@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { TAPi18next } from 'meteor/tap:i18n';
+import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
+import { Tracker } from 'meteor/tracker';
+
 import { isEmail, APIClient } from '../../../utils';
 import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
@@ -16,6 +17,7 @@ import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
 import semver from 'semver';
+import { SideNav } from '../../../ui-utils/client';
 
 function getApps(instance) {
 	const id = instance.id.get();
@@ -24,6 +26,7 @@ function getApps(instance) {
 	return APIClient.get(`apps/${ id }?marketplace=true&version=${ FlowRouter.getQueryParam('version') }`)
 		.catch((e) => {
 			console.log(e);
+			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 			return Promise.resolve({ app: undefined });
 		})
 		.then((remote) => {
@@ -77,7 +80,11 @@ function getApps(instance) {
 			instance.ready.set(true);
 
 			if (appInfo.remote && appInfo.local) {
-				return APIClient.get(`apps/${ id }?marketplace=true&update=true&appVersion=${ FlowRouter.getQueryParam('version') }`);
+				try {
+					return APIClient.get(`apps/${ id }?marketplace=true&update=true&appVersion=${ FlowRouter.getQueryParam('version') }`);
+				} catch (e) {
+					toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+				}
 			}
 
 			return Promise.resolve(false);
@@ -501,4 +508,11 @@ Template.appManage.events({
 			}
 		}
 	}, 500),
+});
+
+Template.appManage.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

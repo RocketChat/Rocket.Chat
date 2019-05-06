@@ -14,10 +14,10 @@ import { CachedCollectionManager } from '../../../ui-cached-collection';
 import _ from 'underscore';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
+import { getConfig } from '../config';
 
 
-
-const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
+const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5 ;
 
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });
@@ -338,7 +338,9 @@ callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), callbacks
 
 CachedCollectionManager.onLogin(() => {
 	Notifications.onUser('subscriptions-changed', (action, sub) => {
-		ChatMessage.update({ rid: sub.rid }, { $unset : { ignored : '' } }, { multi : true });
+		const ignored = sub && sub.ignored ? { $nin: sub.ignored } : { $exists: true };
+
+		ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true });
 		if (sub && sub.ignored) {
 			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in : sub.ignored } }, { $set: { ignored : true } }, { multi : true });
 		}

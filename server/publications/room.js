@@ -48,6 +48,7 @@ const fields = {
 	encrypted: 1,
 	e2eKeyId: 1,
 	departmentId: 1,
+	servedBy: 1,
 };
 
 const roomMap = (record) => {

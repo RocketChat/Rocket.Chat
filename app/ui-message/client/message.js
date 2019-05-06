@@ -1,12 +1,12 @@
 import _ from 'underscore';
-import moment from 'moment';
 
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 
-import { timeAgo } from '../../lib/client/lib/formatDate';
+import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
@@ -15,6 +15,8 @@ import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import './message.html';
+import './messageThread.html';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -68,25 +70,47 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	canvas.style.display = 'block';
 }
 
+const renderBody = (msg, settings) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
+
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.template) {
+		// render template
+	} else if (messageType.message) {
+		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+		msg.html = msg.msg;
+		msg = callbacks.run('renderMentions', msg);
+		msg = msg.html;
+	} else {
+		msg = renderMessageBody(msg);
+	}
+
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
+	}
+	return msg;
+};
+
 Template.message.helpers({
+	body() {
+		const { msg, settings } = this;
+		return Tracker.nonreactive(() => renderBody(msg, settings));
+	},
 	and(a, b) {
 		return a && b;
 	},
-	i18nKeyMessage() {
+	i18nReplyCounter() {
 		const { msg } = this;
-		return msg.dcount > 1
-			? 'messages'
-			: 'message';
+		return `<span class='reply-counter'>${ msg.tcount }</span>`;
 	},
-	i18nKeyReply() {
+	i18nDiscussionCounter() {
 		const { msg } = this;
-		return msg.tcount > 1
-			? 'replies'
-			: 'reply';
+		return `<span class='reply-counter'>${ msg.dcount }</span>`;
 	},
-	formatDate(date) {
-		return moment(date).format('LLL');
-	},
+	formatDateAndTime,
 	encodeURI(text) {
 		return encodeURI(text);
 	},
@@ -111,8 +135,8 @@ Template.message.helpers({
 		return msg.bot && 'bot';
 	},
 	roleTags() {
-		const { msg, hideRoles } = this;
-		if (hideRoles) {
+		const { msg, hideRoles, settings } = this;
+		if (settings.hideRoles || hideRoles) {
 			return [];
 		}
 
@@ -141,13 +165,13 @@ Template.message.helpers({
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false) {
+		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || (MessageTypes.isSystemMessage(msg) && !msg.tmid)) {
 			return 'false';
 		}
 	},
 	sequentialClass() {
-		const { msg, groupable, settings: { showreply } } = this;
-		if (msg.tmid && showreply) {
+		const { msg, groupable } = this;
+		if (MessageTypes.isSystemMessage(msg) && !msg.tmid) {
 			return;
 		}
 		return groupable !== false && msg.groupable !== false && 'sequential';
@@ -204,10 +228,7 @@ Template.message.helpers({
 			return 'temp';
 		}
 	},
-	body() {
-		return Template.instance().body;
-	},
-	normalizedBody() {
+	threadMessage() {
 		const { msg } = this;
 		return normalizeThreadMessage(msg);
 	},
@@ -318,6 +339,11 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	hideMessageActions() {
+		const { msg } = this;
+
+		return msg.private || MessageTypes.isSystemMessage(msg);
+	},
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties
@@ -376,14 +402,13 @@ Template.message.helpers({
 		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
-		const { msg: { tmid }, settings: { showreply } } = this;
-		return !!(tmid && showreply);
+		const { msg: { tmid, t }, settings: { showreply } } = this;
+		return !!(tmid && showreply && !t);
 	},
 	collapsed() {
-		const { msg, msg: { tmid, collapsed }, settings: { showreply } } = this;
-		const isCollapsedThreadReply = tmid && showreply && collapsed !== false;
-		const isSystemMessage = MessageTypes.isSystemMessage(msg);
-		if (isCollapsedThreadReply || isSystemMessage) {
+		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
+		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
+		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
 	},
@@ -403,6 +428,7 @@ const findParentMessage = (() => {
 	const waiting = [];
 
 	const getMessages = _.debounce(async function() {
+		const uid = Tracker.nonreactive(() => Meteor.userId());
 		const _tmp = [...waiting];
 		waiting.length = 0;
 		const messages = await call('getMessages', _tmp);
@@ -413,6 +439,7 @@ const findParentMessage = (() => {
 			const { _id, ...msg } = message;
 			Messages.update({ tmid: _id, repliesCount: { $exists: 0 } }, {
 				$set: {
+					following: message.replies && message.replies.indexOf(uid) > -1,
 					threadMsg: normalizeThreadMessage(msg),
 					repliesCount: msg.tcount,
 				},
@@ -436,10 +463,11 @@ const findParentMessage = (() => {
 		}
 
 		const message = Messages.findOne({ _id: tmid });
-
 		if (message) {
+			const uid = Tracker.nonreactive(() => Meteor.userId());
 			return Messages.update({ tmid, repliesCount: { $exists: 0 } }, {
 				$set: {
+					following: message.replies && message.replies.indexOf(uid) > -1,
 					threadMsg: normalizeThreadMessage(message),
 					repliesCount: message.tcount,
 				},
@@ -451,39 +479,13 @@ const findParentMessage = (() => {
 	};
 })();
 
-
-const renderBody = (msg, settings) => {
-	const isSystemMessage = MessageTypes.isSystemMessage(msg);
-	const messageType = MessageTypes.getType(msg) || {};
-
-	if (messageType.render) {
-		msg = messageType.render(msg);
-	} else if (messageType.template) {
-		// render template
-	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
-	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
-		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
-		msg = msg.html;
-	} else {
-		msg = renderMessageBody(msg);
-	}
-
-	if (isSystemMessage) {
-		msg.html = Markdown.parse(msg.html);
-	}
-	return msg;
-};
-
 Template.message.onCreated(function() {
-	const { msg, settings } = Template.currentData();
+	const { msg, shouldCollapseReplies } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.threadMsg) {
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = renderBody(msg, settings);
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -501,82 +503,132 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 };
 
-const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate) => {
-	const { classList, dataset: currentDataset } = currentNode;
-
-	if (!previousNode) {
-		classList.remove('sequential');
-		!noDate && classList.add('new-day');
-		return;
+const isNewDay = (currentNode, previousNode, forceDate, showDateSeparator) => {
+	if (!showDateSeparator) {
+		return false;
 	}
 
+	if (forceDate || !previousNode) {
+		return true;
+	}
+
+	const { dataset: currentDataset } = currentNode;
 	const { dataset: previousDataset } = previousNode;
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
-	if (!noDate && (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString())) {
-		classList.remove('sequential');
-		classList.add('new-day');
+	if (previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+		return true;
 	}
 
-	if (previousDataset.tmid !== currentDataset.tmid) {
-		return classList.remove('sequential');
+	return false;
+};
+
+const isSequential = (currentNode, previousNode, forceDate, period, showDateSeparator, shouldCollapseReplies) => {
+	if (!previousNode) {
+		return false;
 	}
 
-	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
-		return classList.remove('sequential');
+	if (showDateSeparator && forceDate) {
+		return false;
+	}
+
+	const { dataset: currentDataset } = currentNode;
+	const { dataset: previousDataset } = previousNode;
+	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
+	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
+
+	if (showDateSeparator && previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+		return false;
+	}
+
+	if (shouldCollapseReplies && currentDataset.tmid) {
+		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
+	}
+
+	if (previousDataset.tmid && !currentDataset.tmid) {
+		return false;
 	}
 
 	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
-		return classList.remove('sequential');
+		return false;
+	}
+
+	if (previousDataset.username !== currentDataset.username) {
+		return false;
+	}
+
+	if (parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) <= period) {
+		return true;
+	}
+
+	return false;
+};
+
+const processSequentials = ({ currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
+	if (!showDateSeparator && !groupable) {
+		return;
+	}
+	if (msg.file && msg.file.type === 'application/pdf') {
+		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
+	}
+	// const currentDataset = currentNode.dataset;
+	const previousNode = getPreviousSentMessage(currentNode);
+	const nextNode = currentNode.nextElementSibling;
+
+	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
+		currentNode.classList.add('sequential');
+	} else {
+		currentNode.classList.remove('sequential');
+	}
+
+	if (isNewDay(currentNode, previousNode, forceDate, showDateSeparator)) {
+		currentNode.classList.add('new-day');
+	} else {
+		currentNode.classList.remove('new-day');
+	}
+
+	if (nextNode && nextNode.dataset) {
+		if (isSequential(nextNode, currentNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
+			nextNode.classList.add('sequential');
+		} else {
+			nextNode.classList.remove('sequential');
+		}
+
+		if (isNewDay(nextNode, currentNode, forceDate, showDateSeparator)) {
+			nextNode.classList.add('new-day');
+		} else {
+			nextNode.classList.remove('new-day');
+		}
+	} else {
+		const [el] = $(`#chat-window-${ msg.rid }`);
+		const view = el && Blaze.getView(el);
+		const templateInstance = view && view.templateInstance();
+		if (!templateInstance) {
+			return;
+		}
+
+		if (currentNode.classList.contains('own') === true) {
+			templateInstance.atBottom = true;
+		}
+		templateInstance.sendToBottomIfNecessary();
 	}
 };
 
+Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
+
+	this.autorun(() => {
+		const currentNode = this.firstNode;
+		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
+	});
+
+});
+
 Template.message.onViewRendered = function() {
-	const { settings, forceDate, noDate, groupable, msg } = messageArgs(Template.currentData());
-
-	if (noDate && !groupable) {
-		return;
-	}
-
+	const args = messageArgs(Template.currentData());
+	// processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 	return this._domrange.onAttached((domRange) => {
-		if (msg.file && msg.file.type === 'application/pdf') {
-			Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
-		}
 		const currentNode = domRange.lastNode();
-		const currentDataset = currentNode.dataset;
-		const previousNode = getPreviousSentMessage(currentNode);
-		const nextNode = currentNode.nextElementSibling;
-		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, noDate);
-		if (nextNode && nextNode.dataset) {
-			const nextDataset = nextNode.dataset;
-			if (forceDate || nextDataset.date !== currentDataset.date) {
-				if (!noDate) {
-					currentNode.classList.add('new-day');
-				}
-				currentNode.classList.remove('sequential');
-			} else {
-				nextNode.classList.remove('new-day');
-			}
-			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.tmid !== currentDataset.tmid || nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
-					nextNode.classList.remove('sequential');
-				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
-					nextNode.classList.add('sequential');
-				}
-			}
-		} else {
-			const [el] = $(`#chat-window-${ msg.rid }`);
-			const view = el && Blaze.getView(el);
-			const templateInstance = view && view.templateInstance();
-			if (!templateInstance) {
-				return;
-			}
-
-			if (currentNode.classList.contains('own') === true) {
-				templateInstance.atBottom = true;
-			}
-			templateInstance.sendToBottomIfNecessary();
-		}
+		processSequentials({ currentNode, ...args });
 	});
 };
