@@ -59,13 +59,6 @@ Meteor.methods({
 			});
 		}
 
-		if (room.prid) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing discussion room is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
 		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
 				method: 'saveRoomSettings',
