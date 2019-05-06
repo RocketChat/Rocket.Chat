@@ -666,7 +666,7 @@ export const Livechat = {
 	addAgent(username) {
 		check(username, String);
 
-		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = Users.findOneByUsernameExact(username, { fields: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addAgent' });
@@ -684,7 +684,7 @@ export const Livechat = {
 	addManager(username) {
 		check(username, String);
 
-		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = Users.findOneByUsernameExact(username, { fields: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addManager' });
@@ -700,7 +700,7 @@ export const Livechat = {
 	removeAgent(username) {
 		check(username, String);
 
-		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
+		const user = Users.findOneByUsernameExact(username, { fields: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeAgent' });
@@ -718,7 +718,7 @@ export const Livechat = {
 	removeManager(username) {
 		check(username, String);
 
-		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
+		const user = Users.findOneByUsernameExact(username, { fields: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeManager' });

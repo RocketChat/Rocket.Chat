@@ -130,7 +130,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 	room = Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {
-		const member = Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });
+		const member = Users.findOneByUsernameExact(username, { fields: { username: 1, 'settings.preferences': 1 } });
 		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;

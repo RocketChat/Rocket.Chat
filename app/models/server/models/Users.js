@@ -374,6 +374,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByUsernameExact(username, options) {
+		const query = { username };
+
+		return this.findOne(query, options);
+	}
+
 	findOneByEmailAddress(emailAddress, options) {
 		const query = { 'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i') };
 
