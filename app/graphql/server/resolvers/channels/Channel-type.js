@@ -25,7 +25,7 @@ const resolver = {
 				return;
 			}
 
-			return [Users.findOneByUsername(root.u.username)];
+			return [Users.findOneByUsernameIgnoringCase(root.u.username)];
 		},
 		numberOfMembers: (root) => Subscriptions.findByRoomId(root._id).count(),
 		numberOfMessages: property('msgs'),

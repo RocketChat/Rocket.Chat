@@ -6,7 +6,7 @@ import { settings } from '../../../settings';
 const maxAgeInMS = 1000;
 
 const getUserById = (uid) => Users.findOneById(uid, { fields: { name: 1 } });
-const getUserByUsername = (username) => Users.findOneByUsernameExact(username, { fields: { name: 1 } });
+const getUserByUsername = (username) => Users.findOneByUsername(username, { fields: { name: 1 } });
 
 const getNameOfUserById = memoize((uid) => {
 	const user = getUserById(uid);
@@ -28,7 +28,7 @@ export const composeMessageObjectWithUser = function(message, userId) {
 		message.starred = message.starred.filter((star) => star._id === userId);
 	}
 
-	// if not using real names, there is nothing to do
+	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
 		return message;
 	}

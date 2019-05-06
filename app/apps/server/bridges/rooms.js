@@ -111,7 +111,7 @@ export class AppRoomBridge {
 		Rooms.update(rm._id, rm);
 
 		for (const username of members) {
-			const member = Users.findOneByUsernameExact(username);
+			const member = Users.findOneByUsername(username);
 
 			if (!member) {
 				continue;

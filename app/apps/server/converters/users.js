@@ -13,7 +13,7 @@ export class AppUsersConverter {
 	}
 
 	convertByUsername(username) {
-		const user = Users.findOneByUsernameExact(username);
+		const user = Users.findOneByUsername(username);
 
 		return this.convertToApp(user);
 	}

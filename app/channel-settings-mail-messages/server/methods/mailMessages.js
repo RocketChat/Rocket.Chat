@@ -41,7 +41,7 @@ Meteor.methods({
 		const missing = [];
 		if (data.to_users.length > 0) {
 			_.each(data.to_users, (username) => {
-				const user = Users.findOneByUsername(username);
+				const user = Users.findOneByUsernameIgnoringCase(username);
 				if (user && user.emails && user.emails[0] && user.emails[0].address) {
 					emails.push(user.emails[0].address);
 				} else {

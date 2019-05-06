@@ -55,7 +55,7 @@ settings.get('Accounts_CustomFields', (key, value) => {
 
 export const getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
-	const userToRetrieveFullUserData = Users.findOneByUsernameExact(username);
+	const userToRetrieveFullUserData = Users.findOneByUsername(username);
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
 	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
 	const limit = !viewFullOtherUserInfo ? 1 : l;
