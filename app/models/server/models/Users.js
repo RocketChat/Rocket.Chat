@@ -364,9 +364,9 @@ export class Users extends Base {
 		return this.findOne({ importIds: _id }, options);
 	}
 
-	findOneByUsername(username, options) {
+	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ username }$`, 'i');
+			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
 		}
 
 		const query = { username };
@@ -374,7 +374,7 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByUsernameExact(username, options) {
+	findOneByUsername(username, options) {
 		const query = { username };
 
 		return this.findOne(query, options);
