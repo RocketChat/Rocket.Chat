@@ -149,7 +149,7 @@ Meteor.startup(async function() {
 		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg } = messageArgs(this);
 			roomTypes.openRouteLink('d', { name: msg.u.username }, {
