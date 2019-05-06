@@ -55,6 +55,7 @@ Meteor.startup(function() {
 		context: [
 			'message',
 			'message-mobile',
+			'threads',
 		],
 		action(event) {
 			event.stopPropagation();
