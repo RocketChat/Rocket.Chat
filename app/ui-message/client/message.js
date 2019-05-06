@@ -483,7 +483,6 @@ Template.message.onCreated(function() {
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
