@@ -1,4 +1,3 @@
-
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -10,15 +9,10 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 
-const normalizeThreadMessageCached = [];
-
 export const normalizeThreadMessage = (message) => {
 
 	if (message.msg) {
-		if (!normalizeThreadMessageCached[message._id]) {
-			normalizeThreadMessageCached[message._id] = renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
-		}
-		return normalizeThreadMessageCached[message._id];
+		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}
 
 	if (message.attachments) {
