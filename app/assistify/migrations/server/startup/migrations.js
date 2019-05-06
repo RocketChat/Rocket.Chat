@@ -39,37 +39,51 @@ Meteor.startup(() => {
 	console.log('Migrating from threads to Discussions');
 	Messages.remove({ t: 'thread-welcome' });
 	Messages.find({ t: 'create-thread' }).forEach((msg) => {
-		const update = {
-			$set: {
-				t: 'discussion-created',
-			},
-			$unset: {
-				mentions: 1,
-				channels: 1,
-				urls: 1,
-			},
-		};
-		const room = Rooms.findOne({ _id: msg.channels[0]._id },
-			{
-				fields: {
-					_id: 1,
-					fname: 1,
-					lm: 1,
-					msgs: 1,
-				},
-			});
-		if (room) {
-			update.$set = {
-				msg: room.fname,
-				drid: room._id,
-				dlm: room.lm,
-				dcount: room.msgs,
-			};
+		if (msg.channels && msg.channels[0]._id) {
+			const room = Rooms.findOne({ _id: msg.channels[0]._id },
+				{
+					fields: {
+						_id: 1,
+						fname: 1,
+						lm: 1,
+						msgs: 1,
+					},
+				});
+
+			if (room) {
+				const update = {
+					$set: {
+						t: 'discussion-created',
+						msg: room.fname,
+						drid: room._id,
+						dlm: room.lm,
+						dcount: room.msgs,
+					},
+					$unset: {
+						mentions: 1,
+						channels: 1,
+						urls: 1,
+					},
+				};
+
+				if (msg.attachments && msg.attachments.length) {
+					if (msg.attachments[0].message_link === 'message') {
+						// The thread was created from the side nave and thus never had an origin message => the attachment is not needed
+						Object.assign(update.$set, {
+							attachments: [],
+						});
+					} else {
+						Object.assign(update.$set, {
+							'attachments.0.author_name': msg.channels[0].name,
+							'attachments.0.author_icon': getUserAvatarURL(msg.channels[0].name),
+						});
+					}
+				}
+				Messages.update({ _id: msg._id }, update);
+			}
 		}
-		if (msg.attachments && msg.attachments.length) {
-			msg.attachments[0].author_name = msg.channels && msg.channels[0].name;
-			msg.attachments[0].author_icon = getUserAvatarURL(msg.channels && msg.channels[0].name);
-		}
-		Messages.update({ _id: msg._id }, update);
 	});
+
+	Rooms.update({}, { $rename: { parentRoomId: 'prid' } }, { multi: true });
+
 });
