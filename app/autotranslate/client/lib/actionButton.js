@@ -56,7 +56,7 @@ Meteor.startup(function() {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition({ msg, u }) {
-					return msg && msg.u && msg.u._id !== u._id && msg.translations && !msg.translations.original;
+					return msg && msg.u && msg.u._id !== u._id && msg.translations && msg.translations.original;
 
 				},
 				order: 90,
