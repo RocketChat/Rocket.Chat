@@ -68,8 +68,8 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: mongo:3.2
       - image: circleci/node:8.11-stretch
+      - image: mongo:3.2
 
     steps:
       - checkout
