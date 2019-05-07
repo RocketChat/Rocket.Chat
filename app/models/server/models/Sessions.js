@@ -350,6 +350,20 @@ export class Sessions extends Base {
 		};
 	}
 
+	getUniqueDevicesOfLastMonth() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+
+		return {
+			year,
+			month,
+			data: Promise.await(aggregates.getUniqueDevicesOfLastMonth(this.model.rawCollection(), { year, month })),
+		};
+	}
+
 	getUniqueOSOfYesterday() {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
@@ -363,6 +377,20 @@ export class Sessions extends Base {
 			month,
 			day,
 			data: Promise.await(aggregates.getUniqueOSOfYesterday(this.model.rawCollection(), { year, month, day })),
+		};
+	}
+
+	getUniqueOSOfLastMonth() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+
+		return {
+			year,
+			month,
+			data: Promise.await(aggregates.getUniqueOSOfLastMonth(this.model.rawCollection(), { year, month })),
 		};
 	}
 
