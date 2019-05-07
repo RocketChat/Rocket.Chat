@@ -189,26 +189,42 @@ const DATA = {
 	}],
 }; // require('./fixtures/testData.json')
 
-
-
 describe('Sessions Aggregates', () => {
 	let db;
 
-	before(function() {
-		this.timeout(120000);
-		return mongoUnit.start({ version: '3.2.22' })
-			.catch((e) => console.error(e))
-			.then((testMongoUrl) => MongoClient.connect(testMongoUrl))
-			.then((client) => {
-				db = client.db('test');
-			});
-	});
+	if (process.env.MONGO_URL) {
+		before(function() {
+			this.timeout(120000);
 
-	before(() => mongoUnit.load(DATA));
+			return MongoClient.connect(process.env.MONGO_URL)
+				.then((client) => {
+					db = client.db('test');
+				});
+		});
 
-	after(() => mongoUnit.dropDb(mongoUnit.getUrl()));
+		before(() => {
+			const collection = db.collection('sessions');
+			return collection.drop().then(() => collection.insertMany(DATA.sessions));
+		});
 
-	after(() => { mongoUnit.stop(); });
+		after(() => { db.close(); });
+	} else {
+		before(function() {
+			this.timeout(120000);
+			return mongoUnit.start({ version: '3.2.22' })
+				.catch((e) => console.error(e))
+				.then((testMongoUrl) => MongoClient.connect(testMongoUrl))
+				.then((client) => {
+					db = client.db('test');
+				});
+		});
+
+		before(() => mongoUnit.load(DATA));
+
+		// after(() => mongoUnit.dropDb(mongoUnit.getUrl()));
+
+		after(() => { mongoUnit.stop(); });
+	}
 
 	it('should have sessions data saved', () => {
 		const collection = db.collection('sessions');
