@@ -3,6 +3,7 @@ import moment from 'moment';
 import Clipboard from 'clipboard';
 
 import { Meteor } from 'meteor/meteor';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Blaze } from 'meteor/blaze';
@@ -26,6 +27,7 @@ import {
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { getConfig } from '../../../../ui-utils/client/config';
 import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
@@ -38,8 +40,6 @@ import { isURL } from '../../../../utils/lib/isURL';
 import { mime } from '../../../../utils/lib/mimeTypes';
 
 export const chatMessages = {};
-
-const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
@@ -225,10 +225,18 @@ function roomMaxAge(room) {
 
 callbacks.add('enter-room', wipeFailedUploads);
 
+const ignoreReplies = getConfig('ignoreReplies') === 'true';
+
 Template.room.helpers({
+	useNrr() {
+		const useNrr = getConfig('useNrr');
+		return useNrr === 'true' || useNrr !== 'false';
+	},
 	isTranslated() {
-		const sub = Template.instance().subscription;
-		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
+		const { state } = Template.instance();
+		return settings.get('AutoTranslate_Enabled') &&
+			(state.get('autoTranslate') === true) &&
+			!!state.get('autoTranslateLanguage');
 	},
 
 	embeddedVersion() {
@@ -236,7 +244,8 @@ Template.room.helpers({
 	},
 
 	subscribed() {
-		return Template.instance().subscription;
+		const { state } = Template.instance();
+		return state.get('subscribed');
 	},
 
 	messagesHistory() {
@@ -263,7 +272,13 @@ Template.room.helpers({
 			});
 		});
 
-		const query = { rid };
+		const modes = ['', 'cozy', 'compact'];
+		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
+		const query = {
+			rid,
+			_hidden: { $ne: true },
+			...((ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } }),
+		};
 
 		if (hideMessagesOfType.length > 0) {
 			query.t =
@@ -330,7 +345,7 @@ Template.room.helpers({
 
 		return {
 			rid,
-			subscription,
+			subscription: subscription.get(),
 			isEmbedded,
 			showFormattingTips: showFormattingTips && !isEmbedded,
 			onInputChanged: (input) => {
@@ -430,8 +445,8 @@ Template.room.helpers({
 	},
 
 	showToggleFavorite() {
-		const { subscription } = Template.instace();
-		return subscription && favoritesEnabled();
+		const { state } = Template.instace();
+		return state.get('subscribed') && settings.get('Favorite_Rooms');
 	},
 
 	messageViewMode() {
@@ -466,7 +481,7 @@ Template.room.helpers({
 	},
 
 	canPreview() {
-		const { room, subscription } = Template.instance();
+		const { room, state } = Template.instance();
 
 		if (room && room.t !== 'c') {
 			return true;
@@ -480,7 +495,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return !subscription;
+		return !state.get('subscribed');
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -569,17 +584,27 @@ export const dropzoneEvents = {
 };
 
 Template.room.events({
+	...dropzoneEvents,
+	'click .js-follow-thread'() {
+		const { msg } = messageArgs(this);
+		call('followMessage', { mid: msg._id });
+	},
+	'click .js-unfollow-thread'() {
+		const { msg } = messageArgs(this);
+		call('unfollowMessage', { mid: msg._id });
+	},
 	'click .js-open-thread'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { tabBar } = Template.instance();
+		const { tabBar, subscription } = Template.instance();
 
 		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
 		const $flexTab = $('.flex-tab-container .flex-tab');
 		$flexTab.attr('template', 'thread');
 
 		tabBar.setData({
+			subscription: subscription.get(),
 			msg,
 			rid,
 			mid: tmid || _id,
@@ -773,13 +798,16 @@ Template.room.events({
 			id: item.id,
 			modifier: item.color,
 		}));
-		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+		const itemsBelowDivider = [
+			'delete-message',
+			'report-message',
+		];
+		const [items, alertsItem] = allItems.reduce((result, value) => (result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value), result), [[], []]);
 		const groups = [{ items }];
 
-		if (deleteItem.length) {
-			groups.push({ items: deleteItem });
+		if (alertsItem .length) {
+			groups.push({ items: alertsItem });
 		}
-
 		const config = {
 			columns: [
 				{
@@ -849,14 +877,6 @@ Template.room.events({
 			ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
 		}
 	},
-
-	'click .js-toggle-thread-reply'(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		const { msg: { _id, collapsed = true } } = messageArgs(this);
-		ChatMessage.update({ _id }, { $set: { collapsed: !collapsed } });
-	},
-
 	'load img'(e, template) {
 		return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
 	},
@@ -959,7 +979,17 @@ Template.room.onCreated(function() {
 	};
 
 	this.rid = rid;
-	this.subscription = Subscriptions.findOne({ rid });
+
+	this.subscription = new ReactiveVar();
+	this.state = new ReactiveDict();
+	this.autorun(() => {
+		const subscription = Subscriptions.findOne({ rid });
+		this.subscription.set(subscription);
+		this.state.set('subscribed', !!subscription);
+		this.state.set('autoTranslate', subscription && subscription.autoTranslate);
+		this.state.set('autoTranslateLanguage', subscription && subscription.autoTranslateLanguage);
+	});
+
 	this.room = Rooms.findOne({ _id: rid });
 
 	this.showUsersOffline = new ReactiveVar(false);
@@ -1248,4 +1278,11 @@ Template.room.onRendered(function() {
 		}
 	});
 
+});
+
+callbacks.add('enter-room', (sub) => {
+	const isAReplyInDMFromChannel = FlowRouter.getQueryParam('reply') && sub.t === 'd';
+	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
+		chatMessages[sub.rid].restoreReplies();
+	}
 });

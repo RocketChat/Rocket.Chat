@@ -65,5 +65,9 @@ Meteor.startup(function() {
 			public: true,
 		});
 
+		this.add('FEDERATION_Test_Setup', 'FEDERATION_Test_Setup', {
+			type: 'action',
+			actionText: 'Test_Setup',
+		});
 	});
 });

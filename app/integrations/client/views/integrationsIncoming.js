@@ -3,8 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { Tracker } from 'meteor/tracker';
 import { hasAtLeastOnePermission, hasAllPermission } from '../../../authorization';
-import { modal } from '../../../ui-utils';
+import { modal, SideNav } from '../../../ui-utils/client';
 import { t, handleError } from '../../../utils';
 import { ChatIntegrations } from '../collections';
 import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
@@ -234,4 +235,11 @@ Template.integrationsIncoming.events({
 			});
 		}
 	},
+});
+
+Template.integrationsIncoming.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });
