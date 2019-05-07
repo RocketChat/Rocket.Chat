@@ -29,8 +29,8 @@ const common = {
 		return roomType && roomTypes.roomTypes[roomType].canBeDeleted(hasPermission, room);
 	},
 	canEditRoom() {
-		const { _id, prid } = Template.instance().room;
-		return !prid && hasAllPermission('edit-room', _id);
+		const { _id } = Template.instance().room;
+		return hasAllPermission('edit-room', _id);
 	},
 	isDirectMessage() {
 		const { room: { t } } = Template.instance();
@@ -193,7 +193,7 @@ Template.channelSettingsEditing.events({
 	},
 	async 'click .js-save'(e, t) {
 		const { settings } = t;
-		Object.keys(settings).forEach(async(name) => {
+		Object.keys(settings).forEach(async (name) => {
 			const setting = settings[name];
 			const value = setting.value.get();
 			if (setting.default.get() !== value) {

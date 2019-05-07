@@ -1,7 +1,34 @@
 .rc-header {
-	padding: 0.5rem;
+
+	z-index: 10;
 
 	font-size: var(--text-heading-size);
+
+	.rc-badge {
+		position: absolute;
+		z-index: 1;
+		top: -2px;
+		left: var(--badge-size);
+
+		display: flex;
+
+		min-width: var(--badge-size);
+		height: var(--badge-size);
+
+		padding: 0 5px;
+
+		text-align: center;
+
+		color: white;
+		border-radius: calc(4 * var(--badge-font-size));
+		background: var(--rc-color-button-primary);
+		box-shadow: 0 0 0 2px #ffffff;
+
+		font-size: var(--badge-font-size);
+		font-weight: 600;
+		align-items: center;
+		justify-content: center;
+	}
 
 	&__first-icon {
 		display: flex;
@@ -9,6 +36,8 @@
 		width: 48px;
 
 		padding: 0 0.25rem;
+
+		cursor: pointer;
 
 		justify-content: center;
 	}
@@ -29,8 +58,6 @@
 		flex: 0 0 auto;
 
 		height: 36px;
-
-		margin: 0 -0.5rem;
 
 		white-space: nowrap;
 
@@ -274,6 +301,8 @@
 
 	&__action,
 	&__more-action {
+		position: relative;
+
 		display: flex;
 		flex-direction: column;
 
@@ -424,6 +453,9 @@
 
 		&--burger {
 			display: flex;
+
+			margin: 0;
+			padding: 0;
 		}
 	}
 }
@@ -491,6 +523,9 @@
 	.rc-header {
 		&--burger {
 			display: flex;
+
+			margin: 0;
+			padding: 0;
 		}
 	}
 }

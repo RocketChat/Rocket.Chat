@@ -4,9 +4,9 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { roomTypes as _roomTypes } from '../../../utils';
+import { roomTypes } from '../../../utils';
 import { fireGlobalEvent } from './fireGlobalEvent';
-import { promises } from '../../../promises';
+import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
@@ -14,17 +14,24 @@ import { CachedCollectionManager } from '../../../ui-cached-collection';
 import _ from 'underscore';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
+import { getConfig } from '../config';
 
-const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
-const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
-const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreThreads, users }) => {
+const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5 ;
+
+const onDeleteMessageStream = (msg) => {
+	ChatMessage.remove({ _id: msg._id });
+
+	// remove thread refenrece from deleted message
+	ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
+};
+const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
 	const query = { rid, ts };
 	if (excludePinned) {
 		query.pinned = { $ne: true };
 	}
-	if (ignoreThreads) {
-		query.trid = { $exists: false };
+	if (ignoreDiscussion) {
+		query.drid = { $exists: false };
 	}
 	if (users && users.length) {
 		query['u.username'] = { $in: users };
@@ -52,7 +59,7 @@ export const RoomManager = new function() {
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-					const room = Tracker.nonreactive(() => _roomTypes.findRoom(type, name, user));
+					const room = Tracker.nonreactive(() => roomTypes.findRoom(type, name, user));
 
 					if (room != null) {
 						openedRooms[typeName].rid = room._id;
@@ -77,7 +84,7 @@ export const RoomManager = new function() {
 											};
 										}
 										msg.name = room.name;
-										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+										RoomManager.updateMentionsMarksOfRoom(typeName);
 
 										callbacks.run('streamMessage', msg);
 
@@ -221,25 +228,29 @@ export const RoomManager = new function() {
 
 		updateMentionsMarksOfRoom(typeName) {
 			const dom = this.getDomOfRoom(typeName);
-			if ((dom == null)) {
+			if (!dom) {
 				return;
 			}
 
-			const ticksBar = $(dom).find('.ticks-bar');
-			$(dom).find('.ticks-bar > .tick').remove();
+			const [ticksBar] = dom.getElementsByClassName('ticks-bar');
+			const [messagesBox] = dom.getElementsByClassName('messages-box');
+			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
+			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
 
-			const scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50;
-			const totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40;
-
-			return $('.messages-box .mention-link-me').each(function(index, item) {
-				const topOffset = $(item).offset().top + scrollTop;
-				const percent = (100 / totalHeight) * topOffset;
-				if ($(item).hasClass('mention-link-all')) {
-					return ticksBar.append(`<div class="tick background-attention-color" style="top: ${ percent }%;"></div>`);
-				} else {
-					return ticksBar.append(`<div class="tick background-primary-action-color" style="top: ${ percent }%;"></div>`);
-				}
-			});
+			// TODO: thread quotes should NOT have mention links at all
+			const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
+			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll(mentionsSelector))
+				.map((mentionLink) => {
+					const topOffset = $(mentionLink).offset().top + scrollTop;
+					const percent = (100 / totalHeight) * topOffset;
+					const className = [
+						'tick',
+						mentionLink.classList.contains('mention-link--me') && 'tick--me',
+						mentionLink.classList.contains('mention-link--group') && 'tick--group',
+					].filter(Boolean).join(' ');
+					return `<div class="${ className }" style="top: ${ percent }%;"></div>`;
+				})
+				.join('');
 		}
 	};
 	Cls.initClass();
@@ -247,7 +258,7 @@ export const RoomManager = new function() {
 };
 
 const loadMissedMessages = function(rid) {
-	const lastMessage = ChatMessage.findOne({ rid, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
+	const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true }, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
 	if (lastMessage == null) {
 		return;
 	}
@@ -285,9 +296,10 @@ Meteor.startup(() => {
 		if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
 			currentUsername = user.username;
 			RoomManager.closeAllRooms();
-			const { roomTypes } = _roomTypes;
+			const { roomTypes: types } = roomTypes;
+
 			// Reload only if the current route is a channel route
-			const roomType = Object.keys(roomTypes).find((key) => roomTypes[key].route && roomTypes[key].route.name === FlowRouter.current().route.name);
+			const roomType = Object.keys(types).find((key) => types[key].route && types[key].route.name === FlowRouter.current().route.name);
 			if (roomType) {
 				FlowRouter.reload();
 			}
@@ -314,8 +326,7 @@ Meteor.startup(() => {
 Tracker.autorun(function() {
 	if (Meteor.userId()) {
 		return Notifications.onUser('message', function(msg) {
-			msg.u =
-			{ username: 'rocket.cat' };
+			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
 			return ChatMessage.upsert({ _id: msg._id }, msg);
@@ -327,7 +338,9 @@ callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), callbacks
 
 CachedCollectionManager.onLogin(() => {
 	Notifications.onUser('subscriptions-changed', (action, sub) => {
-		ChatMessage.update({ rid: sub.rid }, { $unset : { ignored : '' } }, { multi : true });
+		const ignored = sub && sub.ignored ? { $nin: sub.ignored } : { $exists: true };
+
+		ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true });
 		if (sub && sub.ignored) {
 			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in : sub.ignored } }, { $set: { ignored : true } }, { multi : true });
 		}

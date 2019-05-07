@@ -183,9 +183,7 @@ Template.loginForm.onCreated(function() {
 			return this.customFields.set(null);
 		}
 	});
-	if (Meteor.settings.public.sandstorm) {
-		this.state = new ReactiveVar('sandstorm');
-	} else if (Session.get('loginDefaultState')) {
+	if (Session.get('loginDefaultState')) {
 		this.state = new ReactiveVar(Session.get('loginDefaultState'));
 	} else {
 		this.state = new ReactiveVar('login');

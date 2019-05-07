@@ -38,7 +38,7 @@ TabBar.addButton({
 	groups: ['live'],
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
-	icon: 'lightbulb',
+	icon: 'book',
 	template: 'externalSearch',
 	order: 10,
 });

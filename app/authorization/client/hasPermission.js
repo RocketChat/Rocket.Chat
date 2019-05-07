@@ -7,11 +7,11 @@ function atLeastOne(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
 
 	return permissions.some((permissionId) => {
-		const permission = ChatPermissions.findOne(permissionId);
+		const permission = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {
-			const role = Models.Roles.findOne(roleName);
+			const role = Models.Roles.findOne(roleName, { fields: { scope: 1 } });
 			const roleScope = role && role.scope;
 			const model = Models[roleScope];
 
@@ -24,11 +24,11 @@ function all(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
 
 	return permissions.every((permissionId) => {
-		const permission = ChatPermissions.findOne(permissionId);
+		const permission = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {
-			const role = Models.Roles.findOne(roleName);
+			const role = Models.Roles.findOne(roleName, { fields: { scope: 1 } });
 			const roleScope = role && role.scope;
 			const model = Models[roleScope];
 

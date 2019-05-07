@@ -52,23 +52,20 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 	}
 	if (userAlreadyReacted) {
 		removeUserReaction(message, reaction, user.username);
-
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
 				Rooms.unsetReactionsInLastMessage(room._id);
 			}
 			Messages.unsetReactions(message._id);
-			callbacks.run('unsetReaction', message._id, reaction);
-			callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
 		} else {
+			Messages.setReactions(message._id, message.reactions);
 			if (isTheLastMessage(room, message)) {
 				Rooms.setReactionsInLastMessage(room._id, message);
 			}
-			Messages.setReactions(message._id, message.reactions);
-			callbacks.run('setReaction', message._id, reaction);
-			callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 		}
+		callbacks.run('unsetReaction', message._id, reaction);
+		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
 	} else {
 		if (!message.reactions) {
 			message.reactions = {};
@@ -79,10 +76,10 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 			};
 		}
 		message.reactions[reaction].usernames.push(user.username);
+		Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			Rooms.setReactionsInLastMessage(room._id, message);
 		}
-		Messages.setReactions(message._id, message.reactions);
 		callbacks.run('setReaction', message._id, reaction);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 	}

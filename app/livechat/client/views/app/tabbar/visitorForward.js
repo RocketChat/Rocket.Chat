@@ -7,6 +7,7 @@ import { t } from '../../../../../utils';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import { AgentUsers } from '../../../collections/AgentUsers';
 import toastr from 'toastr';
+import './visitorForward.html';
 
 Template.visitorForward.helpers({
 	visitor() {

@@ -22,7 +22,7 @@ describe('[Resolution]', () => {
 		});
 
 		describe('moving elements:', () => {
-			it('it should close de sidenav', () => {
+			it('it should close the sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.include({ x:0 });
 			});
 
@@ -35,11 +35,20 @@ describe('[Resolution]', () => {
 				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
 			});
 
+			it('it should not close sidebar on pressing the sidebar item menu', () => {
+				sideNav.firstSidebarItem.moveToObject();
+				sideNav.firstSidebarItemMenu.waitForVisible(10000);
+				sideNav.firstSidebarItemMenu.click();
+				browser.pause(100);
+				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
+				sideNav.popoverOverlay.click();
+			});
+
 			it('it should open general channel', () => {
 				sideNav.openChannel('general');
 			});
 
-			it('it should close de sidenav', () => {
+			it('it should close the sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.include({ x:0 });
 			});
 
@@ -60,7 +69,7 @@ describe('[Resolution]', () => {
 				sideNav.preferences.click();
 			});
 
-			it('it should close de sidenav', () => {
+			it('it should close the sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.include({ x:0 });
 			});
 
@@ -74,7 +83,7 @@ describe('[Resolution]', () => {
 				sideNav.profile.click();
 			});
 
-			it('it should close de sidenav', () => {
+			it('it should close the sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.include({ x:0 });
 			});
 
@@ -83,15 +92,11 @@ describe('[Resolution]', () => {
 				sideNav.burgerBtn.click();
 			});
 
-			it('it should close de sidenav', () => {
+			it('it should close the preferences nav', () => {
 				sideNav.preferencesClose.waitForVisible(10000);
 				sideNav.preferencesClose.click();
-				sideNav.sidebarWrap.click();
-			});
 
-			it('it should press the navbar button', () => {
-				sideNav.burgerBtn.waitForVisible(10000);
-				sideNav.burgerBtn.click();
+				sideNav.preferencesClose.waitForVisible(10000, true);
 			});
 		});
 	});

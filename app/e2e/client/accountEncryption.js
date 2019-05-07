@@ -4,7 +4,7 @@ import toastr from 'toastr';
 import s from 'underscore.string';
 import { settings } from '../../settings';
 import { t } from '../../utils';
-import { e2e } from '..';
+import { e2e } from './rocketchat.e2e';
 
 Template.accountEncryption.helpers({
 	isEnabled() {

@@ -14,11 +14,7 @@
 			</div>
 			{{#with config}}
 				{{#if autocomplete 'isShowing'}}
-					<div class="fadeInDown">
-						{{#if autocomplete 'isLoaded'}}
-							{{> popupList data=config items=items}}
-						{{/if}}
-					</div>
+					{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
 				{{/if}}
 			{{/with}}
 		</label>

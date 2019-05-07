@@ -51,9 +51,7 @@
 				</div>
 				{{#with config}}
 					{{#if autocomplete 'isShowing'}}
-						{{#if autocomplete 'isLoaded'}}
-							{{> popupList data=config items=items}}
-						{{/if}}
+						{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
 					{{/if}}
 				{{/with}}
 			</label>
@@ -69,9 +67,9 @@
 			<span class="rc-checkbox__text rc-text__small">{{_ "Exclude_pinned"}}</span>
 		</label>
 		<label class="rc-checkbox">
-			<input type="checkbox" name="ignoreThreads" class="rc-checkbox__input">
+			<input type="checkbox" name="ignoreDiscussion" class="rc-checkbox__input">
 			{{> icon icon="check" block="rc-checkbox__icon"}}
-			<span class="rc-checkbox__text rc-text__small">{{_ "RetentionPolicy_DoNotExcludeThreads"}}</span>
+			<span class="rc-checkbox__text rc-text__small">{{_ "RetentionPolicy_DoNotExcludeDiscussion"}}</span>
 		</label>
 		<label class="rc-checkbox">
 			<input type="checkbox" name="filesOnly" class="rc-checkbox__input">

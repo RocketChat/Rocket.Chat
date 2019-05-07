@@ -3,7 +3,10 @@ import { ChatRoom, ChatSubscription } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
-import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../../utils';
+import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, roomTypes } from '../../../utils';
+import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
+
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -31,7 +34,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	getIcon(roomData) {
 		if (roomData.prid) {
-			return 'thread';
+			return 'discussion';
 		}
 		return this.icon;
 	}
@@ -70,11 +73,6 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	canSendMessage(roomId) {
-		const room = ChatRoom.findOne({ _id: roomId, t: 'p' }, { fields: { prid: 1 } });
-		if (room.prid) {
-			return true;
-		}
-
 		// TODO: remove duplicated code
 		return ChatSubscription.find({
 			rid: roomId,
@@ -112,5 +110,23 @@ export class PrivateRoomType extends RoomTypeConfig {
 			default:
 				return '';
 		}
+	}
+
+	getAvatarPath(roomData) {
+		// TODO: change to always get avatar from _id when rooms have avatars
+
+		// if room is not a discussion, returns the avatar for its name
+		if (!roomData.prid) {
+			return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		}
+
+		// if discussion's parent room is known, get his avatar
+		const proom = ChatRoom.findOne({ _id: roomData.prid }, { reactive: false });
+		if (proom) {
+			return roomTypes.getConfig(proom.t).getAvatarPath(proom);
+		}
+
+		// otherwise gets discussion's avatar via _id
+		return getRoomAvatarURL(roomData.prid);
 	}
 }

@@ -79,7 +79,7 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
 		});
-		settings.add(`SAML_Custom_${ name }_button_color`, '#13679A', {
+		settings.add(`SAML_Custom_${ name }_button_color`, '#1d74f5', {
 			type: 'string',
 			group: 'SAML',
 			section: name,
@@ -110,6 +110,14 @@ Meteor.methods({
 	},
 });
 
+const normalizeCert = function(cert) {
+	if (typeof cert === 'string') {
+		return cert.replace('-----BEGIN CERTIFICATE-----', '').replace('-----END CERTIFICATE-----', '').trim();
+	}
+
+	return cert;
+};
+
 const getSamlConfigs = function(service) {
 	return {
 		buttonLabelText: settings.get(`${ service.key }_button_label_text`),
@@ -127,7 +135,8 @@ const getSamlConfigs = function(service) {
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
-			cert: settings.get(`${ service.key }_cert`),
+			// People often overlook the instruction to remove the header and footer of the certificate on this specific setting, so let's do it for them.
+			cert: normalizeCert(settings.get(`${ service.key }_cert`)),
 		},
 	};
 };

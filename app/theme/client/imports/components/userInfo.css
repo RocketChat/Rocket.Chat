@@ -19,6 +19,8 @@
 
 		background-color: var(--color-white);
 
+		will-change: transform;
+
 		&.animated {
 			transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s, -webkit-transform 0.45s cubic-bezier(0.5, 0, 0, 1);
 		}
@@ -93,6 +95,8 @@
 	&__scroll {
 		overflow-x: hidden;
 		overflow-y: auto;
+
+		flex: 1;
 
 		margin: 0 -1.5rem;
 		padding: 0 1.5rem;

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
-import { PushNotification } from '../../../../push-notifications';
+import { PushNotification } from '../../../../push-notifications/server';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
@@ -18,7 +18,7 @@ Meteor.startup(() => {
 });
 
 async function getBadgeCount(userId) {
-	const [result] = await SubscriptionRaw.aggregate([
+	const [result = {}] = await SubscriptionRaw.aggregate([
 		{ $match: { 'u._id': userId } },
 		{
 			$group: {
@@ -75,10 +75,11 @@ export function shouldNotifyMobile({
 	hasMentionToAll,
 	isHighlighted,
 	hasMentionToUser,
+	hasReplyToThread,
 	statusConnection,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser) {
+	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
 
@@ -99,5 +100,5 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser;
+	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser || hasReplyToThread;
 }

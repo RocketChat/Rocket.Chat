@@ -54,10 +54,16 @@
 			right: 50%;
 			left: auto;
 		}
-	}
 
-	& .terminal {
-		direction: ltr;
+		&.compact {
+			& .message {
+				padding: 5px 45px 5px 15px;
+
+				&.collapsed .thumb {
+					margin: 0;
+				}
+			}
+		}
 	}
 
 	& .container-bars {
@@ -86,11 +92,6 @@
 	& .messages-container {
 		right: 0;
 		left: auto;
-
-		& .edit-room-title {
-			margin-right: 4px;
-			margin-left: auto;
-		}
 
 		& .wrapper {
 			right: 0;
@@ -365,26 +366,6 @@
 		padding-right: 70px;
 		padding-left: 20px;
 
-		& .message-dropdown {
-			right: -2px;
-			left: auto;
-
-			& ul li {
-				&:first-child {
-					padding-right: 6px;
-					padding-left: 8px;
-
-					border-right: unset;
-					border-left: 1px solid #eeeeee;
-				}
-
-				&:last-child {
-					padding-right: 8px;
-					padding-left: 13px;
-				}
-			}
-		}
-
 		& .user {
 			margin-right: 0;
 			margin-left: 5px;
@@ -395,14 +376,9 @@
 			left: auto;
 		}
 
-		& .info .edited {
+		& .title .edited {
 			margin-right: 3px;
 			margin-left: auto;
-			padding-right: 3px;
-			padding-left: auto;
-
-			border-right: 1px dotted #bab8d8;
-			border-left: unset;
 		}
 
 		& .private {
@@ -413,7 +389,7 @@
 		&.sequential {
 			padding-top: 4px;
 
-			& .info {
+			& .title {
 				right: 5px;
 				left: auto;
 
@@ -434,6 +410,12 @@
 					margin-right: 1px;
 					margin-left: auto;
 				}
+			}
+		}
+
+		&.collapsed {
+			& > .thumb {
+				margin: 0 16px 0 0;
 			}
 		}
 	}
