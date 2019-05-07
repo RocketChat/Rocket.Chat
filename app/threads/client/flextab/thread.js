@@ -51,7 +51,7 @@ Template.thread.helpers({
 		return Threads.find({ tmid }, { sort });
 	},
 	messageContext() {
-		const result = messageContext.apply(this);
+		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
 			settings: {
