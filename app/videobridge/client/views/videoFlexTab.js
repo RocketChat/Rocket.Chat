@@ -25,6 +25,14 @@ Template.videoFlexTab.onRendered(function() {
 		FlowRouter.go(FlowRouter.current().path.replace(/\?.*/, ''));
 	};
 
+	const stopCall = () => {
+		if (this.isCallRecipient) {
+			resetQueryParams();
+		} else {
+			Meteor.call('jitsi:rejectCall', this.roomId, 'jitsi_call_finished_creator');
+		}
+	};
+
 	const closePanel = () => {
 		// Reset things.  Should probably be handled better in closeFlex()
 		$('.flex-tab').css('max-width', '');
@@ -35,11 +43,7 @@ Template.videoFlexTab.onRendered(function() {
 		TabBar.updateButton('video', { class: '' });
 
 		if (this.timeOut) {
-			if (this.isCallRecipient) {
-				resetQueryParams();
-			} else {
-				Meteor.call('jitsi:rejectCall', this.roomId, 'jitsi_call_finished_creator');
-			}
+			stopCall();
 		}
 	};
 
@@ -133,7 +137,7 @@ Template.videoFlexTab.onRendered(function() {
 				if (this.timeOut) {
 					Meteor.defer(() => this.api && this.api.dispose());
 					clearInterval(this.timeOut);
-					resetQueryParams();
+					stopCall();
 				}
 			}
 
