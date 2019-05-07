@@ -608,45 +608,6 @@ Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the
 
 Template.message.onViewRendered = function() {
 	const args = messageArgs(Template.currentData());
-	// processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-
-	// Below is an example of what a bridge between RC and an oembed iFrame might look like
-	//
-	// There are a lot of decisions required to make this viable -- mostly relating to
-	// permissions/authorization. We wouldn't want anyone to be able to paste a link that
-	// could suddenly take control of the channel / suck out channel metadata. For the Koji
-	// games in particular, it would be nice if an authorized iframe could get:
-	// 		- a list of usernames/uids in the channel
-	// 		- the uid of the current user
-	// 		- a callback for storing data inside the channel, similar to the browser's localStorage
-	//
-	// Also note that I'm not familiar enough with RC's high-level structure to know the best place
-	// for this listener, this was just the easiest place to get it working for the point of demo :)
-	window.addEventListener('message', ({ data, source }) => {
-		try {
-			// Some general metadata to demonstrate sending information
-			// back on a `connect` message
-			const { username } = args.msg.u;
-			const { name: roomName } = args.room;
-
-			const { action } = data.rcEmbeddedSdk;
-			// ack the successful connect back to the iframe
-			if (action === 'connect') {
-				source.postMessage({
-					rcEmbeddedSdk: {
-						version: '0.0.1',
-						action: 'connected',
-						connected: {
-							username,
-							roomName,
-						},
-					},
-				}, '*');
-			}
-		} catch (err) {
-			//
-		}
-	}, false);
 
 	return this._domrange.onAttached((domRange) => {
 		const currentNode = domRange.lastNode();

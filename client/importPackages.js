@@ -34,6 +34,7 @@ import '../app/importer-slack-users/client';
 import '../app/integrations/client';
 import '../app/issuelinks/client';
 import '../app/katex/client';
+import '../app/koji-demo/client/index';
 import '../app/ldap/client';
 import '../app/lib';
 import '../app/livestream/client';
