@@ -10,7 +10,6 @@ export { MsgTyping } from './lib/msgTyping';
 export { KonchatNotification } from './lib/notification';
 import './lib/parentTemplate';
 export { Login, animationSupport, animeBack, Button, preLoadImgs } from './lib/rocket';
-import './lib/textarea-autogrow';
 import './lib/codeMirror/codeMirror';
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';

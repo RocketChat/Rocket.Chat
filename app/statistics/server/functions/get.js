@@ -2,7 +2,6 @@ import _ from 'underscore';
 import os from 'os';
 
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import {
@@ -16,7 +15,7 @@ import {
 	LivechatVisitors,
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { Info } from '../../../utils/server';
+import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 
 import { statistics } from '../statisticsNamespace';
@@ -136,19 +135,10 @@ statistics.get = function _getStatistics() {
 	statistics.migration = Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && settings.get('Force_Disable_OpLog_For_Cache') !== true) {
-		statistics.oplogEnabled = true;
-	}
-
-	try {
-		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
-		statistics.mongoVersion = version;
-		statistics.mongoStorageEngine = storageEngine.name;
-	} catch (e) {
-		console.error('Error getting MongoDB info');
-	}
+	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+	statistics.oplogEnabled = oplogEnabled;
+	statistics.mongoVersion = mongoVersion;
+	statistics.mongoStorageEngine = mongoStorageEngine;
 
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
 	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();

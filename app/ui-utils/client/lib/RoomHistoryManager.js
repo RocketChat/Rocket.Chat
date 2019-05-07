@@ -1,6 +1,6 @@
-import mem from 'mem';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
@@ -9,7 +9,8 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 
-export const normalizeThreadMessage = mem((message) => {
+export const normalizeThreadMessage = (message) => {
+
 	if (message.msg) {
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}
@@ -25,7 +26,7 @@ export const normalizeThreadMessage = mem((message) => {
 			return s.escapeHTML(attachment.title);
 		}
 	}
-}, { maxAge: 1000 });
+};
 
 export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	const userId = msg.u && msg.u._id;
@@ -45,8 +46,10 @@ export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	}
 
 	if (msg.tcount) {
+		const uid = Tracker.nonreactive(() => Meteor.userId());
 		ChatMessage.update({ tmid: _id }, {
 			$set: {
+				following: msg.replies && msg.replies.indexOf(uid) > -1,
 				threadMsg: normalizeThreadMessage(msg),
 				repliesCount: msg.tcount,
 			},
@@ -99,7 +102,7 @@ export const RoomHistoryManager = new class {
 		room.isLoading.set(true);
 
 		// ScrollListener.setLoader true
-		const lastMessage = ChatMessage.findOne({ rid }, { sort: { ts: 1 } });
+		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
 		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 
 		if (lastMessage) {
@@ -120,7 +123,7 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
+		Meteor.call('loadHistory', rid, ts, limit, ls, (err, result) => {
 			if (err) {
 				return;
 			}
@@ -140,24 +143,29 @@ export const RoomHistoryManager = new class {
 				subscription,
 			});
 
+			if (!room.loaded) {
+				room.loaded = 0;
+			}
+
+			room.loaded += messages.length;
+
+			if (messages.length < limit) {
+				return room.hasMore.set(false);
+			}
+
 			if (wrapper) {
+				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
+					return this.getMore(rid);
+				}
 				const heightDiff = wrapper.scrollHeight - previousHeight;
 				wrapper.scrollTop += heightDiff;
 			}
 
+			room.isLoading.set(false);
 			Meteor.defer(() => {
 				readMessage.refreshUnreadMark(rid, true);
 				return RoomManager.updateMentionsMarksOfRoom(typeName);
 			});
-
-			room.isLoading.set(false);
-			if (!room.loaded) {
-				room.loaded = 0;
-			}
-			room.loaded += messages.length;
-			if (messages.length < limit) {
-				return room.hasMore.set(false);
-			}
 		});
 	}
 
@@ -172,7 +180,7 @@ export const RoomHistoryManager = new class {
 
 		room.isLoading.set(true);
 
-		const lastMessage = ChatMessage.findOne({ rid }, { sort: { ts: -1 } });
+		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
 
 		let typeName = undefined;
 
@@ -217,7 +225,7 @@ export const RoomHistoryManager = new class {
 
 		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
 
-		if (ChatMessage.findOne(message._id)) {
+		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`#${ message._id }`, wrapper);
 			if (msgElement.length === 0) {

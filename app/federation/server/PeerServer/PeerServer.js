@@ -1,11 +1,11 @@
 import { callbacks } from '../../../callbacks';
 import { setReaction } from '../../../reactions/server';
 import { addUserToRoom, removeUserFromRoom, deleteMessage } from '../../../lib';
-import { Rooms, Subscriptions } from '../../../models';
+import { Rooms, Subscriptions, FederationPeers } from '../../../models';
 
 import { FederatedMessage, FederatedRoom, FederatedUser } from '../federatedResources';
 import { logger } from '../logger.js';
-import { Federation } from '../';
+import { Federation } from '..';
 
 export class PeerServer {
 	constructor() {
@@ -56,6 +56,9 @@ export class PeerServer {
 
 		// Then, create the room, if needed
 		federatedRoom.create();
+
+		// Refresh federation peers
+		FederationPeers.refreshPeers();
 	}
 
 	handleRoomCreatedEvent(e) {
@@ -76,6 +79,9 @@ export class PeerServer {
 
 		// Then, create the room, if needed
 		federatedRoom.create(true);
+
+		// Refresh federation peers
+		FederationPeers.refreshPeers();
 	}
 
 	handleUserJoinedEvent(e) {
@@ -103,6 +109,9 @@ export class PeerServer {
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
+
+		// Refresh federation peers
+		FederationPeers.refreshPeers();
 	}
 
 	handleUserAddedEvent(e) {
@@ -139,6 +148,9 @@ export class PeerServer {
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
+
+		// Refresh federation peers
+		FederationPeers.refreshPeers();
 	}
 
 	handleUserLeftEvent(e) {
@@ -166,6 +178,9 @@ export class PeerServer {
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
+
+		// Refresh federation peers
+		FederationPeers.refreshPeers();
 	}
 
 	handleUserRemovedEvent(e) {
@@ -197,6 +212,9 @@ export class PeerServer {
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
+
+		// Refresh federation peers
+		FederationPeers.refreshPeers();
 	}
 
 	handleUserMutedEvent(e) {

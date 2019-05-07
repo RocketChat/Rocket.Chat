@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, handleError } from '../../../../utils';
-import { TabBar, fireGlobalEvent } from '../../../../ui-utils';
+import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
 import { settings } from '../../../../settings';
 import { FlowRouter } from 'meteor/kadira:flow-router';

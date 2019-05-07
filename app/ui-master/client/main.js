@@ -1,3 +1,5 @@
+import Clipboard from 'clipboard';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
@@ -13,8 +15,6 @@ import { CachedChatSubscription, Roles, ChatSubscription } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../tooltip';
-import Clipboard from 'clipboard';
-import s from 'underscore.string';
 
 settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
 
@@ -134,8 +134,7 @@ Template.main.onCreated(function() {
 
 Template.main.helpers({
 	removeSidenav() {
-		const { modal } = this;
-		return (modal || typeof modal === 'function' ? modal() : modal); // || RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
 	},
 	siteName() {
 		return settings.get('Site_Name');

@@ -140,7 +140,8 @@ Template.membersList.helpers({
 			clear: Template.instance().clearUserDetail,
 			showAll: roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
 			hideAdminControls: roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
-			video: ['d'].includes(room != null ? room.t : undefined),
+			video: ['d'].includes(room && room.t),
+			showBackButton: roomTypes.roomTypes[room.t].isGroupChat(),
 		};
 	},
 	displayName() {
@@ -165,6 +166,13 @@ Template.membersList.events({
 		});
 
 		Template.parentData(0).tabBar.open();
+	},
+	'submit .js-search-form'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+	},
+	'keydown .js-filter'(event, instance) {
+		instance.filter.set(event.target.value.trim());
 	},
 	'input .js-filter'(e, instance) {
 		instance.filter.set(e.target.value.trim());
@@ -274,7 +282,7 @@ Template.membersList.onCreated(function() {
 	this.loading = new ReactiveVar(true);
 	this.loadingMore = new ReactiveVar(false);
 
-	this.tabBar = Template.instance().tabBar;
+	this.tabBar = this.data.tabBar;
 
 	this.autorun(() => {
 		if (this.data.rid == null) { return; }
@@ -282,18 +290,22 @@ Template.membersList.onCreated(function() {
 		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
 			if (error) {
 				console.error(error);
-				return this.loading.set(false);
+				this.loading.set(false);
 			}
 
 			this.users.set(users.records);
 			this.total.set(users.total);
-			return this.loading.set(false);
+			this.loading.set(false);
 		});
 	});
 
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
-		return setTimeout(() => this.clearRoomUserDetail(), 500);
+		this.tabBar.setData({
+			label: 'Members_List',
+			icon: 'team',
+		});
+		setTimeout(() => this.clearRoomUserDetail(), 100);
 	};
 
 	this.showUserDetail = (username, group) => {

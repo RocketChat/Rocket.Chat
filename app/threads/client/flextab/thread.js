@@ -42,8 +42,8 @@ Template.thread.helpers({
 	mainMessage() {
 		return Template.parentData().mainMessage;
 	},
-	loading() {
-		return Template.instance().state.get('loading');
+	isLoading() {
+		return Template.instance().state.get('loading') !== false;
 	},
 	messages() {
 		const { Threads, state } = Template.instance();
@@ -51,7 +51,7 @@ Template.thread.helpers({
 		return Threads.find({ tmid }, { sort });
 	},
 	messageContext() {
-		const result = messageContext.apply(this);
+		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
 			settings: {
@@ -63,9 +63,10 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid } } = this;
+		const { mainMessage: { rid, _id: tmid }, subscription } = this;
 
 		return {
+			subscription,
 			rid,
 			tmid,
 			onSend: (...args) => instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args),
@@ -96,7 +97,6 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.state.set({
 			tmid,
-			loading: false,
 		});
 		this.loadMore();
 	});
@@ -105,7 +105,7 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ tmid, _updatedAt: { $gt: new Date() } }, {
+		this.threadsObserve = Messages.find({ tmid, _hidden: { $ne: true } }, {
 			fields: {
 				collapsed: 0,
 				threadMsg: 0,
@@ -146,10 +146,11 @@ Template.thread.onRendered(function() {
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
 
-	this.state = new ReactiveDict();
+	this.state = new ReactiveDict({
+	});
 
 	this.loadMore = _.debounce(async () => {
-		if (this.state.get('loading')) {
+		if (this.state.get('loading') === true) {
 			return;
 		}
 
@@ -161,7 +162,10 @@ Template.thread.onCreated(async function() {
 
 		upsert(this.Threads, messages);
 
-		this.state.set('loading', false);
+		Tracker.afterFlush(() => {
+			this.state.set('loading', false);
+		});
+
 
 	}, 500);
 });
