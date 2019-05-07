@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils/server/lib/composeMessageObjectWithUser';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import _ from 'underscore';
@@ -29,7 +28,8 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 		throw new Meteor.Error('error-room-archived', `The channel, ${ room.name }, is archived`);
 	}
 	if (userId && room.lastMessage) {
-		room.lastMessage = composeMessageObjectWithUser(room.lastMessage, userId);
+		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		room.lastMessage = lastMessage;
 	}
 
 	return room;

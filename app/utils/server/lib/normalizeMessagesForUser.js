@@ -9,7 +9,8 @@ const filterStarred = (message, uid) => {
 	return message;
 };
 
-// TODO: we should let clients get names on demand instead of doing this
+// TODO: we should let clients get user names on demand instead of doing this
+
 export const normalizeMessagesForUser = (messages, uid) => {
 	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
@@ -23,15 +24,10 @@ export const normalizeMessagesForUser = (messages, uid) => {
 
 		usernames.add(message.u.username);
 
-		if (message.mentions && message.mentions.length) {
-			message.mentions.forEach((mention) => { usernames.add(mention.username); });
-		}
+		(message.mentions || []).forEach(({ username }) => { usernames.add(username); });
 
-		if (message.reactions && Object.keys(message.reactions).length) {
-			Object.keys(message.reactions).forEach((reaction) => {
-				message.reactions[reaction].usernames.forEach((username) => { usernames.add(username); });
-			});
-		}
+		Object.values(message.reactions || {})
+			.forEach((reaction) => reaction.usernames.forEach((username) => usernames.add(username)));
 	});
 
 	const users = {};
@@ -48,16 +44,12 @@ export const normalizeMessagesForUser = (messages, uid) => {
 	messages.forEach((message) => {
 		message.u.name = users[message.u.username];
 
-		if (message.mentions && message.mentions.length) {
-			message.mentions.forEach((mention) => { mention.name = users[mention.username]; });
-		}
+		(message.mentions || []).forEach((mention) => { mention.name = users[mention.username]; });
 
-		if (message.reactions && Object.keys(message.reactions).length) {
-			Object.keys(message.reactions).forEach((reaction) => {
-				const names = message.reactions[reaction].usernames.map((username) => users[username]);
-				message.reactions[reaction].names = names;
-			});
-		}
+		Object.keys(message.reactions || {}).forEach((reaction) => {
+			const names = message.reactions[reaction].usernames.map((username) => users[username]);
+			message.reactions[reaction].names = names;
+		});
 	});
 
 	return messages;
