@@ -38,7 +38,7 @@ Template.threads.events({
 
 Template.threads.helpers({
 	subscription() {
-		return Template.instance().data.subscription;
+		return Template.currentData().subscription;
 	},
 	doDotLoadThreads() {
 		return Template.instance().state.get('close');
@@ -74,6 +74,7 @@ Template.threads.onCreated(async function() {
 		thread: msg,
 	});
 
+	this.rid = rid;
 
 	this.incLimit = () => {
 
