@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Messages, Rooms } from '../../../../models/server';
+import { Users, Messages, Rooms, Subscriptions } from '../../../../models/server';
 import { getUserAvatarURL } from '../../../../utils/lib/getUserAvatarURL';
 
 /*
@@ -30,13 +30,22 @@ Meteor.startup(() => {
 
 /*
  Migrate from Threads to Discussions.
+ - In Rooms Schema ParentRoomId changed to prid
+ - In Subscription schema ParentRoomId changed to prid
  - Messages with type 'thread-welcome' will be removed.
  - Messages with type 'create-thread' will be migrated to 'disscussion-created'.
- - Author Information will be encapsulated inside attachments of message type 'disscussion-created'.
+ - Author Information and Message link will be encapsulated inside attachments of message type 'disscussion-created'.
  */
 
 Meteor.startup(() => {
 	console.log('Migrating from threads to Discussions');
+	// Migrate Rooms
+	Rooms.update({}, { $rename: { parentRoomId: 'prid' } }, { multi: true });
+
+	// Migrate Subscriptions
+	Subscriptions.update({}, { $rename: { parentRoomId: 'prid' } }, { multi: true });
+
+	// Migrate Messages
 	Messages.remove({ t: 'thread-welcome' });
 	Messages.find({ t: 'create-thread' }).forEach((msg) => {
 		if (msg.channels && msg.channels[0]._id) {
@@ -67,15 +76,17 @@ Meteor.startup(() => {
 				};
 
 				if (msg.attachments && msg.attachments.length) {
-					if (msg.attachments[0].message_link === 'message') {
-						// The thread was created from the side nave and thus never had an origin message => the attachment is not needed
+					if (msg.roles && msg.roles.length) {
+						// Threads created from the context menu will include the users from the parent channel.
 						Object.assign(update.$set, {
-							attachments: [],
+							'attachments.0.author_name': msg.u.name,
+							'attachments.0.author_icon': getUserAvatarURL(msg.u.name),
+							'attachments.0.message_link' : msg.urls && msg.urls[0].url,
 						});
 					} else {
+						// Thread created from the side Nav will not include the users from the channel
 						Object.assign(update.$set, {
-							'attachments.0.author_name': msg.channels[0].name,
-							'attachments.0.author_icon': getUserAvatarURL(msg.channels[0].name),
+							attachments: [],
 						});
 					}
 				}
@@ -83,7 +94,4 @@ Meteor.startup(() => {
 			}
 		}
 	});
-
-	Rooms.update({}, { $rename: { parentRoomId: 'prid' } }, { multi: true });
-
 });
