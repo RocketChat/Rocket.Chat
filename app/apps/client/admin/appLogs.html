@@ -1,0 +1,55 @@
+<template name="appLogs">
+	{{#with app}}
+		<section class="page-container page-list page-settings flex-tab-main-content rc-apps-marketplace">
+			{{# header rawSectionName=title fixedHeight=true hideHelp=true fullpage=true}}
+				<div class="rc-header__block rc-header__block-action">
+					<button class="rc-button rc-button--primary js-refresh">
+						{{> icon icon="reload" block="rc-icon--default-size"}} {{_ "Refresh"}}
+					</button>
+					<button class="rc-button rc-button--nude js-cancel">{{> icon icon="cross"}}</button>
+
+				</div>
+			{{/header}}
+			<div class="content">
+				{{#if hasError}}
+					<h2>
+						<span class="room-title">{{ theError }}</span>
+					</h2>
+				{{/if}}
+				{{#if isReady}}
+					<div class="rocket-form">
+						{{#each log in logs}}
+							<div class="section section-collapsed">
+								<div class="section-title">
+									<div class="section-title-text">
+										{{formatDate log._createdAt}}: "{{log.method}}" ({{log.totalTime}}ms)
+									</div>
+									<div class="section-title-right">
+										<button class="rc-button rc-button--nude button-down">
+											{{> icon icon="arrow-down" block="rc-icon--default-size"}}
+										</button>
+									</div>
+								</div>
+								<div class="section-content">
+									{{#each entry in log.entries}}
+										<div>{{ entry.severity }}: {{ entry.timestamp }} (Caller: {{ entry.caller }})</div>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify entry.args }}}</code></pre>
+										</div>
+									{{/each}}
+								</div>
+							</div>
+						{{/each}}
+					</div>
+				{{else if hasError}}
+					<div class="apps-error error-color">
+						<i class="icon-attention"></i>
+						<p>Sadly, an error has occured while loading this page.</p>
+					</div>
+				{{else}}
+					{{> loading}}
+				{{/if}}
+			</div>
+		</section>
+	{{/with}}
+</template>

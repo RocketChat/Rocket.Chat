@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Rooms, Messages, Subscriptions } from 'meteor/rocketchat:models';
-import { Apps } from 'meteor/rocketchat:apps';
+import { deleteRoom } from '../../app/lib';
+import { hasPermission } from '../../app/authorization';
+import { Rooms } from '../../app/models';
+import { Apps } from '../../app/apps/server';
+import { roomTypes } from '../../app/utils';
 
 Meteor.methods({
 	eraseRoom(rid) {
@@ -23,6 +24,12 @@ Meteor.methods({
 			});
 		}
 
+		if (!roomTypes.roomTypes[room.t].canBeDeleted(hasPermission, room)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'eraseRoom',
+			});
+		}
+
 		if (Apps && Apps.isLoaded()) {
 			const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
 			if (prevent) {
@@ -30,16 +37,7 @@ Meteor.methods({
 			}
 		}
 
-		if (!roomTypes.roomTypes[room.t].canBeDeleted(hasPermission, room)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'eraseRoom',
-			});
-		}
-
-		Messages.removeFilesByRoomId(rid);
-		Messages.removeByRoomId(rid);
-		Subscriptions.removeByRoomId(rid);
-		const result = Rooms.removeById(rid);
+		const result = deleteRoom(rid);
 
 		if (Apps && Apps.isLoaded()) {
 			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);

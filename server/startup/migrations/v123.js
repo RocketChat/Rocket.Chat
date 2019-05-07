@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Messages, Rooms, LivechatPageVisited } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Messages, Rooms, LivechatPageVisited } from '../../../app/models';
 
 let pageVisitedCollection;
 let messageCollection;
@@ -85,7 +85,7 @@ Migrations.add({
 		/*
 		 * Move visitor navigation history to messages
 		 */
-		Meteor.setTimeout(async() => {
+		Meteor.setTimeout(async () => {
 			const pages = pageVisitedCollection.find({});
 			const total = await pages.count();
 			await pages.close();

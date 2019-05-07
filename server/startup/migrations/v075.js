@@ -1,4 +1,4 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
+import { Migrations } from '../../../app/migrations';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 Migrations.add({
