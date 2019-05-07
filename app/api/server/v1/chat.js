@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
 import { Messages } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { composeMessageObjectWithUser } from '../../../utils';
@@ -129,6 +130,20 @@ API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 			ts: Date.now(),
 			channel: messageReturn.channel,
 			message: composeMessageObjectWithUser(messageReturn.message, this.userId),
+		});
+	},
+});
+
+API.v1.addRoute('chat.postMessageAnonymous', {
+	post() {
+		const username = Random.secret(7);
+		const user = Meteor.call('registerUser', { username });
+		user.username = username;
+		const message = processWebhookMessage(this.bodyParams, user, undefined, true)[0];
+		return API.v1.success({
+			ts: Date.now(),
+			channel: message.channel,
+			message: composeMessageObjectWithUser(message.message, user._id),
 		});
 	},
 });
