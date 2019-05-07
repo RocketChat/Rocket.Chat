@@ -11,7 +11,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
-import { call } from '../../../../ui-utils';
 import { emojione } from 'meteor/emojione:emojione';
 import s from 'underscore.string';
 

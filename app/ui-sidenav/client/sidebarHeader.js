@@ -8,7 +8,6 @@ import { t, getUserPreference, handleError } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
-import { modal } from '../../ui-utils';
 import { userStatus } from '../../user-status';
 
 const setStatus = (status, statusText) => {
