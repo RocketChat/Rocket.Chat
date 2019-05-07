@@ -63,9 +63,10 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid } } = this;
+		const { mainMessage: { rid, _id: tmid }, subscription } = this;
 
 		return {
+			subscription,
 			rid,
 			tmid,
 			onSend: (...args) => instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args),
