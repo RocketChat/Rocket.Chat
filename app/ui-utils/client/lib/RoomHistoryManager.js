@@ -102,7 +102,7 @@ export const RoomHistoryManager = new class {
 		room.isLoading.set(true);
 
 		// ScrollListener.setLoader true
-		const lastMessage = ChatMessage.findOne({ rid }, { sort: { ts: 1 } });
+		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
 		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 
 		if (lastMessage) {
@@ -180,7 +180,7 @@ export const RoomHistoryManager = new class {
 
 		room.isLoading.set(true);
 
-		const lastMessage = ChatMessage.findOne({ rid }, { sort: { ts: -1 } });
+		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
 
 		let typeName = undefined;
 
@@ -225,7 +225,7 @@ export const RoomHistoryManager = new class {
 
 		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
 
-		if (ChatMessage.findOne(message._id)) {
+		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`#${ message._id }`, wrapper);
 			if (msgElement.length === 0) {
