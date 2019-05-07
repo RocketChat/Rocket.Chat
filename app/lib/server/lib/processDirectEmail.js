@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Rooms, Messages, Users, Subscriptions } from '/app/models';
-import { metrics } from '/app/metrics';
-import { hasPermission } from '/app/authorization';
+import { settings } from '../../../settings';
+import { Rooms, Messages, Users, Subscriptions } from '../../../models';
+import { metrics } from '../../../metrics';
+import { hasPermission } from '../../../authorization';
 import { EmailReplyParser as reply } from 'emailreplyparser';
 import { sendMessage as _sendMessage } from '../functions';
 import moment from 'moment';

@@ -8,6 +8,7 @@ import { modal } from '../../../ui-utils';
 import { t, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import { hasPermission, hasAllPermission, hasRole, userHasAllPermission } from '../../../authorization';
+import _ from 'underscore';
 import toastr from 'toastr';
 
 const canSetLeader = () => hasAllPermission('set-leader', Session.get('openedRoom'));

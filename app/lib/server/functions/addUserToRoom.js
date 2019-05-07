@@ -1,6 +1,6 @@
-import { Rooms, Subscriptions, Messages } from '/app/models';
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
+import { Rooms, Subscriptions, Messages } from '../../../models';
+import { callbacks } from '../../../callbacks';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();

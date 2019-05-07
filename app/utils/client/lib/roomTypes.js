@@ -1,7 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
-import { ChatRoom, ChatSubscription } from '/app/models';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { ChatRoom, ChatSubscription } from '../../../models';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import _ from 'underscore';
 
 export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
