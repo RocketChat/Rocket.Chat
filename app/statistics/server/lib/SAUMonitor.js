@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import UAParser from 'ua-parser-js';
 import { UAParserMobile } from './UAParserMobile';
-import { Sessions } from '../../../models';
+import { Sessions } from '../../../models/server';
 import { Logger } from '../../../logger';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { aggregates } from '../../../models/server/models/Sessions';
 
 const getDateObj = (dateTime = new Date()) => ({
 	day: dateTime.getDate(),
@@ -331,43 +332,7 @@ export class SAUMonitorClass {
 			day: { $lte: yesterday.day },
 		};
 
-		Sessions.model.rawCollection().aggregate([{
-			$match: {
-				userId: { $exists: true },
-				lastActivityAt: { $exists: true },
-				device: { $exists: true },
-				...match,
-			},
-		}, {
-			$group: {
-				_id: {
-					userId: '$userId',
-					day: '$day',
-					month: '$month',
-					year: '$year',
-				},
-				times: { $push: { $trunc: { $divide: [{ $subtract: ['$lastActivityAt', '$loginAt'] }, 1000] } } },
-				devices: { $addToSet: '$device' },
-			},
-		}, {
-			$project: {
-				_id: '$_id',
-				times: { $filter: { input: '$times', as: 'item', cond: { $gt: ['$$item', 0] } } },
-				devices: '$devices',
-			},
-		}, {
-			$project: {
-				type: 'user_daily',
-				_computedAt: new Date(),
-				day: '$_id.day',
-				month: '$_id.month',
-				year: '$_id.year',
-				userId: '$_id.userId',
-				time: { $sum: '$times' },
-				count: { $size: '$times' },
-				devices: '$devices',
-			},
-		}]).forEach(Meteor.bindEnvironment((record) => {
+		aggregates.dailySessionsOfYesterday(Sessions.model.rawCollection(), yesterday).forEach(Meteor.bindEnvironment((record) => {
 			record._id = `${ record.userId }-${ record.year }-${ record.month }-${ record.day }`;
 			Sessions.upsert({ _id: record._id }, record);
 		}));
