@@ -37,6 +37,9 @@ Template.threads.events({
 });
 
 Template.threads.helpers({
+	subscription() {
+		return Template.instance().data.subscription;
+	},
 	doDotLoadThreads() {
 		return Template.instance().state.get('close');
 	},
