@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import * as Models from '../../models';
 import { ChatPermissions } from './lib/ChatPermissions';
 
-function atLeastOne(permissions = [], scope, userId = undefined) {
+function atLeastOne(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
 
 	return permissions.some((permissionId) => {
@@ -20,7 +20,7 @@ function atLeastOne(permissions = [], scope, userId = undefined) {
 	});
 }
 
-function all(permissions = [], scope, userId = undefined) {
+function all(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
 
 	return permissions.every((permissionId) => {
@@ -37,7 +37,7 @@ function all(permissions = [], scope, userId = undefined) {
 	});
 }
 
-function _hasPermission(permissions, scope, strategy, userId = undefined) {
+function _hasPermission(permissions, scope, strategy, userId) {
 	userId = userId || Meteor.userId();
 	if (!userId) {
 		return false;
