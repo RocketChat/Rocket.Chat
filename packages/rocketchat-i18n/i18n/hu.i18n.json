@@ -2218,6 +2218,8 @@
   "SAML_Custom_Cert": "Egyedi tanúsítvány",
   "SAML_Custom_Entry_point": "Egyedi Entry Point",
   "SAML_Custom_Generate_Username": "generálása Felhasználónév",
+  "SAML_Custom_name_overwrite": "Felülírja a felhasználó teljes nevét (IDP attribútum-ból)",
+  "SAML_Custom_mail_overwrite": "Felülírja a felhasználó email címét (IDP attribútum-ból)",
   "SAML_Custom_IDP_SLO_Redirect_URL": "IDP SLO átirányítási URL",
   "SAML_Custom_Issuer": "Egyedi Kibocsátó",
   "SAML_Custom_Logout_Behaviour": "Kijelentkezés viselkedése",
