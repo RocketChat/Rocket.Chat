@@ -168,7 +168,7 @@ Template.main.helpers({
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
 
-		const ready = (routerReady && subscriptionsReady && settingsReady) || (Meteor.userId() == null);
+		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
