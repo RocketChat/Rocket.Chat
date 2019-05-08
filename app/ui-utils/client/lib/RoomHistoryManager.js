@@ -11,7 +11,6 @@ import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 
 export const normalizeThreadMessage = (message) => {
-
 	if (message.msg) {
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}

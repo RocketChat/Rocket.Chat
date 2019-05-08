@@ -78,7 +78,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
 		msg = callbacks.run('renderMentions', msg);

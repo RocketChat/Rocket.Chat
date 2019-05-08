@@ -155,7 +155,6 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
-
 		browser.waitForVisible('.message:last-child .attachment-text', 5000);
 		return browser.getText('.message:last-child .attachment-text') === text;
 	}

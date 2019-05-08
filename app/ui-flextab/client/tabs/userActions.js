@@ -21,9 +21,9 @@ const canMuteUser = () => hasAllPermission('mute-user', Session.get('openedRoom'
 
 const canRemoveUser = () => hasAllPermission('remove-user', Session.get('openedRoom'));
 
-const canBlockUser = () => (
+const canBlockUser = () =>
 	ChatSubscription.findOne({ rid: Session.get('openedRoom'), 'u._id': Meteor.userId() }, { fields: { blocker: 1 } })
-).blocker;
+		.blocker;
 
 const canDirectMessageTo = (username) => {
 	const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') });
@@ -40,18 +40,12 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 
 	const isActive = () => user && user.active;
 
-	const isLeader = () => (
-		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'leader' })
-	);
-
-	const isOwner = () => (
-		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'owner' })
-	);
-
-	const isModerator = () => (
-		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' })
-	);
-
+	const isLeader = () =>
+		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'leader' });
+	const isOwner = () =>
+		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'owner' });
+	const isModerator = () =>
+		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' });
 	const isInDirectMessageRoom = () => {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
 		return (room && room.t) === 'd';

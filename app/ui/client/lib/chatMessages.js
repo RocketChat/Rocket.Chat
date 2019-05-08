@@ -2,7 +2,6 @@ import moment from 'moment';
 import toastr from 'toastr';
 import _ from 'underscore';
 import s from 'underscore.string';
-
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
