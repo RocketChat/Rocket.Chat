@@ -10,6 +10,9 @@ const mem = (fn, tm = 500, generateKey = generateKeyDefault) => {
 	const invalidateCache = (key) => delete cache[key];
 	return (...args) => {
 		const key = generateKey(...args);
+		if (!key) {
+			return fn(...args);
+		}
 		if (!cache[key]) {
 			cache[key] = fn(...args);
 		}
@@ -29,4 +32,4 @@ export const renderMessageBody = mem((message) => {
 
 	return (Array.isArray(tokens) ? tokens.reverse() : [])
 		.reduce((html, { token, text }) => html.replace(token, () => text), html);
-}, 5000, ({ _id, _updatedAt }) => (_id + _updatedAt));
+}, 5000, ({ _id, _updatedAt }) => (_id && _updatedAt && _id + _updatedAt));
