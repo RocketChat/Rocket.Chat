@@ -7,7 +7,7 @@ import { settings } from '../../../settings';
 import { SMS } from '../../../sms';
 import { placeholders } from '../../../utils';
 
-const supportedLanguages = ['en', 'es'];
+const supportedLanguages = ['en', 'es', 'pt', 'pt-BR'];
 
 Meteor.methods({
 	sendInvitationSMS(phones, language, realname) {
