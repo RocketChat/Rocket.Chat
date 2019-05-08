@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Users, Messages, Rooms, Subscriptions } from '../../../../models/server';
 import { getUserAvatarURL } from '../../../../utils/lib/getUserAvatarURL';
+import { roomTypes } from '../../../../utils/server';
 
 /*
 Up to now, there's no "DB version" stored for assistify.
@@ -39,11 +40,17 @@ Meteor.startup(() => {
 
 Meteor.startup(() => {
 	console.log('Migrating from threads to Discussions');
+
+	const isThread = { parentRoomId: { $exists:true } };
+	const convertToDiscussion = {
+		$rename: { parentRoomId: 'prid' },
+		$set: { t: 'p' },
+	};
 	// Migrate Rooms
-	Rooms.update({}, { $rename: { parentRoomId: 'prid' } }, { multi: true });
+	Rooms.update(isThread, convertToDiscussion, { multi: true });
 
 	// Migrate Subscriptions
-	Subscriptions.update({}, { $rename: { parentRoomId: 'prid' } }, { multi: true });
+	Subscriptions.update(isThread, convertToDiscussion, { multi: true });
 
 	// Migrate Messages
 	Messages.remove({ t: 'thread-welcome' });
@@ -54,6 +61,8 @@ Meteor.startup(() => {
 				{
 					fields: {
 						_id: 1,
+						t: 1,
+						name: 1,
 						fname: 1,
 						lm: 1,
 						msgs: 1,
@@ -78,11 +87,15 @@ Meteor.startup(() => {
 
 				if (msg.attachments && msg.attachments.length) {
 					if (msg.urls && msg.urls[0].url) {
+
+						const fixMessageLink = (url) => (url.startsWith('http')
+							? `${ roomTypes.getRouteLink(room.t, { name: room.name }) }?msg=${ url.substr(url.indexOf('msg=') + 4, url.length) }`
+							: url);
 						// If a message is linked, quote it
 						Object.assign(update.$set, {
 							'attachments.0.author_name': msg.u.name,
 							'attachments.0.author_icon': getUserAvatarURL(msg.u.name),
-							'attachments.0.message_link' : msg.urls && msg.urls[0].url,
+							'attachments.0.message_link' : msg.urls && fixMessageLink(msg.urls[0].url),
 						});
 					} else {
 						// Thread created from the side Nav without initial message => nothing to quote
