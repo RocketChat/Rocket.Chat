@@ -1,6 +1,7 @@
-import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
+import _ from 'underscore';
+import s from 'underscore.string';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -429,7 +430,7 @@ export class ChatMessages {
 						_id: Random.id(),
 						rid: msgObject.rid,
 						ts: new Date,
-						msg: TAPi18n.__('No_such_command', { command: match[1] }),
+						msg: TAPi18n.__('No_such_command', { command: s.escapeHTML(match[1]) }),
 						u: {
 							username: settings.get('InternalHubot_Username'),
 						},
