@@ -448,18 +448,21 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 		profile.email = profile['urn:oid:1.2.840.113549.1.9.1'];
 	}
 
-	if (!profile.email && profile.mail) {
-		profile.email = profile.mail;
-	}
-
 	if (!profile.displayName && profile['urn:oid:2.16.840.1.113730.3.1.241']) {
 		profile.displayName = profile['urn:oid:2.16.840.1.113730.3.1.241'];
+	}
+
+	if (!profile.eppn && profile['urn:oid:1.3.6.1.4.1.5923.1.1.1.6']) {
+		profile.eppn = profile['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'];
+	}
+
+	if (!profile.email && profile.mail) {
+		profile.email = profile.mail;
 	}
 
 	if (!profile.cn && profile['urn:oid:2.5.4.3']) {
 		profile.cn = profile['urn:oid:2.5.4.3'];
 	}
-
 };
 
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {

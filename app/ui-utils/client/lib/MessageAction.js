@@ -149,7 +149,7 @@ Meteor.startup(async function() {
 		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg } = messageArgs(this);
 			roomTypes.openRouteLink('d', { name: msg.u.username }, {
@@ -174,7 +174,7 @@ Meteor.startup(async function() {
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			const { input } = chatMessages[message.rid];
@@ -206,7 +206,7 @@ Meteor.startup(async function() {
 		icon: 'permalink',
 		label: 'Get_link',
 		classes: 'clipboard',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		async action(event) {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
@@ -229,7 +229,7 @@ Meteor.startup(async function() {
 		icon: 'copy',
 		label: 'Copy',
 		classes: 'clipboard',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		action(event) {
 			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', message);
@@ -250,7 +250,7 @@ Meteor.startup(async function() {
 		id: 'edit-message',
 		icon: 'edit',
 		label: 'Edit',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg } = messageArgs(this);
 			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
@@ -290,7 +290,7 @@ Meteor.startup(async function() {
 		id: 'delete-message',
 		icon: 'trash',
 		label: 'Delete',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		color: 'alert',
 		action() {
 			const { msg: message } = messageArgs(this);
@@ -315,7 +315,7 @@ Meteor.startup(async function() {
 		id: 'report-message',
 		icon: 'report',
 		label: 'Report',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		color: 'alert',
 		action() {
 			const { msg: message } = messageArgs(this);
