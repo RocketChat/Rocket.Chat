@@ -110,7 +110,7 @@ Meteor.startup(() => {
 						msg: room.fname,
 						drid: room._id,
 						dlm: room.lm,
-						dcount: room.msgs,
+						dcount: room.msgs > 0 ? room.msgs - 1 : 0,
 					},
 					$unset: {
 						mentions: 1,
@@ -120,15 +120,15 @@ Meteor.startup(() => {
 				};
 
 				if (msg.attachments && msg.attachments.length) {
-					if (msg.roles && msg.roles.length) {
-						// Threads created from the context menu will include the users from the parent channel.
+					if (msg.urls && msg.urls[0].url) {
+						// If a message is linked, quote it
 						Object.assign(update.$set, {
 							'attachments.0.author_name': msg.u.name,
 							'attachments.0.author_icon': getUserAvatarURL(msg.u.name),
 							'attachments.0.message_link' : msg.urls && msg.urls[0].url,
 						});
 					} else {
-						// Thread created from the side Nav will not include the users from the channel
+						// Thread created from the side Nav without initial message => nothing to quote
 						Object.assign(update.$set, {
 							attachments: [],
 						});
