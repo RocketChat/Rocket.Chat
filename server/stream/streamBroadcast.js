@@ -8,7 +8,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
-import { isDocker } from '../../app/utils';
+import { isDocker, getURL } from '../../app/utils';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -66,7 +66,8 @@ function startMatrixBroadcast() {
 
 	return InstanceStatus.getCollection().find(query, options).observe({
 		added(record) {
-			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }`;
+			const subPath = getURL('', { cdn: false, full: false });
+			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
 			if (record.extraInformation.port === process.env.PORT && record.extraInformation.host === process.env.INSTANCE_IP) {
 				logger.auth.info('prevent self connect', instance);
@@ -74,7 +75,7 @@ function startMatrixBroadcast() {
 			}
 
 			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
-				instance = `localhost:${ record.extraInformation.port }`;
+				instance = `localhost:${ record.extraInformation.port }${ subPath }`;
 			}
 
 			if (connections[instance] && connections[instance].instanceRecord) {
@@ -101,10 +102,11 @@ function startMatrixBroadcast() {
 		},
 
 		removed(record) {
-			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }`;
+			const subPath = getURL('', { cdn: false, full: false });
+			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
 			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
-				instance = `localhost:${ record.extraInformation.port }`;
+				instance = `localhost:${ record.extraInformation.port }${ subPath }`;
 			}
 
 			const query = {

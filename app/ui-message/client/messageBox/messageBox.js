@@ -183,7 +183,6 @@ Template.messageBox.helpers({
 		if (!rid) {
 			return false;
 		}
-
 		const isAnonymous = !Meteor.userId();
 		return isAnonymous || instance.state.get('mustJoinWithCode');
 	},

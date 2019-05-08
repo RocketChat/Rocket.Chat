@@ -18,6 +18,7 @@ Meteor.startup(function() {
 				context: [
 					'message',
 					'message-mobile',
+					'threads',
 				],
 				action() {
 					const { msg: message } = messageArgs(this);
@@ -42,6 +43,7 @@ Meteor.startup(function() {
 				context: [
 					'message',
 					'message-mobile',
+					'threads',
 				],
 				action() {
 					const { msg: message } = messageArgs(this);

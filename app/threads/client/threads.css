@@ -73,6 +73,8 @@
 			cursor: pointer;
 
 			color: #a0a0a0;
+
+			font-size: 1rem;
 		}
 	}
 
@@ -119,12 +121,12 @@
 	}
 }
 
-.message.collapsed + .message.system:not(.collapsed) {
+.message.collapsed + .message.system:not(.collapsed):not(.new-day) {
 	margin-top: calc(var(--default-padding) / 2);
 	margin-bottom: calc(var(--default-padding) / 2);
 }
 
-.message.collapsed + .message:not(.collapsed) {
+.message.collapsed + .message:not(.collapsed):not(.new-day) {
 	margin-top: calc(var(--default-padding) / 2);
 }
 

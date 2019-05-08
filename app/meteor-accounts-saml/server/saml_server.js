@@ -16,6 +16,8 @@ if (!Accounts.saml) {
 		settings: {
 			debug: false,
 			generateUsername: false,
+			nameOverwrite: false,
+			mailOverwrite: false,
 			providers: [],
 		},
 	};
@@ -93,11 +95,11 @@ Meteor.methods({
 });
 
 Accounts.registerLoginHandler(function(loginRequest) {
-	if (!loginRequest.saml) {
+	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
 
-	const loginResult = Accounts.saml.retrieveCredential(this.connection.id);
+	const loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
 	if (Accounts.saml.settings.debug) {
 		console.log(`RESULT :${ JSON.stringify(loginResult) }`);
 	}
@@ -112,14 +114,33 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
 		const emailList = Array.isArray(loginResult.profile.email) ? loginResult.profile.email : [loginResult.profile.email];
 		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
+
+		const eduPersonPrincipalName = loginResult.profile.eppn;
+		const fullName = loginResult.profile.cn || loginResult.profile.username || loginResult.profile.displayName;
+
+		let eppnMatch = false;
+
+		// Check eppn
 		let user = Meteor.users.findOne({
-			'emails.address': emailRegex,
+			eppn: eduPersonPrincipalName,
 		});
+
+		if (user) {
+			eppnMatch = true;
+		}
+
+		// If eppn is not exist
+		if (!user) {
+			user = Meteor.users.findOne({
+				'emails.address': emailRegex,
+			});
+		}
 
 		if (!user) {
 			const newUser = {
-				name: loginResult.profile.displayName || loginResult.profile.cn || loginResult.profile.username,
+				name: fullName,
 				active: true,
+				eppn: eduPersonPrincipalName,
 				globalRoles: ['user'],
 				emails: emailList.map((email) => ({
 					address: email,
@@ -138,6 +159,17 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
+		}
+
+		// If eppn is not exist then update
+		if (eppnMatch === false) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					eppn: eduPersonPrincipalName,
+				},
+			});
 		}
 
 		// creating the token and adding to the user
@@ -163,6 +195,31 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				'services.saml': samlLogin,
 			},
 		});
+
+		// Overwrite fullname if needed
+		if (Accounts.saml.settings.nameOverwrite === true) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					name: fullName,
+				},
+			});
+		}
+
+		// Overwrite mail if needed
+		if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					emails: emailList.map((email) => ({
+						address: email,
+						verified: true,
+					})),
+				},
+			});
+		}
 
 		// sending token along with the userId
 		const result = {

@@ -69,21 +69,45 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	canvas.style.display = 'block';
 }
 
+const renderBody = (msg, settings) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
+
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.template) {
+		// render template
+	} else if (messageType.message) {
+		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+		msg.html = msg.msg;
+		msg = callbacks.run('renderMentions', msg);
+		msg = msg.html;
+	} else {
+		msg = renderMessageBody(msg);
+	}
+
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
+	}
+	return msg;
+};
+
 Template.message.helpers({
+	body() {
+		const { msg, settings } = this;
+		return Tracker.nonreactive(() => renderBody(msg, settings));
+	},
 	and(a, b) {
 		return a && b;
 	},
-	i18nKeyMessage() {
+	i18nReplyCounter() {
 		const { msg } = this;
-		return msg.dcount > 1
-			? 'messages'
-			: 'message';
+		return `<span class='reply-counter'>${ msg.tcount }</span>`;
 	},
-	i18nKeyReply() {
+	i18nDiscussionCounter() {
 		const { msg } = this;
-		return msg.tcount > 1
-			? 'replies'
-			: 'reply';
+		return `<span class='reply-counter'>${ msg.dcount }</span>`;
 	},
 	formatDateAndTime,
 	encodeURI(text) {
@@ -202,9 +226,6 @@ Template.message.helpers({
 		if (msg.temp === true) {
 			return 'temp';
 		}
-	},
-	body() {
-		return Template.instance().body;
 	},
 	threadMessage() {
 		const { msg } = this;
@@ -352,9 +373,13 @@ Template.message.helpers({
 		}
 		return roomTypes.getIcon(room);
 	},
+	customClass() {
+		const { customClass, msg } = this;
+		return customClass || msg.customClass;
+	},
 	fromSearch() {
-		const { customClass } = this;
-		return customClass === 'search';
+		const { customClass, msg } = this;
+		return [msg.customClass, customClass].includes('search');
 	},
 	actionContext() {
 		const { msg } = this;
@@ -422,13 +447,7 @@ const findParentMessage = (() => {
 				},
 			}, { multi: true });
 			if (!Messages.findOne({ _id })) {
-				/**
-				 * Delete rid from message to not render it and to not be considred in last message
-				 * find from load history method what was preveting the load of some messages in
-				 * between the reals last loaded message and this one if this one is older than
-				 * the real last loaded message.
-				 */
-				delete msg.rid;
+				msg._hidden = true;
 				Messages.upsert({ _id }, msg);
 			}
 		});
@@ -456,39 +475,13 @@ const findParentMessage = (() => {
 	};
 })();
 
-
-const renderBody = (msg, settings) => {
-	const isSystemMessage = MessageTypes.isSystemMessage(msg);
-	const messageType = MessageTypes.getType(msg) || {};
-
-	if (messageType.render) {
-		msg = messageType.render(msg);
-	} else if (messageType.template) {
-		// render template
-	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
-	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
-		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
-		msg = msg.html;
-	} else {
-		msg = renderMessageBody(msg);
-	}
-
-	if (isSystemMessage) {
-		msg.html = Markdown.parse(msg.html);
-	}
-	return msg;
-};
-
 Template.message.onCreated(function() {
-	const { msg, settings } = Template.currentData();
+	const { msg, shouldCollapseReplies } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.threadMsg) {
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	this.body = Tracker.nonreactive(() => renderBody(msg, settings));
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -603,7 +596,7 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		} else {
 			nextNode.classList.remove('new-day');
 		}
-	} else {
+	} else if (shouldCollapseReplies) {
 		const [el] = $(`#chat-window-${ msg.rid }`);
 		const view = el && Blaze.getView(el);
 		const templateInstance = view && view.templateInstance();

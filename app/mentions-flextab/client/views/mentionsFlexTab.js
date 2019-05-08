@@ -12,9 +12,6 @@ Template.mentionsFlexTab.helpers({
 	messages() {
 		return Template.instance().cursor;
 	},
-	message() {
-		return _.extend(this, { customClass: 'mentions', actionContext: 'mentions' });
-	},
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
