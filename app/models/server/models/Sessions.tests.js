@@ -6,6 +6,19 @@ const mongoUnit = require('mongo-unit');
 const { MongoClient } = require('mongodb');
 const { aggregates } = require('./Sessions');
 
+const sessions_dates = [];
+const baseDate = new Date(2018, 6, 1);
+
+for (let index = 0; index < 365; index++) {
+	sessions_dates.push({
+		_id: `${ baseDate.getFullYear() }-${ baseDate.getMonth() + 1 }-${ baseDate.getDate() }`,
+		year: baseDate.getFullYear(),
+		month: baseDate.getMonth() + 1,
+		day: baseDate.getDate(),
+	});
+	baseDate.setDate(baseDate.getDate() + 1);
+}
+
 const DATA = {
 	sessions: [{
 		_id : 'fNFyFcjszvoN6Grip2',
@@ -213,9 +226,10 @@ const DATA = {
 		userId : 'xPZXw9xqM3kKshsse2',
 		lastActivityAt : new Date('2019-05-03T02:59:59.999Z'),
 	}],
+	sessions_dates,
 }; // require('./fixtures/testData.json')
 
-describe('Sessions Aggregates', () => {
+describe.only('Sessions Aggregates', () => {
 	let db;
 
 	if (!process.env.MONGO_URL) {
@@ -234,11 +248,351 @@ describe('Sessions Aggregates', () => {
 	});
 
 	before(() => db.dropDatabase().then(() => {
-		const collection = db.collection('sessions');
-		return collection.insertMany(DATA.sessions);
+		const sessions = db.collection('sessions');
+		const sessions_dates = db.collection('sessions_dates');
+		return Promise.all([
+			sessions.insertMany(DATA.sessions),
+			sessions_dates.insertMany(DATA.sessions_dates),
+		]);
 	}));
 
 	after(() => { db.close(); });
+
+	it('should have sessions_dates data saved', () => {
+		const collection = db.collection('sessions_dates');
+		return collection.find().toArray()
+			.then((docs) => assert.equal(docs.length, DATA.sessions_dates.length));
+	});
+
+	it('should match sessions between 2018-12-11 and 2019-1-10', () => {
+		const collection = db.collection('sessions_dates');
+		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 1, day: 10 });
+
+		assert.deepEqual($match, {
+			$and: [{
+				$or: [
+					{ year: { $gt: 2018 } },
+					{ year: 2018, month: { $gt: 12 } },
+					{ year: 2018, month: 12, day: { $gte: 11 } },
+				],
+			}, {
+				$or: [
+					{ year: { $lt: 2019 } },
+					{ year: 2019, month: { $lt: 1 } },
+					{ year: 2019, month: 1, day: { $lte: 10 } },
+				],
+			}],
+		});
+
+		return collection.aggregate([{
+			$match,
+		}]).toArray()
+			.then((docs) => {
+				assert.equal(docs.length, 31);
+				assert.deepEqual(docs, [
+					{ _id: '2018-12-11', year: 2018, month: 12, day: 11 },
+					{ _id: '2018-12-12', year: 2018, month: 12, day: 12 },
+					{ _id: '2018-12-13', year: 2018, month: 12, day: 13 },
+					{ _id: '2018-12-14', year: 2018, month: 12, day: 14 },
+					{ _id: '2018-12-15', year: 2018, month: 12, day: 15 },
+					{ _id: '2018-12-16', year: 2018, month: 12, day: 16 },
+					{ _id: '2018-12-17', year: 2018, month: 12, day: 17 },
+					{ _id: '2018-12-18', year: 2018, month: 12, day: 18 },
+					{ _id: '2018-12-19', year: 2018, month: 12, day: 19 },
+					{ _id: '2018-12-20', year: 2018, month: 12, day: 20 },
+					{ _id: '2018-12-21', year: 2018, month: 12, day: 21 },
+					{ _id: '2018-12-22', year: 2018, month: 12, day: 22 },
+					{ _id: '2018-12-23', year: 2018, month: 12, day: 23 },
+					{ _id: '2018-12-24', year: 2018, month: 12, day: 24 },
+					{ _id: '2018-12-25', year: 2018, month: 12, day: 25 },
+					{ _id: '2018-12-26', year: 2018, month: 12, day: 26 },
+					{ _id: '2018-12-27', year: 2018, month: 12, day: 27 },
+					{ _id: '2018-12-28', year: 2018, month: 12, day: 28 },
+					{ _id: '2018-12-29', year: 2018, month: 12, day: 29 },
+					{ _id: '2018-12-30', year: 2018, month: 12, day: 30 },
+					{ _id: '2018-12-31', year: 2018, month: 12, day: 31 },
+					{ _id: '2019-1-1', year: 2019, month: 1, day: 1 },
+					{ _id: '2019-1-2', year: 2019, month: 1, day: 2 },
+					{ _id: '2019-1-3', year: 2019, month: 1, day: 3 },
+					{ _id: '2019-1-4', year: 2019, month: 1, day: 4 },
+					{ _id: '2019-1-5', year: 2019, month: 1, day: 5 },
+					{ _id: '2019-1-6', year: 2019, month: 1, day: 6 },
+					{ _id: '2019-1-7', year: 2019, month: 1, day: 7 },
+					{ _id: '2019-1-8', year: 2019, month: 1, day: 8 },
+					{ _id: '2019-1-9', year: 2019, month: 1, day: 9 },
+					{ _id: '2019-1-10', year: 2019, month: 1, day: 10 },
+				]);
+			});
+	});
+
+	it('should match sessions between 2019-1-11 and 2019-2-10', () => {
+		const collection = db.collection('sessions_dates');
+		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 2, day: 10 });
+
+		assert.deepEqual($match, {
+			year: 2019,
+			$and: [{
+				$or: [
+					{ month: { $gt: 1 } },
+					{ month: 1, day: { $gte: 11 } },
+				],
+			}, {
+				$or: [
+					{ month: { $lt: 2 } },
+					{ month: 2, day: { $lte: 10 } },
+				],
+			}],
+		});
+
+		return collection.aggregate([{
+			$match,
+		}]).toArray()
+			.then((docs) => {
+				assert.equal(docs.length, 31);
+				assert.deepEqual(docs, [
+					{ _id: '2019-1-11', year: 2019, month: 1, day: 11 },
+					{ _id: '2019-1-12', year: 2019, month: 1, day: 12 },
+					{ _id: '2019-1-13', year: 2019, month: 1, day: 13 },
+					{ _id: '2019-1-14', year: 2019, month: 1, day: 14 },
+					{ _id: '2019-1-15', year: 2019, month: 1, day: 15 },
+					{ _id: '2019-1-16', year: 2019, month: 1, day: 16 },
+					{ _id: '2019-1-17', year: 2019, month: 1, day: 17 },
+					{ _id: '2019-1-18', year: 2019, month: 1, day: 18 },
+					{ _id: '2019-1-19', year: 2019, month: 1, day: 19 },
+					{ _id: '2019-1-20', year: 2019, month: 1, day: 20 },
+					{ _id: '2019-1-21', year: 2019, month: 1, day: 21 },
+					{ _id: '2019-1-22', year: 2019, month: 1, day: 22 },
+					{ _id: '2019-1-23', year: 2019, month: 1, day: 23 },
+					{ _id: '2019-1-24', year: 2019, month: 1, day: 24 },
+					{ _id: '2019-1-25', year: 2019, month: 1, day: 25 },
+					{ _id: '2019-1-26', year: 2019, month: 1, day: 26 },
+					{ _id: '2019-1-27', year: 2019, month: 1, day: 27 },
+					{ _id: '2019-1-28', year: 2019, month: 1, day: 28 },
+					{ _id: '2019-1-29', year: 2019, month: 1, day: 29 },
+					{ _id: '2019-1-30', year: 2019, month: 1, day: 30 },
+					{ _id: '2019-1-31', year: 2019, month: 1, day: 31 },
+					{ _id: '2019-2-1', year: 2019, month: 2, day: 1 },
+					{ _id: '2019-2-2', year: 2019, month: 2, day: 2 },
+					{ _id: '2019-2-3', year: 2019, month: 2, day: 3 },
+					{ _id: '2019-2-4', year: 2019, month: 2, day: 4 },
+					{ _id: '2019-2-5', year: 2019, month: 2, day: 5 },
+					{ _id: '2019-2-6', year: 2019, month: 2, day: 6 },
+					{ _id: '2019-2-7', year: 2019, month: 2, day: 7 },
+					{ _id: '2019-2-8', year: 2019, month: 2, day: 8 },
+					{ _id: '2019-2-9', year: 2019, month: 2, day: 9 },
+					{ _id: '2019-2-10', year: 2019, month: 2, day: 10 },
+				]);
+			});
+	});
+
+	it('should match sessions between 2019-5-1 and 2019-5-31', () => {
+		const collection = db.collection('sessions_dates');
+		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 5, day: 31 });
+
+		assert.deepEqual($match, {
+			year: 2019,
+			month: 5,
+			day: { $gte: 1, $lte: 31 },
+		});
+
+		return collection.aggregate([{
+			$match,
+		}]).toArray()
+			.then((docs) => {
+				assert.equal(docs.length, 31);
+				assert.deepEqual(docs, [
+					{ _id: '2019-5-1', year: 2019, month: 5, day: 1 },
+					{ _id: '2019-5-2', year: 2019, month: 5, day: 2 },
+					{ _id: '2019-5-3', year: 2019, month: 5, day: 3 },
+					{ _id: '2019-5-4', year: 2019, month: 5, day: 4 },
+					{ _id: '2019-5-5', year: 2019, month: 5, day: 5 },
+					{ _id: '2019-5-6', year: 2019, month: 5, day: 6 },
+					{ _id: '2019-5-7', year: 2019, month: 5, day: 7 },
+					{ _id: '2019-5-8', year: 2019, month: 5, day: 8 },
+					{ _id: '2019-5-9', year: 2019, month: 5, day: 9 },
+					{ _id: '2019-5-10', year: 2019, month: 5, day: 10 },
+					{ _id: '2019-5-11', year: 2019, month: 5, day: 11 },
+					{ _id: '2019-5-12', year: 2019, month: 5, day: 12 },
+					{ _id: '2019-5-13', year: 2019, month: 5, day: 13 },
+					{ _id: '2019-5-14', year: 2019, month: 5, day: 14 },
+					{ _id: '2019-5-15', year: 2019, month: 5, day: 15 },
+					{ _id: '2019-5-16', year: 2019, month: 5, day: 16 },
+					{ _id: '2019-5-17', year: 2019, month: 5, day: 17 },
+					{ _id: '2019-5-18', year: 2019, month: 5, day: 18 },
+					{ _id: '2019-5-19', year: 2019, month: 5, day: 19 },
+					{ _id: '2019-5-20', year: 2019, month: 5, day: 20 },
+					{ _id: '2019-5-21', year: 2019, month: 5, day: 21 },
+					{ _id: '2019-5-22', year: 2019, month: 5, day: 22 },
+					{ _id: '2019-5-23', year: 2019, month: 5, day: 23 },
+					{ _id: '2019-5-24', year: 2019, month: 5, day: 24 },
+					{ _id: '2019-5-25', year: 2019, month: 5, day: 25 },
+					{ _id: '2019-5-26', year: 2019, month: 5, day: 26 },
+					{ _id: '2019-5-27', year: 2019, month: 5, day: 27 },
+					{ _id: '2019-5-28', year: 2019, month: 5, day: 28 },
+					{ _id: '2019-5-29', year: 2019, month: 5, day: 29 },
+					{ _id: '2019-5-30', year: 2019, month: 5, day: 30 },
+					{ _id: '2019-5-31', year: 2019, month: 5, day: 31 },
+				]);
+			});
+	});
+
+	it('should match sessions between 2019-4-1 and 2019-4-30', () => {
+		const collection = db.collection('sessions_dates');
+		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 4, day: 30 });
+
+		assert.deepEqual($match, {
+			year: 2019,
+			month: 4,
+			day: { $gte: 1, $lte: 30 },
+		});
+
+		return collection.aggregate([{
+			$match,
+		}]).toArray()
+			.then((docs) => {
+				assert.equal(docs.length, 30);
+				assert.deepEqual(docs, [
+					{ _id: '2019-4-1', year: 2019, month: 4, day: 1 },
+					{ _id: '2019-4-2', year: 2019, month: 4, day: 2 },
+					{ _id: '2019-4-3', year: 2019, month: 4, day: 3 },
+					{ _id: '2019-4-4', year: 2019, month: 4, day: 4 },
+					{ _id: '2019-4-5', year: 2019, month: 4, day: 5 },
+					{ _id: '2019-4-6', year: 2019, month: 4, day: 6 },
+					{ _id: '2019-4-7', year: 2019, month: 4, day: 7 },
+					{ _id: '2019-4-8', year: 2019, month: 4, day: 8 },
+					{ _id: '2019-4-9', year: 2019, month: 4, day: 9 },
+					{ _id: '2019-4-10', year: 2019, month: 4, day: 10 },
+					{ _id: '2019-4-11', year: 2019, month: 4, day: 11 },
+					{ _id: '2019-4-12', year: 2019, month: 4, day: 12 },
+					{ _id: '2019-4-13', year: 2019, month: 4, day: 13 },
+					{ _id: '2019-4-14', year: 2019, month: 4, day: 14 },
+					{ _id: '2019-4-15', year: 2019, month: 4, day: 15 },
+					{ _id: '2019-4-16', year: 2019, month: 4, day: 16 },
+					{ _id: '2019-4-17', year: 2019, month: 4, day: 17 },
+					{ _id: '2019-4-18', year: 2019, month: 4, day: 18 },
+					{ _id: '2019-4-19', year: 2019, month: 4, day: 19 },
+					{ _id: '2019-4-20', year: 2019, month: 4, day: 20 },
+					{ _id: '2019-4-21', year: 2019, month: 4, day: 21 },
+					{ _id: '2019-4-22', year: 2019, month: 4, day: 22 },
+					{ _id: '2019-4-23', year: 2019, month: 4, day: 23 },
+					{ _id: '2019-4-24', year: 2019, month: 4, day: 24 },
+					{ _id: '2019-4-25', year: 2019, month: 4, day: 25 },
+					{ _id: '2019-4-26', year: 2019, month: 4, day: 26 },
+					{ _id: '2019-4-27', year: 2019, month: 4, day: 27 },
+					{ _id: '2019-4-28', year: 2019, month: 4, day: 28 },
+					{ _id: '2019-4-29', year: 2019, month: 4, day: 29 },
+					{ _id: '2019-4-30', year: 2019, month: 4, day: 30 },
+				]);
+			});
+	});
+
+	it('should match sessions between 2019-2-1 and 2019-2-28', () => {
+		const collection = db.collection('sessions_dates');
+		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 2, day: 28 });
+
+		assert.deepEqual($match, {
+			year: 2019,
+			month: 2,
+			day: { $gte: 1, $lte: 28 },
+		});
+
+		return collection.aggregate([{
+			$match,
+		}]).toArray()
+			.then((docs) => {
+				assert.equal(docs.length, 28);
+				assert.deepEqual(docs, [
+					{ _id: '2019-2-1', year: 2019, month: 2, day: 1 },
+					{ _id: '2019-2-2', year: 2019, month: 2, day: 2 },
+					{ _id: '2019-2-3', year: 2019, month: 2, day: 3 },
+					{ _id: '2019-2-4', year: 2019, month: 2, day: 4 },
+					{ _id: '2019-2-5', year: 2019, month: 2, day: 5 },
+					{ _id: '2019-2-6', year: 2019, month: 2, day: 6 },
+					{ _id: '2019-2-7', year: 2019, month: 2, day: 7 },
+					{ _id: '2019-2-8', year: 2019, month: 2, day: 8 },
+					{ _id: '2019-2-9', year: 2019, month: 2, day: 9 },
+					{ _id: '2019-2-10', year: 2019, month: 2, day: 10 },
+					{ _id: '2019-2-11', year: 2019, month: 2, day: 11 },
+					{ _id: '2019-2-12', year: 2019, month: 2, day: 12 },
+					{ _id: '2019-2-13', year: 2019, month: 2, day: 13 },
+					{ _id: '2019-2-14', year: 2019, month: 2, day: 14 },
+					{ _id: '2019-2-15', year: 2019, month: 2, day: 15 },
+					{ _id: '2019-2-16', year: 2019, month: 2, day: 16 },
+					{ _id: '2019-2-17', year: 2019, month: 2, day: 17 },
+					{ _id: '2019-2-18', year: 2019, month: 2, day: 18 },
+					{ _id: '2019-2-19', year: 2019, month: 2, day: 19 },
+					{ _id: '2019-2-20', year: 2019, month: 2, day: 20 },
+					{ _id: '2019-2-21', year: 2019, month: 2, day: 21 },
+					{ _id: '2019-2-22', year: 2019, month: 2, day: 22 },
+					{ _id: '2019-2-23', year: 2019, month: 2, day: 23 },
+					{ _id: '2019-2-24', year: 2019, month: 2, day: 24 },
+					{ _id: '2019-2-25', year: 2019, month: 2, day: 25 },
+					{ _id: '2019-2-26', year: 2019, month: 2, day: 26 },
+					{ _id: '2019-2-27', year: 2019, month: 2, day: 27 },
+					{ _id: '2019-2-28', year: 2019, month: 2, day: 28 },
+				]);
+			});
+	});
+
+	it('should match sessions between 2019-1-28 and 2019-2-27', () => {
+		const collection = db.collection('sessions_dates');
+		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 2, day: 27 });
+
+		assert.deepEqual($match, {
+			year: 2019,
+			$and: [{
+				$or: [
+					{ month: { $gt: 1 } },
+					{ month: 1, day: { $gte: 28 } },
+				],
+			}, {
+				$or: [
+					{ month: { $lt: 2 } },
+					{ month: 2, day: { $lte: 27 } },
+				],
+			}],
+		});
+
+		return collection.aggregate([{
+			$match,
+		}]).toArray()
+			.then((docs) => {
+				assert.equal(docs.length, 31);
+				assert.deepEqual(docs, [
+					{ _id: '2019-1-28', year: 2019, month: 1, day: 28 },
+					{ _id: '2019-1-29', year: 2019, month: 1, day: 29 },
+					{ _id: '2019-1-30', year: 2019, month: 1, day: 30 },
+					{ _id: '2019-1-31', year: 2019, month: 1, day: 31 },
+					{ _id: '2019-2-1', year: 2019, month: 2, day: 1 },
+					{ _id: '2019-2-2', year: 2019, month: 2, day: 2 },
+					{ _id: '2019-2-3', year: 2019, month: 2, day: 3 },
+					{ _id: '2019-2-4', year: 2019, month: 2, day: 4 },
+					{ _id: '2019-2-5', year: 2019, month: 2, day: 5 },
+					{ _id: '2019-2-6', year: 2019, month: 2, day: 6 },
+					{ _id: '2019-2-7', year: 2019, month: 2, day: 7 },
+					{ _id: '2019-2-8', year: 2019, month: 2, day: 8 },
+					{ _id: '2019-2-9', year: 2019, month: 2, day: 9 },
+					{ _id: '2019-2-10', year: 2019, month: 2, day: 10 },
+					{ _id: '2019-2-11', year: 2019, month: 2, day: 11 },
+					{ _id: '2019-2-12', year: 2019, month: 2, day: 12 },
+					{ _id: '2019-2-13', year: 2019, month: 2, day: 13 },
+					{ _id: '2019-2-14', year: 2019, month: 2, day: 14 },
+					{ _id: '2019-2-15', year: 2019, month: 2, day: 15 },
+					{ _id: '2019-2-16', year: 2019, month: 2, day: 16 },
+					{ _id: '2019-2-17', year: 2019, month: 2, day: 17 },
+					{ _id: '2019-2-18', year: 2019, month: 2, day: 18 },
+					{ _id: '2019-2-19', year: 2019, month: 2, day: 19 },
+					{ _id: '2019-2-20', year: 2019, month: 2, day: 20 },
+					{ _id: '2019-2-21', year: 2019, month: 2, day: 21 },
+					{ _id: '2019-2-22', year: 2019, month: 2, day: 22 },
+					{ _id: '2019-2-23', year: 2019, month: 2, day: 23 },
+					{ _id: '2019-2-24', year: 2019, month: 2, day: 24 },
+					{ _id: '2019-2-25', year: 2019, month: 2, day: 25 },
+					{ _id: '2019-2-26', year: 2019, month: 2, day: 26 },
+					{ _id: '2019-2-27', year: 2019, month: 2, day: 27 },
+				]);
+			});
+	});
 
 	it('should have sessions data saved', () => {
 		const collection = db.collection('sessions');
@@ -348,7 +702,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should have 2 unique users for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates.getUniqueUsersOfLastMonth(collection, { year: 2019, month: 5 })
+		return aggregates.getUniqueUsersOfLastMonth(collection, { year: 2019, month: 5, day: 31 })
 			.then((docs) => {
 				assert.equal(docs.length, 1);
 				assert.deepEqual(docs, [{
@@ -387,7 +741,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should have 2 unique devices for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates.getUniqueDevicesOfLastMonth(collection, { year: 2019, month: 5 })
+		return aggregates.getUniqueDevicesOfLastMonth(collection, { year: 2019, month: 5, day: 31 })
 			.then((docs) => {
 				assert.equal(docs.length, 2);
 				assert.deepEqual(docs, [{
@@ -429,7 +783,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should have 2 unique OS for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates.getUniqueOSOfLastMonth(collection, { year: 2019, month: 5 })
+		return aggregates.getUniqueOSOfLastMonth(collection, { year: 2019, month: 5, day: 31 })
 			.then((docs) => {
 				assert.equal(docs.length, 2);
 				assert.deepEqual(docs, [{
