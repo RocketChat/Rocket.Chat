@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Users, Messages, Rooms, Subscriptions } from '../../../../models/server';
-import { getURL } from '../../../../utils/lib/getURL';
 import { getUserAvatarURL } from '../../../../utils/lib/getUserAvatarURL';
 
 /*
@@ -49,48 +48,6 @@ Meteor.startup(() => {
 	// Migrate Messages
 	Messages.remove({ t: 'thread-welcome' });
 
-	// This fixes the previous issues with team chat migration.
-	Messages.find({ t: 'discussion-created' }).forEach((msg) => {
-		if (msg.roles && msg.roles.length) {
-			const discussions = Messages.find({ rid: msg.drid },
-				{
-					fields: {
-						_id: 1,
-						ts: 1,
-						msg: 1,
-					},
-				}).fetch();
-			const roomName = Rooms.findOne({ _id: msg.drid },
-				{
-					fields: {
-						t: 1,
-						name: 1,
-					},
-				});
-			// id of the first message need to be updated on the parent message
-			let msgURL;
-			switch (roomName.t) {
-				case 'c':
-					msgURL = getURL(`channel/${ roomName.name }?msg=${ discussions[0]._id }`, { full: true });
-					break;
-				default:
-					break;
-			}
-			if (discussions && discussions.length) {
-				const update = {
-					$set: {
-						'attachments.0.author_name': msg.u.name,
-						'attachments.0.author_icon': getUserAvatarURL(msg.u.name),
-						'attachments.0.message_link' : msgURL || (msg.urls && msg.urls[0].url),
-						'attachments.0.ts' : discussions[0].ts, // Timestamp of first message
-						'attachments.0.text' : discussions[0].msg, // Msg of first message
-					},
-				};
-				Messages.update({ _id: msg._id }, update);
-			}
-
-		}
-	});
 	Messages.find({ t: 'create-thread' }).forEach((msg) => {
 		if (msg.channels && msg.channels[0]._id) {
 			const room = Rooms.findOne({ _id: msg.channels[0]._id },
