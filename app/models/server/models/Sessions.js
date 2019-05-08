@@ -8,9 +8,20 @@ export const aggregates = {
 				lastActivityAt: { $exists: true },
 				device: { $exists: true },
 				type: 'session',
-				year: { $lte: year },
-				month: { $lte: month },
-				day: { $lte: day },
+				$or: [{
+					year: { $lte: year },
+				}, {
+					year,
+					month: { $lte: month },
+				}, {
+					year,
+					month,
+					day: { $lte: day },
+				}],
+			},
+		}, {
+			$sort: {
+				_id: 1,
 			},
 		}, {
 			$project: {

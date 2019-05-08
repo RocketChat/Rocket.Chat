@@ -8,6 +8,32 @@ const { aggregates } = require('./Sessions');
 
 const DATA = {
 	sessions: [{
+		_id : 'fNFyFcjszvoN6Grip2',
+		day : 30,
+		instanceId : 'HvbqxukP8E65LAGMY',
+		month : 4,
+		sessionId : 'kiA4xX33AyzPgpBNs2',
+		year : 2019,
+		_updatedAt : new Date('2019-04-30T16:33:24.311Z'),
+		createdAt : new Date('2019-04-30T00:11:34.047Z'),
+		device : {
+			type : 'browser',
+			name : 'Firefox',
+			longVersion : '66.0.3',
+			os : {
+				name : 'Linux',
+				version : '12',
+			},
+			version : '66.0.3',
+		},
+		host : 'localhost:3000',
+		ip : '127.0.0.1',
+		loginAt : new Date('2019-04-30T00:11:34.047Z'),
+		type : 'session',
+		userId : 'xPZXw9xqM3kKshsse',
+		lastActivityAt : new Date('2019-04-30T00:16:20.349Z'),
+		closedAt : new Date('2019-04-30T00:16:20.349Z'),
+	}, {
 		_id : 'fNFyFcjszvoN6Grip',
 		day : 2,
 		instanceId : 'HvbqxukP8E65LAGMY',
@@ -228,25 +254,12 @@ describe('Sessions Aggregates', () => {
 					doc._id = `${ doc.userId }-${ doc.year }-${ doc.month }-${ doc.day }`;
 				});
 
-				assert.equal(docs.length, 2);
+				assert.equal(docs.length, 3);
 				assert.deepEqual(docs, [{
 					_id: 'xPZXw9xqM3kKshsse-2019-5-2',
 					time: 5814,
 					sessions: 3,
 					devices: [{
-						sessions: 2,
-						time: 5528,
-						device: {
-							type: 'browser',
-							name: 'Chrome',
-							longVersion: '73.0.3683.103',
-							os: {
-								name: 'Mac OS',
-								version: '10.14.1',
-							},
-							version: '73.0.3683',
-						},
-					}, {
 						sessions: 1,
 						time: 286,
 						device: {
@@ -259,6 +272,19 @@ describe('Sessions Aggregates', () => {
 							},
 							version: '66.0.3',
 						},
+					}, {
+						sessions: 2,
+						time: 5528,
+						device: {
+							type: 'browser',
+							name: 'Chrome',
+							longVersion: '73.0.3683.103',
+							os: {
+								name: 'Mac OS',
+								version: '10.14.1',
+							},
+							version: '73.0.3683',
+						},
 					}],
 					type: 'user_daily',
 					_computedAt: docs[0]._computedAt,
@@ -266,6 +292,30 @@ describe('Sessions Aggregates', () => {
 					month: 5,
 					year: 2019,
 					userId: 'xPZXw9xqM3kKshsse',
+				}, {
+					_id: 'xPZXw9xqM3kKshsse-2019-4-30',
+					day: 30,
+					devices: [{
+						device: {
+							longVersion: '66.0.3',
+							name: 'Firefox',
+							os: {
+								name: 'Linux',
+								version: '12',
+							},
+							type: 'browser',
+							version: '66.0.3',
+						},
+						sessions: 1,
+						time: 286,
+					}],
+					month: 4,
+					sessions: 1,
+					time: 286,
+					type: 'user_daily',
+					_computedAt: docs[1]._computedAt,
+					userId: 'xPZXw9xqM3kKshsse',
+					year: 2019,
 				}, {
 					_id: 'xPZXw9xqM3kKshsse2-2019-5-1',
 					time: 4167,
@@ -285,7 +335,7 @@ describe('Sessions Aggregates', () => {
 						},
 					}],
 					type: 'user_daily',
-					_computedAt: docs[1]._computedAt,
+					_computedAt: docs[2]._computedAt,
 					day: 1,
 					month: 5,
 					year: 2019,
@@ -306,7 +356,6 @@ describe('Sessions Aggregates', () => {
 					sessions: 4,
 					time: 9981,
 				}]);
-				// console.log(docs);
 			});
 	});
 
@@ -320,7 +369,6 @@ describe('Sessions Aggregates', () => {
 					sessions: 1,
 					time: 4167,
 				}]);
-				// console.log(docs);
 			});
 	});
 
@@ -334,7 +382,6 @@ describe('Sessions Aggregates', () => {
 					sessions: 3,
 					time: 5814,
 				}]);
-				// console.log(docs);
 			});
 	});
 
@@ -342,20 +389,19 @@ describe('Sessions Aggregates', () => {
 		const collection = db.collection('sessions');
 		return aggregates.getUniqueDevicesOfLastMonth(collection, { year: 2019, month: 5 })
 			.then((docs) => {
-				// console.log(JSON.stringify(docs, null, 2));
 				assert.equal(docs.length, 2);
 				assert.deepEqual(docs, [{
-					count: 1,
-					time: 286,
-					type: 'browser',
-					name: 'Firefox',
-					version: '66.0.3',
-				}, {
 					count: 3,
 					time: 9695,
 					type: 'browser',
 					name: 'Chrome',
 					version: '73.0.3683',
+				}, {
+					count: 1,
+					time: 286,
+					type: 'browser',
+					name: 'Firefox',
+					version: '66.0.3',
 				}]);
 			});
 	});
@@ -364,20 +410,19 @@ describe('Sessions Aggregates', () => {
 		const collection = db.collection('sessions');
 		return aggregates.getUniqueDevicesOfYesterday(collection, { year: 2019, month: 5, day: 2 })
 			.then((docs) => {
-				// console.log(JSON.stringify(docs, null, 2));
 				assert.equal(docs.length, 2);
 				assert.deepEqual(docs, [{
-					count: 1,
-					time: 286,
-					type: 'browser',
-					name: 'Firefox',
-					version: '66.0.3',
-				}, {
 					count: 2,
 					time: 5528,
 					type: 'browser',
 					name: 'Chrome',
 					version: '73.0.3683',
+				}, {
+					count: 1,
+					time: 286,
+					type: 'browser',
+					name: 'Firefox',
+					version: '66.0.3',
 				}]);
 			});
 	});
@@ -386,18 +431,17 @@ describe('Sessions Aggregates', () => {
 		const collection = db.collection('sessions');
 		return aggregates.getUniqueOSOfLastMonth(collection, { year: 2019, month: 5 })
 			.then((docs) => {
-				// console.log(JSON.stringify(docs, null, 2));
 				assert.equal(docs.length, 2);
 				assert.deepEqual(docs, [{
-					count: 1,
-					time: 286,
-					name: 'Linux',
-					version: '12',
-				}, {
 					count: 3,
 					time: 9695,
 					name: 'Mac OS',
 					version: '10.14.1',
+				}, {
+					count: 1,
+					time: 286,
+					name: 'Linux',
+					version: '12',
 				}]);
 			});
 	});
@@ -406,18 +450,17 @@ describe('Sessions Aggregates', () => {
 		const collection = db.collection('sessions');
 		return aggregates.getUniqueOSOfYesterday(collection, { year: 2019, month: 5, day: 2 })
 			.then((docs) => {
-				// console.log(JSON.stringify(docs, null, 2));
 				assert.equal(docs.length, 2);
 				assert.deepEqual(docs, [{
-					count: 1,
-					time: 286,
-					name: 'Linux',
-					version: '12',
-				}, {
 					count: 2,
 					time: 5528,
 					name: 'Mac OS',
 					version: '10.14.1',
+				}, {
+					count: 1,
+					time: 286,
+					name: 'Linux',
+					version: '12',
 				}]);
 			});
 	});
