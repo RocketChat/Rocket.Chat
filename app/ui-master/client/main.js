@@ -133,7 +133,7 @@ Template.main.onCreated(function() {
 });
 
 
-const useExperimentalConfigs = getConfig('experimental') === 'true';
+const skipActiveUsersToBeReady = [getConfig('experimental'), getConfig('skipActiveUsersToBeReady')].includes('true');
 Template.main.helpers({
 	removeSidenav() {
 		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
@@ -160,7 +160,7 @@ Template.main.helpers({
 	},
 	subsReady() {
 		const subscriptions = ['userData'];
-		if (useExperimentalConfigs) {
+		if (!skipActiveUsersToBeReady) {
 			subscriptions.push('activeUsers');
 		}
 		const routerReady = FlowRouter.subsReady.apply(FlowRouter, subscriptions);
