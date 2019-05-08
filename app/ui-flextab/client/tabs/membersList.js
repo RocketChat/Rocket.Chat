@@ -167,6 +167,13 @@ Template.membersList.events({
 
 		Template.parentData(0).tabBar.open();
 	},
+	'submit .js-search-form'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+	},
+	'keydown .js-filter'(event, instance) {
+		instance.filter.set(event.target.value.trim());
+	},
 	'input .js-filter'(e, instance) {
 		instance.filter.set(e.target.value.trim());
 	},
