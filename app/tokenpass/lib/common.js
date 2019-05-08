@@ -16,6 +16,7 @@ const config = {
 		forLoggedInUser: ['services.tokenpass'],
 		forOtherUsers: ['services.tokenpass.name'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const Tokenpass = new CustomOAuth('tokenpass', config);

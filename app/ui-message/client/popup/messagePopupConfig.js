@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
@@ -10,17 +11,17 @@ import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorizatio
 import { EmojiPicker, emoji } from '../../../emoji';
 import { call } from '../../../ui-utils';
 import { t, getUserPreference, slashCommands } from '../../../utils';
-import _ from 'underscore';
+import './messagePopupConfig.html';
+import './messagePopupSlashCommand.html';
+import './messagePopupUser.html';
 
-const usersFromRoomMessages = new Mongo.Collection(null);
-
-const reloadUsersFromRoomMessages = (rid) => {
+const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
 	if (!rid || !user) {
 		return;
 	}
 
-	usersFromRoomMessages.remove({});
+	template.usersFromRoomMessages.remove({});
 
 	const uniqueMessageUsersControl = {};
 
@@ -44,7 +45,7 @@ const reloadUsersFromRoomMessages = (rid) => {
 			uniqueMessageUsersControl[username] = true;
 			return notMapped;
 		})
-		.forEach(({ u: { username, name }, ts }) => usersFromRoomMessages.upsert(username, {
+		.forEach(({ u: { username, name }, ts }) => template.usersFromRoomMessages.upsert(username, {
 			_id: username,
 			username,
 			name,
@@ -167,17 +168,20 @@ const addEmojiToRecents = (emoji) => {
 };
 
 Template.messagePopupConfig.onCreated(function() {
+	this.usersFromRoomMessages = new Mongo.Collection(null);
+
 	this.autorun(() => {
 		const { rid } = this.data;
-		reloadUsersFromRoomMessages(rid);
+		reloadUsersFromRoomMessages(rid, this);
 	});
 });
 
 Template.messagePopupConfig.helpers({
 	popupUserConfig() {
+		const template = Template.instance();
 		return {
 			title: t('People'),
-			collection: usersFromRoomMessages,
+			collection: template.usersFromRoomMessages,
 			template: 'messagePopupUser',
 			rid: this.rid,
 			getInput: this.getInput,
@@ -189,7 +193,7 @@ Template.messagePopupConfig.helpers({
 				const filterText = filter.trim();
 				const filterRegex = filterText !== '' && new RegExp(`${ RegExp.escape(filterText) }`, 'i');
 
-				const items = usersFromRoomMessages
+				const items = template.usersFromRoomMessages
 					.find(
 						{
 							ts: { $exists: true },

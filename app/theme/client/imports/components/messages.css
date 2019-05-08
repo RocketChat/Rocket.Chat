@@ -121,15 +121,26 @@
 
 			padding: unset !important;
 
+			vertical-align: unset !important;
+
 			white-space: unset !important;
 
 			color: inherit !important;
+
+			border: unset !important;
 
 			background-color: unset !important;
 
 			font-family: inherit !important;
 
 			font-weight: unset !important;
+
+			line-height: unset !important;
+
+			&::before,
+			&::after {
+				content: unset !important;
+			}
 		}
 
 		& a {

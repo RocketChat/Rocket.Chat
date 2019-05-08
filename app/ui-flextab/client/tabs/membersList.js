@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { RoomManager, popover } from '../../../ui-utils';
@@ -141,7 +140,8 @@ Template.membersList.helpers({
 			clear: Template.instance().clearUserDetail,
 			showAll: roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
 			hideAdminControls: roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
-			video: ['d'].includes(room != null ? room.t : undefined),
+			video: ['d'].includes(room && room.t),
+			showBackButton: roomTypes.roomTypes[room.t].isGroupChat(),
 		};
 	},
 	displayName() {
@@ -167,12 +167,18 @@ Template.membersList.events({
 
 		Template.parentData(0).tabBar.open();
 	},
+	'submit .js-search-form'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+	},
+	'keydown .js-filter'(event, instance) {
+		instance.filter.set(event.target.value.trim());
+	},
 	'input .js-filter'(e, instance) {
 		instance.filter.set(e.target.value.trim());
 	},
 	'change .js-type'(e, instance) {
-		const seeAll = instance.showAllUsers.get();
-		instance.showAllUsers.set(!seeAll);
+		instance.showAllUsers.set(e.currentTarget.value === 'all');
 		instance.usersLimit.set(100);
 	},
 	'click .js-more'(e, instance) {
@@ -276,38 +282,55 @@ Template.membersList.onCreated(function() {
 	this.loading = new ReactiveVar(true);
 	this.loadingMore = new ReactiveVar(false);
 
-	this.tabBar = Template.instance().tabBar;
+	this.tabBar = this.data.tabBar;
 
-	Tracker.autorun(() => {
+	this.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
 		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
 			if (error) {
 				console.error(error);
-				return this.loading.set(false);
+				this.loading.set(false);
 			}
 
 			this.users.set(users.records);
 			this.total.set(users.total);
-			return this.loading.set(false);
+			this.loading.set(false);
 		});
 	});
 
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
-		return setTimeout(() => this.clearRoomUserDetail(), 500);
+		this.tabBar.setData({
+			label: 'Members_List',
+			icon: 'team',
+		});
+		setTimeout(() => this.clearRoomUserDetail(), 100);
 	};
 
-	this.showUserDetail = (username) => {
-		this.showDetail.set(username != null);
-		return this.userDetail.set(username);
+	this.showUserDetail = (username, group) => {
+		this.showDetail.set(!!username);
+		this.userDetail.set(username);
+		if (group) {
+			this.showAllUsers.set(group === 'all');
+		}
 	};
 
 	this.clearRoomUserDetail = this.data.clearUserDetail;
 
-	return this.autorun(() => {
-		const data = Template.currentData();
-		return this.showUserDetail(data.userDetail);
-	}
-	);
+	this.autorun(() => {
+		const { userDetail, groupDetail } = Template.currentData();
+
+		this.showUserDetail(userDetail, groupDetail);
+	});
+});
+
+Template.membersList.onRendered(function() {
+	this.autorun(() => {
+		const showAllUsers = this.showAllUsers.get();
+		const statusTypeSelect = this.find('.js-type');
+		if (statusTypeSelect) {
+			statusTypeSelect.value = showAllUsers ? 'all' : 'online';
+		}
+	});
 });

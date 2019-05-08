@@ -3,11 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, getUserPreference, roomTypes } from '../../utils';
-import { popover, renderMessageBody } from '../../ui-utils';
+import { popover, renderMessageBody, menu } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
-import { menu } from '../../ui-utils';
+
 import { timeAgo } from '../../lib/client/lib/formatDate';
 
 Template.sidebarItem.helpers({
@@ -42,11 +42,12 @@ Template.sidebarItem.helpers({
 
 		if (unread) {
 			badges.push('badge--unread');
+			if (t === 'd') {
+				badges.push('badge--dm');
+			}
 		}
 
-		if (unread && t === 'd') {
-			badges.push('badge--dm');
-		} else if (userMentions) {
+		if (userMentions) {
 			badges.push('badge--user-mentions');
 		} else if (groupMentions) {
 			badges.push('badge--group-mentions');
@@ -143,14 +144,14 @@ Template.sidebarItem.events({
 		if (this.alert) {
 			items.push({
 				icon: 'flag',
-				name: t('Mark_as_read'),
+				name: t('Mark_read'),
 				type: 'sidebar-item',
 				id: 'read',
 			});
 		} else {
 			items.push({
 				icon: 'flag',
-				name: t('Mark_as_unread'),
+				name: t('Mark_unread'),
 				type: 'sidebar-item',
 				id: 'unread',
 			});

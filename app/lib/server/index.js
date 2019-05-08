@@ -1,4 +1,3 @@
-export { hostname } from '../lib/startup/settingsOnLoadSiteUrl';
 export * from './lib';
 export * from './functions';
 import './startup/email';

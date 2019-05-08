@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DateFormat } from '../../lib';
 import { Template } from 'meteor/templating';
-import { getUserPreference, getURL } from '../../utils';
+import { getUserPreference, getURL } from '../../utils/client';
 import { Users } from '../../models';
 import { renderMessageBody } from '../../ui-utils';
 
@@ -72,8 +72,8 @@ Template.messageAttachment.helpers({
 		return this.type === 'file';
 	},
 	isPDF() {
-		if (this.type === 'file' && this.title_link.endsWith('.pdf') && Template.parentData().file) {
-			this.fileId = Template.parentData().file._id;
+		if (this.type === 'file' && this.title_link.endsWith('.pdf') && Template.parentData().msg.file) {
+			this.fileId = Template.parentData().msg.file._id;
 			return true;
 		}
 		return false;

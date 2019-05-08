@@ -1,8 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Base } from './_Base';
 import Rooms from './Rooms';
-import Users from './Users';
 import { settings } from '../../../settings/server/functions/settings';
 import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
 import _ from 'underscore';
@@ -207,13 +205,25 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomId(roomId, options) {
+	findVisibleByRoomId(rid, options) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 
-			rid: roomId,
+			rid,
+		};
+
+		return this.find(query, options);
+	}
+
+	findVisibleThreadByThreadId(tmid, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			tmid,
 		};
 
 		return this.find(query, options);
@@ -493,15 +503,14 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	cloneAndSaveAsHistoryById(_id) {
-		const me = Users.findOneById(Meteor.userId());
+	cloneAndSaveAsHistoryById(_id, user) {
 		const record = this.findOneById(_id);
 		record._hidden = true;
 		record.parent = record._id;
 		record.editedAt = new Date;
 		record.editedBy = {
-			_id: Meteor.userId(),
-			username: me.username,
+			_id: user._id,
+			username: user.username,
 		};
 		delete record._id;
 		return this.insert(record);
@@ -644,7 +653,7 @@ export class Messages extends Base {
 		} else {
 			update = {
 				$pull: {
-					starred: { _id: Meteor.userId() },
+					starred: { _id: userId },
 				},
 			};
 		}

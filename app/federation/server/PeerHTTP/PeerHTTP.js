@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
 import { logger } from '../logger';
-import { Federation } from '../';
+import { Federation } from '..';
 
 import { skipRetryOnSpecificError, delay } from './utils';
 
@@ -23,8 +23,6 @@ export class PeerHTTP {
 	//
 	// Direct request
 	simpleRequest(peer, method, uri, body, headers) {
-		this.log(`Request: ${ method } ${ uri }`);
-
 		const { url: serverBaseURL } = peer;
 
 		const url = `${ serverBaseURL }${ uri }`;
@@ -35,7 +33,7 @@ export class PeerHTTP {
 			data = body;
 		}
 
-		this.log(`Sending request: ${ method } - ${ uri }`);
+		this.log(`Sending request: ${ method } - ${ url }`);
 
 		return HTTP.call(method, url, { data, timeout: 2000, headers: { ...headers, 'x-federation-domain': this.config.peer.domain } });
 	}
@@ -75,14 +73,15 @@ export class PeerHTTP {
 				}
 
 				// Check if we need to skip due to specific error
-				if (skipRetryOnSpecificError(err)) {
-					this.log('Retry: skipping due to specific error');
+				const { skip: skipOnSpecificError, error: specificError } = skipRetryOnSpecificError(err);
+				if (skipOnSpecificError) {
+					this.log(`Retry: skipping due to specific error: ${ specificError }`);
 
 					throw err;
 				}
 
 				if (i === retryInfo.total - 1) {
-				// Throw the error, as we could not fulfill the request
+					// Throw the error, as we could not fulfill the request
 					this.log('Retry: could not fulfill the request');
 
 					throw err;

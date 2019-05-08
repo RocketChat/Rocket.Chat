@@ -7,6 +7,9 @@ import { getTimingsChartData, getAgentStatusData, getConversationsOverviewData, 
 import { LivechatMonitoring } from '../../../collections/LivechatMonitoring';
 import { AgentUsers } from '../../../collections/AgentUsers';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
+import './livechatRealTimeMonitoring.html';
+
+
 let chartContexts = {};			// stores context of current chart, used to clean when redrawing
 let templateInstance;
 

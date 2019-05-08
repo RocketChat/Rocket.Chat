@@ -85,7 +85,7 @@ export class AppRoomsConverter {
 				return RoomType.PRIVATE_GROUP;
 			case 'd':
 				return RoomType.DIRECT_MESSAGE;
-			case 'lc':
+			case 'l':
 				return RoomType.LIVE_CHAT;
 			default:
 				return typeChar;

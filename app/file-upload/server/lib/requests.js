@@ -6,7 +6,7 @@ WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
 
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
-	if (match[1]) {
+	if (match && match[1]) {
 		const file = Uploads.findOneById(match[1]);
 
 		if (file) {
@@ -16,6 +16,7 @@ WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
 			}
 
 			res.setHeader('Content-Security-Policy', 'default-src \'none\'');
+			res.setHeader('Cache-Control', 'max-age=31536000');
 			return FileUpload.get(file, req, res, next);
 		}
 	}

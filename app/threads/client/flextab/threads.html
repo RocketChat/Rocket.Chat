@@ -1,34 +1,39 @@
 <template name="threads">
-	{{#unless hasThreads}}
-		<h2 class="thread-empty">{{_ "No_Threads"}}</h2>
-	{{/unless}}
 	{{# with messageContext}}
-		<div class="thread-list js-scroll-threads">
-			<ul class="thread">
-				{{#each thread in threads}}
-					{{> nrr nrrargs 'message'
-						groupable=false
-						msg=thread
-						room=room
-						subscription=subscription
-						customClass="thread-message"
-						settings=settings
-						templatePrefix='threads-'
-						u=u
-						noDate=true
-						context="threads"
-						timeAgo=true
-				 	}}
-				{{/each}}
-			</ul>
+		{{#if hasNoThreads}}
+			<h2 class="thread-empty">{{_ "No_Threads"}}</h2>
+		{{/if}}
+		{{#unless doDotLoadThreads}}
+			<div class="thread-list js-scroll-threads">
+				<ul class="thread">
+					{{#each thread in threads}}
+						{{> message
+							groupable=false
+							msg=thread
+							room=room
+							hideRoles=true
+							subscription=subscription
+							customClass="thread-message"
+							settings=settings
+							templatePrefix='threads-'
+							u=u
+							showDateSeparator=false
+							context="threads"
+							timeAgo=true
+						}}
+					{{/each}}
+				</ul>
+			</div>
+			{{#if isLoading}}
+				<div class="load-more">
+					{{> loading}}
+				</div>
+			{{/if}}
+		{{/unless}}
+		{{#if msg}}
+		<div class="rc-user-info-container flex-nav">
+			{{> thread mainMessage=msg room=room subscription=subscription settings=settings close=close}}
 		</div>
-		<div class="rc-user-info-container flex-nav animated{{#unless message}} animated-hidden{{/unless}}">
-			{{#if message}} {{> thread mainMessage=message room=room subscription=subscription settings=settings close=close}} {{/if}}
-		</div>
+		{{/if}}
 	{{/with}}
-	{{#if isLoading}}
-		<div class="load-more">
-			{{> loading}}
-		</div>
-	{{/if}}
 </template>

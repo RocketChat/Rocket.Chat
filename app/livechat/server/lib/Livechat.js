@@ -176,7 +176,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username } = {}) {
+	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
 
 		let userId;
@@ -204,12 +204,14 @@ export const Livechat = {
 					username,
 				};
 
-				const storeHttpHeaderData = settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations');
+				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 
-				if (this.connection && storeHttpHeaderData) {
-					userData.userAgent = this.connection.httpHeaders['user-agent'];
-					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.httpHeaders['x-forwarded-for'] || this.connection.clientAddress;
-					userData.host = this.connection.httpHeaders.host;
+					const connection = this.connection || connectionData;
+					if (connection && connection.httpHeaders) {
+						userData.userAgent = connection.httpHeaders['user-agent'];
+						userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
+						userData.host = connection.httpHeaders.host;
+					}
 				}
 
 				userId = LivechatVisitors.insert(userData);
@@ -232,7 +234,9 @@ export const Livechat = {
 			updateUser.$set.name = name;
 		}
 
-		if (department) {
+		if (!department) {
+			Object.assign(updateUser, { $unset: { department: 1 } });
+		} else {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
@@ -467,7 +471,7 @@ export const Livechat = {
 
 		const { servedBy } = room;
 
-		if (agent && agent.agentId !== servedBy._id) {
+		if (agent && servedBy && agent.agentId !== servedBy._id) {
 			Rooms.changeAgentByRoomId(room._id, agent);
 
 			if (transferData.departmentId) {
@@ -794,11 +798,7 @@ export const Livechat = {
 	},
 
 	showConnecting() {
-		if (settings.get('Livechat_Routing_Method') === 'Guest_Pool') {
-			return settings.get('Livechat_open_inquiery_show_connecting');
-		} else {
-			return false;
-		}
+		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
 
 	sendEmail(from, to, replyTo, subject, html) {
