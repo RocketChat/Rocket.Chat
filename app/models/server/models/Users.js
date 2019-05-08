@@ -395,6 +395,14 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByLoginToken(token, options) {
+		const query = {
+			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token),
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneById(userId, options) {
 		const query = { _id: userId };
 

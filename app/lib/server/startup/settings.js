@@ -23,6 +23,10 @@ settings.addGroup('Accounts', function() {
 			value: true,
 		},
 	});
+	this.add('Accounts_AllowAnonymousRegister', false, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Accounts_AllowDeleteOwnAccount', false, {
 		type: 'boolean',
 		public: true,

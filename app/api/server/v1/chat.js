@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Random } from 'meteor/random';
 import { Messages } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { composeMessageObjectWithUser } from '../../../utils';
@@ -136,9 +135,33 @@ API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 
 API.v1.addRoute('chat.postMessageAnonymous', {
 	post() {
-		const username = Random.secret(7);
-		const user = Meteor.call('registerUser', { username });
-		user.username = username;
+		if (!settings.get('Accounts_AllowAnonymousWrite')) {
+			throw new Meteor.Error('error-not-allowed', 'Cannot Post Message anonymously', {
+				method: 'users.postMessageAnonymous',
+			});
+		}
+
+		check(this.bodyParams, Match.ObjectIncluding({
+			username: String,
+			token: String,
+		}));
+
+		const user = Users.findOneByUsername(this.bodyParams.username);
+
+		if (!user) {
+			return API.v1.failure('username not found');
+		}
+
+		if (!user.roles.includes('anonymous')) {
+			return API.v1.failure('Only Anonymous users can use this API');
+		}
+
+		const { services: { resume: { loginTokens: [{ hashedToken }] } } } = user;
+
+		if (this.bodyParams.token !== hashedToken) {
+			return API.v1.failure('Unauthorized. Wrong token');
+		}
+
 		const message = processWebhookMessage(this.bodyParams, user, undefined, true)[0];
 		return API.v1.success({
 			ts: Date.now(),

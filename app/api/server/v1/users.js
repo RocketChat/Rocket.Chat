@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Users, Subscriptions } from '../../../models';
 import { hasPermission } from '../../../authorization';
@@ -224,11 +225,44 @@ API.v1.addRoute('users.register', { authRequired: false }, {
 
 		// Register the user
 		const userId = Meteor.call('registerUser', this.bodyParams);
-
 		// Now set their username
 		Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
 
 		return API.v1.success({ user: Users.findOneById(userId, { fields: API.v1.defaultFieldsToExclude }) });
+	},
+});
+
+API.v1.addRoute('users.registerAnonymous', { authRequired: false }, {
+	post() {
+		if (this.userId) {
+			return API.v1.failure('Logged in users can not register again.');
+		}
+
+		if (!settings.get('Accounts_AllowAnonymousRegister')) {
+			throw new Meteor.Error('error-not-allowed', 'This API is not enabled by administrator', {
+				method: 'users.registerAnonymous',
+			});
+		}
+
+		if (!settings.get('Accounts_AllowAnonymousRead') || !settings.get('Accounts_AllowAnonymousWrite')) {
+			throw new Meteor.Error('error-not-allowed', 'Enable both "Allow Anonymous Read" && "Allow Anonymous Write"', {
+				method: 'users.registerAnonymous',
+			});
+		}
+
+		// Generating a 7 digit random username
+		const username = Random.secret(7);
+
+		if (!checkUsernameAvailability(username)) {
+			return API.v1.failure('Username error, Retry again.');
+		}
+
+		const user = Meteor.call('registerUser', { username });
+		const userId = Users.findOneByLoginToken(user.token);
+		// Now set their username
+		Meteor.runAsUser(userId._id, () => Meteor.call('setUsername', username));
+
+		return API.v1.success({ user: Users.findOneById(userId._id, { fields: API.v1.defaultFieldsToExclude }) });
 	},
 });
 

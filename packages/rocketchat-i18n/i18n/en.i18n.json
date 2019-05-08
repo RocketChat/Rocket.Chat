@@ -29,6 +29,7 @@
   "Accounts_Admin_Email_Approval_Needed_With_Reason_Default": "<p>The user <b>[name] ([email])</b> has been registered.</p><p>Reason: <b>[reason]</b></p><p>Please check \"Administration -> Users\" to activate or delete it.</p>",
   "Accounts_AllowAnonymousRead": "Allow Anonymous Read",
   "Accounts_AllowAnonymousWrite": "Allow Anonymous Write",
+  "Accounts_AllowAnonymousRegister": "Allow Anonymous Registering of accounts",
   "Accounts_AllowDeleteOwnAccount": "Allow Users to Delete Own Account",
   "Accounts_AllowedDomainsList": "Allowed Domains List",
   "Accounts_AllowedDomainsList_Description": "Comma-separated list of allowed domains",
