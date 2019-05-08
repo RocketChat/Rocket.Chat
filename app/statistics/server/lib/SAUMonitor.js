@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import UAParser from 'ua-parser-js';
-import { UAParserMobile } from './UAParserMobile';
+import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { Sessions } from '../../../models/server';
 import { Logger } from '../../../logger';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
@@ -200,6 +200,8 @@ export class SAUMonitorClass {
 
 		if (UAParserMobile.isMobileApp(uaString)) {
 			result = UAParserMobile.uaObject(uaString);
+		} else if (UAParserDesktop.isDesktopApp(uaString)) {
+			result = UAParserDesktop.uaObject(uaString);
 		} else {
 			const ua = new UAParser(uaString);
 			result = ua.getResult();
@@ -225,7 +227,7 @@ export class SAUMonitorClass {
 		}
 
 		if (result.device && (result.device.type || result.device.model)) {
-			info.type = 'mobile-app';
+			info.type = result.device.type;
 
 			if (result.app && result.app.name) {
 				info.name = result.app.name;
