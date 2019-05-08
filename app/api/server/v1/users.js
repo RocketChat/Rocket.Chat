@@ -569,3 +569,14 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 		return API.v1.success();
 	},
 });
+
+API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
+	post() {
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: false }));
+
+		return API.v1.success({
+			requested: result.requested,
+			exportOperation: result.exportOperation,
+		});
+	},
+});
