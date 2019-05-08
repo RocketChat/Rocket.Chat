@@ -221,6 +221,7 @@
 		"ua-parser-js": "^0.7.19",
 		"underscore": "^1.9.1",
 		"underscore.string": "^3.3.5",
+		"url-polyfill": "^1.1.5",
 		"uuid": "^3.3.2",
 		"webdav": "^2.0.0",
 		"wolfy87-eventemitter": "^5.2.5",
