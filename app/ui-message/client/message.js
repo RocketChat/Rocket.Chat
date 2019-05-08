@@ -374,9 +374,13 @@ Template.message.helpers({
 		}
 		return roomTypes.getIcon(room);
 	},
+	customClass() {
+		const { customClass, msg } = this;
+		return customClass || msg.customClass;
+	},
 	fromSearch() {
-		const { customClass } = this;
-		return customClass === 'search';
+		const { customClass, msg } = this;
+		return [msg.customClass, customClass].includes('search');
 	},
 	actionContext() {
 		const { msg } = this;
