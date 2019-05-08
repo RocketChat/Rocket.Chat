@@ -79,7 +79,7 @@ export const aggregates = {
 				sessions: 1,
 				devices: 1,
 			},
-		}]).toArray();
+		}]);
 	},
 
 	getUniqueUsersOfYesterday(collection, { year, month, day }) {

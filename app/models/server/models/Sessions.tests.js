@@ -602,7 +602,7 @@ describe.only('Sessions Aggregates', () => {
 
 	it('should generate daily sessions', () => {
 		const collection = db.collection('sessions');
-		return aggregates.dailySessionsOfYesterday(collection, { year: 2019, month: 5, day: 2 })
+		return aggregates.dailySessionsOfYesterday(collection, { year: 2019, month: 5, day: 2 }).toArray()
 			.then((docs) => {
 				docs.forEach((doc) => {
 					doc._id = `${ doc.userId }-${ doc.year }-${ doc.month }-${ doc.day }`;
