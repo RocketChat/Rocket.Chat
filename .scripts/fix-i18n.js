@@ -4,12 +4,6 @@
  * - remove any duplicated i18n key on the same file;
  * - re-order all keys based on source i18n file (en.i18n.json)
  * - remove all keys not present in source i18n file
- *
- * you might need to do:
- * npm i --no-save fast-glob
- *
- * then run from Rocket.Chat root's folder:
- * node ./scripts/fix-i18n.js
  */
 
 const fg = require('fast-glob');
