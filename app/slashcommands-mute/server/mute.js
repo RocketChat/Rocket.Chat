@@ -20,7 +20,7 @@ slashCommands.add('mute', function Mute(command, params, item) {
 	}
 	const userId = Meteor.userId();
 	const user = Meteor.users.findOne(userId);
-	const mutedUser = Users.findOneByUsername(username);
+	const mutedUser = Users.findOneByUsernameIgnoringCase(username);
 	if (mutedUser == null) {
 		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
