@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import { modal } from '../../../../../ui-utils';
 import { ChatRoom, Rooms, Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
@@ -14,6 +15,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
+import './visitorInfo.html';
 
 Template.visitorInfo.helpers({
 	user() {
@@ -171,6 +173,25 @@ Template.visitorInfo.events({
 	'click .close-livechat'(event) {
 		event.preventDefault();
 
+		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, function(error/* , result*/) {
+			if (error) {
+				return handleError(error);
+			}
+			modal.open({
+				title: t('Chat_closed'),
+				text: t('Chat_closed_successfully'),
+				type: 'success',
+				timer: 1000,
+				showConfirmButton: false,
+			});
+		});
+
+		if (!settings.get('Livechat_request_comment_when_closing_conversation')) {
+			const comment = TAPi18n.__('Chat_closed_by_agent');
+			return closeRoom(comment);
+		}
+
+		// Setting for Ask_for_conversation_finished_message is set to true
 		modal.open({
 			title: t('Closing_chat'),
 			type: 'input',
@@ -188,18 +209,8 @@ Template.visitorInfo.events({
 				return false;
 			}
 
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/* , result*/) {
-				if (error) {
-					return handleError(error);
-				}
-				modal.open({
-					title: t('Chat_closed'),
-					text: t('Chat_closed_successfully'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
-			});
+			return closeRoom(inputValue);
+
 		});
 	},
 

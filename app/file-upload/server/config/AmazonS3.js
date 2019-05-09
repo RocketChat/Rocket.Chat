@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { settings } from '../../../settings';
-import { FileUploadClass } from '../lib/FileUpload';
-import { FileUpload } from '../lib/FileUpload';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+
 import '../../ufs/AmazonS3/server.js';
 import http from 'http';
 import https from 'https';
@@ -16,6 +16,7 @@ const get = function(file, req, res) {
 			request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 		} else {
 			res.removeHeader('Content-Length');
+			res.removeHeader('Cache-Control');
 			res.setHeader('Location', fileUrl);
 			res.writeHead(302);
 			res.end();

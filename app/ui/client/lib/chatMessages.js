@@ -1,351 +1,408 @@
+import moment from 'moment';
+import toastr from 'toastr';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
-import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, getUserPreference, slashCommands, handleError } from '../../../utils';
-import { MessageAction, messageProperties, MessageTypes, readMessage, modal, call } from '../../../ui-utils';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+
+import { t, slashCommands, handleError } from '../../../utils/client';
+import {
+	messageProperties,
+	MessageTypes,
+	readMessage,
+	modal,
+	call,
+	keyCodes,
+	prependReplies,
+} from '../../../ui-utils/client';
+import { settings } from '../../../settings/client';
+import { callbacks } from '../../../callbacks/client';
 import { promises } from '../../../promises/client';
-import { hasAtLeastOnePermission } from '../../../authorization';
-import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models';
-import { emoji } from '../../../emoji';
+import { hasAtLeastOnePermission } from '../../../authorization/client';
+import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
+import { emoji } from '../../../emoji/client';
+
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
-import _ from 'underscore';
-import s from 'underscore.string';
-import moment from 'moment';
-import toastr from 'toastr';
 import { fileUpload } from './fileUpload';
 
-let sendOnEnter = '';
+const messageBoxState = {
+	saveValue: _.debounce(({ rid, tmid }, value) => {
+		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
+		value ? localStorage.setItem(key, value) : localStorage.removeItem(key);
+	}, 1000),
 
-Meteor.startup(() => {
-	Tracker.autorun(function() {
-		const user = Meteor.userId();
-		sendOnEnter = getUserPreference(user, 'sendOnEnter');
-	});
-});
+	restoreValue: ({ rid, tmid }) => {
+		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
+		return localStorage.getItem(key);
+	},
 
-export const getPermaLinks = async(replies) => {
-	const promises = replies.map(async(reply) =>
-		MessageAction.getPermaLink(reply._id)
-	);
+	restore: ({ rid, tmid }, input) => {
+		const value = messageBoxState.restoreValue({ rid, tmid });
+		if (typeof value === 'string') {
+			messageBoxState.set(input, value);
+		}
+	},
 
-	return Promise.all(promises);
+	save: ({ rid, tmid }, input) => {
+		messageBoxState.saveValue({ rid, tmid }, input.value);
+	},
+
+	set: (input, value) => {
+		input.value = value;
+		$(input).trigger('change').trigger('input');
+	},
+
+	purgeAll: () => {
+		Object.keys(localStorage)
+			.filter((key) => key.indexOf('messagebox_') === 0)
+			.forEach((key) => localStorage.removeItem(key));
+	},
 };
 
-export const mountReply = async(msg, input) => {
-	const replies = $(input).data('reply');
-	const mentionUser = $(input).data('mention-user') || false;
+callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
 
-	if (replies && replies.length) {
-		const permalinks = await getPermaLinks(replies);
+const showModal = (config) => new Promise((resolve, reject) => modal.open(config, resolve, reject));
 
-		replies.forEach(async(reply, replyIndex) => {
-			if (reply !== undefined) {
-				msg += `[ ](${ permalinks[replyIndex] }) `;
+export class ChatMessages {
+	editing = {}
 
-				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
-					msg += `@${ reply.u.username } `;
-				}
-			}
-		});
+	records = {}
+
+	initializeWrapper(wrapper) {
+		this.wrapper = wrapper;
 	}
 
-	return msg;
-};
-
-export const ChatMessages = class ChatMessages {
-	constructor() {
-
-		this.saveTextMessageBox = _.debounce((rid, value) => {
-			const key = `messagebox_${ rid }`;
-			return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
-		}, 1000);
-	}
-
-	init(node) {
-		this.editing = {};
-		this.records = {};
-		this.messageMaxSize = settings.get('Message_MaxAllowedSize');
-		this.wrapper = $(node).find('.wrapper');
-		this.input = this.input || $(node).find('.js-input-message').get(0);
+	initializeInput(input, { rid, tmid }) {
+		this.input = input;
 		this.$input = $(this.input);
-		this.hasValue = new ReactiveVar(false);
-		this.bindEvents();
+
+		if (!input || !rid) {
+			return;
+		}
+
+		messageBoxState.restore({ rid, tmid }, input);
+		this.restoreReplies();
+		this.requestInputFocus();
+	}
+
+	async restoreReplies() {
+		const mid = FlowRouter.getQueryParam('reply');
+		if (!mid) {
+			return;
+		}
+
+		const message = Messages.findOne(mid) || await call('getSingleMessage', mid);
+		if (!message) {
+			return;
+		}
+
+		this.$input.data('reply', [message]).trigger('dataChange');
+	}
+
+	requestInputFocus() {
+		setTimeout(() => {
+			if (this.input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
+				this.input.focus();
+			}
+		}, 200);
 	}
 
 	getEditingIndex(element) {
-		const msgs = this.wrapper.get(0).querySelectorAll('.own:not(.system)');
-		let index = 0;
-		for (const msg of Array.from(msgs)) {
-			if (msg === element) {
-				return index;
-			}
-			index++;
-		}
-		return -1;
+		const msgs = this.wrapper.querySelectorAll('.own:not(.system)');
+		return Array.from(msgs).findIndex((msg) => msg === element);
 	}
 
 	recordInputAsDraft() {
-		const { id } = this.editing;
-
-		const message = this.getMessageById(id);
-		const record = this.records[id] || {};
+		const message = ChatMessage.findOne(this.editing.id);
+		const record = this.records[this.editing.id] || {};
 		const draft = this.input.value;
 
 		if (draft === message.msg) {
-			return this.clearCurrentDraft();
-		} else {
-			record.draft = draft;
-			return this.records[id] = record;
+			this.clearCurrentDraft();
+			return;
 		}
-	}
 
-	getMessageDraft(id) {
-		return this.records[id];
-	}
-
-	clearMessageDraft(id) {
-		return delete this.records[id];
+		record.draft = draft;
+		this.records[this.editing.id] = record;
 	}
 
 	clearCurrentDraft() {
-		return this.clearMessageDraft(this.editing.id);
+		delete this.records[this.editing.id];
 	}
 
 	resetToDraft(id) {
-		const message = this.getMessageById(id);
-
-		const old_value = this.input.value;
-		this.input.value = message.msg;
-
-		return old_value !== message.msg;
-	}
-
-	getMessageById(id) {
-		return ChatMessage.findOne(id);
+		const message = ChatMessage.findOne(id);
+		const oldValue = this.input.value;
+		messageBoxState.set(this.input, message.msg);
+		return oldValue !== message.msg;
 	}
 
 	toPrevMessage() {
 		const { index } = this.editing;
-		return this.editByIndex((index != null) ? index - 1 : undefined);
+		this.editByIndex(index ? index - 1 : undefined);
 	}
 
 	toNextMessage() {
 		const { index } = this.editing;
-		if (!this.editByIndex(index + 1)) { return this.clearEditing(); }
+		if (!this.editByIndex(index + 1)) {
+			this.clearEditing();
+		}
 	}
 
 	editByIndex(index) {
-		if (!this.editing.element && index) { return false; }
+		if (!this.editing.element && index) {
+			return false;
+		}
 
-		const msgs = this.wrapper.get(0).querySelectorAll('.own:not(.system)');
-		if (index == null) { index = msgs.length - 1; }
+		const messageElements = this.wrapper.querySelectorAll('.own:not(.system)');
 
-		if (!msgs[index]) { return false; }
+		if (!index) {
+			index = messageElements.length - 1;
+		}
 
-		const element = msgs[index];
+		if (!messageElements[index]) {
+			return false;
+		}
+
+		const element = messageElements[index];
 		this.edit(element, index);
 		return true;
 	}
 
 	edit(element, index) {
-		index = index != null ? index : this.getEditingIndex(element);
+		index = index || this.getEditingIndex(element);
 
-		const message = this.getMessageById(element.getAttribute('id'));
+		const message = ChatMessage.findOne(element.dataset.id);
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = message && message.u && message.u._id === Meteor.userId();
 
-		if (!hasPermission && (!editAllowed || !editOwn)) { return; }
-		if (element.classList.contains('system')) { return; }
+		if (!hasPermission && (!editAllowed || !editOwn)) {
+			return;
+		}
+
+		if (element.classList.contains('system')) {
+			return;
+		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (blockEditInMinutes && blockEditInMinutes !== 0) {
 			let currentTsDiff;
 			let msgTs;
-			if (message.ts != null) { msgTs = moment(message.ts); }
-			if (msgTs != null) { currentTsDiff = moment().diff(msgTs, 'minutes'); }
+			if (message.ts) {
+				msgTs = moment(message.ts);
+			}
+			if (msgTs) {
+				currentTsDiff = moment().diff(msgTs, 'minutes');
+			}
 			if (currentTsDiff > blockEditInMinutes) {
 				return;
 			}
 		}
 
-		const draft = this.getMessageDraft(message._id);
+		const draft = this.records[message._id];
 		let msg = draft && draft.draft;
 		msg = msg || message.msg;
 
 		const editingNext = this.editing.index < index;
 
-		// const old_input = this.input.value;
-
 		this.clearEditing();
 
-		this.hasValue.set(true);
 		this.editing.element = element;
 		this.editing.index = index;
 		this.editing.id = message._id;
-		// TODO: stop set two elements
 		this.input.parentElement.classList.add('editing');
-		this.input.classList.add('editing');
-
 		element.classList.add('editing');
 
 		if (message.attachments && message.attachments[0].description) {
-			this.input.value = message.attachments[0].description;
+			messageBoxState.set(this.input, message.attachments[0].description);
 		} else {
-			this.input.value = msg;
+			messageBoxState.set(this.input, msg);
 		}
-		$(this.input).trigger('change').trigger('input');
 
-		const cursor_pos = editingNext ? 0 : -1;
-		this.$input.setCursorPosition(cursor_pos);
+		const cursorPosition = editingNext ? 0 : -1;
 		this.input.focus();
-		return this.input;
+		this.$input.setCursorPosition(cursorPosition);
 	}
 
 	clearEditing() {
-		if (this.editing.element) {
-			this.recordInputAsDraft();
-			// TODO: stop set two elements
-			this.input.classList.remove('editing');
-			this.input.parentElement.classList.remove('editing');
-
-			this.editing.element.classList.remove('editing');
-			delete this.editing.id;
-			delete this.editing.element;
-			delete this.editing.index;
-
-			this.input.value = this.editing.saved || '';
-			$(this.input).trigger('change').trigger('input');
-			const cursor_pos = this.editing.savedCursor != null ? this.editing.savedCursor : -1;
-			this.$input.setCursorPosition(cursor_pos);
-
-			return this.hasValue.set(this.input.value !== '');
+		if (!this.editing.element) {
+			this.editing.saved = this.input.value;
+			this.editing.savedCursor = this.input.selectionEnd;
+			return;
 		}
-		this.editing.saved = this.input.value;
-		return this.editing.savedCursor = this.input.selectionEnd;
+
+		this.recordInputAsDraft();
+		this.input.parentElement.classList.remove('editing');
+		this.editing.element.classList.remove('editing');
+		delete this.editing.id;
+		delete this.editing.element;
+		delete this.editing.index;
+
+		messageBoxState.set(this.input, this.editing.saved || '');
+		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : -1;
+		this.$input.setCursorPosition(cursorPosition);
 	}
-	/**
-	* * @param {string} rim room ID
-	* * @param {Element} input DOM element
-	* * @param {function?} done callback
-	*/
-	async send(rid, input, done = function() {}) {
+
+	async send(event, { rid, tmid, value }, done = () => {}) {
+		const threadsEnabled = settings.get('Threads_enabled');
+
+		MsgTyping.stop(rid);
 
 		if (!ChatSubscription.findOne({ rid })) {
 			await call('joinRoom', rid);
 		}
 
-		if (s.trim(input.value) !== '') {
+		messageBoxState.save({ rid, tmid }, this.input);
+
+		let msg = value;
+		if (value.trim()) {
+			const mention = this.$input.data('mention-user') || false;
+			const replies = this.$input.data('reply') || [];
+			if (!mention || !threadsEnabled) {
+				msg = await prependReplies(msg, replies, mention);
+			}
+
+			if (mention && threadsEnabled && replies.length) {
+				tmid = replies[0]._id;
+			}
+		} else {
+			msg = '';
+		}
+
+		if (msg) {
 			readMessage.enable();
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
 
-			let msg = '';
+			const message = await promises.run('onClientBeforeSendMessage', {
+				_id: Random.id(),
+				rid,
+				tmid,
+				msg,
+			});
 
-			msg += await mountReply(msg, input);
-
-			msg += input.value;
-			$(input)
-				.removeData('reply')
-				.trigger('dataChange');
-
-
-			if (msg.slice(0, 2) === '+:') {
-				const reaction = msg.slice(1).trim();
-				if (emoji.list[reaction]) {
-					const lastMessage = ChatMessage.findOne({ rid }, { fields: { ts: 1 }, sort: { ts: -1 } });
-					Meteor.call('setReaction', reaction, lastMessage._id);
-					input.value = '';
-					$(input).trigger('change').trigger('input');
-					return;
-				}
+			try {
+				await this.processMessageSend(message);
+				this.$input.removeData('reply').trigger('dataChange');
+			} catch (error) {
+				console.error(error);
+				handleError(error);
+			} finally {
+				return done();
 			}
-
-			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg });
-
-			// checks for the final msgObject.msg size before actually sending the message
-			if (this.isMessageTooLong(msgObject.msg)) {
-				if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
-					return toastr.error(t('Message_too_long'));
-				}
-				return modal.open({
-					text: t('Message_too_long_as_an_attachment_question'),
-					title: '',
-					type: 'warning',
-					showCancelButton: true,
-					confirmButtonText: t('Yes'),
-					cancelButtonText: t('No'),
-					closeOnConfirm: true,
-				}, () => {
-					const contentType = 'text/plain';
-					const messageBlob = new Blob([msgObject.msg], { type: contentType });
-					const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
-					const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
-					fileUpload([{ file, name: fileName }]);
-					this.clearCurrentDraft();
-					input.value = '';
-					$(input).trigger('change').trigger('input');
-					this.hasValue.set(false);
-					this.stopTyping(rid);
-					this.saveTextMessageBox(rid, '');
-					return done();
-				}, done);
-			}
-
-			this.clearCurrentDraft();
-
-			if (this.editing.id) {
-				this.update(this.editing.id, rid, msgObject.msg);
-				return;
-			}
-
-			KonchatNotification.removeRoomNotification(rid);
-			input.value = '';
-			$(input).trigger('change').trigger('input');
-
-			if (typeof input.updateAutogrow === 'function') {
-				input.updateAutogrow();
-			}
-			this.hasValue.set(false);
-			this.stopTyping(rid);
-
-			if (this.processSlashCommand(msgObject)) {
-				return;
-			}
-
-			Meteor.call('sendMessage', msgObject);
-
-			this.saveTextMessageBox(rid, '');
-
-			return done();
-
-
-			// If edited message was emptied we ask for deletion
 		}
-		if (this.editing.element) {
-			const message = this.getMessageById(this.editing.id);
-			if (message.attachments && message.attachments[0] && message.attachments[0].description) {
-				return this.update(this.editing.id, rid, '', true);
-			}
-			// Restore original message in textbox in case delete is canceled
-			this.resetToDraft(this.editing.id);
 
-			return this.confirmDeleteMsg(message, done);
+		if (this.editing.id) {
+			const message = ChatMessage.findOne(this.editing.id);
+			const isDescription = message.attachments && message.attachments[0] && message.attachments[0].description;
+
+			try {
+				if (isDescription) {
+					await this.processMessageEditing({ _id: this.editing.id, rid, msg: '' });
+					return done();
+				}
+
+				this.resetToDraft(this.editing.id);
+				this.confirmDeleteMsg(message, done);
+			} catch (error) {
+				console.error(error);
+				handleError(error);
+			}
 		}
 	}
 
-	processSlashCommand(msgObject) {
-		// Check if message starts with /command
+	async processMessageSend(message) {
+		if (await this.processSetReaction(message)) {
+			return;
+		}
+
+		this.clearCurrentDraft();
+
+		if (await this.processTooLongMessage(message)) {
+			return;
+		}
+
+		if (await this.processMessageEditing({ ...message, _id: this.editing.id })) {
+			return;
+		}
+
+		KonchatNotification.removeRoomNotification(message.rid);
+
+		if (await this.processSlashCommand(message)) {
+			return;
+		}
+
+		await call('sendMessage', message);
+	}
+
+	async processSetReaction({ rid, tmid, msg }) {
+		if (msg.slice(0, 2) !== '+:') {
+			return false;
+		}
+
+		const reaction = msg.slice(1).trim();
+		if (!emoji.list[reaction]) {
+			return false;
+		}
+
+		const lastMessage = ChatMessage.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
+		await call('setReaction', reaction, lastMessage._id);
+		return true;
+	}
+
+	async processTooLongMessage({ msg, rid, tmid }) {
+		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
+		if (messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') && msg) {
+			return false;
+		}
+
+		if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
+			throw { error: 'Message_too_long' };
+		}
+
+		try {
+			await showModal({
+				text: t('Message_too_long_as_an_attachment_question'),
+				title: '',
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonText: t('Yes'),
+				cancelButtonText: t('No'),
+				closeOnConfirm: true,
+			});
+
+			const contentType = 'text/plain';
+			const messageBlob = new Blob([msg], { type: contentType });
+			const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
+			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
+			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
+		} finally {
+			return true;
+		}
+	}
+
+	async processMessageEditing(message) {
+		if (!message._id) {
+			return false;
+		}
+
+		if (MessageTypes.isSystemMessage(message)) {
+			return false;
+		}
+
+		await call('updateMessage', message);
+		this.clearEditing();
+		return true;
+	}
+
+	async processSlashCommand(msgObject) {
 		if (msgObject.msg[0] === '/') {
 			const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
 			if (match) {
@@ -359,7 +416,9 @@ export const ChatMessages = class ChatMessages {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
-							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject }));
+							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => {
+								typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject });
+							});
 						}
 
 						return true;
@@ -371,7 +430,7 @@ export const ChatMessages = class ChatMessages {
 						_id: Random.id(),
 						rid: msgObject.rid,
 						ts: new Date,
-						msg: TAPi18n.__('No_such_command', { command: match[1] }),
+						msg: TAPi18n.__('No_such_command', { command: s.escapeHTML(match[1]) }),
 						u: {
 							username: settings.get('InternalHubot_Username'),
 						},
@@ -387,13 +446,16 @@ export const ChatMessages = class ChatMessages {
 		return false;
 	}
 
-	confirmDeleteMsg(message, done = function() {}) {
-		if (MessageTypes.isSystemMessage(message)) { return; }
+	confirmDeleteMsg(message, done = () => {}) {
+		if (MessageTypes.isSystemMessage(message)) {
+			return done();
+		}
 
 		const room = message.drid && Rooms.findOne({
 			_id: message.drid,
 			prid: { $exists: true },
 		});
+
 		modal.open({
 			title: t('Are_you_sure'),
 			text: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
@@ -413,266 +475,102 @@ export const ChatMessages = class ChatMessages {
 			});
 
 			if (this.editing.id === message._id) {
-				this.clearEditing(message);
+				this.clearEditing();
 			}
+
 			this.deleteMsg(message);
 
 			this.$input.focus();
-			return done();
+			done();
 		});
 	}
 
-	deleteMsg(message) {
-		const forceDelete = hasAtLeastOnePermission('force-delete-message', message.rid);
+	async deleteMsg({ _id, rid, ts }) {
+		const forceDelete = hasAtLeastOnePermission('force-delete-message', rid);
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes && forceDelete === false) {
 			let msgTs;
-			if (message.ts != null) { msgTs = moment(message.ts); }
+			if (ts) {
+				msgTs = moment(ts);
+			}
 			let currentTsDiff;
-			if (msgTs != null) { currentTsDiff = moment().diff(msgTs, 'minutes'); }
+			if (msgTs) {
+				currentTsDiff = moment().diff(msgTs, 'minutes');
+			}
 			if (currentTsDiff > blockDeleteInMinutes) {
 				toastr.error(t('Message_deleting_blocked'));
 				return;
 			}
 		}
 
-		return Meteor.call('deleteMessage', { _id: message._id }, function(error) {
-			if (error) {
-				return handleError(error);
+		try {
+			await call('deleteMessage', { _id });
+		} catch (error) {
+			console.error(error);
+			handleError(error);
+		}
+	}
+
+	keydown(event) {
+		const { currentTarget: input, which: keyCode } = event;
+
+		if (keyCode === keyCodes.ESCAPE && this.editing.index) {
+			if (!this.resetToDraft(this.editing.id)) {
+				this.clearCurrentDraft();
+				this.clearEditing();
 			}
-		});
-	}
-
-	pinMsg(message) {
-		message.pinned = true;
-		return Meteor.call('pinMessage', message, function(error) {
-			if (error) {
-				return handleError(error);
-			}
-		});
-	}
-
-	unpinMsg(message) {
-		message.pinned = false;
-		return Meteor.call('unpinMessage', message, function(error) {
-			if (error) {
-				return handleError(error);
-			}
-		});
-	}
-
-	update(id, rid, msg, isDescription) {
-		if ((s.trim(msg) !== '') || (isDescription === true)) {
-			Meteor.call('updateMessage', { _id: id, msg, rid });
-			this.clearEditing();
-			return this.stopTyping(rid);
-		}
-	}
-
-	startTyping(rid, input) {
-		if (s.trim(input.value) === '') {
-			return this.stopTyping(rid);
-		}
-		return MsgTyping.start(rid);
-	}
-
-	stopTyping(rid) {
-		return MsgTyping.stop(rid);
-	}
-
-	bindEvents() {
-		if (this.wrapper && this.wrapper.length) {
-			$('.input-message').autogrow();
-		}
-	}
-
-	tryCompletion(input) {
-		const [value] = input.value.match(/[^\s]+$/) || [];
-		if (!value) { return; }
-		const re = new RegExp(value, 'i');
-		const user = Meteor.users.findOne({ username: re });
-		if (user) {
-			return input.value = input.value.replace(value, `@${ user.username } `);
-		}
-	}
-
-	insertNewLine(input) {
-		if (document.selection) {
-			input.focus();
-			const sel = document.selection.createRange();
-			sel.text = '\n';
-		} else if (input.selectionStart || input.selectionStart === 0) {
-			const newPosition = input.selectionStart + 1;
-			const before = input.value.substring(0, input.selectionStart);
-			const after = input.value.substring(input.selectionEnd, input.value.length);
-			input.value = `${ before }\n${ after }`;
-			input.selectionStart = input.selectionEnd = newPosition;
-		} else {
-			input.value += '\n';
-		}
-		input.blur();
-		input.focus();
-		typeof input.updateAutogrow === 'function' && input.updateAutogrow();
-	}
-
-	restoreText(rid) {
-		const text = localStorage.getItem(`messagebox_${ rid }`);
-		if (typeof text === 'string' && this.input) {
-			this.input.value = text;
-			this.$input.trigger('input');
-		}
-		const msgId = FlowRouter.getQueryParam('reply');
-		if (!msgId) {
-			return;
-		}
-		const message = Messages.findOne(msgId);
-		if (message) {
-			return this.$input.data('reply', message).trigger('dataChange');
-		}
-		Meteor.call('getSingleMessage', msgId, (err, msg) => !err && this.$input.data('reply', msg).trigger('dataChange'));
-	}
-
-	keyup(rid, event) {
-		let i;
-		const input = event.currentTarget;
-		const k = event.which;
-		const keyCodes = [
-			13, // Enter
-			20, // Caps lock
-			16, // Shift
-			9, // Tab
-			27, // Escape Key
-			17, // Control Key
-			91, // Windows Command Key
-			19, // Pause Break
-			18, // Alt Key
-			93, // Right Click Point Key
-			45, // Insert Key
-			34, // Page Down
-			35, // Page Up
-			144, // Num Lock
-			145, // Scroll Lock
-		];
-		for (i = 35; i <= 40; i++) { keyCodes.push(i); } // Home, End, Arrow Keys
-		for (i = 112; i <= 123; i++) { keyCodes.push(i); } // F1 - F12
-
-		if (!Array.from(keyCodes).includes(k)) {
-			this.startTyping(rid, input);
-		}
-
-		this.saveTextMessageBox(rid, input.value);
-
-		return this.hasValue.set(input.value !== '');
-	}
-
-	keydown(rid, event) {
-		const { currentTarget: input, which: k } = event;
-
-		if (k === 13 || k === 10) { // New line or carriage return
-			const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' ||
-				(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
-			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
-			const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
 
 			event.preventDefault();
 			event.stopPropagation();
-			if (isSending) {
-				this.send(rid, input);
-			} else {
-				this.insertNewLine(input);
-			}
-
 			return;
 		}
 
-		if (k === 9) { // Tab
-			event.preventDefault();
-			event.stopPropagation();
-			this.tryCompletion(input);
-		}
-
-		if (k === 27) { // Escape
-			if (this.editing.index != null) {
-				// const record = this.getMessageDraft(this.editing.id);
-
-				// If resetting did nothing then edited message is same as original
-				if (!this.resetToDraft(this.editing.id)) {
-					this.clearCurrentDraft();
-					this.clearEditing();
-				}
-
-				event.preventDefault();
-				event.stopPropagation();
+		if (keyCode === keyCodes.ARROW_UP || keyCode === keyCodes.ARROW_DOWN) {
+			if (event.shiftKey) {
 				return;
 			}
-		} else if (k === 38 || k === 40) { // Arrow Up or down
-			if (event.shiftKey) { return true; }
 
-			const cursor_pos = input.selectionEnd;
+			const cursorPosition = input.selectionEnd;
 
-			if (k === 38) { // Arrow Up
-				if (cursor_pos === 0) {
+			if (keyCode === keyCodes.ARROW_UP) {
+				if (cursorPosition === 0) {
 					this.toPrevMessage();
 				} else if (!event.altKey) {
-					return true;
+					return;
 				}
 
-				if (event.altKey) { this.$input.setCursorPosition(0); }
-
-			} else { // Arrow Down
-				if (cursor_pos === input.value.length) {
+				if (event.altKey) {
+					this.$input.setCursorPosition(0);
+				}
+			} else {
+				if (cursorPosition === input.value.length) {
 					this.toNextMessage();
 				} else if (!event.altKey) {
-					return true;
+					return;
 				}
 
-				if (event.altKey) { this.$input.setCursorPosition(-1); }
+				if (event.altKey) {
+					this.$input.setCursorPosition(-1);
+				}
 			}
 
-			return false;
-
-			// ctrl (command) + shift + k -> clear room messages
-		}
-		// TODO
-		// else if (k === 75 && navigator && navigator.platform && event.shiftKey && (navigator.platform.indexOf('Mac') !== -1 ? event.metaKey : event.ctrlKey)) {
-		// 	return RoomHistoryManager.clear(rid);
-		// }
-	}
-
-	valueChanged(/* rid, event*/) {
-		if (this.input.value.length === 1) {
-			return this.determineInputDirection();
+			event.preventDefault();
+			event.stopPropagation();
+			return;
 		}
 	}
 
-	determineInputDirection() {
-		return this.input.dir = this.isMessageRtl(this.input.value) ? 'rtl' : 'ltr';
-	}
+	keyup(event, { rid, tmid }) {
+		const { currentTarget: input, which: keyCode } = event;
 
-	// http://stackoverflow.com/a/14824756
-	isMessageRtl(message) {
-		const ltrChars = 'A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u2C00-\uFB1C\uFDFE-\uFE6F\uFEFD-\uFFFF';
-		const rtlChars = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC';
-		const rtlDirCheck = new RegExp(`^[^${ ltrChars }]*[${ rtlChars }]`);
-
-		return rtlDirCheck.test(message);
-	}
-
-	isMessageTooLong(message) {
-		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message);
-		return messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
-	}
-
-	isEmpty() {
-		return !this.hasValue.get();
-	}
-};
-
-
-callbacks.add('afterLogoutCleanUp', () => {
-	Object.keys(localStorage).forEach((item) => {
-		if (item.indexOf('messagebox_') === 0) {
-			localStorage.removeItem(item);
+		if (!Object.values(keyCodes).includes(keyCode)) {
+			if (input.value.trim()) {
+				MsgTyping.start(rid);
+			} else {
+				MsgTyping.stop(rid);
+			}
 		}
-	});
-}, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
+
+		messageBoxState.save({ rid, tmid }, input);
+	}
+}

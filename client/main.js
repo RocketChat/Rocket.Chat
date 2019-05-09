@@ -1,3 +1,5 @@
+import 'url-polyfill';
+
 import './importsCss';
 import './importPackages';
 import '../imports/startup/client';
@@ -19,7 +21,7 @@ import './notifications/updateAvatar';
 import './notifications/updateUserState';
 import './notifications/UsersNameChanged';
 import './routes/adminRouter';
-import './routes/pageNotFound.html';
+import './routes/pageNotFound';
 import './routes/roomRoute';
 import './routes/router';
 import './startup/emailVerification';

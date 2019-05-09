@@ -1,19 +1,21 @@
+import Clipboard from 'clipboard';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { t, getUserPreference } from '../../utils';
+import { getConfig } from '../../ui-utils/client/config';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent } from '../../ui-utils';
+import { chatMessages } from '../../ui';
+import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
 import { settings } from '../../settings';
-import { CachedChatSubscription, Roles, ChatSubscription } from '../../models';
+import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../tooltip';
-import Clipboard from 'clipboard';
-import s from 'underscore.string';
 
 settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
 
@@ -78,8 +80,8 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('.rc-message-box__textarea');
-		if (inputMessage.length === 0) {
+		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
+		if (!inputMessage) {
 			return;
 		}
 		inputMessage.focus();
@@ -130,10 +132,11 @@ Template.main.onCreated(function() {
 	tooltip.init();
 });
 
+
+const skipActiveUsersToBeReady = [getConfig('experimental'), getConfig('skipActiveUsersToBeReady')].includes('true');
 Template.main.helpers({
 	removeSidenav() {
-		const { modal } = this;
-		return (modal || typeof modal === 'function' ? modal() : modal); // || RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
 	},
 	siteName() {
 		return settings.get('Site_Name');
@@ -156,18 +159,26 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const routerReady = FlowRouter.subsReady('userData', 'activeUsers');
+		const subscriptions = ['userData'];
+		if (!skipActiveUsersToBeReady) {
+			subscriptions.push('activeUsers');
+		}
+		const routerReady = FlowRouter.subsReady.apply(FlowRouter, subscriptions);
+
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
-		const ready = (Meteor.userId() == null) || (routerReady && subscriptionsReady && settingsReady);
+
+		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+
 		CachedCollectionManager.syncEnabled = ready;
-		Meteor.defer(() => {
-			mainReady.set(ready);
-		});
+		mainReady.set(ready);
+
 		return ready;
 	},
 	hasUsername() {
-		return (Meteor.userId() != null && Meteor.user().username != null) || (Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead') === true);
+		const uid = Meteor.userId();
+		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
+		return (user && user.username) || settings.get('Accounts_AllowAnonymousRead');
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
@@ -217,13 +228,7 @@ Template.main.events({
 
 Template.main.onRendered(function() {
 	$('#initial-page-loading').remove();
-	window.addEventListener('focus', function() {
-		return Meteor.setTimeout(function() {
-			if (!$(':focus').is('INPUT,TEXTAREA')) {
-				return $('.input-message').focus();
-			}
-		}, 100);
-	});
+
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();
 		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');

@@ -2,11 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from '../../../utils';
+import { handleError } from '../../../utils/client/lib/handleError';
+import { t } from '../../../utils/lib/tapi18n';
+import { Tracker } from 'meteor/tracker';
 import { Roles } from '../../../models';
 import { hasAllPermission } from '../hasPermission';
 import { modal } from '../../../ui-utils/client/lib/modal';
 import toastr from 'toastr';
+import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 
 Template.permissionsRole.helpers({
 	role() {
@@ -244,5 +247,12 @@ Template.permissionsRole.onCreated(function() {
 				username: 1,
 			},
 		}));
+	});
+});
+
+Template.permissionsRole.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
 	});
 });

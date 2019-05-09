@@ -12,27 +12,33 @@ import { templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import { getActions } from './userActions';
+import './userInfo.html';
 
-const more = function() {
-	return Template.instance().actions.get()
-		.map((action) => (typeof action === 'function' ? action.call(this) : action))
-		.filter((action) => action && (!action.condition || action.condition.call(this)))
-		.slice(3);
+const shownActionsCount = 2;
+
+const moreActions = function() {
+	return (
+		Template.instance().actions.get()
+			.map((action) => (typeof action === 'function' ? action.call(this) : action))
+			.filter((action) => action && (!action.condition || action.condition.call(this)))
+			.slice(shownActionsCount)
+	);
 };
-
 
 Template.userInfo.helpers({
 	hideHeader() {
 		return ['Template.adminUserInfo', 'adminUserInfo'].includes(Template.parentData(2).viewName);
 	},
-	moreActions: more,
+
+	moreActions,
 
 	actions() {
 		return Template.instance().actions.get()
 			.map((action) => (typeof action === 'function' ? action.call(this) : action))
 			.filter((action) => action && (!action.condition || action.condition.call(this)))
-			.slice(0, 2);
+			.slice(0, shownActionsCount);
 	},
+
 	customField() {
 		const sCustomFieldsToShow = settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
 		const customFields = [];
@@ -183,7 +189,7 @@ Template.userInfo.helpers({
 
 Template.userInfo.events({
 	'click .js-more'(e, instance) {
-		const actions = more.call(this);
+		const actions = moreActions.call(this);
 		const groups = [];
 		const columns = [];
 		const admin = actions.filter((actions) => actions.group === 'admin');
@@ -232,7 +238,6 @@ Template.userInfo.onCreated(function() {
 	this.user = new ReactiveVar;
 	this.actions = new ReactiveVar;
 
-
 	this.autorun(() => {
 		const user = this.user.get();
 		if (!user) {
@@ -250,8 +255,7 @@ Template.userInfo.onCreated(function() {
 	this.loadingUserInfo = new ReactiveVar(true);
 	this.loadedUsername = new ReactiveVar;
 	this.tabBar = Template.currentData().tabBar;
-
-	Meteor.setInterval(() => this.now.set(moment()), 30000);
+	this.nowInterval = setInterval(() => this.now.set(moment()), 30000);
 
 	this.autorun(() => {
 		const username = this.loadedUsername.get();
@@ -291,4 +295,8 @@ Template.userInfo.onCreated(function() {
 
 		return this.user.set(user);
 	});
+});
+
+Template.userInfo.onDestroyed(function() {
+	clearInterval(this.nowInterval);
 });

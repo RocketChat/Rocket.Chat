@@ -32,8 +32,8 @@ export const call = (...args) => new Promise(function(resolve, reject) {
 
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
-const waitForStreamStatus = async(id, status) => {
-	const streamActive = new Promise(async(resolve) => {
+const waitForStreamStatus = async (id, status) => {
+	const streamActive = new Promise(async (resolve) => {
 		while (true) { // eslint-disable-line no-constant-condition
 			const currentStatus = await call('livestreamStreamStatus', { streamId: id });
 			if (currentStatus === status) {
@@ -44,8 +44,8 @@ const waitForStreamStatus = async(id, status) => {
 	});
 	await streamActive;
 };
-const waitForBroadcastStatus = async(id, status) => {
-	const broadcastActive = new Promise(async(resolve) => {
+const waitForBroadcastStatus = async (id, status) => {
+	const broadcastActive = new Promise(async (resolve) => {
 		while (true) { // eslint-disable-line no-constant-condition
 			const currentStatus = await call('getBroadcastStatus', { broadcastId: id });
 			if (currentStatus === status) {

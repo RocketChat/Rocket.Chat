@@ -1,3 +1,5 @@
+/* eslint import/no-unresolved: 0 */
+
 const async = require('async');
 const fs = require('fs');
 const _ = require('underscore');

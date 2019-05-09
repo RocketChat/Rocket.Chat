@@ -5,14 +5,25 @@ import { FederationKeys } from '../../models';
 import { getWorkspaceAccessToken } from '../../cloud/server';
 
 import './federation-settings';
-import './methods';
 
 import { logger } from './logger';
-import peerClient from './peerClient';
-import peerServer from './peerServer';
-import peerDNS from './peerDNS';
-import peerHTTP from './peerHTTP';
+import { PeerClient } from './PeerClient';
+import { PeerDNS } from './PeerDNS';
+import { PeerHTTP } from './PeerHTTP';
+import { PeerPinger } from './PeerPinger';
+import { PeerServer } from './PeerServer';
 import * as SettingsUpdater from './settingsUpdater';
+
+import './methods/dashboard';
+import { addUser } from './methods/addUser';
+import { searchUsers } from './methods/searchUsers';
+import { ping } from './methods/ping';
+
+const peerClient = new PeerClient();
+const peerDNS = new PeerDNS();
+const peerHTTP = new PeerHTTP();
+const peerPinger = new PeerPinger();
+const peerServer = new PeerServer();
 
 export const Federation = {
 	enabled: false,
@@ -21,6 +32,19 @@ export const Federation = {
 	usingHub: null,
 	uniqueId: null,
 	localIdentifier: null,
+
+	peerClient,
+	peerDNS,
+	peerHTTP,
+	peerPinger,
+	peerServer,
+};
+
+// Add Federation methods
+Federation.methods = {
+	addUser,
+	searchUsers,
+	ping,
 };
 
 // Generate keys
@@ -42,6 +66,9 @@ peerClient.start();
 
 // Start the server, setting up all the endpoints
 peerServer.start();
+
+// Start the pinger, to check the status of all peers
+peerPinger.start();
 
 const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	const _enabled = settings.get('FEDERATION_Enabled');
