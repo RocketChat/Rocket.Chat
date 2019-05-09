@@ -1,7 +1,21 @@
 <template name="reportInfo">
-	<div class="content">
-		{{description}}
-		<hr />
-		{{message.msg}}
-	</div>
+	<section class="contextual-bar__content">
+		<h1>{{_ "Report_Info"}}</h1>
+		<div class="report-description">
+				{{description}}
+		</div>
+		{{_ "Reported_By"}} {{userId}} on {{ts}}
+		<div class="rc-user-info-wrapper">
+			<div class="rc-user-info">
+				<div class="rc-user-info__avatar">
+					{{> avatar username=message.u.username}}
+				</div>
+				{{#if message.u.username}}<p class="rc-user-info__username">@{{message.u.username}}</p>{{/if}}
+
+				<div class="message">
+					{{message.msg}}
+				</div>
+			</div>
+		</div>
+	</section>
 </template>
