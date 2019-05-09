@@ -76,6 +76,7 @@
 		"coverage": "nyc -r html mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"testunit": "mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"translation-diff": "node .scripts/translationDiff.js",
+		"translation-fix-order": "node .scripts/fix-i18n.js",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor npm run set-version --silent"
@@ -101,6 +102,7 @@
 		"chai-datetime": "^1.5.0",
 		"chimp": "^0.51.1",
 		"eslint": "^5.9.0",
+		"fast-glob": "^2.2.6",
 		"husky": "^1.2.0",
 		"mocha": "^5.2.0",
 		"mock-require": "^3.0.2",
