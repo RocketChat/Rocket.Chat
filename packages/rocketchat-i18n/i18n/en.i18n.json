@@ -2540,6 +2540,8 @@
   "SAML_Custom_Debug": "Enable Debug",
   "SAML_Custom_Entry_point": "Custom Entry Point",
   "SAML_Custom_Generate_Username": "Generate Username",
+  "SAML_Custom_name_overwrite": "Overwrite user fullname (use idp attribute)",
+  "SAML_Custom_mail_overwrite": "Overwrite user mail (use idp attribute)",
   "SAML_Custom_IDP_SLO_Redirect_URL": "IDP SLO Redirect URL",
   "SAML_Custom_Issuer": "Custom Issuer",
   "SAML_Custom_Logout_Behaviour": "Logout Behaviour",
