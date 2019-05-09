@@ -91,22 +91,22 @@ Migrations.add({
 			});
 		});
 
-		// Use FUTURE to process itens in batchs and wait the final one
+		// Use FUTURE to process items in batchs and wait the final one
 		const fut = new Future();
 
 		const processBatch = () => {
-			const itens = subscriptions.splice(0, 1000);
+			const items = subscriptions.splice(0, 1000);
 
 			console.log(
 				'Migrating',
-				itens.length,
+				items.length,
 				'of',
 				subscriptions.length,
 				'subscriptions'
 			);
 
-			if (itens.length) {
-				Promise.all(itens.map((s) => updateSubscription(s))).then(() => {
+			if (items.length) {
+				Promise.all(items.map((s) => updateSubscription(s))).then(() => {
 					processBatch();
 				});
 			} else {

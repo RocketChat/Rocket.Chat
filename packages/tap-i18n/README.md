@@ -205,7 +205,7 @@ client language get changed (by TAPi18n.setLanguage)
 
 Returns an object with all the supported languages and their names.
 
-A language is considred supported if it is in the supported_languages array of
+A language is considered supported if it is in the supported_languages array of
 the project-tap.i18n json. If supported_languages is null or not defined in
 project-tap.i18n we consider all the languages we find *.i18n.json/yml files to as
 supported.
@@ -588,7 +588,7 @@ Note that `{_ "foo.bar"}` will be looked under `{foo: {bar: "Hello World"}}`, an
 
 To configure tap-i18n add to it a file named **project-tap.i18n**.
 
-This JSON can have the following properties. All of them are optional. The values bellow
+This JSON can have the following properties. All of them are optional. The values below
 are the defaults.
 
     project-root/project-tap.i18n
@@ -615,7 +615,7 @@ project, will be available.
 
 **cdn\_path:** An alternative path from which you want tap-i18n resources to be loaded. Example: "http://cdn.example.com/tap-i18n".
 
-**preloaded_langs:** An array of languages tags. If isn't empty, a single synchronous ajax requrest will load the translation strings for all the languages tags listed. If you want to load all the supported languages set preloaded_langs to `["*"]` (`"*"` must be the first item of the array, the rest of the array will be ignored. `["zh-*"]` won't work).
+**preloaded_langs:** An array of languages tags. If isn't empty, a single synchronous ajax request will load the translation strings for all the languages tags listed. If you want to load all the supported languages set preloaded_langs to `["*"]` (`"*"` must be the first item of the array, the rest of the array will be ignored. `["zh-*"]` won't work).
 
 **Notes:**
 
@@ -759,7 +759,7 @@ The following functions are added to your package namespace by tap-i18n:
 
 **\_\_("key", options, lang_tag) (Anywhere)**
 
-Read documenation for `TAPi18n.__` above.
+Read documentation for `TAPi18n.__` above.
 
 **On the server**, TAPi18n.__ is not a reactive resource. You have to specify
 the language tag you want to translate the key to.

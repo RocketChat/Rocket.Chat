@@ -15,7 +15,7 @@ echo -e "Tag: $CIRCLE_TAG\r\nBranch: $CIRCLE_BRANCH\r\nBuild: $CIRCLE_BUILD_NUM\
 # Clone launchpad repo for the channel down.
 git clone -b $SNAP_CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
 
-# Rarely will change, but just incase we copy it all
+# Rarely will change, but just in case we copy it all
 cp -r resources buildinfo snap launchpad/
 sed s/#{RC_VERSION}/$RC_VERSION/ snap/snapcraft.yaml > launchpad/snap/snapcraft.yaml
 sed s/#{RC_VERSION}/$RC_VERSION/ resources/prepareRocketChat > launchpad/resources/prepareRocketChat

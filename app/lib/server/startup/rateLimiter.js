@@ -29,7 +29,7 @@ DDPRateLimiter._increment = function(input) {
 };
 
 // Need to override the meteor's code duo to a problem with the callback reply
-// being shared among all matchs
+// being shared among all matches
 RateLimiter.prototype.check = function(input) {
 	// ==== BEGIN OVERRIDE ====
 	const session = Meteor.server.sessions[input.connectionId];

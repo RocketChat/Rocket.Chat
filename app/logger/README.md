@@ -30,7 +30,7 @@ logger.connection.info('connecting');
 // LDAP ➔ Connection.info connecting
 ```
 
-Sections have all avaliable methods methods, the default methods are:
+Sections have all available methods methods, the default methods are:
 ```javascript
 debug:
   name: 'debug'

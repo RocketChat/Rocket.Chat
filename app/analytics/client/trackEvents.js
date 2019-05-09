@@ -34,7 +34,7 @@ if (!window._paq || window.ga) {
 		trackEvent('Navigation', 'Login Page State Change', state);
 	}, callbacks.priority.MEDIUM, 'analytics-login-state-change');
 
-	// Messsages
+	// Messages
 	callbacks.add('afterSaveMessage', (message) => {
 		if ((window._paq || window.ga) && settings.get('Analytics_features_messages')) {
 			const room = ChatRoom.findOne({ _id: message.rid });

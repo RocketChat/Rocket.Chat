@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { logger } from './logger';
 
-// Handler extracts data from JSON and tokenised reponse.
+// Handler extracts data from JSON and tokenised response.
 // Reflects OAuth token service, with some slight modifications for Blockstack.
 //
 // Uses 'iss' (issuer) as unique key (decentralised ID) for user.

@@ -377,7 +377,7 @@ TAPi18next = {};
             }
     
             // Specially prepare GET requests: Setup the query string, handle caching and make a JSONP call
-            // if neccessary.
+            // if necessary.
             if(method === 'GET') {
                 // Setup the query string.
                 var queryString = [];
@@ -391,7 +391,7 @@ TAPi18next = {};
                     queryString.push('_=' + (new Date()).getTime());
                 }
     
-                // If neccessary prepare the query string for a JSONP call.
+                // If necessary prepare the query string for a JSONP call.
                 if(options.jsonp) {
                     queryString.push('callback=' + options.jsonp);
                     queryString.push('jsonp=' + options.jsonp);
@@ -407,7 +407,7 @@ TAPi18next = {};
                     }
                 }
     
-                // Make a JSONP call if neccessary.
+                // Make a JSONP call if necessary.
                 if(options.jsonp) {
                     var head = document.getElementsByTagName('head')[0];
                     var script = document.createElement('script');
@@ -514,9 +514,9 @@ TAPi18next = {};
         };
     
     
-        var methode = options.type ? options.type.toLowerCase() : 'get';
+        var method = options.type ? options.type.toLowerCase() : 'get';
     
-        http[methode](options.url, options, function (status, data) {
+        http[method](options.url, options, function (status, data) {
             if (status === 200) {
                 options.success(data.json(), status, null);
             } else {
@@ -563,7 +563,7 @@ TAPi18next = {};
     
     
     // move dependent functions to a container so that
-    // they can be overriden easier in no jquery environment (node.js)
+    // they can be overridden easier in no jquery environment (node.js)
     var f = {
         extend: $ ? $.extend : _extend,
         each: $ ? $.each : _each,
@@ -678,10 +678,10 @@ TAPi18next = {};
         var lngsToLoad = f.toLanguages(o.lng);
         if (typeof o.preload === 'string') o.preload = [o.preload];
         for (var i = 0, l = o.preload.length; i < l; i++) {
-            var pres = f.toLanguages(o.preload[i]);
-            for (var y = 0, len = pres.length; y < len; y++) {
-                if (lngsToLoad.indexOf(pres[y]) < 0) {
-                    lngsToLoad.push(pres[y]);
+            var press = f.toLanguages(o.preload[i]);
+            for (var y = 0, len = press.length; y < len; y++) {
+                if (lngsToLoad.indexOf(press[y]) < 0) {
+                    lngsToLoad.push(press[y]);
                 }
             }
         }
@@ -751,10 +751,10 @@ TAPi18next = {};
         var lngsToLoad = f.toLanguages(o.lng);
         if (typeof o.preload === 'string') o.preload = [o.preload];
         for (var i = 0, l = o.preload.length; i < l; i++) {
-            var pres = f.toLanguages(o.preload[i]);
-            for (var y = 0, len = pres.length; y < len; y++) {
-                if (lngsToLoad.indexOf(pres[y]) < 0) {
-                    lngsToLoad.push(pres[y]);
+            var press = f.toLanguages(o.preload[i]);
+            for (var y = 0, len = press.length; y < len; y++) {
+                if (lngsToLoad.indexOf(press[y]) < 0) {
+                    lngsToLoad.push(press[y]);
                 }
             }
         }
@@ -791,7 +791,7 @@ TAPi18next = {};
                         resStore[lngValue] = resStore[lngValue] || {};
                         resStore[lngValue][nsValue] = store[lngValue][nsValue];
     
-                        todo--; // wait for all done befor callback
+                        todo--; // wait for all done before callback
                         if (todo === 0 && cb) {
                             if (o.useLocalStorage) TAPi18next.sync._storeLocal(resStore);
                             cb();
@@ -1332,7 +1332,7 @@ TAPi18next = {};
                         }
                     }
     
-                    todo--; // wait for all done befor callback
+                    todo--; // wait for all done before callback
                     if (todo === 0) cb(null, store);
                 });
             }
@@ -1369,7 +1369,7 @@ TAPi18next = {};
                             store[lngValue] = store[lngValue] || {};
                             store[lngValue][nsValue] = data;
     
-                            todo--; // wait for all done befor callback
+                            todo--; // wait for all done before callback
                             if (todo === 0) cb(errors, store);
                         };
                         

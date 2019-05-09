@@ -70,7 +70,7 @@ Template.cloud.onCreated(function() {
 			}
 
 			if (!success) {
-				toastr.error('An error occured connecting');
+				toastr.error('An error occurred connecting');
 				instance.loadRegStatus();
 				return;
 			}
@@ -90,7 +90,7 @@ Template.cloud.onCreated(function() {
 			}
 
 			if (!success) {
-				toastr.error('An error occured disconnecting');
+				toastr.error('An error occurred disconnecting');
 				instance.loadRegStatus();
 				return;
 			}
@@ -110,7 +110,7 @@ Template.cloud.onCreated(function() {
 			}
 
 			if (!success) {
-				toastr.error('An error occured syncing');
+				toastr.error('An error occurred syncing');
 				instance.loadRegStatus();
 				return;
 			}

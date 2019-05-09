@@ -150,7 +150,7 @@ Template.livechatAppearance.helpers({
 					},
 					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
-					body: 'I\'m looking for informations about your product.',
+					body: 'I\'m looking for information about your product.',
 					sequential: null,
 				},
 				{

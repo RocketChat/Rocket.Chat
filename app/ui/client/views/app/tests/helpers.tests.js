@@ -6,7 +6,7 @@ import { timeAgo } from '../helpers';
 
 describe('Helpers', () => {
 	describe('timeAgo', () => {
-		it('returns formated time when the passed value is on the same day', () => {
+		it('returns formatted time when the passed value is on the same day', () => {
 			const now = new Date('Mon Aug 06 2018 22:00:00');
 
 			const t1 = new Date('Mon Aug 06 2018 01:00:00');
@@ -34,7 +34,7 @@ describe('Helpers', () => {
 			assert.equal(timeAgo(t3, func, now), 'yesterday');
 		});
 
-		it('returns formated date when the passed value two or more days before', () => {
+		it('returns formatted date when the passed value two or more days before', () => {
 			const now = new Date('Wed Jun 20 2018 00:00:01');
 
 			const t1 = new Date('Mon Jun 18 2018 10:00:00');

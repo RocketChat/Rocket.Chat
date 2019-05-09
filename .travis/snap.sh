@@ -36,7 +36,7 @@ echo "Tag: $TRAVIS_TAG \r\nBranch: $TRAVIS_BRANCH\r\nBuild: $TRAVIS_BUILD_NUMBER
 # Clone launchpad repo for the channel down.
 GIT_SSH_COMMAND="ssh -i launchpadkey" git clone -b $CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
 
-# Rarely will change, but just incase we copy it all
+# Rarely will change, but just in case we copy it all
 cp -r resources buildinfo launchpad/
 sed s/#{RC_VERSION}/$RC_VERSION/ snapcraft.yaml > launchpad/snapcraft.yaml
 

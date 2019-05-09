@@ -27,8 +27,8 @@ export function checkIfUserIsValid(username, email, password) {
 		try {
 			mainContent.mainContent.waitForExist(5000);
 		} catch (e) {
-			// if the user dont exist.
-			console.log('	User dont exist. Creating user...');
+			// if the user don't exist.
+			console.log('	User don't exist. Creating user...');
 			loginPage.gotToRegister();
 			loginPage.registerNewUser({ username, email, password });
 			browser.waitForExist('form#login-card input#username', 5000);
@@ -60,8 +60,8 @@ export function checkIfUserIsAdmin(username, email, password) {
 		try {
 			mainContent.mainContent.waitForExist(5000);
 		} catch (e) {
-			// if the user dont exist.
-			console.log('	Admin User dont exist. Creating user...');
+			// if the user don't exist.
+			console.log('	Admin User don't exist. Creating user...');
 			loginPage.gotToRegister();
 			loginPage.registerNewUser({ username, email, password });
 			browser.waitForExist('form#login-card input#username', 5000);

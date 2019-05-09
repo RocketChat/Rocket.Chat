@@ -33,7 +33,7 @@ import moment from 'moment';
 	Note: Migrations will lock ensuring only 1 app can be migrating at once. If
 	a migration crashes, the control record in the migrations collection will
 	remain locked and at the version it was at previously, however the db could
-	be in an inconsistant state.
+	be in an inconsistent state.
 */
 
 // since we'll be at version 0 by default, we should have a migration set for it.

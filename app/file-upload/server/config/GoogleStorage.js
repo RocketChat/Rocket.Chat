@@ -48,21 +48,21 @@ const GoogleCloudStorageUploads = new FileUploadClass({
 	name: 'GoogleCloudStorage:Uploads',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const GoogleCloudStorageAvatars = new FileUploadClass({
 	name: 'GoogleCloudStorage:Avatars',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const GoogleCloudStorageUserDataFiles = new FileUploadClass({
 	name: 'GoogleCloudStorage:UserDataFiles',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const configure = _.debounce(function() {

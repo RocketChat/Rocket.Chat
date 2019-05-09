@@ -506,7 +506,7 @@
 		}
 	}
 
-	/* Override toastr messages to show on hte left side */
+	/* Override toastr messages to show on the left side */
 	& .toast-top-right {
 		right: auto;
 		left: 12px;

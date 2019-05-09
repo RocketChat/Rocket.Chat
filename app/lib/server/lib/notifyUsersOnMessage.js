@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 
 /**
- * Chechs if a messages contains a user highlight
+ * Checks if a messages contains a user highlight
  *
  * @param {string} message
  * @param {array|undefined} highlights
@@ -77,7 +77,7 @@ export function updateUsersSubscriptions(message, room, users) {
 		}
 	}
 
-	// Update all other subscriptions to alert their owners but witout incrementing
+	// Update all other subscriptions to alert their owners but without incrementing
 	// the unread counter, as it is only for mentions and direct messages
 	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
 	Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);

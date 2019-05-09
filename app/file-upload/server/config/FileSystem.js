@@ -7,7 +7,7 @@ import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
-	// store setted bellow
+	// store set below
 
 	get(file, req, res) {
 		const filePath = this.store.getFilePath(file._id, file);
@@ -50,7 +50,7 @@ const FileSystemUploads = new FileUploadClass({
 
 const FileSystemAvatars = new FileUploadClass({
 	name: 'FileSystem:Avatars',
-	// store setted bellow
+	// store set below
 
 	get(file, req, res) {
 		const filePath = this.store.getFilePath(file._id, file);

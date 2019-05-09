@@ -95,7 +95,7 @@ describe('[Administration]', () => {
 					admin.roomsChannelsCheckbox.isVisible().should.be.true;
 				});
 
-				it('it should show the direct messsage checkbox', () => {
+				it('it should show the direct message checkbox', () => {
 					admin.roomsDirectCheckbox.isVisible().should.be.true;
 				});
 
@@ -209,7 +209,7 @@ describe('[Administration]', () => {
 
 
 			it('it should show rocket.cat', () => {
-			// it cant find the user if there is too many users
+			// it can't find the user if there is too many users
 				admin.usersRocketCat.isVisible().should.be.true;
 			});
 
@@ -681,7 +681,7 @@ describe('[Administration]', () => {
 					admin.generalStreamCastAdress.scroll();
 				});
 
-				it('it should show the stream cast adress field', () => {
+				it('it should show the stream cast address field', () => {
 					admin.generalStreamCastAdress.isVisible().should.be.true;
 				});
 			});

@@ -12,7 +12,7 @@ In the Rocket chat you have to do the following:
   Bear in mind that the Client ID should not be guessable,but is seen in the URL when doing the login.
 - fill in the 'Client Secret'.
   This should be treated as a Secret Key (like the Secret Key of a TLS certificate). it __must not__ be guesable or 
-  derivable, and is best a Alphanumerical sequence between 16 and 48 cahracters long (longer would be better but longer 
+  derivable, and is best a Alphanumerical sequence between 16 and 48 characters long (longer would be better but longer 
   than 48 characters can be problem with long URI's) 
 - fill in the  Drupal's BaseURL.
 - on the Drupal use the "Restrict redirect URIs" Setting to limit possible exploits. and set the Redirect URI's to 
@@ -20,4 +20,4 @@ In the Rocket chat you have to do the following:
   `https://Rocketchat.example.com/_oauth/drupal?close` URI.).
 - Lastly do not forget to Enable the Drupal OAuth and `SAVE CHANGES`.   
   
-When all is a Blue Button with a drupal like logo will apear on the login page of Rocket.Chat+
+When all is a Blue Button with a drupal like logo will appear on the login page of Rocket.Chat+

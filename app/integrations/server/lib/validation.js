@@ -97,7 +97,7 @@ integrations.validateOutgoing = function _validateOutgoing(integration, userId) 
 		delete integration.channel;
 	}
 
-	// Moved to it's own function to statisfy the complexity rule
+	// Moved to it's own function to satisfy the complexity rule
 	_verifyRequiredFields(integration);
 
 	let channels = [];

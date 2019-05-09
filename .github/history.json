@@ -2898,7 +2898,7 @@
         },
         {
           "pr": "7622",
-          "title": "[FIX] Error when acessing settings before ready",
+          "title": "[FIX] Error when accessing settings before ready",
           "userLogin": "rodrigok",
           "milestone": "0.58.0",
           "contributors": [
@@ -3553,7 +3553,7 @@
         },
         {
           "pr": "7355",
-          "title": "[FIX] Update node-engine in Snap to latest v4 LTS relase: 4.8.3",
+          "title": "[FIX] Update node-engine in Snap to latest v4 LTS release: 4.8.3",
           "userLogin": "al3x",
           "milestone": "0.58.0",
           "contributors": [
@@ -5913,7 +5913,7 @@
         },
         {
           "pr": "8489",
-          "title": "[FIX] Wrong message when reseting password and 2FA is enabled",
+          "title": "[FIX] Wrong message when resetting password and 2FA is enabled",
           "userLogin": "rodrigok",
           "milestone": "0.59.0-rc.14",
           "contributors": [
@@ -7517,7 +7517,7 @@
         },
         {
           "pr": "8489",
-          "title": "[FIX] Wrong message when reseting password and 2FA is enabled",
+          "title": "[FIX] Wrong message when resetting password and 2FA is enabled",
           "userLogin": "rodrigok",
           "milestone": "0.59.0-rc.14",
           "contributors": [
@@ -9586,7 +9586,7 @@
         },
         {
           "pr": "9346",
-          "title": "Update Marked dependecy to 0.3.9",
+          "title": "Update Marked dependency to 0.3.9",
           "userLogin": "rodrigok",
           "milestone": "0.60.4",
           "contributors": [
@@ -9815,7 +9815,7 @@
         },
         {
           "pr": "9346",
-          "title": "Update Marked dependecy to 0.3.9",
+          "title": "Update Marked dependency to 0.3.9",
           "userLogin": "rodrigok",
           "milestone": "0.60.4",
           "contributors": [
@@ -11006,7 +11006,7 @@
         },
         {
           "pr": "9737",
-          "title": "[FIX] API to retrive rooms was returning empty objects",
+          "title": "[FIX] API to retrieve rooms was returning empty objects",
           "userLogin": "rodrigok",
           "milestone": "0.62.0",
           "contributors": [
@@ -13770,7 +13770,7 @@
         },
         {
           "pr": "10597",
-          "title": "[NEW] Store the last sent message to show bellow the room's name by default",
+          "title": "[NEW] Store the last sent message to show below the room's name by default",
           "userLogin": "graywolf336",
           "milestone": "0.64.1",
           "contributors": [
@@ -16645,7 +16645,7 @@
         },
         {
           "pr": "11257",
-          "title": "[FIX] Internal Server Error on first login with CAS integration",
+          "title": "[FIX] Internal Server Error on first login with CASE integration",
           "userLogin": "Hudell",
           "milestone": "0.66.0",
           "contributors": [
@@ -16762,7 +16762,7 @@
         },
         {
           "pr": "11254",
-          "title": "[IMPROVE] Setup Wizard username validation, step progress and optin/optout",
+          "title": "[IMPROVE] Setup Wizard username validation, step progress and option/optout",
           "userLogin": "tassoevan",
           "milestone": "0.66.1",
           "contributors": [
@@ -17071,7 +17071,7 @@
         },
         {
           "pr": "11254",
-          "title": "[IMPROVE] Setup Wizard username validation, step progress and optin/optout",
+          "title": "[IMPROVE] Setup Wizard username validation, step progress and option/optout",
           "userLogin": "tassoevan",
           "milestone": "0.66.1",
           "contributors": [
@@ -20292,7 +20292,7 @@
         },
         {
           "pr": "12436",
-          "title": "[FIX] Attachment actions not being collapsable",
+          "title": "[FIX] Attachment actions not being collapsible",
           "userLogin": "graywolf336",
           "milestone": "0.71.0",
           "contributors": [
@@ -26015,7 +26015,7 @@
         },
         {
           "pr": "13914",
-          "title": "[FIX] Avatar image being shrinked on autocomplete",
+          "title": "[FIX] Avatar image being shrunk on autocomplete",
           "userLogin": "sampaiodiego",
           "milestone": "1.0.0",
           "contributors": [
@@ -27179,7 +27179,7 @@
         },
         {
           "pr": "13509",
-          "title": "Regression: Not updating subscriptions and not showing desktop notifcations",
+          "title": "Regression: Not updating subscriptions and not showing desktop notifications",
           "userLogin": "sampaiodiego",
           "milestone": "1.0.0",
           "contributors": [

@@ -72,7 +72,7 @@ Meteor.methods({
 		});
 
 		// request.request: actual XML SAML Request
-		// request.id: comminucation id which will be mentioned in the ResponseTo field of SAMLResponse
+		// request.id: communication id which will be mentioned in the ResponseTo field of SAMLResponse
 
 		Meteor.users.update({
 			_id: Meteor.userId(),
@@ -255,7 +255,7 @@ const closePopup = function(res, err) {
 	});
 	let content = '<html><head><script>window.close()</script></head><body><H1>Verified</H1></body></html>';
 	if (err) {
-		content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ err }</div><a onclick="window.close();">Close Window</a></body></html>`;
+		content = `<html><body><h2>Sorry, an annoying error occurred</h2><div>${ err }</div><a onclick="window.close();">Close Window</a></body></html>`;
 	}
 	res.end(content, 'utf-8');
 };

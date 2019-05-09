@@ -1364,7 +1364,7 @@ describe('[Users]', function() {
 		});
 		describe('unsuccessful cases', () => {
 			it('Remove necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', []).then(done));
-			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
+			describe('should return an error when the user don't have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)

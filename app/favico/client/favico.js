@@ -539,7 +539,7 @@
 		};
 
 		//http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb#answer-5624139
-		//HEX to RGB convertor
+		//HEX to RGB converter
 		function hexToRgb(hex) {
 			var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
 			hex = hex.replace(shorthandRegex, function(m, r, g, b) {

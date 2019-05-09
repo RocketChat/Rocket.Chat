@@ -585,7 +585,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 		});
 	},
 });
-// TODO: CACHE: I dont like this method( functionality and how we implemented ) its very expensive
+// TODO: CACHE: I don't like this method( functionality and how we implemented ) its very expensive
 // TODO check if this code is better or not
 // RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 // 	get() {

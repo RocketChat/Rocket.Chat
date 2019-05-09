@@ -53,7 +53,7 @@ Template.body.onRendered(() => {
 							}
 						}
 					} catch (e) {
-						// parsing JSON faild
+						// parsing JSON failed
 						console.log('Error while parsing JSON value of "piwikAdditionalTracker": ', e);
 					}
 					window._paq.push(['setTrackerUrl', `${ piwikUrl }js/`]);

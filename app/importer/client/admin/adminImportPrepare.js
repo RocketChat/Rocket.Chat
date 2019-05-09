@@ -294,7 +294,7 @@ Template.adminImportPrepare.onCreated(function() {
 				return;
 			}
 
-			// if the progress isnt defined, that means there currently isn't an instance
+			// if the progress isn't defined, that means there currently isn't an instance
 			// of the importer, so we need to create it
 			if (progress === undefined) {
 				return Meteor.call('setupImporter', FlowRouter.getParam('importer'), function(err, data) {

@@ -15,21 +15,21 @@ const WebdavUploads = new FileUploadClass({
 	name: 'Webdav:Uploads',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const WebdavAvatars = new FileUploadClass({
 	name: 'Webdav:Avatars',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const WebdavUserDataFiles = new FileUploadClass({
 	name: 'Webdav:UserDataFiles',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const configure = _.debounce(function() {

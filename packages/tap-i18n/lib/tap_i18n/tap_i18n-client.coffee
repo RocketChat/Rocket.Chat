@@ -149,7 +149,7 @@ _.extend TAPi18n.prototype,
         # before the language specific translator is ready to keep behavior
         # consistent.
         #
-        # If lang is actually ready before the language specifc translator is
+        # If lang is actually ready before the language specific translator is
         # ready, TAPi18next will translate to lang_tag if we won't remove
         # options.lng.
         delete options.lng

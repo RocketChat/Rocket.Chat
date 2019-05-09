@@ -144,7 +144,7 @@
 		flex: 1 1 100%;
 		justify-content: flex-end;
 
-		/* max-width: use this to allign the buttons with the form */
+		/* max-width: use this to align the buttons with the form */
 	}
 
 	&__section-button > button {

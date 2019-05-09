@@ -17,7 +17,7 @@ const debug = Boolean(process.env.OBSERVERS_CHECK_DEBUG);
  * A good way to freeze a observer is running the instance with --inspect and execute in inspector the following code:
  *   multiplexer = Object.values(MongoInternals.defaultRemoteCollectionDriver().mongo._observeMultiplexers)[0]
  *   multiplexer._observeDriver._needToPollQuery()
- * Whis will raise an error of bindEnvironment and block the observer
+ * This will raise an error of bindEnvironment and block the observer
  * here https://github.com/meteor/meteor/blob/be6e529a739f47446950e045f4547ee60e5de7ae/packages/mongo/oplog_observe_driver.js#L698
  *
  * This code will check for observer instances in QUERYING mode for more than 2 minutues and will manually set them back

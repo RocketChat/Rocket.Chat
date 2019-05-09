@@ -185,7 +185,7 @@ class ChatpalProvider extends SearchProvider {
 	/**
 	 * ping if configuration has been set correctly
 	 * @param config
-	 * @param resolve if ping was successfull
+	 * @param resolve if ping was successful
 	 * @param reject if some error occurs
 	 * @param timeout until ping is repeated
 	 * @private

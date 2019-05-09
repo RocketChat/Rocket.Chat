@@ -1,7 +1,7 @@
 import { settings } from '../../settings';
 import { theme } from './server';
 // TODO: Define registers/getters/setters for packages to work with established
-// 			heirarchy of colors instead of making duplicate definitions
+// 			hierarchy of colors instead of making duplicate definitions
 // TODO: Settings pages to show simple separation of major/minor/addon colors
 // TODO: Get major colours as swatches for minor colors in minicolors plugin
 // TODO: Minicolors settings to use rgb for alphas, hex otherwise

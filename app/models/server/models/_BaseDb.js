@@ -61,7 +61,7 @@ export class BaseDb extends EventEmitter {
 
 	setUpdatedAt(record = {}) {
 
-		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
+		// TODO: Check if this can be deleted, Rodrigo does not remember WHY he added it. So he removed it to fix issue #5541
 		// setUpdatedAt(record = {}, checkQuery = false, query) {
 		// if (checkQuery === true) {
 		// 	if (!query || Object.keys(query).length === 0) {

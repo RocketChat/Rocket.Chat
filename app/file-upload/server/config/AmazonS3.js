@@ -41,21 +41,21 @@ const AmazonS3Uploads = new FileUploadClass({
 	name: 'AmazonS3:Uploads',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const AmazonS3Avatars = new FileUploadClass({
 	name: 'AmazonS3:Avatars',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const AmazonS3UserDataFiles = new FileUploadClass({
 	name: 'AmazonS3:UserDataFiles',
 	get,
 	copy,
-	// store setted bellow
+	// store set below
 });
 
 const configure = _.debounce(function() {

@@ -253,7 +253,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		}
 	});
 
-	// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
+	// the find below is crucial. all subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 
 	const subscriptions = await Subscriptions.model.rawCollection().aggregate([

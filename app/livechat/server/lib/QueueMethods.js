@@ -83,7 +83,7 @@ export const QueueMethods = {
 	},
 	/* Guest Pool Queuing Method:
 	 *
-	 * An incomming livechat is created as an Inquiry
+	 * An incoming livechat is created as an Inquiry
 	 * which is picked up from an agent.
 	 * An Inquiry is visible to all agents (TODO: in the correct department)
      *

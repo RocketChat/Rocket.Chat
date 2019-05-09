@@ -804,10 +804,10 @@ class WebRTCClass {
 		let peerConnection = this.getPeerConnection(data.from);
 
 		// needsRefresh = false
-		// if peerConnection.iceConnectionState isnt 'new'
-		// needsAudio = data.media.audio is true and peerConnection.remoteMedia.audio isnt true
-		// needsVideo = data.media.video is true and peerConnection.remoteMedia.video isnt true
-		// needsRefresh = needsAudio or needsVideo or data.media.desktop isnt peerConnection.remoteMedia.desktop
+		// if peerConnection.iceConnectionState isn't 'new'
+		// needsAudio = data.media.audio is true and peerConnection.remoteMedia.audio isn't true
+		// needsVideo = data.media.video is true and peerConnection.remoteMedia.video isn't true
+		// needsRefresh = needsAudio or needsVideo or data.media.desktop isn't peerConnection.remoteMedia.desktop
 
 		// # if peerConnection.signalingState is "have-local-offer" or needsRefresh
 

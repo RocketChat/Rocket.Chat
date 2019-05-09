@@ -74,7 +74,7 @@ _.extend TAPi18n.prototype,
 
         language_translations = self.translations[lang_tag]
         # returning {} if lang_tag is not in translations allows the project
-        # developer to force a language supporte with project-tap.i18n's
+        # developer to force a language supported with project-tap.i18n's
         # supported_languages property, even if that language has no lang
         # files.
         return JSON.stringify(if language_translations? then language_translations else {})

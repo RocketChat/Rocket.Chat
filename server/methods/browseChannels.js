@@ -118,7 +118,7 @@ Meteor.methods({
 		const total = result.count(); // count ignores the `skip` and `limit` options
 		const results = result.fetch();
 
-		// Try to find federated users, when appliable
+		// Try to find federated users, when applicable
 		if (Federation.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
 			const federatedUsers = Federation.methods.searchUsers(text);
 

@@ -240,7 +240,7 @@ API.v1.addRoute('chat.update', { authRequired: true }, {
 		check(this.bodyParams, Match.ObjectIncluding({
 			roomId: String,
 			msgId: String,
-			text: String, // Using text to be consistant with chat.postMessage
+			text: String, // Using text to be consistent with chat.postMessage
 		}));
 
 		const msg = Messages.findOneById(this.bodyParams.msgId);

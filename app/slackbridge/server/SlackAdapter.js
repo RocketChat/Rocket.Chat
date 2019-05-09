@@ -446,7 +446,7 @@ export default class SlackAdapter {
 					this.processChannelJoin(slackMessage);
 					break;
 				default:
-					// Keeping backwards compatability for now, refactor later
+					// Keeping backwards compatibility for now, refactor later
 					this.processNewMessage(slackMessage, isImporting);
 			}
 		} else {

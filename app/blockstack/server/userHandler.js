@@ -27,7 +27,7 @@ export const updateOrCreateUser = (serviceData, options) => {
 		isNew = true;
 		let emails = [];
 		if (!Array.isArray(profile.emails)) {
-			// Fix absense of emails by adding placeholder address using decentralised
+			// Fix absence of emails by adding placeholder address using decentralised
 			// ID at blockstack.email - a holding domain only, no MX record, does not
 			// process email, may be used in future to provide decentralised email via
 			// gaia, encrypting mail for DID user only. @TODO: document this approach.

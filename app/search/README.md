@@ -2,7 +2,7 @@
 
 This module enables search for messages and other things within Rocket.Chat.
 It provides the basic infrastructure for *Search Providers*, which enables everybody to easily add another
-search (e.g. with special functions) to the Rocket.Chat infrastructure. In addition it provides a defautl implementation
+search (e.g. with special functions) to the Rocket.Chat infrastructure. In addition it provides a default implementation
 based on MongoDB.
 
 ### Providers
@@ -43,7 +43,7 @@ Search provider can have their own result template. The template is loaded with 
  text, //reactive var with the search text
  settings //the settings of the provider,
  parentPayload, //the main search payload (not reset for new searches)
- payload, //the payload (reseted when new search is issed from search field)
+ payload, //the payload (reset when new search is issed from search field)
  search //the search function
 }
 ```
