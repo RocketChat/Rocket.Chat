@@ -7,6 +7,8 @@ Meteor.startup(function() {
 	// const federationUniqueId = FederationKeys.getUniqueId();
 	const federationPublicKey = FederationKeys.getPublicKeyString();
 
+	const defaultHubURL = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://hub.rocket.chat';
+
 	settings.addGroup('Federation', function() {
 		this.add('FEDERATION_Enabled', false, {
 			type: 'boolean',
@@ -45,7 +47,7 @@ Meteor.startup(function() {
 			i18nDescription: 'FEDERATION_Public_Key_Description',
 		});
 
-		this.add('FEDERATION_Hub_URL', 'https://hub.rocket.chat', {
+		this.add('FEDERATION_Hub_URL', defaultHubURL, {
 			group: 'Federation Hub',
 			type: 'string',
 			i18nLabel: 'FEDERATION_Hub_URL',

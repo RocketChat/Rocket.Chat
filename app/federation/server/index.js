@@ -1,7 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 
-import './federation-settings';
+import { settings } from '../../settings';
+import { FederationKeys } from '../../models';
+
+import { getConfig } from './config';
+
+import './adminSettings';
+
 import { logger } from './logger';
 import { PeerClient } from './PeerClient';
 import { PeerDNS } from './PeerDNS';
@@ -45,18 +51,6 @@ Federation.methods = {
 	ping,
 };
 
-// Generate keys
-
-// Create unique id if needed
-if (!FederationKeys.getUniqueId()) {
-	FederationKeys.generateUniqueId();
-}
-
-// Create key pair if needed
-if (!FederationKeys.getPublicKey()) {
-	FederationKeys.generateKeys();
-}
-
 // Initializations
 
 // Start the client, setting up all the callbacks
@@ -73,41 +67,18 @@ const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 
 	if (!_enabled) { return; }
 
-	// If it is enabled, check if the settings are there
-	const _uniqueId = settings.get('FEDERATION_Unique_Id');
-	const _domain = settings.get('FEDERATION_Domain');
-	const _discoveryMethod = settings.get('FEDERATION_Discovery_Method');
-	const _hubUrl = settings.get('FEDERATION_Hub_URL');
-	const _peerUrl = settings.get('Site_Url');
+	// Get the config
+	const config = getConfig();
 
-	if (!_domain || !_discoveryMethod || !_hubUrl || !_peerUrl) {
+	// Check config
+	if (!config.peer.domain || !config.peer.url || (config.hub.active && !config.hub.url)) {
 		SettingsUpdater.updateStatus('Could not enable, settings are not fully set');
 
 		logger.setup.error('Could not enable Federation, settings are not fully set');
-
-		return;
 	}
 
-	logger.setup.info('Updating settings...');
-
-	// Normalize the config values
-	const config = {
-		hub: {
-			active: _discoveryMethod === 'hub',
-			url: _hubUrl.replace(/\/+$/, ''),
-		},
-		peer: {
-			uniqueId: _uniqueId,
-			domain: _domain.replace('@', '').trim(),
-			url: _peerUrl.replace(/\/+$/, ''),
-			public_key: FederationKeys.getPublicKeyString(),
-		},
-		cloud: {
-			token: getWorkspaceAccessToken(),
-		},
-	};
-
 	// If the settings are correctly set, let's update the configuration
+	logger.setup.info('Updating settings...');
 
 	// Get the key pair
 	Federation.privateKey = FederationKeys.getPrivateKey();
