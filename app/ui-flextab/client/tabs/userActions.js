@@ -211,7 +211,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						}
 						Meteor.call('removeRoomOwner', Session.get('openedRoom'), _id, success(() => {
 							const room = ChatRoom.findOne(Session.get('openedRoom'));
-							toastr.success(TAPi18n.__('User__username__removed_from__room_name__owners', { username, room_name: room.name }));
+							toastr.success(TAPi18n.__('User__username__removed_from__room_name__owners', { username, room_name: roomTypes.getRoomName(room.t, room) }));
 						}));
 					}) };
 			}
@@ -226,7 +226,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					}
 					Meteor.call('addRoomOwner', Session.get('openedRoom'), _id, success(() => {
 						const room = ChatRoom.findOne(Session.get('openedRoom'));
-						toastr.success(TAPi18n.__('User__username__is_now_a_owner_of__room_name_', { username, room_name: room.name }));
+						toastr.success(TAPi18n.__('User__username__is_now_a_owner_of__room_name_', { username, room_name: roomTypes.getRoomName(room.t, room) }));
 					}));
 
 				}),
@@ -247,7 +247,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						}
 						Meteor.call('removeRoomLeader', Session.get('openedRoom'), _id, success(() => {
 							const room = ChatRoom.findOne(Session.get('openedRoom'));
-							toastr.success(TAPi18n.__('User__username__removed_from__room_name__leaders', { username, room_name: room.name }));
+							toastr.success(TAPi18n.__('User__username__removed_from__room_name__leaders', { username, room_name: roomTypes.getRoomName(room.t, room) }));
 						}));
 					}),
 				};
@@ -263,7 +263,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					}
 					Meteor.call('addRoomLeader', Session.get('openedRoom'), _id, success(() => {
 						const room = ChatRoom.findOne(Session.get('openedRoom'));
-						toastr.success(TAPi18n.__('User__username__is_now_a_leader_of__room_name_', { username, room_name: room.name }));
+						toastr.success(TAPi18n.__('User__username__is_now_a_leader_of__room_name_', { username, room_name: roomTypes.getRoomName(room.t, room) }));
 					}));
 				}),
 			};
@@ -284,7 +284,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						}
 						Meteor.call('removeRoomModerator', Session.get('openedRoom'), _id, success(() => {
 							const room = ChatRoom.findOne(Session.get('openedRoom'));
-							toastr.success(TAPi18n.__('User__username__removed_from__room_name__moderators', { username, room_name: room.name }));
+							toastr.success(TAPi18n.__('User__username__removed_from__room_name__moderators', { username, room_name: roomTypes.getRoomName(room.t, room) }));
 						}));
 					}),
 				};
@@ -300,7 +300,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					}
 					Meteor.call('addRoomModerator', Session.get('openedRoom'), _id, success(() => {
 						const room = ChatRoom.findOne(Session.get('openedRoom'));
-						toastr.success(TAPi18n.__('User__username__is_now_a_moderator_of__room_name_', { username, room_name: room.name }));
+						toastr.success(TAPi18n.__('User__username__is_now_a_moderator_of__room_name_', { username, room_name: roomTypes.getRoomName(room.t, room) }));
 					}));
 				}),
 			};
@@ -352,7 +352,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					}
 					modal.open({
 						title: t('Are_you_sure'),
-						text: t('The_user_wont_be_able_to_type_in_s', room.name),
+						text: t('The_user_wont_be_able_to_type_in_s', roomTypes.getRoomName(room.t, room)),
 						type: 'warning',
 						showCancelButton: true,
 						confirmButtonColor: '#DD6B55',
@@ -364,7 +364,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						Meteor.call('muteUserInRoom', { rid, username }, success(() => {
 							modal.open({
 								title: t('Muted'),
-								text: t('User_has_been_muted_in_s', room.name),
+								text: t('User_has_been_muted_in_s', roomTypes.getRoomName(room.t, room)),
 								type: 'success',
 								timer: 2000,
 								showConfirmButton: false,
