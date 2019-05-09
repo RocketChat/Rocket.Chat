@@ -79,7 +79,7 @@ export const aggregates = {
 				sessions: 1,
 				devices: 1,
 			},
-		}]);
+		}], { allowDiskUse: true });
 	},
 
 	getUniqueUsersOfYesterday(collection, { year, month, day }) {
@@ -155,7 +155,7 @@ export const aggregates = {
 				sessions: 1,
 				time: 1,
 			},
-		}]).toArray();
+		}], { allowDiskUse: true }).toArray();
 	},
 
 	getMatchOfLastMonthToday({ year, month, day }) {
@@ -257,7 +257,7 @@ export const aggregates = {
 				count: 1,
 				time: 1,
 			},
-		}]).toArray();
+		}], { allowDiskUse: true }).toArray();
 	},
 
 	getUniqueDevicesOfYesterday(collection, { year, month, day }) {
@@ -328,7 +328,7 @@ export const aggregates = {
 				count: 1,
 				time: 1,
 			},
-		}]).toArray();
+		}], { allowDiskUse: true }).toArray();
 	},
 
 	getUniqueOSOfYesterday(collection, { year, month, day }) {
@@ -377,6 +377,7 @@ export class Sessions extends Base {
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, userId: 1 });
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1 });
 		this.tryEnsureIndex({ year: 1, month: 1, day: 1, type: 1 });
+		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });
 	}
 

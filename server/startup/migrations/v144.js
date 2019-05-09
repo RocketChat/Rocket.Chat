@@ -4,11 +4,12 @@ import { Sessions } from '../../../app/models/server';
 Migrations.add({
 	version: 144,
 	up() {
-		Sessions.remove({
+		console.log('Restoring sessions data');
+		Promise.await(Sessions.model.rawCollection().removeMany({
 			type: 'user_daily',
-		});
+		}));
 
-		Sessions.update({
+		Promise.await(Sessions.model.rawCollection().updateMany({
 			type: 'computed-session',
 		}, {
 			$set: {
@@ -17,6 +18,7 @@ Migrations.add({
 			$unset: {
 				_computedAt: 1,
 			},
-		}, { multi: true });
+		}));
+		console.log('Restoring sessions data - Done');
 	},
 });
