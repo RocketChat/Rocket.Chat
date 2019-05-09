@@ -59,7 +59,7 @@ Meteor.methods({
 		// Validate each user, then add to room
 		const user = Meteor.user();
 		data.users.forEach((username) => {
-			const newUser = Users.findOneByUsername(username);
+			const newUser = Users.findOneByUsernameIgnoringCase(username);
 			if (!newUser) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom',

@@ -15,7 +15,7 @@ function usernameIsAvaliable(username) {
 		return false;
 	}
 
-	return !Users.findOneByUsername(username);
+	return !Users.findOneByUsernameIgnoringCase(username);
 }
 
 
