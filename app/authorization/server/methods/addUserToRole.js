@@ -27,7 +27,7 @@ Meteor.methods({
 			});
 		}
 
-		const user = Users.findOneByUsername(username, {
+		const user = Users.findOneByUsernameIgnoringCase(username, {
 			fields: {
 				_id: 1,
 			},
