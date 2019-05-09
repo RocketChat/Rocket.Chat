@@ -7,7 +7,7 @@
 			<div class="thread-list js-scroll-threads">
 				<ul class="thread">
 					{{#each thread in threads}}
-						{{> nrr nrrargs 'message'
+						{{> message
 							groupable=false
 							msg=thread
 							room=room
@@ -30,9 +30,9 @@
 				</div>
 			{{/if}}
 		{{/unless}}
-		{{#if message}}
+		{{#if msg}}
 		<div class="rc-user-info-container flex-nav">
-			{{> thread mainMessage=message room=room subscription=subscription settings=settings close=close}}
+			{{> thread mainMessage=msg room=room subscription=subscription settings=settings close=close}}
 		</div>
 		{{/if}}
 	{{/with}}

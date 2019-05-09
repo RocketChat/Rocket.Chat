@@ -51,7 +51,7 @@ Template.thread.helpers({
 		return Threads.find({ tmid }, { sort });
 	},
 	messageContext() {
-		const result = messageContext.apply(this);
+		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
 			settings: {
@@ -63,9 +63,10 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid } } = this;
+		const { mainMessage: { rid, _id: tmid }, subscription } = this;
 
 		return {
+			subscription,
 			rid,
 			tmid,
 			onSend: (...args) => instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args),
@@ -104,7 +105,7 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ tmid, _updatedAt: { $gt: new Date() } }, {
+		this.threadsObserve = Messages.find({ tmid, _hidden: { $ne: true } }, {
 			fields: {
 				collapsed: 0,
 				threadMsg: 0,
