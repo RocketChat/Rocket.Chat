@@ -14,7 +14,7 @@ Migrations.add({
 			$set: {
 				type: 'session',
 			},
-			unset: {
+			$unset: {
 				_computedAt: 1,
 			},
 		}, { multi: true });
