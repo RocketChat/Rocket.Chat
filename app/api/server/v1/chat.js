@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Messages } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib';
 import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
@@ -68,8 +68,8 @@ API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
 
 		return API.v1.success({
 			result: {
-				updated: result.updated.map((message) => composeMessageObjectWithUser(message, this.userId)),
-				deleted: result.deleted.map((message) => composeMessageObjectWithUser(message, this.userId)),
+				updated: normalizeMessagesForUser(result.updated, this.userId),
+				deleted: normalizeMessagesForUser(result.deleted, this.userId),
 			},
 		});
 	},
@@ -90,8 +90,10 @@ API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 			return API.v1.failure();
 		}
 
+		const [message] = normalizeMessagesForUser([msg], this.userId);
+
 		return API.v1.success({
-			message: composeMessageObjectWithUser(msg, this.userId),
+			message,
 		});
 	},
 });
@@ -111,8 +113,10 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 		let pinnedMessage;
 		Meteor.runAsUser(this.userId, () => pinnedMessage = Meteor.call('pinMessage', msg));
 
+		const [message] = normalizeMessagesForUser([pinnedMessage], this.userId);
+
 		return API.v1.success({
-			message: composeMessageObjectWithUser(pinnedMessage, this.userId),
+			message,
 		});
 	},
 });
@@ -125,10 +129,12 @@ API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 			return API.v1.failure('unknown-error');
 		}
 
+		const [message] = normalizeMessagesForUser([messageReturn.message], this.userId);
+
 		return API.v1.success({
 			ts: Date.now(),
 			channel: messageReturn.channel,
-			message: composeMessageObjectWithUser(messageReturn.message, this.userId),
+			message,
 		});
 	},
 });
@@ -150,7 +156,7 @@ API.v1.addRoute('chat.search', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, count).message.docs);
 
 		return API.v1.success({
-			messages: result.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(result, this.userId),
 		});
 	},
 });
@@ -164,11 +170,12 @@ API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 		}
 
-		let message;
-		Meteor.runAsUser(this.userId, () => message = Meteor.call('sendMessage', this.bodyParams.message));
+		const sent = Meteor.runAsUser(this.userId, () => Meteor.call('sendMessage', this.bodyParams.message));
+
+		const [message] = normalizeMessagesForUser([sent], this.userId);
 
 		return API.v1.success({
-			message: composeMessageObjectWithUser(message, this.userId),
+			message,
 		});
 	},
 });
@@ -259,8 +266,10 @@ API.v1.addRoute('chat.update', { authRequired: true }, {
 			Meteor.call('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
 		});
 
+		const [message] = normalizeMessagesForUser([Messages.findOneById(msg._id)], this.userId);
+
 		return API.v1.success({
-			message: composeMessageObjectWithUser(Messages.findOneById(msg._id), this.userId),
+			message,
 		});
 	},
 });

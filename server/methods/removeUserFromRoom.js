@@ -33,7 +33,7 @@ Meteor.methods({
 			});
 		}
 
-		const removedUser = Users.findOneByUsername(data.username);
+		const removedUser = Users.findOneByUsernameIgnoringCase(data.username);
 
 		const fromUser = Users.findOneById(fromId);
 
