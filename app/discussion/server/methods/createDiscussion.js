@@ -92,6 +92,9 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 		description: message.msg, // TODO discussions remove
 		topic: p_room.name, // TODO discussions remove
 		prid,
+	}, {
+		// overrides name validation to allow anything, because discussion's name is randomly generated
+		nameValidationRegex: /.*/,
 	});
 
 	if (pmid) {
