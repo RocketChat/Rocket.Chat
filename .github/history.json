@@ -15362,9 +15362,6 @@
         }
       ]
     },
-    "HEAD": {
-      "pull_requests": []
-    },
     "0.66.0-rc.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
@@ -30202,7 +30199,7 @@
         },
         {
           "pr": "14431",
-          "title": "[IMPROVE] allow users to skip activeUsers to be ready",
+          "title": "[IMPROVE] Added flag `skipActiveUsersToBeReady` to not wait the load of `active users` to present the Web interface",
           "userLogin": "ggazzo",
           "milestone": "1.0.3",
           "contributors": [
@@ -30363,7 +30360,7 @@
         },
         {
           "pr": "14389",
-          "title": "[NEW] Allow change Discussion's properties",
+          "title": "[IMPROVE] Allow change Discussion's properties",
           "userLogin": "ggazzo",
           "milestone": "1.0.3",
           "contributors": [

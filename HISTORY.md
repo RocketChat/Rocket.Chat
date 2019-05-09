@@ -1,20 +1,17 @@
 
 # 1.0.3
-`2019-05-09  ·  1 🎉  ·  2 🚀  ·  22 🐛  ·  6 🔍  ·  7 👩‍💻👨‍💻`
+`2019-05-09  ·  3 🚀  ·  22 🐛  ·  6 🔍  ·  7 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.4`
 - NPM: `6.4.1`
 - MongoDB: `3.2, 3.4, 3.6, 4.0`
 
-### 🎉 New features
-
-- Allow change Discussion's properties ([#14389](https://github.com/RocketChat/Rocket.Chat/pull/14389))
-
 ### 🚀 Improvements
 
 - Don't use regex to find users ([#14397](https://github.com/RocketChat/Rocket.Chat/pull/14397))
-- allow users to skip activeUsers to be ready ([#14431](https://github.com/RocketChat/Rocket.Chat/pull/14431))
+- Added flag `skipActiveUsersToBeReady` to not wait the load of `active users` to present the Web interface ([#14431](https://github.com/RocketChat/Rocket.Chat/pull/14431))
+- Allow change Discussion's properties ([#14389](https://github.com/RocketChat/Rocket.Chat/pull/14389))
 
 ### 🐛 Bug fixes
 
