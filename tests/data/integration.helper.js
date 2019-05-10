@@ -18,4 +18,3 @@ export const removeIntegration = (integrationId, type) => new Promise((resolve) 
 		})
 		.end(resolve);
 });
-

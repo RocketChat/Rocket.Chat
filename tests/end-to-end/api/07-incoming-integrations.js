@@ -177,7 +177,6 @@ describe('[Incoming Integrations]', function() {
 	});
 
 	describe('[/integrations.list]', () => {
-
 		before((done) => {
 			createUser().then((createdUser) => {
 				user = createdUser;
@@ -346,5 +345,4 @@ describe('[Incoming Integrations]', function() {
 			});
 		});
 	});
-
 });

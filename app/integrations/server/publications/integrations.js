@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasAtLeastOnePermission } from '../../../authorization/server';
 import { Integrations } from '../../../models/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../lib/mountQueriesBasedOnPermission';

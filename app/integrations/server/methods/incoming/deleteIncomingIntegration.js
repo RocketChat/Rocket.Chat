@@ -10,7 +10,7 @@ Meteor.methods({
 		if (hasPermission(this.userId, 'manage-incoming-integrations')) {
 			integration = Integrations.findOne(integrationId);
 		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
-			integration = Integrations.findOne(integrationId, { fields : { '_createdBy._id': this.userId } });
+			integration = Integrations.findOne(integrationId, { fields: { '_createdBy._id': this.userId } });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'deleteIncomingIntegration' });
 		}
