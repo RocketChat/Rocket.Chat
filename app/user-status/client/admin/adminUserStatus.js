@@ -1,11 +1,11 @@
 import s from 'underscore.string';
-
-import { CustomUserStatus } from '../../../models';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TabBar, SideNav, RocketChatTabBar } from '../../../ui-utils';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
+
+import { CustomUserStatus } from '../../../models';
+import { TabBar, SideNav, RocketChatTabBar } from '../../../ui-utils';
 import { t } from '../../../utils';
 
 Template.adminUserStatus.helpers({
@@ -80,13 +80,13 @@ Template.adminUserStatus.onCreated(function() {
 	});
 
 	this.autorun(function() {
-		const limit = (instance.limit !== null) ? instance.limit.get() : 0;
+		const limit = instance.limit !== null ? instance.limit.get() : 0;
 		const subscription = instance.subscribe('fullUserStatusData', '', limit);
 		instance.ready.set(subscription.ready());
 	});
 
 	this.customUserStatus = function() {
-		const filter = (instance.filter != null) ? s.trim(instance.filter.get()) : '';
+		const filter = instance.filter != null ? s.trim(instance.filter.get()) : '';
 
 		let query = {};
 
@@ -95,7 +95,7 @@ Template.adminUserStatus.onCreated(function() {
 			query = { $or: [{ name: filterReg }] };
 		}
 
-		const limit = (instance.limit != null) ? instance.limit.get() : 0;
+		const limit = instance.limit != null ? instance.limit.get() : 0;
 
 		return CustomUserStatus.find(query, { limit, sort: { name: 1 } }).fetch();
 	};

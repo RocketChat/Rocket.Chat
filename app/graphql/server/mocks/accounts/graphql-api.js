@@ -4,7 +4,7 @@
 // maybe Promise is not wrapped with Fiber
 // See: https://github.com/meteor/meteor/blob/a362e20a37547362b581fed52f7171d022e83b62/packages/promise/server.js
 // Opened issue: https://github.com/js-accounts/graphql/issues/16
-export const authenticated = (Accounts, func) => (async (root, args, context, info) => {
+export const authenticated = (Accounts, func) => async (root, args, context, info) => {
 	const { authToken } = context;
 
 	if (!authToken || authToken === '' || authToken === null) {
@@ -17,5 +17,5 @@ export const authenticated = (Accounts, func) => (async (root, args, context, in
 		throw new Error('Invalid or expired token!');
 	}
 
-	return await func(root, args, Object.assign(context, { user: userObject }), info);
-});
+	return func(root, args, Object.assign(context, { user: userObject }), info);
+};

@@ -22,7 +22,6 @@ export class WebdavAccounts extends Base {
 	removeById(_id) {
 		return this.remove({ _id });
 	}
-
 }
 
 export default new WebdavAccounts();

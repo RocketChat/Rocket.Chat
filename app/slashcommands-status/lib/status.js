@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { handleError, slashCommands } from '../../utils';
-import { hasPermission } from '../../authorization';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Random } from 'meteor/random';
+
+import { handleError, slashCommands } from '../../utils';
+import { hasPermission } from '../../authorization';
 import { Notifications } from '../../notifications';
 /*
  * Join is a named function that will replace /status commands
@@ -18,23 +19,23 @@ function Status(command, params, item) {
 				if (err) {
 					if (Meteor.isClient) {
 						return handleError(err);
-					} else {
-						if (err.error === 'error-not-allowed') {
-							Notifications.notifyUser(Meteor.userId(), 'message', {
-								_id: Random.id(),
-								rid: item.rid,
-								ts: new Date,
-								msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
-							});
-						}
-
-						throw err;
 					}
+
+					if (err.error === 'error-not-allowed') {
+						Notifications.notifyUser(Meteor.userId(), 'message', {
+							_id: Random.id(),
+							rid: item.rid,
+							ts: new Date(),
+							msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
+						});
+					}
+
+					throw err;
 				} else {
 					Notifications.notifyUser(Meteor.userId(), 'message', {
 						_id: Random.id(),
 						rid: item.rid,
-						ts: new Date,
+						ts: new Date(),
 						msg: TAPi18n.__('StatusMessage_Changed_Successfully', null, user.language),
 					});
 				}

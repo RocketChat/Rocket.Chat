@@ -3,14 +3,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+import s from 'underscore.string';
+
 import { t, handleError } from '../../../utils';
 import { Roles } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import toastr from 'toastr';
 import { callbacks } from '../../../callbacks';
-import s from 'underscore.string';
 
 Template.userEdit.helpers({
 
@@ -44,7 +45,7 @@ Template.userEdit.helpers({
 
 	role() {
 		const roles = Template.instance().roles.get();
-		return Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
+		return Roles.find({ _id: { $nin: roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {
@@ -162,7 +163,7 @@ Template.userEdit.events({
 Template.userEdit.onCreated(function() {
 	this.user = this.data != null ? this.data.user : undefined;
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
-	this.avatar = new ReactiveVar;
+	this.avatar = new ReactiveVar();
 	this.url = new ReactiveVar('');
 	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 
@@ -173,13 +174,12 @@ Template.userEdit.onCreated(function() {
 		this.$('input[type=checkbox]').prop('checked', true);
 		if (this.user) {
 			return this.data.back(username);
-		} else {
-			return tabBar.close();
 		}
+		return tabBar.close();
 	};
 
 	this.getUserData = () => {
-		const userData = { _id: (this.user != null ? this.user._id : undefined) };
+		const userData = { _id: this.user != null ? this.user._id : undefined };
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
 		userData.statusText = s.trim(this.$('#status').val());

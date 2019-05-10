@@ -4,11 +4,12 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { Deps } from 'meteor/deps';
+import toastr from 'toastr';
+
 import { ChatRoom } from '../../../models';
 import { t, isEmail, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
-import { Deps } from 'meteor/deps';
-import toastr from 'toastr';
 import resetSelection from '../resetSelection';
 
 const filterNames = (old) => {
@@ -235,14 +236,14 @@ Template.mailMessagesInstructions.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 	this.userFilter = new ReactiveVar('');
 
-	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
+	const filter = { exceptions: [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
 	Deps.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
 	});
 
 	this.ac = new AutoComplete(
 		{
-			selector:{
+			selector: {
 				item: '.rc-popup-list__item',
 				container: '.rc-popup-list__list',
 			},

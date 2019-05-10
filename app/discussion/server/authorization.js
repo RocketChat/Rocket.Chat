@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { addRoomAccessValidator, canAccessRoom } from '../../authorization';
 import { Rooms } from '../../models';
 

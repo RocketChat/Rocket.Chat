@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import toastr from 'toastr';
+import s from 'underscore.string';
+
 import { settings } from '../../../../settings';
 import { t } from '../../../../utils';
-import toastr from 'toastr';
 import { popover } from '../../../../ui-utils';
-import s from 'underscore.string';
 
 Template.editStatus.helpers({
 	canChange() {
@@ -92,7 +93,9 @@ Template.editStatus.events({
 				toastr.remove();
 				toastr.error(t('StatusMessage_Change_Disabled'));
 				return false;
-			} else if (statusText || statusText.length === 0) {
+			}
+
+			if (statusText || statusText.length === 0) {
 				Meteor.call('setUserStatus', statusType, statusText);
 				if (instance.data.onSave) {
 					instance.data.onSave(true);

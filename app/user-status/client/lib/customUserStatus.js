@@ -1,5 +1,6 @@
-import { userStatus } from './userStatus';
 import { Meteor } from 'meteor/meteor';
+
+import { userStatus } from './userStatus';
 
 userStatus.packages.customUserStatus = {
 	list: [],

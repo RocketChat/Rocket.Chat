@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
 import { CustomUserStatus } from '../../../models';
-import s from 'underscore.string';
 
 Meteor.methods({
 	insertOrUpdateUserStatus(userStatusData) {
@@ -51,18 +52,19 @@ Meteor.methods({
 			Notifications.notifyLogged('updateCustomUserStatus', { userStatusData: createUserStatus });
 
 			return _id;
-		} else {
-			// update User status
-			if (userStatusData.name !== userStatusData.previousName) {
-				CustomUserStatus.setName(userStatusData._id, userStatusData.name);
-			}
-			if (userStatusData.statusType !== userStatusData.previousStatusType) {
-				CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
-			}
-
-			Notifications.notifyLogged('updateCustomUserStatus', { userStatusData });
-
-			return true;
 		}
+
+		// update User status
+		if (userStatusData.name !== userStatusData.previousName) {
+			CustomUserStatus.setName(userStatusData._id, userStatusData.name);
+		}
+
+		if (userStatusData.statusType !== userStatusData.previousStatusType) {
+			CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
+		}
+
+		Notifications.notifyLogged('updateCustomUserStatus', { userStatusData });
+
+		return true;
 	},
 });

@@ -1,5 +1,6 @@
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
+
 import { CustomUserStatus } from '../../../models';
 
 Meteor.publish('fullUserStatusData', function(filter, limit) {

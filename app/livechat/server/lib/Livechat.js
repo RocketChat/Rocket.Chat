@@ -1,23 +1,25 @@
+import dns from 'dns';
+
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { HTTP } from 'meteor/http';
+import _ from 'underscore';
+import s from 'underscore.string';
+import moment from 'moment';
+import UAParser from 'ua-parser-js';
+
+import { QueueMethods } from './QueueMethods';
+import { Analytics } from './Analytics';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
-import _ from 'underscore';
-import s from 'underscore.string';
-import moment from 'moment';
-import dns from 'dns';
-import UAParser from 'ua-parser-js';
 import * as Mailer from '../../../mailer';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
-import { QueueMethods } from './QueueMethods';
-import { Analytics } from './Analytics';
 
 export const Livechat = {
 	Analytics,
@@ -205,7 +207,6 @@ export const Livechat = {
 				};
 
 				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
-
 					const connection = this.connection || connectionData;
 					if (connection && connection.httpHeaders) {
 						userData.userAgent = connection.httpHeaders['user-agent'];
@@ -348,9 +349,8 @@ export const Livechat = {
 
 		if (customField.scope === 'room') {
 			return Rooms.updateLivechatDataByToken(token, key, value, overwrite);
-		} else {
-			return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 		}
+		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 	},
 
 	getInitSettings() {
@@ -424,7 +424,6 @@ export const Livechat = {
 
 	savePageHistory(token, roomId, pageInfo) {
 		if (pageInfo.change === Livechat.historyMonitorType) {
-
 			const user = Users.findOneById('rocket.cat');
 
 			const pageTitle = pageInfo.title;
@@ -448,8 +447,6 @@ export const Livechat = {
 
 			return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
 		}
-
-		return;
 	},
 
 	transfer(room, guest, transferData) {
@@ -630,8 +627,8 @@ export const Livechat = {
 				phone: null,
 				department: visitor.department,
 				ip: visitor.ip,
-				os: ua.getOS().name && (`${ ua.getOS().name } ${ ua.getOS().version }`),
-				browser: ua.getBrowser().name && (`${ ua.getBrowser().name } ${ ua.getBrowser().version }`),
+				os: ua.getOS().name && `${ ua.getOS().name } ${ ua.getOS().version }`,
+				browser: ua.getBrowser().name && `${ ua.getBrowser().name } ${ ua.getBrowser().version }`,
 				customFields: visitor.livechatData,
 			},
 		};
@@ -845,7 +842,7 @@ export const Livechat = {
 				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
 				<p>${ message.msg }</p>
 			`;
-			html = html + singleMessage;
+			html += singleMessage;
 		});
 
 		html = `${ html }</div>`;
@@ -879,7 +876,7 @@ export const Livechat = {
 			return false;
 		}
 
-		const message = (`${ data.message }`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+		const message = `${ data.message }`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 
 		const html = `
 			<h1>New livechat message</h1>
@@ -913,7 +910,7 @@ export const Livechat = {
 
 		const from = `${ data.name } - ${ data.email } <${ fromEmail }>`;
 		const replyTo = `${ data.name } <${ data.email }>`;
-		const subject = `Livechat offline message from ${ data.name }: ${ (`${ data.message }`).substring(0, 20) }`;
+		const subject = `Livechat offline message from ${ data.name }: ${ `${ data.message }`.substring(0, 20) }`;
 
 		this.sendEmail(from, emailTo, replyTo, subject, html);
 

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
 import { CustomUserStatus } from '../../../models';

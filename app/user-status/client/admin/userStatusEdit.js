@@ -1,10 +1,10 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
-
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { t, handleError } from '../../../utils';
 import { TAPi18n } from 'meteor/tap:i18n';
+
+import { t, handleError } from '../../../utils';
 
 Template.userStatusEdit.helpers({
 	userStatus() {
@@ -23,7 +23,7 @@ Template.userStatusEdit.helpers({
 			name: t('Away'),
 			selected: userStatusType === 'away' ? 'selected' : '',
 		}, {
-			value : 'busy',
+			value: 'busy',
 			name: t('Busy'),
 			selected: userStatusType === 'busy' ? 'selected' : '',
 		}, {

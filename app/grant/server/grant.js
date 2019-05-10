@@ -1,7 +1,7 @@
-import { hostname } from '../../lib';
 import Providers from './providers';
 import Settings from './settings';
 import { path, generateCallback, generateAppCallback } from './routes';
+import { hostname } from '../../lib';
 
 function addProviders(config) {
 	Settings.forEach((settings, providerName) => {

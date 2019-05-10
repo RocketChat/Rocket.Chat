@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { Users } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
-import s from 'underscore.string';
 
 export const _setStatusMessage = function(userId, statusMessage) {
 	statusMessage = s.trim(statusMessage);

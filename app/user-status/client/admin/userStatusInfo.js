@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+
 import { t, handleError } from '../../../utils';
 import { modal } from '../../../ui-utils';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.userStatusInfo.helpers({
 	name() {
@@ -62,17 +63,17 @@ Template.userStatusInfo.events({
 				Meteor.call('deleteCustomUserStatus', _id, (error/* , result */) => {
 					if (error) {
 						return handleError(error);
-					} else {
-						modal.open({
-							title: t('Deleted'),
-							text: t('Custom_User_Status_Has_Been_Deleted'),
-							type: 'success',
-							timer: 2000,
-							showConfirmButton: false,
-						});
-
-						instance.tabBar.close();
 					}
+
+					modal.open({
+						title: t('Deleted'),
+						text: t('Custom_User_Status_Has_Been_Deleted'),
+						type: 'success',
+						timer: 2000,
+						showConfirmButton: false,
+					});
+
+					instance.tabBar.close();
 				});
 			});
 		}
