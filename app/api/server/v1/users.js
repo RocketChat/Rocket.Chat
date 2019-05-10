@@ -282,7 +282,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 						return Users.findOneById(fields.userId, { _id: 1 });
 					}
 					if (fields.username) {
-						return Users.findOneByUsername(fields.username, { _id: 1 });
+						return Users.findOneByUsernameIgnoringCase(fields.username, { _id: 1 });
 					}
 				};
 

@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -29,7 +29,8 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 		throw new Meteor.Error('error-room-archived', `The channel, ${ room.name }, is archived`);
 	}
 	if (userId && room.lastMessage) {
-		room.lastMessage = composeMessageObjectWithUser(room.lastMessage, userId);
+		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		room.lastMessage = lastMessage;
 	}
 
 	return room;
@@ -579,7 +580,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 		const messages = cursor.fetch();
 
 		return API.v1.success({
-			messages: messages.map((record) => composeMessageObjectWithUser(record, this.userId)),
+			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
 			total,

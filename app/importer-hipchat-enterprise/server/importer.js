@@ -712,7 +712,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 	_importUser(userToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			let existingUser = Users.findOneByUsername(userToImport.username);
+			let existingUser = Users.findOneByUsernameIgnoringCase(userToImport.username);
 			if (!existingUser) {
 				// If there's no user with that username, but there's an imported user with the same original ID and no username, use that
 				existingUser = Users.findOne({

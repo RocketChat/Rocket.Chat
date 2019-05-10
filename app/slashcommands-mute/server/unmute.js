@@ -20,7 +20,7 @@ slashCommands.add('unmute', function Unmute(command, params, item) {
 		return;
 	}
 	const user = Meteor.users.findOne(Meteor.userId());
-	const unmutedUser = Users.findOneByUsername(username);
+	const unmutedUser = Users.findOneByUsernameIgnoringCase(username);
 	if (unmutedUser == null) {
 		return Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),

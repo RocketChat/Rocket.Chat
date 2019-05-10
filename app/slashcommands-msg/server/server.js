@@ -29,7 +29,7 @@ function Msg(command, params, item) {
 	const message = trimmedParams.slice(separator + 1);
 	const targetUsernameOrig = trimmedParams.slice(0, separator);
 	const targetUsername = targetUsernameOrig.replace('@', '');
-	const targetUser = Users.findOneByUsername(targetUsername);
+	const targetUser = Users.findOneByUsernameIgnoringCase(targetUsername);
 	if (targetUser == null) {
 		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),

@@ -1,3 +1,5 @@
+import UAParser from 'ua-parser-js';
+
 const mergeDeep = (target, source) => {
 	if (!(typeof target === 'object' && typeof source === 'object')) {
 		return target;
@@ -20,9 +22,9 @@ const mergeDeep = (target, source) => {
 	return target;
 };
 
-const UAParserMobile = {
+export const UAParserMobile = {
 	appName: 'RC Mobile',
-	device: 'mobile',
+	device: 'mobile-app',
 	uaSeparator: ';',
 	props: {
 		os: {
@@ -103,4 +105,37 @@ const UAParserMobile = {
 	},
 };
 
-export { UAParserMobile };
+export const UAParserDesktop = {
+	device: 'desktop-app',
+
+	isDesktopApp(uaString) {
+		if (!uaString || typeof uaString !== 'string') {
+			return false;
+		}
+
+		return uaString.includes(' Electron/');
+	},
+
+	uaObject(uaString) {
+		if (!this.isDesktopApp(uaString)) {
+			return {};
+		}
+
+		const ua = new UAParser(uaString);
+		const uaParsed = ua.getResult();
+
+		const [, name, version] = uaString.match(/(Rocket\.Chat)\/(\d+(\.\d+)+)/) || [];
+
+		return {
+			device: {
+				type: this.device,
+			},
+			os: uaParsed.os,
+			app: {
+				name,
+				version,
+			},
+		};
+	},
+};
+

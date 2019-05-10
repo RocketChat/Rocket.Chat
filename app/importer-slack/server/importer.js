@@ -164,7 +164,7 @@ export class SlackImporter extends Base {
 					}
 
 					Meteor.runAsUser(startedByUserId, () => {
-						const existantUser = Users.findOneByEmailAddress(user.profile.email) || Users.findOneByUsername(user.name);
+						const existantUser = Users.findOneByEmailAddress(user.profile.email) || Users.findOneByUsernameIgnoringCase(user.name);
 						if (existantUser) {
 							user.rocketId = existantUser._id;
 							Users.update({ _id: user.rocketId }, { $addToSet: { importIds: user.id } });

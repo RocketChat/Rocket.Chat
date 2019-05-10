@@ -167,13 +167,13 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		let user;
 		// Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
-			user = Models.Users.findOneByUsername(data.user_name);
+			user = Models.Users.findOneByUsernameIgnoringCase(data.user_name);
 		}
 
 		// If they don't exist (aka the trigger didn't contain a user) then we set the user based upon the
 		// configured username for the integration since this is required at all times.
 		if (!user) {
-			user = Models.Users.findOneByUsername(trigger.username);
+			user = Models.Users.findOneByUsernameIgnoringCase(trigger.username);
 		}
 
 		let tmpRoom;

@@ -39,12 +39,12 @@ Migrations.add({
 			},
 		}).forEach((user) => {
 			let newUserName = user.emails[0].address.split('@')[0];
-			if (Users.findOneByUsername(newUserName)) {
-				newUserName += Math.floor((Math.random() * 10) + 1);
-				if (Users.findOneByUsername(newUserName)) {
-					newUserName += Math.floor((Math.random() * 10) + 1);
-					if (Users.findOneByUsername(newUserName)) {
-						newUserName += Math.floor((Math.random() * 10) + 1);
+			if (Users.findOneByUsernameIgnoringCase(newUserName)) {
+				newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
+				if (Users.findOneByUsernameIgnoringCase(newUserName)) {
+					newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
+					if (Users.findOneByUsernameIgnoringCase(newUserName)) {
+						newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
 					}
 				}
 			}
@@ -55,8 +55,8 @@ Migrations.add({
 		console.log('Fixing _id of direct messages rooms');
 		Rooms.findByType('d').forEach(function(room) {
 			let newId = '';
-			const id0 = Users.findOneByUsername(room.usernames[0])._id;
-			const id1 = Users.findOneByUsername(room.usernames[1])._id;
+			const id0 = Users.findOneByUsernameIgnoringCase(room.usernames[0])._id;
+			const id1 = Users.findOneByUsernameIgnoringCase(room.usernames[1])._id;
 			const ids = [id0, id1];
 
 			newId = ids.sort().join('');

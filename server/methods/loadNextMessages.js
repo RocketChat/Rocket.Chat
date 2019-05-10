@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { Messages } from '../../app/models';
 import { settings } from '../../app/settings';
-import { composeMessageObjectWithUser } from '../../app/utils';
+import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 Meteor.methods({
 	loadNextMessages(rid, end, limit = 20) {
@@ -43,7 +43,7 @@ Meteor.methods({
 		}
 
 		return {
-			messages: records.map((message) => composeMessageObjectWithUser(message, fromId)),
+			messages: normalizeMessagesForUser(records, fromId),
 		};
 	},
 });

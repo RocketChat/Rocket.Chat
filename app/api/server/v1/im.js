@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib';
 import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
 import { hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { settings } from '../../../settings';
 import { API } from '../api';
 
@@ -235,7 +235,7 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 		}).fetch();
 
 		return API.v1.success({
-			messages: messages.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
 			total: Messages.find(ourQuery).count(),
@@ -275,7 +275,7 @@ API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: tr
 		}).fetch();
 
 		return API.v1.success({
-			messages: msgs.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(msgs, this.userId),
 			offset,
 			count: msgs.length,
 			total: Messages.find(ourQuery).count(),

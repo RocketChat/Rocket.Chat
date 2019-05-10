@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
 import { hasPermission, canAccessRoom } from '../../../authorization/server';
-import { composeMessageObjectWithUser } from '../../../utils/server';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+
 import { API } from '../api';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -526,7 +527,7 @@ API.v1.addRoute('groups.messages', { authRequired: true }, {
 		}).fetch();
 
 		return API.v1.success({
-			messages: messages.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
 			total: Messages.find(ourQuery).count(),

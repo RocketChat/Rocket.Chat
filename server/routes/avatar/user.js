@@ -62,7 +62,7 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 	let svg = renderSVGLetters(requestUsername, avatarSize);
 
 	if (settings.get('UI_Use_Name_Avatar')) {
-		const user = Users.findOneByUsername(requestUsername, {
+		const user = Users.findOneByUsernameIgnoringCase(requestUsername, {
 			fields: {
 				name: 1,
 			},

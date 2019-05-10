@@ -67,7 +67,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
 	}
 
-	owner = Users.findOneByUsername(owner, { fields: { username: 1 } });
+	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}

@@ -345,7 +345,7 @@ export class CustomOAuth {
 			}
 
 			if (serviceData.username) {
-				const user = Users.findOneByUsername(serviceData.username);
+				const user = Users.findOneByUsernameIgnoringCase(serviceData.username);
 				if (!user) {
 					return;
 				}

@@ -12,9 +12,9 @@ API.helperMethods.set('getUserFromParams', function _getUserFromParams() {
 	if (params.userId && params.userId.trim()) {
 		user = Users.findOneById(params.userId) || doesntExist;
 	} else if (params.username && params.username.trim()) {
-		user = Users.findOneByUsername(params.username) || doesntExist;
+		user = Users.findOneByUsernameIgnoringCase(params.username) || doesntExist;
 	} else if (params.user && params.user.trim()) {
-		user = Users.findOneByUsername(params.user) || doesntExist;
+		user = Users.findOneByUsernameIgnoringCase(params.user) || doesntExist;
 	} else {
 		throw new Meteor.Error('error-user-param-not-provided', 'The required "userId" or "username" param was not provided');
 	}
