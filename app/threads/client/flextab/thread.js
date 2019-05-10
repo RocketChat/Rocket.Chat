@@ -141,7 +141,7 @@ Template.thread.onRendered(function() {
 
 		if (jump && loading === false) {
 			this.find('.js-scroll-thread').style.scrollBehavior = 'smooth';
-			this.state.set('jump', null);
+			this.state.set('jump', null);
 			Tracker.afterFlush(() => {
 				const message = this.find(`#thread-${ jump }`);
 				message.classList.add('highlight');
