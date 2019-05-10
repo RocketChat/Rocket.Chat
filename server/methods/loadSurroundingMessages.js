@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Messages } from '../../app/models';
 import { settings } from '../../app/settings';
-import { composeMessageObjectWithUser } from '../../app/utils';
+import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
@@ -62,9 +62,10 @@ Meteor.methods({
 
 		const moreAfter = afterMessages.length === options.limit;
 
+		messages.push(...afterMessages);
+
 		return {
-			messages: messages.concat(afterMessages)
-				.map((message) => composeMessageObjectWithUser(message, fromId)),
+			messages: normalizeMessagesForUser(messages, fromId),
 			moreBefore,
 			moreAfter,
 		};

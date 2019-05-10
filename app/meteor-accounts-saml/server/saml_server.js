@@ -92,11 +92,11 @@ Meteor.methods({
 });
 
 Accounts.registerLoginHandler(function(loginRequest) {
-	if (!loginRequest.saml) {
+	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
 
-	const loginResult = Accounts.saml.retrieveCredential(this.connection.id);
+	const loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
 	if (Accounts.saml.settings.debug) {
 		console.log(`RESULT :${ JSON.stringify(loginResult) }`);
 	}

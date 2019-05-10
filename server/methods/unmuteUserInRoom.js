@@ -41,7 +41,7 @@ Meteor.methods({
 			});
 		}
 
-		const unmutedUser = Users.findOneByUsername(data.username);
+		const unmutedUser = Users.findOneByUsernameIgnoringCase(data.username);
 
 		const fromUser = Users.findOneById(fromId);
 
