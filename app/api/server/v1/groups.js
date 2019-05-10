@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
 import { hasPermission, canAccessRoom } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-
 import { API } from '../api';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property

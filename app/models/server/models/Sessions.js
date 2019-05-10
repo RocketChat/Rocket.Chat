@@ -237,9 +237,9 @@ export const aggregates = {
 		}, {
 			$group: {
 				_id: {
-					type : '$devices.device.type',
-					name : '$devices.device.name',
-					version : '$devices.device.version',
+					type: '$devices.device.type',
+					name: '$devices.device.name',
+					version: '$devices.device.version',
 				},
 				count: {
 					$sum: '$devices.sessions',
@@ -273,9 +273,9 @@ export const aggregates = {
 		}, {
 			$group: {
 				_id: {
-					type : '$devices.device.type',
-					name : '$devices.device.name',
-					version : '$devices.device.version',
+					type: '$devices.device.type',
+					name: '$devices.device.name',
+					version: '$devices.device.version',
 				},
 				count: {
 					$sum: '$devices.sessions',
@@ -310,8 +310,8 @@ export const aggregates = {
 		}, {
 			$group: {
 				_id: {
-					name : '$devices.device.os.name',
-					version : '$devices.device.os.version',
+					name: '$devices.device.os.name',
+					version: '$devices.device.os.version',
 				},
 				count: {
 					$sum: '$devices.sessions',
@@ -347,8 +347,8 @@ export const aggregates = {
 		}, {
 			$group: {
 				_id: {
-					name : '$devices.device.os.name',
-					version : '$devices.device.os.version',
+					name: '$devices.device.os.name',
+					version: '$devices.device.os.version',
 				},
 				count: {
 					$sum: '$devices.sessions',
