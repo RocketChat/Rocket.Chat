@@ -185,7 +185,7 @@ export class CsvImporter extends Base {
 
 						// If we couldn't find one by their email address, try to find an existing user by their username
 						if (!existantUser) {
-							existantUser = Users.findOneByUsername(u.username);
+							existantUser = Users.findOneByUsernameIgnoringCase(u.username);
 						}
 
 						if (existantUser) {
@@ -271,7 +271,7 @@ export class CsvImporter extends Base {
 							for (const msgs of messagesMap.values()) {
 								for (const msg of msgs.messages) {
 									if (!this.getUserFromUsername(msg.username)) {
-										const user = Users.findOneByUsername(msg.username);
+										const user = Users.findOneByUsernameIgnoringCase(msg.username);
 										if (user) {
 											this.users.users.push({
 												rocketId: user._id,

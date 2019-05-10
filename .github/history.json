@@ -15362,9 +15362,6 @@
         }
       ]
     },
-    "HEAD": {
-      "pull_requests": []
-    },
     "0.66.0-rc.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
@@ -30121,6 +30118,309 @@
           "milestone": "1.0.2",
           "contributors": [
             "tassoevan"
+          ]
+        }
+      ]
+    },
+    "1.0.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14443",
+          "title": "[FIX] Channel Leader Bar is in the way of Thread Header ",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14433",
+          "title": "Fix i18n files keys sort",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14442",
+          "title": "[FIX] Discussion name being invalid",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14415",
+          "title": "[FIX] Room name was undefined in some info dialogs",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.3",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14405",
+          "title": "[FIX] Exception on crowd sync due to a wrong logging method",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14418",
+          "title": "Fixes on DAU and MAU aggregations",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.3",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14397",
+          "title": "[IMPROVE] Don't use regex to find users",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14431",
+          "title": "[IMPROVE] Added flag `skipActiveUsersToBeReady` to not wait the load of `active users` to present the Web interface",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14422",
+          "title": "[FIX] IE11 support",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.3",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14386",
+          "title": "Add missing german translations",
+          "userLogin": "mrsimpson",
+          "milestone": "1.0.3",
+          "contributors": [
+            "mrsimpson",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14432",
+          "title": "[FIX] Escape unrecognized slash command message",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14430",
+          "title": "[FIX] Mentions message missing 'jump to message' action",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14426",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "milestone": "1.0.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14419",
+          "title": "[FIX] preview pdf its not working",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14404",
+          "title": "[FIX] Messages on thread panel were receiving wrong context/subscription",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14402",
+          "title": "[FIX] Error 400 on send a reply to an old thread",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14400",
+          "title": "[FIX] Users actions in administration were returning error",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14403",
+          "title": "[FIX]  Fallback to mongo version that doesn't require clusterMonitor role",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.3",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14345",
+          "title": "[FIX] SAML credentialToken removal was preventing mobile from being able to authenticate",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.3",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14376",
+          "title": "[FIX] Stream not connecting connect when using subdir and multi-instance",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.3",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14388",
+          "title": "[FIX] Pressing Enter in User Search field at channel causes reload",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.3",
+          "contributors": [
+            "MarcosSpessatto",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14379",
+          "title": "[FIX] Wrong token name was generating error on Gitlab OAuth login",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.3",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14387",
+          "title": "[FIX] more message actions to threads context(follow, unfollow, copy, delete)",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14396",
+          "title": "[FIX] Unnecessary meteor.defer on openRoom",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14389",
+          "title": "[IMPROVE] Allow change Discussion's properties",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14390",
+          "title": "Fix: Message body was not being updated when user disabled nrr message",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14393",
+          "title": "[FIX] Messages on threads disappearing",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14394",
+          "title": "[FIX] Bell was too small on threads",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14372",
+          "title": "[FIX] Main thread title on replies",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14351",
+          "title": "Improve German translations",
+          "userLogin": "mrsimpson",
+          "milestone": "1.0.3",
+          "contributors": [
+            "mrsimpson"
+          ]
+        },
+        {
+          "pr": "14362",
+          "title": "[FIX] New day separator overlapping above system message",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.3",
+          "contributors": [
+            "rodrigok"
           ]
         }
       ]

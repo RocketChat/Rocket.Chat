@@ -18,7 +18,7 @@ const Kick = function(command, params, { rid }) {
 	}
 	const userId = Meteor.userId();
 	const user = Meteor.users.findOne(userId);
-	const kickedUser = Users.findOneByUsername(username);
+	const kickedUser = Users.findOneByUsernameIgnoringCase(username);
 
 	if (kickedUser == null) {
 		return Notifications.notifyUser(userId, 'message', {
