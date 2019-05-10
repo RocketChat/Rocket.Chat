@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
+
 import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
@@ -95,7 +96,7 @@ function startMatrixBroadcast() {
 			connections[instance].instanceRecord = record;
 			connections[instance].instanceId = record._id;
 
-			return connections[instance].onReconnect = function() {
+			connections[instance].onReconnect = function() {
 				return authorizeConnection(instance);
 			};
 		},
@@ -131,7 +132,7 @@ Meteor.methods({
 			_id: remoteId,
 		};
 
-		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && (InstanceStatus.getCollection().findOne(query))) {
+		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && InstanceStatus.getCollection().findOne(query)) {
 			this.connection.broadcastAuth = true;
 		}
 
@@ -223,9 +224,8 @@ function startStreamBroadcast() {
 
 		if (value && value.trim() !== '') {
 			return startStreamCastBroadcast(value);
-		} else {
-			return startMatrixBroadcast();
 		}
+		return startMatrixBroadcast();
 	});
 
 	function broadcast(streamName, eventName, args/* , userId*/) {
@@ -243,18 +243,18 @@ function startStreamBroadcast() {
 
 					switch (response) {
 						case 'self-not-authorized':
-							logger.stream.error((`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`).red);
+							logger.stream.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`.red);
 							logger.stream.debug('    -> connection authorized'.red, connection.broadcastAuth);
 							logger.stream.debug('    -> connection status'.red, connection.status());
 							return logger.stream.debug('    -> arguments'.red, eventName, args);
 						case 'not-authorized':
-							logger.stream.error((`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`).red);
+							logger.stream.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`.red);
 							logger.stream.debug('    -> connection authorized'.red, connection.broadcastAuth);
 							logger.stream.debug('    -> connection status'.red, connection.status());
 							logger.stream.debug('    -> arguments'.red, eventName, args);
 							return authorizeConnection(instance);
 						case 'stream-not-exists':
-							logger.stream.error((`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`).red);
+							logger.stream.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`.red);
 							logger.stream.debug('    -> connection authorized'.red, connection.broadcastAuth);
 							logger.stream.debug('    -> connection status'.red, connection.status());
 							return logger.stream.debug('    -> arguments'.red, eventName, args);

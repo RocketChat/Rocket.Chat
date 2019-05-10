@@ -4,6 +4,7 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
 import visitor from '../../imports/client/visitor';
 
 this.ChatMessages = class ChatMessages {
@@ -14,7 +15,6 @@ this.ChatMessages = class ChatMessages {
 		this.wrapper = $(node).find('.wrapper');
 		this.input = $(node).find('.input-message').get(0);
 		// this.bindEvents()
-		return;
 	}
 
 	resize() {
@@ -258,7 +258,6 @@ this.ChatMessages = class ChatMessages {
 				event.preventDefault();
 				event.stopPropagation();
 				this.clearEditing();
-				return;
 			}
 			// else if k is 38 or k is 40 # Arrow Up or down
 			// 	if k is 38

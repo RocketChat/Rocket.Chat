@@ -2,9 +2,10 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import toastr from 'toastr';
 import s from 'underscore.string';
+
+import { e2e } from './rocketchat.e2e';
 import { settings } from '../../settings';
 import { t } from '../../utils';
-import { e2e } from './rocketchat.e2e';
 
 Template.accountEncryption.helpers({
 	isEnabled() {
@@ -26,7 +27,7 @@ Template.accountEncryption.helpers({
 		const encryptionKey = instance.encryptionKey.get();
 		const confirmationEncryptionKey = instance.confirmationEncryptionKey.get();
 
-		if ((!encryptionKey || encryptionKey !== confirmationEncryptionKey)) {
+		if (!encryptionKey || encryptionKey !== confirmationEncryptionKey) {
 			return ret;
 		}
 	},
@@ -53,8 +54,8 @@ Template.accountEncryption.events({
 Template.accountEncryption.onCreated(function() {
 	const self = this;
 
-	this.encryptionKey = new ReactiveVar;
-	this.confirmationEncryptionKey = new ReactiveVar;
+	this.encryptionKey = new ReactiveVar();
+	this.confirmationEncryptionKey = new ReactiveVar();
 
 	this.save = function(cb) {
 		const instance = this;
@@ -82,5 +83,4 @@ Template.accountEncryption.onCreated(function() {
 		this.find('[name=encryptionKey]').value = '';
 		this.find('[name=confirmation-encryptionKey]').value = '';
 	};
-
 });

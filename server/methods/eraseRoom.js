@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { deleteRoom } from '../../app/lib';
 import { hasPermission } from '../../app/authorization';
 import { Rooms } from '../../app/models';

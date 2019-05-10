@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Base } from './_Base';
-import Settings from './Settings';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { Base } from './_Base';
+import Settings from './Settings';
 
 export class LivechatVisitors extends Base {
 	constructor() {

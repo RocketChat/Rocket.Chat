@@ -1,10 +1,12 @@
 import os from 'os';
+
 import { HTTP } from 'meteor/http';
 import { check, Match } from 'meteor/check';
+import { MongoInternals } from 'meteor/mongo';
+
 import { Settings } from '../../../models';
 import { Info } from '../../../utils';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
-import { MongoInternals } from 'meteor/mongo';
 
 export default () => {
 	try {

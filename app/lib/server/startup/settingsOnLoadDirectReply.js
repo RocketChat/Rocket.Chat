@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../settings';
 import _ from 'underscore';
+
+import { settings } from '../../../settings';
 import { IMAPIntercepter, POP3Helper, POP3 } from '../lib/interceptDirectReplyEmails.js';
 
 

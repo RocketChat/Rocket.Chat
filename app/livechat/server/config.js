@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
@@ -426,5 +427,4 @@ Meteor.startup(function() {
 		i18nDescription: 'Data_processing_consent_text_description',
 		enableQuery: { _id: 'Livechat_force_accept_data_processing_consent', value: true },
 	});
-
 });

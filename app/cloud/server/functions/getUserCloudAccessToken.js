@@ -1,11 +1,12 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
-import { Users } from '../../../models';
+
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
 import { userLoggedOut } from './userLoggedOut';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import { userScopes } from '../oauthScopes';
 
 export function getUserCloudAccessToken(userId, forceNew = false, scope = '', save = true) {

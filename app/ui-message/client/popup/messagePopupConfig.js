@@ -6,6 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { Messages, Subscriptions, Users } from '../../../models';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { EmojiPicker, emoji } from '../../../emoji';
@@ -197,12 +198,12 @@ Template.messagePopupConfig.helpers({
 					.find(
 						{
 							ts: { $exists: true },
-							...(filterRegex && {
+							...filterRegex && {
 								$or: [
 									{ username: filterRegex },
 									{ name: filterRegex },
 								],
-							}),
+							},
 						},
 						{
 							limit: 5,
@@ -221,12 +222,12 @@ Template.messagePopupConfig.helpers({
 									t: 'd',
 									$and: [
 										{
-											...(filterRegex && {
+											...filterRegex && {
 												$or: [
 													{ name: filterRegex },
 													{ fname: filterRegex },
 												],
-											}),
+											},
 										},
 										{
 											name: { $nin: usernamesAlreadyFetched },
@@ -269,12 +270,12 @@ Template.messagePopupConfig.helpers({
 						const newItems = Meteor.users.find({
 							$and: [
 								{
-									...(filterRegex && {
+									...filterRegex && {
 										$or: [
 											{ username: filterRegex },
 											{ name: filterRegex },
 										],
-									}),
+									},
 								},
 								{
 									username: {
