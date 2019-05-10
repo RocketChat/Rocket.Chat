@@ -6,6 +6,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
+
 import { KonchatNotification } from '../../app/ui';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
@@ -186,4 +187,3 @@ FlowRouter.notFound = {
 		BlazeLayout.render('pageNotFound');
 	},
 };
-

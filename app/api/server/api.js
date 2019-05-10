@@ -3,13 +3,14 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
+import { RateLimiter } from 'meteor/rate-limit';
+import _ from 'underscore';
+
 import { Logger } from '../../logger';
 import { settings } from '../../settings';
 import { metrics } from '../../metrics';
 import { hasPermission, hasAllPermission } from '../../authorization';
-import { RateLimiter } from 'meteor/rate-limit';
 
-import _ from 'underscore';
 
 const logger = new Logger('API', {});
 const rateLimiterDictionary = {};
@@ -113,7 +114,7 @@ class APIClass extends Restivus {
 			statusCode: 404,
 			body: {
 				success: false,
-				error: msg ? msg : 'Resource not found',
+				error: msg || 'Resource not found',
 			},
 		};
 	}
@@ -123,7 +124,7 @@ class APIClass extends Restivus {
 			statusCode: 403,
 			body: {
 				success: false,
-				error: msg ? msg : 'unauthorized',
+				error: msg || 'unauthorized',
 			},
 		};
 	}
@@ -133,7 +134,7 @@ class APIClass extends Restivus {
 			statusCode: 429,
 			body: {
 				success: false,
-				error: msg ? msg : 'Too many requests',
+				error: msg || 'Too many requests',
 			},
 		};
 	}
@@ -141,7 +142,7 @@ class APIClass extends Restivus {
 	reloadRoutesToRefreshRateLimiter() {
 		const { version } = this._config;
 		this._routes.forEach((route) => {
-			const shouldAddRateLimitToRoute = ((typeof route.options.rateLimiterOptions === 'object' || route.options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS));
+			const shouldAddRateLimitToRoute = (typeof route.options.rateLimiterOptions === 'object' || route.options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
 			if (shouldAddRateLimitToRoute) {
 				this.addRateLimiterRuleForRoutes({
 					routes: [route.path],
@@ -204,7 +205,7 @@ class APIClass extends Restivus {
 			routes = [routes];
 		}
 		const { version } = this._config;
-		const shouldAddRateLimitToRoute = ((typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS));
+		const shouldAddRateLimitToRoute = (typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
 		if (shouldAddRateLimitToRoute) {
 			this.addRateLimiterRuleForRoutes({
 				routes,

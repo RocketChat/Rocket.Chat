@@ -4,10 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import _ from 'underscore';
+
+import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
-import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
-import _ from 'underscore';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 
@@ -183,7 +184,6 @@ export class CustomOAuth {
 	registerService() {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
-
 			const response = self.getAccessToken(query);
 			const identity = self.getIdentity(response.access_token);
 
@@ -191,7 +191,7 @@ export class CustomOAuth {
 				_OAuthCustom: true,
 				accessToken: response.access_token,
 				idToken: response.id_token,
-				expiresAt: (+new Date) + (1000 * parseInt(response.expires_in, 10)),
+				expiresAt: +new Date() + (1000 * parseInt(response.expires_in, 10)),
 			};
 
 			// only set the token in serviceData if it's there. this ensures
@@ -390,7 +390,6 @@ export class CustomOAuth {
 
 			return true;
 		});
-
 	}
 
 	registerAccessTokenService(name) {
@@ -414,7 +413,7 @@ export class CustomOAuth {
 
 			const serviceData = {
 				accessToken: options.accessToken,
-				expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
+				expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
 			};
 
 			const fields = _.pick(identity, whitelisted);

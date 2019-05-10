@@ -2,7 +2,6 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Template } from 'meteor/templating';
 
 Template.fxOsInstallPrompt.onRendered(function() {
-
 	const showPrompt = function() {
 		const request = window.navigator.mozApps.install(`http://${ location.host }/manifest.webapp`);
 		request.onsuccess = function() {

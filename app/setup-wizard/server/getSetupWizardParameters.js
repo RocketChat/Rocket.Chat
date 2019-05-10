@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasRole } from '../../authorization';
 import { Settings } from '../../models';
 

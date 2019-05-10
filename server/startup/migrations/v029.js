@@ -16,7 +16,7 @@ Migrations.add({
 					value: LDAP_Url,
 				},
 				$setOnInsert: {
-					createdAt: new Date,
+					createdAt: new Date(),
 				},
 			});
 		}
@@ -27,7 +27,7 @@ Migrations.add({
 					value: 'tls',
 				},
 				$setOnInsert: {
-					createdAt: new Date,
+					createdAt: new Date(),
 				},
 			});
 		}
@@ -38,7 +38,7 @@ Migrations.add({
 					value: LDAP_DN,
 				},
 				$setOnInsert: {
-					createdAt: new Date,
+					createdAt: new Date(),
 				},
 			});
 
@@ -47,7 +47,7 @@ Migrations.add({
 					value: '',
 				},
 				$setOnInsert: {
-					createdAt: new Date,
+					createdAt: new Date(),
 				},
 			});
 
@@ -56,7 +56,7 @@ Migrations.add({
 					value: '',
 				},
 				$setOnInsert: {
-					createdAt: new Date,
+					createdAt: new Date(),
 				},
 			});
 		}
@@ -67,7 +67,7 @@ Migrations.add({
 					value: LDAP_Bind_Search,
 				},
 				$setOnInsert: {
-					createdAt: new Date,
+					createdAt: new Date(),
 				},
 			});
 
@@ -76,7 +76,7 @@ Migrations.add({
 					value: true,
 				},
 				$setOnInsert: {
-					createdAt: new Date,
+					createdAt: new Date(),
 				},
 			});
 		}

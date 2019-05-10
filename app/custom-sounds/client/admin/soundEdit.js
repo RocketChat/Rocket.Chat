@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from '../../../utils';
 import toastr from 'toastr';
 import s from 'underscore.string';
+
+import { t, handleError } from '../../../utils';
 
 Template.soundEdit.helpers({
 	sound() {
@@ -30,7 +31,7 @@ Template.soundEdit.events({
 	},
 
 	'change input[type=file]'(ev) {
-		const e = (ev.originalEvent != null) ? ev.originalEvent : ev;
+		const e = ev.originalEvent != null ? ev.originalEvent : ev;
 		let { files } = e.target;
 		if (e.target.files == null || files.length === 0) {
 			if (e.dataTransfer.files != null) {
@@ -131,7 +132,6 @@ Template.soundEdit.onCreated(function() {
 								if (uploadError != null) {
 									handleError(uploadError);
 									console.log(uploadError);
-									return;
 								}
 							}
 							);

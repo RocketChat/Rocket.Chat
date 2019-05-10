@@ -1,7 +1,7 @@
 import { withFilter } from 'graphql-subscriptions';
+
 import { Rooms } from '../../../../models';
 import { callbacks } from '../../../../callbacks';
-
 import { pubsub } from '../../subscriptions';
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/chatMessageAdded.graphqls';
@@ -15,7 +15,7 @@ export function publishMessage(message) {
 function shouldPublish(message, { id, directTo }, username) {
 	if (id) {
 		return message.rid === id;
-	} else if (directTo) {
+	} if (directTo) {
 		const room = Rooms.findOne({
 			usernames: { $all: [directTo, username] },
 			t: 'd',

@@ -92,7 +92,7 @@
 	},
 	"devDependencies": {
 		"@octokit/rest": "^16.1.0",
-		"@rocket.chat/eslint-config": "^0.2.0",
+		"@rocket.chat/eslint-config": "^0.3.0",
 		"acorn": "^6.0.7",
 		"autoprefixer": "^9.4.1",
 		"babel-eslint": "^10.0.1",

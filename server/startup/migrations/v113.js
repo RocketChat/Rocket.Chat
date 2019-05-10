@@ -12,7 +12,7 @@ Migrations.add({
 			const filesToUpdate = Uploads.find(fileQuery);
 			filesToUpdate.forEach((file) => {
 				const messageQuery = {
-					'file._id' : file._id,
+					'file._id': file._id,
 				};
 				const message = Messages.findOne(messageQuery);
 				if (message) {

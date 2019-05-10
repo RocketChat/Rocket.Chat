@@ -1,6 +1,6 @@
 import UAParser from 'ua-parser-js';
 
-const mergeDeep = ((target, source) => {
+const mergeDeep = (target, source) => {
 	if (!(typeof target === 'object' && typeof source === 'object')) {
 		return target;
 	}
@@ -20,7 +20,7 @@ const mergeDeep = ((target, source) => {
 	}
 
 	return target;
-});
+};
 
 export const UAParserMobile = {
 	appName: 'RC Mobile',
@@ -138,4 +138,3 @@ export const UAParserDesktop = {
 		};
 	},
 };
-

@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import moment from 'moment';
+
 import { settings } from '../../../settings';
 import { Rooms, Messages, Users, SmarshHistory } from '../../../models';
 import { MessageTypes } from '../../../ui-utils';
 import { smarsh } from '../lib/rocketchat';
-import _ from 'underscore';
-import moment from 'moment';
 import 'moment-timezone';
 
 const start = '<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';
@@ -21,9 +22,8 @@ function _getLink(attachment) {
 
 	if (url.match(/^(https?:)?\/\//i)) {
 		return url;
-	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 	}
+	return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 }
 
 smarsh.generateEml = () => {

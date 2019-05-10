@@ -1,5 +1,6 @@
 // import resetSelection from '../resetSelection';
 import { Meteor } from 'meteor/meteor';
+
 import { TabBar } from '../../../ui-utils';
 import { hasAllPermission } from '../../../authorization';
 
