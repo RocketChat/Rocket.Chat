@@ -1,1 +1,1 @@
-export const isURL = (str) => /^https?:\/\//.test(str);
+export const isURL = (str) => /^(https?|data):\/\//.test(str);
