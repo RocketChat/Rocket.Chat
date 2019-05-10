@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+
 import { Rooms, Subscriptions } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-
 import { EmojiPicker } from '../../emoji';
 import { tooltip } from '../../tooltip';
 
@@ -13,7 +13,7 @@ Template.room.events({
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
-		const { msg:{ rid, _id: mid } } = messageArgs(data);
+		const { msg: { rid, _id: mid } } = messageArgs(data);
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
@@ -30,7 +30,7 @@ Template.room.events({
 		event.preventDefault();
 
 		const data = Blaze.getData(event.currentTarget);
-		const { msg:{ _id: mid } } = messageArgs(data);
+		const { msg: { _id: mid } } = messageArgs(data);
 		Meteor.call('setReaction', $(event.currentTarget).data('emoji'), mid, () => {
 			tooltip.hide();
 		});
@@ -55,6 +55,7 @@ Meteor.startup(function() {
 		context: [
 			'message',
 			'message-mobile',
+			'threads',
 		],
 		action(event) {
 			event.stopPropagation();
@@ -67,11 +68,11 @@ Meteor.startup(function() {
 
 			if (!room) {
 				return false;
-			} else if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+			} if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 				return false;
-			} else if (!Subscriptions.findOne({ rid: message.rid })) {
+			} if (!Subscriptions.findOne({ rid: message.rid })) {
 				return false;
-			} else if (message.private) {
+			} if (message.private) {
 				return false;
 			}
 

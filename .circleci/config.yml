@@ -45,17 +45,11 @@ test-save-npm-cache: &test-save-npm-cache
 test-docker-image: &test-docker-image
   circleci/node:8.11-stretch-browsers
 
-test: &test
+test-with-oplog: &test-with-oplog
   <<: *defaults
-  environment: &test-environment
+  environment:
     TEST_MODE: "true"
     MONGO_URL: mongodb://localhost:27017/rocketchat
-
-
-test-with-oplog: &test-with-oplog
-  <<: *test
-  environment:
-    <<: *test-environment
     MONGO_OPLOG_URL: mongodb://localhost:27017/local
 
   steps:
@@ -69,25 +63,13 @@ test-with-oplog: &test-with-oplog
     - save_cache: *test-save-npm-cache
     - store_artifacts: *test-store_artifacts
 
-test-without-oplog: &test-without-oplog
-  <<: *test
-  steps:
-    - attach_workspace: *attach_workspace
-    - checkout
-    - run: *test-install-dependencies
-    - restore_cache: *test-restore-npm-cache
-    - run: *test-npm-install
-    - run: *test-run
-    - save_cache: *test-save-npm-cache
-    - store_artifacts: *test-store_artifacts
-
-
 version: 2
 jobs:
   build:
     <<: *defaults
     docker:
       - image: circleci/node:8.11-stretch
+      - image: mongo:3.2
 
     steps:
       - checkout
@@ -136,6 +118,9 @@ jobs:
             # rm -rf node_modules
             # rm -f package-lock.json
             meteor npm install
+            cd packages/rocketchat-livechat/.app
+            meteor npm install
+            cd -
 
       - run:
           name: Lint
@@ -145,7 +130,7 @@ jobs:
       - run:
           name: Unit Test
           command: |
-            meteor npm run testunit
+            MONGO_URL=mongodb://localhost:27017 meteor npm run testunit
 
       - restore_cache:
           keys:
@@ -247,32 +232,6 @@ jobs:
       - image: *test-docker-image
       - image: mongo:4.0
         command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
-
-
-  test-without-oplog-mongo-3-2:
-    <<: *test-without-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.2
-
-  test-without-oplog-mongo-3-4:
-    <<: *test-without-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.4
-
-  test-without-oplog-mongo-3-6:
-    <<: *test-without-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.6
-
-  test-without-oplog-mongo-4-0:
-    <<: *test-without-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:4.0
-
 
   deploy:
     <<: *defaults
@@ -449,20 +408,12 @@ workflows:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-3-6: *test-mongo-no-pr
       - test-with-oplog-mongo-4-0: *test-mongo
-      - test-without-oplog-mongo-3-2: *test-mongo-no-pr
-      - test-without-oplog-mongo-3-4: *test-mongo-no-pr
-      - test-without-oplog-mongo-3-6: *test-mongo-no-pr
-      - test-without-oplog-mongo-4-0: *test-mongo-no-pr
       - deploy:
           requires:
             - test-with-oplog-mongo-3-2
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
-            - test-without-oplog-mongo-3-2
-            - test-without-oplog-mongo-3-4
-            - test-without-oplog-mongo-3-6
-            - test-without-oplog-mongo-4-0
           filters:
             branches:
               only: develop

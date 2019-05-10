@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+
 import { RoomManager } from '../../app/ui-utils';
 
 Meteor.startup(function() {

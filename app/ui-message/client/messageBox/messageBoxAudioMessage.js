@@ -2,11 +2,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { fileUploadHandler } from '../../file-upload';
-import { settings } from '../../settings';
-import { AudioRecorder } from '../../ui';
-import { call } from '../../ui-utils';
-import { t } from '../../utils';
+
+import { fileUploadHandler } from '../../../file-upload';
+import { settings } from '../../../settings';
+import { AudioRecorder } from '../../../ui';
+import { call } from '../../../ui-utils';
+import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
 const startRecording = () => new Promise((resolve, reject) =>
@@ -105,12 +106,12 @@ Template.messageBoxAudioMessage.onCreated(function() {
 
 Template.messageBoxAudioMessage.helpers({
 	isAllowed() {
-		return AudioRecorder.isSupported() &&
-			!Template.instance().isMicrophoneDenied.get() &&
-			settings.get('FileUpload_Enabled') &&
-			settings.get('Message_AudioRecorderEnabled') &&
-			(!settings.get('FileUpload_MediaTypeWhiteList') ||
-			settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
+		return AudioRecorder.isSupported()
+			&& !Template.instance().isMicrophoneDenied.get()
+			&& settings.get('FileUpload_Enabled')
+			&& settings.get('Message_AudioRecorderEnabled')
+			&& (!settings.get('FileUpload_MediaTypeWhiteList')
+				|| settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
 
 	stateClass() {
@@ -140,9 +141,9 @@ Template.messageBoxAudioMessage.events({
 		try {
 			await startRecording();
 
-			const startTime = new Date;
+			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {
-				const now = new Date;
+				const now = new Date();
 				const distance = (now.getTime() - startTime.getTime()) / 1000;
 				const minutes = Math.floor(distance / 60);
 				const seconds = Math.floor(distance % 60);

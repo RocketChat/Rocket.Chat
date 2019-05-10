@@ -1,13 +1,12 @@
 import { Random } from 'meteor/random';
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
 import _ from 'underscore';
 import s from 'underscore.string';
 import katex from 'katex';
 
-class Boundary {
-	constructor() {}
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
 
+class Boundary {
 	length() {
 		return this.end - this.start;
 	}
@@ -72,8 +71,8 @@ class Katex {
 			return null;
 		}
 
-		const inner = new Boundary;
-		const outer = new Boundary;
+		const inner = new Boundary();
+		const outer = new Boundary();
 
 		inner.start = pos + closer.length;
 		inner.end = inner.start + closerIndex;
@@ -128,8 +127,8 @@ class Katex {
 				},
 			});
 		} catch ({ message }) {
-			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">` +
-				`${ s.escapeHTML(message) }</div>`;
+			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">`
+				+ `${ s.escapeHTML(message) }</div>`;
 		}
 	}
 
@@ -148,7 +147,8 @@ class Katex {
 			// Set what comes after the latex block to be examined next
 			str = parts.after;
 		}
-		return result += str;
+		result += str;
+		return result;
 	}
 
 	renderMessage = (message) => {
@@ -187,7 +187,7 @@ class Katex {
 	isParenthesisSyntaxEnabled = () => settings.get('Katex_Parenthesis_Syntax')
 }
 
-const instance = new Katex;
+const instance = new Katex();
 
 callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH - 1, 'katex');
 

@@ -1,13 +1,15 @@
 import qs from 'querystring';
+
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
-import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
 
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
 import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
-import { Federation } from './';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
+import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
+
+import { Federation } from '.';
 
 export class PeerClient {
 	constructor() {
@@ -139,7 +141,7 @@ export class PeerClient {
 	propagateEvent(e) {
 		this.log(`propagateEvent: ${ e.t }`);
 
-		const { peer: domain } = e;
+		const { peer: domain, options: eventOptions } = e;
 
 		const peer = Federation.peerDNS.searchPeer(domain);
 
@@ -157,7 +159,7 @@ export class PeerClient {
 				// Encrypt with the local private key
 				payload = Federation.privateKey.encryptPrivate(payload);
 
-				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
+				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, eventOptions.retry || { total: 5, stepSize: 500, stepMultiplier: 10 });
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
@@ -364,8 +366,8 @@ export class PeerClient {
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room or user who joined are federated
-		if ((!userWhoJoined.federation || userWhoJoined.federation.peer === localPeerDomain) &&
-			!FederatedRoom.isFederated(localPeerDomain, room)) {
+		if ((!userWhoJoined.federation || userWhoJoined.federation.peer === localPeerDomain)
+			&& !FederatedRoom.isFederated(localPeerDomain, room)) {
 			return users;
 		}
 

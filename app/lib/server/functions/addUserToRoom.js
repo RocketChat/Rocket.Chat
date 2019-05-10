@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Rooms, Subscriptions, Messages } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { callbacks } from '../../../callbacks';

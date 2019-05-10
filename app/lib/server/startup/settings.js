@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+
 import { settings } from '../../../settings';
 import './email';
 
@@ -255,16 +256,16 @@ settings.addGroup('Accounts', function() {
 			type: 'select',
 			values: [
 				{
-					key : 'all',
-					i18nLabel : 'All_messages',
+					key: 'all',
+					i18nLabel: 'All_messages',
 				},
 				{
-					key : 'mentions',
-					i18nLabel : 'Mentions',
+					key: 'mentions',
+					i18nLabel: 'Mentions',
 				},
 				{
-					key : 'nothing',
-					i18nLabel : 'Nothing',
+					key: 'nothing',
+					i18nLabel: 'Nothing',
 				},
 			],
 			public: true,
@@ -809,10 +810,6 @@ settings.addGroup('General', function() {
 	});
 	this.add('Bugsnag_api_key', '', {
 		type: 'string',
-		public: false,
-	});
-	this.add('Force_Disable_OpLog_For_Cache', false, {
-		type: 'boolean',
 		public: false,
 	});
 	this.add('Restart', 'restart_server', {
@@ -2662,16 +2659,6 @@ settings.addGroup('Setup_Wizard', function() {
 
 		this.add('Cloud_Workspace_Registration_State', '', {
 			type: 'string',
-			hidden: true,
-			readonly: true,
-			enableQuery: {
-				_id: 'Register_Server',
-				value: true,
-			},
-		});
-
-		this.add('Cloud_Workspace_Account_Associated', false, {
-			type: 'boolean',
 			hidden: true,
 			readonly: true,
 			enableQuery: {

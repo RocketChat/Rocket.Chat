@@ -4,36 +4,39 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { EmojiPicker } from '../../emoji';
-import { Users } from '../../models';
-import { settings } from '../../settings';
+import moment from 'moment';
+
+import { setupAutogrow } from './messageBoxAutogrow';
+import {
+	formattingButtons,
+	applyFormatting,
+} from './messageBoxFormatting';
+import { EmojiPicker } from '../../../emoji';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import {
 	fileUpload,
 	KonchatNotification,
-} from '../../ui';
+} from '../../../ui';
 import {
 	messageBox,
 	popover,
 	call,
 	keyCodes,
 	isRTL,
-} from '../../ui-utils';
+} from '../../../ui-utils';
 import {
 	t,
 	roomTypes,
 	getUserPreference,
-} from '../../utils';
-import moment from 'moment';
-import {
-	formattingButtons,
-	applyFormatting,
-} from './messageBoxFormatting';
+} from '../../../utils';
+import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
-
+import './messageBoxReadOnly';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -54,7 +57,7 @@ Template.messageBox.onCreated(function() {
 	};
 
 	this.insertNewLine = () => {
-		const { input } = this;
+		const { input, autogrow } = this;
 		if (!input) {
 			return;
 		}
@@ -68,7 +71,8 @@ Template.messageBox.onCreated(function() {
 			const before = input.value.substring(0, input.selectionStart);
 			const after = input.value.substring(input.selectionEnd, input.value.length);
 			input.value = `${ before }\n${ after }`;
-			input.selectionStart = input.selectionEnd = newPosition;
+			input.selectionStart = newPosition;
+			input.selectionEnd = newPosition;
 		} else {
 			input.value += '\n';
 		}
@@ -76,26 +80,32 @@ Template.messageBox.onCreated(function() {
 
 		input.blur();
 		input.focus();
-		input.updateAutogrow();
+		autogrow.update();
 	};
 
 	this.send = (event) => {
-		if (!this.input) {
+		const { input } = this;
+
+		if (!input) {
 			return;
 		}
 
-		const { rid, tmid, onSend } = this.data;
-		const { value } = this.input;
+		const { autogrow, data: { rid, tmid, onSend } } = this;
+		const { value } = input;
 		this.set('');
 		onSend && onSend.call(this.data, event, { rid, tmid, value }, () => {
-			this.input.updateAutogrow();
-			this.input.focus();
+			autogrow.update();
+			input.focus();
 		});
 	};
 });
 
 Template.messageBox.onRendered(function() {
-
+	const $input = $(this.find('.js-input-message'));
+	$input.on('dataChange', () => {
+		const messages = $input.data('reply') || [];
+		this.replyMessageData.set(messages);
+	});
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);
@@ -108,8 +118,8 @@ Template.messageBox.onRendered(function() {
 			});
 		}
 
-		const isBlocked = (room && room.t === 'd' && subscription && subscription.blocked);
-		const isBlocker = (room && room.t === 'd' && subscription && subscription.blocker);
+		const isBlocked = room && room.t === 'd' && subscription && subscription.blocked;
+		const isBlocker = room && room.t === 'd' && subscription && subscription.blocker;
 		const isBlockedOrBlocker = isBlocked || isBlocker;
 
 		const mustJoinWithCode = !subscription && room.joinCodeRequired;
@@ -143,22 +153,27 @@ Template.messageBox.onRendered(function() {
 				this.popupConfig.set(null);
 			}
 
+			if (this.autogrow) {
+				this.autogrow.destroy();
+				this.autogrow = null;
+			}
+
 			if (!input) {
 				return;
 			}
 
-			const $input = $(input);
-
-			$input.on('dataChange', () => {
-				const messages = $input.data('reply') || [];
-				this.replyMessageData.set(messages);
-			});
-
-			$input.autogrow().on('autogrow', () => {
-				onResize && onResize();
-			});
+			const shadow = this.find('.js-input-message-shadow');
+			this.autogrow = setupAutogrow(input, shadow, onResize);
 		});
 	});
+});
+
+Template.messageBox.onDestroyed(function() {
+	if (!this.autogrow) {
+		return;
+	}
+
+	this.autogrow.destroy();
 });
 
 Template.messageBox.helpers({
@@ -168,7 +183,6 @@ Template.messageBox.helpers({
 		if (!rid) {
 			return false;
 		}
-
 		const isAnonymous = !Meteor.userId();
 		return isAnonymous || instance.state.get('mustJoinWithCode');
 	},
@@ -261,8 +275,8 @@ const handleSubmit = (event, instance) => {
 	}
 
 	const sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
-	const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' ||
-		(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
+	const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal'
+		|| (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
 	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
 
@@ -337,17 +351,16 @@ Template.messageBox.events({
 	},
 	'paste .js-input-message'(event, instance) {
 		const { rid, tmid } = this;
-		const { input } = instance;
-		setTimeout(() => {
-			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
-		}, 50);
+		const { input, autogrow } = instance;
+
+		setTimeout(() => autogrow && autogrow.update(), 50);
 
 		if (!event.originalEvent.clipboardData) {
 			return;
 		}
 
 		const files = [...event.originalEvent.clipboardData.items]
-			.filter((item) => (item.kind === 'file' && item.type.indexOf('image/') !== -1))
+			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
 			.map((item) => ({
 				file: item.getAsFile(),
 				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
@@ -357,7 +370,6 @@ Template.messageBox.events({
 		if (files.length) {
 			event.preventDefault();
 			fileUpload(files, input, { rid, tmid });
-			return;
 		}
 	},
 	'input .js-input-message'(event, instance) {

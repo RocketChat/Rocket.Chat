@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
-import { Settings } from '../../models';
-import { settings } from '../../settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 
+import { Settings } from '../../models';
+import { settings } from '../../settings';
+
 const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
 	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-	const colors = Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1, editor: 1 } }).fetch().filter((color) => color && color.value);
+	const colors = Settings.find({ _id: /theme-color-rc/i }, { fields: { value: 1, editor: 1 } }).fetch().filter((color) => color && color.value);
 
 	if (!colors) {
 		return;
@@ -27,7 +28,7 @@ renderDynamicCssList();
 // 	changed: renderDynamicCssList
 // });
 
-Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1 } }).observe({
+Settings.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({
 	changed: renderDynamicCssList,
 });
 
@@ -75,8 +76,8 @@ settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 
 settings.get('theme-color-sidebar-background', (key, value) => {
 	const escapedValue = s.escapeHTML(value);
-	Inject.rawHead(key, `<meta name="msapplication-TileColor" content="${ escapedValue }" />` +
-						`<meta name="theme-color" content="${ escapedValue }" />`);
+	Inject.rawHead(key, `<meta name="msapplication-TileColor" content="${ escapedValue }" />`
+						+ `<meta name="theme-color" content="${ escapedValue }" />`);
 });
 
 settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
@@ -99,16 +100,16 @@ settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
 settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key,
-		`<title>${ escapedValue }</title>` +
-		`<meta name="application-name" content="${ escapedValue }">` +
-		`<meta name="apple-mobile-web-app-title" content="${ escapedValue }">`);
+		`<title>${ escapedValue }</title>`
+		+ `<meta name="application-name" content="${ escapedValue }">`
+		+ `<meta name="apple-mobile-web-app-title" content="${ escapedValue }">`);
 });
 
 settings.get('Meta_language', (key, value = '') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key,
-		`<meta http-equiv="content-language" content="${ escapedValue }">` +
-		`<meta name="language" content="${ escapedValue }">`);
+		`<meta http-equiv="content-language" content="${ escapedValue }">`
+		+ `<meta name="language" content="${ escapedValue }">`);
 });
 
 settings.get('Meta_robots', (key, value = '') => {

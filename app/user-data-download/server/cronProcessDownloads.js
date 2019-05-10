@@ -1,12 +1,14 @@
+import fs from 'fs';
+import path from 'path';
+
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
+import archiver from 'archiver';
+
 import { settings } from '../../settings';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations } from '../../models';
 import { FileUpload } from '../../file-upload';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
-import fs from 'fs';
-import path from 'path';
-import archiver from 'archiver';
 import * as Mailer from '../../mailer';
 
 let zipFolder = '/tmp/zipFiles';
@@ -43,7 +45,7 @@ const loadUserSubscriptions = function(exportOperation) {
 	cursor.forEach((subscription) => {
 		const roomId = subscription.rid;
 		const roomData = Rooms.findOneById(roomId);
-		let roomName = (roomData && roomData.name) ? roomData.name : roomId;
+		let roomName = roomData && roomData.name ? roomData.name : roomId;
 		let userId = null;
 
 		if (subscription.t === 'd') {
@@ -79,7 +81,7 @@ const loadUserSubscriptions = function(exportOperation) {
 
 const getAttachmentData = function(attachment) {
 	const attachmentData = {
-		type : attachment.type,
+		type: attachment.type,
 		title: attachment.title,
 		title_link: attachment.title_link,
 		image_url: attachment.image_url,
@@ -227,13 +229,13 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 					message = TAPi18n.__('User_left');
 					break;
 				case 'au':
-					message = TAPi18n.__('User_added_by', { user_added : msg.msg, user_by : msg.u.username });
+					message = TAPi18n.__('User_added_by', { user_added: msg.msg, user_by: msg.u.username });
 					break;
 				case 'r':
 					message = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: msg.u.username });
 					break;
 				case 'ru':
-					message = TAPi18n.__('User_removed_by', { user_removed : msg.msg, user_by : msg.u.username });
+					message = TAPi18n.__('User_removed_by', { user_removed: msg.msg, user_by: msg.u.username });
 					break;
 				case 'wm':
 					message = TAPi18n.__('Welcome', { user: msg.u.username });
@@ -315,7 +317,6 @@ const sendEmail = function(userId) {
 		subject,
 		html: body,
 	});
-
 };
 
 const makeZipFile = function(exportOperation) {
@@ -408,7 +409,6 @@ const continueExportOperation = function(exportOperation) {
 	}
 
 	try {
-
 		if (exportOperation.status === 'exporting-rooms') {
 			generateChannelsFile(exportOperation);
 		}

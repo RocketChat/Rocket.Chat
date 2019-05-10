@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasAtLeastOnePermission } from '../../../authorization';
-import { Integrations } from '../../../models';
+import { hasAtLeastOnePermission } from '../../../authorization/server';
+import { Integrations } from '../../../models/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../lib/mountQueriesBasedOnPermission';
 
 Meteor.publish('integrations', function _integrationPublication() {

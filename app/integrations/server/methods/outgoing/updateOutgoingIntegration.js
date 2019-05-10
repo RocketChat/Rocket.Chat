@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../../authorization';
 import { Integrations, Users } from '../../../../models';
 import { integrations } from '../../../lib/rocketchat';

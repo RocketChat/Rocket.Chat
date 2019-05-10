@@ -2,8 +2,6 @@
 
 	z-index: 10;
 
-	padding: 0.5rem;
-
 	font-size: var(--text-heading-size);
 
 	.rc-badge {
@@ -60,8 +58,6 @@
 		flex: 0 0 auto;
 
 		height: 36px;
-
-		margin: 0 -0.5rem;
 
 		white-space: nowrap;
 
@@ -457,6 +453,9 @@
 
 		&--burger {
 			display: flex;
+
+			margin: 0;
+			padding: 0;
 		}
 	}
 }
@@ -524,6 +523,9 @@
 	.rc-header {
 		&--burger {
 			display: flex;
+
+			margin: 0;
+			padding: 0;
 		}
 	}
 }

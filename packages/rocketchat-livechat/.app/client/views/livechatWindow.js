@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import visitor from '../../imports/client/visitor';
 
 function showDepartments() {
@@ -30,7 +31,7 @@ Template.livechatWindow.helpers({
 		if (Session.get('triggered') || visitor.getId()) {
 			return false;
 		}
-		return (Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments()));
+		return Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments());
 	},
 	showSwitchDepartmentForm() {
 		return Livechat.showSwitchDepartmentForm;
@@ -78,7 +79,8 @@ Template.livechatWindow.events({
 			parentCall('stopDragWindow');
 			window.removeEventListener('mousemove', this.onDrag);
 			window.removeEventListener('mousedown', this.onDragStop);
-			this.onDrag = this.onDragStop = null;
+			this.onDrag = null;
+			this.onDragStop = null;
 		};
 
 		window.addEventListener('mousemove', this.onDrag);
@@ -128,6 +130,22 @@ Template.livechatWindow.onCreated(function() {
 		departments.forEach((department) => {
 			Department.insert(department);
 		});
+	};
+
+	const normalizeLanguageString = (languageString) => {
+		let [languageCode, countryCode] = languageString.split ? languageString.split(/[-_]/) : [];
+		if (!languageCode || languageCode.length !== 2) {
+			return 'en';
+		}
+		languageCode = languageCode.toLowerCase();
+
+		if (!countryCode || countryCode.length !== 2) {
+			countryCode = null;
+		} else {
+			countryCode = countryCode.toUpperCase();
+		}
+
+		return countryCode ? `${ languageCode }-${ countryCode }` : languageCode;
 	};
 
 	this.autorun(() => {
@@ -201,7 +219,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.agent = result.agentData;
 			}
 
-			let language = result.language || defaultAppLanguage();
+			let language = normalizeLanguageString(result.language || defaultAppLanguage());
 
 			if (!availableLanguages[language]) {
 				language = language.split('-').shift();
