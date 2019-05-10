@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+
 const semver = require('semver');
 const ProgressBar = require('progress');
 const _ = require('underscore');
@@ -14,7 +15,7 @@ const historyDataFile = path.join(__dirname, '../.github/history.json');
 
 let historyData = (() => {
 	try {
-		return require(historyDataFile);
+		return require(historyDataFile); // eslint-disable-line import/no-dynamic-require
 	} catch (error) {
 		return {};
 	}

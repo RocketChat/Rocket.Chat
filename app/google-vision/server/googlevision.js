@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Notifications } from '../../notifications';
@@ -69,7 +70,7 @@ class GoogleVision {
 							Notifications.notifyUser(user._id, 'message', {
 								_id: Random.id(),
 								rid: message.rid,
-								ts: new Date,
+								ts: new Date(),
 								msg: TAPi18n.__('Adult_images_are_not_allowed', {}, user.language),
 							});
 						}
@@ -159,4 +160,4 @@ class GoogleVision {
 	}
 }
 
-export default new GoogleVision;
+export default new GoogleVision();

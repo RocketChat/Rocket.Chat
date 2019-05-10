@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import _ from 'underscore';
+
+import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { settings as rcSettings } from '../../../../settings';
 
@@ -140,5 +141,3 @@ export function settings() {
 		},
 	};
 }
-
-

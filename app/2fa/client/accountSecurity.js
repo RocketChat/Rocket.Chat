@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import toastr from 'toastr';
+import qrcode from 'yaqrcode';
+
 import { modal } from '../../ui-utils';
 import { settings } from '../../settings';
 import { t } from '../../utils';
-import toastr from 'toastr';
-import qrcode from 'yaqrcode';
 
 window.qrcode = qrcode;
 

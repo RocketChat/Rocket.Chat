@@ -1,8 +1,8 @@
 import { Random } from 'meteor/random';
-import { Settings } from '../../../models';
-import { settings } from '../../../settings';
 
 import { getRedirectUri } from './getRedirectUri';
+import { Settings } from '../../../models';
+import { settings } from '../../../settings';
 import { userScopes } from '../oauthScopes';
 
 export function getOAuthAuthorizationUrl() {

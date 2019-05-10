@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+
 import { API } from '../../../../api';
 import { FederationKeys } from '../../../../models';
-
 import { Federation } from '../..';
 
 API.v1.addRoute('federation.events', { authRequired: false }, {

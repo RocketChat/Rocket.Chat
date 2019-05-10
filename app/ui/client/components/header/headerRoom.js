@@ -3,11 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { t, roomTypes, handleError } from '../../../../utils';
 import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
 import { settings } from '../../../../settings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';

@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from '../../../utils';
-import { AdminChatRoom } from './adminRooms';
 import toastr from 'toastr';
+
+import { AdminChatRoom } from './adminRooms';
+import { t, handleError } from '../../../utils';
 
 Template.channelSettingsDefault.helpers({
 	canMakeDefault() {
@@ -25,9 +26,8 @@ Template.channelSettingsDefault.helpers({
 		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
 		if (room && room.default) {
 			return t('True');
-		} else {
-			return t('False');
 		}
+		return t('False');
 	},
 });
 

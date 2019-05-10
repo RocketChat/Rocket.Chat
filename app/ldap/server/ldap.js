@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../settings';
-import { Logger } from '../../logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
+
+import { settings } from '../../settings';
+import { Logger } from '../../logger';
 
 const logger = new Logger('LDAP', {
 	sections: {
@@ -379,11 +380,12 @@ export default class LDAP {
 			logger.search.info(title);
 			// Force LDAP idle to wait the record processing
 			this.client._updateIdle(true);
-			page(null, entries, { end, next: () => {
+			page(null, entries, { end,
+				next: () => {
 				// Reset idle timer
-				this.client._updateIdle();
-				next && next();
-			} });
+					this.client._updateIdle();
+					next && next();
+				} });
 		};
 
 		this.client.search(BaseDN, options, (error, res) => {
@@ -396,7 +398,6 @@ export default class LDAP {
 			res.on('error', (error) => {
 				logger.search.error(error);
 				page(error);
-				return;
 			});
 
 			let entries = [];
@@ -462,7 +463,6 @@ export default class LDAP {
 			res.on('error', (error) => {
 				logger.search.error(error);
 				callback(error);
-				return;
 			});
 
 			const entries = [];

@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Base } from './models/_Base';
 import Avatars from './models/Avatars';
 import Uploads from './models/Uploads';
@@ -20,7 +22,6 @@ import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions
 import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
-import _ from 'underscore';
 
 const Users = _.extend({}, users, Meteor.users);
 const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
