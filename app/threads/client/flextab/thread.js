@@ -126,7 +126,7 @@ Template.thread.onRendered(function() {
 	});
 
 
-	this.autorun(async () => {
+	this.autorun(() => {
 		const { mainMessage, jump } = Template.currentData();
 		this.state.set({
 			tmid: mainMessage._id,
