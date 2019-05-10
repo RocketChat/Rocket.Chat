@@ -492,7 +492,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return !state.get('subscribed');
+		return !!state.get('subscribed');
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
