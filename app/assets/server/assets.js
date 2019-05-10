@@ -495,7 +495,7 @@ WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res,
 		if (defaultUrl) {
 			const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
 			req.url = `/${ assetUrl }`;
-			WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFiles, req, res, next);
+			WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFilesByArch, req, res, next);
 		} else {
 			res.writeHead(404);
 			res.end();
