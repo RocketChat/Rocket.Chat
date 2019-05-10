@@ -3,19 +3,19 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
-
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
-import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { messageArgs } from './messageArgs';
+import { modal } from './modal';
+import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
-import { modal } from './modal';
+
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err, data) {
@@ -141,7 +141,7 @@ export const MessageAction = new class {
 		const roomURL = roomTypes.getURL(roomData.t, subData || roomData);
 		return `${ roomURL }?msg=${ msgId }`;
 	}
-};
+}();
 
 Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
@@ -278,9 +278,8 @@ Meteor.startup(async function() {
 					currentTsDiff = moment().diff(msgTs, 'minutes');
 				}
 				return currentTsDiff < blockEditInMinutes;
-			} else {
-				return true;
 			}
+			return true;
 		},
 		order: 6,
 		group: 'menu',

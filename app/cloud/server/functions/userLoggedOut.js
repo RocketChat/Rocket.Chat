@@ -1,7 +1,6 @@
 import { Users } from '../../../models';
 
 export function userLoggedOut(userId) {
-
 	if (!userId) {
 		return false;
 	}

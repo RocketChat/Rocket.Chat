@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';

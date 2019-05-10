@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+
 import { settings } from '../../../settings';
 import './email';
 
@@ -255,16 +256,16 @@ settings.addGroup('Accounts', function() {
 			type: 'select',
 			values: [
 				{
-					key : 'all',
-					i18nLabel : 'All_messages',
+					key: 'all',
+					i18nLabel: 'All_messages',
 				},
 				{
-					key : 'mentions',
-					i18nLabel : 'Mentions',
+					key: 'mentions',
+					i18nLabel: 'Mentions',
 				},
 				{
-					key : 'nothing',
-					i18nLabel : 'Nothing',
+					key: 'nothing',
+					i18nLabel: 'Nothing',
 				},
 			],
 			public: true,

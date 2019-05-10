@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { slashCommands } from '../../utils';
 import { Notifications } from '../../notifications';
 import { Users } from '../../models';
@@ -21,7 +22,7 @@ function Msg(command, params, item) {
 		return	Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Username_and_message_must_not_be_empty', null, user.language),
 		});
 	}
@@ -33,7 +34,7 @@ function Msg(command, params, item) {
 		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [targetUsernameOrig],

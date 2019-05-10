@@ -22,7 +22,6 @@ export const highlightWords = (msg, highlights) => highlights.reduce((msg, { hig
 	const urlMatches = checkHighlightedWordsInUrls(msg, urlRegex);
 	if (!urlMatches) {
 		return msg.replace(regex, highlightTemplate);
-
 	}
 	return removeHighlightedUrls(msg.replace(regex, highlightTemplate), highlight, urlMatches);
 }, msg);

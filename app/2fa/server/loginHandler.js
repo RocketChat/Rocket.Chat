@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+
+import { TOTP } from './lib/totp';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-import { TOTP } from './lib/totp';
 
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {

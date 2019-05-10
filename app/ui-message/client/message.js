@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
@@ -19,9 +18,9 @@ import './message.html';
 import './messageThread.html';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
-	const isSafari = /constructor/i.test(window.HTMLElement) ||
-		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
-			(typeof window.safari !== 'undefined' && window.safari.pushNotification));
+	const isSafari = /constructor/i.test(window.HTMLElement)
+		|| ((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari
+			|| (typeof window.safari !== 'undefined' && window.safari.pushNotification));
 
 	if (isSafari) {
 		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
@@ -79,7 +78,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
 		msg = callbacks.run('renderMentions', msg);
@@ -277,7 +276,7 @@ Template.message.helpers({
 
 		if (msg.i18nLabel) {
 			return t(msg.i18nLabel);
-		} else if (msg.label) {
+		} if (msg.label) {
 			return msg.label;
 		}
 	},
@@ -300,7 +299,7 @@ Template.message.helpers({
 		return Object.entries(reactions)
 			.map(([emoji, reaction]) => {
 				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
-				const displayNames = (reaction.names || reaction.usernames.map((username) => `@${ username }`));
+				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
 				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
 
 				if (displayNames.some((displayName) => displayName === myDisplayName)) {
@@ -428,7 +427,6 @@ Template.message.helpers({
 
 
 const findParentMessage = (() => {
-
 	const waiting = [];
 
 	const getMessages = _.debounce(async function() {
@@ -614,12 +612,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 };
 
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-
 	this.autorun(() => {
 		const currentNode = this.firstNode;
 		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 	});
-
 });
 
 Template.message.onViewRendered = function() {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { getFullUserData } from '../../app/lib';
 
 Meteor.publish('fullUserData', function(filter, limit) {

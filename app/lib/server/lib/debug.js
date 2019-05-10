@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
-import _ from 'underscore';
 import { Logger } from '../../../logger';
 
 const logger = new Logger('Meteor', {
@@ -19,13 +20,13 @@ const logger = new Logger('Meteor', {
 
 let Log_Trace_Methods;
 let Log_Trace_Subscriptions;
-settings.get('Log_Trace_Methods', (key, value) => Log_Trace_Methods = value);
-settings.get('Log_Trace_Subscriptions', (key, value) => Log_Trace_Subscriptions = value);
+settings.get('Log_Trace_Methods', (key, value) => { Log_Trace_Methods = value; });
+settings.get('Log_Trace_Subscriptions', (key, value) => { Log_Trace_Subscriptions = value; });
 
 let Log_Trace_Methods_Filter;
 let Log_Trace_Subscriptions_Filter;
-settings.get('Log_Trace_Methods_Filter', (key, value) => Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined);
-settings.get('Log_Trace_Subscriptions_Filter', (key, value) => Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined);
+settings.get('Log_Trace_Methods_Filter', (key, value) => { Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined; });
+settings.get('Log_Trace_Subscriptions_Filter', (key, value) => { Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined; });
 
 const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 	if (!enable) {

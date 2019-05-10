@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 import { Messages } from '../../app/models';
 
@@ -95,6 +96,5 @@ Meteor.methods({
 		}
 
 		return Meteor.call('getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
-
 	},
 });
