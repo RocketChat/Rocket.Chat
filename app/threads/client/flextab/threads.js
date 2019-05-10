@@ -22,8 +22,9 @@ const sort = { tlm: -1 };
 
 Template.threads.events({
 	'click .js-open-thread'(e, instance) {
-		const { msg } = messageArgs(this);
+		const { msg, jump } = messageArgs(this);
 		instance.state.set('mid', msg._id);
+		instance.state.set('jump', jump);
 		e.preventDefault();
 		e.stopPropagation();
 		return false;
@@ -37,6 +38,9 @@ Template.threads.events({
 });
 
 Template.threads.helpers({
+	jump() {
+		return Template.instance().state.get('jump');
+	},
 	subscription() {
 		return Template.currentData().subscription;
 	},
@@ -107,12 +111,13 @@ Template.threads.onCreated(async function() {
 
 	Tracker.afterFlush(() => {
 		this.autorun(async () => {
-			const { rid, mid } = Template.currentData();
+			const { rid, mid, jump } = Template.currentData();
 
 			this.state.set({
 				close: !!mid,
 				mid,
 				rid,
+				jump,
 			});
 		});
 	});
