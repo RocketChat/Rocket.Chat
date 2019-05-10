@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../settings';
 import { getUserPreference, handleError, t } from '../../../utils';
 import { popover } from '../../../ui-utils';
@@ -181,7 +182,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 					await call('saveNotificationSettings', rid, field, value);
 			}
 			this.original[field].set(this.form[field].get());
-
 		});
 	};
 });
@@ -323,7 +323,7 @@ Template.pushNotificationsFlexTab.events({
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
-				change : (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
+				change: (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
 				value: instance.form[key].get(),
 				options,
 			},

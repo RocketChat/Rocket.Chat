@@ -1,6 +1,5 @@
 import { API } from '../../../../api';
 import { Users } from '../../../../models';
-
 import { FederatedUser } from '../../federatedResources';
 import { Federation } from '../..';
 

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import bugsnag from 'bugsnag';
+
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
-import bugsnag from 'bugsnag';
 
 settings.get('Bugsnag_api_key', (key, value) => {
 	if (value) {

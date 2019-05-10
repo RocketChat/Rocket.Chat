@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { generateUsernameSuggestion } from '../functions';
 
 Meteor.methods({

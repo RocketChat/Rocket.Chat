@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+
 import { Importers, ImporterWebsocketReceiver, ProgressStep } from '..';
+
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from '../../../utils';
 import toastr from 'toastr';
+
+import { t, handleError } from '../../../utils';
 
 Template.adminImportProgress.helpers({
 	step() {

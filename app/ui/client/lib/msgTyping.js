@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
-import _ from 'underscore';
 
 export const MsgTyping = (function() {
 	const timeout = 15000;
@@ -13,7 +14,7 @@ export const MsgTyping = (function() {
 	const renewTimeout = 10000;
 	const selfTyping = new ReactiveVar(false);
 	const usersTyping = {};
-	const dep = new Tracker.Dependency;
+	const dep = new Tracker.Dependency();
 
 	const shownName = function(user) {
 		if (!user) {
@@ -64,14 +65,15 @@ export const MsgTyping = (function() {
 	const start = function(room) {
 		if (!renew) { return; }
 
-		setTimeout(() => renew = true, renewTimeout);
+		setTimeout(() => { renew = true; }, renewTimeout);
 
 		renew = false;
 		selfTyping.set(true);
 		const user = Meteor.user();
 		Notifications.notifyRoom(room, 'typing', shownName(user), true);
 		clearTimeout(timeouts[room]);
-		return timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
+		timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
+		return timeouts[room];
 	};
 
 

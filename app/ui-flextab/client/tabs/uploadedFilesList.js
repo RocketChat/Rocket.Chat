@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';
@@ -152,7 +151,7 @@ Template.uploadedFilesList.events({
 								},
 							],
 						},
-						...(canDelete ? [{
+						...canDelete ? [{
 							items: [
 								{
 									icon: 'trash',
@@ -186,12 +185,12 @@ Template.uploadedFilesList.events({
 									},
 								},
 							],
-						}] : []),
+						}] : [],
 					],
 				},
 			],
 			currentTarget: e.currentTarget,
-			onDestroyed:() => {
+			onDestroyed: () => {
 				e.currentTarget.parentElement.classList.remove('active');
 			},
 		};

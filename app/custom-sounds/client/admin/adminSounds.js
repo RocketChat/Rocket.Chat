@@ -1,10 +1,11 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { CustomSounds } from '../../../models';
 import s from 'underscore.string';
+
+import { CustomSounds } from '../../../models';
+import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 
 Template.adminSounds.helpers({
 	searchText() {
@@ -46,8 +47,8 @@ Template.adminSounds.helpers({
 		const instance = Template.instance();
 		return function(currentTarget) {
 			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
 			) {
 				return instance.limit.set(instance.limit.get() + 50);
 			}
@@ -96,13 +97,13 @@ Template.adminSounds.onCreated(function() {
 	});
 
 	this.autorun(function() {
-		const limit = (instance.limit != null) ? instance.limit.get() : 0;
+		const limit = instance.limit != null ? instance.limit.get() : 0;
 		const subscription = instance.subscribe('customSounds', '', limit);
 		instance.ready.set(subscription.ready());
 	});
 
 	this.customsounds = function() {
-		const filter = (instance.filter != null) ? s.trim(instance.filter.get()) : '';
+		const filter = instance.filter != null ? s.trim(instance.filter.get()) : '';
 
 		let query = {};
 
@@ -111,7 +112,7 @@ Template.adminSounds.onCreated(function() {
 			query = { name: filterReg };
 		}
 
-		const limit = (instance.limit != null) ? instance.limit.get() : 0;
+		const limit = instance.limit != null ? instance.limit.get() : 0;
 
 		return CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
