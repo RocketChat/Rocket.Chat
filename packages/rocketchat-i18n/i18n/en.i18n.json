@@ -487,7 +487,7 @@
   "CAS_button_label_color": "Login Button Text Color",
   "CAS_button_label_text": "Login Button Label",
   "CAS_enabled": "Enabled",
-  "CAS_Login_Layout": "CASE Login Layout",
+  "CAS_Login_Layout": "CAS Login Layout",
   "CAS_login_url": "SSO Login URL",
   "CAS_login_url_Description": "The login URL of your external SSO service e.g: https://sso.example.undef/sso/login",
   "CAS_popup_height": "Login Popup Height",
