@@ -1,5 +1,6 @@
-import { Base } from './_Base';
 import _ from 'underscore';
+
+import { Base } from './_Base';
 
 export class UserDataFiles extends Base {
 	constructor() {
@@ -19,14 +20,14 @@ export class UserDataFiles extends Base {
 			userId,
 		};
 
-		options.sort = { _updatedAt : -1 };
+		options.sort = { _updatedAt: -1 };
 		return this.findOne(query, options);
 	}
 
 	// INSERT
 	create(data) {
 		const userDataFile = {
-			createdAt: new Date,
+			createdAt: new Date(),
 		};
 
 		_.extend(userDataFile, data);

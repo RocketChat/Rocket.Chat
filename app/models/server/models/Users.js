@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 export class Users extends Base {
 	constructor(...args) {
@@ -165,9 +166,8 @@ export class Users extends Base {
 				agentId: user.value._id,
 				username: user.value.username,
 			};
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	setLivechatStatus(userId, status) {
@@ -395,7 +395,7 @@ export class Users extends Base {
 	findOneByIdAndLoginToken(_id, token, options) {
 		const query = {
 			_id,
-			'services.resume.loginTokens.hashedToken' : Accounts._hashLoginToken(token),
+			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token),
 		};
 
 		return this.findOne(query, options);
@@ -673,7 +673,7 @@ export class Users extends Base {
 	updateLastLoginById(_id) {
 		const update = {
 			$set: {
-				lastLogin: new Date,
+				lastLogin: new Date(),
 			},
 		};
 
@@ -681,8 +681,7 @@ export class Users extends Base {
 	}
 
 	setServiceId(_id, serviceName, serviceId) {
-		const update =
-		{ $set: {} };
+		const update =		{ $set: {} };
 
 		const serviceIdKey = `services.${ serviceName }.id`;
 		update.$set[serviceIdKey] = serviceId;
@@ -691,8 +690,7 @@ export class Users extends Base {
 	}
 
 	setUsername(_id, username) {
-		const update =
-		{ $set: { username } };
+		const update =		{ $set: { username } };
 
 		return this.update(_id, update);
 	}
@@ -806,7 +804,7 @@ export class Users extends Base {
 	unsetLoginTokens(_id) {
 		const update = {
 			$set: {
-				'services.resume.loginTokens' : [],
+				'services.resume.loginTokens': [],
 			},
 		};
 
@@ -816,8 +814,8 @@ export class Users extends Base {
 	unsetRequirePasswordChange(_id) {
 		const update = {
 			$unset: {
-				requirePasswordChange : true,
-				requirePasswordChangeReason : true,
+				requirePasswordChange: true,
+				requirePasswordChangeReason: true,
 			},
 		};
 
@@ -1028,7 +1026,7 @@ export class Users extends Base {
 	// INSERT
 	create(data) {
 		const user = {
-			createdAt: new Date,
+			createdAt: new Date(),
 			avatarOrigin: 'none',
 		};
 

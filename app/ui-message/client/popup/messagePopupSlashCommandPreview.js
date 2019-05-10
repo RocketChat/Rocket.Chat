@@ -2,6 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { slashCommands } from '../../../utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { toolbarSearch } from '../../../ui-sidenav';
@@ -24,7 +25,7 @@ function getCursorPosition(input) {
 
 	if (input.selectionStart) {
 		return input.selectionStart;
-	} else if (document.selection) {
+	} if (document.selection) {
 		input.focus();
 		const sel = document.selection.createRange();
 		const selLen = document.selection.createRange().text.length;

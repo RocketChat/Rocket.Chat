@@ -4,8 +4,9 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { settings } from '../../../../settings';
 import s from 'underscore.string';
+
+import { settings } from '../../../../settings';
 
 const parseNotEscaped = function(msg, message) {
 	if (message && message.tokens == null) {

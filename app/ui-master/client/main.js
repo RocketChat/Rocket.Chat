@@ -4,10 +4,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { t, getUserPreference } from '../../utils';
-import { getConfig } from '../../ui-utils/client/config';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
+import { getConfig } from '../../ui-utils/client/config';
+import { t, getUserPreference } from '../../utils';
 import { chatMessages } from '../../ui';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
@@ -17,7 +18,7 @@ import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../tooltip';
 
-settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
+settings.collection.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -145,10 +146,9 @@ Template.main.helpers({
 		if (Meteor.userId() != null || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
 			$('html').addClass('noscroll').removeClass('scroll');
 			return true;
-		} else {
-			$('html').addClass('scroll').removeClass('noscroll');
-			return false;
 		}
+		$('html').addClass('scroll').removeClass('noscroll');
+		return false;
 	},
 	useIframe() {
 		const iframeEnabled = typeof iframeLogin !== 'undefined';
@@ -248,10 +248,9 @@ Template.main.onRendered(function() {
 					return tooltip.showElement($('<span>').text(username), avatarElem);
 				}
 			});
-		} else {
-			$(document.body).off('mouseenter', 'button.thumb');
-			return $(document.body).off('mouseleave', 'button.thumb');
 		}
+		$(document.body).off('mouseenter', 'button.thumb');
+		return $(document.body).off('mouseleave', 'button.thumb');
 	});
 });
 

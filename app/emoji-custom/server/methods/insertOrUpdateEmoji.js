@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+import s from 'underscore.string';
+import limax from 'limax';
+
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
 import { EmojiCustom } from '../../../models';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import _ from 'underscore';
-import s from 'underscore.string';
-import limax from 'limax';
 
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {
@@ -75,40 +76,39 @@ Meteor.methods({
 			Notifications.notifyLogged('updateEmojiCustom', { emojiData: createEmoji });
 
 			return _id;
-		} else {
-			// update emoji
-			if (emojiData.newFile) {
-				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
-				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.previousExtension }`));
-				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.extension }`));
-				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.previousExtension }`));
-
-				EmojiCustom.setExtension(emojiData._id, emojiData.extension);
-			} else if (emojiData.name !== emojiData.previousName) {
-				const rs = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.previousExtension }`));
-				if (rs !== null) {
-					RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
-					const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.previousExtension }`), rs.contentType);
-					ws.on('end', Meteor.bindEnvironment(() =>
-						RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.previousExtension }`))
-					));
-					rs.readStream.pipe(ws);
-				}
-			}
-
-			if (emojiData.name !== emojiData.previousName) {
-				EmojiCustom.setName(emojiData._id, emojiData.name);
-			}
-
-			if (emojiData.aliases) {
-				EmojiCustom.setAliases(emojiData._id, emojiData.aliases);
-			} else {
-				EmojiCustom.setAliases(emojiData._id, []);
-			}
-
-			Notifications.notifyLogged('updateEmojiCustom', { emojiData });
-
-			return true;
 		}
+		// update emoji
+		if (emojiData.newFile) {
+			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
+			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.previousExtension }`));
+			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.extension }`));
+			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.previousExtension }`));
+
+			EmojiCustom.setExtension(emojiData._id, emojiData.extension);
+		} else if (emojiData.name !== emojiData.previousName) {
+			const rs = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.previousExtension }`));
+			if (rs !== null) {
+				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
+				const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.previousExtension }`), rs.contentType);
+				ws.on('end', Meteor.bindEnvironment(() =>
+					RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.previousExtension }`))
+				));
+				rs.readStream.pipe(ws);
+			}
+		}
+
+		if (emojiData.name !== emojiData.previousName) {
+			EmojiCustom.setName(emojiData._id, emojiData.name);
+		}
+
+		if (emojiData.aliases) {
+			EmojiCustom.setAliases(emojiData._id, emojiData.aliases);
+		} else {
+			EmojiCustom.setAliases(emojiData._id, []);
+		}
+
+		Notifications.notifyLogged('updateEmojiCustom', { emojiData });
+
+		return true;
 	},
 });

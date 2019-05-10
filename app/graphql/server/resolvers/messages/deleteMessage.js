@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '../../../../models';
 
+import { Messages } from '../../../../models';
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/deleteMessage.graphqls';
 

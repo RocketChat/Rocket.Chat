@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions } from '../../../models';
+
 import { canAccessRoom } from './canAccessRoom';
+import { Rooms, Subscriptions } from '../../../models';
 
 export const canSendMessage = (rid, { uid, username }, extraData) => {
 	const room = Rooms.findOneById(rid);
