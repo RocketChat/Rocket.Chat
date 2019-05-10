@@ -40,7 +40,6 @@ tracker@1.2.0
 
 #rocketchat:google-natural-language
 rocketchat:livechat
-rocketchat:monitoring
 rocketchat:streamer
 rocketchat:version
 
