@@ -21,7 +21,7 @@ class CustomSounds extends Base {
 		return this.find(query, options);
 	}
 
-	findByNameExceptID(name, except, options) {
+	findByNameExceptId(name, except, options) {
 		const query = {
 			_id: { $nin: [except] },
 			name,

@@ -26,7 +26,7 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (userStatusData._id) {
-			matchingResults = CustomUserStatus.findByNameExceptID(userStatusData.name, userStatusData._id).fetch();
+			matchingResults = CustomUserStatus.findByNameExceptId(userStatusData.name, userStatusData._id).fetch();
 		} else {
 			matchingResults = CustomUserStatus.findByName(userStatusData.name).fetch();
 		}
