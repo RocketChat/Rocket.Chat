@@ -4,6 +4,7 @@
     "0.55.0-rc.0": {
       "node_version": "4.7.3",
       "npm_version": "4.1.2",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6614",
@@ -918,6 +919,7 @@
     "0.55.0-rc.1": {
       "node_version": "4.7.3",
       "npm_version": "4.1.2",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6620",
@@ -951,6 +953,7 @@
     "0.55.0-rc.2": {
       "node_version": "4.8.0",
       "npm_version": "4.3.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6632",
@@ -1028,6 +1031,7 @@
     "0.55.0-rc.3": {
       "node_version": "4.8.0",
       "npm_version": "4.3.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6658",
@@ -1042,6 +1046,7 @@
     "0.55.0-rc.4": {
       "node_version": "4.8.0",
       "npm_version": "4.3.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6682",
@@ -1093,6 +1098,7 @@
     "0.55.0-rc.5": {
       "node_version": "4.8.0",
       "npm_version": "4.3.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6686",
@@ -1136,6 +1142,7 @@
     "0.55.0-rc.6": {
       "node_version": "4.8.0",
       "npm_version": "4.3.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6704",
@@ -1151,6 +1158,7 @@
     "0.55.0": {
       "node_version": "4.8.0",
       "npm_version": "4.3.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6709",
@@ -1168,6 +1176,7 @@
     "0.55.1": {
       "node_version": "4.8.0",
       "npm_version": "4.3.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6734",
@@ -1183,6 +1192,7 @@
     "0.56.0-rc.0": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6881",
@@ -1593,6 +1603,7 @@
     "0.56.0-rc.1": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6896",
@@ -1608,6 +1619,7 @@
     "0.56.0-rc.2": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6923",
@@ -1623,6 +1635,7 @@
     "0.56.0-rc.3": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6939",
@@ -1658,6 +1671,7 @@
     "0.56.0-rc.4": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6953",
@@ -1673,6 +1687,7 @@
     "0.56.0-rc.5": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6955",
@@ -1697,11 +1712,13 @@
     "0.56.0-rc.6": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": []
     },
     "0.56.0-rc.7": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6968",
@@ -1717,6 +1734,7 @@
     "0.56.0": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "6734",
@@ -1732,6 +1750,7 @@
     "0.57.0-rc.0": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7146",
@@ -2365,6 +2384,7 @@
     "0.57.0-rc.1": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7157",
@@ -2397,6 +2417,7 @@
     "0.57.0-rc.2": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7200",
@@ -2478,6 +2499,7 @@
     "0.57.0-rc.3": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7358",
@@ -2547,6 +2569,7 @@
     "0.57.0": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7379",
@@ -2571,6 +2594,7 @@
     "0.57.1": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7428",
@@ -2587,6 +2611,7 @@
     "0.57.2": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7431",
@@ -2647,6 +2672,7 @@
     "0.57.3": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7212",
@@ -2691,7 +2717,7 @@
           "userLogin": "ryoshimizu",
           "milestone": "0.57.3",
           "contributors": [
-            "ryoshimizu"
+            null
           ]
         },
         {
@@ -2735,6 +2761,7 @@
     "0.57.4": {
       "node_version": "4.8.2",
       "npm_version": "4.5.0",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8390",
@@ -2768,6 +2795,7 @@
     "0.58.0-rc.0": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8390",
@@ -2839,7 +2867,7 @@
           "userLogin": "ryoshimizu",
           "milestone": "0.57.3",
           "contributors": [
-            "ryoshimizu"
+            null
           ]
         },
         {
@@ -2898,7 +2926,7 @@
         },
         {
           "pr": "7622",
-          "title": "[FIX] Error when acessing settings before ready",
+          "title": "[FIX] Error when accessing settings before ready",
           "userLogin": "rodrigok",
           "milestone": "0.58.0",
           "contributors": [
@@ -3391,7 +3419,7 @@
           "userLogin": "ryoshimizu",
           "milestone": "0.57.3",
           "contributors": [
-            "ryoshimizu"
+            null
           ]
         },
         {
@@ -3553,7 +3581,7 @@
         },
         {
           "pr": "7355",
-          "title": "[FIX] Update node-engine in Snap to latest v4 LTS relase: 4.8.3",
+          "title": "[FIX] Update node-engine in Snap to latest v4 LTS release: 4.8.3",
           "userLogin": "al3x",
           "milestone": "0.58.0",
           "contributors": [
@@ -3720,6 +3748,7 @@
     "0.58.0-rc.1": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7629",
@@ -3791,6 +3820,7 @@
     "0.58.0-rc.2": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7456",
@@ -3806,6 +3836,7 @@
     "0.58.0-rc.3": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7738",
@@ -3821,13 +3852,14 @@
     "0.58.0": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7752",
           "title": "Release 0.58.0",
           "userLogin": "rodrigok",
           "contributors": [
-            "ryoshimizu",
+            null,
             "rodrigok",
             "web-flow",
             "MartinSchoeler",
@@ -3892,7 +3924,7 @@
           "userLogin": "ryoshimizu",
           "milestone": "0.57.3",
           "contributors": [
-            "ryoshimizu"
+            null
           ]
         },
         {
@@ -3936,6 +3968,7 @@
     "0.58.1": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7782",
@@ -3958,6 +3991,7 @@
     "0.58.2": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7841",
@@ -3974,11 +4008,13 @@
     "0.58.3": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": []
     },
     "0.58.4": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8408",
@@ -4012,6 +4048,7 @@
     "0.59.0-rc.0": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8408",
@@ -4635,6 +4672,7 @@
     "0.59.0-rc.1": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7880",
@@ -4722,6 +4760,7 @@
     "0.59.0-rc.2": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7912",
@@ -4774,6 +4813,7 @@
     "0.59.0-rc.3": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7985",
@@ -4956,6 +4996,7 @@
     "0.59.0-rc.4": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "7988",
@@ -5052,10 +5093,10 @@
         {
           "pr": "7989",
           "title": "[FIX][PL] Polish translation",
-          "userLogin": "Rzeszow",
+          "userLogin": "mhajder",
           "milestone": "0.59.0-rc.4",
           "contributors": [
-            "Rzeszow",
+            "mhajder",
             "web-flow"
           ]
         },
@@ -5073,6 +5114,7 @@
     "0.59.0-rc.5": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8112",
@@ -5144,6 +5186,7 @@
     "0.59.0-rc.6": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8172",
@@ -5231,6 +5274,7 @@
     "0.59.0-rc.7": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8213",
@@ -5292,6 +5336,7 @@
     "0.59.0-rc.8": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8253",
@@ -5402,6 +5447,7 @@
     "0.59.0-rc.9": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8310",
@@ -5525,10 +5571,10 @@
         {
           "pr": "8270",
           "title": "[FIX] [i18n] My Profile & README.md links",
-          "userLogin": "Rzeszow",
+          "userLogin": "mhajder",
           "milestone": "0.59.0-rc.9",
           "contributors": [
-            "Rzeszow",
+            "mhajder",
             "engelgabriel",
             "web-flow"
           ]
@@ -5565,6 +5611,7 @@
     "0.59.0-rc.10": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8355",
@@ -5636,6 +5683,7 @@
     "0.59.0-rc.11": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8375",
@@ -5734,6 +5782,7 @@
     "0.59.0-rc.12": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8416",
@@ -5831,6 +5880,7 @@
     "0.59.0-rc.13": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8459",
@@ -5864,6 +5914,7 @@
     "0.59.0-rc.14": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8515",
@@ -5913,7 +5964,7 @@
         },
         {
           "pr": "8489",
-          "title": "[FIX] Wrong message when reseting password and 2FA is enabled",
+          "title": "[FIX] Wrong message when resetting password and 2FA is enabled",
           "userLogin": "rodrigok",
           "milestone": "0.59.0-rc.14",
           "contributors": [
@@ -5934,6 +5985,7 @@
     "0.59.0-rc.15": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8518",
@@ -5956,6 +6008,7 @@
     "0.59.0-rc.16": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8527",
@@ -5970,6 +6023,7 @@
     "0.59.0-rc.17": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8529",
@@ -5984,6 +6038,7 @@
     "0.59.0": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8420",
@@ -6034,6 +6089,7 @@
     "0.59.1": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8543",
@@ -6077,6 +6133,7 @@
     "0.59.2": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8637",
@@ -6138,6 +6195,7 @@
     "0.59.3": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [],
       "pull_requests": [
         {
           "pr": "8593",
@@ -6229,6 +6287,9 @@
     "0.59.4": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "8967",
@@ -6269,6 +6330,9 @@
     "0.59.5": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "8972",
@@ -6283,6 +6347,9 @@
     "0.59.6": {
       "node_version": "4.8.4",
       "npm_version": "4.6.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "8973",
@@ -6297,6 +6364,9 @@
     "0.60.0-rc.0": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9084",
@@ -6972,7 +7042,7 @@
           "userLogin": "ryoshimizu",
           "milestone": "0.60.0",
           "contributors": [
-            "ryoshimizu"
+            null
           ]
         },
         {
@@ -7117,7 +7187,7 @@
           "userLogin": "rmetzler",
           "milestone": "0.60.0",
           "contributors": [
-            "rmetzler",
+            null,
             "geekgonecrazy",
             "web-flow",
             "engelgabriel"
@@ -7517,7 +7587,7 @@
         },
         {
           "pr": "8489",
-          "title": "[FIX] Wrong message when reseting password and 2FA is enabled",
+          "title": "[FIX] Wrong message when resetting password and 2FA is enabled",
           "userLogin": "rodrigok",
           "milestone": "0.59.0-rc.14",
           "contributors": [
@@ -8074,10 +8144,10 @@
         {
           "pr": "8270",
           "title": "[FIX] [i18n] My Profile & README.md links",
-          "userLogin": "Rzeszow",
+          "userLogin": "mhajder",
           "milestone": "0.59.0-rc.9",
           "contributors": [
-            "Rzeszow",
+            "mhajder",
             "engelgabriel",
             "web-flow"
           ]
@@ -8341,10 +8411,10 @@
         {
           "pr": "7989",
           "title": "[FIX][PL] Polish translation",
-          "userLogin": "Rzeszow",
+          "userLogin": "mhajder",
           "milestone": "0.59.0-rc.4",
           "contributors": [
-            "Rzeszow",
+            "mhajder",
             "web-flow"
           ]
         },
@@ -8728,6 +8798,9 @@
     "0.60.0-rc.1": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9092",
@@ -8798,6 +8871,9 @@
     "0.60.0-rc.2": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9137",
@@ -8859,10 +8935,10 @@
         {
           "pr": "9091",
           "title": "[FIX] Channel page error",
-          "userLogin": "ggrish",
+          "userLogin": "dezzzus",
           "milestone": "0.60.0",
           "contributors": [
-            "ggrish",
+            "dezzzus",
             "web-flow"
           ]
         }
@@ -8871,6 +8947,9 @@
     "0.60.0-rc.3": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9144",
@@ -8896,6 +8975,9 @@
     "0.60.0-rc.4": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9171",
@@ -8974,6 +9056,9 @@
     "0.60.0-rc.5": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9200",
@@ -9153,6 +9238,9 @@
     "0.60.0-rc.6": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9241",
@@ -9231,6 +9319,9 @@
     "0.60.0-rc.7": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9243",
@@ -9246,6 +9337,9 @@
     "0.60.0-rc.8": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9257",
@@ -9288,6 +9382,9 @@
     "0.60.0": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9259",
@@ -9355,6 +9452,9 @@
     "0.60.1": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9262",
@@ -9370,6 +9470,9 @@
     "0.60.2": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9280",
@@ -9412,6 +9515,9 @@
     "0.60.3": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9320",
@@ -9523,6 +9629,9 @@
     "0.60.4-rc.0": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9343",
@@ -9547,6 +9656,9 @@
     "0.60.4-rc.1": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9328",
@@ -9586,7 +9698,7 @@
         },
         {
           "pr": "9346",
-          "title": "Update Marked dependecy to 0.3.9",
+          "title": "Update Marked dependency to 0.3.9",
           "userLogin": "rodrigok",
           "milestone": "0.60.4",
           "contributors": [
@@ -9598,6 +9710,9 @@
     "0.60.4": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9377",
@@ -9623,6 +9738,9 @@
     "0.61.0-rc.0": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "8411",
@@ -9815,7 +9933,7 @@
         },
         {
           "pr": "9346",
-          "title": "Update Marked dependecy to 0.3.9",
+          "title": "Update Marked dependency to 0.3.9",
           "userLogin": "rodrigok",
           "milestone": "0.60.4",
           "contributors": [
@@ -10460,10 +10578,10 @@
         {
           "pr": "9091",
           "title": "[FIX] Channel page error",
-          "userLogin": "ggrish",
+          "userLogin": "dezzzus",
           "milestone": "0.60.0",
           "contributors": [
-            "ggrish",
+            "dezzzus",
             "web-flow"
           ]
         },
@@ -10527,6 +10645,9 @@
     "0.61.0-rc.1": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9469",
@@ -10570,6 +10691,9 @@
     "0.61.0-rc.2": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9506",
@@ -10615,6 +10739,9 @@
     "0.61.0": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9533",
@@ -10691,6 +10818,9 @@
     "0.61.1": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9721",
@@ -10705,6 +10835,9 @@
     "0.61.2": {
       "node_version": "8.9.3",
       "npm_version": "5.5.1",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9786",
@@ -10748,6 +10881,9 @@
     "0.62.0-rc.0": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9796",
@@ -11006,7 +11142,7 @@
         },
         {
           "pr": "9737",
-          "title": "[FIX] API to retrive rooms was returning empty objects",
+          "title": "[FIX] API to retrieve rooms was returning empty objects",
           "userLogin": "rodrigok",
           "milestone": "0.62.0",
           "contributors": [
@@ -11040,10 +11176,10 @@
         {
           "pr": "9312",
           "title": "[NEW] Allow sounds when conversation is focused",
-          "userLogin": "RationalCoding",
+          "userLogin": "t-mullen",
           "milestone": "0.62.0",
           "contributors": [
-            "RationalCoding",
+            "t-mullen",
             "graywolf336"
           ]
         },
@@ -11274,6 +11410,9 @@
     "0.62.0-rc.1": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9843",
@@ -11305,9 +11444,9 @@
         {
           "pr": "9658",
           "title": "[NEW] Add documentation requirement to PRs",
-          "userLogin": "SeanPackham",
+          "userLogin": "seanpackham",
           "contributors": [
-            "SeanPackham",
+            "seanpackham",
             "web-flow",
             "MartinSchoeler"
           ]
@@ -11317,9 +11456,9 @@
           "title": "[NEW] Request mongoDB version in github issue template",
           "userLogin": "TwizzyDizzy",
           "contributors": [
-            "TwizzyDizzy",
-            "web-flow",
-            "engelgabriel"
+            null,
+            "engelgabriel",
+            "web-flow"
           ]
         },
         {
@@ -11382,6 +11521,9 @@
     "0.62.0-rc.2": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9851",
@@ -11425,6 +11567,9 @@
     "0.62.0-rc.3": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9905",
@@ -11516,6 +11661,9 @@
     "0.62.0": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9935",
@@ -11592,6 +11740,9 @@
     "0.62.1": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9989",
@@ -11646,6 +11797,9 @@
     "0.62.2": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10087",
@@ -11716,6 +11870,9 @@
     "0.63.0-rc.0": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10246",
@@ -12004,9 +12161,9 @@
         {
           "pr": "10148",
           "title": "Add forums as a place to suggest, discuss and upvote features",
-          "userLogin": "SeanPackham",
+          "userLogin": "seanpackham",
           "contributors": [
-            "SeanPackham",
+            "seanpackham",
             "web-flow"
           ]
         },
@@ -12059,7 +12216,7 @@
           "milestone": "0.63.0",
           "contributors": [
             "TopHattedCat",
-            "web-flow"
+            null
           ]
         },
         {
@@ -12327,6 +12484,9 @@
     "0.63.0-rc.1": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10272",
@@ -12401,6 +12561,9 @@
     "0.63.0-rc.2": {
       "node_version": "8.9.4",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10078",
@@ -12485,6 +12648,9 @@
     "0.63.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10324",
@@ -12497,7 +12663,7 @@
             "hmagarotto",
             "engelgabriel",
             "web-flow",
-            "TopHattedCat",
+            null,
             "karlprieb",
             "Joe-mcgee",
             "lunaticmonk",
@@ -12609,6 +12775,9 @@
     "0.63.1": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10374",
@@ -12626,47 +12795,52 @@
           ]
         },
         {
-          "pr": "10324",
-          "title": "Release 0.63.0",
-          "userLogin": "rodrigok",
-          "milestone": "0.63.0",
+          "pr": "10348",
+          "title": "[FIX] Change deprecated Meteor._reload.reload method in favor of Reload._reload",
+          "userLogin": "tttt-conan",
+          "milestone": "0.63.1",
           "contributors": [
-            "kb0304",
-            "MarcosSpessatto",
-            "hmagarotto",
-            "engelgabriel",
+            "tttt-conan"
+          ]
+        },
+        {
+          "pr": "10351",
+          "title": "[FIX] Snaps crashing due to Node v8.11.1 Segfault",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.63.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "10084",
+          "title": "[FIX] Add '.value' in the SAML package to fix TypeErrors on SAML token validation",
+          "userLogin": "TechyPeople",
+          "milestone": "0.63.1",
+          "contributors": [
+            "TechyPeople",
             "web-flow",
-            "TopHattedCat",
-            "karlprieb",
-            "Joe-mcgee",
-            "lunaticmonk",
-            "ramrami",
-            "kaiiiiiiiii",
-            "Hudell",
-            "ggazzo",
             "rodrigok"
           ]
         },
         {
-          "pr": "10324",
-          "title": "Release 0.63.0",
-          "userLogin": "rodrigok",
-          "milestone": "0.63.0",
+          "pr": "10356",
+          "title": "[FIX] Incorrect german translation of user online status",
+          "userLogin": "kaiiiiiiiii",
+          "milestone": "0.63.1",
           "contributors": [
-            "kb0304",
-            "MarcosSpessatto",
-            "hmagarotto",
-            "engelgabriel",
-            "web-flow",
-            "TopHattedCat",
-            "karlprieb",
-            "Joe-mcgee",
-            "lunaticmonk",
-            "ramrami",
-            "kaiiiiiiiii",
-            "Hudell",
-            "ggazzo",
-            "rodrigok"
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "10355",
+          "title": "[FIX] Incorrect French language usage for Disabled",
+          "userLogin": "graywolf336",
+          "milestone": "0.63.1",
+          "contributors": [
+            "graywolf336",
+            "web-flow"
           ]
         }
       ]
@@ -12674,6 +12848,9 @@
     "0.63.2": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10476",
@@ -12697,6 +12874,9 @@
     "0.63.3": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10504",
@@ -12712,6 +12892,9 @@
     "0.64.0-rc.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10532",
@@ -13094,9 +13277,9 @@
           "userLogin": "Prakharsvnit",
           "milestone": "0.64.0",
           "contributors": [
-            "Prakharsvnit",
-            "web-flow",
+            null,
             "geekgonecrazy",
+            "web-flow",
             "karlprieb"
           ]
         },
@@ -13384,8 +13567,7 @@
           "title": "Update allowed labels for bot",
           "userLogin": "TwizzyDizzy",
           "contributors": [
-            "TwizzyDizzy",
-            "web-flow"
+            null
           ]
         },
         {
@@ -13460,6 +13642,9 @@
     "0.64.0-rc.1": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10545",
@@ -13495,6 +13680,9 @@
     "0.64.0-rc.2": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10549",
@@ -13548,6 +13736,9 @@
     "0.64.0-rc.3": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10550",
@@ -13591,6 +13782,9 @@
     "0.64.0-rc.4": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10558",
@@ -13636,6 +13830,9 @@
     "0.64.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10613",
@@ -13647,7 +13844,7 @@
             "geekgonecrazy",
             "web-flow",
             "graywolf336",
-            "TwizzyDizzy",
+            null,
             "christianh814",
             "tttt-conan",
             "gdelavald",
@@ -13753,6 +13950,9 @@
     "0.64.1": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10660",
@@ -13770,7 +13970,7 @@
         },
         {
           "pr": "10597",
-          "title": "[NEW] Store the last sent message to show bellow the room's name by default",
+          "title": "[NEW] Store the last sent message to show below the room's name by default",
           "userLogin": "graywolf336",
           "milestone": "0.64.1",
           "contributors": [
@@ -13835,6 +14035,9 @@
     "0.64.2-rc.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10736",
@@ -13989,6 +14192,9 @@
     "0.64.2-rc.1": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10789",
@@ -14059,6 +14265,9 @@
     "0.64.2-rc.2": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10798",
@@ -14111,6 +14320,9 @@
     "0.64.2": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10812",
@@ -14396,6 +14608,9 @@
     "0.65.0-rc.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10822",
@@ -14934,7 +15149,7 @@
             "geekgonecrazy",
             "web-flow",
             "graywolf336",
-            "TwizzyDizzy",
+            null,
             "christianh814",
             "tttt-conan",
             "gdelavald",
@@ -14972,6 +15187,9 @@
     "0.65.0-rc.1": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10837",
@@ -15037,6 +15255,9 @@
     "0.65.0-rc.2": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10847",
@@ -15109,6 +15330,9 @@
     "0.65.0-rc.3": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10875",
@@ -15182,6 +15406,9 @@
     "0.65.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10893",
@@ -15249,7 +15476,7 @@
             "geekgonecrazy",
             "web-flow",
             "graywolf336",
-            "TwizzyDizzy",
+            null,
             "christianh814",
             "tttt-conan",
             "gdelavald",
@@ -15287,7 +15514,20 @@
     "0.65.1": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "10947",
+          "title": "Release 0.65.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "engelgabriel"
+          ]
+        },
         {
           "pr": "10940",
           "title": "[FIX] Livechat not loading",
@@ -15339,6 +15579,9 @@
     "0.65.2": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "9534",
@@ -15349,25 +15592,15 @@
             "web-flow",
             "engelgabriel"
           ]
-        },
-        {
-          "pr": "10947",
-          "title": "Release 0.65.1",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "rodrigok",
-            "sampaiodiego",
-            "engelgabriel"
-          ]
         }
       ]
-    },
-    "HEAD": {
-      "pull_requests": []
     },
     "0.66.0-rc.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11166",
@@ -16479,6 +16712,9 @@
     "0.66.0-rc.1": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11223",
@@ -16542,6 +16778,9 @@
     "0.66.0-rc.2": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11249",
@@ -16602,6 +16841,9 @@
     "0.66.0-rc.3": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10971",
@@ -16657,6 +16899,9 @@
     "0.66.0-rc.4": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11268",
@@ -16701,19 +16946,25 @@
     "0.66.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
-          "pr": "11277",
-          "title": "Merge master into develop & Set version to 0.66.0-develop",
+          "pr": "11278",
+          "title": "Release 0.66.0",
           "userLogin": "rodrigok",
           "contributors": [
-            "brylie",
-            "web-flow",
-            "stuartpb",
-            "engelgabriel",
-            "Hudell",
+            "graywolf336",
+            "renatobecker",
             "sampaiodiego",
-            "rodrigok"
+            "vynmera",
+            "web-flow",
+            "misi",
+            "engelgabriel",
+            "geekgonecrazy",
+            "Hudell",
+            "karlprieb"
           ]
         },
         {
@@ -16731,7 +16982,22 @@
     "0.66.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "11343",
+          "title": "Release 0.66.1",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok",
+            "gdelavald",
+            "tassoevan",
+            "Hudell"
+          ]
+        },
         {
           "pr": "11335",
           "title": "[FIX] Some updates were returning errors when based on queries with position operators",
@@ -16762,7 +17028,7 @@
         },
         {
           "pr": "11254",
-          "title": "[IMPROVE] Setup Wizard username validation, step progress and optin/optout",
+          "title": "[IMPROVE] Setup Wizard username validation, step progress and opt in/out",
           "userLogin": "tassoevan",
           "milestone": "0.66.1",
           "contributors": [
@@ -16795,7 +17061,21 @@
     "0.66.2": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "11366",
+          "title": "Release 0.66.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "geekgonecrazy",
+            "renatobecker",
+            "rodrigok"
+          ]
+        },
         {
           "pr": "11359",
           "title": "Send setting Allow_Marketing_Emails to statistics collector",
@@ -16839,7 +17119,20 @@
     "0.66.3": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "11410",
+          "title": "Release 0.66.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
         {
           "pr": "11398",
           "title": "[FIX] All messages notifications via email were sent as mention alert",
@@ -16863,6 +17156,9 @@
     "0.67.0-rc.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "10749",
@@ -17071,7 +17367,7 @@
         },
         {
           "pr": "11254",
-          "title": "[IMPROVE] Setup Wizard username validation, step progress and optin/optout",
+          "title": "[IMPROVE] Setup Wizard username validation, step progress and opt in/out",
           "userLogin": "tassoevan",
           "milestone": "0.66.1",
           "contributors": [
@@ -17113,7 +17409,29 @@
     "0.67.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "11533",
+          "title": "Release 0.67.0",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow",
+            "gdelavald",
+            "tassoevan",
+            "ggazzo",
+            "Hudell",
+            "AmShaegar13",
+            "c0dzilla",
+            "justinribeiro",
+            "geekgonecrazy",
+            "renatobecker"
+          ]
+        },
         {
           "pr": "11497",
           "title": "Fix dependency issue in redhat image",
@@ -17127,6 +17445,9 @@
     "0.68.0-rc.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11328",
@@ -17140,7 +17461,7 @@
         },
         {
           "pr": "11524",
-          "title": "[FIX] New favicons size too small",
+          "title": "Regression: New favicons size too small",
           "userLogin": "brunosquadros",
           "contributors": [
             "brunosquadros",
@@ -17577,6 +17898,9 @@
     "0.68.0-rc.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11561",
@@ -17601,6 +17925,9 @@
     "0.68.0-rc.2": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11587",
@@ -17626,6 +17953,9 @@
     "0.68.0-rc.3": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11590",
@@ -17640,11 +17970,43 @@
     "0.68.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
-      "pull_requests": []
+      "mongo_versions": [
+        "3.4"
+      ],
+      "pull_requests": [
+        {
+          "pr": "11591",
+          "title": "Release 0.68.0",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "web-flow",
+            "MartinSchoeler",
+            "ggazzo",
+            "PhpXp",
+            "tpDBL",
+            "tassoevan",
+            "arungalva",
+            "brunosquadros",
+            "engelgabriel",
+            "vynmera",
+            "Joe-mcgee",
+            "HappyTobi",
+            "rodrigok",
+            "cardoso",
+            "geekgonecrazy",
+            "Hudell"
+          ]
+        }
+      ]
     },
     "0.68.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11616",
@@ -17680,6 +18042,9 @@
     "0.68.2": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11630",
@@ -17705,6 +18070,9 @@
     "0.68.3": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11650",
@@ -17774,7 +18142,20 @@
     "0.68.4": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "11743",
+          "title": "Release 0.68.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "vynmera",
+            "sampaiodiego",
+            "tassoevan"
+          ]
+        },
         {
           "pr": "11719",
           "title": "[FIX] Default server language not being applied",
@@ -17808,7 +18189,19 @@
     "0.68.5": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "11852",
+          "title": "Release 0.68.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        },
         {
           "pr": "11830",
           "title": "[FIX] Livechat open room method",
@@ -17823,6 +18216,9 @@
     "0.69.0-rc.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11852",
@@ -17863,7 +18259,7 @@
         },
         {
           "pr": "11837",
-          "title": "[NEW] Beta support for Big Blue Button video conferencing system",
+          "title": "[NEW] Beta support for BigBlueButton video conferencing system",
           "userLogin": "rodrigok",
           "milestone": "0.69.0",
           "contributors": [
@@ -17875,7 +18271,6 @@
           "pr": "11011",
           "title": "[FIX] LiveChat switch department not working",
           "userLogin": "renatobecker",
-          "milestone": "Short-term",
           "contributors": [
             "renatobecker",
             "ggazzo",
@@ -18115,7 +18510,6 @@
           "pr": "9749",
           "title": "[NEW] Setting to block unauthenticated access to avatars",
           "userLogin": "Hudell",
-          "milestone": "Short-term",
           "contributors": [
             "Hudell",
             "web-flow",
@@ -18562,6 +18956,9 @@
     "0.69.0-rc.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11835",
@@ -18607,7 +19004,33 @@
     "0.69.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "11881",
+          "title": "Release 0.69.0",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "engelgabriel",
+            "sampaiodiego",
+            "web-flow",
+            "tassoevan",
+            "rodrigok",
+            "c0dzilla",
+            "Hudell",
+            "MarcosSpessatto",
+            "rndmh3ro",
+            "ggazzo",
+            "wreiske",
+            "vynmera",
+            "crazy-max",
+            "glstewart17",
+            "rssilva",
+            "Atisom"
+          ]
+        },
         {
           "pr": "11852",
           "title": "Release 0.68.5",
@@ -18640,7 +19063,20 @@
     "0.69.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "11918",
+          "title": "Release 0.69.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ubarsaiyan",
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
         {
           "pr": "11892",
           "title": "[FIX] Hipchat import was failing when importing messages from a non existent user",
@@ -18683,7 +19119,23 @@
     "0.69.2": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "12026",
+          "title": "Release 0.69.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "timkinnane",
+            "rodrigok",
+            "cardoso",
+            "kaiiiiiiiii"
+          ]
+        },
         {
           "pr": "11812",
           "title": "[NEW] Include room name in stream for bots",
@@ -18736,6 +19188,9 @@
     "0.70.0-rc.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "11184",
@@ -18751,7 +19206,6 @@
           "pr": "10094",
           "title": "[NEW] Support for end to end encryption",
           "userLogin": "mrinaldhar",
-          "milestone": "Short-term",
           "contributors": [
             "mrinaldhar"
           ]
@@ -19289,6 +19743,9 @@
     "0.70.0-rc.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12138",
@@ -19324,6 +19781,9 @@
     "0.70.0-rc.2": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12154",
@@ -19459,6 +19919,9 @@
     "0.70.0-rc.3": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12196",
@@ -19481,7 +19944,7 @@
         },
         {
           "pr": "12009",
-          "title": "[BREAK][IMPROVE] New emails design",
+          "title": "[IMPROVE] New emails design",
           "userLogin": "ggazzo",
           "milestone": "0.70.0",
           "contributors": [
@@ -19522,7 +19985,7 @@
         },
         {
           "pr": "12184",
-          "title": "[NEW] Add Livechat Analytics permission",
+          "title": "New: Add Livechat Analytics permission",
           "userLogin": "renatobecker",
           "milestone": "0.70.0",
           "contributors": [
@@ -19564,7 +20027,6 @@
           "pr": "11565",
           "title": "[FIX] Files list missing from popover menu when owner of room",
           "userLogin": "tassoevan",
-          "milestone": "Short-term",
           "contributors": [
             "tassoevan",
             "web-flow",
@@ -19584,11 +20046,11 @@
         {
           "pr": "12126",
           "title": "[FIX] app engine verbose log typo",
-          "userLogin": "williamriancho",
+          "userLogin": "zahhakrnch",
           "contributors": [
-            "williamriancho",
-            "web-flow",
-            "geekgonecrazy"
+            null,
+            "geekgonecrazy",
+            "web-flow"
           ]
         }
       ]
@@ -19596,6 +20058,9 @@
     "0.70.0-rc.4": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12195",
@@ -19622,7 +20087,38 @@
     "0.70.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "12198",
+          "title": "Release 0.70.0",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "ubarsaiyan",
+            "web-flow",
+            "engelgabriel",
+            "TobiasKappe",
+            "renatobecker",
+            "thaiphv",
+            "MartinSchoeler",
+            "der-eismann",
+            "mrsimpson",
+            "timkinnane",
+            "geekgonecrazy",
+            "cardoso",
+            "kaiiiiiiiii",
+            "ggazzo",
+            "aferreira44",
+            "Hudell",
+            "MarcosSpessatto",
+            "edzluhan",
+            "MIKI785"
+          ]
+        },
         {
           "pr": "12026",
           "title": "Release 0.69.2",
@@ -19688,6 +20184,9 @@
     "0.70.1-rc.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12264",
@@ -19799,6 +20298,9 @@
     "0.70.1-rc.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12268",
@@ -19814,6 +20316,9 @@
     "0.70.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12270",
@@ -19836,11 +20341,17 @@
     "0.70.2": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": []
     },
     "0.70.3": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12281",
@@ -19873,6 +20384,9 @@
     "0.70.4": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12299",
@@ -19900,10 +20414,57 @@
         }
       ]
     },
+    "0.70.5": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
+      "pull_requests": [
+        {
+          "pr": "12898",
+          "title": "[FIX] Reset password email",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.72.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
     "0.71.0-rc.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "12898",
+          "title": "[FIX] Reset password email",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.72.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12299",
+          "title": "Release 0.70.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12276",
+          "title": "Release 0.70.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego"
+          ]
+        },
         {
           "pr": "11521",
           "title": "[FIX] Add image dimensions to attachment even when no reorientation is required",
@@ -20209,29 +20770,15 @@
           "contributors": [
             "Hudell"
           ]
-        },
-        {
-          "pr": "12299",
-          "title": "Release 0.70.4",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "sampaiodiego"
-          ]
-        },
-        {
-          "pr": "12276",
-          "title": "Release 0.70.2",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "Hudell",
-            "sampaiodiego"
-          ]
         }
       ]
     },
     "0.71.0-rc.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12398",
@@ -20292,7 +20839,7 @@
         },
         {
           "pr": "12436",
-          "title": "[FIX] Attachment actions not being collapsable",
+          "title": "[FIX] Attachment actions not being collapsible",
           "userLogin": "graywolf336",
           "milestone": "0.71.0",
           "contributors": [
@@ -20322,6 +20869,9 @@
     "0.71.0-rc.2": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12445",
@@ -20346,6 +20896,9 @@
     "0.71.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12299",
@@ -20369,6 +20922,9 @@
     "0.71.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
         {
           "pr": "12499",
@@ -20388,8 +20944,56 @@
         }
       ]
     },
-    "0.72.0-rc.0": {
+    "0.71.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "mongo_versions": [
+        "3.4"
+      ],
       "pull_requests": [
+        {
+          "pr": "12898",
+          "title": "[FIX] Reset password email",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.72.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.72.0-rc.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "12898",
+          "title": "[FIX] Reset password email",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.72.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12499",
+          "title": "Release 0.71.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12487",
+          "title": "[FIX] Email sending with GDPR user data",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
         {
           "pr": "12684",
           "title": "LingoHub based on develop",
@@ -21446,26 +22050,15 @@
             "web-flow",
             "Hudell"
           ]
-        },
-        {
-          "pr": "12499",
-          "title": "Release 0.71.1",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "sampaiodiego"
-          ]
-        },
-        {
-          "pr": "12487",
-          "title": "[FIX] Email sending with GDPR user data",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "sampaiodiego"
-          ]
         }
       ]
     },
     "0.72.0-rc.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
         {
           "pr": "12712",
@@ -21571,6 +22164,11 @@
       ]
     },
     "0.72.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
         {
           "pr": "12741",
@@ -21620,7 +22218,31 @@
       ]
     },
     "0.72.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
+        {
+          "pr": "12742",
+          "title": "Release 0.72.0",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "vinade",
+            "ggazzo",
+            "mrsimpson",
+            "AndreamApp",
+            "Ismaw34",
+            "ramrami",
+            "engelgabriel",
+            "tassoevan",
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
         {
           "pr": "12499",
           "title": "Release 0.71.1",
@@ -21636,13 +22258,1316 @@
           "contributors": [
             "sampaiodiego"
           ]
+        },
+        {
+          "pr": "12741",
+          "title": "Update Apps Engine to 1.3.1",
+          "userLogin": "rodrigok",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12736",
+          "title": "Regression: Expand Administration sections by toggling section title",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12737",
+          "title": "Regression: Fix Safari detection in PDF previewing",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12735",
+          "title": "Regression: Account pages layout",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12729",
+          "title": "Regression: Inherit font-family for message box",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12712",
+          "title": "Fix some Ukrainian translations",
+          "userLogin": "zdumitru",
+          "milestone": "0.72.0",
+          "contributors": [
+            "zdumitru",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12713",
+          "title": "[FIX] Update caret position on insert a new line in message box",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12714",
+          "title": "[IMPROVE] Allow apps to update persistence by association",
+          "userLogin": "marceloschmidt",
+          "contributors": [
+            "marceloschmidt",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12708",
+          "title": "Improve: Add missing translation keys.",
+          "userLogin": "ura14h",
+          "milestone": "0.72.0",
+          "contributors": [
+            "ura14h",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12705",
+          "title": "Bump Apps Engine to 1.3.0",
+          "userLogin": "rodrigok",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12699",
+          "title": "Fix: Exception when registering a user with gravatar",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "engelgabriel",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12637",
+          "title": "[FIX] DE translation for idle-time-limit",
+          "userLogin": "pfuender",
+          "milestone": "0.72.0",
+          "contributors": [
+            null,
+            "engelgabriel",
+            "web-flow",
+            "pfuender"
+          ]
+        },
+        {
+          "pr": "12707",
+          "title": "Fix: Fix tests by increasing window size",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12680",
+          "title": "[IMPROVE] Add more methods to deal with rooms via Rocket.Chat.Apps",
+          "userLogin": "marceloschmidt",
+          "milestone": "0.72.0",
+          "contributors": [
+            "marceloschmidt"
+          ]
+        },
+        {
+          "pr": "12692",
+          "title": "[IMPROVE] Better query for finding subscriptions that need a new E2E Key",
+          "userLogin": "Hudell",
+          "milestone": "0.72.0",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12684",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12309",
+          "title": "[NEW] Add permission to enable personal access token to specific roles",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12563",
+          "title": "[IMPROVE] Improve unreads and unreadsFrom response, prevent it to be equal null",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12483",
+          "title": "[NEW] Option to reset e2e key",
+          "userLogin": "Hudell",
+          "milestone": "0.72.0",
+          "contributors": [
+            "Hudell",
+            "web-flow",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "12633",
+          "title": "[FIX] Fixed Anonymous Registration",
+          "userLogin": "wreiske",
+          "milestone": "0.72.0",
+          "contributors": [
+            "wreiske",
+            "web-flow",
+            "engelgabriel",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12105",
+          "title": "[IMPROVE] Add rooms property in user object, if the user has the permission, with rooms roles",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12682",
+          "title": "Convert rocketchat-mail-messages to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12679",
+          "title": " Convert rocketchat-livestream to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12675",
+          "title": "[IMPROVE] border-radius to use --border-radius",
+          "userLogin": "engelgabriel",
+          "milestone": "0.72.0",
+          "contributors": [
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12677",
+          "title": "[FIX] high cpu usage ~ svg icon",
+          "userLogin": "ph1p",
+          "contributors": [
+            null,
+            "ph1p"
+          ]
+        },
+        {
+          "pr": "12374",
+          "title": "Added \"npm install\" to quick start for developers",
+          "userLogin": "wreiske",
+          "milestone": "0.72.0",
+          "contributors": [
+            "wreiske",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12651",
+          "title": "[NEW] /api/v1/spotlight: return joinCodeRequired field for rooms",
+          "userLogin": "cardoso",
+          "milestone": "0.72.0",
+          "contributors": [
+            "cardoso",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12678",
+          "title": "Convert rocketchat-ldap to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12674",
+          "title": "Convert rocketchat-issuelinks to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12670",
+          "title": "Convert rocketchat-integrations to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12672",
+          "title": "Convert rocketchat-irc to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12671",
+          "title": "Convert rocketchat-internal-hubot to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12665",
+          "title": "Convert rocketchat-importer-hipchat-enterprise to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12669",
+          "title": "Convert rocketchat-importer-slack-users to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12666",
+          "title": " Convert rocketchat-importer-slack to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12661",
+          "title": "Convert rocketchat-iframe-login to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12662",
+          "title": "Convert rocketchat-importer to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12663",
+          "title": "Convert rocketchat-importer-csv to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12664",
+          "title": "Convert rocketchat-importer-hipchat to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12659",
+          "title": "Convert rocketchat-highlight-words to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12657",
+          "title": "Convert rocketchat-grant to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12658",
+          "title": "Convert rocketchat-graphql to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12564",
+          "title": "[IMPROVE] Update the 'keyboard shortcuts' documentation",
+          "userLogin": "nicolasbock",
+          "milestone": "0.72.0",
+          "contributors": [
+            "nicolasbock",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12643",
+          "title": "[FIX] Fix favico error",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12649",
+          "title": "Convert rocketchat-google-vision to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12650",
+          "title": "Removed RocketChatFile from globals",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12623",
+          "title": "[NEW] New API Endpoints for the new version of JS SDK",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "engelgabriel",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12647",
+          "title": "Added imports for global variables in rocketchat-google-natural-language package",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12646",
+          "title": "Convert rocketchat-gitlab to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12644",
+          "title": "Convert rocketchat-file to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12642",
+          "title": "Convert rocketchat-github-enterprise to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12645",
+          "title": "Fix: Add email dependency in package.js",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12561",
+          "title": "[IMPROVE] Add new acceptable header for Livechat REST requests",
+          "userLogin": "renatobecker",
+          "milestone": "0.72.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "12599",
+          "title": "Convert rocketchat-custom-sounds to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12641",
+          "title": "Fix crowd error with import of SyncedCron",
+          "userLogin": "rodrigok",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12605",
+          "title": "Convert emoji-emojione to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12607",
+          "title": "Convert rocketchat-favico to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12604",
+          "title": " Convert rocketchat-emoji-custom to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12632",
+          "title": "[FIX] Condition to not render PDF preview",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12606",
+          "title": "Convert rocketchat-error-handler to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12601",
+          "title": "Convert rocketchat-drupal to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12596",
+          "title": "Convert rocketchat-crowd to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12603",
+          "title": "Convert rocketchat-emoji to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12625",
+          "title": "Fix users.setAvatar endpoint tests and logic",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12616",
+          "title": "[IMPROVE] Atlassian Crowd settings and option to sync user data",
+          "userLogin": "rodrigok",
+          "milestone": "0.72.0",
+          "contributors": [
+            null,
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12583",
+          "title": "[DOCS] Remove Cordova links, include F-Droid download button and few other adjustments",
+          "userLogin": "rafaelks",
+          "contributors": [
+            "rafaelks",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12600",
+          "title": "Convert rocketchat-dolphin to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12594",
+          "title": " Convert rocketchat-channel-settings to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12595",
+          "title": "Convert rocketchat-cors to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12618",
+          "title": "[IMPROVE] CircleCI to use MongoDB 4.0 for testing",
+          "userLogin": "engelgabriel",
+          "milestone": "0.72.0",
+          "contributors": [
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12614",
+          "title": "[FIX] Admin styles",
+          "userLogin": "engelgabriel",
+          "milestone": "0.72.0",
+          "contributors": [
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "12602",
+          "title": "[FIX] Admin styles",
+          "userLogin": "engelgabriel",
+          "milestone": "0.72.0",
+          "contributors": [
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "9336",
+          "title": "[FIX] Change registration message when user need to confirm email",
+          "userLogin": "karlprieb",
+          "milestone": "0.72.0",
+          "contributors": [
+            "karlprieb",
+            "tassoevan",
+            "ggazzo",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12570",
+          "title": "[FIX] Import missed file in rocketchat-authorization",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12558",
+          "title": "[FIX] Prevent subscriptions and calls to rooms events that the user is not participating",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12382",
+          "title": "[IMPROVE] Japanese translations",
+          "userLogin": "ura14h",
+          "contributors": [
+            "ura14h",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12525",
+          "title": "[IMPROVE] Add CTRL modifier for keyboard shortcut",
+          "userLogin": "nicolasbock",
+          "milestone": "0.72.0",
+          "contributors": [
+            "nicolasbock"
+          ]
+        },
+        {
+          "pr": "12530",
+          "title": "Convert rocketchat-autotranslate to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12537",
+          "title": "Convert rocketchat-channel-settings-mail-messages to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12538",
+          "title": "Convert rocketchat-colors to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12532",
+          "title": "Convert rocketchat-cas to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12531",
+          "title": "Convert rocketchat-bot-helpers to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12529",
+          "title": "Convert rocketchat-autolinker to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12523",
+          "title": "Convert rocketchat-authorization to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12547",
+          "title": "[NEW] Setting to configure robots.txt content",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12539",
+          "title": "[FIX] Wrong test case for `users.setAvatar` endpoint",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12536",
+          "title": "[FIX] Spotlight method being called multiple times",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12524",
+          "title": "Fix CSS import order",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12518",
+          "title": "[FIX] German translation for for API_EmbedIgnoredHosts label",
+          "userLogin": "mbrodala",
+          "milestone": "0.72.0",
+          "contributors": [
+            "mbrodala"
+          ]
+        },
+        {
+          "pr": "12426",
+          "title": "Remove template for feature requests as issues",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12451",
+          "title": "Fix punctuation, spelling, and grammar",
+          "userLogin": "imronras",
+          "milestone": "0.72.0",
+          "contributors": [
+            "imronras",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12522",
+          "title": "[IMPROVE] Ignore non-existent Livechat custom fields on Livechat API",
+          "userLogin": "renatobecker",
+          "milestone": "0.72.0",
+          "contributors": [
+            "renatobecker",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12507",
+          "title": "[FIX] Handle all events for enter key in message box",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12378",
+          "title": "[NEW] Make Livechat's widget draggable",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12408",
+          "title": "[FIX] Fix wrong parameter in chat.delete endpoint and add some test cases",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12452",
+          "title": "[IMPROVE] Emoji search on messageBox behaving like emojiPicker's search (#9607)",
+          "userLogin": "vinade",
+          "milestone": "0.72.0",
+          "contributors": [
+            "vinade"
+          ]
+        },
+        {
+          "pr": "12521",
+          "title": "Convert rocketchat-assets to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12510",
+          "title": "Convert rocketchat-api to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12506",
+          "title": "Convert rocketchat-analytics to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12503",
+          "title": "Convert rocketchat-action-links to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12501",
+          "title": "Convert rocketchat-2fa to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12495",
+          "title": "Convert meteor-timesync to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12491",
+          "title": "Convert meteor-autocomplete package to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12486",
+          "title": "Convert meteor-accounts-saml to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12485",
+          "title": "Convert chatpal search package to modular structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12467",
+          "title": "Removal of TAPi18n and TAPi18next global variables",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12433",
+          "title": "Removal of Template, Blaze, BlazeLayout, FlowRouter, DDPRateLimiter, Session, UAParser, Promise, Reload and CryptoJS global variables",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12410",
+          "title": "Removal of Match, check, moment, Tracker and Mongo global variables",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12377",
+          "title": "Removal of EJSON, Accounts, Email, HTTP, Random, ReactiveDict, ReactiveVar, SHA256 and WebApp global variables",
+          "userLogin": "rodrigok",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12371",
+          "title": "Removal of Meteor global variable",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12468",
+          "title": "[BREAK] Update to Meteor to 1.8",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12509",
+          "title": "Fix ES translation",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12487",
+          "title": "[FIX] Email sending with GDPR user data",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12471",
+          "title": "[IMPROVE] German translations",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12470",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12397",
+          "title": "[FIX] Manage own integrations permissions check",
+          "userLogin": "ggazzo",
+          "milestone": "0.72.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12411",
+          "title": "[FIX] stream room-changed",
+          "userLogin": "ggazzo",
+          "milestone": "0.72.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12457",
+          "title": "[FIX] Emoji picker is not in viewport on small screens",
+          "userLogin": "ramrami",
+          "milestone": "0.72.0",
+          "contributors": [
+            "ramrami"
+          ]
+        },
+        {
+          "pr": "12400",
+          "title": "[IMPROVE] Limit the number of typing users shown (#8722)",
+          "userLogin": "vinade",
+          "contributors": [
+            "vinade",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12406",
+          "title": "[FIX] `Disabled` word translation to Spanish",
+          "userLogin": "Ismaw34",
+          "contributors": [
+            "Ismaw34",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12260",
+          "title": "[FIX] `Disabled` word translation to Chinese",
+          "userLogin": "AndreamApp",
+          "milestone": "0.72.0",
+          "contributors": [
+            "AndreamApp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12465",
+          "title": "Update npm dependencies",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12440",
+          "title": "Fix: Developers not being able to debug root files in VSCode",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson"
+          ]
+        },
+        {
+          "pr": "12453",
+          "title": "[FIX] Correct roomName value in Mail Messages (#12363)",
+          "userLogin": "vinade",
+          "milestone": "0.72.0",
+          "contributors": [
+            "vinade"
+          ]
+        },
+        {
+          "pr": "12460",
+          "title": "Merge master into develop & Set version to 0.72.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "Hudell"
+          ]
         }
       ]
     },
-    "0.70.5": {
-      "node_version": "8.11.3",
-      "npm_version": "5.6.0",
+    "0.72.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
+        {
+          "pr": "12850",
+          "title": "Release 0.72.1",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "Hudell",
+            "MarcosSpessatto",
+            "piotrkochan",
+            "ohmonster",
+            "d-gubert",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12848",
+          "title": "Bump Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "0.72.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "12818",
+          "title": "[FIX] Change spread operator to Array.from for Edge browser",
+          "userLogin": "ohmonster",
+          "milestone": "0.72.1",
+          "contributors": [
+            "ohmonster"
+          ]
+        },
+        {
+          "pr": "12727",
+          "title": "[FIX] API users.info returns caller rooms and not requested user ones",
+          "userLogin": "piotrkochan",
+          "milestone": "0.72.1",
+          "contributors": [
+            "piotrkochan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12804",
+          "title": "Change file order in rocketchat-cors",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.1",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12847",
+          "title": "[FIX] Missing HipChat Enterprise Importer",
+          "userLogin": "Hudell",
+          "milestone": "0.72.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12805",
+          "title": "[FIX] Emoji as avatar",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.1",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "0.72.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "12901",
+          "title": "Release 0.72.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12900",
+          "title": "[FIX] line-height for unread bar buttons (jump to first and mark as read)",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
         {
           "pr": "12898",
           "title": "[FIX] Reset password email",
@@ -21651,20 +23576,35 @@
           "contributors": [
             "sampaiodiego"
           ]
+        },
+        {
+          "pr": "12882",
+          "title": "[FIX] PDF view loading indicator",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.2",
+          "contributors": [
+            "tassoevan"
+          ]
         }
       ]
     },
-    "0.71.2": {
-      "node_version": "8.11.3",
-      "npm_version": "5.6.0",
+    "0.72.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
         {
-          "pr": "12898",
-          "title": "[FIX] Reset password email",
-          "userLogin": "sampaiodiego",
-          "milestone": "0.72.2",
+          "pr": "12932",
+          "title": "Release 0.72.3",
+          "userLogin": "rodrigok",
           "contributors": [
-            "sampaiodiego"
+            "rodrigok",
+            "ggazzo",
+            "Hudell",
+            "tassoevan",
+            "piotrkochan"
           ]
         }
       ]
@@ -21672,12 +23612,14 @@
     "0.73.0-rc.0": {
       "node_version": "8.11.4",
       "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
         {
           "pr": "12985",
           "title": "[IMPROVE] Hipchat Enterprise Importer",
           "userLogin": "Hudell",
-          "milestone": "0.73.0",
           "contributors": [
             "Hudell",
             "rodrigok",
@@ -21688,7 +23630,6 @@
           "pr": "13014",
           "title": "LingoHub based on develop",
           "userLogin": "engelgabriel",
-          "milestone": "0.73.0",
           "contributors": [
             "rodrigok"
           ]
@@ -21697,7 +23638,6 @@
           "pr": "12123",
           "title": "[FIX] Avoiding links with highlighted words",
           "userLogin": "rssilva",
-          "milestone": "0.73.0",
           "contributors": [
             "rssilva",
             "tassoevan",
@@ -21709,7 +23649,6 @@
           "pr": "12748",
           "title": "[NEW] Create new permission.listAll endpoint to be able to use updatedSince parameter",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto",
             "rodrigok",
@@ -21720,7 +23659,6 @@
           "pr": "9748",
           "title": "[NEW] Mandatory 2fa for role",
           "userLogin": "Hudell",
-          "milestone": "0.73.0",
           "contributors": [
             "Hudell",
             "karlprieb",
@@ -21732,7 +23670,6 @@
           "pr": "12739",
           "title": "[FIX] Pin and unpin message were not checking permissions",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto",
             "rodrigok",
@@ -21743,7 +23680,6 @@
           "pr": "12734",
           "title": "[FIX] Fix users.setPreferences endpoint, set language correctly",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -21752,7 +23688,6 @@
           "pr": "12754",
           "title": "[NEW] Add query parameter support to emoji-custom endpoint",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -21761,7 +23696,6 @@
           "pr": "12790",
           "title": "[FIX] Fix set avatar http call, to avoid SSL errors",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -21770,7 +23704,6 @@
           "pr": "12856",
           "title": "[NEW]  Added a link to contributing.md",
           "userLogin": "sanketsingh24",
-          "milestone": "0.73.0",
           "contributors": [
             "sanketsingh24",
             "web-flow"
@@ -21780,7 +23713,6 @@
           "pr": "13010",
           "title": "[NEW] Added chat.getDeletedMessages since specific date",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -21789,7 +23721,6 @@
           "pr": "12569",
           "title": "[FIX] Webdav integration account settings were being shown even when Webdav was disabled",
           "userLogin": "karakayasemi",
-          "milestone": "0.73.0",
           "contributors": [
             "karakayasemi"
           ]
@@ -21798,7 +23729,6 @@
           "pr": "12722",
           "title": "[IMPROVE] Add missing translation keys.",
           "userLogin": "ura14h",
-          "milestone": "0.73.0",
           "contributors": [
             "ura14h",
             "web-flow"
@@ -21808,7 +23738,6 @@
           "pr": "12792",
           "title": "[FIX] Provide better Dutch translations 🇳🇱",
           "userLogin": "mathysie",
-          "milestone": "0.73.0",
           "contributors": [
             "mathysie",
             "tassoevan",
@@ -21819,7 +23748,6 @@
           "pr": "12795",
           "title": "[FIX] E2E`s password reaveal text is always `>%S` when language is zh",
           "userLogin": "lvyue",
-          "milestone": "0.73.0",
           "contributors": [
             "lvyue",
             "web-flow"
@@ -21829,7 +23757,6 @@
           "pr": "12874",
           "title": "[NEW] Download button for each file in fileslist",
           "userLogin": "alexbartsch",
-          "milestone": "0.73.0",
           "contributors": [
             "alexbartsch",
             "web-flow",
@@ -21840,7 +23767,6 @@
           "pr": "13011",
           "title": "Move isFirefox and isChrome functions to rocketchat-utils",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -21849,7 +23775,6 @@
           "pr": "12998",
           "title": "[FIX] Nested Markdown blocks not parsed properly",
           "userLogin": "Hudell",
-          "milestone": "0.73.0",
           "contributors": [
             "Hudell",
             "rodrigok"
@@ -21859,7 +23784,6 @@
           "pr": "13009",
           "title": "[IMPROVE] Accept Slash Commands via Action Buttons when `msg_in_chat_window: true`",
           "userLogin": "rodrigok",
-          "milestone": "0.73.0",
           "contributors": [
             "rodrigok"
           ]
@@ -21868,7 +23792,6 @@
           "pr": "13008",
           "title": "[IMPROVE] Allow transfer Livechats to online agents only",
           "userLogin": "renatobecker",
-          "milestone": "0.73.0",
           "contributors": [
             "renatobecker"
           ]
@@ -21877,7 +23800,6 @@
           "pr": "12706",
           "title": "[FIX] Change JSON to EJSON.parse query to support type Date",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -21886,7 +23808,6 @@
           "pr": "13005",
           "title": "Move tapi18n t and isRtl functions from ui to utils",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -21895,7 +23816,6 @@
           "pr": "13004",
           "title": "[FIX] Inherit font family in message user card",
           "userLogin": "tassoevan",
-          "milestone": "0.73.0",
           "contributors": [
             "tassoevan"
           ]
@@ -21904,7 +23824,6 @@
           "pr": "12999",
           "title": "Remove /* globals */ wave 4",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto",
             "rodrigok",
@@ -21915,7 +23834,6 @@
           "pr": "12997",
           "title": "Remove /* globals */ wave 3",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto",
             "rodrigok",
@@ -21926,7 +23844,6 @@
           "pr": "12995",
           "title": "Convert rocketchat-logger to main module structure and remove Logger from eslintrc",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -21946,7 +23863,6 @@
           "pr": "12983",
           "title": "[FIX] Stop click event propagation on mention link or user card",
           "userLogin": "tassoevan",
-          "milestone": "0.73.0",
           "contributors": [
             "tassoevan"
           ]
@@ -21955,7 +23871,6 @@
           "pr": "12973",
           "title": "[FIX] Change field checks in RocketChat.saveStreamingOptions",
           "userLogin": "tassoevan",
-          "milestone": "0.73.0",
           "contributors": [
             "tassoevan"
           ]
@@ -21964,7 +23879,6 @@
           "pr": "12980",
           "title": "[FIX] Remove sharp's deprecation warnings on image upload",
           "userLogin": "tassoevan",
-          "milestone": "0.73.0",
           "contributors": [
             "tassoevan"
           ]
@@ -22002,7 +23916,6 @@
           "pr": "12988",
           "title": "Remove /* globals */ wave 2",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto",
             "rodrigok",
@@ -22013,7 +23926,6 @@
           "pr": "12984",
           "title": "Remove /* globals */ from files wave-1",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22032,7 +23944,6 @@
           "pr": "12994",
           "title": "[FIX] Readable validation on the apps engine environment bridge",
           "userLogin": "d-gubert",
-          "milestone": "0.73.0",
           "contributors": [
             "d-gubert",
             "web-flow"
@@ -22060,7 +23971,6 @@
           "pr": "12959",
           "title": "Move globals of test to a specific eslintrc file",
           "userLogin": "rodrigok",
-          "milestone": "0.73.0",
           "contributors": [
             "rodrigok",
             "web-flow"
@@ -22070,7 +23980,6 @@
           "pr": "12960",
           "title": "Remove global ServiceConfiguration",
           "userLogin": "rodrigok",
-          "milestone": "0.73.0",
           "contributors": [
             "rodrigok"
           ]
@@ -22079,7 +23988,6 @@
           "pr": "12961",
           "title": "Remove global toastr",
           "userLogin": "rodrigok",
-          "milestone": "0.73.0",
           "contributors": [
             "rodrigok"
           ]
@@ -22088,7 +23996,6 @@
           "pr": "12942",
           "title": "Convert rocketchat-livechat to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22114,7 +24021,6 @@
           "pr": "12934",
           "title": "Revert imports of css, reAdd them to the addFiles function",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22123,7 +24029,6 @@
           "pr": "12896",
           "title": "Convert rocketchat-theme to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22132,7 +24037,6 @@
           "pr": "12895",
           "title": "Convert rocketchat-katex to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22141,7 +24045,6 @@
           "pr": "12886",
           "title": "Convert rocketchat-webdav to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22150,7 +24053,6 @@
           "pr": "12871",
           "title": "Convert rocketchat-ui-message to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22159,7 +24061,6 @@
           "pr": "12881",
           "title": "Convert rocketchat-videobridge to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22281,7 +24182,6 @@
           "pr": "12888",
           "title": " Convert rocketchat-reactions to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22290,7 +24190,6 @@
           "pr": "12887",
           "title": "Convert rocketchat-wordpress to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22308,7 +24207,6 @@
           "pr": "12865",
           "title": "[IMPROVE] Returning an open room object in the Livechat config endpoint",
           "userLogin": "renatobecker",
-          "milestone": "0.73.0",
           "contributors": [
             "renatobecker"
           ]
@@ -22327,7 +24225,6 @@
           "pr": "12879",
           "title": "Convert rocketchat-version-check to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22346,7 +24243,6 @@
           "pr": "12597",
           "title": "[NEW] Livechat registration form message",
           "userLogin": "renatobecker",
-          "milestone": "0.73.0",
           "contributors": [
             "renatobecker",
             "web-flow"
@@ -22356,7 +24252,6 @@
           "pr": "12877",
           "title": "Convert rocketchat-user-data-dowload to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22365,7 +24260,6 @@
           "pr": "12875",
           "title": "Convert rocketchat-ui-vrecord to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22374,7 +24268,6 @@
           "pr": "12861",
           "title": "Convert rocketchat-ui-login to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22383,7 +24276,6 @@
           "pr": "12859",
           "title": " Convert rocketchat-ui-flextab to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22409,7 +24301,6 @@
           "pr": "12851",
           "title": "[FIX] Incorrect parameter name in Livechat stream",
           "userLogin": "renatobecker",
-          "milestone": "0.73.0",
           "contributors": [
             "renatobecker"
           ]
@@ -22418,7 +24309,6 @@
           "pr": "12585",
           "title": "[FIX] Autotranslate icon on message action menu",
           "userLogin": "marceloschmidt",
-          "milestone": "0.73.0",
           "contributors": [
             "marceloschmidt",
             "engelgabriel",
@@ -22455,7 +24345,6 @@
           "pr": "12842",
           "title": " Convert rocketchat-ui-account to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22492,7 +24381,6 @@
           "pr": "12846",
           "title": "Convert rocketchat-ui-clean-history to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22501,7 +24389,6 @@
           "pr": "12844",
           "title": "Convert rocketchat-ui-admin to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22510,7 +24397,6 @@
           "pr": "12843",
           "title": "[FIX] Google Cloud Storage storage provider",
           "userLogin": "sampaiodiego",
-          "milestone": "0.73.0",
           "contributors": [
             "sampaiodiego"
           ]
@@ -22519,7 +24405,6 @@
           "pr": "12838",
           "title": "Convert rocketchat-tokenpass to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22528,7 +24413,6 @@
           "pr": "12840",
           "title": "Remove rocketchat-tutum package",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22537,7 +24421,6 @@
           "pr": "12839",
           "title": "Convert rocketchat-tooltip to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22546,7 +24429,6 @@
           "pr": "12837",
           "title": "Convert rocketchat-token-login to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22566,7 +24448,6 @@
           "pr": "12833",
           "title": "Convert rocketchat-statistics to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22575,7 +24456,6 @@
           "pr": "12832",
           "title": "Convert rocketchat-spotify to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22584,7 +24464,6 @@
           "pr": "12831",
           "title": "Convert rocketchat-sms to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22593,7 +24472,6 @@
           "pr": "12801",
           "title": "Convert rocketchat-search to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22602,7 +24480,6 @@
           "pr": "12767",
           "title": "Convert rocketchat-message-pin to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22611,7 +24488,6 @@
           "pr": "12770",
           "title": "Convert rocketchat-message-star to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22620,7 +24496,6 @@
           "pr": "12823",
           "title": "Convert rocketchat-slashcommands-msg to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto",
             "rodrigok",
@@ -22631,7 +24506,6 @@
           "pr": "12830",
           "title": "Convert rocketchat-smarsh-connector to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22640,7 +24514,6 @@
           "pr": "12828",
           "title": "Convert rocketchat-slider to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22649,7 +24522,6 @@
           "pr": "12827",
           "title": "Convert rocketchat-slashcommands-unarchiveroom to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22658,7 +24530,6 @@
           "pr": "12624",
           "title": "Dependencies update",
           "userLogin": "engelgabriel",
-          "milestone": "0.73.0",
           "contributors": [
             "engelgabriel",
             "rodrigok",
@@ -22669,7 +24540,6 @@
           "pr": "12826",
           "title": "Convert rocketchat-slashcommands-topic to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22678,7 +24548,6 @@
           "pr": "12825",
           "title": "Convert rocketchat-slashcommands-open to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22687,7 +24556,6 @@
           "pr": "12824",
           "title": "Convert rocketchat-slashcommands-mute to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22696,7 +24564,6 @@
           "pr": "12822",
           "title": "Convert rocketchat-slashcommands-me to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22705,7 +24572,6 @@
           "pr": "12821",
           "title": "Convert rocketchat-slashcommands-leave to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22714,7 +24580,6 @@
           "pr": "12817",
           "title": "Convert rocketchat-slashcommands-kick to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22723,7 +24588,6 @@
           "pr": "12816",
           "title": "Convert rocketchat-slashcommands-join to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22732,7 +24596,6 @@
           "pr": "12815",
           "title": "Convert rocketchat-slashcommands-inviteall to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22741,7 +24604,6 @@
           "pr": "12814",
           "title": "Convert rocketchat-slashcommands-invite to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22750,7 +24612,6 @@
           "pr": "12813",
           "title": "Convert rocketchat-slashcommands-hide to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22759,7 +24620,6 @@
           "pr": "12812",
           "title": "Convert rocketchat-slashcommands-help to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22768,7 +24628,6 @@
           "pr": "12811",
           "title": "Convert rocketchat-slashcommands-create to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22777,7 +24636,6 @@
           "pr": "12810",
           "title": "Convert rocketchat-slashcomands-archiveroom to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22786,7 +24644,6 @@
           "pr": "12808",
           "title": "Convert rocketchat-slashcommands-asciiarts to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22795,7 +24652,6 @@
           "pr": "12807",
           "title": "Convert rocketchat-slackbridge to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22804,7 +24660,6 @@
           "pr": "12806",
           "title": "Convert rocketchat-setup-wizard to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22813,7 +24668,6 @@
           "pr": "12799",
           "title": "Convert rocketchat-sandstorm to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22822,7 +24676,6 @@
           "pr": "12773",
           "title": "Convert rocketchat-oauth2-server-config to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto",
             "rodrigok",
@@ -22833,7 +24686,6 @@
           "pr": "12768",
           "title": "Convert rocketchat-message-snippet to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto",
             "rodrigok",
@@ -22870,7 +24722,6 @@
           "pr": "12797",
           "title": "Convert rocketchat-retention-policy to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22879,7 +24730,6 @@
           "pr": "12778",
           "title": "Convert rocketchat-push-notifications to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22888,7 +24738,6 @@
           "pr": "12777",
           "title": "Convert rocketchat-otr to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22897,7 +24746,6 @@
           "pr": "12775",
           "title": "Convert rocketchat-oembed to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22906,7 +24754,6 @@
           "pr": "12772",
           "title": "Convert rocketchat-migrations to main-module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22915,7 +24762,6 @@
           "pr": "12766",
           "title": "Convert rocketchat-message-mark-as-unread to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22924,7 +24770,6 @@
           "pr": "12798",
           "title": "Remove conventional changelog cli, we are using our own cli now (Houston)",
           "userLogin": "rodrigok",
-          "milestone": "0.73.0",
           "contributors": [
             "rodrigok"
           ]
@@ -22933,7 +24778,6 @@
           "pr": "12760",
           "title": "Convert rocketchat-message-attachments to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22942,7 +24786,6 @@
           "pr": "12759",
           "title": "Convert rocketchat-message-action to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22951,7 +24794,6 @@
           "pr": "12757",
           "title": " Convert rocketchat-mentions-flextab to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22960,7 +24802,6 @@
           "pr": "12756",
           "title": "Convert rocketchat-mentions to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -22969,7 +24810,6 @@
           "pr": "12755",
           "title": "Convert rocketchat-markdown to main module structure",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -24206,23 +26046,25 @@
             "web-flow",
             "Hudell"
           ]
-        }
-      ]
-    },
-    "0.72.1": {
-      "pull_requests": [
+        },
         {
-          "pr": "12850",
-          "title": "Release 0.72.1",
+          "pr": "12932",
+          "title": "Release 0.72.3",
           "userLogin": "rodrigok",
           "contributors": [
-            "tassoevan",
             "rodrigok",
+            "ggazzo",
             "Hudell",
-            "MarcosSpessatto",
-            "piotrkochan",
-            "ohmonster",
-            "d-gubert",
+            "tassoevan",
+            "piotrkochan"
+          ]
+        },
+        {
+          "pr": "12901",
+          "title": "Release 0.72.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tassoevan",
             "sampaiodiego"
           ]
         },
@@ -24283,71 +26125,17 @@
         }
       ]
     },
-    "0.72.2": {
-      "pull_requests": [
-        {
-          "pr": "12901",
-          "title": "Release 0.72.2",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "tassoevan",
-            "sampaiodiego"
-          ]
-        },
-        {
-          "pr": "12900",
-          "title": "[FIX] line-height for unread bar buttons (jump to first and mark as read)",
-          "userLogin": "tassoevan",
-          "milestone": "0.72.2",
-          "contributors": [
-            "tassoevan"
-          ]
-        },
-        {
-          "pr": "12898",
-          "title": "[FIX] Reset password email",
-          "userLogin": "sampaiodiego",
-          "milestone": "0.72.2",
-          "contributors": [
-            "sampaiodiego"
-          ]
-        },
-        {
-          "pr": "12882",
-          "title": "[FIX] PDF view loading indicator",
-          "userLogin": "tassoevan",
-          "milestone": "0.72.2",
-          "contributors": [
-            "tassoevan"
-          ]
-        }
-      ]
-    },
-    "0.72.3": {
-      "pull_requests": [
-        {
-          "pr": "12932",
-          "title": "Release 0.72.3",
-          "userLogin": "rodrigok",
-          "contributors": [
-            "rodrigok",
-            "ggazzo",
-            "Hudell",
-            "tassoevan",
-            "piotrkochan"
-          ]
-        }
-      ]
-    },
     "0.73.0-rc.1": {
       "node_version": "8.11.4",
       "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
         {
           "pr": "13021",
           "title": "Change `chat.getDeletedMessages` to get messages after informed date and return only message's _id",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -24356,7 +26144,6 @@
           "pr": "13020",
           "title": "Improve Importer code quality",
           "userLogin": "Hudell",
-          "milestone": "0.73.0",
           "contributors": [
             "Hudell"
           ]
@@ -24366,12 +26153,14 @@
     "0.73.0-rc.2": {
       "node_version": "8.11.4",
       "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
         {
           "pr": "13031",
           "title": "Regression: List of custom emojis wasn't working",
           "userLogin": "MarcosSpessatto",
-          "milestone": "0.73.0",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -24380,7 +26169,6 @@
           "pr": "13033",
           "title": "[FIX] Download files without extension wasn't possible",
           "userLogin": "tassoevan",
-          "milestone": "0.73.0",
           "contributors": [
             "tassoevan"
           ]
@@ -24390,7 +26178,27 @@
     "0.73.0": {
       "node_version": "8.11.4",
       "npm_version": "6.4.1",
+      "mongo_versions": [
+        "4.0"
+      ],
       "pull_requests": [
+        {
+          "pr": "13040",
+          "title": "Release 0.73.0",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "MarcosSpessatto",
+            "Hudell",
+            "rodrigok",
+            "nicolasbock",
+            "ura14h",
+            "karlprieb",
+            "engelgabriel",
+            "rafaelks"
+          ]
+        },
         {
           "pr": "12932",
           "title": "Release 0.72.3",
@@ -25453,6 +27261,20 @@
       ],
       "pull_requests": [
         {
+          "pr": "13323",
+          "title": "Release 0.74.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "geekgonecrazy",
+            "d-gubert",
+            "renatobecker",
+            "Hudell",
+            "rodrigok"
+          ]
+        },
+        {
           "pr": "13311",
           "title": "[NEW] Limit all DDP/Websocket requests (configurable via admin panel)",
           "userLogin": "rodrigok",
@@ -25584,6 +27406,17 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "13364",
+          "title": "Release 0.74.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "geekgonecrazy",
+            "rodrigok"
+          ]
+        },
         {
           "pr": "13326",
           "title": "[FIX] Rate Limiter was limiting communication between instances",
@@ -26015,7 +27848,7 @@
         },
         {
           "pr": "13914",
-          "title": "[FIX] Avatar image being shrinked on autocomplete",
+          "title": "[FIX] Avatar image being shrunk on autocomplete",
           "userLogin": "sampaiodiego",
           "milestone": "1.0.0",
           "contributors": [
@@ -26446,7 +28279,7 @@
         },
         {
           "pr": "13675",
-          "title": "[FIX] WebRTC wasn't working duo to design and browser's APIs changes",
+          "title": "[FIX] WebRTC wasn't working due to design and browser's APIs changes",
           "userLogin": "ggazzo",
           "milestone": "1.0.0",
           "contributors": [
@@ -27179,7 +29012,7 @@
         },
         {
           "pr": "13509",
-          "title": "Regression: Not updating subscriptions and not showing desktop notifcations",
+          "title": "Regression: Not updating subscriptions and not showing desktop notifications",
           "userLogin": "sampaiodiego",
           "milestone": "1.0.0",
           "contributors": [
@@ -28974,7 +30807,7 @@
           "userLogin": "john08burke",
           "milestone": "1.0.0",
           "contributors": [
-            "jhnburke8",
+            null,
             "engelgabriel",
             "web-flow",
             "john08burke",
@@ -29718,6 +31551,30 @@
       ],
       "pull_requests": [
         {
+          "pr": "14277",
+          "title": "Release 1.0.0",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow",
+            "rodrigok",
+            "bhardwajaditya",
+            "graywolf336",
+            "fliptrail",
+            "knrt10",
+            "pkolmann",
+            "tassoevan",
+            "alansikora",
+            "LuluGO",
+            "geekgonecrazy",
+            "trivoallan",
+            "engelgabriel",
+            "vinade"
+          ]
+        },
+        {
           "pr": "13474",
           "title": "Release 0.74.3",
           "userLogin": "sampaiodiego",
@@ -29898,6 +31755,16 @@
       ],
       "pull_requests": [
         {
+          "pr": "14297",
+          "title": "Release 1.0.1",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "wreiske",
+            "rodrigok",
+            "geekgonecrazy"
+          ]
+        },
+        {
           "pr": "14296",
           "title": "[FIX] Popup cloud console in new window",
           "userLogin": "geekgonecrazy",
@@ -29954,6 +31821,613 @@
           "milestone": "1.0.1",
           "contributors": [
             "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14282",
+          "title": "[FIX] Error when accessing an invalid file upload url",
+          "userLogin": "wreiske",
+          "milestone": "1.0.1",
+          "contributors": [
+            "wreiske",
+            "d-gubert",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "HEAD": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14464",
+          "title": "[FIX] Allow data URLs in isURL/getURL helpers",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.4",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14461",
+          "title": "[FIX] You must join to view messages in this channel",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.4",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14459",
+          "title": "Remove specific eslint rules",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14332",
+          "title": "New eslint rules",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14443",
+          "title": "[FIX] Channel Leader Bar is in the way of Thread Header ",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14433",
+          "title": "Fix i18n files keys sort",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14442",
+          "title": "[FIX] Discussion name being invalid",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14415",
+          "title": "[FIX] Room name was undefined in some info dialogs",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.3",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14405",
+          "title": "[FIX] Exception on crowd sync due to a wrong logging method",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14418",
+          "title": "Fixes on DAU and MAU aggregations",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.3",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14397",
+          "title": "[IMPROVE] Don't use regex to find users",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14431",
+          "title": "[IMPROVE] Added flag `skipActiveUsersToBeReady` to not wait the load of `active users` to present the Web interface",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14422",
+          "title": "[FIX] IE11 support",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.3",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14386",
+          "title": "Add missing german translations",
+          "userLogin": "mrsimpson",
+          "milestone": "1.0.3",
+          "contributors": [
+            "mrsimpson",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14432",
+          "title": "[FIX] Escape unrecognized slash command message",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14430",
+          "title": "[FIX] Mentions message missing 'jump to message' action",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14426",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "milestone": "1.0.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14419",
+          "title": "[FIX] preview pdf its not working",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "12891",
+          "title": "[IMPROVE] SAML login process refactoring",
+          "userLogin": "kukkjanos",
+          "milestone": "1.1.0",
+          "contributors": [
+            "kukkjanos",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14404",
+          "title": "[FIX] Messages on thread panel were receiving wrong context/subscription",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14402",
+          "title": "[FIX] Error 400 on send a reply to an old thread",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14400",
+          "title": "[FIX] Users actions in administration were returning error",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14403",
+          "title": "[FIX]  Fallback to mongo version that doesn't require clusterMonitor role",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.3",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14345",
+          "title": "[FIX] SAML credentialToken removal was preventing mobile from being able to authenticate",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.3",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14376",
+          "title": "[FIX] Stream not connecting connect when using subdir and multi-instance",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.3",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14388",
+          "title": "[FIX] Pressing Enter in User Search field at channel causes reload",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.3",
+          "contributors": [
+            "MarcosSpessatto",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14379",
+          "title": "[FIX] Wrong token name was generating error on Gitlab OAuth login",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.3",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14039",
+          "title": "fix discussions: remove restriction for editing room info, server side",
+          "userLogin": "mrsimpson",
+          "milestone": "1.1.0",
+          "contributors": [
+            "mrsimpson",
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14387",
+          "title": "[FIX] more message actions to threads context(follow, unfollow, copy, delete)",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14396",
+          "title": "[FIX] Unnecessary meteor.defer on openRoom",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14389",
+          "title": "[IMPROVE] Allow change Discussion's properties",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14390",
+          "title": "Fix: Message body was not being updated when user disabled nrr message",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14393",
+          "title": "[FIX] Messages on threads disappearing",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14394",
+          "title": "[FIX] Bell was too small on threads",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14372",
+          "title": "[FIX] Main thread title on replies",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.3",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14370",
+          "title": "[NEW] Returns custom emojis through the Livechat REST API",
+          "userLogin": "renatobecker",
+          "milestone": "1.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "14351",
+          "title": "Improve German translations",
+          "userLogin": "mrsimpson",
+          "milestone": "1.0.3",
+          "contributors": [
+            "mrsimpson"
+          ]
+        },
+        {
+          "pr": "14362",
+          "title": "[FIX] New day separator overlapping above system message",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14338",
+          "title": "[FIX] Unread line and new day separator were not aligned ",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14336",
+          "title": "[FIX] Audio notification for messages on DM",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14334",
+          "title": "[IMPROVE] i18n of threads and discussion buttons",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14330",
+          "title": "[FIX] Duplicate thread message after editing",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14328",
+          "title": "[FIX] New day separator rendered over thread reply",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14320",
+          "title": "[IMPROVE] Better error message when not able to get MongoDB Version",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.2",
+          "contributors": [
+            "rodrigok",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14318",
+          "title": "Add cross-browser select arrow positioning",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14182",
+          "title": "i18n: Update German strings",
+          "userLogin": "AnBo83",
+          "milestone": "1.0.2",
+          "contributors": [
+            "AnBo83",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14011",
+          "title": "[FIX] Missing i18n for some new Permissions",
+          "userLogin": "lolimay",
+          "milestone": "1.0.2",
+          "contributors": [
+            "lolimay",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14316",
+          "title": "[FIX] View Logs admin page was broken and not rendering color logs",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14317",
+          "title": "Merge master into develop & Set version to 1.1.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "wreiske",
+            "rodrigok",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14301",
+          "title": "[Regression] Anonymous user fix",
+          "userLogin": "knrt10",
+          "milestone": "1.0.2",
+          "contributors": [
+            "knrt10"
+          ]
+        },
+        {
+          "pr": "14299",
+          "title": "Coerces the MongoDB version string",
+          "userLogin": "thaiphv",
+          "milestone": "1.0.2",
+          "contributors": [
+            "thaiphv"
+          ]
+        },
+        {
+          "pr": "14313",
+          "title": "[FIX] show roles on message",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14075",
+          "title": "[Fix] group name appears instead of the room id",
+          "userLogin": "mohamedar97",
+          "milestone": "1.0.2",
+          "contributors": [
+            "mohamedar97"
+          ]
+        },
+        {
+          "pr": "14311",
+          "title": "[FIX] Remove reference to inexistent field when deleting message in thread",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14296",
+          "title": "[FIX] Popup cloud console in new window",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14288",
+          "title": "[FIX] Switch oplog required doc link to more accurate link",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14291",
+          "title": "[FIX] Optional exit on Unhandled Promise Rejection",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14293",
+          "title": "[FIX] Error when accessing avatar with no token",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14286",
+          "title": "[FIX] Startup error in registration check",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14290",
+          "title": "[FIX] Wrong header at Apps admin section",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14294",
+          "title": "Merge master into develop & Set version to 1.1.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok",
             "web-flow"
           ]
         },
