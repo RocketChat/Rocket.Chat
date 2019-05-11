@@ -111,11 +111,6 @@ export class ChatMessages {
 		}, 200);
 	}
 
-	getEditingIndex(element) {
-		const msgs = this.wrapper.querySelectorAll('.own:not(.system)');
-		return Array.from(msgs).findIndex((msg) => msg === element);
-	}
-
 	recordInputAsDraft() {
 		const message = ChatMessage.findOne(this.editing.id);
 		const record = this.records[this.editing.id] || {};
@@ -142,43 +137,38 @@ export class ChatMessages {
 	}
 
 	toPrevMessage() {
-		const { index } = this.editing;
-		this.editByIndex(index ? index - 1 : undefined);
+		const { element } = this.editing;
+		if (element) {
+			let previous;
+			for (previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
+				if (previous.matches('.own:not(.system)')) {
+					break;
+				}
+			}
+
+			previous ? this.edit(previous, false) : this.clearEditing();
+		} else {
+			this.edit(this.wrapper.querySelector('.own:not(.system):last-child'), false);
+		}
 	}
 
 	toNextMessage() {
-		if (!this.editing.id) {
-			return;
-		}
-		const { index } = this.editing;
-		if (!this.editByIndex(index + 1)) {
+		const { element } = this.editing;
+		if (element) {
+			let next;
+			for (next = element.nextElementSibling; next; next = next.nextElementSibling) {
+				if (next.matches('.own:not(.system)')) {
+					break;
+				}
+			}
+
+			next ? this.edit(next, true) : this.clearEditing();
+		} else {
 			this.clearEditing();
 		}
 	}
 
-	editByIndex(index) {
-		if (!this.editing.element && index) {
-			return false;
-		}
-
-		const messageElements = this.wrapper.querySelectorAll('.own:not(.system)');
-
-		if (!index) {
-			index = messageElements.length - 1;
-		}
-
-		if (!messageElements[index]) {
-			return false;
-		}
-
-		const element = messageElements[index];
-		this.edit(element, index);
-		return true;
-	}
-
-	edit(element, index) {
-		index = index || this.getEditingIndex(element);
-
+	edit(element, isEditingTheNextOne) {
 		const message = ChatMessage.findOne(element.dataset.id);
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
@@ -212,12 +202,9 @@ export class ChatMessages {
 		let msg = draft && draft.draft;
 		msg = msg || message.msg;
 
-		const editingNext = this.editing.index < index;
-
 		this.clearEditing();
 
 		this.editing.element = element;
-		this.editing.index = index;
 		this.editing.id = message._id;
 		this.input.parentElement.classList.add('editing');
 		element.classList.add('editing');
@@ -228,7 +215,7 @@ export class ChatMessages {
 			messageBoxState.set(this.input, msg);
 		}
 
-		const cursorPosition = editingNext ? 0 : -1;
+		const cursorPosition = isEditingTheNextOne ? 0 : -1;
 		this.input.focus();
 		this.$input.setCursorPosition(cursorPosition);
 	}
@@ -245,7 +232,6 @@ export class ChatMessages {
 		this.editing.element.classList.remove('editing');
 		delete this.editing.id;
 		delete this.editing.element;
-		delete this.editing.index;
 
 		messageBoxState.set(this.input, this.editing.saved || '');
 		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : -1;
@@ -516,7 +502,7 @@ export class ChatMessages {
 	keydown(event) {
 		const { currentTarget: input, which: keyCode } = event;
 
-		if (keyCode === keyCodes.ESCAPE && this.editing.index) {
+		if (keyCode === keyCodes.ESCAPE && this.editing.element) {
 			if (!this.resetToDraft(this.editing.id)) {
 				this.clearCurrentDraft();
 				this.clearEditing();
