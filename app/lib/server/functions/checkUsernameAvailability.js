@@ -3,12 +3,12 @@ import s from 'underscore.string';
 
 import { settings } from '../../../settings';
 
-let usernameBlackList = [];
+let usernameBlackList = ['all', 'here'];
 
 const toRegExp = (username) => new RegExp(`^${ s.escapeRegExp(username).trim() }$`, 'i');
 
 settings.get('Accounts_BlockedUsernameList', (key, value) => {
-	usernameBlackList = value.split(',').map(toRegExp);
+	usernameBlackList = usernameBlackList.concat(value.split(',').map(toRegExp));
 });
 
 const usernameIsBlocked = (username, usernameBlackList) => usernameBlackList.length
