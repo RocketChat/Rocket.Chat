@@ -95,10 +95,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	getUserStatusText(roomId) {
 		const userId = roomId.replace(Meteor.userId(), '');
 		const userData = Users.findOne({ _id: userId });
-		if (userData) {
-			if (userData.statusText) {
-				return userData.statusText;
-			}
+		if (userData && userData.statusText) {
+			return userData.statusText;
 		}
 
 		return this.getUserStatus(roomId);
