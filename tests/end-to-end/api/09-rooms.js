@@ -25,7 +25,7 @@ describe('[Rooms]', function() {
 		request.get(api('rooms.get'))
 			.set(credentials)
 			.query({
-				updatedSince: new Date,
+				updatedSince: new Date(),
 			})
 			.expect(200)
 			.expect((res) => {
@@ -291,14 +291,14 @@ describe('[Rooms]', function() {
 				});
 		});
 		it('create a group', (done) => {
-			createRoom(({ type: 'p', name: testGroupName }))
+			createRoom({ type: 'p', name: testGroupName })
 				.end((err, res) => {
 					testGroup = res.body.group;
 					done();
 				});
 		});
 		it('create a Direct message room with rocket.cat', (done) => {
-			createRoom(({ type: 'd', username: 'rocket.cat' }))
+			createRoom({ type: 'd', username: 'rocket.cat' })
 				.end((err, res) => {
 					testDM = res.body.room;
 					done();
@@ -409,14 +409,14 @@ describe('[Rooms]', function() {
 				});
 		});
 		it('create a group', (done) => {
-			createRoom(({ type: 'p', name: testGroupName }))
+			createRoom({ type: 'p', name: testGroupName })
 				.end((err, res) => {
 					testGroup = res.body.group;
 					done();
 				});
 		});
 		it('create a Direct message room with rocket.cat', (done) => {
-			createRoom(({ type: 'd', username: 'rocket.cat' }))
+			createRoom({ type: 'd', username: 'rocket.cat' })
 				.end((err, res) => {
 					testDM = res.body.room;
 					done();

@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
@@ -19,9 +18,9 @@ import './message.html';
 import './messageThread.html';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
-	const isSafari = /constructor/i.test(window.HTMLElement) ||
-		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
-			(typeof window.safari !== 'undefined' && window.safari.pushNotification));
+	const isSafari = /constructor/i.test(window.HTMLElement)
+		|| ((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari
+			|| (typeof window.safari !== 'undefined' && window.safari.pushNotification));
 
 	if (isSafari) {
 		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
@@ -70,7 +69,35 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	canvas.style.display = 'block';
 }
 
+const renderBody = (msg, settings) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
+
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.template) {
+		// render template
+	} else if (messageType.message) {
+		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
+	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+		msg.html = msg.msg;
+		msg = callbacks.run('renderMentions', msg);
+		msg = msg.html;
+	} else {
+		msg = renderMessageBody(msg);
+	}
+
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
+	}
+	return msg;
+};
+
 Template.message.helpers({
+	body() {
+		const { msg, settings } = this;
+		return Tracker.nonreactive(() => renderBody(msg, settings));
+	},
 	and(a, b) {
 		return a && b;
 	},
@@ -200,9 +227,6 @@ Template.message.helpers({
 			return 'temp';
 		}
 	},
-	body() {
-		return Template.instance().body;
-	},
 	threadMessage() {
 		const { msg } = this;
 		return normalizeThreadMessage(msg);
@@ -252,7 +276,7 @@ Template.message.helpers({
 
 		if (msg.i18nLabel) {
 			return t(msg.i18nLabel);
-		} else if (msg.label) {
+		} if (msg.label) {
 			return msg.label;
 		}
 	},
@@ -275,7 +299,7 @@ Template.message.helpers({
 		return Object.entries(reactions)
 			.map(([emoji, reaction]) => {
 				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
-				const displayNames = (reaction.names || reaction.usernames.map((username) => `@${ username }`));
+				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
 				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
 
 				if (displayNames.some((displayName) => displayName === myDisplayName)) {
@@ -349,9 +373,13 @@ Template.message.helpers({
 		}
 		return roomTypes.getIcon(room);
 	},
+	customClass() {
+		const { customClass, msg } = this;
+		return customClass || msg.customClass;
+	},
 	fromSearch() {
-		const { customClass } = this;
-		return customClass === 'search';
+		const { customClass, msg } = this;
+		return [msg.customClass, customClass].includes('search');
 	},
 	actionContext() {
 		const { msg } = this;
@@ -399,7 +427,6 @@ Template.message.helpers({
 
 
 const findParentMessage = (() => {
-
 	const waiting = [];
 
 	const getMessages = _.debounce(async function() {
@@ -420,13 +447,7 @@ const findParentMessage = (() => {
 				},
 			}, { multi: true });
 			if (!Messages.findOne({ _id })) {
-				/**
-				 * Delete rid from message to not render it and to not be considred in last message
-				 * find from load history method what was preveting the load of some messages in
-				 * between the reals last loaded message and this one if this one is older than
-				 * the real last loaded message.
-				 */
-				delete msg.rid;
+				msg._hidden = true;
 				Messages.upsert({ _id }, msg);
 			}
 		});
@@ -454,39 +475,13 @@ const findParentMessage = (() => {
 	};
 })();
 
-
-const renderBody = (msg, settings) => {
-	const isSystemMessage = MessageTypes.isSystemMessage(msg);
-	const messageType = MessageTypes.getType(msg) || {};
-
-	if (messageType.render) {
-		msg = messageType.render(msg);
-	} else if (messageType.template) {
-		// render template
-	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
-	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
-		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
-		msg = msg.html;
-	} else {
-		msg = renderMessageBody(msg);
-	}
-
-	if (isSystemMessage) {
-		msg.html = Markdown.parse(msg.html);
-	}
-	return msg;
-};
-
 Template.message.onCreated(function() {
-	const { msg, settings } = Template.currentData();
+	const { msg, shouldCollapseReplies } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.threadMsg) {
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = Tracker.nonreactive(() => renderBody(msg, settings));
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -601,7 +596,7 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		} else {
 			nextNode.classList.remove('new-day');
 		}
-	} else {
+	} else if (shouldCollapseReplies) {
 		const [el] = $(`#chat-window-${ msg.rid }`);
 		const view = el && Blaze.getView(el);
 		const templateInstance = view && view.templateInstance();
@@ -617,12 +612,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 };
 
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-
 	this.autorun(() => {
 		const currentNode = this.firstNode;
 		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 	});
-
 });
 
 Template.message.onViewRendered = function() {

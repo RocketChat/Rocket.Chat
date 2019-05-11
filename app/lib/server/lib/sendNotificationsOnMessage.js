@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -23,7 +24,6 @@ export const sendNotification = async ({
 	mentionIds,
 	disableAllMessageNotifications,
 }) => {
-
 	// don't notify the sender
 	if (subscription.u._id === sender._id) {
 		return;
@@ -213,7 +213,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		disableNotifications: { $ne: true },
 		$or: [
 			{ 'userHighlights.0': { $exists: 1 } },
-			...(usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : []),
+			...usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : [],
 		],
 	};
 

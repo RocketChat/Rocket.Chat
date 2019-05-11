@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import moment from 'moment';
 import Clipboard from 'clipboard';
-
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -117,7 +116,7 @@ const mountPopover = (e, i, outerContext) => {
 		menuItems = menuItems.concat(messageItems);
 	}
 
-	const [items, deleteItem] = menuItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
 	const groups = [{ items }];
 
 	if (deleteItem.length) {
@@ -234,9 +233,9 @@ Template.room.helpers({
 	},
 	isTranslated() {
 		const { state } = Template.instance();
-		return settings.get('AutoTranslate_Enabled') &&
-			(state.get('autoTranslate') === true) &&
-			!!state.get('autoTranslateLanguage');
+		return settings.get('AutoTranslate_Enabled')
+			&& (state.get('autoTranslate') === true)
+			&& !!state.get('autoTranslateLanguage');
 	},
 
 	embeddedVersion() {
@@ -276,12 +275,12 @@ Template.room.helpers({
 		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
 		const query = {
 			rid,
-			...((ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } }),
+			_hidden: { $ne: true },
+			...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
 		};
 
 		if (hideMessagesOfType.length > 0) {
-			query.t =
-				{ $nin: hideMessagesOfType };
+			query.t =				{ $nin: hideMessagesOfType };
 		}
 
 		const options = {
@@ -319,7 +318,7 @@ Template.room.helpers({
 			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1 } }) || {};
 			return {
 				...roles.u,
-				name: settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
+				name: settings.get('UI_Use_Real_Name') ? roles.u.name || roles.u.username : roles.u.username,
 				status: leader.status || 'offline',
 				statusDisplay: ((status) => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline'),
 			};
@@ -397,8 +396,7 @@ Template.room.helpers({
 	},
 
 	unreadData() {
-		const data =
-			{ count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
+		const data =			{ count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
 
 		const room = RoomManager.getOpenedRoomByRid(this._id);
 		if (room) {
@@ -494,7 +492,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return !state.get('subscribed');
+		return state.get('subscribed');
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -561,7 +559,6 @@ export const dropzoneEvents = {
 	},
 
 	'dropped .dropzone-overlay'(event, instance) {
-
 		event.currentTarget.parentNode.classList.remove('over');
 
 		const e = event.originalEvent || event;
@@ -596,13 +593,14 @@ Template.room.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { tabBar } = Template.instance();
+		const { tabBar, subscription } = Template.instance();
 
 		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
 		const $flexTab = $('.flex-tab-container .flex-tab');
 		$flexTab.attr('template', 'thread');
 
 		tabBar.setData({
+			subscription: subscription.get(),
 			msg,
 			rid,
 			mid: tmid || _id,
@@ -719,7 +717,7 @@ Template.room.events({
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		} else {
 			const subscription = Subscriptions.findOne({ rid: _id });
-			message = ChatMessage.find({ rid: _id, ts: { $gt: (subscription != null ? subscription.ls : undefined) } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
+			message = ChatMessage.find({ rid: _id, ts: { $gt: subscription != null ? subscription.ls : undefined } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		}
 	},
@@ -784,7 +782,6 @@ Template.room.events({
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
-
 		const { msg: message, context: ctx } = messageArgs(this);
 
 		const context = ctx || message.actionContext || 'message';
@@ -800,10 +797,10 @@ Template.room.events({
 			'delete-message',
 			'report-message',
 		];
-		const [items, alertsItem] = allItems.reduce((result, value) => (result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value), result), [[], []]);
+		const [items, alertsItem] = allItems.reduce((result, value) => { result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value); return result; }, [[], []]);
 		const groups = [{ items }];
 
-		if (alertsItem .length) {
+		if (alertsItem.length) {
 			groups.push({ items: alertsItem });
 		}
 		const config = {
@@ -851,7 +848,6 @@ Template.room.events({
 
 		if (username) {
 			openProfileTabOrOpenDM(e, instance, username);
-			return;
 		}
 	},
 
@@ -876,7 +872,7 @@ Template.room.events({
 		}
 	},
 	'load img'(e, template) {
-		return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
+		return typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined;
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -915,16 +911,15 @@ Template.room.events({
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return callbacks.run(roomData.announcementDetails.callback, this._id);
-		} else {
-			modal.open({
-				title: t('Announcement'),
-				text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
-				html: true,
-				showConfirmButton: false,
-				showCancelButton: true,
-				cancelButtonText: t('Close'),
-			});
 		}
+		modal.open({
+			title: t('Announcement'),
+			text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
+			html: true,
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonText: t('Close'),
+		});
 	},
 	'click .toggle-hidden'(e) {
 		const id = e.currentTarget.dataset.message;
@@ -999,7 +994,7 @@ Template.room.onCreated(function() {
 	this.selectedRange = [];
 	this.selectablePointer = null;
 
-	this.flexTemplate = new ReactiveVar;
+	this.flexTemplate = new ReactiveVar();
 
 	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
 	this.groupDetail = new ReactiveVar();
@@ -1111,7 +1106,7 @@ Template.room.onRendered(function() {
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {
-		chatMessages[rid] = new ChatMessages;
+		chatMessages[rid] = new ChatMessages();
 	}
 	chatMessages[rid].initializeWrapper(this.find('.wrapper'));
 	chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
@@ -1165,9 +1160,7 @@ Template.room.onRendered(function() {
 	// observer.disconnect()
 
 	template.onWindowResize = () =>
-		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced())
-	;
-
+		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced());
 	window.addEventListener('resize', template.onWindowResize);
 
 	wrapper.addEventListener('mousewheel', function() {
@@ -1180,7 +1173,7 @@ Template.room.onRendered(function() {
 		Meteor.defer(() => template.checkIfScrollIsAtBottom());
 	});
 
-	wrapper.addEventListener('touchstart', () => template.atBottom = false);
+	wrapper.addEventListener('touchstart', () => { template.atBottom = false; });
 
 	wrapper.addEventListener('touchend', function() {
 		template.checkIfScrollIsAtBottom();
@@ -1238,7 +1231,7 @@ Template.room.onRendered(function() {
 
 	wrapper.addEventListener('scroll', () => updateUnreadCount());
 	// salva a data da renderização para exibir alertas de novas mensagens
-	$.data(this.firstNode, 'renderedAt', new Date);
+	$.data(this.firstNode, 'renderedAt', new Date());
 
 	const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
 	if (webrtc) {
@@ -1265,7 +1258,6 @@ Template.room.onRendered(function() {
 	});
 
 	this.autorun(function() {
-
 		if (template.data._id !== RoomManager.openedRoom) {
 			return;
 		}
@@ -1275,7 +1267,6 @@ Template.room.onRendered(function() {
 			FlowRouter.go('home');
 		}
 	});
-
 });
 
 callbacks.add('enter-room', (sub) => {

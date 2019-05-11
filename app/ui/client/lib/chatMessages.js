@@ -1,13 +1,16 @@
-import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
-
+import _ from 'underscore';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
 
+import { KonchatNotification } from './notification';
+import { MsgTyping } from './msgTyping';
+import { fileUpload } from './fileUpload';
 import { t, slashCommands, handleError } from '../../../utils/client';
 import {
 	messageProperties,
@@ -25,9 +28,6 @@ import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 
-import { KonchatNotification } from './notification';
-import { MsgTyping } from './msgTyping';
-import { fileUpload } from './fileUpload';
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -296,9 +296,8 @@ export class ChatMessages {
 			} catch (error) {
 				console.error(error);
 				handleError(error);
-			} finally {
-				return done();
 			}
+			return done();
 		}
 
 		if (this.editing.id) {
@@ -366,7 +365,7 @@ export class ChatMessages {
 		}
 
 		if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
-			throw { error: 'Message_too_long' };
+			throw new Error({ error: 'Message_too_long' });
 		}
 
 		try {
@@ -385,9 +384,10 @@ export class ChatMessages {
 			const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
 			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
-		} finally {
+		} catch (e) {
 			return true;
 		}
+		return true;
 	}
 
 	async processMessageEditing(message) {
@@ -431,8 +431,8 @@ export class ChatMessages {
 					const invalidCommandMsg = {
 						_id: Random.id(),
 						rid: msgObject.rid,
-						ts: new Date,
-						msg: TAPi18n.__('No_such_command', { command: match[1] }),
+						ts: new Date(),
+						msg: TAPi18n.__('No_such_command', { command: s.escapeHTML(match[1]) }),
 						u: {
 							username: settings.get('InternalHubot_Username'),
 						},
@@ -558,7 +558,6 @@ export class ChatMessages {
 
 			event.preventDefault();
 			event.stopPropagation();
-			return;
 		}
 	}
 

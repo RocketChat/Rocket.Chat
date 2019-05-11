@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Notifications } from '../../notifications';
 import { RoomRoles } from '../../models';
 

@@ -6,29 +6,27 @@ import { getConfig } from '../../ui-utils/client/config';
 Template.log = !!(getConfig('debug') || getConfig('debug-template'));
 
 if (Template.log) {
-
 	Template.logMatch = /.*/;
 
 	Template.enableLogs = function(log) {
 		Template.logMatch = /.*/;
 		if (log === false) {
-			return Template.log = false;
-		} else {
-			Template.log = true;
-			if (log instanceof RegExp) {
-				return Template.logMatch = log;
-			}
+			Template.log = false;
+			return false;
+		}
+		Template.log = true;
+		if (log instanceof RegExp) {
+			Template.logMatch = log;
+			return log;
 		}
 	};
 
 	const wrapHelpersAndEvents = function(original, prefix, color) {
 		return function(dict) {
-
 			const template = this;
 			const fn1 = function(name, fn) {
 				if (fn instanceof Function) {
-					return dict[name] = function(...args) {
-
+					dict[name] = function(...args) {
 						const result = fn.apply(this, args);
 						if (Template.log === true) {
 							const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
@@ -42,6 +40,7 @@ if (Template.log) {
 						}
 						return result;
 					};
+					return dict[name];
 				}
 			};
 			_.each(name, (fn, name) => {
@@ -74,9 +73,8 @@ if (Template.log) {
 					return result;
 				};
 				return original.call(template, wrap);
-			} else {
-				return original.call(template, fn);
 			}
+			return original.call(template, fn);
 		};
 	};
 
