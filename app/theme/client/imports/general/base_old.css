@@ -5368,9 +5368,8 @@ rc-old select,
 	position: absolute;
 	right: 25px;
 
-	width: 80px;
 	height: 30px;
-	padding-top: 4px;
+	padding: 4px;
 
 	cursor: pointer;
 	text-align: center;
