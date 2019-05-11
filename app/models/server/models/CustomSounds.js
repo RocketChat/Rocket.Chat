@@ -48,7 +48,7 @@ class CustomSounds extends Base {
 
 
 	// REMOVE
-	removeByID(_id) {
+	removeById(_id) {
 		return this.remove(_id);
 	}
 }

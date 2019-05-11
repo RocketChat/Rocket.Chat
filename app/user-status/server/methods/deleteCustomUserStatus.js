@@ -18,7 +18,7 @@ Meteor.methods({
 			throw new Meteor.Error('Custom_User_Status_Error_Invalid_User_Status', 'Invalid user status', { method: 'deleteCustomUserStatus' });
 		}
 
-		CustomUserStatus.removeByID(userStatusID);
+		CustomUserStatus.removeById(userStatusID);
 		Notifications.notifyLogged('deleteCustomUserStatus', { userStatusData: userStatus });
 
 		return true;

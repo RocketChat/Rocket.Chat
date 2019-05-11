@@ -20,7 +20,7 @@ Meteor.methods({
 		}
 
 		RocketChatFileCustomSoundsInstance.deleteFile(`${ sound._id }.${ sound.extension }`);
-		CustomSounds.removeByID(_id);
+		CustomSounds.removeById(_id);
 		Notifications.notifyAll('deleteCustomSound', { soundData: sound });
 
 		return true;
