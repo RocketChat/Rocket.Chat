@@ -26,7 +26,7 @@ const isDiscussion = ({ _id }) => {
 
 const	getUserStatus = (id) => {
 	const roomData = Session.get(`roomData${ id }`);
-	return roomTypes.getUserStatus(roomData.t, id) || t('offline');
+	return roomTypes.getUserStatus(roomData.t, id) || 'offline';
 };
 
 Template.headerRoom.helpers({
@@ -121,13 +121,13 @@ Template.headerRoom.helpers({
 
 	userStatusText() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		let status = roomTypes.getUserStatusText(roomData.t, this._id) || getUserStatus(this._id);
+		const statusText = roomTypes.getUserStatusText(roomData.t, this._id);
 
-		if (s.trim(status) !== '') {
-			status = emojione.render(s.escapeHTML(status));
+		if (s.trim(statusText)) {
+			return emojione.render(s.escapeHTML(statusText));
 		}
 
-		return status;
+		return t(getUserStatus(this._id));
 	},
 
 	showToggleFavorite() {

@@ -315,14 +315,13 @@ Template.room.helpers({
 	roomLeader() {
 		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
 		if (roles) {
-			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1 } }) || {};
-			const statusDisplay = ((status) => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline');
+			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
 
 			return {
 				...roles.u,
 				name: settings.get('UI_Use_Real_Name') ? roles.u.name || roles.u.username : roles.u.username,
 				status: leader.status || 'offline',
-				statusDisplay: leader.statusText || statusDisplay,
+				statusDisplay: leader.statusText || leader.status || 'offline',
 			};
 		}
 	},
@@ -386,16 +385,6 @@ Template.room.helpers({
 		}
 
 		return roomIcon;
-	},
-
-	userStatus() {
-		const { room } = Template.instance();
-		return roomTypes.getUserStatus(room.t, this._id) || 'offline';
-	},
-
-	userStatusText() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		return roomTypes.getUserStatusText(roomData.t, this._id) || 'offline';
 	},
 
 	maxMessageLength() {

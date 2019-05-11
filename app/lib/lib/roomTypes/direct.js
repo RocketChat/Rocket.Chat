@@ -98,8 +98,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		if (userData && userData.statusText) {
 			return userData.statusText;
 		}
-
-		return this.getUserStatus(roomId);
 	}
 
 	getDisplayName(room) {
