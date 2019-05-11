@@ -5,10 +5,6 @@ import { Random } from 'meteor/random';
 import { handleError, slashCommands } from '../../utils';
 import { hasPermission } from '../../authorization';
 import { Notifications } from '../../notifications';
-/*
- * Join is a named function that will replace /status commands
- * @param {Object} message - The message object
- */
 
 function Status(command, params, item) {
 	if (command === 'status') {
