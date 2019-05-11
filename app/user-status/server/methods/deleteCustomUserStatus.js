@@ -9,7 +9,7 @@ Meteor.methods({
 		let userStatus = null;
 
 		if (hasPermission(this.userId, 'manage-user-status')) {
-			userStatus = CustomUserStatus.findOneByID(userStatusID);
+			userStatus = CustomUserStatus.findOneById(userStatusID);
 		} else {
 			throw new Meteor.Error('not_authorized');
 		}

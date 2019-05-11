@@ -10,7 +10,7 @@ class EmojiCustom extends Base {
 	}
 
 	// find one
-	findOneByID(_id, options) {
+	findOneById(_id, options) {
 		return this.findOne(_id, options);
 	}
 

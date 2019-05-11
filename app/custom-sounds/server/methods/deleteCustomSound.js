@@ -10,7 +10,7 @@ Meteor.methods({
 		let sound = null;
 
 		if (hasPermission(this.userId, 'manage-sounds')) {
-			sound = CustomSounds.findOneByID(_id);
+			sound = CustomSounds.findOneById(_id);
 		} else {
 			throw new Meteor.Error('not_authorized');
 		}
