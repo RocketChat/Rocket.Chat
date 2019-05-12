@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import _ from 'underscore';
 
 import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils';
@@ -9,7 +10,6 @@ import { ChatRoom, Subscriptions, RoomRoles, UserRoles } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
-import _ from 'underscore';
 
 Template.membersList.helpers({
 	ignored() {
@@ -77,7 +77,7 @@ Template.membersList.helpers({
 			roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 			roles = _.union(userRoles.roles || [], roomRoles.roles || []);
 			roles = _.sortBy(roles, function(role) {
-				return (hierarchy.indexOf(role) === -1) ? 50 : hierarchy.indexOf(role);
+				return hierarchy.indexOf(role) === -1 ? 50 : hierarchy.indexOf(role);
 			});
 
 			if (roles.length !== 0) {
@@ -125,7 +125,7 @@ Template.membersList.helpers({
 	},
 
 	showUserRoles() {
-		return (Template.instance().sortingMode.get() === 'showUserRoles');
+		return Template.instance().sortingMode.get() === 'showUserRoles';
 	},
 
 	canAddUser() {
