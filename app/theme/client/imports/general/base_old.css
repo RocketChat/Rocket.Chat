@@ -2755,7 +2755,6 @@ rc-old select,
 
 		font-size: 0.75rem;
 
-		line-height: 1.25rem;
 		align-items: center;
 
 		& .edited {
@@ -4976,35 +4975,6 @@ rc-old select,
 	}
 }
 
-.rc-old .terminal {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-
-	overflow-y: scroll;
-
-	margin: 0;
-	margin-bottom: 0 !important;
-	padding: 8px 10px !important;
-
-	color: var(--color-white);
-	border: none !important;
-	background-color: #444444 !important;
-
-	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-	font-weight: 500;
-}
-
-.rc-old .terminal-line {
-	word-break: break-all;
-}
-
-.rc-old .terminal-time {
-	color: #7f7f7f;
-}
-
 .rc-old .code-colors {
 	color: #333333;
 	border-color: #cccccc;
@@ -5396,7 +5366,6 @@ rc-old select,
 
 .room-leader .chat-now {
 	position: absolute;
-	top: 15px;
 	right: 25px;
 
 	width: 80px;
@@ -5425,14 +5394,18 @@ rc-old select,
 	right: 0;
 	left: 0;
 
+	display: flex;
+
 	visibility: visible;
+	flex-direction: column;
 
 	height: 57px;
 	padding-bottom: 8px;
 
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
-	border-bottom: 1px solid;
+	border-bottom: 1px solid var(--color-gray-lightest);
+	justify-content: center;
 
 	&.message:hover {
 		background-color: #ffffff;

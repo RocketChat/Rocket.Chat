@@ -1,9 +1,10 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { emoji } from '../lib/rocketchat';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { isSetNotNull } from './function-isSet';
 import { EmojiPicker } from './lib/EmojiPicker';
+import { emoji } from '../lib/rocketchat';
 
 const emojiCategories = {};
 /**
@@ -143,9 +144,8 @@ Template.emojiPicker.helpers({
 
 		if (searchTerm.length > 0) {
 			return getEmojisBySearchTerm(searchTerm);
-		} else {
-			return getEmojisByCategory(category);
 		}
+		return getEmojisByCategory(category);
 	},
 	currentTone() {
 		return `tone-${ Template.instance().tone }`;
@@ -172,9 +172,8 @@ Template.emojiPicker.helpers({
 
 		if (searchTerm.length > 0) {
 			return TAPi18n.__('Search');
-		} else {
-			return categoryName(hash);
 		}
+		return categoryName(hash);
 	},
 });
 

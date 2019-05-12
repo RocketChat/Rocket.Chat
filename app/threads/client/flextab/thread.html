@@ -21,9 +21,9 @@
 					{{> loading}}
 				</li>
 				{{else}}
-						{{> nrr nrrargs 'message' groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u}}
+						{{> message groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u}}
 						{{#each msg in messages}}
-							{{> nrr nrrargs 'message' hideRoles=true msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u}}
+							{{> message hideRoles=true msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u context="threads"}}
 						{{/each}}
 					{{/if}}
 				{{/with}}

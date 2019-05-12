@@ -3,10 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+
 import { hasAllPermission } from '../../authorization';
 import { popover, TabBar, Layout } from '../../ui-utils';
 import { t } from '../../utils';
-import _ from 'underscore';
 
 const commonHelpers = {
 	title() {
@@ -29,16 +30,16 @@ function canShowAddUsersButton(rid) {
 		'add-user-to-joined-room', rid
 	);
 	if (
-		!canAddToJoinedRoom &&
-		!canAddToChannel &&
-		Template.instance().tabBar.currentGroup() === 'channel'
+		!canAddToJoinedRoom
+		&& !canAddToChannel
+		&& Template.instance().tabBar.currentGroup() === 'channel'
 	) {
 		return false;
 	}
 	if (
-		!canAddToJoinedRoom &&
-		!canAddToGroup &&
-		Template.instance().tabBar.currentGroup() === 'group'
+		!canAddToJoinedRoom
+		&& !canAddToGroup
+		&& Template.instance().tabBar.currentGroup() === 'group'
 	) {
 		return false;
 	}
@@ -176,7 +177,7 @@ Template.RoomsActionTab.events({
 		$(e.currentTarget).blur();
 		e.preventDefault();
 		const buttons = TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
-		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => ({
+		const groups = [{ items: (t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => ({
 			...item,
 			name: TAPi18n.__(item.i18nTitle),
 			actionDefault: item.action !== action && item.action,

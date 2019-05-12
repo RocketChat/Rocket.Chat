@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Roles } from '../../../models';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';

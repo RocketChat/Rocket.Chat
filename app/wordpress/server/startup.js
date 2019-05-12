@@ -2,7 +2,6 @@ import { settings } from '../../settings';
 
 settings.addGroup('OAuth', function() {
 	return this.section('WordPress', function() {
-
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Wordpress',
 			value: true,

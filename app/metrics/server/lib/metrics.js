@@ -1,8 +1,10 @@
+import http from 'http';
+
 import client from 'prom-client';
 import connect from 'connect';
-import http from 'http';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
+
 import { Info } from '../../../utils';
 import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';

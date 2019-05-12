@@ -1,7 +1,8 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import AutoComplete from './autocomplete-client';
 import _ from 'underscore';
+
+import AutoComplete from './autocomplete-client';
 
 //  Events on template instances, sent to the autocomplete class
 const acEvents = {
@@ -25,7 +26,6 @@ Template.textareaAutocomplete.events(acEvents);
 
 const attributes = function() {
 	return _.omit(this, 'settings'); // Render all but the settings parameter
-
 };
 
 const autocompleteHelpers = {
