@@ -1,14 +1,14 @@
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { getConfig } from '../../ui-utils/client/config';
-import { t, getUserPreference } from '../../utils';
+import { t, getUserPreference, APIClient } from '../../utils/client';
 import { chatMessages } from '../../ui';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
@@ -129,12 +129,27 @@ Template.body.onRendered(function() {
 	});
 });
 
-Template.main.onCreated(function() {
+Template.main.onCreated(async function() {
 	tooltip.init();
+
+	this.userReady = new ReactiveVar(false);
+
+	this.autorun(async () => {
+		if (!Meteor.userId()) {
+			return;
+		}
+		const { user } = await APIClient.v1.get('users.info');
+
+		Meteor.users.upsert({ _id: user._id }, {
+			$set: {
+				...user,
+			},
+		});
+
+		this.userReady.set(true);
+	});
 });
 
-
-const skipActiveUsersToBeReady = [getConfig('experimental'), getConfig('skipActiveUsersToBeReady')].includes('true');
 Template.main.helpers({
 	removeSidenav() {
 		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
@@ -159,16 +174,10 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const subscriptions = ['userData'];
-		if (!skipActiveUsersToBeReady) {
-			subscriptions.push('activeUsers');
-		}
-		const routerReady = FlowRouter.subsReady.apply(FlowRouter, subscriptions);
-
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
 
-		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = (Template.instance().userReady.get() && subscriptionsReady && settingsReady) || !Meteor.userId();
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);

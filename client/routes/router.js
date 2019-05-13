@@ -15,16 +15,6 @@ Blaze.registerHelper('pathFor', function(path, kw) {
 
 BlazeLayout.setRoot('body');
 
-FlowRouter.subscriptions = function() {
-	Tracker.autorun(() => {
-		if (Meteor.userId()) {
-			this.register('userData', Meteor.subscribe('userData'));
-			this.register('activeUsers', Meteor.subscribe('activeUsers'));
-		}
-	});
-};
-
-
 FlowRouter.route('/', {
 	name: 'index',
 	action() {

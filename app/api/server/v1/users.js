@@ -16,6 +16,7 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
+import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
@@ -147,19 +148,15 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const { username } = this.getUserFromParams();
 		const { fields } = this.parseJsonQuery();
-		let user = {};
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getFullUserData', { username, limit: 1 });
-		});
+
+		const result = getFullUserData({ userId: this.userId, limit: 1 }).fetch();
 
 		if (!result || result.length !== 1) {
-			return API.v1.failure(`Failed to get the user data for the userId of "${ username }".`);
+			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
 
-		user = result[0];
+		const [user] = result;
 		if (fields.userRooms === 1 && hasPermission(this.userId, 'view-other-user-channels')) {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {
