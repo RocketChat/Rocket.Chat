@@ -31,7 +31,10 @@ Meteor.methods({
 
 		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		const fileUrl = `/${ settings.get('Site_Url').split('/').slice(-1) }/file-upload/${ file._id }/${ encodeURI(file.name) }`;
+		const siteUrl = settings.get('Site_Url');
+		const prefix = siteUrl.replace(/http(s)?:\/\/[a-z]*(\.[a-z]*)*(:[0-9]*)?/g, '');
+
+		const fileUrl = `${ prefix }/file-upload/${ file._id }/${ encodeURI(file.name) }`;
 
 		const attachment = {
 			title: file.name,
