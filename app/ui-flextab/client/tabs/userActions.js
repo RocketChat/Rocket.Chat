@@ -19,20 +19,7 @@ const canSetModerator = () => hasAllPermission('set-moderator', Session.get('ope
 
 const canMuteUser = () => hasAllPermission('mute-user', Session.get('openedRoom'));
 
-const canRemoveUser = () => {
-	const rid = Session.get('openedRoom');
-	const room = ChatRoom.findOne(rid);
-	if (instance !== null && room.t === 'g') {
-		Meteor.call('getUsersOfRoom', rid, true, (error, users) => {
-			instance.numOfUsers.set(users.records.length);
-		});
-		if (instance.numOfUsers.get() <= 3) {
-			return false;
-		}
-	}
-
-	return hasAllPermission('remove-user', rid);
-};
+const canRemoveUser = () => hasAllPermission('remove-user', Session.get('openedRoom'));
 
 const canBlockUser = () =>
 	ChatSubscription.findOne({ rid: Session.get('openedRoom'), 'u._id': Meteor.userId() }, { fields: { blocker: 1 } })
@@ -389,7 +376,13 @@ export const getActions = ({ user, directActions, hideAdminControls, instance })
 				const room = ChatRoom.findOne(rid);
 				if (!hasAllPermission('remove-user', rid)) {
 					return toastr.error(TAPi18n.__('error-not-allowed'));
-				}
+				} else if (instance !== null && room.t === 'g') {
+					Meteor.call('getUsersOfRoom', rid, true, (error, users) => {
+						instance.numOfUsers.set(users.records.length);
+					});
+					if (instance.numOfUsers.get() <= 3) {
+						return toastr.error(TAPi18n.__('error-not-allowed'));
+					}
 				modal.open({
 					title: t('Are_you_sure'),
 					text: t('The_user_will_be_removed_from_s', roomTypes.getRoomName(room.t, room)),
