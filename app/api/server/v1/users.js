@@ -148,15 +148,20 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
+		const { username } = this.getUserFromParams();
 		const { fields } = this.parseJsonQuery();
 
-		const result = getFullUserData({ userId: this.userId, limit: 1 }).fetch();
+		const result = getFullUserData({
+			userId: this.userId,
+			filter: username,
+			limit: 1,
+		});
 
-		if (!result || result.length !== 1) {
+		if (!result || result.count() !== 1) {
 			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
 
-		const [user] = result;
+		const [user] = result.fetch();
 		if (fields.userRooms === 1 && hasPermission(this.userId, 'view-other-user-channels')) {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {

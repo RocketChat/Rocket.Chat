@@ -138,7 +138,7 @@ Template.main.onCreated(async function() {
 		if (!Meteor.userId()) {
 			return;
 		}
-		const { user } = await APIClient.v1.get('users.info');
+		const user = await APIClient.v1.get('me');
 
 		Meteor.users.upsert({ _id: user._id }, {
 			$set: {
