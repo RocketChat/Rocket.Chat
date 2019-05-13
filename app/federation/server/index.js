@@ -13,7 +13,6 @@ import { PeerHTTP } from './PeerHTTP';
 import { PeerPinger } from './PeerPinger';
 import { PeerServer } from './PeerServer';
 import * as SettingsUpdater from './settingsUpdater';
-import './methods/dashboard';
 import { addUser } from './methods/addUser';
 import { searchUsers } from './methods/searchUsers';
 import { ping } from './methods/ping';
