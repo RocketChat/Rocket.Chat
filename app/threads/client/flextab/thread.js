@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
@@ -51,13 +50,13 @@ Template.thread.helpers({
 		return Threads.find({ tmid }, { sort });
 	},
 	messageContext() {
-		const result = messageContext.apply(this);
+		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
 			settings: {
 				...result.settings,
 				showReplyButton: false,
-				showreply:false,
+				showreply: false,
 			},
 		};
 	},
@@ -81,7 +80,7 @@ Template.thread.onRendered(function() {
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 
-	this.chatMessages = new ChatMessages;
+	this.chatMessages = new ChatMessages();
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
@@ -165,8 +164,6 @@ Template.thread.onCreated(async function() {
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
 		});
-
-
 	}, 500);
 });
 

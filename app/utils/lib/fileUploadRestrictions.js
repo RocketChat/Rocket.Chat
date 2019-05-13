@@ -1,5 +1,6 @@
-import { settings } from '../../settings';
 import _ from 'underscore';
+
+import { settings } from '../../settings';
 
 export const fileUploadMediaWhiteList = function() {
 	const mediaTypeWhiteList = settings.get('FileUpload_MediaTypeWhiteList');
@@ -24,14 +25,14 @@ export const fileUploadIsValidContentType = function(type) {
 
 	if (_.contains(list, type)) {
 		return true;
-	} else {
-		const wildCardGlob = '/*';
-		const wildcards = _.filter(list, function(item) {
-			return item.indexOf(wildCardGlob) > 0;
-		});
-		if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {
-			return true;
-		}
 	}
+	const wildCardGlob = '/*';
+	const wildcards = _.filter(list, function(item) {
+		return item.indexOf(wildCardGlob) > 0;
+	});
+	if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {
+		return true;
+	}
+
 	return false;
 };

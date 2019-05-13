@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { OAuthApps, Users } from '../../../models';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
+
+import { OAuthApps, Users } from '../../../models';
 import { API } from '../../../api';
 
 const oauth2server = new OAuth2Server({

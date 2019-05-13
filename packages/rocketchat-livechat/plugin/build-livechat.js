@@ -1,6 +1,7 @@
 import path from 'path';
 import { execSync } from 'child_process';
 import fs from 'fs';
+
 import UglifyJS from 'uglify-js';
 
 const livechatSource = path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocket-livechat.js');

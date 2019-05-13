@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import s from 'underscore.string';
 
 Meteor.methods({
 	removeOAuthService(name) {
-
 		check(name, String);
 
 		if (!Meteor.userId()) {

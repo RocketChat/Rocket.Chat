@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+
 import { VRecDialog } from '../../../ui-vrecord/client';
 import { messageBox, modal } from '../../../ui-utils';
 import { fileUpload } from '../../../ui';
@@ -12,13 +13,13 @@ import { mime } from '../../../utils/lib/mimeTypes';
 messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
 	icon: 'video',
-	condition: () => (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
-		navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
-		window.MediaRecorder &&
-		settings.get('FileUpload_Enabled') &&
-		settings.get('Message_VideoRecorderEnabled') &&
-		(!settings.get('FileUpload_MediaTypeWhiteList') ||
-			settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
+	condition: () => (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia
+		|| navigator.mozGetUserMedia || navigator.msGetUserMedia)
+		&& window.MediaRecorder
+		&& settings.get('FileUpload_Enabled')
+		&& settings.get('Message_VideoRecorderEnabled')
+		&& (!settings.get('FileUpload_MediaTypeWhiteList')
+			|| settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
 	action: ({ rid, tmid, messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid })),
 });
 
@@ -106,8 +107,7 @@ Meteor.startup(() => {
 		const isMapViewEnabled = settings.get('MapView_Enabled') === true;
 		const isGeolocationWatchSupported = navigator.geolocation && navigator.geolocation.watchPosition;
 		const googleMapsApiKey = settings.get('MapView_GMapsAPIKey');
-		const canGetGeolocation =
-			isMapViewEnabled && isGeolocationWatchSupported && (googleMapsApiKey && googleMapsApiKey.length);
+		const canGetGeolocation =			isMapViewEnabled && isGeolocationWatchSupported && (googleMapsApiKey && googleMapsApiKey.length);
 
 		if (!canGetGeolocation) {
 			geolocation.set(false);

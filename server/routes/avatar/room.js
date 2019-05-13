@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../app/models/server';
-import { roomTypes } from '../../../app/utils';
-
 import {
 	renderSVGLetters,
 	serveAvatar,
 	wasFallbackModified,
 	setCacheAndDispositionHeaders,
 } from './utils';
+import { Rooms } from '../../../app/models/server';
+import { roomTypes } from '../../../app/utils';
+
 
 const getRoom = (roomId) => {
 	const room = Rooms.findOneById(roomId, { fields: { t: 1, prid: 1, name: 1, fname: 1 } });

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+
 import { Roles } from '../../../models';
 import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
@@ -48,9 +49,8 @@ Template.permissions.events({
 
 		if (instance.permissionByRole[permission].indexOf(role) === -1) {
 			return Meteor.call('authorization:addPermissionToRole', permission, role);
-		} else {
-			return Meteor.call('authorization:removeRoleFromPermission', permission, role);
 		}
+		return Meteor.call('authorization:removeRoleFromPermission', permission, role);
 	},
 });
 
