@@ -18,7 +18,6 @@ import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
-
 import { getStatistics as federationGetStatistics } from '../../../federation/server/methods/dashboard';
 
 const wizardFields = [

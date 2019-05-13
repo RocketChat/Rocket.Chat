@@ -5,7 +5,6 @@ import { FederationKeys } from '../../models';
 import { settings } from '../../settings';
 import { getConfig } from './config';
 import './adminSettings';
-
 import { logger } from './logger';
 import { PeerClient } from './PeerClient';
 import { PeerDNS } from './PeerDNS';
