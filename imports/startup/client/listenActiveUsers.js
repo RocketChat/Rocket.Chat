@@ -39,10 +39,25 @@ const getActiveUsers = debounce(async () => {
 	}
 }, 1000);
 
+let wasConnected = false;
 Tracker.autorun(() => {
 	if (!Meteor.userId() || !Meteor.status().connected) {
 		return;
 	}
+
+	// if is reconnecting, set everyone else to offline
+	if (wasConnected) {
+		Meteor.users.update({
+			_id: { $ne: Meteor.userId() },
+		}, {
+			$set: {
+				status: 'offline',
+			},
+		}, { multi: true });
+	}
+
+	wasConnected = true;
+
 	getActiveUsers();
 });
 
