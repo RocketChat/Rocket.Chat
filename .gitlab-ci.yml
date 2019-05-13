@@ -33,6 +33,8 @@ Install Meteor:
 
 Versions:
   stage: prepare
+  dependencies:
+    - Install Meteor
   script: |
     npm --versions
     node -v
@@ -43,6 +45,8 @@ Versions:
 
 Meteor npm install:
   stage: prepare
+  dependencies:
+    - Versions
   script: |
     # rm -rf node_modules
     # rm -f package-lock.json
@@ -80,6 +84,8 @@ Build Rocket.Chat:
 
 Prepare build:
   stage: build
+  dependencies:
+    - Build Rocket.Chat
   script: |
     mkdir /tmp/build/
     cd /tmp/build-test
