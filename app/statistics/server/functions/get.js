@@ -16,7 +16,7 @@ import {
 	LivechatVisitors,
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { Info } from '../../../utils/server';
+import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
 
@@ -44,17 +44,14 @@ statistics.get = function _getStatistics() {
 	wizardFields.forEach((field) => {
 		const record = Settings.findOne(field);
 		if (record) {
-			const wizardField = field
-				.replace(/_/g, '')
-				.replace(field[0], field[0].toLowerCase());
+			const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
 			statistics.wizard[wizardField] = record.value;
 		}
 	});
 
 	const firstUser = Users.getOldest({ name: 1, emails: 1 });
 	statistics.wizard.contactName = firstUser && firstUser.name;
-	statistics.wizard.contactEmail =
-		firstUser && firstUser.emails && firstUser.emails[0].address;
+	statistics.wizard.contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
 
 	if (settings.get('Organization_Email')) {
 		statistics.wizard.contactEmail = settings.get('Organization_Email');
@@ -76,16 +73,10 @@ statistics.get = function _getStatistics() {
 	statistics.totalUsers = Meteor.users.find().count();
 	statistics.activeUsers = Meteor.users.find({ active: true }).count();
 	statistics.nonActiveUsers = statistics.totalUsers - statistics.activeUsers;
-	statistics.onlineUsers = Meteor.users
-		.find({ statusConnection: 'online' })
-		.count();
-	statistics.awayUsers = Meteor.users
-		.find({ statusConnection: 'away' })
-		.count();
-	statistics.totalConnectedUsers =
-		statistics.onlineUsers + statistics.awayUsers;
-	statistics.offlineUsers =
-		statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers;
+	statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
+	statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
+	statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
+	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers;
 
 	// Room statistics
 	statistics.totalRooms = Rooms.find().count();
@@ -107,43 +98,16 @@ statistics.get = function _getStatistics() {
 
 	// Message statistics
 	statistics.totalMessages = Messages.find().count();
-	statistics.totalChannelMessages = _.reduce(
-		Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),
-		function _countChannelMessages(num, room) {
-			return num + room.msgs;
-		},
-		0
-	);
-	statistics.totalPrivateGroupMessages = _.reduce(
-		Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(),
-		function _countPrivateGroupMessages(num, room) {
-			return num + room.msgs;
-		},
-		0
-	);
-	statistics.totalDirectMessages = _.reduce(
-		Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(),
-		function _countDirectMessages(num, room) {
-			return num + room.msgs;
-		},
-		0
-	);
-	statistics.totalLivechatMessages = _.reduce(
-		Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(),
-		function _countLivechatMessages(num, room) {
-			return num + room.msgs;
-		},
-		0
-	);
+	statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalDirectMessages = _.reduce(Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalLivechatMessages = _.reduce(Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
 
 	// Federation statistics
 	const federationOverviewData = federationGetStatistics();
 
-	statistics.federatedServers =
-		federationOverviewData.numberOfActivePeers +
-		federationOverviewData.numberOfInactivePeers;
-	statistics.federatedServersActive =
-		federationOverviewData.numberOfActivePeers;
+	statistics.federatedServers = federationOverviewData.numberOfActivePeers + federationOverviewData.numberOfInactivePeers;
+	statistics.federatedServersActive = federationOverviewData.numberOfActivePeers;
 	statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
 
 	statistics.lastLogin = Users.getLastLogin();
@@ -174,22 +138,18 @@ statistics.get = function _getStatistics() {
 	};
 
 	statistics.uploadsTotal = Uploads.find().count();
-	const [result] = Promise.await(
-		Uploads.model
-			.rawCollection()
-			.aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }])
-			.toArray()
-	);
+	const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
 	statistics.uploadsTotalSize = result ? result.total : 0;
 
 	statistics.migration = Migrations._getControl();
-	statistics.instanceCount = InstanceStatus.getCollection()
-		.find({
-			_updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) },
-		})
-		.count();
+	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+	statistics.oplogEnabled = oplogEnabled;
+	statistics.mongoVersion = mongoVersion;
+	statistics.mongoStorageEngine = mongoStorageEngine;
 
 	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry) {
 		statistics.oplogEnabled = true;
