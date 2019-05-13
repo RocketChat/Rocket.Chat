@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 
-import { settings } from '../../settings';
 import { FederationKeys } from '../../models';
-
+import { settings } from '../../settings';
 import { getConfig } from './config';
 
 import './adminSettings';
@@ -19,8 +18,6 @@ import './methods/dashboard';
 import { addUser } from './methods/addUser';
 import { searchUsers } from './methods/searchUsers';
 import { ping } from './methods/ping';
-import { FederationKeys } from '../../models';
-import { settings } from '../../settings';
 
 const peerClient = new PeerClient();
 const peerDNS = new PeerDNS();
