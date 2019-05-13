@@ -19,7 +19,6 @@ import './methods/dashboard';
 import { addUser } from './methods/addUser';
 import { searchUsers } from './methods/searchUsers';
 import { ping } from './methods/ping';
-import { getWorkspaceAccessToken } from '../../cloud/server';
 import { FederationKeys } from '../../models';
 import { settings } from '../../settings';
 

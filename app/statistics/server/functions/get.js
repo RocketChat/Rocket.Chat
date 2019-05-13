@@ -189,7 +189,9 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
 	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
 	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+	statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
+	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
 	return statistics;
 };
