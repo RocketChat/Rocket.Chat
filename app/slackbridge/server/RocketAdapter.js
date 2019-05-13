@@ -355,9 +355,9 @@ export default class RocketAdapter {
 				const email = (rocketUserData.profile && rocketUserData.profile.email) || '';
 				let existingRocketUser;
 				if (!isBot) {
-					existingRocketUser = Users.findOneByEmailAddress(email) || Users.findOneByUsername(rocketUserData.name);
+					existingRocketUser = Users.findOneByEmailAddress(email) || Users.findOneByUsernameIgnoringCase(rocketUserData.name);
 				} else {
-					existingRocketUser = Users.findOneByUsername(rocketUserData.name);
+					existingRocketUser = Users.findOneByUsernameIgnoringCase(rocketUserData.name);
 				}
 
 				if (existingRocketUser) {

@@ -6,8 +6,7 @@ import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
 
-export function messageContext() {
-	const { rid } = Template.instance();
+export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
 	return {
 		u: Users.findOne({ _id: uid }, { fields: { name: 1, username: 1 } }),
@@ -22,6 +21,7 @@ export function messageContext() {
 			fields: {
 				name: 1,
 				autoTranslate: 1,
+				rid: 1,
 			},
 		}),
 		settings: {
