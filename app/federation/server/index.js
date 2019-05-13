@@ -4,7 +4,6 @@ import { _ } from 'meteor/underscore';
 import { FederationKeys } from '../../models';
 import { settings } from '../../settings';
 import { getConfig } from './config';
-
 import './adminSettings';
 
 import { logger } from './logger';
