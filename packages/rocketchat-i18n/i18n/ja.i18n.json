@@ -2537,6 +2537,8 @@
   "SAML_Custom_Debug": "デバッグを有効化",
   "SAML_Custom_Entry_point": "カスタム エントリーポイント",
   "SAML_Custom_Generate_Username": "ユーザー名を生成する",
+  "SAML_Custom_name_overwrite": "ユーザーのフルネームを上書きする（idp属性を使用）",
+  "SAML_Custom_mail_overwrite": "ユーザーのメールアドレスを上書きする（idp属性を使用）",
   "SAML_Custom_IDP_SLO_Redirect_URL": "IDP SLOリダイレクトURL",
   "SAML_Custom_Issuer": "カスタム 照会者 (Issuer)",
   "SAML_Custom_Logout_Behaviour": "ログアウト動作",
