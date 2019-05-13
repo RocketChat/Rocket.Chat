@@ -376,7 +376,8 @@ export const getActions = ({ user, directActions, hideAdminControls, instance })
 				const room = ChatRoom.findOne(rid);
 				if (!hasAllPermission('remove-user', rid)) {
 					return toastr.error(TAPi18n.__('error-not-allowed'));
-				} else if (instance !== null && room.t === 'g') {
+				}
+				if (instance !== null && room.t === 'g') {
 					Meteor.call('getUsersOfRoom', rid, true, (error, users) => {
 						instance.numOfUsers.set(users.records.length);
 					});
