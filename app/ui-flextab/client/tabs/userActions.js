@@ -19,6 +19,21 @@ const canSetModerator = () => hasAllPermission('set-moderator', Session.get('ope
 
 const canMuteUser = () => hasAllPermission('mute-user', Session.get('openedRoom'));
 
+const canRemoveUser = () => {
+	const rid = Session.get('openedRoom');
+	const room = ChatRoom.findOne(rid);
+	if (instance !== null && room.t === 'g') {
+		Meteor.call('getUsersOfRoom', rid, true, (error, users) => {
+			instance.numOfUsers.set(users.records.length);
+		});
+		if (instance.numOfUsers.get() <= 3) {
+			return false;
+		}
+	}
+
+	return hasAllPermission('remove-user', rid);
+};
+
 const canBlockUser = () =>
 	ChatSubscription.findOne({ rid: Session.get('openedRoom'), 'u._id': Meteor.userId() }, { fields: { blocker: 1 } })
 		.blocker;
@@ -494,19 +509,4 @@ export const getActions = ({ user, directActions, hideAdminControls, instance })
 		}];
 
 	return actions;
-};
-
-const canRemoveUser = () => {
-	const rid = Session.get('openedRoom');
-	const room = ChatRoom.findOne(rid);
-	if (instance !== null && room.t === 'g') {
-		Meteor.call('getUsersOfRoom', rid, true, (error, users) => {
-			instance.numOfUsers.set(users.records.length);
-		});
-		if (instance.numOfUsers.get() <= 3) {
-			return false;
-		}
-	}
-
-	return hasAllPermission('remove-user', rid);
 };
