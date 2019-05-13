@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { UserPresence } from 'meteor/konecty:user-presence';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import _ from 'underscore';
@@ -9,9 +10,13 @@ import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
+import { Users } from '../../app/models/server/models/Users';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
+
+const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
+	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
 
 const connections = {};
 this.connections = connections;
@@ -51,7 +56,12 @@ function authorizeConnection(instance) {
 	return _authorizeConnection(instance);
 }
 
+const originalSetDefaultStatus = UserPresence.setDefaultStatus;
 function startMatrixBroadcast() {
+	if (!startMonitor) {
+		UserPresence.setDefaultStatus = originalSetDefaultStatus;
+	}
+
 	const query = {
 		'extraInformation.port': {
 			$exists: true,
@@ -169,6 +179,12 @@ function startStreamCastBroadcast(value) {
 
 	logger.connection.info('connecting in', instance, value);
 
+	if (!startMonitor) {
+		UserPresence.setDefaultStatus = (id, status) => {
+			Users.updateDefaultStatus(id, status);
+		};
+	}
+
 	const connection = DDP.connect(value, {
 		_dontPrintErrors: LoggerManager.logLevel < 2,
 	});
@@ -195,11 +211,16 @@ function startStreamCastBroadcast(value) {
 			return 'not-authorized';
 		}
 
-		if (!Meteor.StreamerCentral.instances[streamName]) {
+		const instance = Meteor.StreamerCentral.instances[streamName];
+		if (!instance) {
 			return 'stream-not-exists';
 		}
 
-		return Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+		if (instance.serverOnly) {
+			const scope = {};
+			return instance.emitWithScope(eventName, scope, args);
+		}
+		return instance.emitWithoutBroadcast(eventName, args);
 	});
 
 	return connection.subscribe('stream');

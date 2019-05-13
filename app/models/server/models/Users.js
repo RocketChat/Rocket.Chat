@@ -1023,6 +1023,17 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
+	updateDefaultStatus(_id, statusDefault) {
+		return this.update({
+			_id,
+			statusDefault: { $ne: statusDefault },
+		}, {
+			$set: {
+				statusDefault,
+			},
+		});
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
