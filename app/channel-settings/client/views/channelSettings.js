@@ -390,9 +390,13 @@ Template.channelSettingsEditing.onCreated(function() {
 				}
 			},
 			canView() {
-				if (!['g'].includes(room.t)) {
+				if (!['c', 'p'].includes(room.t)) {
 					return false;
-				} else if (room.t === 'g' && !hasAllPermission('create-g')) {
+				} if (room.t === 'c' && !hasAllPermission('create-c')) {
+					return false;
+				} if (room.t === 'p' && !hasAllPermission('create-p')) {
+					return false;
+				} if (room.t === 'g' && !hasAllPermission('create-g')) {
 					return false;
 				}
 				return true;
