@@ -7,12 +7,14 @@ after_script:
   - date
 
 stages:
+  - install
   - prepare
   - code-check
   - build
+  - after-build
 
 Install Meteor:
-  stage: prepare
+  stage: install
   script: |
     # Restore bin from cache
     set +e
@@ -33,8 +35,6 @@ Install Meteor:
 
 Versions:
   stage: prepare
-  dependencies:
-    - Install Meteor
   script: |
     npm --versions
     node -v
@@ -45,8 +45,6 @@ Versions:
 
 Meteor npm install:
   stage: prepare
-  dependencies:
-    - Versions
   script: |
     # rm -rf node_modules
     # rm -f package-lock.json
@@ -83,9 +81,7 @@ Build Rocket.Chat:
     fi;
 
 Prepare build:
-  stage: build
-  dependencies:
-    - Build Rocket.Chat
+  stage: after-build
   script: |
     mkdir /tmp/build/
     cd /tmp/build-test
