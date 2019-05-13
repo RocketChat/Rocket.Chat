@@ -379,10 +379,11 @@ export const getActions = ({ user, directActions, hideAdminControls, instance })
 				} else if (instance !== null && room.t === 'g') {
 					Meteor.call('getUsersOfRoom', rid, true, (error, users) => {
 						instance.numOfUsers.set(users.records.length);
-					};
+					});
 					if (instance.numOfUsers.get() <= 3) {
 						return toastr.error(TAPi18n.__('error-not-allowed'));
 					}
+				}
 				modal.open({
 					title: t('Are_you_sure'),
 					text: t('The_user_will_be_removed_from_s', roomTypes.getRoomName(room.t, room)),
