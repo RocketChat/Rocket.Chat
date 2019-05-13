@@ -565,3 +565,18 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 		return API.v1.success();
 	},
 });
+
+API.v1.addRoute('users.active', { authRequired: true }, {
+	get() {
+		return API.v1.success({
+			users: Users.findUsersNotOffline({
+				fields: {
+					username: 1,
+					name: 1,
+					status: 1,
+					utcOffset: 1,
+				},
+			}).fetch(),
+		});
+	},
+});
