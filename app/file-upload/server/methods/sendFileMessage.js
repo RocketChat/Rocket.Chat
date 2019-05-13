@@ -6,6 +6,7 @@ import _ from 'underscore';
 import { Uploads } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { FileUpload } from '../lib/FileUpload';
+import { settings } from '../../../settings';
 
 Meteor.methods({
 	async sendFileMessage(roomId, store, file, msgData = {}) {
@@ -30,7 +31,7 @@ Meteor.methods({
 
 		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(file.name) }`;
+		const fileUrl = `/${ settings.get('Site_Url').split('/').slice(-1) }/file-upload/${ file._id }/${ encodeURI(file.name) }`;
 
 		const attachment = {
 			title: file.name,
