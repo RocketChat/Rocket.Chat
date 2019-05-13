@@ -2,7 +2,6 @@ import os from 'os';
 
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import {
@@ -144,16 +143,12 @@ statistics.get = function _getStatistics() {
 	statistics.migration = Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 	statistics.oplogEnabled = oplogEnabled;
 	statistics.mongoVersion = mongoVersion;
 	statistics.mongoStorageEngine = mongoStorageEngine;
 
-	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry) {
-		statistics.oplogEnabled = true;
-	}
 
 	try {
 		const { version, storageEngine } = Promise.await(
