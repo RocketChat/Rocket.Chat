@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { Users } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { setUsername, checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
-import _ from 'underscore';
 
 Meteor.methods({
 	setUsername(username, param = {}) {

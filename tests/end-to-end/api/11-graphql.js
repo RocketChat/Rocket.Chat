@@ -1,7 +1,8 @@
-const supertest = require('supertest');
-const request = supertest('http://localhost:3000');
+import supertest from 'supertest';
 
 import { adminUsername, adminPassword, adminEmail } from '../../data/user.js';
+
+const request = supertest('http://localhost:3000');
 
 const user = { username: adminUsername, password: adminPassword, email: adminEmail, accessToken: null };
 const channel = {};
@@ -10,8 +11,8 @@ const message = { content: 'Test Message GraphQL', modifiedContent: 'Test Messag
 const { expect } = require('chai');
 
 const credentials = {
-	['X-Auth-Token']: undefined,
-	['X-User-Id']: undefined,
+	'X-Auth-Token': undefined,
+	'X-User-Id': undefined,
 };
 
 const login = {
@@ -93,7 +94,6 @@ describe('GraphQL Tests', function() {
 				user.accessToken = data.tokens.accessToken;
 				expect(data.user).to.have.property('username', user.username);
 				expect(data.user).to.have.property('email', user.email);
-
 			})
 			.end(done);
 	});

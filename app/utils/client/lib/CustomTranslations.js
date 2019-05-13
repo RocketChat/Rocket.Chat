@@ -1,4 +1,5 @@
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
+
 import { settings } from '../../../settings';
 
 export function applyCustomTranslations() {

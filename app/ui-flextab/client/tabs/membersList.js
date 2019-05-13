@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
+import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils';
 import { ChatRoom, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
-import { getActions } from './userActions';
 
 Template.membersList.helpers({
 	ignored() {
@@ -67,7 +68,7 @@ Template.membersList.helpers({
 
 			return {
 				user,
-				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
+				status: onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline',
 				muted: Array.from(roomMuted).includes(user.username),
 				utcOffset,
 			};
@@ -167,6 +168,13 @@ Template.membersList.events({
 
 		Template.parentData(0).tabBar.open();
 	},
+	'submit .js-search-form'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+	},
+	'keydown .js-filter'(event, instance) {
+		instance.filter.set(event.target.value.trim());
+	},
 	'input .js-filter'(e, instance) {
 		instance.filter.set(e.target.value.trim());
 	},
@@ -191,14 +199,14 @@ Template.membersList.events({
 		const others = _actions.filter((action) => !action.group);
 		const channel = _actions.filter((actions) => actions.group === 'channel');
 		if (others.length) {
-			groups.push({ items:others });
+			groups.push({ items: others });
 		}
 		if (channel.length) {
-			groups.push({ items:channel });
+			groups.push({ items: channel });
 		}
 
 		if (admin.length) {
-			groups.push({ items:admin });
+			groups.push({ items: admin });
 		}
 		columns[0] = { groups };
 
@@ -211,7 +219,7 @@ Template.membersList.events({
 				y: e.currentTarget.getBoundingClientRect().bottom + 100,
 			}),
 			customCSSProperties: () => ({
-				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+				top: `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
 				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined,
 			}),
 			data: {
@@ -222,7 +230,7 @@ Template.membersList.events({
 			offsetHorizontal: 15,
 			activeElement: e.currentTarget,
 			currentTarget: e.currentTarget,
-			onDestroyed:() => {
+			onDestroyed: () => {
 				e.currentTarget.parentElement.classList.remove('active');
 			},
 		};
@@ -230,7 +238,6 @@ Template.membersList.events({
 		popover.open(config);
 	},
 	'autocompleteselect #user-add-search'(event, template, doc) {
-
 		const roomData = Session.get(`roomData${ template.data.rid }`);
 
 		if (roomTypes.roomTypes[roomData.t].canAddUser(roomData)) {
@@ -266,13 +273,13 @@ Template.membersList.events({
 Template.membersList.onCreated(function() {
 	this.showAllUsers = new ReactiveVar(false);
 	this.usersLimit = new ReactiveVar(100);
-	this.userDetail = new ReactiveVar;
+	this.userDetail = new ReactiveVar();
 	this.showDetail = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
 
 
 	this.users = new ReactiveVar([]);
-	this.total = new ReactiveVar;
+	this.total = new ReactiveVar();
 	this.loading = new ReactiveVar(true);
 	this.loadingMore = new ReactiveVar(false);
 

@@ -5,12 +5,13 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import toastr from 'toastr';
+import _ from 'underscore';
+
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { t, roomTypes } from '../../../../utils';
 import { hasAllPermission } from '../../../../authorization';
-import toastr from 'toastr';
-import _ from 'underscore';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -173,7 +174,7 @@ Template.createChannel.helpers({
 	extensionsConfig() {
 		const instance = Template.instance();
 		return {
-			validations : instance.extensions_validations,
+			validations: instance.extensions_validations,
 			submits: instance.extensions_submits,
 			change: instance.change,
 		};
@@ -330,7 +331,7 @@ Template.createChannel.onRendered(function() {
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
-	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
+	const filter = { exceptions: [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
 	// this.onViewRead:??y(function() {
 	Tracker.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
@@ -349,7 +350,7 @@ Template.createChannel.onCreated(function() {
 	this.extensions_invalid = new ReactiveVar(false);
 	this.change = _.debounce(() => {
 		let valid = true;
-		Object.keys(this.extensions_validations).map((key) => this.extensions_validations[key]).forEach((f) => (valid = f(this) && valid));
+		Object.keys(this.extensions_validations).map((key) => this.extensions_validations[key]).forEach((f) => { valid = f(this) && valid; });
 		this.extensions_invalid.set(!valid);
 	}, 300);
 
@@ -382,12 +383,12 @@ Template.createChannel.onCreated(function() {
 
 	this.ac = new AutoComplete(
 		{
-			selector:{
+			selector: {
 				anchor: '.rc-input__label',
 				item: '.rc-popup-list__item',
 				container: '.rc-popup-list__list',
 			},
-			position:'fixed',
+			position: 'fixed',
 			limit: 10,
 			inputDelay: 300,
 			rules: [
@@ -443,7 +444,7 @@ Template.tokenpass.helpers({
 	},
 	addIsDisabled() {
 		const { balance, token } = Template.instance();
-		return (balance.get().length && token.get().length) ? '' : 'disabled';
+		return balance.get().length && token.get().length ? '' : 'disabled';
 	},
 	tokenRequiment() {
 		return Template.instance().requireAll.get() ? t('Require_all_tokens') : t('Require_any_token');
@@ -461,7 +462,7 @@ Template.tokenpass.events({
 		selectedTokens.set([...arr.filter((token) => token.token !== text), { token: text, balance: balance.get() }]);
 		balance.set('');
 		token.set('');
-		[...instance.findAll('input[type=text],input[type=number]')].forEach((el) => el.value = '');
+		[...instance.findAll('input[type=text],input[type=number]')].forEach((el) => { el.value = ''; });
 		instance.data.change();
 		return false;
 	},

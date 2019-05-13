@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
+
+import ChatpalLogger from '../utils/logger';
 import { Rooms, Messages } from '../../../models';
 
 /**
  * Enables HTTP functions on Chatpal Backend
  */
 class Backend {
-
 	constructor(options) {
 		this._options = options;
 	}
@@ -20,13 +20,12 @@ class Backend {
 	 */
 	index(docs) {
 		const options = {
-			data:docs,
-			params:{ language:this._options.language },
+			data: docs,
+			params: { language: this._options.language },
 			...this._options.httpOptions,
 		};
 
 		try {
-
 			const response = HTTP.call('POST', `${ this._options.baseurl }${ this._options.updatepath }`, options);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -34,13 +33,11 @@ class Backend {
 			} else {
 				throw new Error(response);
 			}
-
 		} catch (e) {
 			// TODO how to deal with this
 			ChatpalLogger.error('indexing failed', JSON.stringify(e, null, 2));
 			return false;
 		}
-
 	}
 
 	/**
@@ -53,11 +50,11 @@ class Backend {
 		ChatpalLogger.debug(`Remove ${ type }(${ id }) from Index`);
 
 		const options = {
-			data:{
+			data: {
 				delete: {
 					query: `id:${ id } AND type:${ type }`,
 				},
-				commit:{},
+				commit: {},
 			},
 			...this._options.httpOptions,
 		};
@@ -72,7 +69,7 @@ class Backend {
 	}
 
 	count(type) {
-		return this.query({ type, rows:0, text:'*' })[type].numFound;
+		return this.query({ type, rows: 0, text: '*' })[type].numFound;
 	}
 
 	/**
@@ -81,7 +78,6 @@ class Backend {
 	 * @param callback
 	 */
 	query(params, callback) {
-
 		const options = {
 			params,
 			...this._options.httpOptions,
@@ -97,14 +93,12 @@ class Backend {
 					callback(undefined, result.data);
 				});
 			} else {
-
 				const response = HTTP.call('POST', this._options.baseurl + this._options.searchpath, options);
 
 				if (response.statusCode >= 200 && response.statusCode < 300) {
 					return response.data;
-				} else {
-					throw new Error(response);
 				}
+				throw new Error(response);
 			}
 		} catch (e) {
 			ChatpalLogger.error('query failed', JSON.stringify(e, null, 2));
@@ -113,7 +107,6 @@ class Backend {
 	}
 
 	suggest(params, callback) {
-
 		const options = {
 			params,
 			...this._options.httpOptions,
@@ -134,12 +127,13 @@ class Backend {
 		ChatpalLogger.debug('Clear Index');
 
 		const options = {
-			data:{
+			data: {
 				delete: {
 					query: '*:*',
 				},
-				commit:{},
-			}, ...this._options.httpOptions,
+				commit: {},
+			},
+			...this._options.httpOptions,
 		};
 
 		try {
@@ -157,10 +151,9 @@ class Backend {
 	 * @returns {boolean}
 	 */
 	static ping(config) {
-
 		const options = {
 			params: {
-				stats:true,
+				stats: true,
 			},
 			...config.httpOptions,
 		};
@@ -170,21 +163,18 @@ class Backend {
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
 				return response.data.stats;
-			} else {
-				return false;
 			}
+			return false;
 		} catch (e) {
 			return false;
 		}
 	}
-
 }
 
 /**
  * Enabled batch indexing
  */
 class BatchIndexer {
-
 	constructor(size, func, ...rest) {
 		this._size = size;
 		this._func = func;
@@ -209,14 +199,12 @@ class BatchIndexer {
  * Provides index functions to chatpal provider
  */
 export default class Index {
-
 	/**
 	 * Creates Index Stub
 	 * @param options
 	 * @param clear if a complete reindex should be done
 	 */
 	constructor(options, clear, date) {
-
 		this._id = Random.id();
 
 		this._backend = new Backend(options);
@@ -280,22 +268,22 @@ export default class Index {
 	 * @private
 	 */
 	_existsDataOlderThan(date) {
-		return Messages.model.find({ ts:{ $lt: new Date(date) }, t:{ $exists:false } }, { limit:1 }).fetch().length > 0;
+		return Messages.model.find({ ts: { $lt: new Date(date) }, t: { $exists: false } }, { limit: 1 }).fetch().length > 0;
 	}
 
 	_doesRoomCountDiffer() {
-		return Rooms.find({ t:{ $ne:'d' } }).count() !== this._backend.count('room');
+		return Rooms.find({ t: { $ne: 'd' } }).count() !== this._backend.count('room');
 	}
 
 	_doesUserCountDiffer() {
-		return Meteor.users.find({ active:true }).count() !== this._backend.count('user');
+		return Meteor.users.find({ active: true }).count() !== this._backend.count('user');
 	}
 
 	/**
 	 * Index users by using a database cursor
 	 */
 	_indexUsers() {
-		const cursor = Meteor.users.find({ active:true });
+		const cursor = Meteor.users.find({ active: true });
 
 		ChatpalLogger.debug(`Start indexing ${ cursor.count() } users`);
 
@@ -311,7 +299,7 @@ export default class Index {
 	 * @private
 	 */
 	_indexRooms() {
-		const cursor = Rooms.find({ t:{ $ne:'d' } });
+		const cursor = Rooms.find({ t: { $ne: 'd' } });
 
 		ChatpalLogger.debug(`Start indexing ${ cursor.count() } rooms`);
 
@@ -323,11 +311,10 @@ export default class Index {
 	}
 
 	_indexMessages(date, gap) {
-
 		const start = new Date(date - gap);
 		const end = new Date(date);
 
-		const cursor = Messages.model.find({ ts:{ $gt: start, $lt: end }, t:{ $exists:false } });
+		const cursor = Messages.model.find({ ts: { $gt: start, $lt: end }, t: { $exists: false } });
 
 		ChatpalLogger.debug(`Start indexing ${ cursor.count() } messages between ${ start.toString() } and ${ end.toString() }`);
 
@@ -341,16 +328,13 @@ export default class Index {
 	}
 
 	_run(date, resolve, reject) {
-
 		this._running = true;
 
 		if (this._existsDataOlderThan(date) && !this._break) {
-
 			Meteor.setTimeout(() => {
 				date = this._indexMessages(date, (this._options.windowSize || 24) * 3600000);
 
 				this._run(date, resolve, reject);
-
 			}, this._options.timeout || 1000);
 		} else if (this._break) {
 			ChatpalLogger.info(`stopped bootstrap (index-id: ${ this._id })`);
@@ -361,7 +345,6 @@ export default class Index {
 
 			resolve();
 		} else {
-
 			ChatpalLogger.info(`No messages older than already indexed date ${ new Date(date).toString() }`);
 
 			if (this._doesUserCountDiffer() && !this._break) {
@@ -387,18 +370,15 @@ export default class Index {
 	}
 
 	_bootstrap(clear, date) {
-
 		ChatpalLogger.info('Start bootstrapping');
 
 		return new Promise((resolve, reject) => {
-
 			if (clear) {
 				this._backend.clear();
 				date = new Date().getTime();
 			}
 
 			this._run(date, resolve, reject);
-
 		});
 	}
 
@@ -448,5 +428,4 @@ export default class Index {
 			type,
 		}, callback);
 	}
-
 }

@@ -6,7 +6,7 @@ import { Random } from 'meteor/random';
 import s from 'underscore.string';
 import hljs from 'highlight.js';
 
-const inlinecode = (message) =>
+const inlinecode = (message) => {
 	// Support `text`
 	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) => {
 		const token = `=!=${ Random.id() }=!=`;
@@ -18,15 +18,14 @@ const inlinecode = (message) =>
 		});
 
 		return token;
-	})
-;
+	});
+};
 
 const codeblocks = (message) => {
 	// Count occurencies of ```
 	const count = (message.html.match(/```/g) || []).length;
 
 	if (count) {
-
 		// Check if we need to add a final ```
 		if ((count % 2) > 0) {
 			message.html = `${ message.html }\n\`\`\``;
@@ -48,7 +47,7 @@ const codeblocks = (message) => {
 				const emptyLanguage = lang === '' ? s.unescapeHTML(codeMatch[1] + codeMatch[2]) : s.unescapeHTML(codeMatch[2]);
 				const code = singleLine ? s.unescapeHTML(codeMatch[1]) : emptyLanguage;
 
-				const result = lang === '' ? hljs.highlightAuto((lang + code)) : hljs.highlight(lang, code);
+				const result = lang === '' ? hljs.highlightAuto(lang + code) : hljs.highlight(lang, code);
 				const token = `=!=${ Random.id() }=!=`;
 
 				message.tokens.push({
@@ -65,7 +64,7 @@ const codeblocks = (message) => {
 		}
 
 		// Re-mount message
-		return message.html = msgParts.join('');
+		message.html = msgParts.join('');
 	}
 };
 

@@ -1,9 +1,10 @@
 /* globals LivechatVideoCall, JitsiMeetExternalAPI */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+
 import visitor from '../../imports/client/visitor';
 
-LivechatVideoCall = new (class LivechatVideoCall {
+LivechatVideoCall = new class LivechatVideoCall {
 	constructor() {
 		this.live = new ReactiveVar(false);
 		this.calling = new ReactiveVar(false);
@@ -67,6 +68,6 @@ LivechatVideoCall = new (class LivechatVideoCall {
 	isLive() {
 		return this.live.get();
 	}
-});
+}();
 
 /* exported LivechatVideoCall */

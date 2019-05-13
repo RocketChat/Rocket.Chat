@@ -34,7 +34,6 @@ export const tooltip = {
 
 			this.opened = true;
 		}, 300);
-
 	},
 
 	hide() {

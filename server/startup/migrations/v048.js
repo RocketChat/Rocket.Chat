@@ -5,7 +5,6 @@ Migrations.add({
 	version: 48,
 	up() {
 		if (Settings) {
-
 			const RocketBot_Enabled = Settings.findOne({
 				_id: 'RocketBot_Enabled',
 			});
@@ -37,7 +36,6 @@ Migrations.add({
 					},
 				});
 			}
-
 		}
 	},
 });
