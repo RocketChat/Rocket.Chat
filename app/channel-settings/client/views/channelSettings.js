@@ -424,7 +424,6 @@ Template.channelSettingsEditing.onCreated(function() {
 								}
 								return reject();
 							});
-
 						});
 					}
 					// return $('.channel-settings form [name=\'t\']').prop('checked', !!room.type === 'p');
@@ -446,7 +445,6 @@ Template.channelSettingsEditing.onCreated(function() {
 							}
 							return reject();
 						});
-
 					});
 				}
 				return saveRoomSettings();
