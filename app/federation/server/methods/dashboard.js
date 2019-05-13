@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { FederationEvents, FederationPeers, Users } from '../../../models';
-
 // We do not import the whole Federation object here because statistics cron
 // job use this file, and some of the features are not available on the cron
+import { FederationEvents, FederationPeers, Users } from '../../../models';
 import { getConfig } from '../config';
 
 export function getStatistics() {
