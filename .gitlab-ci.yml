@@ -15,43 +15,38 @@ stages:
 
 Install Meteor:
   stage: install
-  script: |
-    # Restore bin from cache
-    set +e
-    METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
-    METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
-    set -e
-    LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
-    if [ -e $LAUNCHER ]
-    then
-      echo "Cached Meteor bin found, restoring it"
-      sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
-    else
-      echo "No cached Meteor bin found."
-    fi
+  script:
+    - |
+      # Restore bin from cache
+      set +e
+      METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+      METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+      set -e
+      LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+      if [ -e $LAUNCHER ]
+      then
+        echo "Cached Meteor bin found, restoring it"
+        sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+      else
+        echo "No cached Meteor bin found."
+      fi
 
-    # only install meteor if bin isn't found
-    command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
-
-Versions:
-  stage: prepare
-  script: |
-    npm --versions
-    node -v
-    meteor --version
-    meteor npm --versions
-    meteor node -v
-    git version
-
-Meteor npm install:
-  stage: prepare
-  script: |
-    # rm -rf node_modules
-    # rm -f package-lock.json
-    meteor npm install
-    cd packages/rocketchat-livechat/.app
-    meteor npm install
-    cd -
+      # only install meteor if bin isn't found
+      command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+    - |
+      npm --versions
+      node -v
+      meteor --version
+      meteor npm --versions
+      meteor node -v
+      git version
+    - |
+      # rm -rf node_modules
+      # rm -f package-lock.json
+      meteor npm install
+      cd packages/rocketchat-livechat/.app
+      meteor npm install
+      cd -
 
 Lint:
   stage: code-check
