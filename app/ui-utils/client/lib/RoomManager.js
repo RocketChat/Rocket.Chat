@@ -4,18 +4,21 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { roomTypes } from '../../../utils';
+import _ from 'underscore';
+
 import { fireGlobalEvent } from './fireGlobalEvent';
+import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { mainReady } from './mainReady';
+import { roomTypes } from '../../../utils';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import _ from 'underscore';
-import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
-import { mainReady } from './mainReady';
+import { getConfig } from '../config';
 
-const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
+
+const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });
@@ -68,10 +71,8 @@ export const RoomManager = new function() {
 							msgStream.on(openedRooms[typeName].rid, (msg) =>
 
 								promises.run('onClientMessageReceived', msg).then(function(msg) {
-
 									// Should not send message to room if room has not loaded all the current messages
 									if (RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) === false) {
-
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
 											const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid });
@@ -108,7 +109,7 @@ export const RoomManager = new function() {
 
 		getDomOfRoom(typeName, rid) {
 			const room = openedRooms[typeName];
-			if ((room == null)) {
+			if (room == null) {
 				return;
 			}
 
@@ -170,7 +171,7 @@ export const RoomManager = new function() {
 
 
 		open(typeName) {
-			if ((openedRooms[typeName] == null)) {
+			if (openedRooms[typeName] == null) {
 				openedRooms[typeName] = {
 					typeName,
 					active: false,
@@ -179,14 +180,13 @@ export const RoomManager = new function() {
 				};
 			}
 
-			openedRooms[typeName].lastSeen = new Date;
+			openedRooms[typeName].lastSeen = new Date();
 
 			if (openedRooms[typeName].ready) {
 				this.closeOlderRooms();
 			}
 
 			if (CachedChatSubscription.ready.get() === true) {
-
 				if (openedRooms[typeName].active !== true) {
 					openedRooms[typeName].active = true;
 					if (this.computation) {
@@ -205,7 +205,7 @@ export const RoomManager = new function() {
 
 		existsDomOfRoom(typeName) {
 			const room = openedRooms[typeName];
-			return ((room != null ? room.dom : undefined) != null);
+			return (room != null ? room.dom : undefined) != null;
 		}
 
 		updateUserStatus(user, status, utcOffset) {
@@ -235,7 +235,9 @@ export const RoomManager = new function() {
 			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
 			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
 
-			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll('.mention-link--me, .mention-link--group'))
+			// TODO: thread quotes should NOT have mention links at all
+			const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
+			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll(mentionsSelector))
 				.map((mentionLink) => {
 					const topOffset = $(mentionLink).offset().top + scrollTop;
 					const percent = (100 / totalHeight) * topOffset;
@@ -250,11 +252,11 @@ export const RoomManager = new function() {
 		}
 	};
 	Cls.initClass();
-	return new Cls;
-};
+	return new Cls();
+}();
 
 const loadMissedMessages = function(rid) {
-	const lastMessage = ChatMessage.findOne({ rid, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
+	const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true }, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
 	if (lastMessage == null) {
 		return;
 	}
@@ -262,9 +264,8 @@ const loadMissedMessages = function(rid) {
 	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) => {
 		if (result) {
 			return Array.from(result).map((item) => promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })));
-		} else {
-			return [];
 		}
+		return [];
 	});
 };
 
@@ -280,11 +281,10 @@ Tracker.autorun(function() {
 			}
 		});
 	}
-	return connectionWasOnline = connected;
+	connectionWasOnline = connected;
 });
 
 Meteor.startup(() => {
-
 	// Reload rooms after login
 	let currentUsername = undefined;
 	Tracker.autorun(() => {
@@ -307,12 +307,12 @@ Meteor.startup(() => {
 			if (RoomManager.getOpenedRoomByRid(record.rid) != null) {
 				const recordBefore = ChatMessage.findOne({ ts: { $lt: record.ts } }, { sort: { ts: -1 } });
 				if (recordBefore != null) {
-					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date } });
+					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date() } });
 				}
 
 				const recordAfter = ChatMessage.findOne({ ts: { $gt: record.ts } }, { sort: { ts: 1 } });
 				if (recordAfter != null) {
-					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date } });
+					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date() } });
 				}
 			}
 		},
@@ -322,8 +322,7 @@ Meteor.startup(() => {
 Tracker.autorun(function() {
 	if (Meteor.userId()) {
 		return Notifications.onUser('message', function(msg) {
-			msg.u =
-			{ username: 'rocket.cat' };
+			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
 			return ChatMessage.upsert({ _id: msg._id }, msg);
@@ -335,9 +334,11 @@ callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), callbacks
 
 CachedCollectionManager.onLogin(() => {
 	Notifications.onUser('subscriptions-changed', (action, sub) => {
-		ChatMessage.update({ rid: sub.rid }, { $unset : { ignored : '' } }, { multi : true });
+		const ignored = sub && sub.ignored ? { $nin: sub.ignored } : { $exists: true };
+
+		ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true });
 		if (sub && sub.ignored) {
-			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in : sub.ignored } }, { $set: { ignored : true } }, { multi : true });
+			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in: sub.ignored } }, { $set: { ignored: true } }, { multi: true });
 		}
 	});
 });

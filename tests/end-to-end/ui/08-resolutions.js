@@ -1,7 +1,6 @@
 import Global from '../../pageobjects/global';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
-
 import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 
@@ -22,8 +21,8 @@ describe('[Resolution]', () => {
 		});
 
 		describe('moving elements:', () => {
-			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.include({ x:0 });
+			it('it should close the sidenav', () => {
+				mainContent.mainContent.getLocation().should.deep.include({ x: 0 });
 			});
 
 			it('it should press the navbar button', () => {
@@ -32,7 +31,7 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should open de sidenav', () => {
-				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
+				mainContent.mainContent.getLocation().should.not.deep.equal({ x: 0 });
 			});
 
 			it('it should not close sidebar on pressing the sidebar item menu', () => {
@@ -40,7 +39,7 @@ describe('[Resolution]', () => {
 				sideNav.firstSidebarItemMenu.waitForVisible(10000);
 				sideNav.firstSidebarItemMenu.click();
 				browser.pause(100);
-				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
+				mainContent.mainContent.getLocation().should.not.deep.equal({ x: 0 });
 				sideNav.popoverOverlay.click();
 			});
 
@@ -48,8 +47,8 @@ describe('[Resolution]', () => {
 				sideNav.openChannel('general');
 			});
 
-			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.include({ x:0 });
+			it('it should close the sidenav', () => {
+				mainContent.mainContent.getLocation().should.deep.include({ x: 0 });
 			});
 
 			it('it should press the navbar button', () => {
@@ -69,8 +68,8 @@ describe('[Resolution]', () => {
 				sideNav.preferences.click();
 			});
 
-			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.include({ x:0 });
+			it('it should close the sidenav', () => {
+				mainContent.mainContent.getLocation().should.deep.include({ x: 0 });
 			});
 
 			it('it should press the navbar button', () => {
@@ -83,8 +82,8 @@ describe('[Resolution]', () => {
 				sideNav.profile.click();
 			});
 
-			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.include({ x:0 });
+			it('it should close the sidenav', () => {
+				mainContent.mainContent.getLocation().should.deep.include({ x: 0 });
 			});
 
 			it('it should press the navbar button', () => {
@@ -92,15 +91,11 @@ describe('[Resolution]', () => {
 				sideNav.burgerBtn.click();
 			});
 
-			it('it should close de sidenav', () => {
+			it('it should close the preferences nav', () => {
 				sideNav.preferencesClose.waitForVisible(10000);
 				sideNav.preferencesClose.click();
-				sideNav.sidebarWrap.click();
-			});
 
-			it('it should press the navbar button', () => {
-				sideNav.burgerBtn.waitForVisible(10000);
-				sideNav.burgerBtn.click();
+				sideNav.preferencesClose.waitForVisible(10000, true);
 			});
 		});
 	});

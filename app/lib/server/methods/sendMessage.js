@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
@@ -14,6 +13,7 @@ import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
+import { SystemLogger } from '../../../logger/server';
 
 Meteor.methods({
 	sendMessage(message) {
@@ -60,7 +60,7 @@ Meteor.methods({
 		const user = Users.findOneById(uid, {
 			fields: {
 				username: 1,
-				...(!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 }),
+				...!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 },
 			},
 		});
 		let { rid } = message;
@@ -84,16 +84,17 @@ Meteor.methods({
 
 			metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 			return sendMessage(user, message, room);
-
 		} catch (error) {
 			if (error === 'error-not-allowed') {
 				throw new Meteor.Error('error-not-allowed');
 			}
 
+			SystemLogger.error('Error sending message:', error);
+
 			Notifications.notifyUser(uid, 'message', {
 				_id: Random.id(),
 				rid: message.rid,
-				ts: new Date,
+				ts: new Date(),
 				msg: TAPi18n.__(error, {}, user.language),
 			});
 		}

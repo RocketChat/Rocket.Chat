@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { MessageAction } from './MessageAction';
 import { Rooms, Users } from '../../../models/client';
 

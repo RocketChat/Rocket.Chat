@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Roles } from '../../app/models';
 import _ from 'underscore';
+
+import { Users, Roles } from '../../app/models';
 
 Meteor.methods({
 	afterVerifyEmail() {
