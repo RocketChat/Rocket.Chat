@@ -53,10 +53,6 @@ import './components/tabs';
 import './components/popupList.html';
 import './components/popupList';
 import './components/selectDropdown.html';
-import './components/inputText.html';
-import './components/inputText';
-import './components/button.html';
-import './components/button';
 
 import './components/header/header.html';
 import './components/header/header';
