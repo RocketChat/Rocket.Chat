@@ -73,6 +73,8 @@
 			cursor: pointer;
 
 			color: #a0a0a0;
+
+			font-size: 1rem;
 		}
 	}
 
@@ -115,24 +117,27 @@
 	}
 
 	&.collapsed .thread-reply-preview {
-		display: initial;
+		display: inline;
 	}
 }
 
-.message.collapsed + .message.system:not(.collapsed) {
+.message.collapsed + .message.system:not(.collapsed):not(.new-day) {
 	margin-top: calc(var(--default-padding) / 2);
 	margin-bottom: calc(var(--default-padding) / 2);
 }
 
-.message.collapsed + .message:not(.collapsed) {
+.message.collapsed + .message:not(.collapsed):not(.new-day) {
 	margin-top: calc(var(--default-padding) / 2);
 }
 
 .message.collapsed > .thread-replied > .thumb {
+	bottom: 0;
 	left: 40px;
 
 	width: 20px;
 	height: 20px;
+	margin-top: auto;
+	margin-bottom: auto;
 	margin-left: 0;
 
 	& .avatar {

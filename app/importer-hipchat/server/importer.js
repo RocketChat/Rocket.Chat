@@ -1,6 +1,9 @@
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import _ from 'underscore';
+import moment from 'moment';
+
 import {
 	Base,
 	ProgressStep,
@@ -11,8 +14,6 @@ import {
 import { RocketChatFile } from '../../file';
 import { Users, Rooms } from '../../models';
 import { sendMessage } from '../../lib';
-import _ from 'underscore';
-import moment from 'moment';
 
 import 'moment-timezone';
 
@@ -58,7 +59,8 @@ export class HipChatImporter extends Base {
 						tempMessages[roomName] = {};
 					}
 					try {
-						return tempMessages[roomName][msgGroupData] = JSON.parse(entry.getData().toString());
+						tempMessages[roomName][msgGroupData] = JSON.parse(entry.getData().toString());
+						return tempMessages[roomName][msgGroupData];
 					} catch (error) {
 						return this.logger.warn(`${ entry.entryName } is not a valid JSON file! Unable to import it.`);
 					}
@@ -67,10 +69,10 @@ export class HipChatImporter extends Base {
 				const usersName = entry.entryName.split(this.usersPrefix)[1];
 				if (usersName === 'list.json') {
 					super.updateProgress(ProgressStep.PREPARING_USERS);
-					return tempUsers = JSON.parse(entry.getData().toString()).users;
-				} else {
-					return this.logger.warn(`Unexpected file in the ${ this.name } import: ${ entry.entryName }`);
+					tempUsers = JSON.parse(entry.getData().toString()).users;
+					return tempUsers;
 				}
+				return this.logger.warn(`Unexpected file in the ${ this.name } import: ${ entry.entryName }`);
 			}
 		});
 		const usersId = this.collection.insert({
@@ -164,7 +166,11 @@ export class HipChatImporter extends Base {
 		this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 
 		importSelection.channels.forEach((channel) =>
-			this.channels.channels.forEach((c) => c.room_id === channel.channel_id && (c.do_import = channel.do_import))
+			this.channels.channels.forEach((c) => {
+				if (c.room_id === channel.channel_id) {
+					c.do_import = channel.do_import;
+				}
+			})
 		);
 		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
 
@@ -239,7 +245,7 @@ export class HipChatImporter extends Base {
 							}
 							Meteor.runAsUser(userId, () => {
 								const returned = Meteor.call('createChannel', channel.name, []);
-								return channel.rocketId = returned.rid;
+								channel.rocketId = returned.rid;
 							});
 							Rooms.update({
 								_id: channel.rocketId,

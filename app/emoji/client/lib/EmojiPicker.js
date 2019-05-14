@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 

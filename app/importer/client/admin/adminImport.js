@@ -1,9 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { Importers } from '..';
+
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { hasRole } from '../../../authorization';
 import { t, handleError } from '../../../utils';
 import { SideNav } from '../../../ui-utils/client';

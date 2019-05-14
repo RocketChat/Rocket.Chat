@@ -1,12 +1,11 @@
 import emojione from 'emojione';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { emojioneRender, emojioneRenderFromShort } from './emojioneRender';
+import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 import { emoji } from '../../emoji';
 import { getUserPreference } from '../../utils';
-import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 
 emoji.packages.emojione = emojione;
 emoji.packages.emojione.sprites = true;
@@ -24,9 +23,8 @@ function isSetNotNull(fn) {
 		value = fn();
 	} catch (e) {
 		value = null;
-	} finally {
-		return value !== null && value !== undefined;
 	}
+	return value !== null && value !== undefined;
 }
 
 // RocketChat.emoji.list is the collection of emojis from all emoji packages

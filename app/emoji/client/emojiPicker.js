@@ -1,13 +1,12 @@
 import _ from 'underscore';
-
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 
 import { t } from '../../utils/client';
-import { emoji } from '../lib/rocketchat';
 import { EmojiPicker } from './lib/EmojiPicker';
+import { emoji } from '../lib/rocketchat';
 
 export const recentEmojisNeedsUpdate = new ReactiveVar(false);
 

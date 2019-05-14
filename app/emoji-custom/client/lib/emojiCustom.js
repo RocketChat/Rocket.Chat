@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
+
 import { isSetNotNull } from './function-isSet';
 import { RoomManager, call } from '../../../ui-utils';
 import { emoji, EmojiPicker } from '../../../emoji';

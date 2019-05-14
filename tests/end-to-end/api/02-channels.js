@@ -620,7 +620,7 @@ describe('[Channels]', function() {
 	describe('/channels.setCustomFields:', () => {
 		let cfchannel;
 		it('create channel with customFields', (done) => {
-			const customFields = { field0:'value0' };
+			const customFields = { field0: 'value0' };
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -647,7 +647,7 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 		it('change customFields', async (done) => {
-			const customFields = { field9:'value9' };
+			const customFields = { field9: 'value9' };
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -705,7 +705,7 @@ describe('[Channels]', function() {
 				});
 		});
 		it('set customFields with one nested field', async (done) => {
-			const customFields = { field1:'value1' };
+			const customFields = { field1: 'value1' };
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -724,7 +724,7 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 		it('set customFields with multiple nested fields', async (done) => {
-			const customFields = { field2:'value2', field3:'value3', field4:'value4' };
+			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)

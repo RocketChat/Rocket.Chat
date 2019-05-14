@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions } from '../../../../models';
 
+import { Rooms, Subscriptions } from '../../../../models';
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/hideChannel.graphqls';
 
