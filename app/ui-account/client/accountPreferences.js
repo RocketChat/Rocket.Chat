@@ -4,14 +4,15 @@ import { Tracker } from 'meteor/tracker';
 import { Reload } from 'meteor/reload';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+
 import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
 import { settings } from '../../settings';
 import { CustomSounds } from '../../custom-sounds/client';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 const notificationLabels = {
 	all: 'All_messages',
@@ -243,9 +244,9 @@ Template.accountPreferences.onCreated(function() {
 
 				if (results.exportOperation) {
 					if (results.exportOperation.status === 'completed') {
-						const text = results.url ?
-							TAPi18n.__('UserDataDownload_CompletedRequestExistedWithLink_Text', { download_link: results.url }) :
-							t('UserDataDownload_CompletedRequestExisted_Text');
+						const text = results.url
+							? TAPi18n.__('UserDataDownload_CompletedRequestExistedWithLink_Text', { download_link: results.url })
+							: t('UserDataDownload_CompletedRequestExisted_Text');
 
 						modal.open({
 							title: t('UserDataDownload_Requested'),

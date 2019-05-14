@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import toastr from 'toastr';
+
 import { modal } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { Button } from '../../../ui';
 import { callbacks } from '../../../callbacks';
-import toastr from 'toastr';
 
 Template.resetPassword.helpers({
 	requirePasswordChange() {

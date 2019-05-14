@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { Subscriptions, Users, Messages } from '../../app/models';
@@ -22,7 +23,6 @@ msgStream.allowRead(function(eventName, args) {
 
 		return true;
 	} catch (error) {
-
 		/* error*/
 		return false;
 	}
@@ -43,7 +43,6 @@ msgStream.allowEmit(MY_MESSAGE, function(eventName, msg) {
 			roomType: room.t,
 			roomName: room.name,
 		};
-
 	} catch (error) {
 		/* error*/
 		return false;

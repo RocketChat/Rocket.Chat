@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission, getUsersInRole } from '../../../authorization';
 
 Meteor.publish('livechat:agents', function() {

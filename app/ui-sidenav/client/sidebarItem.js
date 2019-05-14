@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { t, getUserPreference, roomTypes } from '../../utils';
-import { popover, renderMessageBody } from '../../ui-utils';
+import { popover, renderMessageBody, menu } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
-import { menu } from '../../ui-utils';
 import { timeAgo } from '../../lib/client/lib/formatDate';
 
 Template.sidebarItem.helpers({
@@ -42,11 +42,12 @@ Template.sidebarItem.helpers({
 
 		if (unread) {
 			badges.push('badge--unread');
+			if (t === 'd') {
+				badges.push('badge--dm');
+			}
 		}
 
-		if (unread && t === 'd') {
-			badges.push('badge--dm');
-		} else if (userMentions) {
+		if (userMentions) {
 			badges.push('badge--user-mentions');
 		} else if (groupMentions) {
 			badges.push('badge--group-mentions');
@@ -84,13 +85,15 @@ Template.sidebarItem.onCreated(function() {
 		}
 
 		if (!currentData.lastMessage._id) {
-			return this.renderedMessage = currentData.lastMessage.msg;
+			this.renderedMessage = currentData.lastMessage.msg;
+			return;
 		}
 
 		setLastMessageTs(this, currentData.lastMessage.ts);
 
 		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
-			return this.renderedMessage = '******';
+			this.renderedMessage = '******';
+			return;
 		}
 
 		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
@@ -121,7 +124,7 @@ Template.sidebarItem.events({
 			if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
 			if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
 
-			return !(((roomData.cl != null) && !roomData.cl) || (['d', 'l'].includes(roomData.t)));
+			return !(((roomData.cl != null) && !roomData.cl) || ['d', 'l'].includes(roomData.t));
 		};
 
 		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
@@ -143,14 +146,14 @@ Template.sidebarItem.events({
 		if (this.alert) {
 			items.push({
 				icon: 'flag',
-				name: t('Mark_as_read'),
+				name: t('Mark_read'),
 				type: 'sidebar-item',
 				id: 'read',
 			});
 		} else {
 			items.push({
 				icon: 'flag',
-				name: t('Mark_as_unread'),
+				name: t('Mark_unread'),
 				type: 'sidebar-item',
 				id: 'unread',
 			});

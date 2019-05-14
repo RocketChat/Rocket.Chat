@@ -1,8 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { ExportOperations, UserDataFiles } from '../../app/models';
-import { settings } from '../../app/settings';
 import fs from 'fs';
 import path from 'path';
+
+import { Meteor } from 'meteor/meteor';
+
+import { ExportOperations, UserDataFiles } from '../../app/models';
+import { settings } from '../../app/settings';
 
 let tempFolder = '/tmp/userData';
 if (settings.get('UserData_FileSystemPath') != null) {
@@ -62,7 +64,7 @@ Meteor.methods({
 		}
 
 		const exportOperation = {
-			userId : currentUserData._id,
+			userId: currentUserData._id,
 			roomList: null,
 			status: 'pending',
 			exportPath: folderName,

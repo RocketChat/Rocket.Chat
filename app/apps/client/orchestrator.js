@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { AppWebsocketReceiver } from './communication';
-import { Utilities } from '../lib/misc/Utilities';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { TAPi18next } from 'meteor/tap:i18n';
+
+import { AppWebsocketReceiver } from './communication';
+import { Utilities } from '../lib/misc/Utilities';
 import { APIClient } from '../../utils';
 import { AdminBox } from '../../ui-utils';
 import { CachedCollectionManager } from '../../ui-cached-collection';
@@ -74,6 +75,15 @@ class AppClientOrchestrator {
 				return hasAtLeastOnePermission(['manage-apps']);
 			},
 		});
+
+		AdminBox.addOption({
+			icon: 'cube',
+			href: 'marketplace',
+			i18nLabel: 'Marketplace',
+			permissionGranted() {
+				return hasAtLeastOnePermission(['manage-apps']);
+			},
+		});
 	}
 
 	_loadLanguages() {
@@ -124,6 +134,20 @@ const appsRouteAction = function _theRealAction(whichCenter) {
 };
 
 // Bah, this has to be done *before* `Meteor.startup`
+FlowRouter.route('/admin/marketplace', {
+	name: 'marketplace',
+	action() {
+		appsRouteAction('marketplace');
+	},
+});
+
+FlowRouter.route('/admin/marketplace/:itemId', {
+	name: 'app-manage',
+	action() {
+		appsRouteAction('appManage');
+	},
+});
+
 FlowRouter.route('/admin/apps', {
 	name: 'apps',
 	action() {

@@ -1,6 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
-import { IframeLogin } from '../../ui-utils';
 import _ from 'underscore';
+
+import { IframeLogin } from '../../ui-utils';
 
 const iframeLogin = new IframeLogin();
 

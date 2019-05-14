@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { FileUpload } from '../../../file-upload';
 import { settings } from '../../../settings';
 import { Messages, Uploads, Rooms } from '../../../models';

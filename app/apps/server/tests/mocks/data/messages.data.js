@@ -1,13 +1,13 @@
 export const appMessageMock = {
-	id: 'bojapwB2udErwrvCZ',
+	id: 'appMessageMock',
 	text: 'rocket.cat',
 	createdAt: new Date('2019-03-30T01:22:08.389Z'),
 	updatedAt: new Date('2019-03-30T01:22:08.412Z'),
 	groupable: false,
 	room: {
 		id: 'GENERAL',
-		displayName: 'Mocked Room',
-		slugifiedName: 'mocked-room',
+		displayName: 'general',
+		slugifiedName: 'general',
 		type: 'c',
 		creator: {
 			username: 'rocket.cat',
@@ -57,7 +57,7 @@ export const appMessageMock = {
 };
 
 export const appMessageInvalidRoomMock = {
-	id: 'bojapwB2udErwrvCZ',
+	id: 'appMessageInvalidRoomMock',
 	text: 'rocket.cat',
 	createdAt: new Date('2019-03-30T01:22:08.389Z'),
 	updatedAt: new Date('2019-03-30T01:22:08.412Z'),
@@ -112,18 +112,4 @@ export const appMessageInvalidRoomMock = {
 	_unmappedProperties_: {
 		t: 'uj',
 	},
-};
-
-export const rocketchatMessageMock = {
-	_id : 'bojapwB2udErwrvCZ',
-	t : 'uj',
-	rid : 'GENERAL',
-	ts : new Date('2019-03-30T01:22:08.389Z'),
-	msg : 'rocket.cat',
-	u : {
-		_id : 'rocket.cat',
-		username : 'rocket.cat',
-	},
-	groupable : false,
-	_updatedAt : new Date('2019-03-30T01:22:08.412Z'),
 };

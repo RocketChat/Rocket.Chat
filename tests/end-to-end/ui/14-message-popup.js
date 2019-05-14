@@ -1,5 +1,4 @@
 import { adminEmail, adminPassword } from '../../data/user.js';
-
 import {
 	api,
 	request,
@@ -74,7 +73,7 @@ describe('[Message Popup]', () => {
 
 			browser.call(async () => {
 				for (const user of users) {
-					await createTestUser(user);
+					await createTestUser(user); // eslint-disable-line no-await-in-loop
 				}
 			});
 

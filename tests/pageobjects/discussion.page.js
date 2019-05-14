@@ -1,5 +1,4 @@
 import Page from './Page';
-
 import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
@@ -55,10 +54,10 @@ class Discussion extends Page {
 		this.createDiscussionModal.waitForVisible(1000);
 		this.discussionName.setValue(name);
 		this.discussionMessage.setValue(message);
-
-		browser.pause(100);
-
 		this.parentChannelName.waitForVisible(1000);
+
+		browser.pause(1000);
+
 		this.parentChannelName.setValue(parentChannelName);
 
 		const listItem = browser.element('.rc-popup-list__list .rc-popup-list__item');
