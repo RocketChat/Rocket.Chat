@@ -1,9 +1,13 @@
 import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 import { emoji } from '../../lib/rocketchat';
 import { updateRecentEmoji } from '../emojiPicker';
+
+let updatePositions = true;
 
 export const EmojiPicker = {
 	width: 365,
@@ -15,6 +19,8 @@ export const EmojiPicker = {
 	tone: null,
 	opened: false,
 	pickCallback: null,
+	scrollingToCategory: false,
+	currentCategory: new ReactiveVar('recent'),
 	init() {
 		if (this.initiated) {
 			return;
@@ -97,6 +103,10 @@ export const EmojiPicker = {
 
 		this.calculateCategoryPositions();
 
+		if (this.recent.length === 0 && this.currentCategory.get() === 'recent') {
+			this.showCategory(emoji.packages.emojiCustom.list.length > 0 ? 'rocket' : 'people', false);
+		}
+
 		this.opened = true;
 	},
 	close() {
@@ -118,6 +128,8 @@ export const EmojiPicker = {
 
 		this.recent.unshift(_emoji);
 
+		updatePositions = true;
+
 		window.localStorage.setItem('emoji.recent', this.recent);
 		emoji.packages.base.emojisByCategory.recent = this.recent;
 		this.updateRecent('recent');
@@ -126,15 +138,47 @@ export const EmojiPicker = {
 		updateRecentEmoji(category);
 	},
 	calculateCategoryPositions() {
+		if (!updatePositions) {
+			return;
+		}
+		updatePositions = false;
+
+		const containerScroll = $('.emoji-picker .emojis').scrollTop();
+
 		this.catPositions = Array.from(document.querySelectorAll('.emoji-list-category')).map((el) => {
 			const { top } = $(el).position();
 			return {
 				el,
-				top,
+				top: top + containerScroll,
 			};
 		});
 	},
 	getCategoryPositions() {
 		return this.catPositions;
+	},
+	showCategory(category, animate = true) {
+		this.scrollingToCategory = animate;
+
+		$('.emoji-picker .js-emojipicker-search')
+			.val('')
+			.change()
+			.focus();
+
+		this.currentCategory.set(category);
+
+		Tracker.afterFlush(() => {
+			const header = $(`#emoji-list-category-${ category }`);
+			const container = $('.emoji-picker .emojis');
+
+			const scrollTop = header.position().top + container.scrollTop();// - container.position().top;
+
+			if (animate) {
+				return container.animate({
+					scrollTop,
+				}, 300, () => setTimeout(() => { this.scrollingToCategory = false; }, 200));
+			}
+
+			container.scrollTop(scrollTop);
+		});
 	},
 };

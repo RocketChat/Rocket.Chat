@@ -2,7 +2,6 @@ import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
-import { Tracker } from 'meteor/tracker';
 
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
@@ -45,7 +44,7 @@ function getEmojisBySearchTerm(searchTerm) {
 	const t = Template.instance();
 	const actualTone = t.tone;
 
-	t.currentCategory.set('');
+	EmojiPicker.currentCategory.set('');
 
 	const searchRegExp = new RegExp(RegExp.escape(searchTerm.replace(/:/g, '')), 'i');
 
@@ -121,7 +120,7 @@ Template.emojiPicker.helpers({
 	 * @return {boolean} true if active, false otherwise
 	 */
 	activeCategory(category) {
-		return Template.instance().currentCategory.get() === category ? 'active' : '';
+		return EmojiPicker.currentCategory.get() === category ? 'active' : '';
 	},
 	/**
 	 * Returns currently active emoji category hash
@@ -129,7 +128,7 @@ Template.emojiPicker.helpers({
 	 * @return {string} category hash
 	 */
 	currentCategory() {
-		return Template.instance().currentCategory.get();
+		return EmojiPicker.currentCategory.get();
 	},
 });
 
@@ -138,32 +137,16 @@ Template.emojiPicker.events({
 		event.stopPropagation();
 		event.preventDefault();
 	},
-	'click .category-link'(event, instance) {
+	'click .category-link'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
-		instance.scrollingToCategory = true;
-
-		instance.$('.emoji-picker .js-emojipicker-search').val('').change();
-		instance.$('.emoji-picker .js-emojipicker-search').focus();
-
-		instance.currentCategory.set(event.currentTarget.hash.substr(1));
-
-		Tracker.afterFlush(() => {
-			const header = instance.$(`#emoji-list-category-${ event.currentTarget.hash.substr(1) }`);
-			const container = instance.$('.emoji-picker .emojis');
-
-			const scrollTop = header.position().top + container.scrollTop();// - container.position().top;
-
-			container.animate({
-				scrollTop,
-			}, 300, () => setTimeout(() => { instance.scrollingToCategory = false; }, 200));
-		});
+		EmojiPicker.showCategory(event.currentTarget.hash.substr(1));
 
 		return false;
 	},
 	'scroll .emojis': _.throttle((event, instance) => {
-		if (instance.scrollingToCategory) {
+		if (EmojiPicker.scrollingToCategory) {
 			return;
 		}
 
@@ -182,7 +165,7 @@ Template.emojiPicker.events({
 
 		const category = el.id.replace('emoji-list-category-', '');
 
-		instance.currentCategory.set(category);
+		EmojiPicker.currentCategory.set(category);
 	}, 300),
 	'click .change-tone > a'(event, instance) {
 		event.stopPropagation();
@@ -258,9 +241,6 @@ Template.emojiPicker.onCreated(function() {
 	this.tone = EmojiPicker.getTone();
 	const recent = EmojiPicker.getRecent();
 
-	this.scrollingToCategory = false;
-
-	this.currentCategory = new ReactiveVar('recent');
 	this.currentSearchTerm = new ReactiveVar('');
 
 	this.categoriesList = [];
