@@ -118,12 +118,14 @@ Template.message.helpers({
 		return !msg.private && !msg.t && msg.u._id !== u._id && room && room.broadcast;
 	},
 	isIgnored() {
-		const { msg } = this;
-		return msg.ignored;
+		const { ignored, msg } = this;
+		const isIgnored = typeof ignored !== 'undefined' ? ignored : msg.ignored;
+		return isIgnored;
 	},
 	ignoredClass() {
-		const { msg } = this;
-		return msg.ignored ? 'message--ignored' : '';
+		const { ignored, msg } = this;
+		const isIgnored = typeof ignored !== 'undefined' ? ignored : msg.ignored;
+		return isIgnored ? 'message--ignored' : '';
 	},
 	isDecrypting() {
 		const { msg } = this;
