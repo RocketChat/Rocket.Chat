@@ -1,36 +1,44 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
-import { ChatRoom, ChatSubscription } from '../../../models';
-import { hasAtLeastOnePermission } from '../../../authorization';
 import _ from 'underscore';
+
+import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
+import { hasAtLeastOnePermission } from '../../../authorization';
+import { ChatRoom, ChatSubscription } from '../../../models';
 
 export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	checkCondition(roomType) {
 		return roomType.condition == null || roomType.condition();
 	}
+
 	getTypes() {
 		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]).filter((type) => !type.condition || type.condition());
 	}
+
 	getIcon(roomData) {
 		if (!roomData || !roomData.t || !this.roomTypes[roomData.t]) {
 			return;
 		}
 		return (this.roomTypes[roomData.t].getIcon && this.roomTypes[roomData.t].getIcon(roomData)) || this.roomTypes[roomData.t].icon;
 	}
+
 	getRoomName(roomType, roomData) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
 	}
+
 	getSecondaryRoomName(roomType, roomData) {
 		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].secondaryRoomName === 'function' && this.roomTypes[roomType].secondaryRoomName(roomData);
 	}
+
 	getIdentifiers(e) {
 		const except = [].concat(e);
 		const list = _.reject(this.roomTypesOrder, (t) => except.indexOf(t.identifier) !== -1);
 		return _.map(list, (t) => t.identifier);
 	}
+
 	getUserStatus(roomType, rid) {
 		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatus === 'function' && this.roomTypes[roomType].getUserStatus(rid);
 	}
+
 	getRoomType(roomId) {
 		const fields = {
 			t: 1,
@@ -42,12 +50,15 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		});
 		return room && room.t;
 	}
+
 	findRoom(roomType, identifier, user) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier, user);
 	}
+
 	canSendMessage(rid) {
 		return ChatSubscription.find({ rid }).count() > 0;
 	}
+
 	readOnly(rid, user) {
 		const fields = {
 			ro: 1,
@@ -92,10 +103,12 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 
 		return false;
 	}
+
 	archived(rid) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { archived: 1 } });
 		return room && room.archived === true;
 	}
+
 	verifyCanSendMessage(rid) {
 		const room = ChatRoom.findOne({	_id: rid }, { fields: { t: 1 } });
 
@@ -109,6 +122,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}
 		return this.canSendMessage(rid);
 	}
+
 	verifyShowJoinLink(rid) {
 		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
@@ -120,6 +134,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}
 		return this.roomTypes[roomType].showJoinLink(rid);
 	}
+
 	getNotSubscribedTpl(rid) {
 		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
@@ -157,4 +172,4 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 
 		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
-};
+}();

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+
 import { Rooms, Subscriptions } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-
 import { EmojiPicker } from '../../emoji';
 import { tooltip } from '../../tooltip';
 
@@ -13,7 +13,7 @@ Template.room.events({
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
-		const { msg:{ rid, _id: mid } } = messageArgs(data);
+		const { msg: { rid, _id: mid } } = messageArgs(data);
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
@@ -36,7 +36,7 @@ Template.room.events({
 		event.preventDefault();
 
 		const data = Blaze.getData(event.currentTarget);
-		const { msg:{ _id: mid } } = messageArgs(data);
+		const { msg: { _id: mid } } = messageArgs(data);
 		Meteor.call('setReaction', $(event.currentTarget).data('emoji'), mid, () => {
 			tooltip.hide();
 		});

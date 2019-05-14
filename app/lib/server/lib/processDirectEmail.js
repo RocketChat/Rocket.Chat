@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { EmailReplyParser as reply } from 'emailreplyparser';
+import moment from 'moment';
+
 import { settings } from '../../../settings';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models';
 import { metrics } from '../../../metrics';
 import { hasPermission } from '../../../authorization';
-import { EmailReplyParser as reply } from 'emailreplyparser';
 import { sendMessage as _sendMessage } from '../functions';
-import moment from 'moment';
 
 export const processDirectEmail = function(email) {
 	function sendMessage(email) {

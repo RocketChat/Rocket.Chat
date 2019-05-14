@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Messages, Rooms, Subscriptions, EmojiCustom } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { emoji } from '../../../emoji';
-import _ from 'underscore';
 
 Meteor.methods({
 	setReaction(reaction, messageId) {
@@ -66,7 +67,5 @@ Meteor.methods({
 			Messages.setReactions(messageId, message.reactions);
 			callbacks.run('setReaction', messageId, reaction);
 		}
-
-		return;
 	},
 });

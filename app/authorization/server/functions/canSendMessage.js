@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions } from '../../../models';
-import { canAccessRoom } from './canAccessRoom';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Random } from 'meteor/random';
+
+import { canAccessRoom } from './canAccessRoom';
 import { Notifications } from '../../../notifications';
 import { hasPermission } from '../..';
+import { Rooms, Subscriptions } from '../../../models';
 
 export const canSendMessage = (rid, { uid, username }, extraData) => {
 	const room = Rooms.findOneById(rid);
@@ -25,7 +26,7 @@ export const canSendMessage = (rid, { uid, username }, extraData) => {
 				Notifications.notifyUser(Meteor.userId(), 'message', {
 					_id: Random.id(),
 					rid: room._id,
-					ts: new Date,
+					ts: new Date(),
 					msg: TAPi18n.__('room_is_read_only'),
 				});
 

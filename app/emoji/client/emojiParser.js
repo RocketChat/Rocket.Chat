@@ -1,5 +1,4 @@
 import s from 'underscore.string';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 

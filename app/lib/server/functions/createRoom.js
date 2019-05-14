@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { Users, Rooms, Subscriptions } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { addUserRoles } from '../../../authorization';
 import { getValidRoomName } from '../../../utils';
 import { Apps } from '../../../apps/server';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 function createDirectRoom(source, target, extraData, options) {
 	const rid = [source._id, target._id].sort().join('');
@@ -66,7 +67,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
 	}
 
-	owner = Users.findOneByUsername(owner, { fields: { username: 1 } });
+	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}

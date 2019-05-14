@@ -1,18 +1,20 @@
+import URL from 'url';
+import QueryString from 'querystring';
+
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Messages } from '../../models';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import _ from 'underscore';
-import URL from 'url';
-import QueryString from 'querystring';
 
 const recursiveRemove = (message, deep = 1) => {
 	if (message) {
 		if ('attachments' in message && message.attachments !== null && deep < settings.get('Message_QuoteChainLimit')) {
 			message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
 		} else {
-			delete(message.attachments);
+			delete message.attachments;
 		}
 	}
 	return message;

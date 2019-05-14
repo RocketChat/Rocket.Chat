@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import * as Models from '../../models';
+
 import { ChatPermissions } from './lib/ChatPermissions';
+import * as Models from '../../models';
 
 function atLeastOne(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
@@ -62,4 +63,3 @@ export const hasAllPermission = (permissions, scope) => _hasPermission(permissio
 export const hasAtLeastOnePermission = (permissions, scope) => _hasPermission(permissions, scope, atLeastOne);
 export const userHasAllPermission = (permissions, scope, userId) => _hasPermission(permissions, scope, all, userId);
 export const hasPermission = hasAllPermission;
-

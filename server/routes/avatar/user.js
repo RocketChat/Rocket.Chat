@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../app/file-upload';
-import { settings } from '../../../app/settings/server';
-import { Users, Avatars } from '../../../app/models/server';
-
 import {
 	renderSVGLetters,
 	serveAvatar,
 	wasFallbackModified,
 	setCacheAndDispositionHeaders,
 } from './utils';
+import { FileUpload } from '../../../app/file-upload';
+import { settings } from '../../../app/settings/server';
+import { Users, Avatars } from '../../../app/models/server';
+
 
 // request /avatar/@name forces returning the svg
 export const userAvatar = Meteor.bindEnvironment(function(req, res) {
@@ -62,7 +62,7 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 	let svg = renderSVGLetters(requestUsername, avatarSize);
 
 	if (settings.get('UI_Use_Name_Avatar')) {
-		const user = Users.findOneByUsername(requestUsername, {
+		const user = Users.findOneByUsernameIgnoringCase(requestUsername, {
 			fields: {
 				name: 1,
 			},
@@ -74,5 +74,4 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 	}
 
 	serveAvatar(svg, req.query.format, res);
-	return;
 });

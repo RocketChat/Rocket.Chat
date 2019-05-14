@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+
 import { Messages, EmojiCustom, Subscriptions, Rooms } from '../../models';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib';
-import _ from 'underscore';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
@@ -37,7 +38,7 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 			msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 		});
 		return false;
-	} else if (!Subscriptions.findOne({ rid: message.rid })) {
+	} if (!Subscriptions.findOne({ rid: message.rid })) {
 		return false;
 	}
 
@@ -108,7 +109,5 @@ Meteor.methods({
 		}
 
 		setReaction(room, user, message, reaction, shouldReact);
-
-		return;
 	},
 });

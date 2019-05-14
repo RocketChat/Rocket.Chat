@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import _ from 'underscore';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
@@ -28,7 +29,8 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 		throw new Meteor.Error('error-room-archived', `The channel, ${ room.name }, is archived`);
 	}
 	if (userId && room.lastMessage) {
-		room.lastMessage = composeMessageObjectWithUser(room.lastMessage, userId);
+		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		room.lastMessage = lastMessage;
 	}
 
 	return room;
@@ -264,7 +266,7 @@ API.v1.addRoute('channels.files', { authRequired: true }, {
 		const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
 		const files = Uploads.find(ourQuery, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -309,7 +311,7 @@ API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 		ourQuery = Object.assign({}, query, ourQuery);
 
 		const integrations = Integrations.find(ourQuery, {
-			sort: sort ? sort : { _createdAt: 1 },
+			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -464,7 +466,7 @@ API.v1.addRoute('channels.list', { authRequired: true }, {
 			}
 
 			const cursor = Rooms.find(ourQuery, {
-				sort: sort ? sort : { name: 1 },
+				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				fields,
@@ -491,7 +493,7 @@ API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 		// TODO: CACHE: Add Breacking notice since we removed the query param
 		const cursor = Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -568,7 +570,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 		}
 
 		const cursor = Messages.find(ourQuery, {
-			sort: sort ? sort : { ts: -1 },
+			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -578,7 +580,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 		const messages = cursor.fetch();
 
 		return API.v1.success({
-			messages: messages.map((record) => composeMessageObjectWithUser(record, this.userId)),
+			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
 			total,
@@ -933,7 +935,7 @@ API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequired: true }, 
 		const mentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
 			roomId,
 			options: {
-				sort: sort ? sort : { ts: 1 },
+				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
 			},
@@ -1004,4 +1006,3 @@ API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
 		return API.v1.success();
 	},
 });
-

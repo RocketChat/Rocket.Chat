@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
@@ -33,6 +32,10 @@ Template.thread.events({
 		const { atBottom } = this;
 		atBottom && this.sendToBottom();
 	},
+	'click .toggle-hidden'(e) {
+		const id = e.currentTarget.dataset.message;
+		document.querySelector(`#thread-${ id }`).classList.toggle('message--ignored');
+	},
 });
 
 Template.thread.helpers({
@@ -57,7 +60,7 @@ Template.thread.helpers({
 			settings: {
 				...result.settings,
 				showReplyButton: false,
-				showreply:false,
+				showreply: false,
 			},
 		};
 	},
@@ -81,7 +84,7 @@ Template.thread.onRendered(function() {
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 
-	this.chatMessages = new ChatMessages;
+	this.chatMessages = new ChatMessages();
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
@@ -165,8 +168,6 @@ Template.thread.onCreated(async function() {
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
 		});
-
-
 	}, 500);
 });
 

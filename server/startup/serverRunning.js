@@ -1,10 +1,12 @@
+import fs from 'fs';
+import path from 'path';
+
+import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
+
 import { SystemLogger } from '../../app/logger';
 import { settings } from '../../app/settings';
 import { Info, getMongoInfo } from '../../app/utils';
-import fs from 'fs';
-import path from 'path';
-import semver from 'semver';
 
 Meteor.startup(function() {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();

@@ -6,7 +6,6 @@ export const addUserToDefaultChannels = function(user, silenced) {
 	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], { fields: { usernames: 0 } }).fetch();
 	defaultRooms.forEach((room) => {
 		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
-
 			// Add a subscription to this user
 			Subscriptions.createWithRoomAndUser(room, user, {
 				ts: new Date(),

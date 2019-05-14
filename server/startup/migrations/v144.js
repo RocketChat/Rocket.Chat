@@ -1,23 +1,24 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Rooms } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations/server';
+import { Sessions } from '../../../app/models/server';
 
 Migrations.add({
-	version: 134,
+	version: 144,
 	up() {
-		Rooms.update({
-			ro: true,
-			muted: {
-				$exists: true,
-				$not: {
-					$size: 0,
-				},
-			},
+		console.log('Restoring sessions data');
+		Promise.await(Sessions.model.rawCollection().removeMany({
+			type: 'user_daily',
+		}));
+
+		Promise.await(Sessions.model.rawCollection().updateMany({
+			type: 'computed-session',
 		}, {
 			$set: {
-				muted: [],
+				type: 'session',
 			},
-		}, {
-			multi: true,
-		});
+			$unset: {
+				_computedAt: 1,
+			},
+		}));
+		console.log('Restoring sessions data - Done');
 	},
 });

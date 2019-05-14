@@ -1,6 +1,6 @@
-import _ from 'underscore';
 import os from 'os';
 
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
@@ -17,7 +17,6 @@ import {
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
-
 import { statistics } from '../statisticsNamespace';
 
 const wizardFields = [
@@ -143,7 +142,9 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
 	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
 	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+	statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
+	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
 	return statistics;
 };
