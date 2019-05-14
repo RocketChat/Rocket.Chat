@@ -142,6 +142,8 @@ Template.emojiPicker.events({
 		event.stopPropagation();
 		event.preventDefault();
 
+		instance.scrollingToCategory = true;
+
 		instance.$('.emoji-picker .js-emojipicker-search').val('').change();
 		instance.$('.emoji-picker .js-emojipicker-search').focus();
 
@@ -151,15 +153,37 @@ Template.emojiPicker.events({
 			const header = instance.$(`#emoji-list-category-${ event.currentTarget.hash.substr(1) }`);
 			const container = instance.$('.emoji-picker .emojis');
 
-			const scrollTop = header.position().top + container.scrollTop() - container.position().top;
+			const scrollTop = header.position().top + container.scrollTop();// - container.position().top;
 
 			container.animate({
 				scrollTop,
-			}, 300);
+			}, 300, () => setTimeout(() => { instance.scrollingToCategory = false; }, 200));
 		});
 
 		return false;
 	},
+	'scroll .emojis': _.throttle((event, instance) => {
+		if (instance.scrollingToCategory) {
+			return;
+		}
+
+		const container = instance.$(event.currentTarget);
+		const scrollTop = container.scrollTop() + 8;
+
+		const position = EmojiPicker.getCategoryPositions()
+			.filter((pos) => pos.top <= scrollTop)
+			.reverse();
+
+		if (!position) {
+			return;
+		}
+
+		const [{ el }] = position;
+
+		const category = el.id.replace('emoji-list-category-', '');
+
+		instance.currentCategory.set(category);
+	}, 300),
 	'click .change-tone > a'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
@@ -233,6 +257,8 @@ Template.emojiPicker.events({
 Template.emojiPicker.onCreated(function() {
 	this.tone = EmojiPicker.getTone();
 	const recent = EmojiPicker.getRecent();
+
+	this.scrollingToCategory = false;
 
 	this.currentCategory = new ReactiveVar('recent');
 	this.currentSearchTerm = new ReactiveVar('');

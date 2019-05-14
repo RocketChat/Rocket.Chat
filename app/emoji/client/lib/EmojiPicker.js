@@ -94,6 +94,9 @@ export const EmojiPicker = {
 		if (emojiInput) {
 			emojiInput.focus();
 		}
+
+		this.calculateCategoryPositions();
+
 		this.opened = true;
 	},
 	close() {
@@ -121,5 +124,17 @@ export const EmojiPicker = {
 	},
 	updateRecent(category) {
 		updateRecentEmoji(category);
+	},
+	calculateCategoryPositions() {
+		this.catPositions = Array.from(document.querySelectorAll('.emoji-list-category')).map((el) => {
+			const { top } = $(el).position();
+			return {
+				el,
+				top,
+			};
+		});
+	},
+	getCategoryPositions() {
+		return this.catPositions;
 	},
 };

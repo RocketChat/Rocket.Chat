@@ -33,6 +33,8 @@
 
 	margin-right: 22px;
 
+	padding-bottom: 0;
+
 	white-space: initial;
 
 	opacity: 1;
@@ -70,6 +72,8 @@
 	}
 
 	& .emojis {
+		position: relative;
+
 		overflow-y: auto;
 
 		flex: 1;
@@ -109,17 +113,13 @@
 }
 
 .emoji-footer {
-	position: relative;
-
-	top: 5px;
-
-	padding-top: 5px;
+	padding: 0.4rem;
 
 	text-align: center;
 
 	color: var(--rc-color-primary-light);
 
-	font-size: 13px;
+	font-size: 12px;
 
 	font-weight: 500;
 }

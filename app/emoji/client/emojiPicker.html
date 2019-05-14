@@ -37,7 +37,7 @@
 				{{{searchResults}}}
 			{{else}}
 				{{#each category in emojiCategories}}
-					<h4 id="emoji-list-category-{{category.key}}">{{_ category.i18n}}</h4>
+					<h4 class="emoji-list-category" id="emoji-list-category-{{category.key}}">{{_ category.i18n}}</h4>
 					<ul class="emoji-list emoji-category-{{category.key}}">
 						{{{emojiList category.key}}}
 					</ul>
