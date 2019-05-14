@@ -32,6 +32,10 @@ Template.thread.events({
 		const { atBottom } = this;
 		atBottom && this.sendToBottom();
 	},
+	'click .toggle-hidden'(e) {
+		const id = e.currentTarget.dataset.message;
+		document.querySelector(`#thread-${ id }`).classList.toggle('message--ignored');
+	},
 });
 
 Template.thread.helpers({
