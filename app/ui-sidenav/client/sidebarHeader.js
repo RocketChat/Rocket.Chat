@@ -331,11 +331,7 @@ Template.sidebarHeader.events({
 				};
 			});
 
-			let { statusText } = user;
-			if (!statusText) {
-				const translatedUserStatus = t(user.status);
-				statusText = translatedUserStatus[0].toUpperCase() + translatedUserStatus.substr(1);
-			}
+			const statusText = user.statusText || t(user.status);
 
 			userStatusList.push({
 				icon: 'edit',

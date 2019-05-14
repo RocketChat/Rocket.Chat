@@ -24,7 +24,7 @@ const isDiscussion = ({ _id }) => {
 	return !!(room && room.prid);
 };
 
-const	getUserStatus = (id) => {
+const getUserStatus = (id) => {
 	const roomData = Session.get(`roomData${ id }`);
 	return roomTypes.getUserStatus(roomData.t, id) || 'offline';
 };
