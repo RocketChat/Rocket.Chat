@@ -5,6 +5,13 @@ import { debounce } from 'underscore';
 import { Notifications } from '../../../app/notifications/client';
 import { APIClient } from '../../../app/utils/client';
 
+const STATUS_MAP = [
+	'offline',
+	'online',
+	'away',
+	'busy',
+];
+
 const saveUser = (user, force = false) => {
 	// do not update my own user, my user's status will come from a subscription
 	if (user._id === Meteor.userId()) {
@@ -62,8 +69,8 @@ Tracker.autorun(() => {
 });
 
 Meteor.startup(function() {
-	Notifications.onLogged('user-status', (user) => {
-		saveUser(user, true);
+	Notifications.onLogged('user-status', ([_id, username, status]) => {
+		saveUser({ _id, username, status: STATUS_MAP[status] }, true);
 	});
 
 	Notifications.onLogged('Users:NameChanged', ({ _id, username }) => {
