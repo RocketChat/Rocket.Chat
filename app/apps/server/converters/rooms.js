@@ -1,5 +1,6 @@
-import { Rooms, Users } from '../../../models';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+
+import { Rooms, Users } from '../../../models';
 
 export class AppRoomsConverter {
 	constructor(orch) {
@@ -85,7 +86,7 @@ export class AppRoomsConverter {
 				return RoomType.PRIVATE_GROUP;
 			case 'd':
 				return RoomType.DIRECT_MESSAGE;
-			case 'lc':
+			case 'l':
 				return RoomType.LIVE_CHAT;
 			default:
 				return typeChar;

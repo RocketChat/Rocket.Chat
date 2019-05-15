@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import s from 'underscore.string';
 
 Meteor.methods({
 	removeOAuthService(name) {
-
 		check(name, String);
 
 		if (!Meteor.userId()) {
@@ -25,6 +25,7 @@ Meteor.methods({
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-identity_path`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-authorize_path`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-scope`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-access_token_param`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-token_sent_via`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-identity_token_sent_via`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-id`);
@@ -34,6 +35,9 @@ Meteor.methods({
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-button_color`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-login_style`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-username_field`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-avatar_field`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-roles_claim`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_roles`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_users`);
 	},
 });

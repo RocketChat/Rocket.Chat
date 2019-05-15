@@ -49,8 +49,37 @@
 		display: none;
 	}
 
-	&--ignored {
-		& .body {
+	&&--ignored {
+		min-height: 25px;
+		padding: 2px 50px 2px 70px;
+
+		font-size: 12px;
+
+		& > .thumb {
+			top: 3px;
+
+			width: 20px;
+			height: 20px;
+			margin-left: 16px;
+
+			& .avatar {
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		& .user {
+			font-size: 0.75rem;
+			font-weight: initial;
+		}
+
+		& .message-body-wrapper .body,
+		& .message-oembed,
+		& .attachment,
+		& .message-discussion,
+		& .reactions,
+		& .edited,
+		& .role-tag {
 			display: none;
 		}
 
@@ -101,6 +130,58 @@
 	}
 }
 
+.message-body {
+	&--unstyled {
+		font: inherit;
+		line-height: initial;
+
+		& .emojione,
+		& .emoji {
+			display: inline-block !important;
+
+			width: 1em !important;
+			min-width: 1em;
+			height: 1em !important;
+			min-height: 1em;
+		}
+
+		& * {
+			display: inline !important;
+
+			padding: unset !important;
+
+			vertical-align: unset !important;
+
+			white-space: unset !important;
+
+			color: inherit !important;
+
+			border: unset !important;
+
+			background-color: unset !important;
+
+			font-family: inherit !important;
+
+			font-weight: unset !important;
+
+			line-height: unset !important;
+
+			&::before,
+			&::after {
+				content: unset !important;
+			}
+		}
+
+		& a {
+			pointer-events: none;
+		}
+	}
+}
+
+.message-oembed {
+	overflow: hidden;
+}
+
 .messages-box .rc-popover__list {
 	padding: 0;
 }
@@ -114,7 +195,7 @@
 	.message {
 		&:hover,
 		&.active {
-			background-color: rgba(0, 0, 0, 0.05);
+			background-color: rgba(15, 34, 0, 0.05);
 
 			& .message-actions {
 				display: flex;

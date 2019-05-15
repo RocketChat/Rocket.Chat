@@ -1,12 +1,22 @@
-import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
-import _ from 'underscore';
 import os from 'os';
+
+import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, LivechatVisitors } from '../../../models';
-import { settings } from '../../../settings';
-import { Info } from '../../../utils';
-import { Migrations } from '../../../migrations';
+
+import {
+	Sessions,
+	Settings,
+	Users,
+	Rooms,
+	Subscriptions,
+	Uploads,
+	Messages,
+	LivechatVisitors,
+} from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Info, getMongoInfo } from '../../../utils/server';
+import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
 
 const wizardFields = [
@@ -62,6 +72,7 @@ statistics.get = function _getStatistics() {
 	statistics.nonActiveUsers = statistics.totalUsers - statistics.activeUsers;
 	statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
 	statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
+	statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers;
 
 	// Room statistics
@@ -70,6 +81,8 @@ statistics.get = function _getStatistics() {
 	statistics.totalPrivateGroups = Rooms.findByType('p').count();
 	statistics.totalDirect = Rooms.findByType('d').count();
 	statistics.totalLivechat = Rooms.findByType('l').count();
+	statistics.totalDiscussions = Rooms.countDiscussions();
+	statistics.totalThreads = Messages.countThreads();
 
 	// livechat visitors
 	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -121,23 +134,17 @@ statistics.get = function _getStatistics() {
 	statistics.migration = Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && settings.get('Force_Disable_OpLog_For_Cache') !== true) {
-		statistics.oplogEnabled = true;
-	}
-
-	try {
-		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));
-		statistics.mongoVersion = version;
-	} catch (e) {
-		console.error('Error getting MongoDB version');
-	}
+	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+	statistics.oplogEnabled = oplogEnabled;
+	statistics.mongoVersion = mongoVersion;
+	statistics.mongoStorageEngine = mongoStorageEngine;
 
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
 	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
 	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+	statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
+	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
 	return statistics;
 };

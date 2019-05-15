@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+
 import { Base } from './_Base';
 
 export class Avatars extends Base {
@@ -54,9 +55,8 @@ export class Avatars extends Base {
 
 		if (this.model.direct && this.model.direct.update) {
 			return this.model.direct.update(filter, update);
-		} else {
-			return this.update(filter, update);
 		}
+		return this.update(filter, update);
 	}
 
 	findOneByName(name) {
@@ -72,9 +72,8 @@ export class Avatars extends Base {
 		};
 		if (this.model.direct && this.model.direct.update) {
 			return this.model.direct.update(filter, update);
-		} else {
-			return this.update(filter, update);
 		}
+		return this.update(filter, update);
 	}
 
 	// @TODO deprecated
@@ -99,17 +98,15 @@ export class Avatars extends Base {
 
 		if (this.model.direct && this.model.direct.update) {
 			return this.model.direct.update(filter, update);
-		} else {
-			return this.update(filter, update);
 		}
+		return this.update(filter, update);
 	}
 
 	deleteFile(fileId) {
 		if (this.model.direct && this.model.direct.remove) {
 			return this.model.direct.remove({ _id: fileId });
-		} else {
-			return this.remove({ _id: fileId });
 		}
+		return this.remove({ _id: fileId });
 	}
 }
 

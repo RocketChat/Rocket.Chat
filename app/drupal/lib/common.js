@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { settings } from '../../settings';
 import { CustomOAuth } from '../../custom-oauth';
 
@@ -19,6 +20,7 @@ const config = {
 		forLoggedInUser: ['services.drupal'],
 		forOtherUsers: ['services.drupal.name'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const Drupal = new CustomOAuth('drupal', config);
