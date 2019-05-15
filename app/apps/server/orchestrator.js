@@ -8,10 +8,12 @@ import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { settings } from '../../settings';
 import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
 
-export let Apps;
-
 class AppServerOrchestrator {
 	constructor() {
+		this._isInitialized = false;
+	}
+
+	initialize() {
 		if (Permissions) {
 			Permissions.createOrUpdate('manage-apps', ['admin']);
 		}
@@ -38,6 +40,8 @@ class AppServerOrchestrator {
 		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
+
+		this._isInitialized = true;
 	}
 
 	getModel() {
@@ -70,6 +74,10 @@ class AppServerOrchestrator {
 
 	getManager() {
 		return this._manager;
+	}
+
+	isInitialized() {
+		return this._isInitialized;
 	}
 
 	isEnabled() {
@@ -120,6 +128,8 @@ class AppServerOrchestrator {
 	}
 }
 
+export const Apps = new AppServerOrchestrator();
+
 settings.addGroup('General', function() {
 	this.section('Apps', function() {
 		this.add('Apps_Framework_enabled', true, {
@@ -141,7 +151,7 @@ settings.addGroup('General', function() {
 
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`
-	if (!Apps) {
+	if (!Apps.isInitialized()) {
 		return;
 	}
 
@@ -153,7 +163,7 @@ settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 });
 
 Meteor.startup(function _appServerOrchestrator() {
-	Apps = new AppServerOrchestrator();
+	Apps.initialize();
 
 	if (Apps.isEnabled()) {
 		Apps.load();

@@ -10,14 +10,21 @@ import { AdminBox } from '../../ui-utils';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 
-export let Apps;
-
 class AppClientOrchestrator {
 	constructor() {
+		this._isInitialized = false;
+	}
+
+	initialize() {
+		this._isInitialized = true;
 		this._isLoaded = false;
 		this._isEnabled = false;
 		this._loadingResolve;
 		this._refreshLoading();
+	}
+
+	isInitialized() {
+		return this._isInitialized;
 	}
 
 	isLoaded() {
@@ -37,7 +44,6 @@ class AppClientOrchestrator {
 	}
 
 	load(isEnabled) {
-		console.log('Loading:', isEnabled);
 		this._isEnabled = isEnabled;
 
 		// It was already loaded, so let's load it again
@@ -113,8 +119,10 @@ class AppClientOrchestrator {
 	}
 }
 
+export const Apps = new AppClientOrchestrator();
+
 Meteor.startup(function _rlClientOrch() {
-	Apps = new AppClientOrchestrator();
+	Apps.initialize();
 
 	CachedCollectionManager.onLogin(() => {
 		Meteor.call('apps/is-enabled', (error, isEnabled) => {
