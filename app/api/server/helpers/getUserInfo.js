@@ -2,40 +2,7 @@ import { settings } from '../../../settings';
 import { getUserPreference, getURL } from '../../../utils';
 import { API } from '../api';
 
-const getInfoFromUserObject = (user) => {
-	const {
-		_id,
-		name,
-		emails,
-		status,
-		statusConnection,
-		username,
-		utcOffset,
-		active,
-		language,
-		roles,
-		settings,
-		customFields,
-	} = user;
-	return {
-		_id,
-		name,
-		emails,
-		status,
-		statusConnection,
-		username,
-		utcOffset,
-		active,
-		language,
-		roles,
-		settings,
-		customFields,
-	};
-};
-
-
-API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
-	const me = getInfoFromUserObject(user);
+API.helperMethods.set('getUserInfo', function _getUserInfo(me) {
 	const isVerifiedEmail = () => {
 		if (me && me.emails && Array.isArray(me.emails)) {
 			return me.emails.find((email) => email.verified);
@@ -48,7 +15,7 @@ API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 
 		return allDefaultUserSettings.reduce((accumulator, setting) => {
 			const settingWithoutPrefix = setting.key.replace(defaultUserSettingPrefix, ' ').trim();
-			accumulator[settingWithoutPrefix] = getUserPreference(user, settingWithoutPrefix);
+			accumulator[settingWithoutPrefix] = getUserPreference(me, settingWithoutPrefix);
 			return accumulator;
 		}, {});
 	};
