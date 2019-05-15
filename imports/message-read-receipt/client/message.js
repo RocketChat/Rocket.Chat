@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
+
+import { settings } from '../../../app/settings';
 
 Template.message.helpers({
 	readReceipt() {
@@ -8,7 +9,7 @@ Template.message.helpers({
 		}
 
 		return {
-			readByEveryone: (!this.unread && 'read') || 'color-component-color',
+			readByEveryone: (!this.msg.unread && 'read') || 'color-component-color',
 		};
 	},
 });

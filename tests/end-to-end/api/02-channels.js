@@ -176,7 +176,7 @@ describe('[Channels]', function() {
 		});
 	});
 
-	it('/channels.invite', async(done) => {
+	it('/channels.invite', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.invite'))
@@ -257,7 +257,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.kick', async(done) => {
+	it('/channels.kick', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.kick'))
@@ -278,7 +278,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.invite', async(done) => {
+	it('/channels.invite', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.invite'))
@@ -533,7 +533,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.rename', async(done) => {
+	it('/channels.rename', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.rename'))
@@ -620,7 +620,7 @@ describe('[Channels]', function() {
 	describe('/channels.setCustomFields:', () => {
 		let cfchannel;
 		it('create channel with customFields', (done) => {
-			const customFields = { field0:'value0' };
+			const customFields = { field0: 'value0' };
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -646,8 +646,8 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('change customFields', async(done) => {
-			const customFields = { field9:'value9' };
+		it('change customFields', async (done) => {
+			const customFields = { field9: 'value9' };
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -704,8 +704,8 @@ describe('[Channels]', function() {
 					done();
 				});
 		});
-		it('set customFields with one nested field', async(done) => {
-			const customFields = { field1:'value1' };
+		it('set customFields with one nested field', async (done) => {
+			const customFields = { field1: 'value1' };
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -723,8 +723,8 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('set customFields with multiple nested fields', async(done) => {
-			const customFields = { field2:'value2', field3:'value3', field4:'value4' };
+		it('set customFields with multiple nested fields', async (done) => {
+			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
@@ -746,7 +746,7 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('set customFields to empty object', async(done) => {
+		it('set customFields to empty object', async (done) => {
 			const customFields = {};
 
 			request.post(api('channels.setCustomFields'))
@@ -768,7 +768,7 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('set customFields as a string -> should return 400', async(done) => {
+		it('set customFields as a string -> should return 400', async (done) => {
 			const customFields = '';
 
 			request.post(api('channels.setCustomFields'))
@@ -799,7 +799,7 @@ describe('[Channels]', function() {
 		});
 	});
 
-	it('/channels.setJoinCode', async(done) => {
+	it('/channels.setJoinCode', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.setJoinCode'))
@@ -820,7 +820,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.setReadOnly', async(done) => {
+	it('/channels.setReadOnly', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.setReadOnly'))
@@ -841,7 +841,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.setDefault', async(done) => {
+	it('/channels.setDefault', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.setDefault'))
@@ -862,7 +862,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.leave', async(done) => {
+	it('/channels.leave', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.leave'))
@@ -882,7 +882,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.setType', async(done) => {
+	it('/channels.setType', async (done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.setType'))
@@ -978,7 +978,7 @@ describe('[Channels]', function() {
 					done();
 				});
 		});
-		it('/channels.invite', async(done) => {
+		it('/channels.invite', async (done) => {
 			request.post(api('channels.invite'))
 				.set(credentials)
 				.send({
@@ -1048,7 +1048,7 @@ describe('[Channels]', function() {
 					done();
 				});
 		});
-		it('/channels.invite', async(done) => {
+		it('/channels.invite', async (done) => {
 			request.post(api('channels.invite'))
 				.set(credentials)
 				.send({

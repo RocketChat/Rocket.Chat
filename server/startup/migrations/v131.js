@@ -1,12 +1,12 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Users, Subscriptions, Rooms, Messages } from '../../../app/models';
 
 Migrations.add({
 	version: 131,
 	up() {
 		const userOptions = {
 			fields: {
-				_id : 1,
+				_id: 1,
 			},
 		};
 
@@ -14,16 +14,16 @@ Migrations.add({
 		const userIds = users.map((user) => user._id);
 
 		const subscriptionQuery = {
-			'u._id' : {
-				$nin : userIds,
+			'u._id': {
+				$nin: userIds,
 			},
 		};
 
 		const subscriptionOptions = {
-			fields : {
-				_id : 1,
-				rid : 1,
-				'u._id' : 1,
+			fields: {
+				_id: 1,
+				rid: 1,
+				'u._id': 1,
 			},
 		};
 

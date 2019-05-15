@@ -1,10 +1,9 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Settings, Permissions } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Settings, Permissions } from '../../../app/models';
 
 Migrations.add({
 	version: 93,
 	up() {
-
 		if (Settings) {
 			const setting = Settings.findOne({ _id: 'Accounts_AllowAnonymousAccess' });
 			if (setting && setting.value === true) {

@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Users } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { deleteUser } from 'meteor/rocketchat:lib';
+
+import { Users } from '../../app/models';
+import { hasPermission } from '../../app/authorization';
+import { deleteUser } from '../../app/lib';
 
 Meteor.methods({
 	deleteUser(userId) {

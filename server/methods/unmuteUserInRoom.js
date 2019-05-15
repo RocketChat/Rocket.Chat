@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
+
+import { hasPermission } from '../../app/authorization';
+import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	unmuteUserInRoom(data) {
@@ -40,17 +42,23 @@ Meteor.methods({
 			});
 		}
 
-		const unmutedUser = Users.findOneByUsername(data.username);
-
-		Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
+		const unmutedUser = Users.findOneByUsernameIgnoringCase(data.username);
 
 		const fromUser = Users.findOneById(fromId);
+
+		callbacks.run('beforeUnmuteUser', { unmutedUser, fromUser }, room);
+
+		Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
 
 		Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
 			},
+		});
+
+		Meteor.defer(function() {
+			callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
 		});
 
 		return true;

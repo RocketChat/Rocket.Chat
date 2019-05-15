@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users } from 'meteor/rocketchat:models';
+
+import { hasPermission } from '../../../../../app/authorization';
+import { Users } from '../../../../../app/models';
 
 Meteor.methods({
 	'personalAccessTokens:removeToken'({ tokenName }) {

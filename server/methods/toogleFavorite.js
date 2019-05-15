@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Subscriptions } from 'meteor/rocketchat:models';
+
+import { Subscriptions } from '../../app/models';
 
 Meteor.methods({
 	toggleFavorite(rid, f) {

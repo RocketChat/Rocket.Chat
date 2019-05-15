@@ -13,7 +13,6 @@ Package.registerBuildPlugin({
 		'plugin/build-livechat.js',
 	],
 	npmDependencies: {
-		shelljs: '0.8.1',
 		'uglify-js': '2.8.29',
 	},
 });
@@ -23,20 +22,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'webapp',
 		'autoupdate',
-		'rocketchat:utils',
-		'rocketchat:action-links',
-		'rocketchat:ui-utils',
-		'rocketchat:settings',
-		'rocketchat:callbacks',
-		'rocketchat:models',
-		'rocketchat:lib',
-		'rocketchat:authorization',
-		'rocketchat:logger',
-		'rocketchat:api',
-		'rocketchat:theme',
-		'rocketchat:streamer',
 		'konecty:user-presence',
-		'rocketchat:ui',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 		'templating',
@@ -44,7 +30,6 @@ Package.onUse(function(api) {
 		'check',
 		'mongo',
 		'ddp-rate-limiter',
-		'rocketchat:sms',
 		'tracker',
 		'less',
 	]);
@@ -53,8 +38,4 @@ Package.onUse(function(api) {
 	// DEPRECATED
 	api.addAssets('assets/rocket-livechat.js', 'client'); // this file is still added to not break currently installed livechat widgets
 	api.addAssets('assets/rocketchat-livechat.min.js', 'client');
-	api.addAssets('public/head.html', 'server');
-	api.addFiles('client/stylesheets/livechat.less', 'client');
-	api.mainModule('client/index.js', 'client');
-	api.mainModule('server/index.js', 'server');
 });

@@ -9,6 +9,7 @@ import { password } from '../../data/user';
 import { createRoom } from '../../data/rooms.helper.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createUser, login } from '../../data/users.helper';
 
 describe('[Chat]', function() {
 	this.retries(0);
@@ -16,7 +17,6 @@ describe('[Chat]', function() {
 	before((done) => getCredentials(done));
 
 	describe('/chat.postMessage', () => {
-
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
 			request.post(api('chat.postMessage'))
 				.set(credentials)
@@ -70,6 +70,119 @@ describe('[Chat]', function() {
 					expect(res.body).to.have.property('error');
 				})
 				.end(done);
+		});
+
+		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
+			it('attachment.message_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.author_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							author_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.title_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.action.url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							actions: [
+								{
+									type: 'button',
+									text: 'Text',
+									url: 'javascript:alert("xss")',
+								},
+							],
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
 		});
 
 		it('should throw an error when the properties (attachments.fields.title, attachments.fields.value) are with the wrong type', (done) => {
@@ -158,7 +271,6 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
 	});
 
 	describe('/chat.getMessage', () => {
@@ -179,7 +291,6 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.sendMessage', () => {
-
 		it('should throw an error when the required param \'rid\' is not sent', (done) => {
 			request.post(api('chat.sendMessage'))
 				.set(credentials)
@@ -198,6 +309,119 @@ describe('[Chat]', function() {
 					expect(res.body).to.have.property('error', 'The \'rid\' property on the message object is missing.');
 				})
 				.end(done);
+		});
+
+		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
+			it('attachment.message_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.author_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							author_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.title_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.action.url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							actions: [
+								{
+									type: 'button',
+									text: 'Text',
+									url: 'javascript:alert("xss")',
+								},
+							],
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
 		});
 
 		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
@@ -324,7 +548,6 @@ describe('[Chat]', function() {
 					.end(done);
 			});
 		});
-
 	});
 
 	describe('/chat.update', () => {
@@ -896,6 +1119,674 @@ describe('[Chat]', function() {
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
+			});
+		});
+	});
+
+	describe('Threads', () => {
+		after((done) => {
+			updateSetting('API_Upper_Count_Limit', 100)
+				.then(() => updatePermission('view-c-room', ['admin', 'user', 'bot']))
+				.then(done);
+		});
+
+		describe('[/chat.getThreadsList]', () => {
+			let testChannel;
+			let threadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
+					.end((err, channel) => {
+						testChannel = channel.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: message.body.message._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.get(api('chat.getThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updateSetting('Threads_enabled', true).then(() => {
+							updatePermission('view-c-room', []).then(() => {
+								request.get(api('chat.getThreadsList'))
+									.set(userCredentials)
+									.query({
+										rid: testChannel._id,
+									})
+									.expect('Content-Type', 'application/json')
+									.expect(400)
+									.expect((res) => {
+										expect(res.body).to.have.property('success', false);
+										expect(res.body).to.have.property('errorType', 'error-not-allowed');
+										expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+									})
+									.end(done);
+							});
+						});
+					});
+				});
+			});
+
+			it('should return the room\'s thread list', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.get(api('chat.getThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('threads').and.to.be.an('array');
+							expect(res.body).to.have.property('total');
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('count');
+							expect(res.body.threads).to.have.lengthOf(1);
+							expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		describe('[/chat.syncThreadsList]', () => {
+			let testChannel;
+			let threadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `.threads.sync.${ Date.now() }` })
+					.end((err, channel) => {
+						testChannel = channel.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: message.body.message._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.get(api('chat.getThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the required param "rid" is missing', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadsList'))
+						.set(credentials)
+						.query({
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-room-id-param-not-provided');
+							expect(res.body).to.have.property('error', 'The required \"rid\" query param is missing. [error-room-id-param-not-provided]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the required param "updatedSince" is missing', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
+							expect(res.body).to.have.property('error', 'The required param \"updatedSince\" is missing. [error-updatedSince-param-invalid]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the param "updatedSince" is an invalid date', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+							updatedSince: 'invalid-date',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
+							expect(res.body).to.have.property('error', 'The \"updatedSince\" query parameter must be a valid date. [error-updatedSince-param-invalid]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updatePermission('view-c-room', []).then(() => {
+							request.get(api('chat.syncThreadsList'))
+								.set(userCredentials)
+								.query({
+									rid: testChannel._id,
+									updatedSince: new Date().toISOString(),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(400)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('errorType', 'error-not-allowed');
+									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+
+			it('should return the room\'s thread synced list', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.get(api('chat.syncThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+							updatedSince: new Date('2019-04-01').toISOString(),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('threads').and.to.be.an('object');
+							expect(res.body.threads).to.have.property('update').and.to.be.an('array');
+							expect(res.body.threads).to.have.property('remove').and.to.be.an('array');
+							expect(res.body.threads.update).to.have.lengthOf(1);
+							expect(res.body.threads.remove).to.have.lengthOf(0);
+							expect(res.body.threads.update[0]._id).to.be.equal(threadMessage.tmid);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		describe('[/chat.getThreadMessages]', () => {
+			let testChannel;
+			let threadMessage;
+			let createdThreadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
+					.end((err, res) => {
+						testChannel = res.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							createdThreadMessage = message.body.message;
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: createdThreadMessage._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error for chat.getThreadMessages when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.get(api('chat.getThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updateSetting('Threads_enabled', true).then(() => {
+							updatePermission('view-c-room', []).then(() => {
+								request.get(api('chat.getThreadMessages'))
+									.set(userCredentials)
+									.query({
+										tmid: threadMessage.tmid,
+									})
+									.expect('Content-Type', 'application/json')
+									.expect(400)
+									.expect((res) => {
+										expect(res.body).to.have.property('success', false);
+										expect(res.body).to.have.property('errorType', 'error-not-allowed');
+										expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+									})
+									.end(done);
+							});
+						});
+					});
+				});
+			});
+
+			it('should return the thread\'s message list', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.get(api('chat.getThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(res.body).to.have.property('total').and.to.be.equal(1);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('count');
+							expect(res.body.messages).to.have.lengthOf(1);
+							expect(res.body.messages[0].tmid).to.be.equal(createdThreadMessage._id);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		describe('[/chat.syncThreadMessages]', () => {
+			let testChannel;
+			let threadMessage;
+			let createdThreadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `message.threads.${ Date.now() }` })
+					.end((err, res) => {
+						testChannel = res.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							createdThreadMessage = message.body.message;
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: createdThreadMessage._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error for chat.syncThreadMessages when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the required param "tmid" is missing', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-invalid-params');
+							expect(res.body).to.have.property('error', 'The required \"tmid\" query param is missing. [error-invalid-params]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the required param "updatedSince" is missing', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
+							expect(res.body).to.have.property('error', 'The required param \"updatedSince\" is missing. [error-updatedSince-param-invalid]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the param "updatedSince" is an invalid date', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+							updatedSince: 'invalid-date',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
+							expect(res.body).to.have.property('error', 'The \"updatedSince\" query parameter must be a valid date. [error-updatedSince-param-invalid]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updatePermission('view-c-room', []).then(() => {
+							request.get(api('chat.syncThreadMessages'))
+								.set(userCredentials)
+								.query({
+									tmid: threadMessage.tmid,
+									updatedSince: new Date().toISOString(),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(400)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('errorType', 'error-not-allowed');
+									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+
+			it('should return the thread\'s message list', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+							updatedSince: new Date('2019-04-01').toISOString(),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('object');
+							expect(res.body.messages).to.have.property('update').and.to.be.an('array');
+							expect(res.body.messages).to.have.property('remove').and.to.be.an('array');
+							expect(res.body.messages.update).to.have.lengthOf(1);
+							expect(res.body.messages.remove).to.have.lengthOf(0);
+							expect(res.body.messages.update[0].id).to.be.equal(createdThreadMessage.tmid);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		describe('[/chat.followMessage]', () => {
+			let testChannel;
+			let threadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `channel.test.threads.follow.${ Date.now() }` })
+					.end((err, res) => {
+						testChannel = res.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: message.body.message._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error for chat.followMessage when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.post(api('chat.followMessage'))
+						.set(credentials)
+						.send({
+							mid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the message does not exist', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.post(api('chat.followMessage'))
+						.set(credentials)
+						.send({
+							mid: 'invalid-message-id',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-invalid-message');
+							expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updatePermission('view-c-room', []).then(() => {
+							request.post(api('chat.followMessage'))
+								.set(userCredentials)
+								.send({
+									mid: threadMessage.tmid,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(400)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('errorType', 'error-not-allowed');
+									expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+
+			it('should return success: true when it execute successfully', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.post(api('chat.followMessage'))
+						.set(credentials)
+						.send({
+							mid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		describe('[/chat.unfollowMessage]', () => {
+			let testChannel;
+			let threadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `channel.test.threads.unfollow.${ Date.now() }` })
+					.end((err, res) => {
+						testChannel = res.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: message.body.message._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error for chat.unfollowMessage when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.post(api('chat.unfollowMessage'))
+						.set(credentials)
+						.send({
+							mid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the message does not exist', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.post(api('chat.unfollowMessage'))
+						.set(credentials)
+						.send({
+							mid: 'invalid-message-id',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-invalid-message');
+							expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updatePermission('view-c-room', []).then(() => {
+							request.post(api('chat.unfollowMessage'))
+								.set(userCredentials)
+								.send({
+									mid: threadMessage.tmid,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(400)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('errorType', 'error-not-allowed');
+									expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+
+			it('should return success: true when it execute successfully', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.post(api('chat.unfollowMessage'))
+						.set(credentials)
+						.send({
+							mid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 	});
