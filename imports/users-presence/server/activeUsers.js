@@ -2,6 +2,7 @@ import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
 import { Notifications } from '../../../app/notifications/server';
 
+// mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
 const STATUS_MAP = {
 	offline: 0,
 	online: 1,
@@ -13,8 +14,6 @@ UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => 
 	const {
 		_id,
 		username,
-		// name,
-		// utcOffset,
 	} = user;
 
 	// since this callback can be called by only one instance in the cluster

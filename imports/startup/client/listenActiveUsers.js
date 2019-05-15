@@ -5,6 +5,7 @@ import { debounce } from 'underscore';
 import { Notifications } from '../../../app/notifications/client';
 import { APIClient } from '../../../app/utils/client';
 
+// mirror of object in /imports/users-presence/server/activeUsers.js - keep updated
 const STATUS_MAP = [
 	'offline',
 	'online',
