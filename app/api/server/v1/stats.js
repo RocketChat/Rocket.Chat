@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { Statistics } from '../../../models';
 import { API } from '../api';
@@ -31,7 +32,7 @@ API.v1.addRoute('statistics.list', { authRequired: true }, {
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		const statistics = Statistics.find(query, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,

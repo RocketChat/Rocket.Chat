@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+
 import { modal } from '../../../../ui-utils';
 
 Template.iframeModal.onCreated(function() {

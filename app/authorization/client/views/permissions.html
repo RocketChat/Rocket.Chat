@@ -8,26 +8,41 @@
 			{{/header}}
 
 			<div class="content">
-				<table border="1" class="permission-grid secondary-background-color">
+				<table class="permission-grid secondary-background-color">
+
 					<thead class="content-background-color">
+
 						<tr>
-							<th class="border-component-color">&nbsp;</th>
+							<th class="permission-name border-component-color"></th>
 							{{#each role}}
-							<th class="border-component-color" title="{{description}}">
-								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
-									{{_id}}
-									<i class="icon-edit"></i>
-								</a>
-							</th>
+								<th class="edit-icon role-name border-component-color" title="{{description}}">
+									<a href="{{pathFor "admin-permissions-edit" name=_id}}">
+										<p class = "rotator">
+										{{_id}}
+										</p>
+									</a>
+								</th>
+							{{/each}}
+						</tr>
+						<tr>
+							<th class="permission-name border-component-color"></th>
+							{{#each role}}
+								<th class="edit-icon role-name-edit-icon border-component-color" title="{{description}}">
+									<a href="{{pathFor "admin-permissions-edit" name=_id}}">
+										<p>
+											<i class="icon-edit"></i>
+										</p>
+									</a>
+								</th>
 							{{/each}}
 						</tr>
 					</thead>
 					<tbody>
 						{{#each permission}}
 						<tr class="admin-table-row">
-							<td class="permission-name border-component-color" title="{{_ permissionDescription}}">{{_ permissionName}}<br>[{{_id}}]</td>
+							<td class="permission-name border-component-color" title="{{_ permissionDescription}}">{{_ permissionName}}<br><span class = "id-styler">[ID: {{_id}}]</span></td>
 							{{#each role}}
-							<td class="border-component-color">
+							<td class="permission-checkbox border-component-color">
 								<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">
 							</td>
 							{{/each}}
@@ -35,6 +50,7 @@
 						{{/each}}
 					</tbody>
 				</table>
+
 			</div>
 		{{else}}
 			<div class="content">

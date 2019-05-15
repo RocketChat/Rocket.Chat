@@ -1,9 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { settings } from '../../../settings';
 import { handleError } from '../../../utils';
-import toastr from 'toastr';
+import { SideNav } from '../../../ui-utils/client';
 
 Template.mailer.helpers({
 	fromEmail() {
@@ -34,4 +37,11 @@ Template.mailer.events({
 			return toastr.success(TAPi18n.__('The_emails_are_being_sent'));
 		});
 	},
+});
+
+Template.mailer.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

@@ -1,6 +1,6 @@
+import { FederatedResource } from './FederatedResource';
 import { Users } from '../../../models';
 
-import { FederatedResource } from './FederatedResource';
 
 export class FederatedUser extends FederatedResource {
 	constructor(localPeerIdentifier, user) {

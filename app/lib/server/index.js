@@ -1,6 +1,3 @@
-export { hostname } from '../lib/startup/settingsOnLoadSiteUrl';
-export * from './lib';
-export * from './functions';
 import './startup/email';
 import './startup/oAuthServicesUpdate';
 import './startup/rateLimiter';
@@ -44,6 +41,7 @@ import './methods/getRoomJoinCode';
 import './methods/getRoomRoles';
 import './methods/getServerInfo';
 import './methods/getSingleMessage';
+import './methods/getMessages';
 import './methods/getSlashCommandPreviews';
 import './methods/getUsernameSuggestion';
 import './methods/getUserRoles';
@@ -68,3 +66,6 @@ import './methods/unarchiveRoom';
 import './methods/unblockUser';
 import './methods/updateMessage';
 import './publications/settings';
+
+export * from './lib';
+export * from './functions';

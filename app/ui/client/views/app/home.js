@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../../settings';
 
 Template.home.helpers({

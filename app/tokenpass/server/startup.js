@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+
+import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
+import { Tokenpass } from './Tokenpass';
 import { settings } from '../../settings';
 import { addRoomAccessValidator } from '../../authorization';
 import { Users } from '../../models';
 import { callbacks } from '../../callbacks';
-import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
-import { Tokenpass } from './Tokenpass';
 
 settings.addGroup('OAuth', function() {
 	this.section('Tokenpass', function() {

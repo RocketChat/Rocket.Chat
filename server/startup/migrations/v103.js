@@ -76,7 +76,7 @@ Migrations.add({
 					color.value = newvariables[color.value.replace('@', '')];
 				}
 				const id = `theme-color-${ key }`;
-				Settings.update({ _id: id }, { $set: { value : color.value, editor: /^#.+/.test(color.value) ? 'color' : 'expression' } });
+				Settings.update({ _id: id }, { $set: { value: color.value, editor: /^#.+/.test(color.value) ? 'color' : 'expression' } });
 				if (key === 'rc-color-primary') {
 					Settings.update({ _id: 'theme-color-rc-color-primary-darkest' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, -16) } });
 					Settings.update({ _id: 'theme-color-rc-color-primary-dark' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, 18) } });

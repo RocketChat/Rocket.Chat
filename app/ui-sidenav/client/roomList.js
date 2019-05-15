@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '../../callbacks';
 import { Template } from 'meteor/templating';
+
+import { callbacks } from '../../callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
@@ -25,6 +26,7 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarShowUnread': 1,
 				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
+				messageViewMode: 1,
 			},
 		});
 

@@ -1,17 +1,16 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Messages, Rooms } from '../../../app/models/server';
 
 Migrations.add({
 	version: 140,
 	up() {
-		const setting = Settings.findOne({ _id: 'Livechat_secret_token' });
-
-		if (setting && setting.value === false) {
-			Settings.update({ _id: 'Livechat_secret_token' }, {
-				$set: {
-					value: '',
-				},
-			});
-		}
+		Messages.find({ drid: { $exists: 1 } }, { fields: { drid: 1 } }).forEach(({ _id, drid }) => Rooms.findOne({ _id: drid }) || Messages.update({ _id }, {
+			$unset: {
+				drid: 1,
+				dcount: 1,
+				dlm: 1,
+				t: 1,
+			},
+		}));
 	},
 });

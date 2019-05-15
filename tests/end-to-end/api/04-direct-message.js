@@ -7,8 +7,8 @@ import {
 	apiUsername,
 	apiEmail,
 } from '../../data/api-data.js';
-import { password } from '../../data/user.js';
-import { adminUsername } from '../../data/user';
+import { password, adminUsername } from '../../data/user.js';
+
 
 describe('[Direct Messages]', function() {
 	this.retries(0);

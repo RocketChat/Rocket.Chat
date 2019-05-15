@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
@@ -82,7 +81,7 @@ Template.CreateDiscussion.helpers({
 			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
 		};
 	},
-	channelName() {
+	nameSuggestion() {
 		return Template.instance().discussionName.get();
 	},
 });
@@ -126,7 +125,7 @@ Template.CreateDiscussion.onRendered(function() {
 	this.find(this.data.rid ? '#discussion_name' : '#parentChannel').focus();
 });
 
-const suggestName = (name, msg) => [name, msg].filter((e) => e).join(' - ').substr(0, 140);
+const suggestName = (msg = '') => msg.substr(0, 140);
 
 Template.CreateDiscussion.onCreated(function() {
 	const { rid, message: msg } = this.data;
@@ -141,7 +140,7 @@ Template.CreateDiscussion.onCreated(function() {
 	}
 
 	const roomName = room && roomTypes.getRoomName(room.t, room);
-	this.discussionName = new ReactiveVar(suggestName(roomName, msg && msg.msg));
+	this.discussionName = new ReactiveVar(suggestName(msg && msg.msg));
 
 	this.pmid = msg && msg._id;
 
@@ -176,7 +175,6 @@ Template.CreateDiscussion.onCreated(function() {
 
 	this.selectedUsers = new ReactiveVar([]);
 	this.onSelectUser = ({ item: user }) => {
-
 		if (user.username === (msg && msg.u.username)) {
 			return;
 		}
@@ -189,14 +187,14 @@ Template.CreateDiscussion.onCreated(function() {
 			this.selectedUsers.set([...users, user]);
 		}
 	};
-	this.onClickTagUser = (({ username }) => {
+	this.onClickTagUser = ({ username }) => {
 		this.selectedUsers.set(this.selectedUsers.get().filter((user) => user.username !== username));
-	});
-	this.deleteLastItemUser = (() => {
+	};
+	this.deleteLastItemUser = () => {
 		const arr = this.selectedUsers.get();
 		arr.pop();
 		this.selectedUsers.set(arr);
-	});
+	};
 
 	// callback to allow setting a parent Channel or e. g. tracking the event using Piwik or GA
 	const { parentChannel, reply } = callbacks.run('openDiscussionCreationScreen') || {};
@@ -252,7 +250,6 @@ Template.SearchCreateDiscussion.events({
 			const { deleteLastItem } = t;
 			return deleteLastItem && deleteLastItem();
 		}
-
 	},
 	'keyup input'(e, t) {
 		t.ac.onKeyUp(e);
@@ -269,7 +266,6 @@ Template.SearchCreateDiscussion.events({
 	},
 });
 Template.SearchCreateDiscussion.onRendered(function() {
-
 	const { name } = this.data;
 
 	this.ac.element = this.firstNode.querySelector(`[name=${ name }]`);

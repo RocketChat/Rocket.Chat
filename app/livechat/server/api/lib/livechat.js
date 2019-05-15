@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import _ from 'underscore';
+
+import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { settings as rcSettings } from '../../../../settings';
 
@@ -64,7 +65,7 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
-export function getRoom(guest, rid, roomInfo) {
+export function getRoom({ guest, rid, roomInfo, agent }) {
 	const token = guest && guest.token;
 
 	const message = {
@@ -75,18 +76,23 @@ export function getRoom(guest, rid, roomInfo) {
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo);
+	return Livechat.getRoom(guest, message, roomInfo, agent);
 }
 
 export function findAgent(agentId) {
 	return Users.getAgentInfo(agentId);
 }
 
+export function normalizeHttpHeaderData(headers = {}) {
+	const httpHeaders = Object.assign({}, headers);
+	return { httpHeaders };
+}
 export function settings() {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = findTriggers();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
+	const emojis = Meteor.call('listEmojiCustom');
 
 	return {
 		enabled: initSettings.Livechat_enabled,
@@ -131,8 +137,7 @@ export function settings() {
 		departments,
 		resources: {
 			sound,
+			emojis,
 		},
 	};
 }
-
-

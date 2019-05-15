@@ -8,7 +8,6 @@ import { canAccessRoom } from '../../../authorization/server';
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:updateTimeout' });
 		}
@@ -29,15 +28,15 @@ Meteor.methods({
 
 		if (!jitsiTimeout || currentTime > jitsiTimeout) {
 			const message = Messages.createWithTypeRoomIdMessageAndUser('jitsi_call_started', rid, '', Meteor.user(), {
-				actionLinks : [
+				actionLinks: [
 					{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join'), method_id: 'joinJitsiCall', params: '' },
 				],
 			});
 			message.msg = TAPi18n.__('Started_a_video_call');
 			message.mentions = [
 				{
-					_id:'here',
-					username:'here',
+					_id: 'here',
+					username: 'here',
 				},
 			];
 			callbacks.run('afterSaveMessage', message, { ...room, jitsiTimeout: currentTime + CONSTANTS.TIMEOUT });

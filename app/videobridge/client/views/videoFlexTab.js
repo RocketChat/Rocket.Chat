@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../settings';
 import { modal, TabBar } from '../../../ui-utils';
 import { t } from '../../../utils';
@@ -61,7 +62,11 @@ Template.videoFlexTab.onRendered(function() {
 			if (jitsiTimeout && (new Date() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
 				return;
 			}
-			return Meteor.status().connected && Meteor.call('jitsi:updateTimeout', rid);
+			if (Meteor.status().connected) {
+				return Meteor.call('jitsi:updateTimeout', rid);
+			}
+			closePanel();
+			return this.stop();
 		};
 		update();
 		this.intervalHandler = Meteor.setInterval(update, CONSTANTS.HEARTBEAT);

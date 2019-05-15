@@ -86,6 +86,7 @@ import '../app/slashcommands-unarchiveroom/server';
 import '../app/smarsh-connector';
 import '../app/spotify/server';
 import '../app/theme/server';
+import '../app/threads/server';
 import '../app/tokenpass/server';
 import '../app/ui-admin/server';
 import '../app/ui-master/server';
