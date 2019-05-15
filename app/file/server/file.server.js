@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
-import Grid from 'gridfs-stream';
 import stream from 'stream';
 import fs from 'fs';
 import path from 'path';
+
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
+import Grid from 'gridfs-stream';
 import mkdirp from 'mkdirp';
 
 // Fix problem with usernames being converted to object id
@@ -133,8 +134,6 @@ RocketChatFile.GridFS = class {
 		}
 		return this.remove(fileName);
 	}
-
-
 };
 
 RocketChatFile.FileSystem = class {

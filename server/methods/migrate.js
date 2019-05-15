@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { Migrations } from '../../app/migrations';
 import { hasPermission } from '../../app/authorization';
 

@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
 	settings.addGroup('Video Conference', function() {
-
 		this.section('BigBlueButton', function() {
-
 			this.add('bigbluebutton_Enabled', false, {
 				type: 'boolean',
 				i18nLabel: 'Enabled',
@@ -60,7 +59,6 @@ Meteor.startup(function() {
 				},
 				public: true,
 			});
-
 		});
 
 		this.section('Jitsi', function() {

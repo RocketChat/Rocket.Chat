@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { modal } from '../../../../../ui-utils';
-import { t, handleError } from '../../../../../utils';
-import { LivechatIntegration } from '../../../collections/LivechatIntegration';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
+import { modal } from '../../../../../ui-utils';
+import { t, handleError } from '../../../../../utils';
+import { LivechatIntegration } from '../../../collections/LivechatIntegration';
 import './livechatIntegrationWebhook.html';
 
 Template.livechatIntegrationWebhook.helpers({

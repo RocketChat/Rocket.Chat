@@ -1,6 +1,10 @@
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
+import _ from 'underscore';
+
+import LDAP from './ldap';
 import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
@@ -8,11 +12,9 @@ import { Users, Roles, Rooms, Subscriptions } from '../../models';
 import { Logger } from '../../logger';
 import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom } from '../../lib/server/functions';
 import _ from 'underscore';
-import LDAP from './ldap';
 
 const logger = new Logger('LDAPSync', {});
 let ldap = new LDAP();
@@ -165,11 +167,14 @@ export function getDataToSyncUserData(ldapUser, user) {
 						// TODO: Find a better solution.
 						const dKeys = userField.split('.');
 						const lastKey = _.last(dKeys);
-						_.reduce(dKeys, (obj, currKey) => (
-							(currKey === lastKey)
-								? obj[currKey] = tmpLdapField
-								: obj[currKey] = obj[currKey] || {}
-						), userData);
+						_.reduce(dKeys, (obj, currKey) => {
+							if (currKey === lastKey) {
+								obj[currKey] = tmpLdapField;
+							} else {
+								obj[currKey] = obj[currKey];
+							}
+							return obj[currKey];
+						}, userData);
 						logger.debug(`user.${ userField } changed to: ${ tmpLdapField }`);
 					}
 			}

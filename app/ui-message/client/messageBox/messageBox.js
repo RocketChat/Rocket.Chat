@@ -4,6 +4,13 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import moment from 'moment';
+
+import { setupAutogrow } from './messageBoxAutogrow';
+import {
+	formattingButtons,
+	applyFormatting,
+} from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
@@ -23,12 +30,6 @@ import {
 	roomTypes,
 	getUserPreference,
 } from '../../../utils';
-import moment from 'moment';
-import { setupAutogrow } from './messageBoxAutogrow';
-import {
-	formattingButtons,
-	applyFormatting,
-} from './messageBoxFormatting';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
@@ -70,7 +71,8 @@ Template.messageBox.onCreated(function() {
 			const before = input.value.substring(0, input.selectionStart);
 			const after = input.value.substring(input.selectionEnd, input.value.length);
 			input.value = `${ before }\n${ after }`;
-			input.selectionStart = input.selectionEnd = newPosition;
+			input.selectionStart = newPosition;
+			input.selectionEnd = newPosition;
 		} else {
 			input.value += '\n';
 		}
@@ -116,8 +118,8 @@ Template.messageBox.onRendered(function() {
 			});
 		}
 
-		const isBlocked = (room && room.t === 'd' && subscription && subscription.blocked);
-		const isBlocker = (room && room.t === 'd' && subscription && subscription.blocker);
+		const isBlocked = room && room.t === 'd' && subscription && subscription.blocked;
+		const isBlocker = room && room.t === 'd' && subscription && subscription.blocker;
 		const isBlockedOrBlocker = isBlocked || isBlocker;
 
 		const mustJoinWithCode = !subscription && room.joinCodeRequired;
@@ -273,8 +275,8 @@ const handleSubmit = (event, instance) => {
 	}
 
 	const sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
-	const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' ||
-		(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
+	const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal'
+		|| (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
 	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
 
@@ -358,7 +360,7 @@ Template.messageBox.events({
 		}
 
 		const files = [...event.originalEvent.clipboardData.items]
-			.filter((item) => (item.kind === 'file' && item.type.indexOf('image/') !== -1))
+			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
 			.map((item) => ({
 				file: item.getAsFile(),
 				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
@@ -368,7 +370,6 @@ Template.messageBox.events({
 		if (files.length) {
 			event.preventDefault();
 			fileUpload(files, input, { rid, tmid });
-			return;
 		}
 	},
 	'input .js-input-message'(event, instance) {
