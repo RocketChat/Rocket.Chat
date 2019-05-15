@@ -25,7 +25,7 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
@@ -50,7 +50,7 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
@@ -73,7 +73,7 @@ Meteor.startup(function() {
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
@@ -95,7 +95,7 @@ Meteor.startup(function() {
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
