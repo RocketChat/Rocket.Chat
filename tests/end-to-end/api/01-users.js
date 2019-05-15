@@ -259,6 +259,39 @@ describe('[Users]', function() {
 		});
 	});
 
+	describe('[/users.active]', () => {
+		describe('Not logged in:', () => {
+			it('should return 401 unauthorized', (done) => {
+				request.get(api('users.active'))
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('message');
+					})
+					.end(done);
+			});
+		});
+		describe('Logged in:', () => {
+			it('should return online users list', (done) => {
+				request.get(api('users.active'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
+							'_id',
+							'username',
+							'name',
+							'status',
+							'utcOffset',
+						);
+					})
+					.end(done);
+			});
+		});
+	});
+
 	describe('[/users.list]', () => {
 		it('should query all users in the system', (done) => {
 			request.get(api('users.list'))
