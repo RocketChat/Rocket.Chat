@@ -726,8 +726,7 @@ export const Livechat = {
 
 	removeGuest(_id) {
 		check(_id, String);
-
-		const guest = LivechatVisitors.findById(_id);
+		const guest = LivechatVisitors.findOneById(_id);
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
 		}
@@ -737,12 +736,13 @@ export const Livechat = {
 	},
 
 	cleanGuestHistory(_id) {
-		const guest = LivechatVisitors.findById(_id);
+		const guest = LivechatVisitors.findOneById(_id);
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
 		}
 
 		const { token } = guest;
+		check(token, String);
 
 		Rooms.findByVisitorToken(token).forEach((room) => {
 			Messages.removeFilesByRoomId(room._id);
