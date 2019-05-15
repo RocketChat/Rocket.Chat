@@ -3138,6 +3138,7 @@
   "view-other-user-channels": "View Other User Channels",
   "view-other-user-channels_description": "Permission to view channels owned by other users",
   "view-outside-room": "View Outside Room",
+  "view-outside-room_description": "Permission to view users outside the current room",
   "view-p-room": "View Private Room",
   "view-p-room_description": "Permission to view private channels",
   "view-privileged-setting": "View Privileged Setting",

@@ -603,6 +603,7 @@ Template.room.events({
 			subscription: subscription.get(),
 			msg,
 			rid,
+			jump: tmid && tmid !== _id && _id,
 			mid: tmid || _id,
 			label: 'Threads',
 			icon: 'thread',
