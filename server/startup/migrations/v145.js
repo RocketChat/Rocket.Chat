@@ -1,23 +1,17 @@
-import { Migrations } from '../../../app/migrations/server';
-import { Rooms } from '../../../app/models';
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
 
 Migrations.add({
 	version: 145,
 	up() {
-		Rooms.update({
-			ro: true,
-			muted: {
-				$exists: true,
-				$not: {
-					$size: 0,
+		const setting = Settings.findOne({ _id: 'Livechat_secret_token' });
+
+		if (setting && setting.value === false) {
+			Settings.update({ _id: 'Livechat_secret_token' }, {
+				$set: {
+					value: '',
 				},
-			},
-		}, {
-			$set: {
-				muted: [],
-			},
-		}, {
-			multi: true,
-		});
+			});
+		}
 	},
 });
