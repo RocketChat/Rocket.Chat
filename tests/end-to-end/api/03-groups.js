@@ -362,7 +362,6 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-
 	});
 
 	describe('/groups.setTopic', () => {
