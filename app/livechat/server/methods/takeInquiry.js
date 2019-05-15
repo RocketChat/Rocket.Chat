@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Users, Rooms, Subscriptions, Messages } from '../../../models';
+import { Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from '../lib/Livechat';
 
@@ -25,6 +25,12 @@ Meteor.methods({
 			ts: new Date(),
 		};
 
+		const {v: { _id: visitorId } = {} } = inquiry;
+		const guest = LivechatVisitors.findOneById(visitorId);
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:takeInquiry' });
+		}
+
 		// add subscription
 		const subscriptionData = {
 			rid: inquiry.rid,
@@ -42,6 +48,12 @@ Meteor.methods({
 			desktopNotifications: 'all',
 			mobilePushNotifications: 'all',
 			emailNotifications: 'all',
+			v: {
+				_id: guest._id,
+				username: guest.username,
+				token: guest.token,
+				status: guest.status || 'online',
+			},
 		};
 
 		Subscriptions.insert(subscriptionData);
