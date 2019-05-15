@@ -80,15 +80,21 @@ Template.sideNav.events({
 	},
 });
 
+const redirectToDefaultChannelIfNeeded = () => {
+	const currentRouteState = FlowRouter.current();
+	const needToBeRedirect = ['/', '/home'];
+	const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
+	const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+	if (room && room._id && needToBeRedirect.includes(currentRouteState.path)) {
+		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
+	}
+};
+
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
 	lazyloadtick();
-	const first_channel_login = settings.get('First_Channel_After_Login');
-	const room = roomTypes.findRoom('c', first_channel_login, Meteor.userId());
-	if (room !== undefined && room._id !== '') {
-		FlowRouter.go(`/channel/${ first_channel_login }`);
-	}
+	redirectToDefaultChannelIfNeeded();
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
