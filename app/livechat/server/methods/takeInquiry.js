@@ -25,7 +25,7 @@ Meteor.methods({
 			ts: new Date(),
 		};
 
-		const {v: { _id: visitorId } = {} } = inquiry;
+		const { v: { _id: visitorId } = {} } = inquiry;
 		const guest = LivechatVisitors.findOneById(visitorId);
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:takeInquiry' });
