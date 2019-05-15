@@ -43,7 +43,6 @@ describe('[Channels]', function() {
 				channel._id = res.body.channel._id;
 			})
 			.end(done);
-
 	});
 
 	describe('[/channels.info]', () => {
