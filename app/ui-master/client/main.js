@@ -17,8 +17,17 @@ import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../mo
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../tooltip';
+import { callbacks } from '../../callbacks/client';
+
+function runLogoutScript() {
+	const script = settings.get('Custom_Script_Logged_Out') || '';
+	if (script.trim()) {
+		eval(script);//eslint-disable-line
+	}
+}
 
 settings.collection.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
+callbacks.add('afterLogoutCleanUp', () => runLogoutScript(), callbacks.priority.LOW, 'run-logout-script-after-logout-cleanup');
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -194,12 +203,6 @@ Template.main.helpers({
 
 		const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
 		return mandatoryRole !== undefined;
-	},
-	CustomScriptLoggedOut() {
-		const script = settings.get('Custom_Script_Logged_Out') || '';
-		if (script.trim()) {
-			eval(script);//eslint-disable-line
-		}
 	},
 	CustomScriptLoggedIn() {
 		const script = settings.get('Custom_Script_Logged_In') || '';
