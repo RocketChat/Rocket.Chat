@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+
 import { MsgTyping } from '../../../ui';
 import { t } from '../../../utils';
 import './messageBoxTyping.html';

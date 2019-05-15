@@ -3,6 +3,7 @@ import s from 'underscore.string';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { settings } from '../../settings';
 import { CachedCollection } from '../../ui-cached-collection';
 import { menu, SideNav, AdminBox, Layout } from '../../ui-utils/client';
@@ -54,9 +55,8 @@ Template.adminFlex.helpers({
 		}).sort(function(a, b) {
 			if (a.label.toLowerCase() >= b.label.toLowerCase()) {
 				return 1;
-			} else {
-				return -1;
 			}
+			return -1;
 		});
 	},
 	label,

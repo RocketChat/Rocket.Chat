@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { TabBar } from '../../../ui-utils';

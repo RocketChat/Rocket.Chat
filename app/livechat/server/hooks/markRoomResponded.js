@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { callbacks } from '../../../callbacks';
 import { Rooms } from '../../../models';
 

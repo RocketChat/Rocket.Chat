@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
+import s from 'underscore.string';
+
 import { hasRole } from '../../../authorization';
 import { Info } from '../../../utils';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { API } from '../api';
 
-import s from 'underscore.string';
 
 // DEPRECATED
 // Will be removed after v1.12.0

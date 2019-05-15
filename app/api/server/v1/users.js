@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import Busboy from 'busboy';
+
 import { Users, Subscriptions } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
@@ -14,8 +17,6 @@ import {
 	saveCustomFields,
 } from '../../../lib';
 import { API } from '../api';
-import _ from 'underscore';
-import Busboy from 'busboy';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -122,7 +123,6 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
-
 	},
 });
 
@@ -191,7 +191,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		const users = Users.find(query, {
-			sort: sort ? sort : { username: 1 },
+			sort: sort || { username: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -282,7 +282,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 						return Users.findOneById(fields.userId, { _id: 1 });
 					}
 					if (fields.username) {
-						return Users.findOneByUsername(fields.username, { _id: 1 });
+						return Users.findOneByUsernameIgnoringCase(fields.username, { _id: 1 });
 					}
 				};
 
@@ -409,9 +409,8 @@ API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 			return API.v1.success({
 				preferences,
 			});
-		} else {
-			return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		}
+		return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
 	},
 });
 

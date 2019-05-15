@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
@@ -33,7 +34,7 @@ async function getBadgeCount(userId) {
 }
 
 function canSendMessageToRoom(room, username) {
-	return !((room.muted || []).includes(username));
+	return !(room.muted || []).includes(username);
 }
 
 export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {

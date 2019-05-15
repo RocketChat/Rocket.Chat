@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { hasPermission } from '../../../authorization';
 import { Rooms } from '../../../models';
 import { unarchiveRoom } from '../functions';
 
 Meteor.methods({
 	unarchiveRoom(rid) {
-
 		check(rid, String);
 
 		if (!Meteor.userId()) {

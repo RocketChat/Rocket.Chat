@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { CustomSounds } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
