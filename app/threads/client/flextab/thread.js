@@ -27,10 +27,14 @@ Template.thread.events({
 	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
 		lazyloadtick();
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
-	}, 500),
+	}, 50),
 	'load img'() {
 		const { atBottom } = this;
 		atBottom && this.sendToBottom();
+	},
+	'click .toggle-hidden'(e) {
+		const id = e.currentTarget.dataset.message;
+		document.querySelector(`#thread-${ id }`).classList.toggle('message--ignored');
 	},
 });
 
@@ -94,14 +98,6 @@ Template.thread.onRendered(function() {
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
-		this.state.set({
-			tmid,
-		});
-		this.loadMore();
-	});
-
-	this.autorun(() => {
-		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
 		this.threadsObserve = Messages.find({ tmid, _hidden: { $ne: true } }, {
@@ -123,6 +119,8 @@ Template.thread.onRendered(function() {
 			},
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
+
+		this.loadMore();
 	});
 
 	this.autorun(() => {
@@ -131,14 +129,36 @@ Template.thread.onRendered(function() {
 		this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 	});
 
-	Tracker.afterFlush(() => {
-		this.autorun(async () => {
-			const { mainMessage } = Template.currentData();
-			this.state.set({
-				tmid: mainMessage._id,
-				rid: mainMessage.rid,
-			});
+
+	this.autorun(() => {
+		const { mainMessage, jump } = Template.currentData();
+		this.state.set({
+			tmid: mainMessage._id,
+			rid: mainMessage.rid,
+			jump,
 		});
+	});
+
+	this.autorun(() => {
+		const jump = this.state.get('jump');
+		const loading = this.state.get('loading');
+
+		if (jump && loading === false) {
+			this.find('.js-scroll-thread').style.scrollBehavior = 'smooth';
+			this.state.set('jump', null);
+			Tracker.afterFlush(() => {
+				const message = this.find(`#thread-${ jump }`);
+				message.classList.add('highlight');
+				const removeClass = () => {
+					message.classList.remove('highlight');
+					message.removeEventListener('animationend', removeClass);
+				};
+				message.addEventListener('animationend', removeClass);
+				setTimeout(() => {
+					message.scrollIntoView();
+				}, 300);
+			});
+		}
 	});
 });
 

@@ -492,7 +492,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return !state.get('subscribed');
+		return state.get('subscribed');
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -603,6 +603,7 @@ Template.room.events({
 			subscription: subscription.get(),
 			msg,
 			rid,
+			jump: tmid && tmid !== _id && _id,
 			mid: tmid || _id,
 			label: 'Threads',
 			icon: 'thread',
