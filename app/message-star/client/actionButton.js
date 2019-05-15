@@ -64,7 +64,7 @@ Meteor.startup(function() {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred', 'threads'],
+		context: ['starred'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
@@ -73,10 +73,11 @@ Meteor.startup(function() {
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
-			return true;
+
+			return message.starred && message.starred.find((star) => star._id === Meteor.userId());
 		},
 		order: 100,
 		group: 'menu',
@@ -87,17 +88,18 @@ Meteor.startup(function() {
 		icon: 'permalink',
 		label: 'Get_link',
 		classes: 'clipboard',
-		context: ['starred', 'threads'],
+		context: ['starred'],
 		async action(event) {
 			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
-			return true;
+
+			return message.starred && message.starred.find((star) => star._id === Meteor.userId());
 		},
 		order: 101,
 		group: 'menu',
