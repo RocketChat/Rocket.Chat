@@ -3,9 +3,10 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { Random } from 'meteor/random';
 
 import { canAccessRoom } from './canAccessRoom';
+import { hasPermission } from './hasPermission';
 import { Notifications } from '../../../notifications';
-import { hasPermission } from '../..';
 import { Rooms, Subscriptions } from '../../../models';
+
 
 export const canSendMessage = (rid, { uid, username }, extraData) => {
 	const room = Rooms.findOneById(rid);
