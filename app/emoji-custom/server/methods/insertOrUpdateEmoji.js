@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
+import limax from 'limax';
 
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
@@ -16,6 +17,9 @@ Meteor.methods({
 		if (!s.trim(emojiData.name)) {
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateEmoji', field: 'Name' });
 		}
+
+		emojiData.name = limax(emojiData.name, { replacement: '_' });
+		emojiData.aliases = limax(emojiData.aliases, { replacement: '_' });
 
 		// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 		// more practical than allowing specific sets of characters; also allows foreign languages
