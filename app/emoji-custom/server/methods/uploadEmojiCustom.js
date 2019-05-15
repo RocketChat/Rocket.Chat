@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import limax from 'limax';
 
 import { Notifications } from '../../../notifications';
 import { hasPermission } from '../../../authorization';
 import { RocketChatFile } from '../../../file';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import limax from 'limax';
 
 Meteor.methods({
 	uploadEmojiCustom(binaryContent, contentType, emojiData) {
