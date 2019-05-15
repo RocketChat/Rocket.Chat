@@ -47,6 +47,7 @@ export class AppRoomsConverter {
 			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
 			lm: room.lastModifiedAt,
+			customFields: room.customFields,
 		};
 	}
 
