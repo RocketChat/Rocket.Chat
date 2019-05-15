@@ -1,9 +1,10 @@
-import { settings } from '../../../../settings';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
 import hljs from 'highlight.js';
 import _marked from 'marked';
+
+import { settings } from '../../../../settings';
 
 const renderer = new _marked.Renderer();
 

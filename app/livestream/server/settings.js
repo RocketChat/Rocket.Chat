@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
 	settings.addGroup('LiveStream & Broadcasting', function() {
-
 		this.add('Livestream_enabled', false, {
 			type: 'boolean',
 			public: true,

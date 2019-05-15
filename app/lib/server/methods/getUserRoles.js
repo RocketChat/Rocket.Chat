@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles, Users } from '../../../models';
 import _ from 'underscore';
+
+import { Roles, Users } from '../../../models';
 
 Meteor.methods({
 	getUserRoles() {
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUserRoles' });
 		}

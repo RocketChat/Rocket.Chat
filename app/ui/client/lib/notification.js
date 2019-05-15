@@ -7,6 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
+
 import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models';
 import { getUserPreference } from '../../../utils';
@@ -15,7 +16,7 @@ import { getAvatarAsPng } from '../../../ui-utils';
 import { promises } from '../../../promises/client';
 
 export const KonchatNotification = {
-	notificationStatus: new ReactiveVar,
+	notificationStatus: new ReactiveVar(),
 
 	// notificacoes HTML5
 	getDesktopPermission() {
@@ -23,7 +24,7 @@ export const KonchatNotification = {
 			return Notification.requestPermission(function(status) {
 				KonchatNotification.notificationStatus.set(status);
 				if (Notification.permission !== status) {
-					return Notification.permission = status;
+					Notification.permission = status;
 				}
 			});
 		}
@@ -31,7 +32,7 @@ export const KonchatNotification = {
 
 	notify(notification) {
 		if (window.Notification && Notification.permission === 'granted') {
-			const message = { rid: (notification.payload != null ? notification.payload.rid : undefined), msg: notification.text, notification: true };
+			const message = { rid: notification.payload != null ? notification.payload.rid : undefined, msg: notification.text, notification: true };
 			return promises.run('onClientMessageReceived', message).then(function(message) {
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
@@ -43,7 +44,7 @@ export const KonchatNotification = {
 
 				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
 				if (notificationDuration > 0) {
-					setTimeout((() => n.close()), notificationDuration * 1000);
+					setTimeout(() => n.close(), notificationDuration * 1000);
 				}
 
 				if (notification.payload && notification.payload.rid) {
@@ -174,7 +175,7 @@ Meteor.startup(() => {
 			}
 			if (room.pause) {
 				room.pause();
-				return room.currentTime = 0;
+				room.currentTime = 0;
 			}
 		}
 	});

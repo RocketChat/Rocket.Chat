@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+
 import { Migrations } from '../../../app/migrations';
 import { Rooms, Subscriptions, Messages } from '../../../app/models';
 
@@ -45,7 +46,6 @@ Migrations.add({
 		console.log('Making room names unique');
 
 		Rooms.find().forEach(function(room) {
-
 			return Rooms.find({
 				name: room.name,
 				_id: {

@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import semver from 'semver';
+
+import getNewUpdates from './getNewUpdates';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 import { Roles, Users } from '../../../models';
-import semver from 'semver';
 import logger from '../logger';
-import getNewUpdates from './getNewUpdates';
 // import getNewUpdates from '../sampleUpdateData';
 
 export default () => {
@@ -75,7 +76,7 @@ export default () => {
 					}
 
 					const msg = {
-						msg: `*${ TAPi18n.__('Rocket_Chat_Alert', adminUser.language) }:*\n\n*${ TAPi18n.__(alert.title, adminUser.language) }*\n${ TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language) }\n${ alert.infoUrl }`,
+						msg: `*${ TAPi18n.__('Rocket_Chat_Alert', adminUser.language) }:*\n\n*${ TAPi18n.__(alert.title, adminUser.language) }*\n${ TAPi18n.__(alert.text, ...alert.textArguments || [], adminUser.language) }\n${ alert.infoUrl }`,
 						rid: [adminUser._id, 'rocket.cat'].sort().join(''),
 					};
 

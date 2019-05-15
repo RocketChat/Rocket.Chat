@@ -1,8 +1,9 @@
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import moment from 'moment';
+
 import { hasAllPermission } from '../../../../authorization';
 import { ChatOAuthApps } from '../collection';
-import moment from 'moment';
 import { SideNav } from '../../../../ui-utils/client';
 
 Template.oauthApps.onCreated(function() {
@@ -27,4 +28,3 @@ Template.oauthApps.onRendered(() => {
 		SideNav.openFlex();
 	});
 });
-
