@@ -1,11 +1,6 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
-
-// test data imports
 import { checkIfUserIsValid } from '../../data/checks';
 import { username, email, password } from '../../data/user.js';
 
@@ -25,7 +20,7 @@ describe('[Main Elements Render]', function() {
 			});
 
 			it('it should show the new channel button', () => {
-				sideNav.newChannelBtn.isVisible().should.be.true;
+				sideNav.newChannelBtnToolbar.isVisible().should.be.true;
 			});
 
 			it('it should show "general" channel', () => {
@@ -39,11 +34,13 @@ describe('[Main Elements Render]', function() {
 			});
 			it('it should show spotlight search bar', () => {
 				sideNav.spotlightSearchIcon.click();
+				sideNav.spotlightSearch.waitForVisible(500);
 				sideNav.spotlightSearch.isVisible().should.be.true;
 			});
 
 			it('it should click the spotlight and show the channel list', () => {
 				sideNav.spotlightSearch.waitForVisible(5000);
+				browser.pause(100);
 				sideNav.spotlightSearch.click();
 				sideNav.spotlightSearchPopUp.waitForVisible(5000);
 				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
@@ -151,7 +148,7 @@ describe('[Main Elements Render]', function() {
 
 			// issues with the new message box action button and the no animations on tests
 
-			it.skip('it should show the audio recording button', () => {
+			it('it should show the audio recording button', () => {
 				mainContent.recordBtn.isVisible().should.be.true;
 			});
 
@@ -209,7 +206,6 @@ describe('[Main Elements Render]', function() {
 					flexTab.channelSettingName.waitForVisible();
 					flexTab.channelSettingName.getAttribute('title').should.equal('general');
 				});
-
 			});
 
 			describe('Search Tab:', () => {
@@ -300,7 +296,6 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Mentions Tab:', () => {
-
 				before(() => {
 					if (flexTab.mentionsTab.isVisible()) {
 						this.shouldClose = undefined;

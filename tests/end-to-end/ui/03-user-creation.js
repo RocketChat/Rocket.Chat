@@ -1,10 +1,5 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import loginPage from '../../pageobjects/login.page';
 import mainContent from '../../pageobjects/main-content.page';
-
-// test data imports
 import { username, email, password } from '../../data/user.js';
 
 

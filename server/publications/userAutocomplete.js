@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { Users } from '../../app/models';
+
 Meteor.publish('userAutocomplete', function(selector) {
 	if (!this.userId) {
 		return this.ready();
@@ -25,7 +27,7 @@ Meteor.publish('userAutocomplete', function(selector) {
 	const pub = this;
 	const exceptions = selector.exceptions || [];
 
-	const cursorHandle = RocketChat.models.Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options).observeChanges({
+	const cursorHandle = Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options).observeChanges({
 		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},

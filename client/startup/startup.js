@@ -1,10 +1,15 @@
-/* globals UserPresence, fireGlobalEvent */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { TimeSync } from 'meteor/mizzao:timesync';
+import { UserPresence } from 'meteor/konecty:user-presence';
 import toastr from 'toastr';
 import hljs from 'highlight.js';
+
+import { fireGlobalEvent } from '../../app/ui-utils';
+import { settings } from '../../app/settings';
+import { Users } from '../../app/models';
+import { getUserPreference } from '../../app/utils';
 import 'highlight.js/styles/github.css';
 
 hljs.initHighlightingOnLoad();
@@ -25,7 +30,7 @@ Meteor.startup(function() {
 	window.lastMessageWindowHistory = {};
 
 	Tracker.autorun(function(computation) {
-		if (!Meteor.userId() && !RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+		if (!Meteor.userId() && !settings.get('Accounts_AllowAnonymousRead')) {
 			return;
 		}
 		Meteor.subscribe('userData');
@@ -38,7 +43,7 @@ Meteor.startup(function() {
 		if (!Meteor.userId()) {
 			return;
 		}
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+		const user = Users.findOne(Meteor.userId(), {
 			fields: {
 				status: 1,
 				'settings.preferences.idleTimeLimit': 1,
@@ -50,8 +55,8 @@ Meteor.startup(function() {
 			return;
 		}
 
-		if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
-			const idleTimeLimit = RocketChat.getUserPreference(user, 'idleTimeLimit') || 300;
+		if (getUserPreference(user, 'enableAutoAway')) {
+			const idleTimeLimit = getUserPreference(user, 'idleTimeLimit') || 300;
 			UserPresence.awayTime = idleTimeLimit * 1000;
 		} else {
 			delete UserPresence.awayTime;

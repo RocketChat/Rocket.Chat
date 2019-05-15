@@ -3,8 +3,9 @@ import { Match } from 'meteor/check';
 import { Blaze } from 'meteor/blaze';
 import { Deps } from 'meteor/deps';
 import _ from 'underscore';
-import AutoCompleteRecords from './collection';
 import { getCaretCoordinates } from 'meteor/dandv:caret-position';
+
+import AutoCompleteRecords from './collection';
 
 const isServerSearch = function(rule) {
 	return _.isString(rule.collection);
@@ -29,10 +30,9 @@ const getRegExp = function(rule) {
 	if (!isWholeField(rule)) {
 		// Expressions for the range from the last word break to the current cursor position
 		return new RegExp(`(^|\\b|\\s)${ rule.token }([\\w.]*)$`);
-	} else {
-		// Whole-field behavior - word characters or spaces
-		return new RegExp('(^)(.*)$');
 	}
+	// Whole-field behavior - word characters or spaces
+	return new RegExp('(^)(.*)$');
 };
 
 const getFindParams = function(rule, filter, limit) {
@@ -91,6 +91,8 @@ export default class AutoComplete {
 			validateRule(rule);
 		});
 
+		this.onSelect = settings.onSelect;
+
 		this.expressions = (() => Object.keys(rules).map((key) => {
 			const rule = rules[key];
 			return getRegExp(rule);
@@ -99,9 +101,9 @@ export default class AutoComplete {
 		this.loaded = true;
 
 		// Reactive dependencies for current matching rule and filter
-		this.ruleDep = new Deps.Dependency;
-		this.filterDep = new Deps.Dependency;
-		this.loadingDep = new Deps.Dependency;
+		this.ruleDep = new Deps.Dependency();
+		this.filterDep = new Deps.Dependency();
+		this.loadingDep = new Deps.Dependency();
 
 		// Autosubscribe to the record set published by the server based on the filter
 		// This will tear down server subscriptions when they are no longer being used.
@@ -122,9 +124,7 @@ export default class AutoComplete {
 				this.setLoaded(true);
 				return;
 			}
-			const params = getFindParams(rule, filter, this.limit);
-			const selector = params[0];
-			const options = params[1];
+			const [selector, options] = getFindParams(rule, filter, this.limit);
 
 			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
 			this.setLoaded(false);
@@ -145,9 +145,8 @@ export default class AutoComplete {
 		this.ruleDep.depend();
 		if (this.matched >= 0) {
 			return this.rules[this.matched];
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	setMatchedRule(i) {
@@ -320,7 +319,6 @@ export default class AutoComplete {
 		const doc = Blaze.getData(node);
 		if (!doc) {
 			return false; // Don't select if nothing matched
-
 		}
 		this.processSelection(doc, this.rules[this.matched]);
 		return true;
@@ -332,7 +330,6 @@ export default class AutoComplete {
 			this.replace(replacement, rule);
 			this.hideList();
 		} else {
-
 			// Empty string or doesn't exist?
 			// Single-field replacement: replace whole field
 			this.setText(replacement);
@@ -342,6 +339,7 @@ export default class AutoComplete {
 			// TODO this is a hack; see above
 			this.onBlur();
 		}
+		this.onSelect && this.onSelect(doc);
 		this.$element.trigger('autocompleteselect', doc);
 	}
 
@@ -353,7 +351,7 @@ export default class AutoComplete {
 		let val = fullStuff.substring(0, startpos);
 		val = val.replace(this.expressions[this.matched], `$1${ this.rules[this.matched].token }${ replacement }`);
 		const posfix = fullStuff.substring(startpos, fullStuff.length);
-		const separator = (posfix.match(/^\s/) ? '' : ' ');
+		const separator = posfix.match(/^\s/) ? '' : ' ';
 		const finalFight = val + separator + posfix;
 		this.setText(finalFight);
 		const newPosition = val.length + 1;
@@ -371,10 +369,9 @@ export default class AutoComplete {
 
 	setText(text) {
 		if (this.$element.is('input,textarea')) {
-			this.$element.val(text);
-		} else {
-			this.$element.html(text);
+			return this.$element.val(text);
 		}
+		this.$element.html(text);
 	}
 
 
@@ -385,7 +382,14 @@ export default class AutoComplete {
 	positionContainer() {
 		// First render; Pick the first item and set css whenever list gets shown
 		let pos = {};
-		const position = this.$element.position();
+		const element = this.tmplInst.$(this.selector.anchor || this.$element);
+
+		if (this.position === 'fixed') {
+			const width = element.outerWidth();
+			return this.tmplInst.$(this.selector.container).css({ width, position: 'fixed' });
+		}
+
+		const position = element.position();
 		const rule = this.matchedRule();
 		const offset = getCaretCoordinates(this.element, this.element.selectionStart);
 
@@ -394,8 +398,7 @@ export default class AutoComplete {
 		if (rule && isWholeField(rule)) {
 			pos.left = position.left;
 			if (rule.doNotChangeWidth !== false) {
-				pos.width = this.$element.outerWidth(); // position.offsetWidth
-
+				pos.width = element.outerWidth(); // position.offsetWidth
 			}
 		} else { // Normal positioning, at token word
 			pos = { left: position.left + offset.left };
@@ -403,11 +406,12 @@ export default class AutoComplete {
 
 		// Position menu from top (above) or from bottom of caret (below, default)
 		if (this.position === 'top') {
-			pos.bottom = this.$element.offsetParent().height() - position.top - offset.top;
+			pos.bottom = element.offsetParent().height() - position.top - offset.top;
 		} else {
-			pos.top = position.top + offset.top + parseInt(this.$element.css('font-size'));
+			pos.top = position.top + offset.top + parseInt(element.css('font-size'));
 		}
-		this.tmplInst.$(this.selector.container).css(pos);
+
+		this.tmplInst.$(this.selector.container).css({ ...pos, position: 'absolute' });
 	}
 
 	ensureSelection() {
@@ -454,5 +458,4 @@ export default class AutoComplete {
 	currentTemplate() {
 		return this.rules[this.matched].template;
 	}
-
 }

@@ -1,13 +1,8 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import sideNav from '../../pageobjects/side-nav.page';
 import flexTab from '../../pageobjects/flex-tab.page';
 import admin from '../../pageobjects/administration.page';
 import mainContent from '../../pageobjects/main-content.page';
 import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
-
-// test data imports
 import { username, email, password, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
 describe.skip('[Permissions]', () => {

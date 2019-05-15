@@ -1,11 +1,6 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import sideNav from '../../pageobjects/side-nav.page';
 import flexTab from '../../pageobjects/flex-tab.page';
 import admin from '../../pageobjects/administration.page';
-
-// test data imports
 import { checkIfUserIsAdmin } from '../../data/checks';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
@@ -877,6 +872,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the enter key behavior field', () => {
+					browser.scroll(0, 500);
 					admin.accountsSendOnEnter.click();
 					admin.accountsSendOnEnter.isVisible().should.be.true;
 				});
@@ -885,6 +881,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the messagebox view mode field', () => {
+					admin.accountsMessageViewMode.moveToObject();
 					admin.accountsMessageViewMode.click();
 					admin.accountsMessageViewMode.isVisible().should.be.true;
 				});

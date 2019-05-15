@@ -1,10 +1,5 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
-import supertest from 'supertest';
 
 describe('miscellaneous', function() {
 	this.retries(0);
@@ -114,7 +109,7 @@ describe('miscellaneous', function() {
 				const allUserPreferencesKeys = ['enableAutoAway', 'idleTimeLimit', 'desktopNotificationDuration', 'audioNotifications',
 					'desktopNotifications', 'mobileNotifications', 'unreadAlert', 'useEmojis', 'convertAsciiEmoji', 'autoImageLoad',
 					'saveMobileBandwidth', 'collapseMediaByDefault', 'hideUsernames', 'hideRoles', 'hideFlexTab', 'hideAvatars',
-					'sidebarViewMode', 'sidebarHideAvatar', 'sidebarShowUnread', 'sidebarShowFavorites', 'sidebarGroupByType',
+					'sidebarViewMode', 'sidebarHideAvatar', 'sidebarShowUnread', 'sidebarShowDiscussion', 'sidebarShowFavorites', 'sidebarGroupByType',
 					'sendOnEnter', 'messageViewMode', 'emailNotificationMode', 'roomCounterSidebar', 'newRoomNotification', 'newMessageNotification',
 					'muteFocusedConversations', 'notificationsSoundVolume'];
 				expect(res.body).to.have.property('success', true);
@@ -218,9 +213,9 @@ describe('miscellaneous', function() {
 						text: testChannel.name,
 						type: 'channels',
 					}),
-					sort: JSON.stringify(({
+					sort: JSON.stringify({
 						name: 1,
-					})),
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -261,10 +256,10 @@ describe('miscellaneous', function() {
 						text: testChannel.name,
 						type: 'channels',
 					}),
-					sort: JSON.stringify(({
+					sort: JSON.stringify({
 						name: 1,
 						test: 1,
-					})),
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
