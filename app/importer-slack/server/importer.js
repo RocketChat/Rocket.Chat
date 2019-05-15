@@ -264,8 +264,8 @@ export class SlackImporter extends Base {
 						...msgDataDefaults,
 						attachments: [{
 							text: this.convertSlackMessageToRocketChat(message.attachments[0].text),
-							author_name : message.attachments[0].author_subname,
-							author_icon : getUserAvatarURL(message.attachments[0].author_subname),
+							author_name: message.attachments[0].author_subname,
+							author_icon: getUserAvatarURL(message.attachments[0].author_subname),
 						}],
 					};
 
