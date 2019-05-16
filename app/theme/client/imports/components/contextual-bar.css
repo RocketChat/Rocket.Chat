@@ -83,6 +83,18 @@
 			}
 		}
 
+		&-back-btn {
+			position: absolute;
+			left: 0;
+
+			width: auto;
+			height: auto;
+			margin: 0;
+			padding: 0;
+
+			font-size: 22px;
+		}
+
 		&-title {
 
 			overflow: hidden;
@@ -128,6 +140,7 @@
 @media (width <= 1100px) {
 	.contextual-bar {
 		position: absolute;
+		z-index: 10;
 		right: 0;
 	}
 

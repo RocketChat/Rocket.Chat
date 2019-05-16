@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../settings';
 import s from 'underscore.string';
+
 import { isURL } from './isURL';
+import { settings } from '../../settings';
 
 export const getURL = (path, { cdn = true, full = false } = {}) => {
 	if (isURL(path)) {

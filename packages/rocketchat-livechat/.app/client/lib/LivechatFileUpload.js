@@ -1,8 +1,9 @@
 /* globals fileUpload, Livechat, Handlebars, showError, sendFileUpload */
 /* exported LivechatFileUpload, fileUpload, sendFileUpload */
 import { Meteor } from 'meteor/meteor';
-import visitor from '../../imports/client/visitor';
 import swal from 'sweetalert2';
+
+import visitor from '../../imports/client/visitor';
 
 const handleRequestError = (response) => {
 	if (!response.success) {
@@ -57,7 +58,7 @@ function getUploadPreview(file, callback) {
 	// If greater then 10MB don't try and show a preview
 	if (file.file.size > (10 * 1000000)) {
 		return callback(file, null);
-	} else if (file.file.type == null) {
+	} if (file.file.type == null) {
 		callback(file, null);
 	} else if ((file.file.type.indexOf('audio') > -1) || (file.file.type.indexOf('video') > -1) || (file.file.type.indexOf('image') > -1)) {
 		file.type = file.file.type.split('/')[0];
@@ -157,7 +158,6 @@ sendFileUpload = (file) => getUploadPreview(file, function(file, preview) {
 });
 
 fileUpload = (file) => {
-
 	if (file.size === 0) {
 		swal({
 			title: t('FileUpload_File_Empty'),

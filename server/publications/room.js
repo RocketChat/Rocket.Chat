@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { roomTypes } from '../../app/utils';
 import { hasPermission } from '../../app/authorization';
 import { Rooms, Subscriptions } from '../../app/models';
 import { settings } from '../../app/settings';
 import { Notifications } from '../../app/notifications';
-import _ from 'underscore';
 
 const fields = {
 	_id: 1,
@@ -48,6 +49,7 @@ const fields = {
 	encrypted: 1,
 	e2eKeyId: 1,
 	departmentId: 1,
+	servedBy: 1,
 };
 
 const roomMap = (record) => {

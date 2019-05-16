@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Users, Roles } from '../../app/models';
 
 Meteor.methods({

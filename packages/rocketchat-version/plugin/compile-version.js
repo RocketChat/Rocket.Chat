@@ -2,12 +2,13 @@ import { exec } from 'child_process';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
+
 import Future from 'fibers/future';
 import async from 'async';
 
 class VersionCompiler {
 	processFilesForTarget(files) {
-		const future = new Future;
+		const future = new Future();
 		const processFile = function(file, cb) {
 			if (!file.getDisplayPath().match(/rocketchat\.info$/)) {
 				return cb();
