@@ -156,11 +156,9 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 			filter: username,
 			limit: 1,
 		});
-
 		if (!result || result.count() !== 1) {
 			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
-    
 		const [user] = result.fetch();
 		const myself = user._id === this.userId;
 		if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
