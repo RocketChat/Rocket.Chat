@@ -90,10 +90,12 @@ Meteor.startup(() => {
 });
 
 Meteor.startup(() => {
-	const favicon = window.favico = new Favico({
+	const favicon = new Favico({
 		position: 'up',
 		animation: 'none',
 	});
+
+	window.favico = favicon;
 
 	Tracker.autorun(function() {
 		const siteName = settings.get('Site_Name') || '';
