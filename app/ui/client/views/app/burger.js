@@ -8,6 +8,7 @@ import { getUserPreference } from '../../../../utils';
 
 Template.burger.helpers({
 	unread() {
+		const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
 		const [unreadCount, unreadAlert] = ChatSubscription
 			.find({
 				open: true,
@@ -25,7 +26,6 @@ Template.burger.helpers({
 				if (alert || unread > 0) {
 					unreadCount += unread;
 					if (alert === true && alertType !== 'nothing') {
-						const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
 						if (alertType === 'all' || userUnreadAlert !== false) {
 							unreadAlert = '•';
 						}
@@ -36,7 +36,7 @@ Template.burger.helpers({
 			}, [0, false]);
 
 		if (unreadCount > 0) {
-			return unreadCount > 999 ? '999+' : unreadCount;
+			return unreadCount > 99 ? '99+' : unreadCount;
 		}
 
 		return unreadAlert || '';
