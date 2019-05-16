@@ -1101,6 +1101,9 @@ Template.room.onDestroyed(function() {
 	readMessage.off(this.data._id);
 
 	window.removeEventListener('resize', this.onWindowResize);
+
+	const chatMessage = chatMessages[this.data._id];
+	return chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
 });
 
 Template.room.onRendered(function() {
