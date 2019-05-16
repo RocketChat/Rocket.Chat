@@ -8,32 +8,27 @@ import { RoomManager, menu, fireGlobalEvent, readMessage } from 'meteor/rocketch
 import { getUserPreference } from 'meteor/rocketchat:utils';
 import { settings } from 'meteor/rocketchat:settings';
 
-const fetchSubscriptions = () => (
-	ChatSubscription.find({
-		open: true,
-		hideUnreadStatus: { $ne: true },
-	}, {
-		fields: {
-			unread: 1,
-			alert: 1,
-			rid: 1,
-			t: 1,
-			name: 1,
-			ls: 1,
-			unreadAlert: 1,
-		},
-	})
-		.fetch()
-);
+const fetchSubscriptions = () => ChatSubscription.find({
+	open: true,
+	hideUnreadStatus: { $ne: true },
+}, {
+	fields: {
+		unread: 1,
+		alert: 1,
+		rid: 1,
+		t: 1,
+		name: 1,
+		ls: 1,
+		unreadAlert: 1,
+	},
+}).fetch();
 
 // TODO: make it a helper
-const getOpenRoomId = () => {
-	return Tracker.nonreactive(() => {
-		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-			return Session.get('openedRoom');
-		}
-	});
-};
+const getOpenRoomId = () => Tracker.nonreactive(() => {
+	if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
+		return Session.get('openedRoom');
+	}
+});
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
