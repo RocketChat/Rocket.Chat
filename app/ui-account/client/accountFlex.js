@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../settings';
 import { hasAllPermission } from '../../authorization';
 import { SideNav, Layout } from '../../ui-utils';

@@ -1,12 +1,14 @@
+import _ from 'underscore';
+import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { modal } from '/app/ui-utils';
-import { t, handleError } from '/app/utils';
-import _ from 'underscore';
-import moment from 'moment';
+
+import { modal } from '../../../../ui-utils/client';
+import { t, handleError } from '../../../../utils/client';
+import './livechatCurrentChats.html';
 
 const LivechatRoom = new Mongo.Collection('livechatRoom');
 
@@ -128,7 +130,7 @@ Template.livechatCurrentChats.events({
 Template.livechatCurrentChats.onCreated(function() {
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
-	this.selectedAgent = new ReactiveVar;
+	this.selectedAgent = new ReactiveVar();
 	this.autorun(() => {
 		this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get());
 	});

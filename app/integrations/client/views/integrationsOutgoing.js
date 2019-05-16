@@ -4,13 +4,16 @@ import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
-import { modal } from '../../../ui-utils';
-import { t, handleError } from '../../../utils';
-import { ChatIntegrations } from '../collections';
-import { integrations } from '../../lib/rocketchat';
+import { Tracker } from 'meteor/tracker';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
+
+import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
+import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { modal, SideNav } from '../../../ui-utils';
+import { t, handleError } from '../../../utils/client';
+import { ChatIntegrations } from '../collections';
+import { integrations } from '../../lib/rocketchat';
 
 Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated() {
 	this.record = new ReactiveVar({
@@ -72,6 +75,9 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 });
 
 Template.integrationsOutgoing.helpers({
+	exampleMsg,
+	exampleUser,
+	exampleSettings,
 	join(arr, sep) {
 		if (!arr || !arr.join) {
 			return arr;
@@ -122,34 +128,6 @@ Template.integrationsOutgoing.helpers({
 		const record = Template.instance().record.get();
 
 		return typeof record.event === 'string' && integrations.outgoingEvents[record.event].use.targetRoom;
-	},
-
-	example() {
-		const record = Template.instance().record.get();
-
-		return {
-			_id: Random.id(),
-			alias: record.alias,
-			emoji: record.emoji,
-			avatar: record.avatar,
-			msg: 'Response text',
-			bot: {
-				i: Random.id(),
-			},
-			groupable: false,
-			attachments: [{
-				title: 'Rocket.Chat',
-				title_link: 'https://rocket.chat',
-				text: 'Rocket.Chat, the best open source chat',
-				image_url: '/images/integration-attachment-example.png',
-				color: '#764FA5',
-			}],
-			ts: new Date(),
-			u: {
-				_id: Random.id(),
-				username: record.username,
-			},
-		};
 	},
 
 	exampleJson() {
@@ -349,8 +327,8 @@ Template.integrationsOutgoing.events({
 			scriptEnabled: scriptEnabled === '1',
 			impersonateUser: impersonateUser === '1',
 			retryFailedCalls: retryFailedCalls === '1',
-			retryCount: retryCount ? retryCount : 6,
-			retryDelay: retryDelay ? retryDelay : 'powers-of-ten',
+			retryCount: retryCount || 6,
+			retryDelay: retryDelay || 'powers-of-ten',
 			triggerWordAnywhere: triggerWordAnywhere === '1',
 			runOnEdits: runOnEdits === '1',
 		};
@@ -375,4 +353,11 @@ Template.integrationsOutgoing.events({
 			});
 		}
 	},
+});
+
+Template.integrationsOutgoing.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

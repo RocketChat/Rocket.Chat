@@ -2,6 +2,7 @@ import { decodeToken } from 'blockstack';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
+
 import { logger } from './logger';
 
 // Handler extracts data from JSON and tokenised reponse.

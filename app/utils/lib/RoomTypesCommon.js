@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RoomTypeConfig } from './RoomTypeConfig';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
+import { RoomTypeConfig } from './RoomTypeConfig';
 import { roomExit } from './roomExit';
 
 export class RoomTypesCommon {
@@ -60,17 +61,9 @@ export class RoomTypesCommon {
 	 * @param {object} subData the user's subscription data
 	 */
 	getRouteLink(roomType, subData) {
-		if (!this.roomTypes[roomType]) {
+		const routeData = this.getRouteData(roomType, subData);
+		if (!routeData) {
 			return false;
-		}
-
-		let routeData = {};
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
-			routeData = this.roomTypes[roomType].route.link(subData);
-		} else if (subData && subData.name) {
-			routeData = {
-				name: subData.name,
-			};
 		}
 
 		return FlowRouter.path(this.roomTypes[roomType].route.name, routeData);
@@ -84,11 +77,33 @@ export class RoomTypesCommon {
 		return this.roomTypes[roomType];
 	}
 
-	getURL(...args) {
-		const path = this.getRouteLink(...args);
-		if (!path) {
+	/**
+	 * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
+	 * @param {object} subData the user's subscription data
+	 */
+	getURL(roomType, subData) {
+		const routeData = this.getRouteData(roomType, subData);
+		if (!routeData) {
 			return false;
 		}
-		return Meteor.absoluteUrl(path.replace(/^\//, ''));
+
+		return FlowRouter.url(this.roomTypes[roomType].route.name, routeData);
+	}
+
+	getRouteData(roomType, subData) {
+		if (!this.roomTypes[roomType]) {
+			return false;
+		}
+
+		let routeData = {};
+		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
+			routeData = this.roomTypes[roomType].route.link(subData);
+		} else if (subData && subData.name) {
+			routeData = {
+				name: subData.name,
+			};
+		}
+
+		return routeData;
 	}
 }

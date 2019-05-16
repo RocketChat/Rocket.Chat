@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { DateFormat } from '../../../lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { settings } from '../../../settings';
-import { Markdown } from '../../../markdown';
-import { SnippetedMessages } from '../lib/collections';
 import moment from 'moment';
+
+import { DateFormat } from '../../../lib';
+import { settings } from '../../../settings';
+import { Markdown } from '../../../markdown/client';
+import { SnippetedMessages } from '../lib/collections';
 
 Template.snippetPage.helpers({
 	snippet() {

@@ -1,7 +1,8 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { emoji } from '../../lib/rocketchat';
 import _ from 'underscore';
+
+import { emoji } from '../../lib/rocketchat';
 
 export const EmojiPicker = {
 	width: 365,
@@ -88,7 +89,7 @@ export const EmojiPicker = {
 		const containerEl = this.setPosition();
 		containerEl.addClass('show');
 
-		const emojiInput = containerEl.find('.emoji-filter input.search');
+		const emojiInput = containerEl.find('.js-emojipicker-search');
 		if (emojiInput) {
 			emojiInput.focus();
 		}

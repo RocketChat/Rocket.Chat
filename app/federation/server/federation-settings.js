@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 import { FederationKeys } from '../../models';
 
@@ -33,6 +34,7 @@ Meteor.startup(function() {
 			i18nLabel: 'FEDERATION_Domain',
 			i18nDescription: 'FEDERATION_Domain_Description',
 			alert: 'FEDERATION_Domain_Alert',
+			disableReset: true,
 		});
 
 		this.add('FEDERATION_Public_Key', federationPublicKey, {
@@ -64,5 +66,9 @@ Meteor.startup(function() {
 			public: true,
 		});
 
+		this.add('FEDERATION_Test_Setup', 'FEDERATION_Test_Setup', {
+			type: 'action',
+			actionText: 'Test_Setup',
+		});
 	});
 });

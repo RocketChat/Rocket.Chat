@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles, Permissions } from '../../models';
 import _ from 'underscore';
+
+import { Roles, Permissions } from '../../models';
 
 Meteor.startup(() => {
 	const roles = _.pluck(Roles.find().fetch(), 'name');

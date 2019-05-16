@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { isTheLastMessage } from '../../lib';
-import { getAvatarUrlFromUsername } from '../../utils';
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { hasPermission } from '../../authorization';
 import { Subscriptions, Messages, Users, Rooms } from '../../models';
 
@@ -58,12 +59,13 @@ Meteor.methods({
 			});
 		}
 
+		const me = Users.findOneById(userId);
+
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			Messages.cloneAndSaveAsHistoryById(message._id);
+			Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-		const me = Users.findOneById(userId);
 
 		originalMessage.pinned = true;
 		originalMessage.pinnedAt = pinnedAt || Date.now;
@@ -99,9 +101,7 @@ Meteor.methods({
 					{
 						text: originalMessage.msg,
 						author_name: originalMessage.u.username,
-						author_icon: getAvatarUrlFromUsername(
-							originalMessage.u.username
-						),
+						author_icon: getUserAvatarURL(originalMessage.u.username),
 						ts: originalMessage.ts,
 						attachments: recursiveRemove(attachments),
 					},
@@ -141,12 +141,13 @@ Meteor.methods({
 			});
 		}
 
+		const me = Users.findOneById(Meteor.userId());
+
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			Messages.cloneAndSaveAsHistoryById(originalMessage._id);
+			Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
 		}
 
-		const me = Users.findOneById(Meteor.userId());
 		originalMessage.pinned = false;
 		originalMessage.pinnedBy = {
 			_id: Meteor.userId(),

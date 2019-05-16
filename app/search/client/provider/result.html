@@ -13,9 +13,9 @@
 			{{#if $and result.message result.message.docs}}
 				<div class="flex-tab__result js-list">
 					<ul class="list clearfix">
-						{{#each result.message.docs}}
-							{{#nrr nrrargs 'message' message}}{{/nrr}}
-						{{/each}}
+						{{# with messageContext}}
+							{{#each msg in result.message.docs}}{{#nrr nrrargs 'message' msg=(message msg) room=room subscription=subscription settings=settings u=u}}{{/nrr}}{{/each}}
+						{{/with}}
 					</ul>
 				</div>
 			{{else}}

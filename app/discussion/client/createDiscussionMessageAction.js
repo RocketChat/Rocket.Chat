@@ -5,6 +5,7 @@ import { Subscriptions } from '../../models/client';
 import { settings } from '../../settings/client';
 import { hasPermission } from '../../authorization/client';
 import { MessageAction, modal } from '../../ui-utils/client';
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { t } from '../../utils/client';
 
 const condition = (rid, uid) => {
@@ -26,15 +27,17 @@ Meteor.startup(function() {
 			label: 'Discussion_start',
 			context: ['message', 'message-mobile'],
 			async action() {
-				const [, message] = this._arguments;
+				const { msg: message } = messageArgs(this);
 
 				modal.open({
 					title: t('Discussion_title'),
 					modifier: 'modal',
 					content: 'CreateDiscussion',
-					data: { rid: message.rid, message, onCreate() {
-						modal.close();
-					} },
+					data: { rid: message.rid,
+						message,
+						onCreate() {
+							modal.close();
+						} },
 					confirmOnEnter: false,
 					showConfirmButton: false,
 					showCancelButton: false,

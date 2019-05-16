@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+
 import { TabBar } from './TabBar';
 
 export class RocketChatTabBar {
@@ -29,6 +30,10 @@ export class RocketChatTabBar {
 
 	showGroup(group) {
 		this.group.set(group);
+	}
+
+	extendsData(data) {
+		this.data.set({ ...this.data.get(), ...data });
 	}
 
 	setData(d) {

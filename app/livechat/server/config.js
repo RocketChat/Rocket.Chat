@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
@@ -80,6 +81,13 @@ Meteor.startup(function() {
 	settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
 	settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
 
+	settings.add('Livechat_request_comment_when_closing_conversation', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Request_comment_when_closing_conversation',
+	});
+
 	settings.add('Livechat_conversation_finished_message', '', {
 		type: 'string',
 		group: 'Livechat',
@@ -149,7 +157,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Webhook_URL',
 	});
 
-	settings.add('Livechat_secret_token', false, {
+	settings.add('Livechat_secret_token', '', {
 		type: 'string',
 		group: 'Livechat',
 		section: 'CRM_Integration',
@@ -308,14 +316,6 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_registration_form_message',
 	});
 
-	settings.add('Livechat_open_inquiery_show_connecting', false, {
-		type: 'boolean',
-		group: 'Livechat',
-		public: true,
-		i18nLabel: 'Livechat_open_inquiery_show_connecting',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
-	});
-
 	settings.add('Livechat_AllowedDomainsList', '', {
 		type: 'string',
 		group: 'Livechat',
@@ -427,5 +427,4 @@ Meteor.startup(function() {
 		i18nDescription: 'Data_processing_consent_text_description',
 		enableQuery: { _id: 'Livechat_force_accept_data_processing_consent', value: true },
 	});
-
 });

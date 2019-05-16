@@ -1,9 +1,11 @@
+import url from 'url';
+
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from '/app/settings';
+
+import { settings } from '../../settings/server';
 import { addServerUrlToIndex, addServerUrlToHead } from '../lib/Assets';
-import _ from 'underscore';
-import url from 'url';
 
 const latestVersion = '1.0.0';
 const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('livechat/index.html'));

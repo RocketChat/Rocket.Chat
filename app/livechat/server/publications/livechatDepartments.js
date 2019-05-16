@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { LivechatDepartment } from '../../../models';
 
@@ -13,8 +14,6 @@ Meteor.publish('livechat:departments', function(_id) {
 
 	if (_id !== undefined) {
 		return LivechatDepartment.findByDepartmentId(_id);
-	} else {
-		return LivechatDepartment.find();
 	}
-
+	return LivechatDepartment.find();
 });

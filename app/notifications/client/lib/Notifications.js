@@ -9,7 +9,7 @@ class Notifications {
 			if (Meteor.userId() !== null && this.logged === false) {
 				this.loginCb.forEach((cb) => cb());
 			}
-			return this.logged = Meteor.userId() !== null;
+			this.logged = Meteor.userId() !== null;
 		});
 		this.debug = false;
 		this.streamAll = new Meteor.Streamer('notify-all');
@@ -33,6 +33,7 @@ class Notifications {
 			return cb();
 		}
 	}
+
 	notifyRoom(room, eventName, ...args) {
 		if (this.debug === true) {
 			console.log('RocketChat.Notifications: notifyRoom', [room, eventName, ...args]);
@@ -40,6 +41,7 @@ class Notifications {
 		args.unshift(`${ room }/${ eventName }`);
 		return this.streamRoom.emit.apply(this.streamRoom, args);
 	}
+
 	notifyUser(userId, eventName, ...args) {
 		if (this.debug === true) {
 			console.log('RocketChat.Notifications: notifyUser', [userId, eventName, ...args]);
@@ -47,6 +49,7 @@ class Notifications {
 		args.unshift(`${ userId }/${ eventName }`);
 		return this.streamUser.emit.apply(this.streamUser, args);
 	}
+
 	notifyUsersOfRoom(room, eventName, ...args) {
 		if (this.debug === true) {
 			console.log('RocketChat.Notifications: notifyUsersOfRoom', [room, eventName, ...args]);
@@ -54,12 +57,15 @@ class Notifications {
 		args.unshift(`${ room }/${ eventName }`);
 		return this.streamRoomUsers.emit.apply(this.streamRoomUsers, args);
 	}
+
 	onAll(eventName, callback) {
 		return this.streamAll.on(eventName, callback);
 	}
+
 	onLogged(eventName, callback) {
 		return this.onLogin(() => this.streamLogged.on(eventName, callback));
 	}
+
 	onRoom(room, eventName, callback) {
 		if (this.debug === true) {
 			this.streamRoom.on(room, function() {
@@ -68,18 +74,23 @@ class Notifications {
 		}
 		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
 	}
+
 	onUser(eventName, callback) {
 		return this.streamUser.on(`${ Meteor.userId() }/${ eventName }`, callback);
 	}
+
 	unAll(callback) {
 		return this.streamAll.removeListener('notify', callback);
 	}
+
 	unLogged(callback) {
 		return this.streamLogged.removeListener('notify', callback);
 	}
+
 	unRoom(room, eventName, callback) {
 		return this.streamRoom.removeListener(`${ room }/${ eventName }`, callback);
 	}
+
 	unUser(eventName, callback) {
 		return this.streamUser.removeListener(`${ Meteor.userId() }/${ eventName }`, callback);
 	}

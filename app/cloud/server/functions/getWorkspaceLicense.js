@@ -1,8 +1,9 @@
 import { HTTP } from 'meteor/http';
+
+import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
 export function getWorkspaceLicense() {
 	const token = getWorkspaceAccessToken();
@@ -20,6 +21,12 @@ export function getWorkspaceLicense() {
 			},
 		});
 	} catch (e) {
+		if (e.response && e.response.data && e.response.data.error) {
+			console.error(`Failed to update license from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
+		}
+
 		return { updated: false, license: '' };
 	}
 

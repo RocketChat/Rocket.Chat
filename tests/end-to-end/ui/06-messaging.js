@@ -1,8 +1,6 @@
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import Global from '../../pageobjects/global';
-
-// test data imports
 import { username, email, password } from '../../data/user.js';
 import { publicChannelName, privateChannelName } from '../../data/channel.js';
 import { targetUser, imgURL } from '../../data/interactions.js';
@@ -167,8 +165,8 @@ function messageActionsTest() {
 				});
 
 				it('it should check if the message was replied', () => {
-					mainContent.lastMessageTextAttachment.waitForVisible(5000);
-					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+					mainContent.lastMessageQuote.waitForVisible(5000);
+					mainContent.lastMessageQuote.getAttribute('data-tmid').should.equal(mainContent.beforeLastMessageQuote.getAttribute('data-id'));
 				});
 			});
 

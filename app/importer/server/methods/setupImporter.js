@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from '../..';
+
+import { Importers } from '..';
+
 import { hasPermission } from '../../../authorization';
 
 Meteor.methods({

@@ -60,6 +60,11 @@ export default {
 		return this.token.get();
 	},
 
+	getDepartment() {
+		const data = this.getData();
+		return data && data.department;
+	},
+
 	setToken(token) {
 		if (!token || token === this.token.get()) {
 			return;
@@ -71,7 +76,6 @@ export default {
 		this.token.set(token);
 
 		Meteor.call('livechat:loginByToken', token, (err, result) => {
-
 			if (!result) {
 				return;
 			}

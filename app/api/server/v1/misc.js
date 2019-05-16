@@ -1,27 +1,42 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
+import s from 'underscore.string';
+
 import { hasRole } from '../../../authorization';
 import { Info } from '../../../utils';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { API } from '../api';
 
+
+// DEPRECATED
+// Will be removed after v1.12.0
 API.v1.addRoute('info', { authRequired: false }, {
 	get() {
+		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v1.12.0';
+		console.warn(warningMessage);
 		const user = this.getLoggedInUser();
 
 		if (user && hasRole(user._id, 'admin')) {
-			return API.v1.success({
-				info: Info,
-			});
+			return API.v1.success(this.deprecationWarning({
+				endpoint: 'info',
+				versionWillBeRemoved: '1.12.0',
+				response: {
+					info: Info,
+				},
+			}));
 		}
 
-		return API.v1.success({
-			info: {
-				version: Info.version,
+		return API.v1.success(this.deprecationWarning({
+			endpoint: 'info',
+			versionWillBeRemoved: '1.12.0',
+			response: {
+				info: {
+					version: Info.version,
+				},
 			},
-		});
+		}));
 	},
 });
 
@@ -36,7 +51,8 @@ let onlineCacheDate = 0;
 const cacheInvalid = 60000; // 1 minute
 API.v1.addRoute('shield.svg', { authRequired: false }, {
 	get() {
-		const { type, channel, name, icon } = this.queryParams;
+		const { type, icon } = this.queryParams;
+		let { channel, name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/shield.svg' });
 		}
@@ -102,29 +118,34 @@ API.v1.addRoute('shield.svg', { authRequired: false }, {
 		const rightSize = text.length * 6 + 20;
 		const width = leftSize + rightSize;
 		const height = 20;
+
+		channel = s.escapeHTML(channel);
+		text = s.escapeHTML(text);
+		name = s.escapeHTML(name);
+
 		return {
 			headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' },
 			body: `
 				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${ width }" height="${ height }">
-				  <linearGradient id="b" x2="0" y2="100%">
-				    <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
-				    <stop offset="1" stop-opacity=".1"/>
-				  </linearGradient>
-				  <mask id="a">
-				    <rect width="${ width }" height="${ height }" rx="3" fill="#fff"/>
-				  </mask>
-				  <g mask="url(#a)">
-				    <path fill="#555" d="M0 0h${ leftSize }v${ height }H0z"/>
-				    <path fill="${ backgroundColor }" d="M${ leftSize } 0h${ rightSize }v${ height }H${ leftSize }z"/>
-				    <path fill="url(#b)" d="M0 0h${ width }v${ height }H0z"/>
-				  </g>
-				    ${ hideIcon ? '' : '<image x="5" y="3" width="14" height="14" xlink:href="/assets/favicon.svg"/>' }
-				  <g fill="#fff" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+					<linearGradient id="b" x2="0" y2="100%">
+						<stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+						<stop offset="1" stop-opacity=".1"/>
+					</linearGradient>
+					<mask id="a">
+						<rect width="${ width }" height="${ height }" rx="3" fill="#fff"/>
+					</mask>
+					<g mask="url(#a)">
+						<path fill="#555" d="M0 0h${ leftSize }v${ height }H0z"/>
+						<path fill="${ backgroundColor }" d="M${ leftSize } 0h${ rightSize }v${ height }H${ leftSize }z"/>
+						<path fill="url(#b)" d="M0 0h${ width }v${ height }H0z"/>
+					</g>
+						${ hideIcon ? '' : '<image x="5" y="3" width="14" height="14" xlink:href="/assets/favicon.svg"/>' }
+					<g fill="#fff" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
 						${ name ? `<text x="${ iconSize }" y="15" fill="#010101" fill-opacity=".3">${ name }</text>
-				    <text x="${ iconSize }" y="14">${ name }</text>` : '' }
-				    <text x="${ leftSize + 7 }" y="15" fill="#010101" fill-opacity=".3">${ text }</text>
-				    <text x="${ leftSize + 7 }" y="14">${ text }</text>
-				  </g>
+						<text x="${ iconSize }" y="14">${ name }</text>` : '' }
+						<text x="${ leftSize + 7 }" y="15" fill="#010101" fill-opacity=".3">${ text }</text>
+						<text x="${ leftSize + 7 }" y="14">${ text }</text>
+					</g>
 				</svg>
 			`.trim().replace(/\>[\s]+\</gm, '><'),
 		};

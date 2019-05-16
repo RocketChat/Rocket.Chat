@@ -2,12 +2,15 @@ import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, Info, APIClient } from '../../../utils';
+import { Tracker } from 'meteor/tracker';
+
+import { settings } from '../../../settings';
+import { t, APIClient } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
+import { SideNav } from '../../../ui-utils/client';
 
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
-const HOST = 'https://marketplace.rocket.chat';
 const enabled = ({ status }) => ENABLED_STATUS.includes(status);
 
 const sortByColumn = (array, column, inverted) =>
@@ -18,53 +21,24 @@ const sortByColumn = (array, column, inverted) =>
 		return 1;
 	});
 
-const tagAlreadyInstalledApps = (installedApps, apps) => {
-	const installedIds = installedApps.map((app) => app.latest.id);
-
-	const tagged = apps.map((app) =>
-		({
-			latest: {
-				...app.latest,
-				_installed: installedIds.includes(app.latest.id),
-			},
-		})
-	);
-
-	return tagged;
-};
-
-const getApps = (instance) => {
-	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
-		.then((response) => response.json())
-		.then((data) => {
-			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
-
-			if (instance.searchType.get() === 'marketplace') {
-				instance.apps.set(tagged);
-				instance.isLoading.set(false);
-				instance.ready.set(true);
-			}
-		});
-};
-
-const getInstalledApps = (instance) => {
-	APIClient.get('apps').then((data) => {
+const getInstalledApps = async (instance) => {
+	try {
+		const data = await APIClient.get('apps');
 		const apps = data.apps.map((app) => ({ latest: app }));
-		instance.installedApps.set(apps);
 
-		if (instance.searchType.get() === 'installed') {
-			instance.apps.set(apps);
-			instance.isLoading.set(false);
-			instance.ready.set(true);
-		}
-	});
+		instance.apps.set(apps);
+	} catch (e) {
+		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+	}
+
+	instance.isLoading.set(false);
+	instance.ready.set(true);
 };
 
 Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
-	this.installedApps = new ReactiveVar([]);
 	this.categories = new ReactiveVar([]);
 	this.searchText = new ReactiveVar('');
 	this.searchSortBy = new ReactiveVar('name');
@@ -73,23 +47,14 @@ Template.apps.onCreated(function() {
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
 	this.isLoading = new ReactiveVar(true);
-	this.searchType = new ReactiveVar('marketplace');
 
-	const queryTab = FlowRouter.getQueryParam('tab');
-	if (queryTab) {
-		if (queryTab.toLowerCase() === 'installed') {
-			this.searchType.set('installed');
-		}
-	}
-
-	getApps(instance);
 	getInstalledApps(instance);
 
-	fetch(`${ HOST }/v1/categories`)
-		.then((response) => response.json())
-		.then((data) => {
-			instance.categories.set(data);
-		});
+	try {
+		APIClient.get('apps?categories=true').then((data) => instance.categories.set(data));
+	} catch (e) {
+		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+	}
 
 	instance.onAppAdded = function _appOnAppAdded() {
 		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
@@ -149,6 +114,9 @@ Template.apps.helpers({
 	categories() {
 		return Template.instance().categories.get();
 	},
+	appsDevelopmentMode() {
+		return settings.get('Apps_Framework_Development_Mode') === true;
+	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
 	},
@@ -202,52 +170,8 @@ Template.apps.helpers({
 			sortDirection.set('asc');
 		};
 	},
-	searchType() {
-		return Template.instance().searchType.get();
-	},
-	renderDownloadButton(latest) {
-		const isMarketplace = Template.instance().searchType.get() === 'marketplace';
-		const isDownloaded = latest._installed === false;
-
-		return isMarketplace && isDownloaded;
-	},
-	tabsData() {
-		const instance = Template.instance();
-
-		const { searchType } = instance;
-
-		return {
-			tabs: [
-				{
-					label: t('Marketplace'),
-					value: 'marketplace',
-					condition() {
-						return true;
-					},
-					active: searchType.get() === 'marketplace',
-				},
-				{
-					label: t('Installed'),
-					value: 'installed',
-					condition() {
-						return true;
-					},
-					active: searchType.get() === 'installed',
-				},
-			],
-			onChange(value) {
-				instance.apps.set([]);
-				searchType.set(value);
-				instance.isLoading.set(true);
-
-				if (value === 'marketplace') {
-					getApps(instance);
-				} else {
-					instance.apps.set(instance.installedApps.get());
-					instance.isLoading.set(false);
-				}
-			},
-		};
+	formatCategories(categories = []) {
+		return categories.join(', ');
 	},
 });
 
@@ -256,31 +180,27 @@ Template.apps.events({
 		const rl = this;
 
 		if (rl && rl.latest && rl.latest.id) {
-			FlowRouter.go(`/admin/apps/${ rl.latest.id }`);
+			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
 		}
 	},
-	'click [data-button="install"]'() {
-		FlowRouter.go('/admin/app/install');
+	'click [data-button="install_app"]'() {
+		FlowRouter.go('marketplace');
 	},
-	'click .js-install'(e, template) {
-		e.stopPropagation();
-
-		const url = `${ HOST }/v1/apps/${ this.latest.id }/download/${ this.latest.version }`;
-
-		// play animation
-		e.currentTarget.parentElement.classList.add('loading');
-
-		APIClient.post('apps/', { url })
-			.then(() => {
-				getApps(template);
-				getInstalledApps(template);
-			})
-			.catch((e) => toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message));
+	'click [data-button="upload_app"]'() {
+		FlowRouter.go('app-install');
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
 	},
-	'submit .js-search'(e) {
+	'submit .js-search-form'(e) {
 		e.preventDefault();
+		e.stopPropagation();
 	},
+});
+
+Template.apps.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

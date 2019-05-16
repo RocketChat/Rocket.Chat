@@ -2,11 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from '../../../utils';
+import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
+
+import { handleError } from '../../../utils/client/lib/handleError';
+import { t } from '../../../utils/lib/tapi18n';
 import { Roles } from '../../../models';
 import { hasAllPermission } from '../hasPermission';
 import { modal } from '../../../ui-utils/client/lib/modal';
-import toastr from 'toastr';
+import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 
 Template.permissionsRole.helpers({
 	role() {
@@ -115,6 +119,7 @@ Template.permissionsRole.events({
 		e.preventDefault();
 		modal.open({
 			title: t('Are_you_sure'),
+			text: t('The_user_s_will_be_removed_from_role_s', this.username, FlowRouter.getParam('name')),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',
@@ -221,9 +226,9 @@ Template.permissionsRole.events({
 });
 
 Template.permissionsRole.onCreated(function() {
-	this.searchRoom = new ReactiveVar;
-	this.searchUsername = new ReactiveVar;
-	this.usersInRole = new ReactiveVar;
+	this.searchRoom = new ReactiveVar();
+	this.searchUsername = new ReactiveVar();
+	this.usersInRole = new ReactiveVar();
 	this.limit = new ReactiveVar(50);
 	this.ready = new ReactiveVar(true);
 	this.subscribe('roles', FlowRouter.getParam('name'));
@@ -243,5 +248,12 @@ Template.permissionsRole.onCreated(function() {
 				username: 1,
 			},
 		}));
+	});
+});
+
+Template.permissionsRole.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
 	});
 });

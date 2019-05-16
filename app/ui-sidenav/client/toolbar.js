@@ -5,12 +5,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+
+import { toolbarSearch } from './sidebarHeader';
 import { Rooms, Subscriptions } from '../../models';
 import { roomTypes } from '../../utils';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { menu } from '../../ui-utils';
-import { toolbarSearch } from './sidebarHeader';
-import _ from 'underscore';
 
 let filterText = '';
 let usernamesFromClient;
@@ -82,7 +83,7 @@ Template.toolbar.helpers({
 
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
-		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
+		} if (window.navigator.platform.toLowerCase().includes('mac')) {
 			placeholder = `${ placeholder } (\u2318+K)`;
 		} else {
 			placeholder = `${ placeholder } (\u2303+K)`;
@@ -135,7 +136,7 @@ Template.toolbar.helpers({
 					query.t = 'd';
 				}
 
-				const searchQuery = new RegExp((RegExp.escape(filterText)), 'i');
+				const searchQuery = new RegExp(RegExp.escape(filterText), 'i');
 				query.$or = [
 					{ name: searchQuery },
 					{ fname: searchQuery },
@@ -144,7 +145,7 @@ Template.toolbar.helpers({
 				resultsFromClient = collection.find(query, { limit: 20, sort: { unread: -1, ls: -1 } }).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username:1 } });
+				const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username: 1 } });
 				if (user) {
 					usernamesFromClient = [user];
 				}
@@ -183,15 +184,6 @@ Template.toolbar.events({
 
 	'click [role="search"] input'() {
 		toolbarSearch.shortcut = false;
-	},
-
-	'keyup [role="search"] input'(e) {
-		if (e.which === 27) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			toolbarSearch.clear();
-		}
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {

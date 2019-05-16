@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
+import s from 'underscore.string';
+
 import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { promises } from '../../../promises';
-import s from 'underscore.string';
+import { promises } from '../../../promises/client';
 
 Meteor.methods({
 	sendMessage(message) {

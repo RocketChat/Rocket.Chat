@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import google from 'googleapis';
+
 import { settings } from '../../settings';
 import { Users } from '../../models';
 import { API } from '../../api';
-import google from 'googleapis';
+
 const { OAuth2 } = google.auth;
 
 API.v1.addRoute('livestream/oauth', {
@@ -21,7 +23,8 @@ API.v1.addRoute('livestream/oauth', {
 			statusCode: 302,
 			headers: {
 				Location: url,
-			}, body: 'Oauth redirect',
+			},
+			body: 'Oauth redirect',
 		};
 	},
 });
@@ -37,13 +40,14 @@ API.v1.addRoute('livestream/oauth/callback', {
 		const ret = Meteor.wrapAsync(clientAuth.getToken.bind(clientAuth))(code);
 
 		Users.update({ _id: userId }, { $set: {
-			'settings.livestream' : ret,
+			'settings.livestream': ret,
 		} });
 
 		return {
 			headers: {
-				'content-type' : 'text/html',
-			}, body: '<script>window.close()</script>',
+				'content-type': 'text/html',
+			},
+			body: '<script>window.close()</script>',
 		};
 	},
 });
