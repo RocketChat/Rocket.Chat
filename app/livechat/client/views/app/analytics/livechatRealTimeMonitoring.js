@@ -2,11 +2,15 @@ import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
+
 import { drawLineChart, drawDoughnutChart, updateChart } from '../../../lib/chartHandler';
 import { getTimingsChartData, getAgentStatusData, getConversationsOverviewData, getTimingsOverviewData } from '../../../lib/dataHandler';
 import { LivechatMonitoring } from '../../../collections/LivechatMonitoring';
 import { AgentUsers } from '../../../collections/AgentUsers';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
+import './livechatRealTimeMonitoring.html';
+
+
 let chartContexts = {};			// stores context of current chart, used to clean when redrawing
 let templateInstance;
 
@@ -194,7 +198,7 @@ const updateTimingsOverview = () => {
 
 const displayDepartmentChart = (val) => {
 	const elem = document.getElementsByClassName('lc-chats-per-dept-chart-section')[0];
-	elem.style.display = (val) ? 'block' : 'none';
+	elem.style.display = val ? 'block' : 'none';
 };
 
 const updateVisitorsCount = () => {

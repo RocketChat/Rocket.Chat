@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
+
 import { Favico } from '../../app/favico';
 import { ChatSubscription } from '../../app/models';
 import { RoomManager, menu, fireGlobalEvent, readMessage } from '../../app/ui-utils';

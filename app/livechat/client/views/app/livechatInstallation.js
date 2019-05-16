@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating';
-import { settings } from '../../../../settings';
 import s from 'underscore.string';
+
+import { settings } from '../../../../settings';
+import './livechatInstallation.html';
 
 const latestVersion = '1.0.0';
 
