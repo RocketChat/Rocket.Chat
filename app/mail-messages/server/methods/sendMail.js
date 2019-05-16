@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Mailer } from '../lib/Mailer';
 import { hasRole } from '../../../authorization';
 

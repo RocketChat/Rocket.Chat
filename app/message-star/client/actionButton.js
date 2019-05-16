@@ -1,18 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { handleError } from '../../utils';
 import { Subscriptions } from '../../models';
 import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import toastr from 'toastr';
+
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'star-message',
 		icon: 'star',
-		label: 'Star_Message',
-		context: ['starred', 'message', 'message-mobile'],
+		label: 'Star',
+		context: ['starred', 'message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.starred = Meteor.userId();
@@ -29,7 +31,7 @@ Meteor.startup(function() {
 
 			return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
 		},
-		order: 10,
+		order: 9,
 		group: 'menu',
 	});
 
@@ -37,7 +39,7 @@ Meteor.startup(function() {
 		id: 'unstar-message',
 		icon: 'star',
 		label: 'Unstar_Message',
-		context: ['starred', 'message', 'message-mobile'],
+		context: ['starred', 'message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.starred = false;
@@ -54,7 +56,7 @@ Meteor.startup(function() {
 
 			return message.starred && message.starred.find((star) => star._id === Meteor.userId());
 		},
-		order: 10,
+		order: 9,
 		group: 'menu',
 	});
 
@@ -62,7 +64,7 @@ Meteor.startup(function() {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred'],
+		context: ['starred', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
@@ -83,9 +85,9 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'permalink-star',
 		icon: 'permalink',
-		label: 'Permalink',
+		label: 'Get_link',
 		classes: 'clipboard',
-		context: ['starred'],
+		context: ['starred', 'threads'],
 		async action(event) {
 			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));

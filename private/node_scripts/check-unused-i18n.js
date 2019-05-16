@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+
 const _ = require('underscore');
 
 let contents = fs.readFileSync(`${ __dirname }/../../packages/rocketchat-lib/i18n/en.i18n.json`, 'utf-8');

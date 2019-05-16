@@ -1,5 +1,7 @@
 import { Template } from 'meteor/templating';
+
 import { LivechatExternalMessage } from '../../../../lib/LivechatExternalMessage';
+import './externalSearch.html';
 
 Template.externalSearch.helpers({
 	messages() {

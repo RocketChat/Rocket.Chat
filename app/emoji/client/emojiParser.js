@@ -1,5 +1,4 @@
 import s from 'underscore.string';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -38,7 +37,7 @@ Tracker.autorun(() => {
 					continue;
 				}
 
-				if (s.trim(childNode.innerText) === '') {
+				if (s.trim(childNode.nodeValue) === '') {
 					continue;
 				}
 

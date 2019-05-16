@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Federation } from '../';
+import { Federation } from '..';
 
 export function searchUsers(identifier) {
 	if (!Meteor.userId()) {

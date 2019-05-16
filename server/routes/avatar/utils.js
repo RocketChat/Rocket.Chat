@@ -1,6 +1,5 @@
 import sharp from 'sharp';
 import { throttle } from 'underscore';
-
 import { Cookies } from 'meteor/ostrio:cookies';
 
 import { Users } from '../../../app/models/server';
@@ -38,8 +37,12 @@ function isUserAuthenticated({ headers, query }) {
 	let { rc_uid, rc_token } = query;
 
 	if (!rc_uid && headers.cookie) {
-		rc_uid = cookie.get('rc_uid', headers.cookie) ;
+		rc_uid = cookie.get('rc_uid', headers.cookie);
 		rc_token = cookie.get('rc_token', headers.cookie);
+	}
+
+	if (rc_uid == null || rc_token == null) {
+		return false;
 	}
 
 	const userFound = Users.findOneByIdAndLoginToken(rc_uid, rc_token, { fields: { _id: 1 } });

@@ -1,14 +1,16 @@
-import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
+
+import { Meteor } from 'meteor/meteor';
 import streamBuffers from 'stream-buffers';
-import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
+import filesize from 'filesize';
+
 import { settings } from '../../../settings';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
@@ -16,11 +18,11 @@ import Avatars from '../../../models/server/models/Avatars';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';
+import { mime } from '../../../utils/lib/mimeTypes';
 import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import filesize from 'filesize';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -253,8 +255,6 @@ export const FileUpload = {
 						console.error(err);
 						fut.return();
 					});
-
-				return;
 			};
 
 			reorientation(() => {
@@ -311,7 +311,7 @@ export const FileUpload = {
 		// This file type can be pretty much anything, so it's better if we don't mess with the file extension
 		if (file.type !== 'application/octet-stream') {
 			const ext = mime.extension(file.type);
-			if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
+			if (ext && new RegExp(`\.${ ext }$`, 'i').test(file.name) === false) {
 				file.name = `${ file.name }.${ ext }`;
 			}
 		}

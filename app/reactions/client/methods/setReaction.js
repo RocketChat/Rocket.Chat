@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Messages, Rooms, Subscriptions, EmojiCustom } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { emoji } from '../../../emoji';
-import _ from 'underscore';
 
 Meteor.methods({
 	setReaction(reaction, messageId) {
@@ -17,11 +18,11 @@ Meteor.methods({
 
 		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			return false;
-		} else if (!Subscriptions.findOne({ rid: message.rid })) {
+		} if (!Subscriptions.findOne({ rid: message.rid })) {
 			return false;
-		} else if (message.private) {
+		} if (message.private) {
 			return false;
-		} else if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
+		} if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
 			return false;
 		}
 
@@ -54,7 +55,5 @@ Meteor.methods({
 			Messages.setReactions(messageId, message.reactions);
 			callbacks.run('setReaction', messageId, reaction);
 		}
-
-		return;
 	},
 });

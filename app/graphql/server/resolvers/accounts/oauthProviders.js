@@ -23,9 +23,8 @@ const resolver = {
 					const providers = JSON.parse(result).data;
 
 					return providers.map((name) => ({ name }));
-				} else {
-					throw new Error('Could not parse the result');
 				}
+				throw new Error('Could not parse the result');
 			} catch (e) {
 				throw new Error('rocketchat:grant not installed');
 			}

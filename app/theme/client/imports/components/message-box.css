@@ -264,6 +264,10 @@
 
 		margin: -1rem 0.15rem;
 	}
+
+	&__take-it-button {
+		margin: 0 0.5rem;
+	}
 }
 
 @media (width <= 500px) {
