@@ -1,5 +1,5 @@
-import { settings } from '../../../settings';
-import { getUserPreference, getURL } from '../../../utils';
+import { settings } from '../../../settings/server';
+import { getUserPreference, getURL } from '../../../utils/server';
 import { API } from '../api';
 
 API.helperMethods.set('getUserInfo', function _getUserInfo(me) {
@@ -24,8 +24,13 @@ API.helperMethods.set('getUserInfo', function _getUserInfo(me) {
 
 	me.avatarUrl = getURL(`/avatar/${ me.username }`, { cdn: false, full: true });
 
+	const userPreferences = (me.settings && me.settings.preferences) || {};
+
 	me.settings = {
-		preferences: getUserPreferences(),
+		preferences: {
+			...getUserPreferences(),
+			...userPreferences,
+		},
 	};
 
 	return me;
