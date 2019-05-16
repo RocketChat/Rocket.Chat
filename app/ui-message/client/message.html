@@ -39,7 +39,7 @@
 							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
 						</span>
 					{{/if}}
-					{{#if sentByEmail}}
+					{{#if msg.sentByEmail}}
 						<span class="sent-by-email">
 							<i class="icon-mail" title='{{_ "Message_sent_by_email"}}' aria-label='{{_ "Message_sent_by_email"}}'></i>
 						</span>
