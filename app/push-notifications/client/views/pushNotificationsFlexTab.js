@@ -249,7 +249,7 @@ Template.pushNotificationsFlexTab.events({
 						id: 'audioNotificationValueDefault',
 						name: 'audioNotificationValue',
 						label: 'Default',
-						value: `${ 0 } ` + 'Default',
+						value: '0 Default',
 					},
 					...audioAssetsArray,
 				];
