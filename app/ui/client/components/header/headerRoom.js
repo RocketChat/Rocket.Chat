@@ -4,7 +4,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { TAPi18n } from 'meteor/tap:i18n';
 
 import { t, roomTypes, handleError } from '../../../../utils';
 import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
@@ -25,9 +24,6 @@ const isDiscussion = ({ _id }) => {
 
 
 Template.headerRoom.helpers({
-	backToRoom() {
-		return TAPi18n.__('Back_to_room');
-	},
 	back() {
 		return Template.instance().data.back;
 	},
