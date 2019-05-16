@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+
+import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization';
+import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	removeUserFromRoom(data) {
@@ -33,7 +34,7 @@ Meteor.methods({
 			});
 		}
 
-		const removedUser = Users.findOneByUsername(data.username);
+		const removedUser = Users.findOneByUsernameIgnoringCase(data.username);
 
 		const fromUser = Users.findOneById(fromId);
 

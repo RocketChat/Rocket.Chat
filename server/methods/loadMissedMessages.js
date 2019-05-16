@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+
+import { Messages } from '../../app/models';
+import { settings } from '../../app/settings';
 
 Meteor.methods({
 	loadMissedMessages(rid, start) {

@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { Favico } from 'meteor/rocketchat:favico';
-import { ChatSubscription } from 'meteor/rocketchat:models';
-import { RoomManager, menu, fireGlobalEvent, readMessage } from 'meteor/rocketchat:ui-utils';
-import { getUserPreference } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
+
+import { Favico } from '../../app/favico';
+import { ChatSubscription } from '../../app/models';
+import { RoomManager, menu, fireGlobalEvent, readMessage } from '../../app/ui-utils';
+import { getUserPreference } from '../../app/utils';
+import { settings } from '../../app/settings';
 
 const fetchSubscriptions = () => ChatSubscription.find({
 	open: true,

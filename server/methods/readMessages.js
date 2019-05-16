@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Subscriptions } from 'meteor/rocketchat:models';
+
+import { callbacks } from '../../app/callbacks';
+import { Subscriptions } from '../../app/models';
 
 Meteor.methods({
 	readMessages(rid) {

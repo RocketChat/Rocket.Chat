@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Users } from 'meteor/rocketchat:models';
+
+import { Users } from '../../app/models';
 
 Meteor.methods({
 	userSetUtcOffset(utcOffset) {

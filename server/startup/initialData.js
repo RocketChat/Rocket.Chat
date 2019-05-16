@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { RocketChatFile } from 'meteor/rocketchat:file';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { addUserRoles, getUsersInRole } from 'meteor/rocketchat:authorization';
-import { Users, Settings, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { checkUsernameAvailability, addUserToDefaultChannels } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
+
+import { RocketChatFile } from '../../app/file';
+import { FileUpload } from '../../app/file-upload';
+import { addUserRoles, getUsersInRole } from '../../app/authorization';
+import { Users, Settings, Rooms } from '../../app/models';
+import { settings } from '../../app/settings';
+import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib';
 
 Meteor.startup(function() {
 	Meteor.defer(() => {
@@ -60,7 +61,7 @@ Meteor.startup(function() {
 					adminUser.name = process.env.ADMIN_NAME;
 				}
 
-				console.log((`Name: ${ adminUser.name }`).green);
+				console.log(`Name: ${ adminUser.name }`.green);
 
 				if (process.env.ADMIN_EMAIL) {
 					const re = /^[^@].*@[^@]+$/i;
@@ -72,7 +73,7 @@ Meteor.startup(function() {
 								verified: true,
 							}];
 
-							console.log((`Email: ${ process.env.ADMIN_EMAIL }`).green);
+							console.log(`Email: ${ process.env.ADMIN_EMAIL }`.green);
 						} else {
 							console.log('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red);
 						}
@@ -101,7 +102,7 @@ Meteor.startup(function() {
 					}
 				}
 
-				console.log((`Username: ${ adminUser.username }`).green);
+				console.log(`Username: ${ adminUser.username }`.green);
 
 				adminUser.type = 'user';
 
@@ -109,7 +110,7 @@ Meteor.startup(function() {
 
 				Accounts.setPassword(id, process.env.ADMIN_PASS);
 
-				console.log((`Password: ${ process.env.ADMIN_PASS }`).green);
+				console.log(`Password: ${ process.env.ADMIN_PASS }`.green);
 
 				addUserRoles(id, 'admin');
 			} else {
@@ -171,10 +172,10 @@ Meteor.startup(function() {
 				type: 'user',
 			};
 
-			console.log((`Name: ${ adminUser.name }`).green);
-			console.log((`Email: ${ adminUser.emails[0].address }`).green);
-			console.log((`Username: ${ adminUser.username }`).green);
-			console.log((`Password: ${ adminUser._id }`).green);
+			console.log(`Name: ${ adminUser.name }`.green);
+			console.log(`Email: ${ adminUser.emails[0].address }`.green);
+			console.log(`Username: ${ adminUser.username }`.green);
+			console.log(`Password: ${ adminUser._id }`.green);
 
 			if (Users.findOneByEmailAddress(adminUser.emails[0].address)) {
 				throw new Meteor.Error(`Email ${ adminUser.emails[0].address } already exists`, 'Rocket.Chat can\'t run in test mode');

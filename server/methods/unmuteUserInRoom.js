@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+
+import { hasPermission } from '../../app/authorization';
+import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	unmuteUserInRoom(data) {
@@ -41,7 +42,7 @@ Meteor.methods({
 			});
 		}
 
-		const unmutedUser = Users.findOneByUsername(data.username);
+		const unmutedUser = Users.findOneByUsernameIgnoringCase(data.username);
 
 		const fromUser = Users.findOneById(fromId);
 

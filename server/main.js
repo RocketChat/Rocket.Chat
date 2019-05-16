@@ -1,14 +1,13 @@
+import './importPackages';
 import '../imports/startup/server';
 
 import '../lib/RegExp';
-import '../lib/francocatena_fix';
 
 import './lib/accounts';
 import './lib/cordova';
 import './lib/roomFiles';
 import './startup/migrations';
 import './startup/appcache';
-import './startup/avatar';
 import './startup/cron';
 import './startup/initialData';
 import './startup/presence';
@@ -78,5 +77,6 @@ import './publications/subscription';
 import './publications/userAutocomplete';
 import './publications/userChannels';
 import './publications/userData';
+import './routes/avatar';
 import './stream/messages';
 import './stream/streamBroadcast';

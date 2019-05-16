@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Rooms, Users } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
-import { Federation } from 'meteor/rocketchat:federation';
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Users } from '../../app/models';
+import { Federation } from '../../app/federation/server';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -52,7 +52,7 @@ Meteor.methods({
 
 		limit = limit > 0 ? limit : 10;
 
-		const options = {
+		const pagination = {
 			skip,
 			limit,
 		};
@@ -66,7 +66,7 @@ Meteor.methods({
 			}
 
 			const result = Rooms.findByNameAndType(regex, 'c', {
-				...options,
+				...pagination,
 				sort,
 				fields: {
 					description: 1,
@@ -90,36 +90,13 @@ Meteor.methods({
 			return;
 		}
 
-		let exceptions = [user.username];
-
-		// Get exceptions
-		if (type === 'users' && workspace === 'all') {
-			const nonFederatedUsers = Users.find({
-				$or: [
-					{ federation: { $exists: false } },
-					{ 'federation.peer': Federation.localIdentifier },
-				],
-			}, { fields: { username: 1 } }).map((u) => u.username);
-
-			exceptions = exceptions.concat(nonFederatedUsers);
-		} else if (type === 'users' && workspace === 'local') {
-			const federatedUsers = Users.find({
-				$and: [
-					{ federation: { $exists: true } },
-					{ 'federation.peer': { $ne: Federation.localIdentifier } },
-				],
-			}, { fields: { username: 1 } }).map((u) => u.username);
-
-			exceptions = exceptions.concat(federatedUsers);
-		}
-
-		const sort = sortUsers(sortBy, sortDirection);
+		const exceptions = [user.username];
 
 		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
-		const result = Users.findByActiveUsersExcept(text, exceptions, {
-			...options,
-			sort,
+		const options = {
+			...pagination,
+			sort: sortUsers(sortBy, sortDirection),
 			fields: {
 				username: 1,
 				name: 1,
@@ -127,11 +104,45 @@ Meteor.methods({
 				emails: 1,
 				federation: 1,
 			},
-		}, forcedSearchFields);
+		};
+
+		let result;
+		if (workspace === 'all') {
+			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
+		} else if (workspace === 'external') {
+			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+		} else {
+			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+		}
+
+		const total = result.count(); // count ignores the `skip` and `limit` options
+		const results = result.fetch();
+
+		// Try to find federated users, when appliable
+		if (Federation.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
+			const federatedUsers = Federation.methods.searchUsers(text);
+
+			for (const federatedUser of federatedUsers) {
+				const { user } = federatedUser;
+
+				const exists = results.findIndex((e) => e.domain === user.federation.peer && e.username === user.username) !== -1;
+
+				if (exists) { continue; }
+
+				// Add the federated user to the results
+				results.unshift({
+					username: user.username,
+					name: user.name,
+					createdAt: user.createdAt,
+					emails: user.emails,
+					federation: user.federation,
+				});
+			}
+		}
 
 		return {
-			total: result.count(), // count ignores the `skip` and `limit` options
-			results: result.fetch(),
+			total,
+			results,
 		};
 	},
 });

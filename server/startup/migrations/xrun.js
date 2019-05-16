@@ -1,5 +1,6 @@
 import _ from 'underscore';
-import { Migrations } from 'meteor/rocketchat:migrations';
+
+import { Migrations } from '../../../app/migrations';
 
 if (Migrations.getVersion() !== 0) {
 	Migrations.migrateTo(process.env.MIGRATION_VERSION || 'latest');

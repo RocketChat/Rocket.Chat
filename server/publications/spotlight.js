@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { roomTypes } from 'meteor/rocketchat:utils';
 import s from 'underscore.string';
+
+import { hasPermission } from '../../app/authorization';
+import { Users, Subscriptions, Rooms } from '../../app/models';
+import { settings } from '../../app/settings';
+import { roomTypes } from '../../app/utils';
 
 function fetchRooms(userId, rooms) {
 	if (!settings.get('Store_Last_Message') || hasPermission(userId, 'preview-c-room')) {
@@ -83,7 +84,8 @@ Meteor.methods({
 			}
 		} else if (type.users === true && rid) {
 			const subscriptions = Subscriptions.find({
-				rid, 'u.username': {
+				rid,
+				'u.username': {
 					$regex: regex,
 					$nin: [...usernames, Meteor.user().username],
 				},

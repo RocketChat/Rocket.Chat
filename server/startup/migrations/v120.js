@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Users } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
 
 Migrations.add({
 	version: 120,
@@ -24,7 +24,7 @@ Migrations.add({
 			},
 			$set: {
 				'settings.preferences.sidebarSortby': 'alphabetical',
-				'settings.preferences.sidebarShowUnread' : true,
+				'settings.preferences.sidebarShowUnread': true,
 				'settings.preferences.sidebarShowFavorites': true,
 			},
 		});

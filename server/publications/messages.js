@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
-import { Messages } from 'meteor/rocketchat:models';
+
+import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
+import { Messages } from '../../app/models';
 
 Meteor.publish('messages', function(rid/* , start*/) {
 	if (!this.userId) {
@@ -27,10 +28,12 @@ Meteor.publish('messages', function(rid/* , start*/) {
 
 	const cursorHandle = cursor.observeChanges({
 		added(_id, record) {
-			return publication.added('rocketchat_message', _id, composeMessageObjectWithUser(record, publication.userId));
+			const [message] = normalizeMessagesForUser([record], publication.userId);
+			return publication.added('rocketchat_message', _id, message);
 		},
 		changed(_id, record) {
-			return publication.changed('rocketchat_message', _id, composeMessageObjectWithUser(record, publication.userId));
+			const [message] = normalizeMessagesForUser([record], publication.userId);
+			return publication.changed('rocketchat_message', _id, message);
 		},
 	});
 
@@ -93,6 +96,5 @@ Meteor.methods({
 		}
 
 		return Meteor.call('getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
-
 	},
 });
