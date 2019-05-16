@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
+import { Migrations } from '../../../app/migrations';
+import { Messages, Rooms, LivechatPageVisited } from '../../../app/models';
+
 let pageVisitedCollection;
 let messageCollection;
 let roomCollection;
@@ -35,11 +38,11 @@ async function migrateHistory(total, current) {
 			ts: item.ts,
 			msg: `${ item.page.title } - ${ item.page.location.href }`,
 			u: {
-				_id : 'rocket.cat',
-				username : 'rocket.cat',
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
 			},
-			groupable : false,
-			navigation : {
+			groupable: false,
+			navigation: {
 				page: item.page,
 				token: item.token,
 			},
@@ -73,17 +76,17 @@ async function migrateHistory(total, current) {
 }
 
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 123,
 	up() {
-		pageVisitedCollection = RocketChat.models.LivechatPageVisited.model.rawCollection();
-		messageCollection = RocketChat.models.Messages.model.rawCollection();
-		roomCollection = RocketChat.models.Rooms.model.rawCollection();
+		pageVisitedCollection = LivechatPageVisited.model.rawCollection();
+		messageCollection = Messages.model.rawCollection();
+		roomCollection = Rooms.model.rawCollection();
 
 		/*
 		 * Move visitor navigation history to messages
 		 */
-		Meteor.setTimeout(async() => {
+		Meteor.setTimeout(async () => {
 			const pages = pageVisitedCollection.find({});
 			const total = await pages.count();
 			await pages.close();

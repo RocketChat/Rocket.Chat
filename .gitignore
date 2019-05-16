@@ -75,3 +75,6 @@ settings.json
 build.sh
 /public/livechat
 packages/rocketchat-i18n/i18n/livechat.*
+tests/end-to-end/temporary_staged_test
+.screenshots
+/private/livechat

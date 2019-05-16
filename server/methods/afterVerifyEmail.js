@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { Users, Roles } from '../../app/models';
+
 Meteor.methods({
 	afterVerifyEmail() {
 		const userId = Meteor.userId();
@@ -11,13 +13,13 @@ Meteor.methods({
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		const verifiedEmail = _.find(user.emails, (email) => email.verified);
 
 		if (verifiedEmail) {
-			RocketChat.models.Roles.addUserRoles(user._id, 'user');
-			RocketChat.models.Roles.removeUserRoles(user._id, 'anonymous');
+			Roles.addUserRoles(user._id, 'user');
+			Roles.removeUserRoles(user._id, 'anonymous');
 		}
 	},
 });

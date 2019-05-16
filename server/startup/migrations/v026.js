@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Messages } from '../../../app/models';
+
+Migrations.add({
 	version: 26,
 	up() {
-		return RocketChat.models.Messages.update({
+		return Messages.update({
 			t: 'rm',
 		}, {
 			$set: {

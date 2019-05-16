@@ -9,8 +9,8 @@ test-install-dependencies: &test-install-dependencies
   command: |
     wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-    echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-    echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+    echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
     sudo apt-get update
     sudo apt-get install -y mongodb-org-shell google-chrome-stable
 
@@ -33,20 +33,23 @@ test-configure-replicaset: &test-configure-replicaset
     mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
     mongo --eval 'rs.status()'
 
+test-restore-npm-cache: &test-restore-npm-cache
+  keys:
+    - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+
+test-save-npm-cache: &test-save-npm-cache
+  key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+  paths:
+    - ./node_modules
+
 test-docker-image: &test-docker-image
-  circleci/node:8.11-browsers
-
-test: &test
-  <<: *defaults
-  environment: &test-environment
-    TEST_MODE: "true"
-    MONGO_URL: mongodb://localhost:27017/rocketchat
-
+  circleci/node:8.11-stretch-browsers
 
 test-with-oplog: &test-with-oplog
-  <<: *test
+  <<: *defaults
   environment:
-    <<: *test-environment
+    TEST_MODE: "true"
+    MONGO_URL: mongodb://localhost:27017/rocketchat
     MONGO_OPLOG_URL: mongodb://localhost:27017/local
 
   steps:
@@ -54,38 +57,30 @@ test-with-oplog: &test-with-oplog
     - checkout
     - run: *test-install-dependencies
     - run: *test-configure-replicaset
+    - restore_cache: *test-restore-npm-cache
     - run: *test-npm-install
     - run: *test-run
+    - save_cache: *test-save-npm-cache
     - store_artifacts: *test-store_artifacts
-
-test-without-oplog: &test-without-oplog
-  <<: *test
-  steps:
-    - attach_workspace: *attach_workspace
-    - checkout
-    - run: *test-install-dependencies
-    - run: *test-npm-install
-    - run: *test-run
-    - store_artifacts: *test-store_artifacts
-
 
 version: 2
 jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:8.11-stretch
+      - image: mongo:3.2
 
     steps:
       - checkout
 
-      # - restore_cache:
-      #     keys:
-      #       - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+      - restore_cache:
+          keys:
+            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
 
-      # - restore_cache:
-      #     keys:
-      #       - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+      - restore_cache:
+          keys:
+            - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
 
       - run:
           name: Install Meteor
@@ -123,6 +118,9 @@ jobs:
             # rm -rf node_modules
             # rm -f package-lock.json
             meteor npm install
+            cd packages/rocketchat-livechat/.app
+            meteor npm install
+            cd -
 
       - run:
           name: Lint
@@ -132,30 +130,36 @@ jobs:
       - run:
           name: Unit Test
           command: |
-            meteor npm run testunit
+            MONGO_URL=mongodb://localhost:27017 meteor npm run testunit
 
-      # - restore_cache:
-      #     keys:
-      #       - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+      - restore_cache:
+          keys:
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
-      # - restore_cache:
-      #     keys:
-      #       - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+      - restore_cache:
+          keys:
+            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
 
-      # - restore_cache:
-      #     keys:
-      #       - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+      - restore_cache:
+          keys:
+            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
 
       - run:
           name: Build Rocket.Chat
           environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=4096
+            TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
-            if [[ $CIRCLE_TAG ]]; then meteor reset; fi
-            set +e
-            meteor add rocketchat:lib
-            set -e
-            meteor build --server-only --directory /tmp/build-test
+            if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == 'develop' ]]; then
+              meteor reset;
+            fi
+
+            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+            if [[ -z $CIRCLE_PR_NUMBER ]]; then
+              meteor build --server-only --directory /tmp/build-test
+            else
+              export METEOR_PROFILE=1000
+              meteor build --server-only --directory --debug /tmp/build-test
+            fi;
 
       - run:
           name: Prepare build
@@ -166,30 +170,30 @@ jobs:
             cd /tmp/build-test/bundle/programs/server
             npm install
 
-      # - save_cache:
-      #     key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
-      #     paths:
-      #       - ./node_modules
+      - save_cache:
+          key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
 
-      # - save_cache:
-      #     key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
-      #     paths:
-      #       - ./.meteor/local
+      - save_cache:
+          key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+          paths:
+            - ./.meteor/local
 
-      # - save_cache:
-      #     key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
-      #     paths:
-      #       - ./packages/rocketchat-livechat/app/node_modules
+      - save_cache:
+          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
+          paths:
+            - ./packages/rocketchat-livechat/app/node_modules
 
-      # - save_cache:
-      #     key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
-      #     paths:
-      #       - ./packages/rocketchat-livechat/app/.meteor/local
+      - save_cache:
+          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
+          paths:
+            - ./packages/rocketchat-livechat/app/.meteor/local
 
-      # - save_cache:
-      #     key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
-      #     paths:
-      #       - ~/.meteor
+      - save_cache:
+          key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+          paths:
+            - ~/.meteor
 
       - persist_to_workspace:
           root: /tmp/
@@ -229,36 +233,10 @@ jobs:
       - image: mongo:4.0
         command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
-
-  test-without-oplog-mongo-3-2:
-    <<: *test-without-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.2
-
-  test-without-oplog-mongo-3-4:
-    <<: *test-without-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.4
-
-  test-without-oplog-mongo-3-6:
-    <<: *test-without-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.6
-
-  test-without-oplog-mongo-4-0:
-    <<: *test-without-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:4.0
-
-
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:8.11-stretch
 
     steps:
       - attach_workspace:
@@ -272,9 +250,9 @@ jobs:
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3.4-dev
+            sudo apt-get -y -qq install python3.5-dev
             curl -O https://bootstrap.pypa.io/get-pip.py
-            python3.4 get-pip.py --user
+            python3.5 get-pip.py --user
             export PATH=~/.local/bin:$PATH
             pip install awscli --upgrade --user
 
@@ -290,7 +268,6 @@ jobs:
             source .circleci/setdeploydir.sh
             bash .circleci/setupsig.sh
             bash .circleci/namefiles.sh
-            # echo ".circleci/sandstorm.sh"
 
             aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
@@ -414,13 +391,13 @@ workflows:
       - build:
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-3-2: &test-mongo
           requires:
             - build
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-3-4: &test-mongo-no-pr
           requires:
             - build
@@ -428,28 +405,20 @@ workflows:
             branches:
               only: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-3-6: *test-mongo-no-pr
       - test-with-oplog-mongo-4-0: *test-mongo
-      - test-without-oplog-mongo-3-2: *test-mongo-no-pr
-      - test-without-oplog-mongo-3-4: *test-mongo-no-pr
-      - test-without-oplog-mongo-3-6: *test-mongo-no-pr
-      - test-without-oplog-mongo-4-0: *test-mongo-no-pr
       - deploy:
           requires:
             - test-with-oplog-mongo-3-2
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
-            - test-without-oplog-mongo-3-2
-            - test-without-oplog-mongo-3-4
-            - test-without-oplog-mongo-3-6
-            - test-without-oplog-mongo-4-0
           filters:
             branches:
               only: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - image-build:
           requires:
             - deploy
@@ -457,7 +426,7 @@ workflows:
             branches:
               only: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - hold:
           type: approval
           requires:
@@ -466,7 +435,7 @@ workflows:
             branches:
               ignore: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - pr-image-build:
           requires:
             - hold
@@ -474,5 +443,5 @@ workflows:
             branches:
               ignore: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
 

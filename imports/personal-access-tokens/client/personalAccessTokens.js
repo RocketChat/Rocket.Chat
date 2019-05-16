@@ -3,10 +3,12 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { t } from 'meteor/rocketchat:utils';
-import { modal, SideNav } from 'meteor/rocketchat:ui-utils';
 import toastr from 'toastr';
 import moment from 'moment';
+
+import { t } from '../../../app/utils';
+import { modal, SideNav } from '../../../app/ui-utils';
+import { hasAllPermission } from '../../../app/authorization';
 
 import './personalAccessTokens.html';
 
@@ -14,7 +16,7 @@ const PersonalAccessTokens = new Mongo.Collection('personal_access_tokens');
 
 Template.accountTokens.helpers({
 	isAllowed() {
-		return RocketChat.authz.hasAllPermission(['create-personal-access-tokens']);
+		return hasAllPermission(['create-personal-access-tokens']);
 	},
 	tokens() {
 		return (PersonalAccessTokens.find({}).fetch()[0] && PersonalAccessTokens.find({}).fetch()[0].tokens) || [];
