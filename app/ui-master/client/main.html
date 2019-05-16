@@ -16,6 +16,7 @@
 				{{else}}
 					{{> loginLayout center="loginForm"}}
 				{{/if}}
+				{{ CustomScriptLoggedOut }}
 			{{else}}
 				{{#unless hasUsername}}
 					{{> username}}
