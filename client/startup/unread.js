@@ -36,7 +36,6 @@ Meteor.startup(() => {
 		const openedRoomId = getOpenRoomId();
 
 		let unreadCount = 0;
-		let unreadCountInOpenedRoom = 0;
 		let unreadAlert = false;
 
 		for (const subscription of fetchSubscriptions()) {
@@ -55,9 +54,6 @@ Meteor.startup(() => {
 
 				// Increment the total unread count.
 				unreadCount += subscription.unread;
-				if (subscriptionIsTheOpenedRoom) {
-					unreadCountInOpenedRoom = subscription.unread;
-				}
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
 					const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
@@ -84,8 +80,6 @@ Meteor.startup(() => {
 		} else {
 			Session.set('unread', '');
 		}
-
-		Session.set('unreadOutsideRoom', unreadCount > unreadCountInOpenedRoom);
 	});
 });
 

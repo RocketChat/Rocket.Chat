@@ -1,11 +1,45 @@
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { Layout } from '../../../../ui-utils';
+import { ChatSubscription } from '../../../../models/client';
+import { Layout } from '../../../../ui-utils/client';
+import { getUserPreference } from '../../../../utils';
 
 Template.burger.helpers({
 	unread() {
-		return Session.get('unreadOutsideRoom') ? Session.get('unread') : 0;
+		const [unreadCount, unreadAlert] = ChatSubscription
+			.find({
+				open: true,
+				hideUnreadStatus: { $ne: true },
+				rid: { $ne: Session.get('openedRoom') },
+			}, {
+				fields: {
+					unread: 1,
+					alert: 1,
+					unreadAlert: 1,
+				},
+			})
+			.fetch()
+			.reduce(([unreadCount, unreadAlert], { alert, unread, unreadAlert: alertType }) => {
+				if (alert || unread > 0) {
+					unreadCount += unread;
+					if (alert === true && alertType !== 'nothing') {
+						const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
+						if (alertType === 'all' || userUnreadAlert !== false) {
+							unreadAlert = '•';
+						}
+					}
+				}
+
+				return [unreadCount, unreadAlert];
+			}, [0, false]);
+
+		if (unreadCount > 0) {
+			return unreadCount > 999 ? '999+' : unreadCount;
+		}
+
+		return unreadAlert || '';
 	},
 
 	isMenuOpen() {
