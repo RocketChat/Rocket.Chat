@@ -9,9 +9,9 @@ export class AppListenerBridge {
 
 		if (typeof result === 'boolean') {
 			return result;
-		} else {
-			return this.orch.getConverters().get('messages').convertAppMessage(result);
 		}
+		return this.orch.getConverters().get('messages').convertAppMessage(result);
+
 		// try {
 
 		// } catch (e) {
@@ -26,9 +26,9 @@ export class AppListenerBridge {
 
 		if (typeof result === 'boolean') {
 			return result;
-		} else {
-			return this.orch.getConverters().get('rooms').convertAppRoom(result);
 		}
+		return this.orch.getConverters().get('rooms').convertAppRoom(result);
+
 		// try {
 
 		// } catch (e) {

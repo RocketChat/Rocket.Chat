@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Users, Messages } from '../../../models';
 
 Meteor.publish('snippetedMessages', function(rid, limit = 50) {

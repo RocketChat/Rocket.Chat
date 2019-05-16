@@ -1,5 +1,3 @@
-export { Apps } from './orchestrator';
-
 import './admin/modalTemplates/iframeModal.html';
 import './admin/modalTemplates/iframeModal';
 import './admin/marketplace.html';
@@ -14,3 +12,5 @@ import './admin/appManage.html';
 import './admin/appManage';
 import './admin/appWhatIsIt.html';
 import './admin/appWhatIsIt';
+
+export { Apps } from './orchestrator';

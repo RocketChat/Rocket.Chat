@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
+
 import { Subscriptions, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 

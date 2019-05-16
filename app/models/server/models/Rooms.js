@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import Settings from './Settings';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -242,8 +243,8 @@ export class Rooms extends Base {
 		}
 
 		// livechat analytics : update last message timestamps
-		const visitorLastQuery = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;
-		const agentLastReply = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
+		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
+		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
 
 		if (message.token) {	// update visitor timestamp, only if its new inquiry and not continuing message
 			if (agentLastReply >= visitorLastQuery) {		// if first query, not continuing query from visitor
@@ -475,7 +476,7 @@ export class Rooms extends Base {
 			$set: {
 				'lastMessage.msg': msg,
 				'lastMessage.snippeted': snippeted,
-				'lastMessage.snippetedAt': snippetedAt || new Date,
+				'lastMessage.snippetedAt': snippetedAt || new Date(),
 				'lastMessage.snippetedBy': snippetedBy,
 				'lastMessage.snippetName': snippetName,
 			},
@@ -490,7 +491,7 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				'lastMessage.pinned': pinned,
-				'lastMessage.pinnedAt': pinnedAt || new Date,
+				'lastMessage.pinnedAt': pinnedAt || new Date(),
 				'lastMessage.pinnedBy': pinnedBy,
 			},
 		};
