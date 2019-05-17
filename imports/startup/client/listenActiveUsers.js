@@ -39,7 +39,7 @@ const saveUser = (user, force = false) => {
 
 let lastStatusChange = null;
 let retry = 0;
-const getActiveUsers = debounce(async () => {
+const getUsersPresence = debounce(async () => {
 	try {
 		const params = {};
 
@@ -50,7 +50,7 @@ const getActiveUsers = debounce(async () => {
 		const { users } = await APIClient.v1.get('users.presence', params);
 		users.forEach((user) => saveUser(user, true));
 	} catch (e) {
-		setTimeout(getActiveUsers, retry++ * 2000);
+		setTimeout(getUsersPresence, retry++ * 2000);
 	}
 }, 1000);
 
@@ -73,7 +73,7 @@ Tracker.autorun(() => {
 
 	wasConnected = true;
 
-	getActiveUsers();
+	getUsersPresence();
 });
 
 Meteor.startup(function() {
