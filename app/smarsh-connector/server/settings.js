@@ -1,5 +1,6 @@
-import { settings } from '../../settings';
 import moment from 'moment';
+
+import { settings } from '../../settings';
 import 'moment-timezone';
 
 settings.addGroup('Smarsh', function addSettings() {

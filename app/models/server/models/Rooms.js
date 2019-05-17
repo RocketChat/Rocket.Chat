@@ -1,26 +1,27 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import Settings from './Settings';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 export class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 
-		this.tryEnsureIndex({ name: 1 }, { unique: 1, sparse: 1 });
+		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
 		this.tryEnsureIndex({ default: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
-		this.tryEnsureIndex({ open: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ departmentId: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ open: 1 }, { sparse: true });
+		this.tryEnsureIndex({ departmentId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ ts: 1 });
 
 		// discussions
-		this.tryEnsureIndex({ prid: 1 });
+		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -242,8 +243,8 @@ export class Rooms extends Base {
 		}
 
 		// livechat analytics : update last message timestamps
-		const visitorLastQuery = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;
-		const agentLastReply = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
+		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
+		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
 
 		if (message.token) {	// update visitor timestamp, only if its new inquiry and not continuing message
 			if (agentLastReply >= visitorLastQuery) {		// if first query, not continuing query from visitor
@@ -438,7 +439,7 @@ export class Rooms extends Base {
 	}
 
 	setReactionsInLastMessage(roomId, lastMessage) {
-		return this.update({ _id: roomId }, { $set: { lastMessage } });
+		return this.update({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
 	}
 
 	unsetReactionsInLastMessage(roomId) {
@@ -475,7 +476,7 @@ export class Rooms extends Base {
 			$set: {
 				'lastMessage.msg': msg,
 				'lastMessage.snippeted': snippeted,
-				'lastMessage.snippetedAt': snippetedAt || new Date,
+				'lastMessage.snippetedAt': snippetedAt || new Date(),
 				'lastMessage.snippetedBy': snippetedBy,
 				'lastMessage.snippetName': snippetName,
 			},
@@ -490,7 +491,7 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				'lastMessage.pinned': pinned,
-				'lastMessage.pinnedAt': pinnedAt || new Date,
+				'lastMessage.pinnedAt': pinnedAt || new Date(),
 				'lastMessage.pinnedBy': pinnedBy,
 			},
 		};
@@ -543,25 +544,8 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				ro: readOnly,
-				muted: [],
 			},
 		};
-		if (readOnly) {
-			Subscriptions.findByRoomIdWhenUsernameExists(_id, { fields: { 'u._id': 1, 'u.username': 1 } }).forEach(function({ u: user }) {
-				if (hasPermission(user._id, 'post-readonly')) {
-					return;
-				}
-				return update.$set.muted.push(user.username);
-			});
-		} else {
-			update.$unset = {
-				muted: '',
-			};
-		}
-
-		if (update.$set.muted.length === 0) {
-			delete update.$set.muted;
-		}
 
 		return this.update(query, update);
 	}
@@ -1176,6 +1160,9 @@ export class Rooms extends Base {
 			$addToSet: {
 				muted: username,
 			},
+			$pull: {
+				unmuted: username,
+			},
 		};
 
 		return this.update(query, update);
@@ -1187,6 +1174,9 @@ export class Rooms extends Base {
 		const update = {
 			$pull: {
 				muted: username,
+			},
+			$addToSet: {
+				unmuted: username,
 			},
 		};
 
@@ -1412,6 +1402,10 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	countDiscussions() {
+		return this.find({ prid: { $exists: true } }).count();
 	}
 }
 

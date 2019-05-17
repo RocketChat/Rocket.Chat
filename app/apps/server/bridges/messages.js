@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+
 import { Messages, Users, Subscriptions } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -29,10 +30,6 @@ export class AppMessageBridge {
 
 	async update(message, appId) {
 		this.orch.debugLog(`The App ${ appId } is updating a message.`);
-		if (!this.updateMessage) {
-			const { updateMessage } = await import('meteor/rocketchat:lib');
-			this.updateMessage = updateMessage;
-		}
 
 		if (!message.editor) {
 			throw new Error('Invalid editor assigned to the message for the update.');

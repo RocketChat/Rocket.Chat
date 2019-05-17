@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+
 import { settings } from '../../../settings';
 import './email';
 
@@ -172,7 +173,7 @@ settings.addGroup('Accounts', function() {
 		});
 		this.add('Accounts_RegistrationForm_SecretURL', Random.id(), {
 			type: 'string',
-			secret : true,
+			secret: true,
 		});
 		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
 			type: 'string',
@@ -256,16 +257,16 @@ settings.addGroup('Accounts', function() {
 			type: 'select',
 			values: [
 				{
-					key : 'all',
-					i18nLabel : 'All_messages',
+					key: 'all',
+					i18nLabel: 'All_messages',
 				},
 				{
-					key : 'mentions',
-					i18nLabel : 'Mentions',
+					key: 'mentions',
+					i18nLabel: 'Mentions',
 				},
 				{
-					key : 'nothing',
-					i18nLabel : 'Nothing',
+					key: 'nothing',
+					i18nLabel: 'Nothing',
 				},
 			],
 			public: true,
@@ -821,10 +822,6 @@ settings.addGroup('General', function() {
 		public: false,
 		secret: true,
 	});
-	this.add('Force_Disable_OpLog_For_Cache', false, {
-		type: 'boolean',
-		public: false,
-	});
 	this.add('Restart', 'restart_server', {
 		type: 'action',
 		actionText: 'Restart_the_server',
@@ -1274,6 +1271,11 @@ settings.addGroup('Layout', function() {
 		});
 	});
 	this.section('Custom_Scripts', function() {
+		this.add('Custom_Script_On_Logout', '//Add your script', {
+			type: 'code',
+			multiline: true,
+			public: true,
+		});
 		this.add('Custom_Script_Logged_Out', '//Add your script', {
 			type: 'code',
 			multiline: true,
@@ -2693,17 +2695,6 @@ settings.addGroup('Setup_Wizard', function() {
 
 		this.add('Cloud_Workspace_Registration_State', '', {
 			type: 'string',
-			hidden: true,
-			readonly: true,
-			enableQuery: {
-				_id: 'Register_Server',
-				value: true,
-			},
-			secret: true,
-		});
-
-		this.add('Cloud_Workspace_Account_Associated', false, {
-			type: 'boolean',
 			hidden: true,
 			readonly: true,
 			enableQuery: {

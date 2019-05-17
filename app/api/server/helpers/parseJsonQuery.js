@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '../../../authorization';
 import { EJSON } from 'meteor/ejson';
+
+import { hasPermission } from '../../../authorization';
 import { API } from '../api';
 
 API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {

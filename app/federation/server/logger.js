@@ -8,5 +8,6 @@ export const logger = new Logger('Federation', {
 		peerServer: 'Peer Server',
 		dns: 'DNS',
 		http: 'HTTP',
+		pinger: 'Pinger',
 	},
 });

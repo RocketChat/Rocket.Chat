@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Base } from '../../models';
 import { Mongo } from 'meteor/mongo';
+
+import { Base } from '../../models';
 
 export let LivechatInquiry;
 

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { EmojiCustom } from '../../../models';
 import s from 'underscore.string';
+
+import { EmojiCustom } from '../../../models';
 
 Meteor.publish('fullEmojiData', function(filter, limit) {
 	if (!this.userId) {
