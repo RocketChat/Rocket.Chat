@@ -380,6 +380,10 @@ class WebRTCClass {
 			}
 			onSuccess(stream);
 		};
+		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+			return navigator.mediaDevices.getUserMedia(media).then(onSuccessLocal).catch(onError);
+		}
+
 		navigator.getUserMedia(media, onSuccessLocal, onError);
 	}
 

@@ -1,8 +1,8 @@
 export const WEB_RTC_EVENTS = {
-	WEB_RTC: 0,
-	STATUS: 1,
-	CALL: 2,
-	JOIN: 3,
-	CANDIDATE: 4,
-	DESCRIPTION: 5,
+	WEB_RTC: 'webrtc',
+	STATUS: 'status',
+	CALL: 'call',
+	JOIN: 'join',
+	CANDIDATE: 'candidate',
+	DESCRIPTION: 'description',
 };
