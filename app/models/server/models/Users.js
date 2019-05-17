@@ -432,6 +432,21 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findNotIdNotOfflineUpdatedFrom(uid, from, options) {
+		const query = {
+			_id: { $ne: uid },
+			username: {
+				$exists: 1,
+			},
+			status: {
+				$in: ['online', 'away', 'busy'],
+			},
+			_updatedAt: { $gte: from },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomId(rid, options) {
 		const data = Subscriptions.findByRoomId(rid).fetch().map((item) => item.u._id);
 		const query = {

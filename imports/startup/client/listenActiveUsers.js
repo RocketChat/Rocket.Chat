@@ -37,11 +37,18 @@ const saveUser = (user, force = false) => {
 	Meteor.users.insert(user);
 };
 
+let lastStatusChange = null;
 let retry = 0;
 const getActiveUsers = debounce(async () => {
 	try {
-		const { users } = await APIClient.v1.get('users.active');
-		users.forEach(saveUser);
+		const params = {};
+
+		if (lastStatusChange) {
+			params.from = lastStatusChange.toISOString();
+		}
+
+		const { users } = await APIClient.v1.get('users.presence', params);
+		users.forEach((user) => saveUser(user, true));
 	} catch (e) {
 		setTimeout(getActiveUsers, retry++ * 2000);
 	}
@@ -71,6 +78,8 @@ Tracker.autorun(() => {
 
 Meteor.startup(function() {
 	Notifications.onLogged('user-status', ([_id, username, status]) => {
+		lastStatusChange = new Date();
+
 		saveUser({ _id, username, status: STATUS_MAP[status] }, true);
 	});
 

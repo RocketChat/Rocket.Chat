@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
-import { Users, Subscriptions } from '../../../models';
+import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -571,17 +571,25 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.active', { authRequired: true }, {
+API.v1.addRoute('users.presence', { authRequired: true }, {
 	get() {
+		const { from } = this.queryParams;
+
+		const options = {
+			fields: {
+				username: 1,
+				name: 1,
+				status: 1,
+				utcOffset: 1,
+			},
+		};
+
+		const users = from
+			? Users.findNotIdNotOfflineUpdatedFrom(this.userId, new Date(from), options).fetch()
+			: Users.findUsersNotOffline(options).fetch();
+
 		return API.v1.success({
-			users: Users.findUsersNotOffline({
-				fields: {
-					username: 1,
-					name: 1,
-					status: 1,
-					utcOffset: 1,
-				},
-			}).fetch(),
+			users,
 		});
 	},
 });

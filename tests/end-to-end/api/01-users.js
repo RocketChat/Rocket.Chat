@@ -294,10 +294,10 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.active]', () => {
+	describe('[/users.presence]', () => {
 		describe('Not logged in:', () => {
 			it('should return 401 unauthorized', (done) => {
-				request.get(api('users.active'))
+				request.get(api('users.presence'))
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res) => {
@@ -308,7 +308,7 @@ describe('[Users]', function() {
 		});
 		describe('Logged in:', () => {
 			it('should return online users list', (done) => {
-				request.get(api('users.active'))
+				request.get(api('users.presence'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -321,6 +321,18 @@ describe('[Users]', function() {
 							'status',
 							'utcOffset',
 						);
+					})
+					.end(done);
+			});
+
+			it('should return no online users updated after now', (done) => {
+				request.get(api(`users.presence?from=${ new Date().toISOString() }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('users').that.is.an('array').that.has.lengthOf(0);
 					})
 					.end(done);
 			});
