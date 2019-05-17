@@ -1,6 +1,6 @@
-import { Subscriptions, Users } from '../../../../models';
 import property from 'lodash.property';
 
+import { Subscriptions, Users } from '../../../../models';
 import schema from '../../schemas/channels/Channel-type.graphqls';
 
 const resolver = {

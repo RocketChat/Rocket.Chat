@@ -1,8 +1,8 @@
+import crypto from 'crypto';
+
 import _ from 'underscore';
 import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefix';
-import crypto from 'crypto';
-
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
@@ -119,7 +119,6 @@ export const theme = new class {
 			};
 			return settings.add(`theme-${ type }-${ name }`, value, config);
 		}
-
 	}
 
 	addPublicColor(name, value, section, editor = 'color', property) {
@@ -152,7 +151,7 @@ export const theme = new class {
 	getCss() {
 		return settings.get('css') || '';
 	}
-};
+}();
 
 settings.get('css', (key, value = '') => {
 	currentHash = crypto.createHash('sha1').update(value).digest('hex');

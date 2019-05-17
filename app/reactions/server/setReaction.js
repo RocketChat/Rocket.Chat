@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+
 import { Messages, EmojiCustom, Subscriptions, Rooms } from '../../models';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib';
-import _ from 'underscore';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
@@ -23,7 +24,13 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
 	}
 
-	if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+	if (room.ro && !room.reactWhenReadOnly) {
+		if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
+			return false;
+		}
+	}
+
+	if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: room._id,
@@ -31,7 +38,7 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 			msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 		});
 		return false;
-	} else if (!Subscriptions.findOne({ rid: message.rid })) {
+	} if (!Subscriptions.findOne({ rid: message.rid })) {
 		return false;
 	}
 
@@ -46,23 +53,20 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 	}
 	if (userAlreadyReacted) {
 		removeUserReaction(message, reaction, user.username);
-
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
 				Rooms.unsetReactionsInLastMessage(room._id);
 			}
 			Messages.unsetReactions(message._id);
-			callbacks.run('unsetReaction', message._id, reaction);
-			callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
 		} else {
 			Messages.setReactions(message._id, message.reactions);
 			if (isTheLastMessage(room, message)) {
 				Rooms.setReactionsInLastMessage(room._id, message);
 			}
-			callbacks.run('setReaction', message._id, reaction);
-			callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 		}
+		callbacks.run('unsetReaction', message._id, reaction);
+		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
 	} else {
 		if (!message.reactions) {
 			message.reactions = {};
@@ -105,7 +109,5 @@ Meteor.methods({
 		}
 
 		setReaction(room, user, message, reaction, shouldReact);
-
-		return;
 	},
 });

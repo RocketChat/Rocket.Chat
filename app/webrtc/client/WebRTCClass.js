@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t } from '../../utils';
+
 import { ChromeScreenShare } from './screenShare';
+import { t } from '../../utils';
 import { Notifications } from '../../notifications';
 import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
@@ -151,8 +152,6 @@ class WebRTCTransportClass {
 		}
 		callbacks.onRemoteStatus.push(fn);
 	}
-
-
 }
 
 class WebRTCClass {
@@ -195,7 +194,7 @@ class WebRTCClass {
 		this.videoEnabled = new ReactiveVar(true);
 		this.overlayEnabled = new ReactiveVar(false);
 		this.screenShareEnabled = new ReactiveVar(false);
-		this.localUrl = new ReactiveVar;
+		this.localUrl = new ReactiveVar();
 		this.active = false;
 		this.remoteMonitoring = false;
 		this.monitor = false;
@@ -406,7 +405,7 @@ class WebRTCClass {
 	_getUserMedia(media, onSuccess, onError) {
 		const onSuccessLocal = (stream) => {
 			if (AudioContext && stream.getAudioTracks().length > 0) {
-				const audioContext = new AudioContext;
+				const audioContext = new AudioContext();
 				const source = audioContext.createMediaStreamSource(stream);
 				const volume = audioContext.createGain();
 				source.connect(volume);
@@ -954,7 +953,6 @@ class WebRTCClass {
 			peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
 		}
 	}
-
 }
 
 const WebRTC = new class {
@@ -986,7 +984,7 @@ const WebRTC = new class {
 		}
 		return this.instancesByRoomId[roomId];
 	}
-};
+}();
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

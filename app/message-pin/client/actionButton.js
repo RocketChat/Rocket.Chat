@@ -1,19 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Subscriptions } from '../../models';
 import { hasAtLeastOnePermission } from '../../authorization';
-import toastr from 'toastr';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'pin-message',
 		icon: 'pin',
-		label: 'Pin_Message',
+		label: 'Pin',
 		context: ['pinned', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
@@ -31,14 +32,14 @@ Meteor.startup(function() {
 
 			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
-		order: 20,
+		order: 7,
 		group: 'menu',
 	});
 
 	MessageAction.addButton({
 		id: 'unpin-message',
 		icon: 'pin',
-		label: 'Unpin_Message',
+		label: 'Unpin',
 		context: ['pinned', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
@@ -56,7 +57,7 @@ Meteor.startup(function() {
 
 			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
-		order: 21,
+		order: 8,
 		group: 'menu',
 	});
 
@@ -85,7 +86,7 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'permalink-pinned',
 		icon: 'permalink',
-		label: 'Permalink',
+		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['pinned'],
 		async action(event) {

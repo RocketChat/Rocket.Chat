@@ -27,7 +27,7 @@ class LivechatPageVisited extends Base {
 	}
 
 	findByToken(token) {
-		return this.find({ token }, { sort : { ts: -1 }, limit: 20 });
+		return this.find({ token }, { sort: { ts: -1 }, limit: 20 });
 	}
 
 	keepHistoryForToken(token) {

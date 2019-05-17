@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Base } from './_Base';
 import Users from './Users';
-import _ from 'underscore';
 /**
  * Livechat Department model
  */
@@ -69,9 +70,8 @@ export class LivechatDepartmentAgents extends Base {
 				agentId: agent.value.agentId,
 				username: agent.value.username,
 			};
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	getOnlineForDepartment(departmentId) {

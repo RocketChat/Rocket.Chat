@@ -1,8 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../settings';
-import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
-import _ from 'underscore';
 import dns from 'dns';
+
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
+import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
+import { settings } from '../../../settings';
 
 let emailDomainBlackList = [];
 let emailDomainWhiteList = [];

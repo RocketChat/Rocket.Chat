@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import moment from 'moment';
+
 import { hasPermission } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { Users } from '../../../models';
-import _ from 'underscore';
-import moment from 'moment';
 
 callbacks.add('beforeSaveMessage', function(message) {
 	// If the message was edited, or is older than 60 seconds (imported)
@@ -16,12 +17,10 @@ callbacks.add('beforeSaveMessage', function(message) {
 	}
 
 	// Test if the message mentions include @all.
-	if (message.mentions != null &&
-		_.pluck(message.mentions, '_id').some((item) => item === 'all')) {
-
+	if (message.mentions != null
+		&& _.pluck(message.mentions, '_id').some((item) => item === 'all')) {
 		// Check if the user has permissions to use @all in both global and room scopes.
 		if (!hasPermission(message.u._id, 'mention-all') && !hasPermission(message.u._id, 'mention-all', message.rid)) {
-
 			// Get the language of the user for the error notification.
 			const { language } = Users.findOneById(message.u._id);
 			const action = TAPi18n.__('Notify_all_in_this_room', {}, language);
@@ -31,7 +30,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 			Notifications.notifyUser(message.u._id, 'message', {
 				_id: Random.id(),
 				rid: message.rid,
-				ts: new Date,
+				ts: new Date(),
 				msg: TAPi18n.__('error-action-not-allowed', { action }, language),
 			});
 
@@ -44,5 +43,4 @@ callbacks.add('beforeSaveMessage', function(message) {
 	}
 
 	return message;
-
 }, 1, 'filterATAllTag');

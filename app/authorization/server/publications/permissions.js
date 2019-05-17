@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import Permissions from '../../../models/server/models/Permissions';
 import { Notifications } from '../../../notifications';
 
