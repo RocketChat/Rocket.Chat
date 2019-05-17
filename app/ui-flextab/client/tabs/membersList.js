@@ -91,7 +91,7 @@ Template.membersList.helpers({
 				// sending the ones without an assigned role at the end of list
 				rank = 1000;
 			}
-      
+
 			const muted = (room.ro && !roomUnmuted.includes(user.username)) || roomMuted.includes(user.username);
 
 			return {
