@@ -584,12 +584,21 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 			},
 		};
 
-		const users = from
-			? Users.findNotIdNotOfflineUpdatedFrom(this.userId, new Date(from), options).fetch()
-			: Users.findUsersNotOffline(options).fetch();
+		if (from) {
+			const ts = new Date(from);
+			const diff = (Date.now() - ts) / 1000 / 60;
+
+			if (diff < 10) {
+				return API.v1.success({
+					users: Users.findNotIdUpdatedFrom(this.userId, ts, options).fetch(),
+					full: false,
+				});
+			}
+		}
 
 		return API.v1.success({
-			users,
+			users: Users.findUsersNotOffline(options).fetch(),
+			full: true,
 		});
 	},
 });

@@ -39,7 +39,7 @@ const saveUser = (user, force = false) => {
 
 let lastStatusChange = null;
 let retry = 0;
-const getUsersPresence = debounce(async () => {
+const getUsersPresence = debounce(async (isConnected) => {
 	try {
 		const params = {};
 
@@ -47,10 +47,27 @@ const getUsersPresence = debounce(async () => {
 			params.from = lastStatusChange.toISOString();
 		}
 
-		const { users } = await APIClient.v1.get('users.presence', params);
-		users.forEach((user) => saveUser(user, true));
+		const {
+			users,
+			full,
+		} = await APIClient.v1.get('users.presence', params);
+
+		// if is reconnecting, set everyone else to offline
+		if (full && isConnected) {
+			Meteor.users.update({
+				_id: { $ne: Meteor.userId() },
+			}, {
+				$set: {
+					status: 'offline',
+				},
+			}, { multi: true });
+		}
+
+		users.forEach((user) => saveUser(user, full));
+
+		lastStatusChange = new Date();
 	} catch (e) {
-		setTimeout(getUsersPresence, retry++ * 2000);
+		setTimeout(() => getUsersPresence(isConnected), retry++ * 2000);
 	}
 }, 1000);
 
@@ -60,25 +77,19 @@ Tracker.autorun(() => {
 		return;
 	}
 
-	// if is reconnecting, set everyone else to offline
-	if (wasConnected) {
-		Meteor.users.update({
-			_id: { $ne: Meteor.userId() },
-		}, {
-			$set: {
-				status: 'offline',
-			},
-		}, { multi: true });
-	}
+	lastStatusChange = null;
+
+	getUsersPresence(wasConnected);
 
 	wasConnected = true;
-
-	getUsersPresence();
 });
 
 Meteor.startup(function() {
 	Notifications.onLogged('user-status', ([_id, username, status]) => {
-		lastStatusChange = new Date();
+		// only set after first request completed
+		if (lastStatusChange) {
+			lastStatusChange = new Date();
+		}
 
 		saveUser({ _id, username, status: STATUS_MAP[status] }, true);
 	});

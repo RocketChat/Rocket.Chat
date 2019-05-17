@@ -307,13 +307,14 @@ describe('[Users]', function() {
 			});
 		});
 		describe('Logged in:', () => {
-			it('should return online users list', (done) => {
+			it('should return online users full list', (done) => {
 				request.get(api('users.presence'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('full', true);
 						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
 							'_id',
 							'username',
@@ -332,7 +333,30 @@ describe('[Users]', function() {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('full', false);
 						expect(res.body).to.have.property('users').that.is.an('array').that.has.lengthOf(0);
+					})
+					.end(done);
+			});
+
+			it('should return full list of online users for more than 10 minutes in the past', (done) => {
+				const date = new Date();
+				date.setMinutes(date.getMinutes() - 11);
+
+				request.get(api(`users.presence?from=${ date.toISOString() }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('full', true);
+						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
+							'_id',
+							'username',
+							'name',
+							'status',
+							'utcOffset',
+						);
 					})
 					.end(done);
 			});

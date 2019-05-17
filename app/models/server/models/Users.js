@@ -432,14 +432,11 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findNotIdNotOfflineUpdatedFrom(uid, from, options) {
+	findNotIdUpdatedFrom(uid, from, options) {
 		const query = {
 			_id: { $ne: uid },
 			username: {
 				$exists: 1,
-			},
-			status: {
-				$in: ['online', 'away', 'busy'],
 			},
 			_updatedAt: { $gte: from },
 		};
