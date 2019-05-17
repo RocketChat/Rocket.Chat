@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { logger } from './logger';
 import { ping } from './methods/ping';
-import { FederationPeers } from '../../models';
+import { FederationPeers, FederationEvents } from '../../models';
 
 
 export class PeerPinger {
@@ -31,6 +31,12 @@ export class PeerPinger {
 		const pingResults = ping(peers.map((p) => p.peer));
 
 		FederationPeers.updateStatuses(pingResults);
+
+		// Resend failed events to active peers
+		FederationEvents.retryEvents(FederationPeers.getActivePeers());
+
+		// Warn channels that a federated user might not be getting messages
+		FederationPeers.notifyInactivePeerRooms();
 
 		Meteor.setTimeout(this.pingAllPeers.bind(this), this.config.pingInterval);
 	}

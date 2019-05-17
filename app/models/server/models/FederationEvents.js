@@ -20,6 +20,14 @@ const normalizePeers = (basePeers, options) => {
 class FederationEventsModel extends Base {
 	constructor() {
 		super('federation_events');
+
+		// Remove ping events
+		this.tryEnsureIndex({ ts: 1 }, {
+			expireAfterSeconds: 60, // 1 minute
+			partialFilterExpression: {
+				t: 'png',
+			},
+		});
 	}
 
 	// Sometimes events errored but the error is final
@@ -69,6 +77,22 @@ class FederationEventsModel extends Base {
 		}
 
 		return records;
+	}
+
+	retryEvents(peers) {
+		// Get the events
+		const events = this.find({
+			peer: { $in: peers.map((p) => p.peer) },
+			t: { $ne: 'png' },
+			fulfilled: false,
+		}).fetch();
+
+		// Emit those events
+		for (const event of events) {
+			Meteor.defer(() => {
+				this.emit('createEvent', event);
+			});
+		}
 	}
 
 	// Create a `ping(png)` event

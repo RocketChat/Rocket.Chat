@@ -21,3 +21,13 @@ MessageTypes.registerType({
 		};
 	},
 });
+MessageTypes.registerType({
+	id: 'peer-inactive',
+	system: true,
+	message: 'The_peer__peer__is_not_active_and_some_users_are_not_receiving_the_messages',
+	data(message) {
+		return {
+			peer: message.peer,
+		};
+	},
+});

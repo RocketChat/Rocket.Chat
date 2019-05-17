@@ -858,6 +858,11 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('peer-does-not-exist', roomId, message, user, extraData);
 	}
 
+	createPeerInactive(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('peer-inactive', roomId, message, user, extraData);
+	}
+
 	// REMOVE
 	removeById(_id) {
 		const query =	{ _id };
