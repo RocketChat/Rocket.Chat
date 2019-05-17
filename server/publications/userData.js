@@ -8,7 +8,15 @@ Meteor.publish('userData', function() {
 		return this.ready();
 	}
 
-	return Users.find(this.userId, {
+	const handle = Users.find({ _id: this.userId }, {
 		fields: getDefaultUserFields(),
+	}).observeChanges({
+		added: (_id, record) => this.added('own_user', _id, record),
+		changed: (_id, record) => this.changed('own_user', _id, record),
+		removed: (_id, record) => this.removed('own_user', _id, record),
 	});
+
+	this.ready();
+
+	this.onStop(() => handle.stop());
 });

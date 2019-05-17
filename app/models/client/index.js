@@ -23,14 +23,10 @@ import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
 
-Meteor.users = new Meteor.Collection(null);
-Meteor.user = () => Meteor.users.findOne({ _id: Meteor.userId() });
-
 const Users = _.extend({}, users, Meteor.users);
 const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
 const Messages = _.extend({}, ChatMessage);
 const Rooms = _.extend({}, ChatRoom);
-
 
 export {
 	Base,

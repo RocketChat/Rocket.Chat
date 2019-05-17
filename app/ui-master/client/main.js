@@ -129,25 +129,8 @@ Template.body.onRendered(function() {
 	});
 });
 
-Template.main.onCreated(async function() {
+Template.main.onCreated(function() {
 	tooltip.init();
-
-	this.userReady = new ReactiveVar(false);
-
-	this.autorun(async () => {
-		if (!Meteor.userId()) {
-			return;
-		}
-		const user = await APIClient.v1.get('me');
-
-		Meteor.users.upsert({ _id: user._id }, {
-			$set: {
-				...user,
-			},
-		});
-
-		this.userReady.set(true);
-	});
 });
 
 Template.main.helpers({
@@ -174,10 +157,11 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
+		const routerReady = FlowRouter.subsReady('userData');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
 
-		const ready = (Template.instance().userReady.get() && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);

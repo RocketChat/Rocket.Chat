@@ -33,6 +33,7 @@ Meteor.startup(function() {
 		if (!Meteor.userId() && !settings.get('Accounts_AllowAnonymousRead')) {
 			return;
 		}
+		Meteor.subscribe('userData');
 		computation.stop();
 	});
 

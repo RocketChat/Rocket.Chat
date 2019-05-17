@@ -17,7 +17,7 @@ UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => 
 	} = user;
 
 	// since this callback can be called by only one instance in the cluster
-	// we need to brodcast the change to all instances
+	// we need to broadcast the change to all instances
 	Notifications.notifyLogged('user-status', [
 		_id,
 		username,
