@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -51,13 +53,12 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-
 		// this function can receive different types of data
 		// if it doesn't have fname and name properties, should be a Room object
 		// so, need to find the related subscription
-		const subscription = roomData && (roomData.fname || roomData.name) ?
-			roomData :
-			Subscriptions.findOne({ rid: roomData._id });
+		const subscription = roomData && (roomData.fname || roomData.name)
+			? roomData
+			: Subscriptions.findOne({ rid: roomData._id });
 
 		if (subscription === undefined) {
 			return console.log('roomData', roomData);
@@ -148,5 +149,9 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		const text = notificationMessage;
 
 		return { title, text };
+	}
+
+	getAvatarPath(roomData) {
+		return getUserAvatarURL(roomData.name || this.roomName(roomData));
 	}
 }

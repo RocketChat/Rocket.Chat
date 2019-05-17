@@ -1,8 +1,8 @@
+import { FederatedResource } from './FederatedResource';
+import { FederatedUser } from './FederatedUser';
 import { createRoom } from '../../../lib';
 import { Rooms, Subscriptions, Users } from '../../../models';
 
-import { FederatedResource } from './FederatedResource';
-import { FederatedUser } from './FederatedUser';
 
 export class FederatedRoom extends FederatedResource {
 	constructor(localPeerIdentifier, room, extras = {}) {
@@ -27,11 +27,9 @@ export class FederatedRoom extends FederatedResource {
 		const { owner } = extras;
 
 		if (owner) {
-			if (!owner && room.federation) {
-				this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
-			} else {
-				this.federatedOwner = FederatedUser.loadOrCreate(localPeerIdentifier, owner);
-			}
+			this.federatedOwner = FederatedUser.loadOrCreate(localPeerIdentifier, owner);
+		} else if (!owner && room.federation && room.federation.ownerId) {
+			this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
 		}
 
 		// Set base federation
@@ -40,6 +38,9 @@ export class FederatedRoom extends FederatedResource {
 			peer: localPeerIdentifier,
 			ownerId: this.federatedOwner ? this.federatedOwner.getFederationId() : null,
 		};
+
+		// Keep room's owner id
+		this.federationOwnerId = room.federation && room.federation.ownerId;
 
 		// Set room property
 		this.room = room;
@@ -82,6 +83,12 @@ export class FederatedRoom extends FederatedResource {
 
 		for (const user of users) {
 			const federatedUser = FederatedUser.loadOrCreate(localPeerIdentifier, user);
+
+			// Set owner if it does not exist
+			if (!this.federatedOwner && user._id === this.federationOwnerId) {
+				this.federatedOwner = federatedUser;
+				this.room.federation.ownerId = this.federatedOwner.getFederationId();
+			}
 
 			// Keep the federated user
 			this.federatedUsers.push(federatedUser);
@@ -228,7 +235,7 @@ export class FederatedRoom extends FederatedResource {
 	}
 }
 
-FederatedRoom.loadByFederationId = function loadByFederationId(localPeerIdentifier, federationId) {
+FederatedRoom.loadByFederationId = function _loadByFederationId(localPeerIdentifier, federationId) {
 	const localRoom = Rooms.findOne({ 'federation._id': federationId });
 
 	if (!localRoom) { return; }
@@ -236,13 +243,13 @@ FederatedRoom.loadByFederationId = function loadByFederationId(localPeerIdentifi
 	return new FederatedRoom(localPeerIdentifier, localRoom);
 };
 
-FederatedRoom.loadRoomUsers = function loadRoomUsers(room) {
+FederatedRoom.loadRoomUsers = function _loadRoomUsers(room) {
 	const subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id, { fields: { 'u._id': 1 } }).fetch();
 	const userIds = subscriptions.map((s) => s.u._id);
 	return Users.findUsersWithUsernameByIds(userIds).fetch();
 };
 
-FederatedRoom.isFederated = function isFederated(localPeerIdentifier, room, options = {}) {
+FederatedRoom.isFederated = function _isFederated(localPeerIdentifier, room, options = {}) {
 	this.log('federated-room', `${ room._id } - isFederated?`);
 
 	let isFederated = false;

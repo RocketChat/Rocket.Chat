@@ -81,7 +81,7 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
 
-You can also join the conversation at [Twitter](https://twitter.com/RocketChat), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp).
+You can also join the conversation at [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -464,7 +464,7 @@ Testing with [BrowserStack](https://www.browserstack.com)
 
 Rocket.Chat will be free forever, but you can help us speed up the development!
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZL94ZE6LGVUSN)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9MT88JJ9X4A6U&source=url)
 
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)

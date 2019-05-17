@@ -1,6 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+
 import { API } from '../../../../api';
 import { FederationKeys } from '../../../../models';
-
 import { Federation } from '../..';
 
 API.v1.addRoute('federation.events', { authRequired: false }, {
@@ -27,11 +28,17 @@ API.v1.addRoute('federation.events', { authRequired: false }, {
 
 		const payloadBuffer = Buffer.from(this.bodyParams.payload.data);
 
-		// Decrypt with the peer's public key
-		let payload = FederationKeys.loadKey(peer.public_key, 'public').decryptPublic(payloadBuffer);
+		let payload;
 
-		// Decrypt with the local private key
-		payload = Federation.privateKey.decrypt(payload);
+		// Decrypt with the peer's public key
+		try {
+			payload = FederationKeys.loadKey(peer.public_key, 'public').decryptPublic(payloadBuffer);
+
+			// Decrypt with the local private key
+			payload = Federation.privateKey.decrypt(payload);
+		} catch (err) {
+			throw new Meteor.Error('error-decrypt', 'Could not decrypt');
+		}
 
 		// Get the event
 		const { event: e } = JSON.parse(payload.toString());
@@ -44,6 +51,9 @@ API.v1.addRoute('federation.events', { authRequired: false }, {
 
 		try {
 			switch (e.t) {
+				case 'png':
+					// This is a ping so we should do nothing, just respond with success
+					break;
 				case 'drc':
 					Federation.peerServer.handleDirectRoomCreatedEvent(e);
 					break;
@@ -95,7 +105,9 @@ API.v1.addRoute('federation.events', { authRequired: false }, {
 			// Respond
 			return API.v1.success();
 		} catch (err) {
-			Federation.peerServer.log(`Error handling event:${ e.t } - ${ err.toString() }`);
+			console.log(err);
+
+			Federation.peerServer.error(`Error handling event:${ e.t } - ${ err.toString() }`);
 
 			return API.v1.failure(`Error handling event:${ e.t } - ${ err.toString() }`, err.error || 'unknown-error');
 		}

@@ -5,12 +5,12 @@
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+
 import { marked } from './parser/marked/marked.js';
 import { original } from './parser/original/original.js';
-
 import { code } from './parser/original/code.js';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
 
 const parsers = {
 	original,
@@ -78,7 +78,7 @@ class MarkdownClass {
 	}
 }
 
-export const Markdown = new MarkdownClass;
+export const Markdown = new MarkdownClass();
 
 // renderMessage already did html escape
 const MarkdownMessage = (message) => {

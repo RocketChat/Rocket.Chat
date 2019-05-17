@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, Rooms } from '../../../../models';
 import { API } from '../../../../api';
-import { findGuest, findRoom, getRoom, settings } from '../lib/livechat';
+import { findGuest, findRoom, getRoom, settings, findAgent } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/room', {
@@ -14,6 +15,7 @@ API.v1.addRoute('livechat/room', {
 			check(this.queryParams, {
 				token: String,
 				rid: Match.Maybe(String),
+				agentId: Match.Maybe(String),
 			});
 
 			const { token } = this.queryParams;
@@ -22,8 +24,16 @@ API.v1.addRoute('livechat/room', {
 				throw new Meteor.Error('invalid-token');
 			}
 
+			let agent;
+			const { agentId } = this.queryParams;
+			const agentObj = agentId && findAgent(agentId);
+			if (agentObj) {
+				const { username } = agentObj;
+				agent = Object.assign({}, { agentId, username });
+			}
+
 			const rid = this.queryParams.rid || Random.id();
-			const room = getRoom(guest, rid);
+			const room = getRoom({ guest, rid, agent });
 
 			return API.v1.success(room);
 		} catch (e) {

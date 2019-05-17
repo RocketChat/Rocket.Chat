@@ -1,23 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasAtLeastOnePermission, hasAllPermission } from '../../../authorization';
-import { modal } from '../../../ui-utils';
-import { t, handleError } from '../../../utils';
-import { ChatIntegrations } from '../collections';
+import { Tracker } from 'meteor/tracker';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
 
+import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
+import { hasAtLeastOnePermission, hasAllPermission } from '../../../authorization';
+import { modal, SideNav } from '../../../ui-utils/client';
+import { t, handleError } from '../../../utils';
+import { ChatIntegrations } from '../collections';
+
 Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated() {
-	return this.record = new ReactiveVar({
+	this.record = new ReactiveVar({
 		username: 'rocket.cat',
 	});
 });
 
 Template.integrationsIncoming.helpers({
+	exampleMsg,
+	exampleUser,
+	exampleSettings,
 	hasPermission() {
 		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
 	},
@@ -44,34 +49,6 @@ Template.integrationsIncoming.helpers({
 
 		return Template.instance().record.curValue;
 	},
-
-	example() {
-		const record = Template.instance().record.get();
-		return {
-			_id: Random.id(),
-			alias: record.alias,
-			emoji: record.emoji,
-			avatar: record.avatar,
-			msg: 'Example message',
-			bot: {
-				i: Random.id(),
-			},
-			groupable: false,
-			attachments: [{
-				title: 'Rocket.Chat',
-				title_link: 'https://rocket.chat',
-				text: 'Rocket.Chat, the best open source chat',
-				image_url: '/images/integration-attachment-example.png',
-				color: '#764FA5',
-			}],
-			ts: new Date(),
-			u: {
-				_id: Random.id(),
-				username: record.username,
-			},
-		};
-	},
-
 	exampleJson() {
 		const record = Template.instance().record.get();
 		const data = {
@@ -181,17 +158,16 @@ Template.integrationsIncoming.events({
 			Meteor.call('deleteIncomingIntegration', params.id, (err) => {
 				if (err) {
 					return handleError(err);
-				} else {
-					modal.open({
-						title: t('Deleted'),
-						text: t('Your_entry_has_been_deleted'),
-						type: 'success',
-						timer: 1000,
-						showConfirmButton: false,
-					});
-
-					FlowRouter.go('admin-integrations');
 				}
+				modal.open({
+					title: t('Deleted'),
+					text: t('Your_entry_has_been_deleted'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false,
+				});
+
+				FlowRouter.go('admin-integrations');
 			});
 		});
 	},
@@ -259,4 +235,11 @@ Template.integrationsIncoming.events({
 			});
 		}
 	},
+});
+
+Template.integrationsIncoming.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

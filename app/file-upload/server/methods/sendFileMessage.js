@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
+import _ from 'underscore';
+
 import { Uploads } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { FileUpload } from '../lib/FileUpload';
-import _ from 'underscore';
 
 Meteor.methods({
 	async sendFileMessage(roomId, store, file, msgData = {}) {
@@ -24,6 +25,7 @@ Meteor.methods({
 			alias: Match.Optional(String),
 			groupable: Match.Optional(Boolean),
 			msg: Match.Optional(String),
+			tmid: Match.Optional(String),
 		});
 
 		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
