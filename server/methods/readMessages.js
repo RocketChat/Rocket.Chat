@@ -19,8 +19,8 @@ Meteor.methods({
 		callbacks.run('beforeReadMessages', rid, userId);
 
 		// TODO: move this calls to an exported function
-		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { ls: 1 } });
 		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
+		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { ls: 1 } });
 
 		Meteor.defer(() => {
 			callbacks.run('afterReadMessages', rid, { userId, lastSeen: userSubscription.ls });
