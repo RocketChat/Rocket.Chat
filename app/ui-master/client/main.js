@@ -17,8 +17,22 @@ import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../mo
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../tooltip';
+import { callbacks } from '../../callbacks/client';
+
+function executeCustomScript(script) {
+	eval(script);//eslint-disable-line
+}
+
+function customScriptsOnLogout() {
+	const script = settings.get('Custom_Script_On_Logout') || '';
+	if (script.trim()) {
+		executeCustomScript(script);
+	}
+}
 
 settings.collection.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
+
+callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -191,13 +205,13 @@ Template.main.helpers({
 	CustomScriptLoggedOut() {
 		const script = settings.get('Custom_Script_Logged_Out') || '';
 		if (script.trim()) {
-			eval(script);//eslint-disable-line
+			executeCustomScript(script);
 		}
 	},
 	CustomScriptLoggedIn() {
 		const script = settings.get('Custom_Script_Logged_In') || '';
 		if (script.trim()) {
-			eval(script);//eslint-disable-line
+			executeCustomScript(script);
 		}
 	},
 	embeddedVersion() {

@@ -3,13 +3,14 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
+import _ from 'underscore';
 
 import { WebRTC } from '../../../webrtc/client';
 import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
 import { modal } from '../../../ui-utils';
 import { t, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
-import { hasPermission, hasAllPermission, hasRole } from '../../../authorization';
+import { hasPermission, hasAllPermission, hasRole, userHasAllPermission } from '../../../authorization';
 
 const canSetLeader = () => hasAllPermission('set-leader', Session.get('openedRoom'));
 
@@ -53,6 +54,19 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 
 	const isMuted = () => {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
+
+		if (room && room.ro) {
+			if (_.isArray(room.unmuted) && room.unmuted.indexOf(user && user.username) !== -1) {
+				return false;
+			}
+
+			if (userHasAllPermission(user._id, 'post-readonly', room)) {
+				return _.isArray(room.muted) && (room.muted.indexOf(user && user.username) !== -1);
+			}
+
+			return true;
+		}
+
 		return room && Array.isArray(room.muted) && room.muted.indexOf(user && user.username) > -1;
 	};
 

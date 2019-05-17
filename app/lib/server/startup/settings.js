@@ -1250,6 +1250,11 @@ settings.addGroup('Layout', function() {
 		});
 	});
 	this.section('Custom_Scripts', function() {
+		this.add('Custom_Script_On_Logout', '//Add your script', {
+			type: 'code',
+			multiline: true,
+			public: true,
+		});
 		this.add('Custom_Script_Logged_Out', '//Add your script', {
 			type: 'code',
 			multiline: true,
