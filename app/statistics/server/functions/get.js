@@ -148,3 +148,7 @@ statistics.get = function _getStatistics() {
 
 	return statistics;
 };
+
+statistics.getConnectedUsers = function _getConnectedUsers() {
+	return Meteor.users.find({ statusConnection: { $in: ['online', 'away'] } }).count();
+};
