@@ -149,6 +149,14 @@ statistics.get = function _getStatistics() {
 	return statistics;
 };
 
-statistics.getConnectedUsers = function _getConnectedUsers() {
-	return Meteor.users.find({ statusConnection: { $in: ['online', 'away'] } }).count();
+statistics.getConnectedUsersStatistics = function _getConnectedUsersStatistics() {
+	const statistics = {};
+	const totalUsers = Meteor.users.find().count();
+
+	statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
+	statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
+	statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
+	statistics.offlineUsers = totalUsers - statistics.onlineUsers - statistics.awayUsers;
+
+	return statistics;
 };

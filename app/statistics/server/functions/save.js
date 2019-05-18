@@ -6,11 +6,23 @@ statistics.save = function() {
 	rcStatistics.createdAt = new Date();
 
 	// Check if there's partial data already saved for the hour
-	const existingStatistics = Statistics.findLast();
-	if (existingStatistics) {
-		rcStatistics.hourlyData = existingStatistics.hourlyData;
+	const oldStats = Statistics.findLast();
+	if (oldStats) {
+		if (oldStats.connectedUserCountList && oldStats.connectedUserCountList.length) {
+			rcStatistics.avgConnectedUsers = oldStats.connectedUserCountList.reduce((total, value) => total + value) / oldStats.connectedUserCountList.length;
+		} else {
+			rcStatistics.avgConnectedUsers = 0;
+		}
 
-		Statistics.update(existingStatistics._id, rcStatistics);
+		delete oldStats.connectedUserCountList;
+
+		rcStatistics.totalConnectedUsers = oldStats.totalConnectedUsers || 0;
+		rcStatistics.minConnectedUsers = oldStats.minConnectedUsers;
+		rcStatistics.onlineUsers = oldStats.onlineUsers || 0;
+		rcStatistics.awayUsers = oldStats.awayUsers || 0;
+		rcStatistics.offlineUsers = oldStats.offlineUsers;
+
+		Statistics.update(oldStats._id, rcStatistics);
 	} else {
 		Statistics.insert(rcStatistics);
 	}
@@ -19,59 +31,36 @@ statistics.save = function() {
 };
 
 statistics.saveUsersInfo = function() {
-	const connectedUsers = statistics.getConnectedUsers();
+	const userStatistics = statistics.getConnectedUsersStatistics();
 
 	const rcStatistics = Statistics.findLast();
 	if (!rcStatistics || !rcStatistics.partial) {
-		const statistics = {
-			maxConnectedUsers: connectedUsers,
-			minConnectedUsers: connectedUsers,
-			partial: true,
-			createdAt: new Date(),
-		};
+		const statistics = userStatistics;
+
+		statistics.partial = true;
+		statistics.connectedUserCountList = [
+			userStatistics.totalConnectedUsers,
+		];
+		statistics.createdAt = new Date();
 
 		Statistics.insert(statistics);
-		return statistics;
-	}
-
-	if (rcStatistics.maxConnectedUsers != null) {
-		rcStatistics.maxConnectedUsers = Math.max(rcStatistics.maxConnectedUsers, connectedUsers);
-	} else {
-		rcStatistics.maxConnectedUsers = connectedUsers;
-	}
-
-	if (rcStatistics.minConnectedUsers != null) {
-		rcStatistics.minConnectedUsers = Math.min(rcStatistics.minConnectedUsers, connectedUsers);
-	} else {
-		rcStatistics.minConnectedUsers = connectedUsers;
-	}
-
-	Statistics.update(rcStatistics._id, rcStatistics);
-
-	return rcStatistics;
-};
-
-statistics.compileHourlyUsersInfo = function() {
-	const rcStatistics = Statistics.findLast();
-	if (!rcStatistics || !rcStatistics.partial) {
 		return;
 	}
 
-	const now = new Date();
-	const hourTimeStamp = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours());
-
-	if (!rcStatistics.hourlyData) {
-		rcStatistics.hourlyData = {};
-	}
-
-	rcStatistics.hourlyData[hourTimeStamp] = {
-		maxConnectedUsers: rcStatistics.maxConnectedUsers,
-		minConnectedUsers: rcStatistics.minConnectedUsers,
+	const data = {
+		$max: {
+			onlineUsers: userStatistics.onlineUsers,
+			awayUsers: userStatistics.awayUsers,
+			totalConnectedUsers: userStatistics.totalConnectedUsers,
+		},
+		$min: {
+			offlineUsers: userStatistics.offlineUsers,
+			minConnectedUsers: userStatistics.totalConnectedUsers,
+		},
+		$push: {
+			connectedUserCountList: userStatistics.totalConnectedUsers,
+		},
 	};
 
-	rcStatistics.maxConnectedUsers = null;
-	rcStatistics.minConnectedUsers = null;
-
-	Statistics.update(rcStatistics._id, rcStatistics);
-	return rcStatistics;
+	Statistics.update(rcStatistics._id, data);
 };

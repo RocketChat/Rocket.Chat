@@ -45,10 +45,6 @@ function generateUserStatistics() {
 	statistics.saveUsersInfo();
 }
 
-function compileHourlyUsersInfo() {
-	statistics.compileHourlyUsersInfo();
-}
-
 function cleanupOEmbedCache() {
 	return Meteor.call('OEmbedCacheCleanup');
 }
@@ -68,17 +64,9 @@ Meteor.startup(function() {
 		SyncedCron.add({
 			name: 'Count online users for statistics',
 			schedule(parser) {
-				return parser.cron('*/5 * * * *');
+				return parser.cron('*/10 * * * *');
 			},
 			job: generateUserStatistics,
-		});
-
-		SyncedCron.add({
-			name: 'Compile hourly data of online users.',
-			schedule(parser) {
-				return parser.cron('58 * * * *');
-			},
-			job: compileHourlyUsersInfo,
 		});
 
 		SyncedCron.add({
