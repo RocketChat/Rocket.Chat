@@ -388,11 +388,13 @@ export class Sessions extends Base {
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
 		const day = date.getDate();
+		const weekDay = date.getDay();
 
 		return {
 			year,
 			month,
 			day,
+			weekDay,
 			data: Promise.await(aggregates.getUniqueUsersOfYesterday(this.model.rawCollection(), { year, month, day })),
 		};
 	}
@@ -404,11 +406,13 @@ export class Sessions extends Base {
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
 		const day = date.getDate();
+		const weekDay = date.getDay();
 
 		return {
 			year,
 			month,
 			day,
+			weekDay,
 			data: Promise.await(aggregates.getUniqueUsersOfLastMonth(this.model.rawCollection(), { year, month, day })),
 		};
 	}
@@ -420,11 +424,13 @@ export class Sessions extends Base {
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
 		const day = date.getDate();
+		const weekDay = date.getDay();
 
 		return {
 			year,
 			month,
 			day,
+			weekDay,
 			data: Promise.await(aggregates.getUniqueDevicesOfYesterday(this.model.rawCollection(), { year, month, day })),
 		};
 	}
@@ -436,11 +442,13 @@ export class Sessions extends Base {
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
 		const day = date.getDate();
+		const weekDay = date.getDay();
 
 		return {
 			year,
 			month,
 			day,
+			weekDay,
 			data: Promise.await(aggregates.getUniqueDevicesOfLastMonth(this.model.rawCollection(), { year, month, day })),
 		};
 	}
@@ -452,11 +460,13 @@ export class Sessions extends Base {
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
 		const day = date.getDate();
+		const weekDay = date.getDay();
 
 		return {
 			year,
 			month,
 			day,
+			weekDay,
 			data: Promise.await(aggregates.getUniqueOSOfYesterday(this.model.rawCollection(), { year, month, day })),
 		};
 	}
@@ -468,11 +478,13 @@ export class Sessions extends Base {
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
 		const day = date.getDate();
+		const weekDay = date.getDay();
 
 		return {
 			year,
 			month,
 			day,
+			weekDay,
 			data: Promise.await(aggregates.getUniqueOSOfLastMonth(this.model.rawCollection(), { year, month, day })),
 		};
 	}
