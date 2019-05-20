@@ -13,7 +13,6 @@ import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
 
-
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
@@ -80,19 +79,15 @@ Template.headerRoom.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData || !roomData.topic) { return ''; }
 
-		let roomTopic = Markdown.parse(roomData.topic);
+		let roomTopic = Markdown.parse(roomData.topic.replace(/\n/mg, ' '));
 
 		// &#39; to apostrophe (') for emojis such as :')
 		roomTopic = roomTopic.replace(/&#39;/g, '\'');
 
-		Object.keys(emoji.packages).forEach((emojiPackage) => {
-			roomTopic = emoji.packages[emojiPackage].render(roomTopic);
-		});
+		roomTopic = Object.keys(emoji.packages).reduce((topic, emojiPackage) => emoji.packages[emojiPackage].render(topic), roomTopic);
 
 		// apostrophe (') back to &#39;
-		roomTopic = roomTopic.replace(/\'/g, '&#39;');
-
-		return roomTopic;
+		return roomTopic.replace(/\'/g, '&#39;');
 	},
 
 	roomIcon() {
