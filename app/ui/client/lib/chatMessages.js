@@ -571,4 +571,8 @@ export class ChatMessages {
 
 		messageBoxState.save({ rid, tmid }, input);
 	}
+
+	onDestroyed(rid) {
+		MsgTyping.cancel(rid);
+	}
 }

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Subscriptions, Messages } from '../../../models';
-import { hasPermission } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
@@ -20,11 +19,6 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 
 		// Keep the current event
 		callbacks.run('beforeJoinRoom', user, room);
-	}
-
-	const muted = room.ro && !hasPermission(user._id, 'post-readonly');
-	if (muted) {
-		Rooms.muteUsernameByRoomId(rid, user.username);
 	}
 
 	Subscriptions.createWithRoomAndUser(room, user, {
