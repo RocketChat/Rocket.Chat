@@ -1,9 +1,8 @@
+import { ReadReceipt } from './lib/ReadReceipt';
 import { callbacks } from '../../../app/callbacks';
 import { Subscriptions } from '../../../app/models';
-import { ReadReceipt } from './lib/ReadReceipt';
 
 callbacks.add('afterSaveMessage', (message, room) => {
-
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;

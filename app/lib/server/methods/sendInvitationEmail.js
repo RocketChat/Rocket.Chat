@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import * as Mailer from '../../../mailer';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
@@ -44,9 +45,9 @@ Meteor.methods({
 					html,
 					data: {
 						email,
-						Invite_Link:Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
-						Username:inviter,
-						Avatar_Link:`${ settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
+						Invite_Link: Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
+						Username: inviter,
+						Avatar_Link: `${ settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
 					},
 					lng: language,
 				});

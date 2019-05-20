@@ -1,6 +1,6 @@
-import { Rooms, Users } from '../../../../models';
 import property from 'lodash.property';
 
+import { Rooms, Users } from '../../../../models';
 import { dateToFloat } from '../../helpers/dateToFloat';
 import schema from '../../schemas/messages/Message-type.graphqls';
 

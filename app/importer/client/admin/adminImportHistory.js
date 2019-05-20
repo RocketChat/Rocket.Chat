@@ -1,12 +1,17 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 import { Importers } from '..';
+
 import { Template } from 'meteor/templating';
-import { hasRole } from '../../../authorization';
-import { t, APIClient } from '../../../utils';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
+import { hasRole } from '../../../authorization';
+import { t, APIClient } from '../../../utils';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { SideNav } from '../../../ui-utils/client';
 
 Template.adminImportHistory.helpers({
 	isAdmin() {
@@ -177,7 +182,6 @@ Template.adminImportHistory.events({
 	},
 });
 
-
 Template.adminImportHistory.onCreated(function() {
 	const instance = this;
 	this.preparing = new ReactiveVar(true);
@@ -191,5 +195,12 @@ Template.adminImportHistory.onCreated(function() {
 			toastr.error(t('Failed_To_Load_Import_Data'));
 			instance.preparing.set(false);
 		}
+	});
+});
+
+Template.adminImportHistory.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
 	});
 });

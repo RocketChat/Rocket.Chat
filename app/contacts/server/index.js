@@ -3,11 +3,13 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
-import { getAvatarUrlFromUsername } from '../../utils';
-const service = require('./service.js');
-const provider = new service.Provider();
+
+import { getAvatarUrlFromUsername, getUserPreference } from '../../utils';
 import { settings } from '../../settings';
-import { getUserPreference } from '../../utils';
+
+const service = require('./service.js');
+
+const provider = new service.Provider();
 
 function refreshContactsHashMap() {
 	let phoneFieldName = '';
@@ -26,7 +28,7 @@ function refreshContactsHashMap() {
 	});
 
 	const contacts = [];
-	const cursor = Meteor.users.find({ active:true });
+	const cursor = Meteor.users.find({ active: true });
 
 	let phoneFieldArray = [];
 	if (phoneFieldName) {
@@ -47,7 +49,7 @@ function refreshContactsHashMap() {
 		if (discoverability !== 'none') {
 			if (phoneFieldArray.length > 0) {
 				dict = user;
-				for (let i = 0;i < phoneFieldArray.length - 1;i++) {
+				for (let i = 0; i < phoneFieldArray.length - 1; i++) {
 					if (phoneFieldArray[i] in dict) {
 						dict = dict[phoneFieldArray[i]];
 					}
@@ -56,15 +58,14 @@ function refreshContactsHashMap() {
 				if (phone && _.isString(phone)) {
 					phone = phone.replace(/[^0-9+]|_/g, '');
 					if (phonePattern.test(phone)) {
-						contacts.push({ d:phone, u:user.username, _id:user._id });
+						contacts.push({ d: phone, u: user.username, _id: user._id });
 					}
 				}
-
 			}
 
 			if (emailFieldArray.length > 0) {
 				dict = user;
-				for (let i = 0;i < emailFieldArray.length - 1;i++) {
+				for (let i = 0; i < emailFieldArray.length - 1; i++) {
 					if (emailFieldArray[i] in dict) {
 						dict = dict[emailFieldArray[i]];
 					}
@@ -72,7 +73,7 @@ function refreshContactsHashMap() {
 				const email = dict[emailFieldArray[emailFieldArray.length - 1]];
 				if (email && _.isString(email)) {
 					if (rfcMailPattern.test(email)) {
-						contacts.push({ d:email, u:user.username, _id:user._id });
+						contacts.push({ d: email, u: user.username, _id: user._id });
 					}
 				}
 			}
@@ -80,7 +81,7 @@ function refreshContactsHashMap() {
 			if (useDefaultEmails && 'emails' in user) {
 				user.emails.forEach((email) => {
 					if (email.verified) {
-						contacts.push({ d:email.address, u:user.username, _id:user._id });
+						contacts.push({ d: email.address, u: user.username, _id: user._id });
 					}
 				});
 			}
@@ -132,11 +133,11 @@ Meteor.methods({
 			try {
 				const result = HTTP.call('POST', `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${ settings.get('Contacts_Dynamic_Link_APIKey') }`, {
 					data: {
-						dynamicLinkInfo:{
+						dynamicLinkInfo: {
 							domainUriPrefix: settings.get('Contacts_Dynamic_Link_DomainURIPrefix'),
 							link: `${ server }direct/${ user.username }`,
-							androidInfo:{
-								androidPackageName:settings.get('Contacts_Dynamic_Link_AndroidPackageName'),
+							androidInfo: {
+								androidPackageName: settings.get('Contacts_Dynamic_Link_AndroidPackageName'),
 							},
 							socialMetaTagInfo: {
 								socialTitle: user.username,
@@ -154,9 +155,8 @@ Meteor.methods({
 			}
 		} catch (e) {
 			link = settings.get('Site_Url');
-		} finally {
-			return link;
 		}
+		return link;
 	},
 });
 

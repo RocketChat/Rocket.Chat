@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 
 class ContactsProvider {
-
 	constructor() {
 		this.contactsWeakHashMap = {};
 	}
@@ -13,13 +12,13 @@ class ContactsProvider {
 		if (weakHash in this.contactsWeakHashMap) {
 			if (this.contactsWeakHashMap[weakHash].indexOf(strongHash) === -1) {
 				this.contactsWeakHashMap[weakHash].push({
-					h:strongHash,
-					u:username,
+					h: strongHash,
+					u: username,
 					_id,
 				});
 			}
 		} else {
-			this.contactsWeakHashMap[weakHash] = [{ h:strongHash, u:username, _id }];
+			this.contactsWeakHashMap[weakHash] = [{ h: strongHash, u: username, _id }];
 		}
 	}
 
@@ -30,10 +29,10 @@ class ContactsProvider {
 			const strongHash = this.getStrongHash(contact.d);
 			if (weakHash in contactsWeakHashMap) {
 				if (contactsWeakHashMap[weakHash].indexOf(strongHash) === -1) {
-					contactsWeakHashMap[weakHash].push({ h:strongHash, u:contact.u, _id:contact._id });
+					contactsWeakHashMap[weakHash].push({ h: strongHash, u: contact.u, _id: contact._id });
 				}
 			} else {
-				contactsWeakHashMap[weakHash] = [{ h:strongHash, u:contact.u, _id:contact._id }];
+				contactsWeakHashMap[weakHash] = [{ h: strongHash, u: contact.u, _id: contact._id }];
 			}
 		});
 		return contactsWeakHashMap;
@@ -66,7 +65,7 @@ class ContactsProvider {
 		const strongHash = this.getStrongHash(contact);
 
 		if (weakHash in this.contactsWeakHashMap && this.contactsWeakHashMap[weakHash].indexOf(strongHash) >= 0) {
-			this.contactsWeakHashMap[weakHash].splice(this.contactsWeakHashMap[weakHash].indexOf({ h:strongHash, u:username, _id }), 1);
+			this.contactsWeakHashMap[weakHash].splice(this.contactsWeakHashMap[weakHash].indexOf({ h: strongHash, u: username, _id }), 1);
 
 			if (!this.contactsWeakHashMap[weakHash].length) { delete this.contactsWeakHashMap[weakHash]; }
 		}

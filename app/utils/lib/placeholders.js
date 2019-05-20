@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
 
 import { settings } from '../../settings';
-import { getAvatarUrlFromUsername } from '../../utils';
 
-import s from 'underscore.string';
+import { getAvatarUrlFromUsername } from '..';
+
 
 export const placeholders = {
 	replace: (str, data) => {
@@ -42,7 +43,7 @@ export const placeholders = {
 			}
 		}
 
-		str = str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+		str = str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 
 		return str;
 	},

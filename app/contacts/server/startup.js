@@ -1,4 +1,5 @@
 import { settings } from '../../settings';
+
 settings.addGroup('Contacts', function() {
 	this.add('Contacts_Phone_Custom_Field_Name', '', {
 		type: 'string',

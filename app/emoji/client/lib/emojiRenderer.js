@@ -1,8 +1,9 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+import { HTML } from 'meteor/htmljs';
+
 import { emoji } from '../../lib/rocketchat';
 import { isSetNotNull } from '../function-isSet';
-import { HTML } from 'meteor/htmljs';
 
 export const renderEmoji = function(_emoji) {
 	if (isSetNotNull(() => emoji.list[_emoji].emojiPackage)) {

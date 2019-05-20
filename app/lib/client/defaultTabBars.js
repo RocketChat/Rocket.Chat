@@ -1,4 +1,5 @@
 import { Session } from 'meteor/session';
+
 import { TabBar } from '../../ui-utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';

@@ -4,14 +4,15 @@ import { Tracker } from 'meteor/tracker';
 import { Reload } from 'meteor/reload';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+
 import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
 import { settings } from '../../settings';
 import { CustomSounds } from '../../custom-sounds/client';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 const notificationLabels = {
 	all: 'All_messages',
@@ -211,7 +212,6 @@ Template.accountPreferences.onCreated(function() {
 			data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
 			data.desktopNotifications = $('#desktopNotifications').find('select').val();
 			data.mobileNotifications = $('#mobileNotifications').find('select').val();
-
 		}
 
 		if (settings.get('UI_DisplayMessages')) {
