@@ -15,7 +15,7 @@ emojione.regShortNames = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\
 
 emojione.emojioneList[':tm:'] = {
 	uc_base: '2122',
-	uc_output: '2122',
+	uc_output: '2122-fe0f',
 	uc_match: '2122-fe0f',
 	uc_greedy: '2122-fe0f',
 	shortnames: [],
@@ -25,7 +25,7 @@ emojione.emojioneList[':tm:'] = {
 
 emojione.emojioneList[':copyright:'] = {
 	uc_base: '00a9',
-	uc_output: '00a9',
+	uc_output: '00a9-f0ef',
 	uc_match: '00a9-fe0f',
 	uc_greedy: '00a9-fe0f',
 	shortnames: [],
@@ -35,7 +35,7 @@ emojione.emojioneList[':copyright:'] = {
 
 emojione.emojioneList[':registered:'] = {
 	uc_base: '00ae',
-	uc_output: '00ae',
+	uc_output: '00ae-fe0f',
 	uc_match: '00ae-fe0f',
 	uc_greedy: '00ae-fe0f',
 	shortnames: [],
@@ -45,7 +45,7 @@ emojione.emojioneList[':registered:'] = {
 
 emojione.emojioneList[':digit_zero:'] = {
 	uc_base: '0030',
-	uc_output: '0030',
+	uc_output: '0030-fe0f',
 	uc_match: '0030-fe0f',
 	uc_greedy: '0030-fe0f',
 	shortnames: [],
@@ -55,7 +55,7 @@ emojione.emojioneList[':digit_zero:'] = {
 
 emojione.emojioneList[':digit_one:'] = {
 	uc_base: '0031',
-	uc_output: '0031',
+	uc_output: '0031-fe0f',
 	uc_match: '0031-fe0f',
 	uc_greedy: '0031-fe0f',
 	shortnames: [],
@@ -65,7 +65,7 @@ emojione.emojioneList[':digit_one:'] = {
 
 emojione.emojioneList[':digit_two:'] = {
 	uc_base: '0032',
-	uc_output: '0032',
+	uc_output: '0032-fe0f',
 	uc_match: '0032-fe0f',
 	uc_greedy: '0032-fe0f',
 	shortnames: [],
@@ -75,7 +75,7 @@ emojione.emojioneList[':digit_two:'] = {
 
 emojione.emojioneList[':digit_three:'] = {
 	uc_base: '0033',
-	uc_output: '0033',
+	uc_output: '0033-fe0f',
 	uc_match: '0033-fe0f',
 	uc_greedy: '0033-fe0f',
 	shortnames: [],
@@ -85,7 +85,7 @@ emojione.emojioneList[':digit_three:'] = {
 
 emojione.emojioneList[':digit_four:'] = {
 	uc_base: '0034',
-	uc_output: '0034',
+	uc_output: '0034-fe0f',
 	uc_match: '0034-fe0f',
 	uc_greedy: '0034-fe0f',
 	shortnames: [],
@@ -95,7 +95,7 @@ emojione.emojioneList[':digit_four:'] = {
 
 emojione.emojioneList[':digit_five:'] = {
 	uc_base: '0035',
-	uc_output: '0035',
+	uc_output: '0035-fe0f',
 	uc_match: '0035-fe0f',
 	uc_greedy: '0035-fe0f',
 	shortnames: [],
@@ -105,7 +105,7 @@ emojione.emojioneList[':digit_five:'] = {
 
 emojione.emojioneList[':digit_six:'] = {
 	uc_base: '0036',
-	uc_output: '0036',
+	uc_output: '0036-fe0f',
 	uc_match: '0036-fe0f',
 	uc_greedy: '0036-fe0f',
 	shortnames: [],
@@ -115,7 +115,7 @@ emojione.emojioneList[':digit_six:'] = {
 
 emojione.emojioneList[':digit_seven:'] = {
 	uc_base: '0037',
-	uc_output: '0037',
+	uc_output: '0037-fe0f',
 	uc_match: '0037-fe0f',
 	uc_greedy: '0037-fe0f',
 	shortnames: [],
@@ -125,7 +125,7 @@ emojione.emojioneList[':digit_seven:'] = {
 
 emojione.emojioneList[':digit_eight:'] = {
 	uc_base: '0038',
-	uc_output: '0038',
+	uc_output: '0038-fe0f',
 	uc_match: '0038-fe0f',
 	uc_greedy: '0038-fe0f',
 	shortnames: [],
@@ -135,7 +135,7 @@ emojione.emojioneList[':digit_eight:'] = {
 
 emojione.emojioneList[':digit_nine:'] = {
 	uc_base: '0039',
-	uc_output: '0039',
+	uc_output: '0039-fe0f',
 	uc_match: '0039-fe0f',
 	uc_greedy: '0039-fe0f',
 	shortnames: [],
@@ -145,7 +145,7 @@ emojione.emojioneList[':digit_nine:'] = {
 
 emojione.emojioneList[':pound_symbol:'] = {
 	uc_base: '0023',
-	uc_output: '0023',
+	uc_output: '0023-fe0f',
 	uc_match: '0023-fe0f',
 	uc_greedy: '0023-fe0f',
 	shortnames: [],
@@ -155,7 +155,7 @@ emojione.emojioneList[':pound_symbol:'] = {
 
 emojione.emojioneList[':asterisk_symbol:'] = {
 	uc_base: '002a',
-	uc_output: '002a',
+	uc_output: '002a-fe0f',
 	uc_match: '002a-fe0f',
 	uc_greedy: '002a-fe0f',
 	shortnames: [],
