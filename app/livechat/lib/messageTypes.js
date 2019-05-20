@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { Livechat } from 'meteor/rocketchat:livechat';
+
 import { MessageTypes } from '../../ui-utils';
 import { actionLinks } from '../../action-links';
 import { Notifications } from '../../notifications';
 import { Messages, Rooms } from '../../models';
 import { settings } from '../../settings';
-import { Livechat } from 'meteor/rocketchat:livechat';
 
 MessageTypes.registerType({
 	id: 'livechat_navigation_history',

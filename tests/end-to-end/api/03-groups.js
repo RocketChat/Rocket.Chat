@@ -19,7 +19,7 @@ describe('[Groups]', function() {
 
 	before((done) => getCredentials(done));
 
-	it('/groups.create', (done) => {
+	before('/groups.create', (done) => {
 		request.post(api('groups.create'))
 			.set(credentials)
 			.send({
@@ -331,52 +331,104 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.setDescription', (done) => {
-		request.post(api('groups.setDescription'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				description: 'this is a description for a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
-			})
-			.end(done);
+	describe('/groups.setDescription', () => {
+		it('should set the description of the group with a string', (done) => {
+			request.post(api('groups.setDescription'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					description: 'this is a description for a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the description of the group with an empty string(remove the description)', (done) => {
+			request.post(api('groups.setDescription'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					description: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('description', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/groups.setTopic', (done) => {
-		request.post(api('groups.setTopic'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				topic: 'this is a topic of a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
-			})
-			.end(done);
+	describe('/groups.setTopic', () => {
+		it('should set the topic of the group with a string', (done) => {
+			request.post(api('groups.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					topic: 'this is a topic of a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the topic of the group with an empty string(remove the topic)', (done) => {
+			request.post(api('groups.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					topic: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/groups.setPurpose', (done) => {
-		request.post(api('groups.setPurpose'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				purpose: 'this is a purpose of a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
-			})
-			.end(done);
+
+	describe('/groups.setPurpose', () => {
+		it('should set the purpose of the group with a string', (done) => {
+			request.post(api('groups.setPurpose'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					purpose: 'this is a purpose of a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the purpose of the group with an empty string(remove the purpose)', (done) => {
+			request.post(api('groups.setPurpose'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					purpose: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('purpose', '');
+				})
+				.end(done);
+		});
 	});
 
 	it('/groups.history', (done) => {
@@ -568,41 +620,61 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.setAnnouncement', (done) => {
-		request.post(api('groups.setAnnouncement'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				announcement: 'this is an announcement of a group for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a group for api tests');
-			})
-			.end(done);
+	describe('/groups.setAnnouncement', () => {
+		it('should set the announcement of the group with a string', (done) => {
+			request.post(api('groups.setAnnouncement'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					announcement: 'this is an announcement of a group for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a group for api tests');
+				})
+				.end(done);
+		});
+		it('should set the announcement of the group with an empty string(remove the announcement)', (done) => {
+			request.post(api('groups.setAnnouncement'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					announcement: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('announcement', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/groups.setType', (done) => {
-		request.post(api('groups.setType'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				type: 'c',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
+	describe('/groups.setType', () => {
+		it('should change the type of the group to a channel', (done) => {
+			request.post(api('groups.setType'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					type: 'c',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 	});
+
 
 	describe('/groups.setCustomFields:', () => {
 		let cfchannel;
 		it('create group with customFields', (done) => {
-			const customFields = { field0:'value0' };
+			const customFields = { field0: 'value0' };
 			request.post(api('groups.create'))
 				.set(credentials)
 				.send({
@@ -629,7 +701,7 @@ describe('[Groups]', function() {
 				.end(done);
 		});
 		it('change customFields', async (done) => {
-			const customFields = { field9:'value9' };
+			const customFields = { field9: 'value9' };
 			request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -687,7 +759,7 @@ describe('[Groups]', function() {
 				});
 		});
 		it('set customFields with one nested field', async (done) => {
-			const customFields = { field1:'value1' };
+			const customFields = { field1: 'value1' };
 			request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -706,7 +778,7 @@ describe('[Groups]', function() {
 				.end(done);
 		});
 		it('set customFields with multiple nested fields', async (done) => {
-			const customFields = { field2:'value2', field3:'value3', field4:'value4' };
+			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
 			request.post(api('groups.setCustomFields'))
 				.set(credentials)

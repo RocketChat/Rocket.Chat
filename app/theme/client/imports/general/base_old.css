@@ -5366,7 +5366,6 @@ rc-old select,
 
 .room-leader .chat-now {
 	position: absolute;
-	top: 15px;
 	right: 25px;
 
 	width: 80px;
@@ -5395,14 +5394,18 @@ rc-old select,
 	right: 0;
 	left: 0;
 
+	display: flex;
+
 	visibility: visible;
+	flex-direction: column;
 
 	height: 57px;
 	padding-bottom: 8px;
 
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
-	border-bottom: 1px solid;
+	border-bottom: 1px solid var(--color-gray-lightest);
+	justify-content: center;
 
 	&.message:hover {
 		background-color: #ffffff;

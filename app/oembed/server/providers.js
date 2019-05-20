@@ -1,8 +1,10 @@
-import { changeCase } from 'meteor/konecty:change-case';
-import { callbacks } from '../../callbacks';
-import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';
+
+import { changeCase } from 'meteor/konecty:change-case';
+import _ from 'underscore';
+
+import { callbacks } from '../../callbacks';
 
 class Providers {
 	constructor() {
@@ -104,7 +106,7 @@ callbacks.add('oembed:afterParseContent', function(data) {
 						const metas = JSON.parse(data.content.body);
 						_.each(metas, function(value, key) {
 							if (_.isString(value)) {
-								return data.meta[changeCase.camelCase(`oembed_${ key }`)] = value;
+								data.meta[changeCase.camelCase(`oembed_${ key }`)] = value;
 							}
 						});
 						data.meta.oembedUrl = url;

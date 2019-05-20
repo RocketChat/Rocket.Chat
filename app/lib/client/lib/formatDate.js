@@ -1,8 +1,8 @@
 import moment from 'moment';
 import mem from 'mem';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { getUserPreference, t } from '../../../utils';
 import { settings } from '../../../settings';
 

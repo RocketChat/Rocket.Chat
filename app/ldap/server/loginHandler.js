@@ -1,13 +1,14 @@
 import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import ldapEscape from 'ldap-escape';
+
+import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
+import LDAP from './ldap';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Logger } from '../../logger';
-import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
-import LDAP from './ldap';
 
-import ldapEscape from 'ldap-escape';
 
 const logger = new Logger('LDAPHandler', {});
 
