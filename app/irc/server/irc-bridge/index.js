@@ -1,8 +1,9 @@
-import { callbacks } from '../../../callbacks';
 import Queue from 'queue-fifo';
-import * as servers from '../servers';
+
 import * as peerCommandHandlers from './peerHandlers';
 import * as localCommandHandlers from './localHandlers';
+import { callbacks } from '../../../callbacks';
+import * as servers from '../servers';
 
 class Bridge {
 	constructor(config) {

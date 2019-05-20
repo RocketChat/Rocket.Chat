@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../settings';
 import { Users } from '../../models';
 import { hasRole } from '../../authorization';
@@ -32,7 +33,6 @@ Template.setupWizardFinal.onCreated(function() {
 		const userIsLoggedButIsNotAdmin = userId && !hasRole(userId, 'admin');
 		if (isComplete || noUserLoggedInAndIsNotPending || userIsLoggedButIsNotAdmin) {
 			FlowRouter.go('home');
-			return;
 		}
 	});
 });

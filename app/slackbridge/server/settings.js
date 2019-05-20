@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
@@ -11,11 +12,13 @@ Meteor.startup(function() {
 
 		this.add('SlackBridge_APIToken', '', {
 			type: 'string',
+			multiline: true,
 			enableQuery: {
 				_id: 'SlackBridge_Enabled',
 				value: true,
 			},
-			i18nLabel: 'API_Token',
+			i18nLabel: 'SlackBridge_APIToken',
+			i18nDescription: 'SlackBridge_APIToken_Description',
 		});
 
 		this.add('SlackBridge_FileUpload_Enabled', true, {

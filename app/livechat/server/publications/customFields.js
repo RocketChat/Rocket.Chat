@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { LivechatCustomField } from '../../../models';
-import s from 'underscore.string';
 
 Meteor.publish('livechat:customFields', function(_id) {
 	if (!this.userId) {
@@ -17,5 +18,4 @@ Meteor.publish('livechat:customFields', function(_id) {
 	}
 
 	return LivechatCustomField.find();
-
 });

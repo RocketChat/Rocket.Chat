@@ -2,7 +2,6 @@ import { settings } from '../../../settings';
 
 settings.addGroup('Email', function() {
 	this.section('Style', function() {
-
 		this.add('email_style', `html, body, .body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
 
 	body, .body {

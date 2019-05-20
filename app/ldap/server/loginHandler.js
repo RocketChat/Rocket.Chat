@@ -1,11 +1,14 @@
 import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import ldapEscape from 'ldap-escape';
+
+import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
+import LDAP from './ldap';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Logger } from '../../logger';
-import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
-import LDAP from './ldap';
+
 
 const logger = new Logger('LDAPHandler', {});
 
@@ -46,23 +49,25 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	const ldap = new LDAP();
 	let ldapUser;
 
+	const escapedUsername = ldapEscape.filter`${ loginRequest.username }`;
+
 	try {
 		ldap.connectSync();
-		const users = ldap.searchUsersSync(loginRequest.username);
+		const users = ldap.searchUsersSync(escapedUsername);
 
 		if (users.length !== 1) {
-			logger.info('Search returned', users.length, 'record(s) for', loginRequest.username);
+			logger.info('Search returned', users.length, 'record(s) for', escapedUsername);
 			throw new Error('User not Found');
 		}
 
 		if (ldap.authSync(users[0].dn, loginRequest.ldapPass) === true) {
-			if (ldap.isUserInGroup(loginRequest.username, users[0].dn)) {
+			if (ldap.isUserInGroup(escapedUsername, users[0].dn)) {
 				ldapUser = users[0];
 			} else {
 				throw new Error('User not in a valid group');
 			}
 		} else {
-			logger.info('Wrong password for', loginRequest.username);
+			logger.info('Wrong password for', escapedUsername);
 		}
 	} catch (error) {
 		logger.error(error);

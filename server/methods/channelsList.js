@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../app/authorization';
 import { Rooms, Subscriptions, Users } from '../../app/models';
 import { getUserPreference } from '../../app/utils';
 import { settings } from '../../app/settings';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 Meteor.methods({
 	channelsList(filter, channelType, limit, sort) {

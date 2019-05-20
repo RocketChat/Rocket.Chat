@@ -1,24 +1,23 @@
+import stream from 'stream';
+
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 import { createClient } from 'webdav';
-import stream from 'stream';
 /**
  * WebDAV store
  * @param options
  * @constructor
  */
 export class WebdavStore extends UploadFS.Store {
-
 	constructor(options) {
-
 		super(options);
 
 		const client = createClient(
 			options.connection.credentials.server,
 			{
-				username:options.connection.credentials.username,
-				password:options.connection.credentials.password,
+				username: options.connection.credentials.username,
+				password: options.connection.credentials.password,
 			}
 		);
 

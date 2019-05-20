@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { Messages } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib';
 import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
@@ -68,8 +69,8 @@ API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
 
 		return API.v1.success({
 			result: {
-				updated: result.updated.map((message) => composeMessageObjectWithUser(message, this.userId)),
-				deleted: result.deleted.map((message) => composeMessageObjectWithUser(message, this.userId)),
+				updated: normalizeMessagesForUser(result.updated, this.userId),
+				deleted: normalizeMessagesForUser(result.deleted, this.userId),
 			},
 		});
 	},
@@ -90,8 +91,10 @@ API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 			return API.v1.failure();
 		}
 
+		const [message] = normalizeMessagesForUser([msg], this.userId);
+
 		return API.v1.success({
-			message: composeMessageObjectWithUser(msg, this.userId),
+			message,
 		});
 	},
 });
@@ -109,10 +112,12 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 		}
 
 		let pinnedMessage;
-		Meteor.runAsUser(this.userId, () => pinnedMessage = Meteor.call('pinMessage', msg));
+		Meteor.runAsUser(this.userId, () => { pinnedMessage = Meteor.call('pinMessage', msg); });
+
+		const [message] = normalizeMessagesForUser([pinnedMessage], this.userId);
 
 		return API.v1.success({
-			message: composeMessageObjectWithUser(pinnedMessage, this.userId),
+			message,
 		});
 	},
 });
@@ -125,10 +130,12 @@ API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 			return API.v1.failure('unknown-error');
 		}
 
+		const [message] = normalizeMessagesForUser([messageReturn.message], this.userId);
+
 		return API.v1.success({
 			ts: Date.now(),
 			channel: messageReturn.channel,
-			message: composeMessageObjectWithUser(messageReturn.message, this.userId),
+			message,
 		});
 	},
 });
@@ -147,10 +154,10 @@ API.v1.addRoute('chat.search', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, count).message.docs);
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('messageSearch', searchText, roomId, count).message.docs; });
 
 		return API.v1.success({
-			messages: result.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(result, this.userId),
 		});
 	},
 });
@@ -164,11 +171,12 @@ API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 		}
 
-		let message;
-		Meteor.runAsUser(this.userId, () => message = Meteor.call('sendMessage', this.bodyParams.message));
+		const sent = Meteor.runAsUser(this.userId, () => Meteor.call('sendMessage', this.bodyParams.message));
+
+		const [message] = normalizeMessagesForUser([sent], this.userId);
 
 		return API.v1.success({
-			message: composeMessageObjectWithUser(message, this.userId),
+			message,
 		});
 	},
 });
@@ -259,8 +267,10 @@ API.v1.addRoute('chat.update', { authRequired: true }, {
 			Meteor.call('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
 		});
 
+		const [message] = normalizeMessagesForUser([Messages.findOneById(msg._id)], this.userId);
+
 		return API.v1.success({
-			message: composeMessageObjectWithUser(Messages.findOneById(msg._id), this.userId),
+			message,
 		});
 	},
 });
@@ -386,16 +396,36 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 	get() {
 		const { rid } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
-
+		const { sort, fields, query } = this.parseJsonQuery();
 		if (!rid) {
 			throw new Meteor.Error('The required "rid" query param is missing.');
 		}
-		const threads = Meteor.runAsUser(this.userId, () => Meteor.call('getThreadsList', {
-			rid,
-			limit: count,
+		if (!settings.get('Threads_enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+		}
+		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+		const room = Rooms.findOneById(rid, { fields: { t: 1, _id: 1 } });
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+		const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+		const cursor = Messages.find(threadQuery, {
+			sort: sort || { ts: 1 },
 			skip: offset,
-		}));
-		return API.v1.success({ threads });
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+
+		const threads = cursor.fetch();
+
+		return API.v1.success({
+			threads,
+			count: threads.length,
+			offset,
+			total,
+		});
 	},
 });
 
@@ -437,17 +467,42 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 	get() {
 		const { tmid } = this.queryParams;
+		const { query, fields, sort } = this.parseJsonQuery();
 		const { offset, count } = this.getPaginationItems();
 
-		if (!tmid) {
-			throw new Meteor.Error('The required "tmid" query param is missing.');
+		if (!settings.get('Threads_enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
-		const messages = Meteor.runAsUser(this.userId, () => Meteor.call('getThreadMessages', {
-			tmid,
-			limit: count,
+		if (!tmid) {
+			throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
+		}
+		const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
+		if (!thread || !thread.rid) {
+			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+		}
+		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+		const room = Rooms.findOneById(thread.rid, { fields: { t: 1, _id: 1 } });
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+		const cursor = Messages.find({ ...query, tmid }, {
+			sort: sort || { ts: 1 },
 			skip: offset,
-		}));
-		return API.v1.success({ messages });
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 });
 
@@ -472,7 +527,7 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 			updatedSinceDate = new Date(updatedSince);
 		}
 		const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
-		if (!thread.rid) {
+		if (!thread || !thread.rid) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });

@@ -1,10 +1,13 @@
 import dns from 'dns';
+
 import { Meteor } from 'meteor/meteor';
-import { FederationDNSCache } from '../../models';
+
 
 import { logger } from './logger';
 import { updateStatus } from './settingsUpdater';
-import { Federation } from './';
+import { FederationDNSCache } from '../../models';
+
+import { Federation } from '.';
 
 const dnsResolveSRV = Meteor.wrapAsync(dns.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dns.resolveTxt);
@@ -72,9 +75,13 @@ export class PeerDNS {
 
 		// Try to lookup at the DNS Cache
 		if (!peer) {
-			this.updatePeerDNS(domain);
+			try {
+				this.updatePeerDNS(domain);
 
-			peer = FederationDNSCache.findOneByDomain(domain);
+				peer = FederationDNSCache.findOneByDomain(domain);
+			} catch (err) {
+				this.log(`Could not find peer for domain ${ domain }`);
+			}
 		}
 
 		return peer;
@@ -127,7 +134,7 @@ export class PeerDNS {
 	updatePeerDNS(domain) {
 		this.log(`updatePeerDNS: ${ domain }`);
 
-		let peer;
+		let peer = null;
 
 		try {
 			peer = this.getPeerUsingDNS(domain);
@@ -138,7 +145,11 @@ export class PeerDNS {
 				throw new Error(`Error trying to fetch SRV DNS entries for ${ domain }`);
 			}
 
-			peer = this.getPeerUsingHub(domain);
+			try {
+				peer = this.getPeerUsingHub(domain);
+			} catch (err) {
+				throw new Error(`Could not find a peer with domain ${ domain } using the hub`);
+			}
 		}
 
 		this.updateDNSCache.call(this, peer);

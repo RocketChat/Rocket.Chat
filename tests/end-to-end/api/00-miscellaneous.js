@@ -111,7 +111,7 @@ describe('miscellaneous', function() {
 					'saveMobileBandwidth', 'collapseMediaByDefault', 'hideUsernames', 'hideRoles', 'hideFlexTab', 'hideAvatars',
 					'sidebarViewMode', 'sidebarHideAvatar', 'sidebarShowUnread', 'sidebarShowDiscussion', 'sidebarShowFavorites', 'sidebarGroupByType',
 					'sendOnEnter', 'messageViewMode', 'emailNotificationMode', 'roomCounterSidebar', 'newRoomNotification', 'newMessageNotification',
-					'muteFocusedConversations', 'notificationsSoundVolume', 'isPublicAccount'];
+					'muteFocusedConversations', 'notificationsSoundVolume', 'isPublicAccount', 'discoverability'];
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
 				expect(res.body).to.have.property('username', login.user);
@@ -213,9 +213,9 @@ describe('miscellaneous', function() {
 						text: testChannel.name,
 						type: 'channels',
 					}),
-					sort: JSON.stringify(({
+					sort: JSON.stringify({
 						name: 1,
-					})),
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -256,10 +256,10 @@ describe('miscellaneous', function() {
 						text: testChannel.name,
 						type: 'channels',
 					}),
-					sort: JSON.stringify(({
+					sort: JSON.stringify({
 						name: 1,
 						test: 1,
-					})),
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)

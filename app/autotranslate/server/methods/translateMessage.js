@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Rooms } from '../../../models';
 import AutoTranslate from '../autotranslate';
 

@@ -17,7 +17,6 @@ describe('[Chat]', function() {
 	before((done) => getCredentials(done));
 
 	describe('/chat.postMessage', () => {
-
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
 			request.post(api('chat.postMessage'))
 				.set(credentials)
@@ -71,6 +70,119 @@ describe('[Chat]', function() {
 					expect(res.body).to.have.property('error');
 				})
 				.end(done);
+		});
+
+		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
+			it('attachment.message_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.author_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							author_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.title_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.action.url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							actions: [
+								{
+									type: 'button',
+									text: 'Text',
+									url: 'javascript:alert("xss")',
+								},
+							],
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
 		});
 
 		it('should throw an error when the properties (attachments.fields.title, attachments.fields.value) are with the wrong type', (done) => {
@@ -159,7 +271,6 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
 	});
 
 	describe('/chat.getMessage', () => {
@@ -180,7 +291,6 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.sendMessage', () => {
-
 		it('should throw an error when the required param \'rid\' is not sent', (done) => {
 			request.post(api('chat.sendMessage'))
 				.set(credentials)
@@ -199,6 +309,119 @@ describe('[Chat]', function() {
 					expect(res.body).to.have.property('error', 'The \'rid\' property on the message object is missing.');
 				})
 				.end(done);
+		});
+
+		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
+			it('attachment.message_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.author_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							author_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.title_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.action.url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							actions: [
+								{
+									type: 'button',
+									text: 'Text',
+									url: 'javascript:alert("xss")',
+								},
+							],
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
 		});
 
 		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
@@ -325,7 +548,6 @@ describe('[Chat]', function() {
 					.end(done);
 			});
 		});
-
 	});
 
 	describe('/chat.update', () => {
@@ -931,25 +1153,6 @@ describe('[Chat]', function() {
 					});
 			});
 
-			it('should return an error when the limit is greater than the MAX LIMIT(100) allowed', (done) => {
-				updateSetting('API_Upper_Count_Limit', 105).then(() => {
-					request.get(api('chat.getThreadsList'))
-						.set(credentials)
-						.query({
-							rid: testChannel._id,
-							count: 101,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('errorType', 'error-not-allowed');
-							expect(res.body).to.have.property('error', 'max limit: 100 [error-not-allowed]');
-						})
-						.end(() => updateSetting('API_Upper_Count_Limit', 100).then(done));
-				});
-			});
-
 			it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.get(api('chat.getThreadsList'))
@@ -1004,6 +1207,9 @@ describe('[Chat]', function() {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('threads').and.to.be.an('array');
+							expect(res.body).to.have.property('total');
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('count');
 							expect(res.body.threads).to.have.lengthOf(1);
 							expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
 						})
@@ -1179,25 +1385,6 @@ describe('[Chat]', function() {
 					});
 			});
 
-			it('should return an error when the limit is greater than the MAX LIMIT(100) allowed', (done) => {
-				updateSetting('API_Upper_Count_Limit', 105).then(() => {
-					request.get(api('chat.getThreadMessages'))
-						.set(credentials)
-						.query({
-							tmid: threadMessage.tmid,
-							count: 101,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('errorType', 'error-not-allowed');
-							expect(res.body).to.have.property('error', 'max limit: 100 [error-not-allowed]');
-						})
-						.end(done);
-				});
-			});
-
 			it('should return an error for chat.getThreadMessages when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.get(api('chat.getThreadMessages'))
@@ -1231,7 +1418,7 @@ describe('[Chat]', function() {
 									.expect((res) => {
 										expect(res.body).to.have.property('success', false);
 										expect(res.body).to.have.property('errorType', 'error-not-allowed');
-										expect(res.body).to.have.property('error', 'Not allowed [error-not-allowed]');
+										expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
 									})
 									.end(done);
 							});
@@ -1252,9 +1439,11 @@ describe('[Chat]', function() {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(res.body.messages).to.have.lengthOf(2);
-							expect(res.body.messages[0]._id).to.be.equal(createdThreadMessage._id);
-							expect(res.body.messages[1].tmid).to.be.equal(createdThreadMessage._id);
+							expect(res.body).to.have.property('total').and.to.be.equal(1);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('count');
+							expect(res.body.messages).to.have.lengthOf(1);
+							expect(res.body.messages[0].tmid).to.be.equal(createdThreadMessage._id);
 						})
 						.end(done);
 				});
