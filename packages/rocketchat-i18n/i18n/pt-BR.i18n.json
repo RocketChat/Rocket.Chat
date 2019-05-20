@@ -2096,6 +2096,7 @@
   "No_channel_with_name_%s_was_found": "Nenhum canal com nome <strong>\"%s\"</strong> foi encontrado!",
   "No_channels_yet": "Você não faz parte de nenhum canal ainda.",
   "No_direct_messages_yet": "Você não iniciou nenhuma conversa ainda.",
+  "No_emojis_found": "Nenhum emoji encontrado",
   "No_Encryption": "Sem Criptografia",
   "No_group_with_name_%s_was_found": "Nenhum grupo privado com nome <strong>\"%s\"</strong> foi encontrado!",
   "No_groups_yet": "Nenhum grupo privado ainda.",
