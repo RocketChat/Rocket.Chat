@@ -81,7 +81,7 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
 
-You can also join the conversation at [Twitter](https://twitter.com/RocketChat), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp).
+You can also join the conversation at [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -450,9 +450,9 @@ Thanks to our core team
 [Sing Li](https://github.com/Sing-Li),
 and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
-![Emoji One](https://cloud.githubusercontent.com/assets/1986378/24772858/47290a70-1ae9-11e7-9a5a-2913d0002c94.png)
+![JoyPixels](https://i.imgur.com/OrhYvLe.png)
 
-Emoji provided free by [Emoji One](http://emojione.com)
+Emoji provided graciously by [JoyPixels](https://www.joypixels.com/)
 
 ![BrowserStack](https://cloud.githubusercontent.com/assets/1986378/24772879/57d57b88-1ae9-11e7-98b4-4af824b47933.png)
 
