@@ -162,6 +162,7 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		section: 'CRM_Integration',
 		i18nLabel: 'Secret_token',
+		secret: true,
 	});
 
 	settings.add('Livechat_webhook_on_close', false, {
@@ -236,6 +237,7 @@ Meteor.startup(function() {
 		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Key',
+		secret: true,
 	});
 
 	settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
