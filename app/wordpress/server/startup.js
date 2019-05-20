@@ -14,6 +14,7 @@ settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery,
 			public: true,
+			secret: true,
 		});
 		this.add('Accounts_OAuth_Wordpress_id', '', {
 			type: 'string',
@@ -22,6 +23,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Wordpress_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		this.add('Accounts_OAuth_Wordpress_server_type', '', {
 			type: 'select',
