@@ -71,6 +71,8 @@ jobs:
       - image: circleci/node:8.15-stretch
       - image: mongo:3.2
 
+    resource_class: medium+
+
     steps:
       - checkout
 
