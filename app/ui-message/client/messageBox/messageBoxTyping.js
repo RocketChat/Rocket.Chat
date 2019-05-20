@@ -15,7 +15,7 @@ Template.messageBoxTyping.helpers({
 		if (users.length === 1) {
 			return {
 				multi: false,
-				selfTyping: MsgTyping.selfTyping.get(),
+				selfTyping: MsgTyping.selfTyping,
 				users: users[0],
 			};
 		}
@@ -27,7 +27,7 @@ Template.messageBoxTyping.helpers({
 		usernames = [usernames, last];
 		return {
 			multi: true,
-			selfTyping: MsgTyping.selfTyping.get(),
+			selfTyping: MsgTyping.selfTyping,
 			users: usernames.join(` ${ t('and') } `),
 		};
 	},
