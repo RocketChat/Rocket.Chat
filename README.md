@@ -450,9 +450,9 @@ Thanks to our core team
 [Sing Li](https://github.com/Sing-Li),
 and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
-![Emoji One](https://cloud.githubusercontent.com/assets/1986378/24772858/47290a70-1ae9-11e7-9a5a-2913d0002c94.png)
+![JoyPixels](https://i.imgur.com/OrhYvLe.png)
 
-Emoji provided free by [Emoji One](http://emojione.com)
+Emoji provided graciously by [JoyPixels](https://www.joypixels.com/)
 
 ![BrowserStack](https://cloud.githubusercontent.com/assets/1986378/24772879/57d57b88-1ae9-11e7-98b4-4af824b47933.png)
 
