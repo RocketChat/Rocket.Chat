@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
+
 import visitor from '../../imports/client/visitor';
 
 const api = {

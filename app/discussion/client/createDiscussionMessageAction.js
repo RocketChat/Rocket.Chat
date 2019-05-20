@@ -25,9 +25,11 @@ Meteor.startup(function() {
 					title: t('Discussion_title'),
 					modifier: 'modal',
 					content: 'CreateDiscussion',
-					data: { rid: message.rid, message, onCreate() {
-						modal.close();
-					} },
+					data: { rid: message.rid,
+						message,
+						onCreate() {
+							modal.close();
+						} },
 					confirmOnEnter: false,
 					showConfirmButton: false,
 					showCancelButton: false,

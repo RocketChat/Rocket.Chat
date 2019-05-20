@@ -33,9 +33,9 @@ export function updateUsersSubscriptions(message, room, users) {
 
 		const highlightOptions = { fields: { userHighlights: 1, 'u._id': 1 } };
 
-		const highlights = users ?
-			Subscriptions.findByRoomAndUsersWithUserHighlights(room._id, users, highlightOptions).fetch() :
-			Subscriptions.findByRoomWithUserHighlights(room._id, highlightOptions).fetch();
+		const highlights = users
+			? Subscriptions.findByRoomAndUsersWithUserHighlights(room._id, users, highlightOptions).fetch()
+			: Subscriptions.findByRoomWithUserHighlights(room._id, highlightOptions).fetch();
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
@@ -90,8 +90,7 @@ function notifyUsersOnMessage(message, room) {
 		// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
 		Rooms.incMsgCountById(message.rid, 1);
 		return message;
-	} else if (message.editedAt) {
-
+	} if (message.editedAt) {
 		// only updates last message if it was edited (skip rest of callback)
 		if (settings.get('Store_Last_Message') && (!room.lastMessage || room.lastMessage._id === message._id)) {
 			Rooms.setLastMessageById(message.rid, message);

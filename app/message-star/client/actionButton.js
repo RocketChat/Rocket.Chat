@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import toastr from 'toastr';
+
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'star-message',
@@ -61,7 +63,7 @@ Meteor.startup(function() {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred', 'threads'],
+		context: ['starred'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
@@ -69,11 +71,12 @@ Meteor.startup(function() {
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		condition({ subscription }) {
-			if (subscription == null) {
+		condition({ msg, subscription, u }) {
+			if (subscription == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
-			return true;
+
+			return msg.starred && msg.starred.find((star) => star._id === u._id);
 		},
 		order: 100,
 		group: 'menu',
@@ -84,17 +87,18 @@ Meteor.startup(function() {
 		icon: 'permalink',
 		label: 'Get_link',
 		classes: 'clipboard',
-		context: ['starred', 'threads'],
+		context: ['starred'],
 		async action(event) {
 			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition({ subscription }) {
+		condition({ msg, subscription, u }) {
 			if (subscription == null) {
 				return false;
 			}
-			return true;
+
+			return msg.starred && msg.starred.find((star) => star._id === u._id);
 		},
 		order: 101,
 		group: 'menu',

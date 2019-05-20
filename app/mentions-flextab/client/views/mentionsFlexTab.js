@@ -1,17 +1,16 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { MentionedMessage } from '../lib/MentionedMessage';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+
 Template.mentionsFlexTab.helpers({
 	hasMessages() {
 		return Template.instance().cursor.count() > 0;
 	},
 	messages() {
 		return Template.instance().cursor;
-	},
-	message() {
-		return _.extend(this, { customClass: 'mentions', actionContext: 'mentions' });
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();

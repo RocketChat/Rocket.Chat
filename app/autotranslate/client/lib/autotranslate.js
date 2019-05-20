@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import _ from 'underscore';
+import mem from 'mem';
+
 import { Subscriptions, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import _ from 'underscore';
-import mem from 'mem';
 
 let userLanguage = 'en';
 let username = '';

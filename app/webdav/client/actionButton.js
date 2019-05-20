@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+
 import { t, getURL } from '../../utils';
 import { WebdavAccounts } from '../../models';
 import { settings } from '../../settings';
 import { MessageAction, modal } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-Meteor.startup(function() {
 
+Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'webdav-upload',
 		icon: 'upload',

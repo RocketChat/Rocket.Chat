@@ -17,5 +17,3 @@ settings.addGroup('Accounts', function() {
 		});
 	});
 });
-
-
