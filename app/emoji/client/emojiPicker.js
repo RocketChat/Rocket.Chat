@@ -7,8 +7,6 @@ import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
 
-export const recentEmojisNeedsUpdate = new ReactiveVar(false);
-
 const emojiListByCategory = new ReactiveDict('emojiList');
 
 const getEmojiElement = (emoji, image) => `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
@@ -32,12 +30,12 @@ export function updateRecentEmoji(category) {
 	emojiListByCategory.set(category, createEmojiList(category));
 }
 
-const createPickerEmojis = _.throttle((instance) => {
+const createPickerEmojis = (instance) => {
 	const categories = instance.categoriesList;
 	const actualTone = instance.tone;
 
 	categories.forEach((category) => emojiListByCategory.set(category.key, createEmojiList(category.key, actualTone)));
-}, 300);
+};
 
 function getEmojisBySearchTerm(searchTerm) {
 	let html = '<ul class="emoji-list">';
@@ -153,15 +151,15 @@ Template.emojiPicker.events({
 		const container = instance.$(event.currentTarget);
 		const scrollTop = container.scrollTop() + 8;
 
-		const position = EmojiPicker.getCategoryPositions()
+		const last = EmojiPicker.getCategoryPositions()
 			.filter((pos) => pos.top <= scrollTop)
-			.reverse();
+			.pop();
 
-		if (!position) {
+		if (!last) {
 			return;
 		}
 
-		const [{ el }] = position;
+		const { el } = last;
 
 		const category = el.id.replace('emoji-list-category-', '');
 
@@ -204,7 +202,7 @@ Template.emojiPicker.events({
 
 		$('.tone-selector').toggleClass('show');
 	},
-	'click .emoji-list li.emoji-picker-item'(event, instance) {
+	'click .emoji-list .emoji-picker-item'(event, instance) {
 		event.stopPropagation();
 
 		const _emoji = event.currentTarget.dataset.emoji;
@@ -265,12 +263,6 @@ Template.emojiPicker.onCreated(function() {
 		$('.current-tone').addClass(`tone-${ newTone }`);
 		this.tone = newTone;
 	};
-
-	this.autorun(() => {
-		if (recentEmojisNeedsUpdate.get()) {
-			recentEmojisNeedsUpdate.set(false);
-		}
-	});
 
 	createPickerEmojis(this);
 });

@@ -175,7 +175,7 @@ export const EmojiPicker = {
 			if (animate) {
 				return container.animate({
 					scrollTop,
-				}, 300, () => setTimeout(() => { this.scrollingToCategory = false; }, 200));
+				}, 300, () => { this.scrollingToCategory = false; });
 			}
 
 			container.scrollTop(scrollTop);
