@@ -586,7 +586,7 @@ API.v1.addRoute('users.getServiceAccessToken', { authRequired: true }, {
 		}
 
 		return API.v1.success({
-			accessToken : token,
+			accessToken: token,
 		});
 	},
 });

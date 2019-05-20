@@ -271,7 +271,7 @@ Template.accountProfile.onCreated(function() {
 		// 		data.email = s.trim(self.email.get());
 		// 	}
 		// }
-		
+
 		const customFields = {};
 		$('[data-customfield=true]').each(function() {
 			customFields[this.name] = $(this).val() || '';

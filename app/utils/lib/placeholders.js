@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
 
 import { settings } from '../../settings';
-import { getAvatarUrlFromUsername } from '../../utils';
 
-import s from 'underscore.string';
+import { getAvatarUrlFromUsername } from '..';
+
 
 export const placeholders = {
 	replace: (str, data) => {

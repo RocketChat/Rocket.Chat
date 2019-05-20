@@ -212,7 +212,6 @@ Template.accountPreferences.onCreated(function() {
 			data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
 			data.desktopNotifications = $('#desktopNotifications').find('select').val();
 			data.mobileNotifications = $('#mobileNotifications').find('select').val();
-
 		}
 
 		if (settings.get('UI_DisplayMessages')) {

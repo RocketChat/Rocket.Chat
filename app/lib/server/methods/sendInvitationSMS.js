@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { check } from 'meteor/check';
 import _ from 'underscore';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { SMS } from '../../../sms';
@@ -65,7 +66,7 @@ Meteor.methods({
 				lng,
 			});
 		}
-		body = placeholders.replace(body, { name:inviter });
+		body = placeholders.replace(body, { name: inviter });
 		validPhones.forEach((phone) => {
 			try {
 				twilioService.send(messageFrom, phone, body);

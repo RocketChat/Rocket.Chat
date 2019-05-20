@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
+import { PhoneNumberUtil } from 'google-libphonenumber';
 
 import { hasRole } from '../../../authorization';
 import { Info } from '../../../utils';
@@ -10,7 +11,6 @@ import { settings } from '../../../settings';
 import { API } from '../api';
 import * as Mailer from '../../../mailer';
 
-import { PhoneNumberUtil } from 'google-libphonenumber';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -219,9 +219,8 @@ API.v1.addRoute('invite.email', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email], this.bodyParams.language, this.bodyParams.realname));
 		if (result.indexOf(this.bodyParams.email) >= 0) {
 			return API.v1.success();
-		} else {
-			return API.v1.failure('Email Invite Failed');
 		}
+		return API.v1.failure('Email Invite Failed');
 	},
 });
 
@@ -238,9 +237,8 @@ API.v1.addRoute('invite.sms', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', [phone], this.bodyParams.language, this.bodyParams.realname));
 		if (result.indexOf(phone) >= 0) {
 			return API.v1.success();
-		} else {
-			return API.v1.failure('SMS Invite Failed');
 		}
+		return API.v1.failure('SMS Invite Failed');
 	},
 });
 
@@ -251,8 +249,6 @@ API.v1.addRoute('query.contacts', { authRequired: true }, {
 			return API.v1.failure('weakHashes param not present.');
 		}
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('queryContacts', hashes));
-		return API.v1.success({ strongHashes:result });
-
+		return API.v1.success({ strongHashes: result });
 	},
 });
-

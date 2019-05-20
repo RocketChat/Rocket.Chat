@@ -94,7 +94,7 @@ class Administration extends Page {
 	get rolesUserCreateP() { return browser.element('[name="perm[user][create-p]"]'); }
 
 	get rolesUserCreateD() { return browser.element('[name="perm[user][create-d]"]'); }
-	
+
 	get rolesUserCreateRo() { return browser.element('[name="perm[user][create-ro]"]'); }
 
 	get rolesUserMentionAll() { return browser.element('[name="perm[user][mention-all]"]'); }

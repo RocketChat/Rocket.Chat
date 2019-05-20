@@ -46,7 +46,7 @@ export const toolbarSearch = {
 	clear() {
 		const $inputMessage = $('.js-input-message');
 
-		if (0 === $inputMessage.length) {
+		if ($inputMessage.length === 0) {
 			return;
 		}
 
