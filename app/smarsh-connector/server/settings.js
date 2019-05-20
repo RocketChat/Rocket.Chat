@@ -19,6 +19,7 @@ settings.addGroup('Smarsh', function addSettings() {
 		type: 'string',
 		i18nLabel: 'Smarsh_Email',
 		placeholder: 'email@domain.com',
+		secret: true,
 	});
 	this.add('Smarsh_MissingEmail_Email', 'no-email@example.com', {
 		type: 'string',
