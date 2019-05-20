@@ -20,7 +20,7 @@ Meteor.startup(function() {
 				const { msg } = messageArgs(this);
 				call('unfollowMessage', { mid: msg._id });
 			},
-			condition({ msg:{ tmid, replies = [] }, u }) {
+			condition({ msg: { tmid, replies = [] }, u }) {
 				if (tmid) {
 					const parentMessage = Messages.findOne({ _id: tmid }, { fields: { replies: 1 } });
 					if (parentMessage) {

@@ -10,12 +10,10 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { modal } from './modal';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { modal } from './modal';
-import { settings } from '../../../settings/client';
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err, data) {
@@ -289,7 +287,7 @@ Meteor.startup(async function() {
 			const { msg: message } = messageArgs(this);
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
-		condition({ msg:message, subscription }) {
+		condition({ msg: message, subscription }) {
 			if (!subscription) {
 				return false;
 			}

@@ -69,7 +69,6 @@ Meteor.startup(function() {
 			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
 		},
 		condition({ msg: message, u: user, room, subscription }) {
-
 			if (!room) {
 				return false;
 			}
@@ -82,7 +81,9 @@ Meteor.startup(function() {
 
 			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 				return false;
-			} else if (!subscription) {
+			}
+
+			if (!subscription) {
 				return false;
 			}
 
