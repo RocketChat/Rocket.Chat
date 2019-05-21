@@ -6,19 +6,23 @@
 		{{#if otrAvailable}}
 			<form>
 				<ul class="list clearfix">
-					{{#if userIsOnline}}
-						{{#if established}}
-							<div class="buttons-group">
-								<button class="button refresh"><span>{{_ "Refresh_keys"}}</span></button>
-							</div>
-							<div class="buttons-group">
-								<button class="button end"><span>{{_ "End_OTR"}}</span></button>
-							</div>
-						{{else}} {{#if establishing}}
-							{{_ "Please_wait_while_OTR_is_being_established"}}
-						{{else}}
-							<button class="button start"><span>{{_ "Start_OTR"}}</span></button>
-						{{/if}} {{/if}}
+                                        {{#if userIsOnline}}
+                                            {{#if userIsBot}}
+                                                <h2>{{_ "OTR_is_only_available_between_users_not_bots"}}</h2>
+                                                {{else}}
+                                                    {{#if established}}
+                                                            <div class="buttons-group">
+                                                              <button class="button refresh"><span>{{_ "Refresh_keys"}}</span></button>
+                                                            </div>
+                                                            <div class="buttons-group">
+                                                              <button class="button end"><span>{{_ "End_OTR"}}</span></button>
+                                                            </div>
+                                                    {{else}} {{#if establishing}}
+                                                        {{_ "Please_wait_while_OTR_is_being_established"}}
+                                                    {{else}}
+                                                            <button class="button start"><span>{{_ "Start_OTR"}}</span></button>
+                                                    {{/if}} {{/if}}
+                                              {{/if}}  
 					{{else}}
 						<h2>{{_ "OTR_is_only_available_when_both_users_are_online"}}</h2>
 					{{/if}}
