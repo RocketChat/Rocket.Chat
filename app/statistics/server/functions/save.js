@@ -5,9 +5,12 @@ statistics.save = function() {
 	const rcStatistics = statistics.get();
 	rcStatistics.createdAt = new Date();
 
-	// Check if there's partial data already saved for the hour
+	// Check if there's partial data already saved for the day
 	const oldStats = Statistics.findLast();
-	if (oldStats) {
+	const now = new Date();
+	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, now.getHours(), now.getMinutes());
+
+	if (oldStats && oldStats.partial && oldStats.createdAt >= yesterday) {
 		if (oldStats.connectedUserCountList && oldStats.connectedUserCountList.length) {
 			rcStatistics.avgConnectedUsers = oldStats.connectedUserCountList.reduce((total, value) => total + value) / oldStats.connectedUserCountList.length;
 		} else {
@@ -24,6 +27,7 @@ statistics.save = function() {
 
 		Statistics.update(oldStats._id, rcStatistics);
 	} else {
+		rcStatistics._id = now.toISOString().substr(0, 10);
 		Statistics.insert(rcStatistics);
 	}
 
@@ -42,6 +46,7 @@ statistics.saveUsersInfo = function() {
 			userStatistics.totalConnectedUsers,
 		];
 		statistics.createdAt = new Date();
+		statistics._id = new Date().toISOString().substr(0, 10);
 
 		Statistics.insert(statistics);
 		return;
