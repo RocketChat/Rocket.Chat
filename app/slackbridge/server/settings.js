@@ -19,6 +19,7 @@ Meteor.startup(function() {
 			},
 			i18nLabel: 'SlackBridge_APIToken',
 			i18nDescription: 'SlackBridge_APIToken_Description',
+			secret: true,
 		});
 
 		this.add('SlackBridge_FileUpload_Enabled', true, {
