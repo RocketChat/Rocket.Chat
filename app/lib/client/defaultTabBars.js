@@ -63,7 +63,7 @@ TabBar.addButton({
 });
 
 TabBar.addButton({
-	groups: ['channel', 'privategroup', 'directmessage', 'groupchat'],
+	groups: ['channel', 'group', 'direct', 'groupchat'],
 	id: 'keyboard-shortcut-list',
 	i18nTitle: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',
