@@ -28,7 +28,6 @@ const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
 const Messages = _.extend({}, ChatMessage);
 const Rooms = _.extend({}, ChatRoom);
 
-
 export {
 	Base,
 	Avatars,

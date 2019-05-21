@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { emojione } from 'meteor/emojione:emojione';
+import emojione from 'emojione';
 
 import { callbacks } from '../../callbacks';
 

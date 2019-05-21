@@ -499,6 +499,16 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setLastMessageAsRead(roomId) {
+		return this.update({
+			_id: roomId,
+		}, {
+			$unset: {
+				'lastMessage.unread': 1,
+			},
+		});
+	}
+
 	setSentiment(roomId, sentiment) {
 		return this.update({ _id: roomId }, { $set: { sentiment } });
 	}
