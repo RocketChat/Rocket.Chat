@@ -1,14 +1,10 @@
 # Updating emojione
 
 ## Generate new category map variable for emojipicker
-Create a file called `emoji.json` on this directory with the content of the file https://github.com/Ranks/emojione/blob/master/emoji.json
-
-After that, run:
+Run
 ```
-node generateEmojiIndex.js
+node --experimental-modules generateEmojiIndex.mjs
 ```
-
-Grab the result and update the file `emojiPicker.js`.
 
 ## Generate new percentage sprite
 Clone the repository https://github.com/Ranks/emojione/ and replace the file `assets/sprites/emojione.sprites.mustache` with the content 

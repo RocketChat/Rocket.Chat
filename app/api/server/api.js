@@ -10,6 +10,7 @@ import { Logger } from '../../logger';
 import { settings } from '../../settings';
 import { metrics } from '../../metrics';
 import { hasPermission, hasAllPermission } from '../../authorization';
+import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 
 
 const logger = new Logger('API', {});
@@ -382,6 +383,8 @@ class APIClass extends Restivus {
 
 				this.user = Meteor.users.findOne({
 					_id: auth.id,
+				}, {
+					fields: getDefaultUserFields(),
 				});
 
 				this.userId = this.user._id;

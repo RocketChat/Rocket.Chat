@@ -7,6 +7,7 @@ import { settings } from '../../../settings';
 import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
+import { Notifications } from '../../../notifications/server';
 
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
@@ -85,6 +86,13 @@ export const _setUsername = function(userId, u) {
 			fileStore.model.updateFileNameById(file._id, username);
 		}
 	}
+
+	Notifications.notifyLogged('Users:NameChanged', {
+		_id: user._id,
+		name: user.name,
+		username: user.username,
+	});
+
 	return user;
 };
 
