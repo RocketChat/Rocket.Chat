@@ -70,7 +70,7 @@ konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
-konecty:user-presence@2.3.0
+konecty:user-presence@2.4.0
 launch-screen@1.1.1
 less@2.8.0
 littledata:synced-cron@1.5.1
