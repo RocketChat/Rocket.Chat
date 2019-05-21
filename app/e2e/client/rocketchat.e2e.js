@@ -228,13 +228,7 @@ class E2E {
 			this.decryptSubscription(doc);
 		});
 
-		Messages.after.update((userId, doc) => {
-			this.decryptMessage(doc);
-		});
-
-		Messages.after.insert((userId, doc) => {
-			this.decryptMessage(doc);
-		});
+		promises.add('onClientMessageReceived', (msg) => this.decryptMessage(msg), promises.priority.HIGH);
 	}
 
 	async changePassword(newPassword) {
@@ -423,15 +417,14 @@ class E2E {
 
 		const data = await e2eRoom.decrypt(message.msg);
 		if (!data) {
-			return;
+			return message;
 		}
 
-		Messages.direct.update({ _id: message._id }, {
-			$set: {
-				msg: data.text,
-				e2e: 'done',
-			},
-		});
+		return {
+			...message,
+			msg: data.text,
+			e2e: 'done',
+		};
 	}
 
 	async decryptPendingMessages() {

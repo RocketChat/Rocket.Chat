@@ -255,18 +255,24 @@ export const RoomManager = new function() {
 	return new Cls();
 }();
 
-const loadMissedMessages = function(rid) {
+const loadMissedMessages = async function(rid) {
 	const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true }, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
+
 	if (lastMessage == null) {
 		return;
 	}
-	const subscription = ChatSubscription.findOne({ rid });
-	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) => {
+
+	const result = await call('loadMissedMessages', rid, lastMessage.ts);
+
+	try {
 		if (result) {
-			return Array.from(result).map((item) => promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })));
+	const subscription = ChatSubscription.findOne({ rid });
+			return Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
 		}
 		return [];
-	});
+	} catch (error) {
+		return [];
+	}
 };
 
 let connectionWasOnline = true;
