@@ -70,10 +70,14 @@ statistics.get = function _getStatistics() {
 	statistics.totalUsers = Meteor.users.find().count();
 	statistics.activeUsers = Meteor.users.find({ active: true }).count();
 	statistics.nonActiveUsers = statistics.totalUsers - statistics.activeUsers;
-	statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
-	statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
-	statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
-	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers;
+
+	// Those will be replaced by data collected throughout the day, if such data is present
+	statistics.onlineUsers = null;
+	statistics.awayUsers = null;
+	statistics.offlineUsers = null;
+	statistics.totalConnectedUsers = null;
+	statistics.avgConnectedUsers = null;
+	statistics.minConnectedUsers = null;
 
 	// Room statistics
 	statistics.totalRooms = Rooms.find().count();
