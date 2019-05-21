@@ -1,0 +1,35 @@
+@import './symbols-sprites.css';
+@import './activity-sprites.css';
+@import './objects-sprites.css';
+@import './nature-sprites.css';
+@import './food-sprites.css';
+@import './people-sprites.css';
+@import './regional-sprites.css';
+@import './travel-sprites.css';
+@import './flags-sprites.css';
+@import './modifier-sprites.css';
+
+.emojione {
+	position: relative;
+
+	display: inline-block;
+	overflow: hidden;
+
+	width: 22px;
+	height: 22px;
+	margin: 0 0.15em;
+
+	vertical-align: middle;
+	white-space: nowrap;
+	text-indent: 100%;
+
+	font-size: inherit;
+	line-height: normal;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: optimizeQuality;
+}
+
+.emojione.big {
+	width: 44px;
+	height: 44px;
+}
