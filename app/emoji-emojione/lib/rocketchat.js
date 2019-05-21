@@ -190,6 +190,12 @@ for (const key in emojione.emojioneList) {
 		const currentEmoji = emojione.emojioneList[key];
 		currentEmoji.emojiPackage = 'emojione';
 		emoji.list[key] = currentEmoji;
+
+		if (currentEmoji.shortnames) {
+			currentEmoji.shortnames.forEach((shortname) => {
+				emoji.list[shortname] = currentEmoji;
+			});
+		}
 	}
 }
 
