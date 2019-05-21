@@ -264,9 +264,9 @@ const loadMissedMessages = async function(rid) {
 
 
 	try {
-	const result = await call('loadMissedMessages', rid, lastMessage.ts);
+		const result = await call('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
-	const subscription = ChatSubscription.findOne({ rid });
+			const subscription = ChatSubscription.findOne({ rid });
 			return Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
 		}
 		return [];
