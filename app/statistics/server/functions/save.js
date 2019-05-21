@@ -38,7 +38,10 @@ statistics.saveUsersInfo = function() {
 	const userStatistics = statistics.getConnectedUsersStatistics();
 
 	const rcStatistics = Statistics.findLast();
-	if (!rcStatistics || !rcStatistics.partial) {
+	const now = new Date();
+	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, now.getHours(), now.getMinutes());
+
+	if (!rcStatistics || !rcStatistics.partial || rcStatistics.createdAt < yesterday) {
 		const statistics = userStatistics;
 
 		statistics.partial = true;
