@@ -7,8 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { getConfig } from '../../ui-utils/client/config';
-import { t, getUserPreference } from '../../utils';
+import { t, getUserPreference } from '../../utils/client';
 import { chatMessages } from '../../ui';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
@@ -147,8 +146,6 @@ Template.main.onCreated(function() {
 	tooltip.init();
 });
 
-
-const skipActiveUsersToBeReady = [getConfig('experimental'), getConfig('skipActiveUsersToBeReady')].includes('true');
 Template.main.helpers({
 	removeSidenav() {
 		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
@@ -173,12 +170,7 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const subscriptions = ['userData'];
-		if (!skipActiveUsersToBeReady) {
-			subscriptions.push('activeUsers');
-		}
-		const routerReady = FlowRouter.subsReady.apply(FlowRouter, subscriptions);
-
+		const routerReady = FlowRouter.subsReady('userData');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
 
