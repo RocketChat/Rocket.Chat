@@ -10,7 +10,7 @@ import { fireGlobalEvent } from './fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { roomTypes } from '../../../utils';
-import { promises } from '../../../promises/client';
+import { call } from '../..';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
@@ -262,9 +262,9 @@ const loadMissedMessages = async function(rid) {
 		return;
 	}
 
-	const result = await call('loadMissedMessages', rid, lastMessage.ts);
 
 	try {
+	const result = await call('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
 	const subscription = ChatSubscription.findOne({ rid });
 			return Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
