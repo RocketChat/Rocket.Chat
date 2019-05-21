@@ -499,6 +499,16 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setLastMessageAsRead(roomId) {
+		return this.update({
+			_id: roomId,
+		}, {
+			$unset: {
+				'lastMessage.unread': 1,
+			},
+		});
+	}
+
 	setSentiment(roomId, sentiment) {
 		return this.update({ _id: roomId }, { $set: { sentiment } });
 	}
@@ -544,25 +554,8 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				ro: readOnly,
-				muted: [],
 			},
 		};
-		if (readOnly) {
-			Subscriptions.findByRoomIdWhenUsernameExists(_id, { fields: { 'u._id': 1, 'u.username': 1 } }).forEach(function({ u: user }) {
-				if (hasPermission(user._id, 'post-readonly')) {
-					return;
-				}
-				return update.$set.muted.push(user.username);
-			});
-		} else {
-			update.$unset = {
-				muted: '',
-			};
-		}
-
-		if (update.$set.muted.length === 0) {
-			delete update.$set.muted;
-		}
 
 		return this.update(query, update);
 	}
@@ -1177,6 +1170,9 @@ export class Rooms extends Base {
 			$addToSet: {
 				muted: username,
 			},
+			$pull: {
+				unmuted: username,
+			},
 		};
 
 		return this.update(query, update);
@@ -1188,6 +1184,9 @@ export class Rooms extends Base {
 		const update = {
 			$pull: {
 				muted: username,
+			},
+			$addToSet: {
+				unmuted: username,
 			},
 		};
 
