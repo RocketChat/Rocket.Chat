@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 
+import { promises } from '../../../promises/client';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
@@ -28,7 +29,7 @@ export const normalizeThreadMessage = (message) => {
 	}
 };
 
-export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
+export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
 
 	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
@@ -41,32 +42,36 @@ export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	// ].map((e) => e.roles);
 	// msg.roles = _.union.apply(_.union, roles);
 
+
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
 	}
+	msg = await promises.run('onClientMessageReceived', msg) || msg;
+
+	const { _id, ...messageToUpsert } = msg;
 
 	if (msg.tcount) {
-		const uid = Tracker.nonreactive(() => Meteor.userId());
-		ChatMessage.update({ tmid: _id }, {
+		collection.direct.update({ tmid: _id }, {
 			$set: {
 				following: msg.replies && msg.replies.indexOf(uid) > -1,
-				threadMsg: normalizeThreadMessage(msg),
+				threadMsg: normalizeThreadMessage(messageToUpsert),
 				repliesCount: msg.tcount,
 			},
 		}, { multi: true });
 	}
 
-	return ChatMessage.upsert({ _id }, msg);
+	return collection.direct.upsert({ _id }, messageToUpsert);
 };
 
-function upsertMessageBulk({ msgs, subscription }) {
+export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
+	const uid = Tracker.nonreactive(() => Meteor.userId());
 	const { queries } = ChatMessage;
-	ChatMessage.queries = [];
+	collection.queries = [];
 	msgs.forEach((msg, index) => {
 		if (index === msgs.length - 1) {
 			ChatMessage.queries = queries;
 		}
-		upsertMessage({ msg, subscription });
+		upsertMessage({ msg, subscription, uid }, collection);
 	});
 }
 
@@ -95,6 +100,7 @@ export const RoomHistoryManager = new class {
 	getMore(rid, limit = defaultLimit) {
 		let ts;
 		const room = this.getRoom(rid);
+
 		if (room.hasMore.curValue !== true) {
 			return;
 		}
@@ -162,10 +168,8 @@ export const RoomHistoryManager = new class {
 			}
 
 			room.isLoading.set(false);
-			Meteor.defer(() => {
-				readMessage.refreshUnreadMark(rid, true);
-				return RoomManager.updateMentionsMarksOfRoom(typeName);
-			});
+			readMessage.refreshUnreadMark(rid, true);
+			return RoomManager.updateMentionsMarksOfRoom(typeName);
 		});
 	}
 
