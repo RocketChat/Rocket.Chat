@@ -12,6 +12,7 @@ import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
+import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
 import './messageThread.html';
@@ -406,7 +407,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { msg: { tmid, t }, settings: { showreply } } = this;
-		return !!(tmid && showreply && !t);
+		return !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -433,24 +434,7 @@ const findParentMessage = (() => {
 		const uid = Tracker.nonreactive(() => Meteor.userId());
 		const _tmp = [...waiting];
 		waiting.length = 0;
-		const messages = await call('getMessages', _tmp);
-		messages.forEach((message) => {
-			if (!message) {
-				return;
-			}
-			const { _id, ...msg } = message;
-			Messages.update({ tmid: _id, repliesCount: { $exists: 0 } }, {
-				$set: {
-					following: message.replies && message.replies.indexOf(uid) > -1,
-					threadMsg: normalizeThreadMessage(msg),
-					repliesCount: msg.tcount,
-				},
-			}, { multi: true });
-			if (!Messages.findOne({ _id })) {
-				msg._hidden = true;
-				Messages.upsert({ _id }, msg);
-			}
-		});
+		(await call('getMessages', _tmp)).map((msg) => upsertMessage({ msg, uid }));
 	}, 500);
 
 	return (tmid) => {
