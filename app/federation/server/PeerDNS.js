@@ -101,7 +101,7 @@ export class PeerDNS {
 		try {
 			const protocolTxtRecords = dnsResolveTXT(`rocketchat-protocol.${ domain }`);
 
-			protocol = protocolTxtRecords[0][0] === 'http' ? 'http' : 'https';
+			protocol = protocolTxtRecords[0][0].toLowerCase() === 'http' ? 'http' : 'https';
 		} catch (err) {
 			// Ignore the error if the rocketchat-protocol TXT entry does not exist
 		}
