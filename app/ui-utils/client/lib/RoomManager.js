@@ -50,12 +50,11 @@ export const RoomManager = new function() {
 			this.prototype.openedRooms = openedRooms;
 			this.prototype.onlineUsers = onlineUsers;
 			this.prototype.computation = Tracker.autorun(() => {
-				Object.keys(openedRooms).forEach((typeName) => {
-					const record = openedRooms[typeName];
+				const ready = CachedChatRoom.ready.get() && mainReady.get();
+				if (ready !== true) { return; }
+				const user = Meteor.user();
+				Tracker.nonreactive(() => Object.entries(openedRooms).forEach(([typeName, record]) => {
 					if (record.active !== true || record.ready === true) { return; }
-					const ready = CachedChatRoom.ready.get() && mainReady.get();
-					if (ready !== true) { return; }
-					const user = Meteor.user();
 
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
@@ -63,19 +62,19 @@ export const RoomManager = new function() {
 					const room = roomTypes.findRoom(type, name, user);
 
 					if (room != null) {
-						openedRooms[typeName].rid = room._id;
+						record.rid = room._id;
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
 
-						if (openedRooms[typeName].streamActive !== true) {
-							openedRooms[typeName].streamActive = true;
-							msgStream.on(openedRooms[typeName].rid, async (msg) => {
+						if (record.streamActive !== true) {
+							record.streamActive = true;
+							msgStream.on(record.rid, async (msg) => {
 								// Should not send message to room if room has not loaded all the current messages
-								if (RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) !== false) {
+								if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 									return;
 								}
 								// Do not load command messages into channel
 								if (msg.t !== 'command') {
-									const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid }, { reactive: false });
+									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
 									upsertMessage({ msg, subscription });
 									msg.room = {
 										type,
@@ -90,13 +89,14 @@ export const RoomManager = new function() {
 								return fireGlobalEvent('new-message', msg);
 							});
 
-							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
-							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 						}
 					}
 
 					record.ready = true;
-				});
+				}));
+				Dep.changed();
 			});
 		}
 
