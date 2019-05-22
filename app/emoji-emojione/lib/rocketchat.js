@@ -167,6 +167,9 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 
 // fix for :+1: - had to replace all function that does its conversion: https://github.com/joypixels/emojione/blob/4.5.0/lib/js/emojione.js#L249
 (function(ns) {
+	ns.shortnameConversionMap = mem(ns.shortnameConversionMap);
+	ns.unicodeCharRegex = mem(ns.unicodeCharRegex);
+
 	const convertShortName = mem(function(shortname) {
 		// the fix is basically adding this .replace(/[+]/g, '\\$&')
 		if ((typeof shortname === 'undefined') || (shortname === '') || (ns.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1)) {
