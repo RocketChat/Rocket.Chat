@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Avatars, Rooms } from '../../../../models';
 import property from 'lodash.property';
 
+import { Avatars, Rooms } from '../../../../models';
 import schema from '../../schemas/users/User-type.graphqls';
 
 const resolver = {
@@ -18,7 +18,7 @@ const resolver = {
 				return avatar.url;
 			}
 		},
-		channels: Meteor.bindEnvironment(async ({ _id }) => await Rooms.findBySubscriptionUserId(_id).fetch()),
+		channels: Meteor.bindEnvironment(({ _id }) => Rooms.findBySubscriptionUserId(_id).fetch()),
 		directMessages: ({ username }) => Rooms.findDirectRoomContainingUsername(username).fetch(),
 	},
 };

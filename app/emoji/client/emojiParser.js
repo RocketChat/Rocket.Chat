@@ -1,5 +1,4 @@
 import s from 'underscore.string';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -26,28 +25,20 @@ Tracker.autorun(() => {
 
 			message.html = Object.entries(emoji.packages).reduce((value, [, emojiPackage]) => emojiPackage.render(value), message.html);
 
-			const checkEmojiOnly = $(`<div>${ message.html }</div>`);
-			let emojiOnly = true;
+			const checkEmojiOnly = document.createElement('div');
 
+			checkEmojiOnly.innerHTML = message.html;
 
-			for (let i = 0, len = checkEmojiOnly[0].childNodes.length; i < len; i++) {
-				const childNode = checkEmojiOnly[0].childNodes[i];
+			const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
 
-				if (childNode.classList && (childNode.classList.contains('emoji') || childNode.classList.contains('emojione'))) {
-					childNode.classList.add('big');
-					continue;
-				}
-
-				if (s.trim(childNode.nodeValue) === '') {
-					continue;
-				}
-
-				emojiOnly = false;
-				break;
+			for (let i = 0, len = emojis.length; i < len; i++) {
+				const { classList } = emojis[i];
+				classList.add('big');
 			}
+			const emojiOnly = checkEmojiOnly.childNodes.length === emojis.length;
 
 			if (emojiOnly) {
-				message.html = checkEmojiOnly.unwrap().html();
+				message.html = checkEmojiOnly.innerHTML;
 			}
 
 			// apostrophe (') back to &#39;

@@ -22,3 +22,4 @@ public/livechat/
 !.scripts
 !packages/rocketchat-livechat/.app
 public/pdf.worker.min.js
+imports/client/

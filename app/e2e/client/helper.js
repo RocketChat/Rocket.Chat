@@ -43,50 +43,50 @@ export function splitVectorAndEcryptedData(cipherText) {
 }
 
 export async function encryptRSA(key, data) {
-	return await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
+	return crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
 export async function encryptAES(vector, key, data) {
-	return await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
+	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
 export async function decryptRSA(key, data) {
-	return await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
+	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
 export async function decryptAES(vector, key, data) {
-	return await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
+	return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
 export async function generateAESKey() {
-	return await crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
+	return crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
 }
 
 export async function generateRSAKey() {
-	return await crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt', 'decrypt']);
+	return crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt', 'decrypt']);
 }
 
 export async function exportJWKKey(key) {
-	return await crypto.subtle.exportKey('jwk', key);
+	return crypto.subtle.exportKey('jwk', key);
 }
 
 export async function importRSAKey(keyData, keyUsages = ['encrypt', 'decrypt']) {
-	return await crypto.subtle.importKey('jwk', keyData, { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, keyUsages);
+	return crypto.subtle.importKey('jwk', keyData, { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, keyUsages);
 }
 
 export async function importAESKey(keyData, keyUsages = ['encrypt', 'decrypt']) {
-	return await crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC' }, true, keyUsages);
+	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC' }, true, keyUsages);
 }
 
 export async function importRawKey(keyData, keyUsages = ['deriveKey']) {
-	return await crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
+	return crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
 }
 
 export async function deriveKey(salt, baseKey, keyUsages = ['encrypt', 'decrypt']) {
 	const iterations = 1000;
 	const hash = 'SHA-256';
 
-	return await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, keyUsages);
+	return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, keyUsages);
 }
 
 export async function readFileAsArrayBuffer(file) {

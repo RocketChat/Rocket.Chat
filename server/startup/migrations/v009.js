@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+
 import { Migrations } from '../../../app/migrations';
 import { Rooms, Subscriptions, Messages, Settings, OEmbedCache } from '../../../app/models';
 

@@ -92,6 +92,9 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 		description: message.msg, // TODO discussions remove
 		topic: p_room.name, // TODO discussions remove
 		prid,
+	}, {
+		// overrides name validation to allow anything, because discussion's name is randomly generated
+		nameValidationRegex: /.*/,
 	});
 
 	if (pmid) {
@@ -119,7 +122,6 @@ Meteor.methods({
 	* @param {string[]} users - users to be added
 	*/
 	createDiscussion({ prid, pmid, t_name, reply, users }) {
-
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}

@@ -4,7 +4,6 @@ import './renderField.html';
 import { registerFieldTemplate } from './renderField';
 
 
-
 export {
 	registerFieldTemplate,
 };

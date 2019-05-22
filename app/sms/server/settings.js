@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
@@ -31,6 +32,7 @@ Meteor.startup(function() {
 					value: 'twilio',
 				},
 				i18nLabel: 'Account_SID',
+				secret: true,
 			});
 			this.add('SMS_Twilio_authToken', '', {
 				type: 'string',
@@ -39,6 +41,7 @@ Meteor.startup(function() {
 					value: 'twilio',
 				},
 				i18nLabel: 'Auth_Token',
+				secret: true,
 			});
 		});
 
@@ -50,6 +53,7 @@ Meteor.startup(function() {
 					value: 'voxtelesys',
 				},
 				i18nLabel: 'Auth_Token',
+				secret: true,
 			});
 			this.add('SMS_Voxtelesys_URL', 'https://smsapi.voxtelesys.net/api/v1/sms', {
 				type: 'string',
@@ -58,6 +62,7 @@ Meteor.startup(function() {
 					value: 'voxtelesys',
 				},
 				i18nLabel: 'URL',
+				secret: true,
 			});
 		});
 	});

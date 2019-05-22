@@ -5,12 +5,15 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
+
 import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
+
+import _ from 'underscore';
+
 import { ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes, handleError } from '../../../utils';
-import _ from 'underscore';
 
 window.currentTracker = undefined;
 
@@ -65,22 +68,19 @@ export const openRoom = function(type, name) {
 					if (!error) {
 						RoomManager.close(type + name);
 						return openRoom('d', name);
-					} else {
-						Session.set('roomNotFound', { type, name, error });
-						BlazeLayout.render('main', { center: 'roomNotFound' });
-						return;
 					}
+					Session.set('roomNotFound', { type, name, error });
+					BlazeLayout.render('main', { center: 'roomNotFound' });
 				});
 			} else {
 				Meteor.call('getRoomByTypeAndName', type, name, function(error, record) {
 					if (error) {
 						Session.set('roomNotFound', { type, name, error });
 						return BlazeLayout.render('main', { center: 'roomNotFound' });
-					} else {
-						Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
-						RoomManager.close(type + name);
-						return openRoom(type, name);
 					}
+					Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
+					RoomManager.close(type + name);
+					return openRoom(type, name);
 				});
 			}
 			return;
