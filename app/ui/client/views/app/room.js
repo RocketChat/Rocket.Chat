@@ -94,9 +94,9 @@ const mountPopover = (e, i, outerContext) => {
 		context = 'message';
 	}
 
-	const { msg: message } = messageArgs(outerContext);
+	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
+	let menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',
@@ -105,7 +105,7 @@ const mountPopover = (e, i, outerContext) => {
 	}));
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(message, context, 'message').map((item) => ({
+		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
 			type: 'message-action',
@@ -783,17 +783,18 @@ Template.room.events({
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
-		const { msg: message, context: ctx } = messageArgs(this);
+		const messageContext = messageArgs(this);
+		const { msg: message, context: ctx } = messageContext;
+		const context = ctx || message.context || message.actionContext || 'message';
 
-		const context = ctx || message.actionContext || 'message';
-
-		const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
+		const allItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
 			type: 'message-action',
 			id: item.id,
 			modifier: item.color,
 		}));
+
 		const itemsBelowDivider = [
 			'delete-message',
 			'report-message',
@@ -1101,6 +1102,9 @@ Template.room.onDestroyed(function() {
 	readMessage.off(this.data._id);
 
 	window.removeEventListener('resize', this.onWindowResize);
+
+	const chatMessage = chatMessages[this.data._id];
+	return chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
 });
 
 Template.room.onRendered(function() {
