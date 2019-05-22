@@ -10,4 +10,4 @@ execSync('cp node_modules/katex/dist/fonts/* public/fonts/');
 
 execSync('cp node_modules/pdfjs-dist/build/pdf.worker.min.js public/');
 
-execSync('cd packages/rocketchat-livechat/.app && meteor npm install && cd -');
+execSync('cd packages/rocketchat-livechat/.app && (meteor npm install || npm install) && cd -');
