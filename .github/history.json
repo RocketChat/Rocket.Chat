@@ -31410,6 +31410,102 @@
           ]
         }
       ]
+    },
+    "1.1.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14600",
+          "title": "Ci improvements",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14580",
+          "title": "[FIX] E2E messages not decrypting in message threads",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14593",
+          "title": "Fix: emoji render performance for alias",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14568",
+          "title": "[FIX] Send replyTo for livechat offline messages",
+          "userLogin": "renatobecker",
+          "milestone": "1.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "14595",
+          "title": "Federation i18n message changes",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "14565",
+          "title": "[REGRESSION] Fix Slack bridge channel owner on channel creation",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14581",
+          "title": "Fix thumbs up emoji shortname",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14572",
+          "title": "[Fix] broken logo url in app.json",
+          "userLogin": "jaredmoody",
+          "contributors": [
+            "jaredmoody"
+          ]
+        },
+        {
+          "pr": "14583",
+          "title": "Add digitalocean button to readme",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
