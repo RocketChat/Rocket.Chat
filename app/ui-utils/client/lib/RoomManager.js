@@ -60,7 +60,7 @@ export const RoomManager = new function() {
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-			const room = roomTypes.findRoom(type, name, user);
+					const room = roomTypes.findRoom(type, name, user);
 
 					if (room != null) {
 						openedRooms[typeName].rid = room._id;
@@ -68,27 +68,27 @@ export const RoomManager = new function() {
 
 						if (openedRooms[typeName].streamActive !== true) {
 							openedRooms[typeName].streamActive = true;
-					msgStream.on(openedRooms[typeName].rid, async (msg) => {
-									// Should not send message to room if room has not loaded all the current messages
-						if (RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) !== false) {
-							return;
-						}
-										// Do not load command messages into channel
-										if (msg.t !== 'command') {
-							const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid }, { reactive: false });
-											upsertMessage({ msg, subscription });
-											msg.room = {
-												type,
-												name,
-											};
-										}
-										msg.name = room.name;
-										RoomManager.updateMentionsMarksOfRoom(typeName);
+							msgStream.on(openedRooms[typeName].rid, async (msg) => {
+								// Should not send message to room if room has not loaded all the current messages
+								if (RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) !== false) {
+									return;
+								}
+								// Do not load command messages into channel
+								if (msg.t !== 'command') {
+									const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid }, { reactive: false });
+									upsertMessage({ msg, subscription });
+									msg.room = {
+										type,
+										name,
+									};
+								}
+								msg.name = room.name;
+								RoomManager.updateMentionsMarksOfRoom(typeName);
 
-										callbacks.run('streamMessage', msg);
+								callbacks.run('streamMessage', msg);
 
-										return fireGlobalEvent('new-message', msg);
-					});
+								return fireGlobalEvent('new-message', msg);
+							});
 
 							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
@@ -96,6 +96,8 @@ export const RoomManager = new function() {
 					}
 
 					record.ready = true;
+				});
+			});
 		}
 
 		getOpenedRoomByRid(rid) {
@@ -259,9 +261,9 @@ const loadMissedMessages = async function(rid) {
 
 
 	try {
-	const result = await call('loadMissedMessages', rid, lastMessage.ts);
+		const result = await call('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
-	const subscription = ChatSubscription.findOne({ rid });
+			const subscription = ChatSubscription.findOne({ rid });
 			return Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
 		}
 		return [];
