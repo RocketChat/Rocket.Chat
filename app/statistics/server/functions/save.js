@@ -5,30 +5,42 @@ statistics.save = function() {
 	const rcStatistics = statistics.get();
 	rcStatistics.createdAt = new Date();
 
-	// Check if there's partial data already saved for the day
-	const oldStats = Statistics.findLast();
 	const now = new Date();
-	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, now.getHours(), now.getMinutes());
+	const newId = now.toISOString().substr(0, 10);
+	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+	const yesterdayPartialId = `${ yesterday.toISOString().substr(0, 10) }-partial`;
+	const yesterdayData = Statistics.findOneById(yesterdayPartialId);
 
-	if (oldStats && oldStats.partial && oldStats.createdAt >= yesterday) {
-		if (oldStats.connectedUserCountList && oldStats.connectedUserCountList.length) {
-			rcStatistics.avgConnectedUsers = oldStats.connectedUserCountList.reduce((total, value) => total + value) / oldStats.connectedUserCountList.length;
+	if (yesterdayData) {
+		const userCountList = yesterdayData.connectedUserCountList;
+
+		if (userCountList && userCountList.length) {
+			rcStatistics.avgConnectedUsers = userCountList.reduce((total, value) => total + value) / userCountList.length;
 		} else {
-			rcStatistics.avgConnectedUsers = 0;
+			rcStatistics.avgConnectedUsers = null;
 		}
 
-		delete oldStats.connectedUserCountList;
+		rcStatistics.totalConnectedUsers = yesterdayData.totalConnectedUsers || 0;
+		rcStatistics.minConnectedUsers = yesterdayData.minConnectedUsers;
+		rcStatistics.onlineUsers = yesterdayData.onlineUsers || 0;
+		rcStatistics.awayUsers = yesterdayData.awayUsers || 0;
+		rcStatistics.offlineUsers = yesterdayData.offlineUsers;
+	}
 
-		rcStatistics.totalConnectedUsers = oldStats.totalConnectedUsers || 0;
-		rcStatistics.minConnectedUsers = oldStats.minConnectedUsers;
-		rcStatistics.onlineUsers = oldStats.onlineUsers || 0;
-		rcStatistics.awayUsers = oldStats.awayUsers || 0;
-		rcStatistics.offlineUsers = oldStats.offlineUsers;
+	const existingData = Statistics.findOneById(newId);
 
-		Statistics.update(oldStats._id, rcStatistics);
-	} else {
-		rcStatistics._id = now.toISOString().substr(0, 10);
-		Statistics.insert(rcStatistics);
+	if (existingData) {
+		Statistics.update(newId, rcStatistics);
+		return rcStatistics;
+	}
+
+	rcStatistics._id = newId;
+	Statistics.insert(rcStatistics);
+
+	if (yesterdayData) {
+		Statistics.remove({
+			_id: yesterdayPartialId,
+		});
 	}
 
 	return rcStatistics;
@@ -37,19 +49,19 @@ statistics.save = function() {
 statistics.saveUsersInfo = function() {
 	const userStatistics = statistics.getConnectedUsersStatistics();
 
-	const rcStatistics = Statistics.findLast();
 	const now = new Date();
-	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, now.getHours(), now.getMinutes());
+	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+	const yesterdayPartialId = `${ yesterday.toISOString().substr(0, 10) }-partial`;
+	const yesterdayData = Statistics.findOneById(yesterdayPartialId);
 
-	if (!rcStatistics || !rcStatistics.partial || rcStatistics.createdAt < yesterday) {
+	if (!yesterdayData) {
 		const statistics = userStatistics;
-
-		statistics.partial = true;
 		statistics.connectedUserCountList = [
 			userStatistics.totalConnectedUsers,
 		];
+		statistics.minConnectedUsers = userStatistics.totalConnectedUsers;
 		statistics.createdAt = new Date();
-		statistics._id = new Date().toISOString().substr(0, 10);
+		statistics._id = yesterdayPartialId;
 
 		Statistics.insert(statistics);
 		return;
@@ -70,5 +82,5 @@ statistics.saveUsersInfo = function() {
 		},
 	};
 
-	Statistics.update(rcStatistics._id, data);
+	Statistics.update(yesterdayData._id, data);
 };
