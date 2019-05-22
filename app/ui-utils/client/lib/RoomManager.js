@@ -60,7 +60,7 @@ export const RoomManager = new function() {
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-					const room = Tracker.nonreactive(() => roomTypes.findRoom(type, name, user));
+			const room = roomTypes.findRoom(type, name, user);
 
 					if (room != null) {
 						openedRooms[typeName].rid = room._id;
@@ -68,14 +68,14 @@ export const RoomManager = new function() {
 
 						if (openedRooms[typeName].streamActive !== true) {
 							openedRooms[typeName].streamActive = true;
-							msgStream.on(openedRooms[typeName].rid, (msg) =>
-
-								promises.run('onClientMessageReceived', msg).then(function(msg) {
+					msgStream.on(openedRooms[typeName].rid, async (msg) => {
 									// Should not send message to room if room has not loaded all the current messages
-									if (RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) === false) {
+						if (RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) !== false) {
+							return;
+						}
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
-											const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid });
+							const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid }, { reactive: false });
 											upsertMessage({ msg, subscription });
 											msg.room = {
 												type,
@@ -88,9 +88,7 @@ export const RoomManager = new function() {
 										callbacks.run('streamMessage', msg);
 
 										return fireGlobalEvent('new-message', msg);
-									}
-								})
-							);
+					});
 
 							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
@@ -98,9 +96,6 @@ export const RoomManager = new function() {
 					}
 
 					record.ready = true;
-					Dep.changed();
-				});
-			});
 		}
 
 		getOpenedRoomByRid(rid) {
