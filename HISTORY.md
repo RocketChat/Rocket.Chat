@@ -1,6 +1,41 @@
 
 # 1.1.0 (Under Release Candidate Process)
 
+## 1.1.0-rc.2
+`2019-05-22  ·  2 🐛  ·  7 🔍  ·  8 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- E2E messages not decrypting in message threads ([#14580](https://github.com/RocketChat/Rocket.Chat/pull/14580))
+- Send replyTo for livechat offline messages ([#14568](https://github.com/RocketChat/Rocket.Chat/pull/14568))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Ci improvements ([#14600](https://github.com/RocketChat/Rocket.Chat/pull/14600))
+- Fix: emoji render performance for alias ([#14593](https://github.com/RocketChat/Rocket.Chat/pull/14593))
+- Federation i18n message changes ([#14595](https://github.com/RocketChat/Rocket.Chat/pull/14595))
+- [REGRESSION] Fix Slack bridge channel owner on channel creation ([#14565](https://github.com/RocketChat/Rocket.Chat/pull/14565))
+- Fix thumbs up emoji shortname ([#14581](https://github.com/RocketChat/Rocket.Chat/pull/14581))
+- [Fix] broken logo url in app.json ([#14572](https://github.com/RocketChat/Rocket.Chat/pull/14572) by [@jaredmoody](https://github.com/jaredmoody))
+- Add digitalocean button to readme ([#14583](https://github.com/RocketChat/Rocket.Chat/pull/14583))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@jaredmoody](https://github.com/jaredmoody)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@alansikora](https://github.com/alansikora)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 1.1.0-rc.1
 `2019-05-21  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
