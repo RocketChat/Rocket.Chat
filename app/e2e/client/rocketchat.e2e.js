@@ -402,20 +402,21 @@ class E2E {
 
 	async decryptMessage(message) {
 		if (!this.isEnabled()) {
-			return;
+			return message;
 		}
 
 		if (message.t !== 'e2e' || message.e2e === 'done') {
-			return;
+			return message;
 		}
 
 		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
-			return;
+			return message;
 		}
 
 		const data = await e2eRoom.decrypt(message.msg);
+
 		if (!data) {
 			return message;
 		}
