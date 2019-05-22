@@ -111,14 +111,7 @@ export class PeerDNS {
 		const publicKeyTxtRecords = dnsResolveTXT(`rocketchat-public-key.${ domain }`);
 
 		// Get the first TXT record, this subdomain should have only a single record
-		const publicKeyTxtRecord = publicKeyTxtRecords[0];
-
-		// If there is no record, skip
-		if (!publicKeyTxtRecord) {
-			throw new Meteor.Error('ENOTFOUND', 'Could not find public key entry on TXT records');
-		}
-
-		const publicKey = publicKeyTxtRecord.join('');
+		const publicKey = publicKeyTxtRecords[0].join('');
 
 		return {
 			domain,
