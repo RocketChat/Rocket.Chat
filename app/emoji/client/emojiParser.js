@@ -18,7 +18,7 @@ Tracker.autorun(() => {
 	callbacks.add('renderMessage', (message) => {
 		if (s.trim(message.html)) {
 			// &#39; to apostrophe (') for emojis such as :')
-			message.html = message.html.replace(/&#39;/g, '\'');
+			message.html = s.trim(message.html.replace(/&#39;/g, '\''));
 
 			// '<br>' to ' <br> ' for emojis such at line breaks
 			message.html = message.html.replace(/<br>/g, ' <br> ');
