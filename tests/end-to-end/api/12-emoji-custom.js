@@ -1,5 +1,6 @@
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { imgURL } from '../../data/interactions';
+
 const customEmojiName = `my-custom-emoji-${ Date.now() }`;
 let createdCustomEmoji;
 
@@ -7,7 +8,8 @@ describe('[EmojiCustom]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
-
+	// DEPRECATED
+	// Will be removed after v1.12.0
 	describe('[/emoji-custom]', () => {
 		it('should return emojis', (done) => {
 			request.get(api('emoji-custom'))
@@ -182,6 +184,66 @@ describe('[EmojiCustom]', function() {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[/emoji-custom.list]', () => {
+		it('should return emojis', (done) => {
+			request.get(api('emoji-custom.list'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.not.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+		it('should return emojis when use "query" query parameter', (done) => {
+			request.get(api(`emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "${ new Date().toISOString() }" } } }`))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+		it('should return emojis when use "updateSince" query parameter', (done) => {
+			request.get(api(`emoji-custom.list?updatedSince=${ new Date().toISOString() }`))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+		it('should return emojis when use both, "updateSince" and "query" query parameter', (done) => {
+			request.get(api(`emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "${ new Date().toISOString() }" } }}&updatedSince=${ new Date().toISOString() }`))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+		it('should return an error when the "updateSince" query parameter is a invalid date', (done) => {
+			request.get(api('emoji-custom.list?updatedSince=invalid-date'))
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-roomId-param-invalid');
+				})
+				.end(done);
 		});
 	});
 

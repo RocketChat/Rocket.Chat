@@ -1,6 +1,9 @@
 import _ from 'underscore';
 
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Rooms } from '../../../app/models';
+
+Migrations.add({
 	version: 10,
 	up() {
 		/*
@@ -8,7 +11,7 @@ RocketChat.Migrations.add({
 		 */
 		let count = 0;
 
-		RocketChat.models.Rooms.find({
+		Rooms.find({
 			'usernames.0': {
 				$exists: true,
 			},
@@ -20,7 +23,7 @@ RocketChat.Migrations.add({
 			const newUsernames = _.uniq(room.usernames);
 			if (newUsernames.length !== room.usernames.length) {
 				count++;
-				return RocketChat.models.Rooms.update({
+				return Rooms.update({
 					_id: room._id,
 				}, {
 					$set: {

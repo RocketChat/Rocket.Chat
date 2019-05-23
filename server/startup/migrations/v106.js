@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
 
-RocketChat.Migrations.add({
+import { LivechatVisitors } from '../../../app/models';
+import { Migrations } from '../../../app/migrations';
+
+Migrations.add({
 	version: 106,
 	up() {
 		const visitors = Meteor.users.find({ type: 'visitor' });

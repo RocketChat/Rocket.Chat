@@ -19,9 +19,9 @@
 * [Desktop Apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
+   * [DigitalOcean](#digitalocean-droplet)
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
-   * [Sandstorm.io](#sandstormio)
    * [Yunohost.org](#yunohostorg)
    * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
@@ -82,7 +82,7 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
 
-You can also join the conversation at [Twitter](https://twitter.com/RocketChat), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp).
+You can also join the conversation at [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -110,6 +110,12 @@ Our snap features a built-in reverse proxy that can request and maintain free Le
 
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/).
 
+## DigitalOcean droplet
+
+Deploy to a DigitalOcean droplet with our one-click install listing from the DigitalOcean Marketplace.
+
+[![do-btn-blue](https://user-images.githubusercontent.com/51996/58146107-50512580-7c1a-11e9-8ec9-e032ba387c2a.png)](https://marketplace.digitalocean.com/apps/rocket-chat?action=deploy&refcode=1940fe28bd31)
+
 ## RocketChatLauncher
 
 Focus on your team/community and not on servers or code - the Launcher provides RocketChat-as-a-Service on a monthly subscription model.
@@ -123,11 +129,6 @@ Instantly deploy your Rocket.Chat server for free on next generation auto-scalin
 [![Layershift Hosting](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
 
 Painless SSL. Automatically scale your server cluster based on usage demand.
-
-## Sandstorm.io
-Host your own Rocket.Chat server in four seconds flat.
-
-[![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
 ## Yunohost.org
 Host your own Rocket.Chat server in a few seconds.
@@ -166,7 +167,7 @@ Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://he
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 ## Helm Kubernetes
-Deploy on Kubernetes using the official [helm chart](https://github.com/kubernetes/charts/pull/752).
+Deploy on Kubernetes using the official [helm chart](https://github.com/helm/charts/tree/master/stable/rocketchat).
 
 ## Scalingo
 Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com).
@@ -320,7 +321,6 @@ It is a great solution for communities and companies wanting to privately host t
 - Native Cross-Platform Desktop Application [Windows, macOS, or Linux](https://rocket.chat/)
 - Mobile app for iPhone, iPad, and iPod touch [Download on App Store](https://geo.itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8)
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play](https://play.google.com/store/apps/details?id=chat.rocket.android)
-- Sandstorm.io instant Rocket.Chat server [Now on Sandstorm App Store](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 - Available on [Cloudron Store](https://cloudron.io/appstore.html#chat.rocket.cloudronapp)
 
 ## Roadmap
@@ -457,9 +457,9 @@ Thanks to our core team
 [Sing Li](https://github.com/Sing-Li),
 and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
-![Emoji One](https://cloud.githubusercontent.com/assets/1986378/24772858/47290a70-1ae9-11e7-9a5a-2913d0002c94.png)
+![JoyPixels](https://i.imgur.com/OrhYvLe.png)
 
-Emoji provided free by [Emoji One](http://emojione.com)
+Emoji provided graciously by [JoyPixels](https://www.joypixels.com/)
 
 ![BrowserStack](https://cloud.githubusercontent.com/assets/1986378/24772879/57d57b88-1ae9-11e7-98b4-4af824b47933.png)
 
@@ -471,9 +471,7 @@ Testing with [BrowserStack](https://www.browserstack.com)
 
 Rocket.Chat will be free forever, but you can help us speed up the development!
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZL94ZE6LGVUSN)
-
-[![Bitcoins](https://github.com/RocketChat/Rocket.Chat.Docs/blob/master/1.%20Contributing/Donating/coinbase.png?raw=true)](https://www.coinbase.com/checkouts/ac2fa967efca7f6fc1201d46bdccb875)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9MT88JJ9X4A6U&source=url)
 
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)

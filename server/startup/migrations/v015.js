@@ -1,14 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Uploads, Messages } from '../../../app/models';
+
+Migrations.add({
 	version: 15,
 	up() {
 		console.log('Starting file migration');
 		const oldFilesCollection = new Mongo.Collection('cfs.Files.filerecord');
 		const oldGridFSCollection = new Mongo.Collection('cfs_gridfs.files.files');
 		const oldChunkCollection = new Mongo.Collection('cfs_gridfs.files.chunks');
-		const newFilesCollection = RocketChat.models.Uploads;
+		const newFilesCollection = Uploads;
 		const newGridFSCollection = new Mongo.Collection('rocketchat_uploads.files');
 		const newChunkCollection = new Mongo.Collection('rocketchat_uploads.chunks');
 
@@ -71,7 +74,7 @@ RocketChat.Migrations.add({
 				});
 			});
 
-			RocketChat.models.Messages.find({
+			Messages.find({
 				$or: [{
 					'urls.url': `https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }`,
 				}, {
@@ -79,7 +82,7 @@ RocketChat.Migrations.add({
 				}],
 			}).forEach((message) => {
 				for (const urlsItem of message.urls) {
-					if (urlsItem.url === (`https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }`) || urlsItem.url === (`https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`)) {
+					if (urlsItem.url === `https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }` || urlsItem.url === `https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`) {
 						urlsItem.url = Meteor.absoluteUrl() + url;
 						if (urlsItem.parsedUrl && urlsItem.parsedUrl.pathname) {
 							urlsItem.parsedUrl.pathname = `/${ url }`;
@@ -89,7 +92,7 @@ RocketChat.Migrations.add({
 					}
 				}
 
-				RocketChat.models.Messages.update({ _id: message._id }, {
+				Messages.update({ _id: message._id }, {
 					$set: {
 						urls: message.urls,
 						msg: message.msg,

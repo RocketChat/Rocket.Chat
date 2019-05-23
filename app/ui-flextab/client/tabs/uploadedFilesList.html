@@ -1,0 +1,57 @@
+<template name="uploadedFilesList">
+	<form class="search-form" role="form">
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Search_by_file_name"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+					</div>
+					<input type="text" class="rc-input__element uploaded-files-list__search-input" name="file-search" placeholder={{_ "File_name_Placeholder"}} autocomplete="off" />
+				</div>
+			</label>
+		</div>
+	</form>
+
+	<div class="flex-tab__result">
+		<ul class="attachments">
+			{{#each files}}
+				<li class="attachments__item">
+					<a href="{{url}}" title="{{name}}" data-description="{{description}}"
+						class="attachments__item-link {{fileTypeClass}}"
+						download rel="noopener noreferrer" target="_blank">
+						{{#with thumb}}
+							<span class="attachments__thumb" style="background-image: url('{{escapeCssUrl .}}');"></span>
+						{{else}}
+							{{#with fileTypeIcon}}
+							<span class="attachments__file attachments__file--{{type}}">
+								{{>icon icon=id}}
+								<div class="attachments__type">{{extension}}</div>
+							</span>
+							{{/with}}
+						{{/with}}
+
+						<span class="attachments__content">
+							<span class="attachments__name">{{name}}</span>
+							<span class="attachments__details attachments__bold">@{{user.username}}</span>
+							<span class="attachments__details">{{formatTimestamp uploadedAt}}</span>
+						</span>
+					</a>
+
+					{{> icon file=. block="attachments-menu js-action" icon="menu"}}
+
+				</li>
+			{{/each}}
+		</ul>
+		{{#if hasMore}}
+			<div class="load-more">
+				{{> loading}}
+			</div>
+		{{/if}}
+		{{#if Template.subscriptionsReady}}
+			{{#unless hasFiles}}
+				<h2>{{_ "Room_uploaded_file_list_empty"}}</h2>
+			{{/unless}}
+		{{/if}}
+	</div>
+</template>

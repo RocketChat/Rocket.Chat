@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
+import { Subscriptions } from '../../app/models';
+
 Meteor.methods({
 	toggleFavorite(rid, f) {
 		check(rid, String);
@@ -12,7 +14,7 @@ Meteor.methods({
 			});
 		}
 
-		const userSubscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
 		if (!userSubscription) {
 			throw new Meteor.Error('error-invalid-subscription',
 				'You must be part of a room to favorite it',
@@ -20,6 +22,6 @@ Meteor.methods({
 			);
 		}
 
-		return RocketChat.models.Subscriptions.setFavoriteByRoomIdAndUserId(rid, Meteor.userId(), f);
+		return Subscriptions.setFavoriteByRoomIdAndUserId(rid, Meteor.userId(), f);
 	},
 });

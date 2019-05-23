@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Users, Subscriptions } from '../../../app/models';
+
+Migrations.add({
 	version: 129,
 	up() {
-		RocketChat.models.Users.find({
+		Users.find({
 			$or: [
 				{ 'settings.preferences.desktopNotifications': { $exists: true, $ne: 'default' } },
 				{ 'settings.preferences.mobileNotifications': { $exists: true, $ne: 'default' } },
@@ -15,7 +18,7 @@ RocketChat.Migrations.add({
 			},
 		}).forEach((user) => {
 			if (user.settings.preferences.desktopNotifications && user.settings.preferences.desktopNotifications !== 'default') {
-				RocketChat.models.Subscriptions.update({
+				Subscriptions.update({
 					'u._id': user._id,
 					desktopPrefOrigin: 'user',
 					desktopNotifications: null,
@@ -29,7 +32,7 @@ RocketChat.Migrations.add({
 			}
 
 			if (user.settings.preferences.mobileNotifications && user.settings.preferences.mobileNotifications !== 'default') {
-				RocketChat.models.Subscriptions.update({
+				Subscriptions.update({
 					'u._id': user._id,
 					mobilePrefOrigin: 'user',
 					mobilePushNotifications: null,
@@ -43,7 +46,7 @@ RocketChat.Migrations.add({
 			}
 
 			if (user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode !== 'default') {
-				RocketChat.models.Subscriptions.update({
+				Subscriptions.update({
 					'u._id': user._id,
 					emailPrefOrigin: 'user',
 					emailNotifications: null,
