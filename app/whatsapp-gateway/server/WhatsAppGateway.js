@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
-export default WhatsAppGateway = {
+const WhatsAppGateway = {
 	enabled: false,
 	services: {},
 
@@ -18,9 +19,11 @@ export default WhatsAppGateway = {
 
 	getParams(name) {
 		return this.getService(name).getParams();
-	}
+	},
 };
 
 settings.get('WhatsApp_Gateway_Enabled', function(key, value) {
 	WhatsAppGateway.enabled = value;
 });
+
+export default WhatsAppGateway;

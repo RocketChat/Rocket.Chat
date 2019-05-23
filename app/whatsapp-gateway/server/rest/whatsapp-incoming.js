@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { Rooms, LivechatVisitors, LivechatDepartment } from '../../../models';
@@ -20,13 +19,12 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			department = dep && dep._id;
 		}
 
-		let rid, token;
+		let rid;
+		let token;
 		if (guest) {
-			const rooms = department ?
-				Rooms.findOpenByVisitorTokenAndDepartmentId(guest.token, department).fetch() :
-				Rooms.findOpenByVisitorToken(guest.token).fetch();
+			const rooms = department ? Rooms.findOpenByVisitorTokenAndDepartmentId(guest.token, department).fetch() : Rooms.findOpenByVisitorToken(guest.token).fetch();
 
-			rid = (rooms && rooms.length > 0) ? rooms[0]._id : Random.id();
+			rid = rooms && rooms.length > 0 ? rooms[0]._id : Random.id();
 			token = guest.token;
 		} else {
 			rid = Random.id();
@@ -34,7 +32,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 
 			const visitorId = Livechat.registerGuest({
 				username: id_cliente.replace(/[^0-9]/g, ''),
-				token: sendMessage.message.token,
+				token,
 				phone: {
 					number: id_cliente,
 				},
@@ -54,7 +52,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			roomInfo: {
 				whatsAppGateway: {
 					sessionId,
-					from
+					from,
 				},
 			},
 			guest,
@@ -62,7 +60,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 
 		try {
 			const message = Livechat.sendMessage(sendMessage);
-			const {_id, msg } = message;
+			const { _id, msg } = message;
 			return { success: true, _id, msg };
 		} catch (e) {
 			return { success: false, e };
