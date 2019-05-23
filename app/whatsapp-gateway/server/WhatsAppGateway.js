@@ -16,10 +16,6 @@ const WhatsAppGateway = {
 		}
 		return new this.services[name]();
 	},
-
-	getParams(name) {
-		return this.getService(name).getParams();
-	},
 };
 
 settings.get('WhatsApp_Gateway_Enabled', function(key, value) {
