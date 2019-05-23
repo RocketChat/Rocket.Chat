@@ -19,6 +19,7 @@
 * [Desktop Apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
+   * [DigitalOcean](#digitalocean-droplet)
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
    * [Yunohost.org](#yunohostorg)
@@ -108,6 +109,12 @@ Installing snaps is very quick. By running that command you have your full Rocke
 Our snap features a built-in reverse proxy that can request and maintain free Let's Encrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/).
+
+## DigitalOcean droplet
+
+Deploy to a DigitalOcean droplet with our one-click install listing from the DigitalOcean Marketplace.
+
+[![do-btn-blue](https://user-images.githubusercontent.com/51996/58146107-50512580-7c1a-11e9-8ec9-e032ba387c2a.png)](https://marketplace.digitalocean.com/apps/rocket-chat?action=deploy&refcode=1940fe28bd31)
 
 ## RocketChatLauncher
 
