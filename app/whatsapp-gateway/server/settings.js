@@ -1,0 +1,46 @@
+import { Meteor } from 'meteor/meteor';
+
+import { settings } from '../../settings';
+
+Meteor.startup(function() {
+	settings.addGroup('WhatsApp Gateway', function() {
+		this.add('WhatsApp_Gateway_Enabled', false, {
+			type: 'boolean',
+			i18nLabel: 'Enabled',
+		});
+
+		this.add('WhatsApp_Gateway_Service', 'caixa', {
+			type: 'select',
+			values: [
+				{
+					key: 'caixa',
+					i18nLabel: 'Caixa',
+				},
+			],
+			i18nLabel: 'Service',
+		});
+
+		this.section('Caixa', function() {
+			this.add('WhatsApp_Gateway_Base_API_URL', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'WhatsApp_Gateway_Service',
+					value: 'caixa',
+				},
+				i18nLabel: 'WhatsApp_Gateway_Base_API_URL',
+				i18nDescription: 'Whatsapp_Gateway_Base_API_URL_Description',
+				secret: true,
+			});
+			this.add('WhatsApp_Gateway_Default_Department', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'WhatsApp_Gateway_Service',
+					value: 'caixa',
+				},
+				i18nLabel: 'WhatsApp_Gateway_Default_Department',
+				i18nDescription: 'WhatsApp_Gateway_Default_Department_Description',
+				secret: true,
+			});
+		});
+	});
+});
