@@ -61,7 +61,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 					attachment.audio_url = `data:${ mime_type };base64,${ base64 }`;
 					break;
 			}
-			attachments =[attachment];
+			attachments = [attachment];
 		}
 		const sendMessage = {
 			message: {
