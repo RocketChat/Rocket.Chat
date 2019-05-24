@@ -3,6 +3,8 @@ import { Session } from 'meteor/session';
 
 import { RoomManager } from './RoomManager';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
+import { Subscriptions } from '../../../models';
 
 Blaze.registerHelper('avatarUrlFromUsername', getUserAvatarURL);
 
@@ -38,6 +40,19 @@ export const updateAvatarOfUsername = function(username) {
 	// force reload of avatar on sidenav
 	$(`.sidebar-item.js-sidebar-type-d .sidebar-item__link[aria-label='${ username }'] .avatar-image`)
 		.attr('src', url);
+
+	return true;
+};
+
+export const updateAvatarOfRoom = function(roomId) {
+	// Session.set(`avatar_random_${ roomId }`, Date.now());
+	const url = getRoomAvatarURL(roomId);
+
+	// Discussions have the same avatar as the parent room
+	const subs = Subscriptions.find({ $or: [{ rid: roomId }, { prid: roomId }] }).fetch();
+	const selector = subs.map((sub) => `.sidebar-item[data-id='${ sub._id }'] .avatar-image`).join(',');
+
+	$(selector).attr('src', url);
 
 	return true;
 };

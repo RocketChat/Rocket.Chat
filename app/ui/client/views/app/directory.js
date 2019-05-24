@@ -23,6 +23,7 @@ function directorySearch(config, cb) {
 					description: result.description,
 					archived: result.archived,
 					topic: result.topic,
+					avatarUrl: roomTypes.getConfig('c').getAvatarPath(result),
 				};
 			}
 

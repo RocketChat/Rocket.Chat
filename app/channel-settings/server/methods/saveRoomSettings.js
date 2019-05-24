@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../authorization';
 import { Rooms } from '../../../models';
 import { callbacks } from '../../../callbacks';
+import { saveRoomAvatar } from '../functions/saveRoomAvatar';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
@@ -16,7 +17,7 @@ import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
+const fields = ['roomAvatar', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
@@ -131,6 +132,9 @@ Meteor.methods({
 		Object.keys(settings).forEach((setting) => {
 			const value = settings[setting];
 			switch (setting) {
+				case 'roomAvatar':
+					saveRoomAvatar(rid, value, user);
+					break;
 				case 'roomName':
 					saveRoomName(rid, value, user);
 					break;

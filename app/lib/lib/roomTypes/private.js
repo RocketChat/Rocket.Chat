@@ -6,7 +6,6 @@ import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
 import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, roomTypes } from '../../../utils';
 import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
-import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
@@ -93,6 +92,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			case RoomSettingsEnum.E2E:
 				return settings.get('E2E_Enable') === true;
+			case RoomSettingsEnum.AVATAR:
+				return !room.prid;
 			default:
 				return true;
 		}
@@ -118,7 +119,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 		// if room is not a discussion, returns the avatar for its name
 		if (!roomData.prid) {
-			return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+			return getRoomAvatarURL(roomData.rid || roomData._id);
 		}
 
 		// if discussion's parent room is known, get his avatar

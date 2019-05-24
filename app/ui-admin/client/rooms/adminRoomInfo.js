@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 
 import { AdminChatRoom } from './adminRooms';
-import { t, handleError } from '../../../utils';
+import { t, handleError, roomTypes } from '../../../utils';
 import { call, modal } from '../../../ui-utils';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { ChannelSettings } from '../../../channel-settings';
@@ -27,6 +27,10 @@ Template.adminRoomInfo.helpers({
 		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
 		return room && room.t !== 'd';
 	},
+	notDiscussion() {
+		const room = AdminChatRoom.findOne(this.rid, { fields: { prid: 1 } });
+		return room && !room.prid;
+	},
 	roomType() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
 		return room && room.t;
@@ -42,6 +46,20 @@ Template.adminRoomInfo.helpers({
 		} if (roomType === 'p') {
 			return t('Private_Group');
 		}
+	},
+	roomAvatar() {
+		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		return roomTypes.getConfig(room.t).getAvatarPath(room);
+	},
+	newRoomAvatar() {
+		return Template.instance().newRoomAvatar.get();
+	},
+	initials() {
+		const room = AdminChatRoom.findOne(this.rid, { fields: { name: 1 } });
+		return `@${ room.name }`;
+	},
+	selectAvatarUrl() {
+		return Template.instance().newRoomAvatarUrl.get().trim() ? '' : 'disabled';
 	},
 	roomName() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { name: 1 } });
@@ -136,11 +154,59 @@ Template.adminRoomInfo.events({
 		e.preventDefault();
 		t.saveSetting(this.rid);
 	},
+	'click .js-select-avatar-initials'(event, t) {
+		const room = AdminChatRoom.findOne(this.rid, { fields: { name: 1 } });
+		t.newRoomAvatar.set({
+			service: 'initials',
+			contentType: '',
+			blob: `@${ room.name }`,
+		});
+	},
+	'change .js-select-avatar-upload [type=file]'(event, t) {
+		const e = event.originalEvent || event;
+		let { files } = e.target;
+		if (!files || files.length === 0) {
+			files = (e.dataTransfer && e.dataTransfer.files) || [];
+		}
+		Object.keys(files).forEach((key) => {
+			const blob = files[key];
+			if (!/image\/.+/.test(blob.type)) {
+				return;
+			}
+			const reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.onloadend = () => {
+				t.newRoomAvatar.set({
+					service: 'upload',
+					contentType: blob.type,
+					blob: reader.result,
+				});
+			};
+		});
+	},
+	'click .js-select-avatar-url'(e, t) {
+		const url = t.newRoomAvatarUrl.get().trim();
+		if (!url) {
+			return;
+		}
+
+		t.newRoomAvatar.set({
+			service: 'url',
+			blob: url,
+			contentType: '',
+		});
+	},
+	'input .js-avatar-url-input'(e, t) {
+		const text = e.target.value;
+		t.newRoomAvatarUrl.set(text);
+	},
 });
 
 Template.adminRoomInfo.onCreated(function() {
 	this.editing = new ReactiveVar();
 	this.roomOwner = new ReactiveVar();
+	this.newRoomAvatar = new ReactiveVar();
+	this.newRoomAvatarUrl = new ReactiveVar('');
 	this.validateRoomType = () => {
 		const type = this.$('input[name=roomType]:checked').val();
 		if (type !== 'c' && type !== 'p') {
@@ -172,6 +238,26 @@ Template.adminRoomInfo.onCreated(function() {
 	this.validateRoomTopic = () => true;
 	this.saveSetting = (rid) => {
 		switch (this.editing.get()) {
+			case 'roomAvatar':
+				const newRoomAvatar = this.newRoomAvatar.get();
+				if (newRoomAvatar) {
+					Meteor.call('saveRoomSettings', rid, 'roomAvatar', newRoomAvatar, function(err) {
+						if (err) {
+							return handleError(err);
+						}
+
+						const room = AdminChatRoom.findOne(rid);
+						toastr.success(TAPi18n.__('Room_avatar_changed_successfully'));
+						callbacks.run('roomAvatarChanged', room);
+
+						const url = roomTypes.getConfig(room.t).getAvatarPath(room);
+						setTimeout(() => { // wait for editing mode to finish
+							$('#admin-room-avatar-preview .avatar-image').attr('src', url);
+							$(`tr[data-id='${ rid }'] .avatar-image`).attr('src', url);
+						});
+					});
+				}
+				break;
 			case 'roomName':
 				if (this.validateRoomName(rid)) {
 					callbacks.run('roomNameChanged', AdminChatRoom.findOne(rid));

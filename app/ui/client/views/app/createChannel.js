@@ -168,6 +168,15 @@ Template.createChannel.helpers({
 			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
 		).filter((roomType) => roomType.creationTemplate);
 	},
+	avatarPreview() {
+		return Template.instance().avatar.get();
+	},
+	initials() {
+		return Template.instance().name.get() || 'a';
+	},
+	selectAvatarUrl() {
+		return Template.instance().avatarUrl.get().trim() ? '' : 'disabled';
+	},
 });
 
 Template.createChannel.events({
@@ -229,6 +238,7 @@ Template.createChannel.events({
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
 		const isPrivate = type === 'p';
+		const avatar = instance.avatar.get();
 
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
@@ -240,7 +250,7 @@ Template.createChannel.events({
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, avatar, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					instance.invalid.set(true);
@@ -267,6 +277,47 @@ Template.createChannel.events({
 			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
+	},
+	'click .js-select-avatar-initials'(event, instance) {
+		instance.avatar.set(null);
+	},
+	'change .js-select-avatar-upload [type=file]'(event, instance) {
+		const e = event.originalEvent || event;
+		let { files } = e.target;
+		if (!files || files.length === 0) {
+			files = (e.dataTransfer && e.dataTransfer.files) || [];
+		}
+		Object.keys(files).forEach((key) => {
+			const blob = files[key];
+			if (!/image\/.+/.test(blob.type)) {
+				return;
+			}
+			const reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.onloadend = function() {
+				instance.avatar.set({
+					service: 'upload',
+					contentType: blob.type,
+					blob: reader.result,
+				});
+			};
+		});
+	},
+	'click .js-select-avatar-url'(e, instance, ...args) {
+		const url = instance.avatarUrl.get().trim();
+		if (!url) {
+			return;
+		}
+
+		instance.avatar.set({
+			service: 'url',
+			blob: url,
+			contentType: '',
+		});
+	},
+	'input .js-avatar-url-input'(e, instance) {
+		const text = e.target.value;
+		instance.avatarUrl.set(text);
 	},
 });
 
@@ -367,6 +418,8 @@ Template.createChannel.onCreated(function() {
 	// this.ac.element = this.firstNode.querySelector('[name=users]');
 	// this.ac.$element = $(this.ac.element);
 	this.ac.tmplInst = this;
+	this.avatar = new ReactiveVar();
+	this.avatarUrl = new ReactiveVar('');
 });
 
 Template.tokenpass.onCreated(function() {

@@ -107,6 +107,42 @@
 						</label>
 					</div>
 				</div>
+				<div class="rc-form-group">
+					<label class="rc-form-label">{{_ "Avatar"}}</label>
+					<div class="rc-select-avatar">
+						<div class="rc-select-avatar__preview">
+						{{# unless avatarPreview}}
+								{{> avatar username=initials }}
+						{{else}}
+								{{> avatar url=avatarPreview.blob}}
+						{{/unless}}
+						</div>
+						<div class="rc-select-avatar__list">
+							<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
+								{{> avatar username=initials }}
+							</div>
+							<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_avatar" }}">
+								<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
+									{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
+								</label>
+								<input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg">
+							</div>
+							<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectAvatarUrl}}"	aria-label="{{_ "Use_url_for_avatar" }}">
+								<label class="rc-select-avatar__upload-label avatar">
+									{{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
+								</label>
+							</div>
+							<div class="rc-input">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Use_url_for_avatar"}}</div>
+									<div class="rc-input__wrapper">
+										<input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
+									</div>
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
 				{{#if tokenAccessEnabled}}
 					<div class="create-channel__switches">
 						<div class="rc-switch">

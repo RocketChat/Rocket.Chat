@@ -37,6 +37,10 @@ const common = {
 		const { room: { t } } = Template.instance();
 		return t === 'd';
 	},
+	avatarUrl() {
+		const { room } = Template.instance();
+		return roomTypes.getConfig(room.t).getAvatarPath(room);
+	},
 };
 
 function roomFilesOnly(room) {
@@ -205,12 +209,88 @@ Template.channelSettingsEditing.events({
 			}
 		});
 	},
+	'click .js-select-avatar-initials'(event, t) {
+		this.value.set({
+			service: 'initials',
+			contentType: '',
+			blob: `@${ t.room.name }`,
+		});
+	},
+	'change .js-select-avatar-upload [type=file]'(event) {
+		const e = event.originalEvent || event;
+		let { files } = e.target;
+		if (!files || files.length === 0) {
+			files = (e.dataTransfer && e.dataTransfer.files) || [];
+		}
+		Object.keys(files).forEach((key) => {
+			const blob = files[key];
+			if (!/image\/.+/.test(blob.type)) {
+				return;
+			}
+			const reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.onloadend = () => {
+				this.value.set({
+					service: 'upload',
+					contentType: blob.type,
+					blob: reader.result,
+				});
+			};
+		});
+	},
+	'click .js-select-avatar-url'(e, t) {
+		const { settings } = t;
+		const url = settings.avatar.newAvatarUrl.get().trim();
+		if (!url) {
+			return;
+		}
+
+		this.value.set({
+			service: 'url',
+			blob: url,
+			contentType: '',
+		});
+	},
+	'input .js-avatar-url-input'(e, t) {
+		const { settings } = t;
+		const text = e.target.value;
+		settings.avatar.newAvatarUrl.set(text);
+	},
 });
 
 Template.channelSettingsEditing.onCreated(function() {
 	const room = ChatRoom.findOne(this.data && this.data.rid);
 	this.room = room;
 	this.settings = {
+		avatar: {
+			label: 'Avatar',
+			newAvatarUrl: new ReactiveVar(''),
+			initials() {
+				return `@${ room.name }`;
+			},
+			selectAvatarUrl() {
+				return this.newAvatarUrl.get().trim() ? '' : 'disabled';
+			},
+			canView() {
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.AVATAR);
+			},
+			canEdit() {
+				return hasAllPermission('edit-room', room._id);
+			},
+			getValue() {
+				return {
+					service: 'url',
+					blob: roomTypes.getConfig(room.t).getAvatarPath(room),
+					contentType: '',
+				};
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, RoomSettingsEnum.AVATAR, value).then(function() {
+					toastr.success(t('Room_avatar_changed_successfully'));
+					return callbacks.run('roomAvatarChanged', room);
+				});
+			},
+		},
 		name: {
 			type: 'text',
 			label: 'Name',
@@ -771,9 +851,6 @@ Template.channelSettingsInfo.onCreated(function() {
 
 Template.channelSettingsInfo.helpers({
 	...common,
-	channelName() {
-		return `@${ Template.instance().room.name }`;
-	},
 	archived() {
 		return Template.instance().room.archived;
 	},

@@ -37,9 +37,9 @@
 						</thead>
 						<tbody>
 							{{#each rooms}}
-								<tr>
+								<tr data-id="{{_id}}">
 									<td width="30%"><div class="rc-table-wrapper">
-										<div class="rc-table-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-table-avatar">{{> avatar url=avatarUrl roomIcon="true"}}</div>
 										<div class="rc-table-info">
 											<span class="rc-table-title">
 												{{>icon icon="hashtag" block="rc-table-icon"}} {{name}}
