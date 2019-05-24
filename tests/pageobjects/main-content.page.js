@@ -154,6 +154,13 @@ class MainContent extends Page {
 		}, 5000);
 	}
 
+	waitForLastMessageEqualsHtml(text) {
+		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .body', 5000);
+			return browser.getHTML('.message:last-child .body', false).trim() === text;
+		}, 5000);
+	}
+
 	waitForLastMessageTextAttachmentEqualsText(text) {
 		browser.waitForVisible('.message:last-child .attachment-text', 5000);
 		return browser.getText('.message:last-child .attachment-text') === text;

@@ -8,6 +8,7 @@ import { Info } from '../../../utils';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { API } from '../api';
+import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 
 
 // DEPRECATED
@@ -42,7 +43,7 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId)));
+		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields: getDefaultUserFields() })));
 	},
 });
 

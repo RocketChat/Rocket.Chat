@@ -767,7 +767,7 @@ API.v1.addRoute('channels.setDefault', { authRequired: true }, {
 
 API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.description || !this.bodyParams.description.trim()) {
+		if (!this.bodyParams.hasOwnProperty('description')) {
 			return API.v1.failure('The bodyParam "description" is required');
 		}
 
@@ -786,6 +786,7 @@ API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 		});
 	},
 });
+
 
 API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 	post() {
@@ -807,7 +808,7 @@ API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 
 API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.purpose || !this.bodyParams.purpose.trim()) {
+		if (!this.bodyParams.hasOwnProperty('purpose')) {
 			return API.v1.failure('The bodyParam "purpose" is required');
 		}
 
@@ -851,7 +852,7 @@ API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
 
 API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
+		if (!this.bodyParams.hasOwnProperty('topic')) {
 			return API.v1.failure('The bodyParam "topic" is required');
 		}
 
@@ -873,7 +874,7 @@ API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 
 API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+		if (!this.bodyParams.hasOwnProperty('announcement')) {
 			return API.v1.failure('The bodyParam "announcement" is required');
 		}
 

@@ -1,90 +1,106 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
 
-export const MsgTyping = (function() {
-	const timeout = 15000;
-	const timeouts = {};
-	let renew = true;
-	const renewTimeout = 10000;
-	const selfTyping = new ReactiveVar(false);
-	const usersTyping = {};
-	const dep = new Tracker.Dependency();
+const shownName = function(user) {
+	if (!user) {
+		return;
+	}
+	if (settings.get('UI_Use_Real_Name')) {
+		return user.name;
+	}
+	return user.username;
+};
 
-	const shownName = function(user) {
-		if (!user) {
+const timeouts = {};
+const timeout = 15000;
+const renew = timeout / 3;
+const renews = {};
+const rooms = {};
+const selfTyping = new ReactiveVar(false);
+const usersTyping = new ReactiveDict();
+
+const stopTyping = (rid) => Notifications.notifyRoom(rid, 'typing', shownName(Meteor.user()), false);
+const typing = (rid) => Notifications.notifyRoom(rid, 'typing', shownName(Meteor.user()), true);
+
+export const MsgTyping = new class {
+	constructor() {
+		Tracker.autorun(() => Session.get('openedRoom') && this.addStream(Session.get('openedRoom')));
+	}
+
+	get selfTyping() { return selfTyping.get(); }
+
+	cancel(rid) {
+		if (rooms[rid]) {
+			delete rooms[rid];
+			Notifications.unRoom(rid, 'typing', rooms[rid]);
+		}
+	}
+
+	addStream(rid) {
+		if (rooms[rid]) {
 			return;
 		}
-		if (settings.get('UI_Use_Real_Name')) {
-			return user.name;
-		}
-		return user.username;
-	};
-
-	const addStream = function(room) {
-		if (!_.isEmpty(usersTyping[room] && usersTyping[room].users)) {
-			return;
-		}
-		usersTyping[room] = { users: {} };
-		return Notifications.onRoom(room, 'typing', function(username, typing) {
+		rooms[rid] = function(username, typing) {
 			const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username: 1 } });
 			if (username === shownName(user)) {
 				return;
 			}
-			const { users } = usersTyping[room];
+			const users = usersTyping.get(rid) || {};
 			if (typing === true) {
-				users[username] = Meteor.setTimeout(function() {
+				clearTimeout(users[username]);
+				users[username] = setTimeout(function() {
 					delete users[username];
-					usersTyping[room].users = users;
-					return dep.changed();
+					usersTyping.set(rid, users);
 				}, timeout);
 			} else {
 				delete users[username];
 			}
-			usersTyping[room].users = users;
-			return dep.changed();
-		});
-	};
 
-	Tracker.autorun(() => Session.get('openedRoom') && addStream(Session.get('openedRoom')));
-	const stop = function(room) {
-		renew = true;
+			usersTyping.set(rid, users);
+		};
+		return Notifications.onRoom(rid, 'typing', rooms[rid]);
+	}
+
+	stop(rid) {
 		selfTyping.set(false);
-		if (timeouts && timeouts[room]) {
-			clearTimeout(timeouts[room]);
-			timeouts[room] = null;
+		if (timeouts[rid]) {
+			clearTimeout(timeouts[rid]);
+			delete timeouts[rid];
+			delete renews[rid];
 		}
-		const user = Meteor.user();
-		return Notifications.notifyRoom(room, 'typing', shownName(user), false);
-	};
-	const start = function(room) {
-		if (!renew) { return; }
+		return stopTyping(rid);
+	}
 
-		setTimeout(() => { renew = true; }, renewTimeout);
 
-		renew = false;
+	start(rid) {
 		selfTyping.set(true);
-		const user = Meteor.user();
-		Notifications.notifyRoom(room, 'typing', shownName(user), true);
-		clearTimeout(timeouts[room]);
-		timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
-		return timeouts[room];
-	};
 
-
-	const get = function(room) {
-		dep.depend();
-		if (!usersTyping[room]) {
-			usersTyping[room] = { users: {} };
+		if (renews[rid]) {
+			return;
 		}
-		const { users } = usersTyping[room];
-		return _.keys(users) || [];
-	};
 
-	return { start, stop, get, selfTyping };
-}());
+		renews[rid] = setTimeout(() => delete renews[rid], renew);
+
+		typing(rid);
+
+		if (timeouts[rid]) {
+			clearTimeout(timeouts[rid]);
+		}
+
+		timeouts[rid] = setTimeout(() => this.stop(rid), timeout);
+
+		return timeouts[rid];
+	}
+
+
+	get(rid) {
+		return _.keys(usersTyping.get(rid)) || [];
+	}
+}();
