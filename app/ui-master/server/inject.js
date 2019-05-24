@@ -110,18 +110,21 @@ Meteor.startup(() => {
 		injectIntoHead(key, value);
 	});
 
-	Meteor.defer(() => {
-		let baseUrl;
-		if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX && __meteor_runtime_config__.ROOT_URL_PATH_PREFIX.trim() !== '') {
-			baseUrl = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-		} else {
-			baseUrl = '/';
+	const baseUrl = ((prefix) => {
+		if (!prefix) {
+			return '/';
 		}
-		if (/\/$/.test(baseUrl) === false) {
-			baseUrl += '/';
+
+		prefix = prefix.trim();
+
+		if (!prefix) {
+			return '/';
 		}
-		injectIntoHead('base', `<base href="${ baseUrl }">`);
-	});
+
+		return /\/$/.test(prefix) ? prefix : `${ prefix }/`;
+	})(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX);
+
+	injectIntoHead('base', `<base href="${ baseUrl }">`);
 
 	injectIntoHead('css-theme', '');
 });
