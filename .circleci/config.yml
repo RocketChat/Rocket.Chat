@@ -71,8 +71,6 @@ jobs:
       - image: circleci/node:8.15-stretch
       - image: mongo:3.2
 
-    resource_class: medium+
-
     steps:
       - checkout
 
@@ -149,7 +147,7 @@ jobs:
       - run:
           name: Build Rocket.Chat
           environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=3584
+            TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
             if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == 'develop' ]]; then
               meteor reset;

@@ -4,6 +4,7 @@ export BUILD_DIR="../build"
 export BUNDLE_DIR="../build/bundle/programs/web.browser.legacy"
 export LIVECHAT_ASSETS_DIR="../../../private/livechat"
 export LATEST_LIVECHAT_VERSION="1.0.0"
+export TOOL_NODE_FLAGS="--max_old_space_size=2000"
 
 cd packages/rocketchat-livechat/.app
 meteor npm install --production
