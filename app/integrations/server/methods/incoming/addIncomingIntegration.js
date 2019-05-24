@@ -34,7 +34,6 @@ Meteor.methods({
 		if (!_.isString(integration.username) || integration.username.trim() === '') {
 			throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'addIncomingIntegration' });
 		}
-
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 			try {
 				let babelOptions = Babel.getDefaultOptions({ runtime: false });

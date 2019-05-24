@@ -62,6 +62,7 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 				} else if (hasAllPermission('manage-own-outgoing-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
 				}
+				intRecord.hasScriptError = intRecord.scriptEnabled && intRecord.scriptError;
 
 				if (intRecord) {
 					this.record.set(intRecord);

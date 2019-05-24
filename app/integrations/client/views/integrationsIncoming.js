@@ -49,6 +49,7 @@ Template.integrationsIncoming.helpers({
 				const completeToken = `${ data._id }/${ data.token }`;
 				data.url = Meteor.absoluteUrl(`hooks/${ completeToken }`);
 				data.completeToken = completeToken;
+				data.hasScriptError = data.scriptEnabled && data.scriptError;
 				Template.instance().record.set(data);
 				return data;
 			}
