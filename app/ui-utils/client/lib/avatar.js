@@ -45,7 +45,7 @@ export const updateAvatarOfUsername = function(username) {
 };
 
 export const updateAvatarOfRoom = function(roomId) {
-	// Session.set(`avatar_random_${ roomId }`, Date.now());
+	Session.set(`room_avatar_random_${ roomId }`, Date.now());
 	const url = getRoomAvatarURL(roomId);
 
 	// Discussions have the same avatar as the parent room
