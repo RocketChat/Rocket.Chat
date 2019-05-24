@@ -10,7 +10,7 @@ import { Messages, Subscriptions } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { getConfig } from '../../../ui-utils/client/config';
-import { upsert } from '../upsert';
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 
 import './threads.html';
 
@@ -99,8 +99,8 @@ Template.threads.onCreated(async function() {
 
 
 		this.state.set('loading', rid);
-		const threads = await call('getThreadsList', { rid, limit: LIST_SIZE, skip: limit - LIST_SIZE });
-		upsert(this.Threads, threads);
+		const messages = await call('getThreadsList', { rid, limit: LIST_SIZE, skip: limit - LIST_SIZE });
+		upsertMessageBulk({ msgs: messages }, this.Threads);
 		// threads.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
 		this.state.set('loading', false);
 	}, 500);
