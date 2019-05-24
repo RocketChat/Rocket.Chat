@@ -10,7 +10,7 @@ const offlineServiceError = 'no-agent-online';
 API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 	post() {
 		const WhatsAppService = WhatsAppGateway.getService(this.urlParams.service);
-		const { id_sessao: sessionId, id_cliente, id_caixa: from, texto: msg } = this.bodyParams;
+		const { id_sessao: sessionId, id_cliente, id_caixa: from, texto: msg, midia } = this.bodyParams;
 		let guest = LivechatVisitors.findOneVisitorByPhone(id_cliente);
 
 		const config = WhatsAppService.getConfig() || {};
@@ -46,12 +46,30 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			guest = LivechatVisitors.findOneById(visitorId);
 		}
 
+		let attachments;
+		if (midia) {
+			const attachment = {};
+			const { mime_type, base64 } = midia;
+			switch (mime_type.substr(0, mime_type.indexOf('/'))) {
+				case 'image':
+					attachment.image_url = `data:${ mime_type };base64,${ base64 }`;
+					break;
+				case 'video':
+					attachment.video_url = `data:${ mime_type };base64,${ base64 }`;
+					break;
+				case 'audio':
+					attachment.audio_url = `data:${ mime_type };base64,${ base64 }`;
+					break;
+			}
+			attachments =[attachment];
+		}
 		const sendMessage = {
 			message: {
 				_id: Random.id(),
 				msg,
 				rid,
 				token,
+				attachments,
 			},
 			roomInfo: {
 				whatsAppGateway: {
@@ -67,12 +85,11 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			const { _id, msg } = message;
 			return { success: true, _id, msg };
 		} catch (e) {
-			if (e.error && e.error === offlineServiceError) {
-				if (offlineServiceMessage) {
-					WhatsAppService.send(from, id_cliente, offlineServiceMessage);
-				}
+			const { error, reason, message } = e;
+			if (error && error === offlineServiceError && offlineServiceMessage) {
+				WhatsAppService.send(from, id_cliente, offlineServiceMessage);
 			}
-			return { success: false, e };
+			return { success: false, error, reason, message };
 		}
 	},
 });
