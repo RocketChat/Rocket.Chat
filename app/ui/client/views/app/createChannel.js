@@ -303,7 +303,7 @@ Template.createChannel.events({
 			};
 		});
 	},
-	'click .js-select-avatar-url'(e, instance, ...args) {
+	'click .js-select-avatar-url'(e, instance) {
 		const url = instance.avatarUrl.get().trim();
 		if (!url) {
 			return;
