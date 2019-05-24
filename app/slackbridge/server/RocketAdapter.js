@@ -1,13 +1,15 @@
-import _ from 'underscore';
 import util from 'util';
+
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+
+import { logger } from './logger';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { Messages, Rooms, Users } from '../../models';
 import { createRoom, sendMessage, setUserAvatar } from '../../lib';
-import { logger } from './logger';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {
@@ -84,7 +86,7 @@ export default class RocketAdapter {
 				if (rocketMsg) {
 					this.slackAdapters.forEach((slack) => {
 						const slackChannel = slack.getSlackChannel(rocketMsg.rid);
-						if (null != slackChannel) {
+						if (slackChannel != null) {
 							const slackTS = slack.getTimeStamp(rocketMsg);
 							slack.postReactionAdded(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
 						}
@@ -151,7 +153,6 @@ export default class RocketAdapter {
 
 				// A new message from Rocket.Chat
 				this.processSendMessage(rocketMessage, slack);
-
 			} catch (err) {
 				logger.rocket.error('Unhandled error onMessage', err);
 			}
@@ -291,7 +292,7 @@ export default class RocketAdapter {
 
 					try {
 						const isPrivate = slackChannel.is_private;
-						const rocketChannel = createRoom(isPrivate ? 'p' : 'c', slackChannel.name, slackChannel.username, rocketUsers);
+						const rocketChannel = createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator.username, rocketUsers);
 						rocketChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {
@@ -299,9 +300,8 @@ export default class RocketAdapter {
 							// If first time trying to create channel fails, could be because of multiple messages received at the same time. Try again once after 1s.
 							Meteor._sleepForMs(1000);
 							return this.findChannel(slackChannelID) || this.addChannel(slackChannelID, true);
-						} else {
-							console.log(e.message);
 						}
+						console.log(e.message);
 					}
 
 					const roomUpdate = {
@@ -355,9 +355,9 @@ export default class RocketAdapter {
 				const email = (rocketUserData.profile && rocketUserData.profile.email) || '';
 				let existingRocketUser;
 				if (!isBot) {
-					existingRocketUser = Users.findOneByEmailAddress(email) || Users.findOneByUsername(rocketUserData.name);
+					existingRocketUser = Users.findOneByEmailAddress(email) || Users.findOneByUsernameIgnoringCase(rocketUserData.name);
 				} else {
-					existingRocketUser = Users.findOneByUsername(rocketUserData.name);
+					existingRocketUser = Users.findOneByUsernameIgnoringCase(rocketUserData.name);
 				}
 
 				if (existingRocketUser) {
@@ -522,5 +522,4 @@ export default class RocketAdapter {
 		}
 		return slackMsgTxt;
 	}
-
 }

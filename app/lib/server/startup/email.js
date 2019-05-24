@@ -2,7 +2,6 @@ import { settings } from '../../../settings';
 
 settings.addGroup('Email', function() {
 	this.section('Style', function() {
-
 		this.add('email_style', `html, body, .body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
 
 	body, .body {
@@ -279,6 +278,7 @@ settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Username',
 			placeholder: 'email@domain',
+			secret: true,
 		});
 		this.add('Direct_Reply_ReplyTo', '', {
 			type: 'string',
@@ -290,6 +290,7 @@ settings.addGroup('Email', function() {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password',
+			secret: true,
 		});
 	});
 	this.section('SMTP', function() {
@@ -336,12 +337,14 @@ settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Username',
 			autocomplete: false,
+			secret: true,
 		});
 		this.add('SMTP_Password', '', {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password',
 			autocomplete: false,
+			secret: true,
 		});
 		this.add('From_Email', '', {
 			type: 'string',

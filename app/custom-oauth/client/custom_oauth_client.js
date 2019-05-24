@@ -5,6 +5,7 @@ import { Random } from 'meteor/random';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { OAuth } from 'meteor/oauth';
 import s from 'underscore.string';
+
 import { isURL } from '../../utils/lib/isURL';
 
 // Request custom OAuth credentials for the user
@@ -91,8 +92,8 @@ export class CustomOAuth {
 		const loginUrl = `${ this.authorizePath
 		}${ separator }client_id=${ config.clientId
 		}&redirect_uri=${ OAuth._redirectUri(this.name, config)
-		}&response_type=code` +
-			`&state=${ OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)
+		}&response_type=code`
+			+ `&state=${ OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)
 			}&scope=${ this.scope }`;
 
 		OAuth.launchLogin({

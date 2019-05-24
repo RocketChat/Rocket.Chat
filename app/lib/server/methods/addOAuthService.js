@@ -2,13 +2,13 @@
 /* eslint comma-spacing: 0 */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import s from 'underscore.string';
+
 import { settings } from '../../../settings';
 import { hasPermission } from '../../../authorization';
-import s from 'underscore.string';
 
 Meteor.methods({
 	addOAuthService(name) {
-
 		check(name, String);
 
 		if (!Meteor.userId()) {
@@ -37,6 +37,7 @@ Meteor.methods({
 		settings.add(`Accounts_OAuth_Custom-${ name }-button_label_color`     , '#FFFFFF'         , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-button_color`           , '#1d74f5'         , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Button_Color', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-username_field`         , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Username_Field', persistent: true });
+		settings.add(`Accounts_OAuth_Custom-${ name }-name_field`             , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Name_Field', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-avatar_field`           , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Avatar_Field', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-roles_claim`            , 'roles'           , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Roles_Claim', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles`	          , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles', persistent: true });

@@ -3,12 +3,13 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
-import { CredentialTokens } from '../../models';
-import { generateUsernameSuggestion } from '../../lib';
-import { SAML } from './saml_utils';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 import _ from 'underscore';
+
+import { SAML } from './saml_utils';
+import { CredentialTokens } from '../../models';
+import { generateUsernameSuggestion } from '../../lib';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -34,7 +35,7 @@ function getSamlProviderConfig(provider) {
 			{ method: 'getSamlProviderConfig' });
 	}
 	const samlProvider = function(element) {
-		return (element.provider === provider);
+		return element.provider === provider;
 	};
 	return Accounts.saml.settings.providers.filter(samlProvider)[0];
 }
@@ -227,10 +228,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 
 		return result;
-
-	} else {
-		throw new Error('SAML Profile did not contain an email address');
 	}
+	throw new Error('SAML Profile did not contain an email address');
 });
 
 Accounts.saml.hasCredential = function(credentialToken) {
@@ -365,7 +364,6 @@ const middleware = function(req, res, next) {
 							if (loggedOutUser.length === 1) {
 								logoutRemoveTokens(loggedOutUser[0]._id);
 							}
-
 						};
 
 						fiber(function() {
@@ -387,9 +385,7 @@ const middleware = function(req, res, next) {
 								Location: url,
 							});
 							res.end();
-
 						});
-
 					});
 				} else {
 					_saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
@@ -475,7 +471,6 @@ const middleware = function(req, res, next) {
 				break;
 			default:
 				throw new Error(`Unexpected SAML action ${ samlObject.actionName }`);
-
 		}
 	} catch (err) {
 		closePopup(res, err);

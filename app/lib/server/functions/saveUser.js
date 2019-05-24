@@ -2,13 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
-import * as Mailer from '../../../mailer';
 import { Gravatar } from 'meteor/jparker:gravatar';
+
+import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import PasswordPolicy from '../lib/PasswordPolicyClass';
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername } from '.';
 import { validateEmailDomain } from '../lib';
+
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername } from '.';
 
 const passwordPolicy = new PasswordPolicy();
 

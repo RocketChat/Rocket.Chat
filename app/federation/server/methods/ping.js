@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { FederationEvents } from '../../../models';
 import { settings } from '../../../settings';
 import { delay } from '../PeerHTTP/utils';

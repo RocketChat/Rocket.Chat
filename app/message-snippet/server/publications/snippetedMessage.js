@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Messages, Users, Rooms } from '../../../models';
 
 Meteor.publish('snippetedMessage', function(_id) {

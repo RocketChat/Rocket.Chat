@@ -1,8 +1,7 @@
 import _ from 'underscore';
-
+import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 
@@ -10,18 +9,18 @@ import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
-import { AutoTranslate } from '../../autotranslate/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
+import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
 import './messageThread.html';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
-	const isSafari = /constructor/i.test(window.HTMLElement) ||
-		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
-			(typeof window.safari !== 'undefined' && window.safari.pushNotification));
+	const isSafari = /constructor/i.test(window.HTMLElement)
+		|| ((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari
+			|| (typeof window.safari !== 'undefined' && window.safari.pushNotification));
 
 	if (isSafari) {
 		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
@@ -79,7 +78,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
 		msg = callbacks.run('renderMentions', msg);
@@ -119,12 +118,14 @@ Template.message.helpers({
 		return !msg.private && !msg.t && msg.u._id !== u._id && room && room.broadcast;
 	},
 	isIgnored() {
-		const { msg } = this;
-		return msg.ignored;
+		const { ignored, msg } = this;
+		const isIgnored = typeof ignored !== 'undefined' ? ignored : msg.ignored;
+		return isIgnored;
 	},
 	ignoredClass() {
-		const { msg } = this;
-		return msg.ignored ? 'message--ignored' : '';
+		const { ignored, msg } = this;
+		const isIgnored = typeof ignored !== 'undefined' ? ignored : msg.ignored;
+		return isIgnored ? 'message--ignored' : '';
 	},
 	isDecrypting() {
 		const { msg } = this;
@@ -248,9 +249,8 @@ Template.message.helpers({
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
 		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
-			const language = AutoTranslate.getLanguage(msg.rid);
 			const autoTranslate = subscription && subscription.autoTranslate;
-			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[language]);
+			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
 		}
 	},
 	edited() {
@@ -277,7 +277,7 @@ Template.message.helpers({
 
 		if (msg.i18nLabel) {
 			return t(msg.i18nLabel);
-		} else if (msg.label) {
+		} if (msg.label) {
 			return msg.label;
 		}
 	},
@@ -300,7 +300,7 @@ Template.message.helpers({
 		return Object.entries(reactions)
 			.map(([emoji, reaction]) => {
 				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
-				const displayNames = (reaction.names || reaction.usernames.map((username) => `@${ username }`));
+				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
 				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
 
 				if (displayNames.some((displayName) => displayName === myDisplayName)) {
@@ -374,9 +374,13 @@ Template.message.helpers({
 		}
 		return roomTypes.getIcon(room);
 	},
+	customClass() {
+		const { customClass, msg } = this;
+		return customClass || msg.customClass;
+	},
 	fromSearch() {
-		const { customClass } = this;
-		return customClass === 'search';
+		const { customClass, msg } = this;
+		return [msg.customClass, customClass].includes('search');
 	},
 	actionContext() {
 		const { msg } = this;
@@ -395,7 +399,7 @@ Template.message.helpers({
 			context = 'message';
 		}
 
-		return MessageAction.getButtons(msg, context, messageGroup);
+		return MessageAction.getButtons(this, context, messageGroup);
 	},
 	isSnippet() {
 		const { msg } = this;
@@ -403,7 +407,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { msg: { tmid, t }, settings: { showreply } } = this;
-		return !!(tmid && showreply && !t);
+		return !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -424,31 +428,13 @@ Template.message.helpers({
 
 
 const findParentMessage = (() => {
-
 	const waiting = [];
 
 	const getMessages = _.debounce(async function() {
 		const uid = Tracker.nonreactive(() => Meteor.userId());
 		const _tmp = [...waiting];
 		waiting.length = 0;
-		const messages = await call('getMessages', _tmp);
-		messages.forEach((message) => {
-			if (!message) {
-				return;
-			}
-			const { _id, ...msg } = message;
-			Messages.update({ tmid: _id, repliesCount: { $exists: 0 } }, {
-				$set: {
-					following: message.replies && message.replies.indexOf(uid) > -1,
-					threadMsg: normalizeThreadMessage(msg),
-					repliesCount: msg.tcount,
-				},
-			}, { multi: true });
-			if (!Messages.findOne({ _id })) {
-				msg._hidden = true;
-				Messages.upsert({ _id }, msg);
-			}
-		});
+		(await call('getMessages', _tmp)).map((msg) => upsertMessage({ msg, uid }));
 	}, 500);
 
 	return (tmid) => {
@@ -552,6 +538,10 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 		return false;
 	}
 
+	if (previousDataset.alias !== currentDataset.alias) {
+		return false;
+	}
+
 	if (parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) <= period) {
 		return true;
 	}
@@ -610,12 +600,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 };
 
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-
 	this.autorun(() => {
 		const currentNode = this.firstNode;
 		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 	});
-
 });
 
 Template.message.onViewRendered = function() {
