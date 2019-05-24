@@ -31506,6 +31506,27 @@
           ]
         }
       ]
+    },
+    "1.1.0-rc.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14614",
+          "title": "[FIX] Mailer breaking if user doesn't have an email address",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        }
+      ]
     }
   }
 }

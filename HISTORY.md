@@ -1,6 +1,17 @@
 
 # 1.1.0 (Under Release Candidate Process)
 
+## 1.1.0-rc.3
+`2019-05-23  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Mailer breaking if user doesn't have an email address ([#14614](https://github.com/RocketChat/Rocket.Chat/pull/14614))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+
 ## 1.1.0-rc.2
 `2019-05-22  ·  2 🐛  ·  7 🔍  ·  8 👩‍💻👨‍💻`
 
