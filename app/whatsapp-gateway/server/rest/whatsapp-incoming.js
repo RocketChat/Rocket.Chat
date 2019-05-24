@@ -28,7 +28,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 
 			rid = rooms && rooms.length > 0 ? rooms[0]._id : Random.id();
 			token = guest.token;
-			//Update Guest department..
+			// Update Guest department..
 			Livechat.registerGuest({ token, department });
 		} else {
 			rid = Random.id();
