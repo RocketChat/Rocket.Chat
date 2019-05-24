@@ -5,6 +5,8 @@ import { API } from '../../../api';
 import WhatsAppGateway from '../WhatsAppGateway';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 
+const offlineServiceError = 'no-agent-online';
+
 API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 	post() {
 		const WhatsAppService = WhatsAppGateway.getService(this.urlParams.service);
@@ -26,6 +28,8 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 
 			rid = rooms && rooms.length > 0 ? rooms[0]._id : Random.id();
 			token = guest.token;
+			//Update Guest department..
+			Livechat.registerGuest({ token, department });
 		} else {
 			rid = Random.id();
 			token = Random.id();
@@ -63,6 +67,12 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			const { _id, msg } = message;
 			return { success: true, _id, msg };
 		} catch (e) {
+			if (e.error && e.error === offlineServiceError) {
+				const config = WhatsAppService.getConfig();
+				if (config && config.offlineServiceMessage) {
+					WhatsAppService.send(from, id_cliente, config.offlineServiceMessage);
+				}
+			}
 			return { success: false, e };
 		}
 	},

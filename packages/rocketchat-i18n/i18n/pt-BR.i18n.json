@@ -3160,6 +3160,8 @@
   "Whatsapp_Gateway_Base_API_URL_Description": "Base URL da API do gateway onde o serviço está sendo executado.",
   "WhatsApp_Gateway_Default_Department": "Departmento default",
   "WhatsApp_Gateway_Default_Department_Description": "(Opcional) Nome ou ID do departmento que receberá as conversas de WhatsApp.",
+  "WhatsApp_Gateway_Fallback_Message": "Mensagem default para serviço offline",
+  "WhatsApp_Gateway_Fallback_Message_Description": "(Opcional) Mensagem default que será enviada aos usuários quando o serviço estiver offline.",
   "Why_do_you_want_to_report_question_mark": "Por que você quer denunciar?",
   "will_be_able_to": "poderá",
   "Worldwide": "Em todo o mundo",

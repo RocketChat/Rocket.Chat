@@ -9,6 +9,7 @@ class Caixa {
 		this.config = {
 			baseApiUrl: settings.get('WhatsApp_Gateway_Base_API_URL'),
 			defaultDepartmentName: settings.get('WhatsApp_Gateway_Default_Department'),
+			offlineServiceMessage: settings.get('WhatsApp_Gateway_Fallback_Message'),
 		};
 	}
 
