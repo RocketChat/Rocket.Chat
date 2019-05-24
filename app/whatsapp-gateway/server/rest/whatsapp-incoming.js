@@ -13,11 +13,11 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 		const { id_sessao: sessionId, id_cliente, id_caixa: from, texto: msg } = this.bodyParams;
 		let guest = LivechatVisitors.findOneVisitorByPhone(id_cliente);
 
-		const config = WhatsAppService.getConfig();
-
+		const config = WhatsAppService.getConfig() || {};
+		const { defaultDepartmentName, offlineServiceMessage } = config;
 		let department;
-		if (config.defaultDepartmentName) {
-			const dep = LivechatDepartment.findOneByIdOrName(config.defaultDepartmentName);
+		if (defaultDepartmentName) {
+			const dep = LivechatDepartment.findOneByIdOrName(defaultDepartmentName);
 			department = dep && dep._id;
 		}
 
@@ -68,9 +68,8 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			return { success: true, _id, msg };
 		} catch (e) {
 			if (e.error && e.error === offlineServiceError) {
-				const config = WhatsAppService.getConfig();
-				if (config && config.offlineServiceMessage) {
-					WhatsAppService.send(from, id_cliente, config.offlineServiceMessage);
+				if (offlineServiceMessage) {
+					WhatsAppService.send(from, id_cliente, offlineServiceMessage);
 				}
 			}
 			return { success: false, e };
