@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
+const fields = ['messageDelay', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
+
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
@@ -106,6 +107,13 @@ Meteor.methods({
 					action: 'Editing_room',
 				});
 			}
+
+			if (setting === 'messageDelay' && value.messageDelayType !== 'custom' && value.messageDelayType !== 'default' && !RocketChat.authz.hasPermission(userId, 'edit-message-delay-type') && !RocketChat.authz.hasPermission(userId, 'edit-custom-message-delay')) {
+				throw new Meteor.Error('error-action-not-allowed', 'Editing room message delay is not allowed', {
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				});
+			}
 			if (setting === 'retentionOverrideGlobal') {
 				delete settings.retentionMaxAge;
 				delete settings.retentionExcludePinned;
@@ -172,6 +180,10 @@ Meteor.methods({
 						RocketChat.saveRoomSystemMessages(rid, value, user);
 					}
 					break;
+				case 'messageDelay':
+					if(value.messageDelayType !== room.messageDelayType || value.messageDelayMS != room.messageDelayMS) {
+						RocketChat.saveRoomMessageDelay(rid, value);
+					}
 				case 'joinCode':
 					RocketChat.models.Rooms.setJoinCodeById(rid, String(value));
 					break;

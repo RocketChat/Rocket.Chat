@@ -63,3 +63,16 @@ RocketChat.models.Rooms.setSystemMessagesById = function(_id, systemMessages) {
 	};
 	return this.update(query, update);
 };
+
+RocketChat.models.Rooms.setMessageDelayById = function(_id, messageDelay) {
+	const query = {
+		_id,
+	};
+	const update = {
+		$set: {
+			messageDelayType: messageDelay.messageDelayType,
+			messageDelayMS: messageDelay.messageDelayMS
+		},
+	};
+	return this.update(query, update);
+};

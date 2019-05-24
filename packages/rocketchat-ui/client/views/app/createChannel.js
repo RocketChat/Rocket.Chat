@@ -41,6 +41,10 @@ const validateChannelName = (name) => {
 	return name.length === 0 || reg.test(name);
 };
 
+const validateMessageDelay = (delay) => {
+	return delay >= 0;
+}
+
 const filterNames = (old) => {
 	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 		return old;
@@ -83,6 +87,15 @@ Template.createChannel.helpers({
 		const invalid = instance.invalid.get();
 		const inUse = instance.inUse.get();
 		return invalid || inUse;
+	},
+	invalidMessageDelay() {
+		const instance = Template.instance();
+		const invalid = instance.invalidMessageDelay.get();
+		return invalid;
+	},
+	isCustomMessageDelay() {
+		const instance = Template.instance();
+		return instance.isCustomMessageDelay.get();
 	},
 	typeLabel() {
 		return t(Template.instance().type.get() === 'p' ? t('Private_Channel') : t('Public_Channel'));
@@ -189,6 +202,21 @@ Template.createChannel.events({
 	'change [name="readOnly"]'(e, t) {
 		t.readOnly.set(e.target.checked);
 	},
+	'input [name="messageDelayType"]'(e, t) {
+		t.messageDelayType.set(e.target.value);
+		t.isCustomMessageDelay.set(e.target.value === 'custom');
+	},
+	'input [name="messageDelay"]'(e, t) {
+		const input = e.target;
+		const modified = Math.round(input.value);
+
+		input.value = modified;
+		document.activeElement === input && e && /input/i.test(e.type);
+		t.invalidMessageDelay.set(!validateMessageDelay(input.value));
+		if (input.value !== t.messageDelay.get()) {
+			t.messageDelay.set(modified);
+		}
+	},
 	'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
@@ -222,17 +250,22 @@ Template.createChannel.events({
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
+		const messageDelay = instance.messageDelay.get();
+		const messageDelayType = instance.messageDelayType.get();
 		const isPrivate = type === 'p';
 
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
+		}
+		if(instance.invalidMessageDelay.get()) {
+			return e.target.messageDelay.focus();
 		}
 		if (!Object.keys(instance.extensions_validations).map((key) => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
 		}
 
 		const extraData = Object.keys(instance.extensions_submits)
-			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
+			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted, messageDelayMS: messageDelay, messageDelayType });
 
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
@@ -280,6 +313,10 @@ Template.createChannel.onCreated(function() {
 	this.extensions_submits = {};
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c');
+	this.messageDelay = new ReactiveVar('');
+	this.invalidMessageDelay = new ReactiveVar(false);
+	this.messageDelayType = new ReactiveVar('default');
+	this.isCustomMessageDelay = new ReactiveVar(false);
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
 	this.encrypted = new ReactiveVar(false);

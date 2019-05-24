@@ -75,13 +75,20 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
+const DelayMessage = (MS) => Meteor._sleepForMs(MS);
+
 RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
 
-        // Adding 10 minutes delay for every message.
-	Meteor._sleepForMs(600000);
+    if(room.messageDelayType === 'custom' && room.messageDelayMS) {
+		DelayMessage(room.messageDelayMS);
+    } else {	   
+		const DefaultMessageDelay = RocketChat.settings.get('Message_DefaultDelayMS');
+		
+		DelayMessage(DefaultMessageDelay);
+    }
 
 	check(message, objectMaybeIncluding({
 		_id: String,

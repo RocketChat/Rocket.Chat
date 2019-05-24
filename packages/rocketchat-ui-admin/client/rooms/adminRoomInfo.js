@@ -6,6 +6,14 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 
+const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+const validateMessageDelay = (delay) => {
+	return delay >= 0;
+}
+
 Template.adminRoomInfo.helpers({
 	selectedRoom() {
 		return Session.get('adminRoomsSelected');
@@ -76,6 +84,23 @@ Template.adminRoomInfo.helpers({
 			return t('False');
 		}
 	},
+	messageDelayType() {
+		const room = AdminChatRoom.findOne(this.rid, { fields: { messageDelayType: 1 } });
+		const delayType = capitalizeFirstLetter(room.messageDelayType);
+
+		if(room && room.messageDelayType) {
+			Template.instance().messageDelayType.set(delayType);
+		}
+		
+		return room && delayType;
+	},
+	isCustomMessageDelay() {
+		return Template.instance().messageDelayType.get() === "Custom";
+	},
+	messageDelayMS() {
+		const room = AdminChatRoom.findOne(this.rid, { fields: { messageDelayMS: 1 } });
+		return room && room.messageDelayMS;
+	}
 });
 
 Template.adminRoomInfo.events({
@@ -127,10 +152,28 @@ Template.adminRoomInfo.events({
 		e.preventDefault();
 		t.saveSetting(this.rid);
 	},
+	'change [name="messageDelayType"]:checked'(e, t) {
+		t.messageDelayType.set(e.target.value);
+	},
+	'change [name="messageDelayMS"]'(e, t) {
+		const input = e.target;
+		const modified = Math.round(input.value);
+
+		input.value = modified;
+		document.activeElement === input && e && /input/i.test(e.type);
+
+		t.invalidMessageDelay.set(!validateMessageDelay(input.value));
+		if (input.value !== t.messageDelayMS.get()) {
+			t.messageDelayMS.set(modified);
+		}
+	},
 });
 
 Template.adminRoomInfo.onCreated(function() {
 	this.editing = new ReactiveVar;
+	this.messageDelayType = new ReactiveVar;
+	this.messageDelayMS = new ReactiveVar;
+	this.invalidMessageDelay = new ReactiveVar(false);
 	this.validateRoomType = () => {
 		const type = this.$('input[name=roomType]:checked').val();
 		if (type !== 'c' && type !== 'p') {
@@ -253,6 +296,23 @@ Template.adminRoomInfo.onCreated(function() {
 						return handleError(err);
 					}
 					toastr.success(TAPi18n.__('Read_only_changed_successfully'));
+				});
+			case 'messageDelay':
+				if(this.invalidMessageDelay.get()) {
+					toastr.error(t('Message delay must be a positive integer.'));
+					return;
+				}
+
+				const messageDelay = {
+					messageDelayType: this.messageDelayType.get(),
+					messageDelayMS: this.messageDelayMS.get()
+				};
+
+				Meteor.call('saveRoomSettings', rid, 'messageDelay', messageDelay, function(err) {
+					if (err) {
+						return handleError(err);
+					}
+					toastr.success('Message delay changed successfully.');
 				});
 		}
 		this.editing.set();
