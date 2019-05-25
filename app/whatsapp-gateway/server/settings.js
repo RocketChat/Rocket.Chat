@@ -51,6 +51,15 @@ Meteor.startup(function() {
 				i18nDescription: 'WhatsApp_Gateway_Fallback_Message_Description',
 				secret: true,
 			});
+			this.add('WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs', true, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'WhatsApp_Gateway_Service',
+					value: 'caixa',
+				},
+				i18nLabel: 'WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs',
+				secret: true,
+			});
 		});
 	});
 });

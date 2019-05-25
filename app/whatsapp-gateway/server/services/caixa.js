@@ -37,6 +37,10 @@ class Caixa {
 				id_caixa: fromNumber,
 				texto: message,
 			},
+			npmRequestOptions: {
+				rejectUnauthorized: !settings.get('WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs'),
+				strictSSL: !settings.get('WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs'),
+			},
 		};
 
 		try {
