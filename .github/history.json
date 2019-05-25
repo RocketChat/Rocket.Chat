@@ -31527,6 +31527,46 @@
           ]
         }
       ]
+    },
+    "1.1.0-rc.4": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14625",
+          "title": "[FIX] Role name spacing on Permissions page",
+          "userLogin": "tassoevan",
+          "milestone": "1.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14590",
+          "title": "[FIX] Avatar images on old Livechat client",
+          "userLogin": "arminfelder",
+          "contributors": [
+            "arminfelder",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14623",
+          "title": "[FIX] Inject code at the end of <head> tag",
+          "userLogin": "tassoevan",
+          "milestone": "1.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
