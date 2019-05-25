@@ -1,8 +1,8 @@
-version: '2'
+gersion: '2'
 
 services:
   rocketchat:
-    image: dmarsil/rocketchat:dmars1
+    image: dmarsil/rocketchat:dmars2
     restart: unless-stopped
     volumes:
       - ./uploads:/app/uploads
