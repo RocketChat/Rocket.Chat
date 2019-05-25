@@ -83,7 +83,6 @@ accounts-base@1.4.3
 accounts-oauth@1.1.16
 autoupdate@1.6.0
 babel-compiler@7.3.4
-emojione:emojione@2.2.6
 google-oauth@1.2.6
 htmljs
 less
