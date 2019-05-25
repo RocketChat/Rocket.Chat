@@ -1,44 +1,188 @@
-pipeline:
-  restore-cache:
-    image: drillster/drone-volume-cache
-    restore: true
-    mount:
-      - /drone/.meteor/
-      - ./node_modules
-      - ./.meteor/local
-    volumes:
-      - /tmp/cache/Rocket.Chat:/cache
-  build:
-    image: ubuntu:16.04
-    environment:
-      - METEOR_ALLOW_SUPERUSER=true
-    commands:
-      - apt update && apt install curl git python g++ build-essential bzip2 -y
-      - export HOME=/drone
-      - export PATH="/drone/.meteor:$PATH"
-      - if [ ! -e "/drone/.meteor/meteor" ]; then export HOME=/drone; curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
-      - which meteor
-      - meteor npm install
-      - set +e
-      - meteor add rocketchat:lib
-      - set -e
-      - mkdir /drone/build
-      - meteor build --allow-superuser --server-only --directory /drone/build
-      - cp .docker/Dockerfile.local /drone/build/Dockerfile
-  rebuild-cache:
-    image: drillster/drone-volume-cache
-    rebuild: true
-    mount:
-      - /drone/.meteor/
-      - ./node_modules
-      - ./.meteor/local
-    volumes:
-      - /tmp/cache/Rocket.Chat:/cache
-  docker:
-    image: plugins/docker
-    repo: rocketchat/rocket.chat
-    dockerfile: /drone/build/Dockerfile
-    storage_driver: overlay
-    context: /drone/build
-    secrets: [ docker_username, docker_password ]
-    tag: designpreview
+kind: pipeline
+name: default
+
+steps:
+- name: Install Meteor
+  image: ubuntu
+  volumes:
+  - name: meteor
+    path: /drone/home
+  environment:
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - apt update && apt install curl bzip2 -y
+    - if [ ! -e "/drone/home/.meteor" ]; then export HOME=/drone/home; curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+    - curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
+- name: Start replicas
+  image: debian:stretch
+  commands:
+    - apt-get update && apt-get install -y gnupg
+    - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+    - echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+    - apt-get update && apt-get install -y mongodb-org-shell
+    - 'mongo --host mongo40 --eval ''rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'''
+    - mongo --host mongo40 --eval 'rs.status()'
+    - 'mongo --host mongo32 --eval ''rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'''
+    - mongo --host mongo32 --eval 'rs.status()'
+  depends_on:
+    - Install Meteor
+
+- name: Show versions
+  image: ubuntu
+  volumes:
+  - name: meteor
+    path: /drone/home
+  environment:
+    METEOR_ALLOW_SUPERUSER: 'true'
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - pwd
+    - whoami
+    - meteor --version
+    - meteor npm --versions
+    - meteor node -v
+  depends_on:
+    - Start replicas
+
+- name: Npm install
+  image: ubuntu
+  volumes:
+  - name: meteor
+    path: /drone/home
+  environment:
+    TOOL_NODE_FLAGS: --max_old_space_size=3072
+    METEOR_ALLOW_SUPERUSER: 'true'
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - apt update && apt install curl git python g++ build-essential bzip2 -y
+    - meteor npm install
+    - cd packages/rocketchat-livechat/.app/
+    - meteor npm install
+  depends_on:
+    - Show versions
+
+- name: Lint
+  image: ubuntu
+  volumes:
+  - name: meteor
+    path: /drone/home
+  environment:
+    TOOL_NODE_FLAGS: --max_old_space_size=3072
+    METEOR_ALLOW_SUPERUSER: 'true'
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - meteor npm run lint
+  depends_on:
+    - Npm install
+
+- name: Unit test
+  image: ubuntu
+  volumes:
+  - name: meteor
+    path: /drone/home
+  environment:
+    TOOL_NODE_FLAGS: --max_old_space_size=3072
+    METEOR_ALLOW_SUPERUSER: 'true'
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - MONGO_URL=mongodb://mongo32:27017 meteor npm run testunit
+  depends_on:
+    - Lint
+
+- name: Meteor build
+  image: node:8.11-stretch
+  volumes:
+  - name: meteor
+    path: /drone/home
+  - name: build
+    path: /tmp/build-test
+  environment:
+    TOOL_NODE_FLAGS: --max_old_space_size=3072
+    METEOR_ALLOW_SUPERUSER: 'true'
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - apt update && apt install curl bzip2 -y
+    - export METEOR_PROFILE=1000
+    - meteor build --server-only --directory --debug /tmp/build-test
+    - cd /tmp/build-test/bundle/programs/server
+    - npm install
+  depends_on:
+    - Unit test
+
+- name: Test Mongo 3.2
+  image: node:8.11-stretch
+  environment:
+    TEST_MODE: "true"
+    MONGO_URL: mongodb://mongo32:27017/rocketchat
+    MONGO_OPLOG_URL: mongodb://mongo32:27017/local
+  volumes:
+  - name: build
+    path: /tmp/build-test
+  commands:
+    - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+    - echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google.list
+    - echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+    - apt-get update && apt-get install -y mongodb-org-shell google-chrome-stable
+    - npm install
+    - for i in $(seq 1 5); do mongo --host mongo32 rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+  depends_on:
+    - Meteor build
+
+- name: Test Mongo 4.0
+  image: node:8.11-stretch
+  environment:
+    TEST_MODE: "true"
+    MONGO_URL: mongodb://mongo40:27017/rocketchat
+    MONGO_OPLOG_URL: mongodb://mongo40:27017/local
+  volumes:
+  - name: build
+    path: /tmp/build-test
+  commands:
+    - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+    - echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google.list
+    - echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+    - apt-get update && apt-get install -y mongodb-org-shell google-chrome-stable
+    - npm install
+    - for i in $(seq 1 5); do mongo --host mongo40 rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+  depends_on:
+    - Meteor build
+
+- name: Deploy
+  image: node:8.11-stretch
+  volumes:
+  - name: build
+    path: /tmp/build-test
+  commands:
+    - ls -l /tmp/build-test
+  depends_on:
+    - Test Mongo 3.2
+    - Test Mongo 4.0
+
+services:
+- name: mongo32
+  image: mongo:3.2
+  ports:
+  - 27017
+  command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
+
+- name: mongo40
+  image: mongo:4.0
+  ports:
+  - 27017
+  command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
+
+volumes:
+- name: meteor
+  temp: {}
+
+- name: build
+  temp: {}
