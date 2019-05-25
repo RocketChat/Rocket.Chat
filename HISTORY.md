@@ -1,6 +1,24 @@
 
 # 1.1.0 (Under Release Candidate Process)
 
+## 1.1.0-rc.4
+`2019-05-24  ·  3 🐛  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Role name spacing on Permissions page ([#14625](https://github.com/RocketChat/Rocket.Chat/pull/14625))
+- Avatar images on old Livechat client ([#14590](https://github.com/RocketChat/Rocket.Chat/pull/14590) by [@arminfelder](https://github.com/arminfelder))
+- Inject code at the end of <head> tag ([#14623](https://github.com/RocketChat/Rocket.Chat/pull/14623))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@arminfelder](https://github.com/arminfelder)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 1.1.0-rc.3
 `2019-05-23  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
