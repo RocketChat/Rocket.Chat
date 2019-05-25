@@ -37,6 +37,9 @@
 		}
 
 		.rotator {
+			width: 80px;
+			margin: 0 auto;
+
 			transform: rotate(-90deg);
 		}
 
