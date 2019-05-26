@@ -914,9 +914,16 @@ Template.room.events({
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return callbacks.run(roomData.announcementDetails.callback, this._id);
 		}
+
+		const message = callbacks.run('renderMessage', { html: roomData.announcement });
+		message.tokens.map((msg) => {
+			message.html = message.html.replace(msg.token, msg.text);
+			return message.html;
+		});
+
 		modal.open({
 			title: t('Announcement'),
-			text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
+			text: message.html,
 			html: true,
 			showConfirmButton: false,
 			showCancelButton: true,
