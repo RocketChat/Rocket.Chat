@@ -1,44 +1,103 @@
-pipeline:
-  restore-cache:
-    image: drillster/drone-volume-cache
-    restore: true
-    mount:
-      - /drone/.meteor/
-      - ./node_modules
-      - ./.meteor/local
-    volumes:
-      - /tmp/cache/Rocket.Chat:/cache
-  build:
-    image: ubuntu:16.04
-    environment:
-      - METEOR_ALLOW_SUPERUSER=true
-    commands:
-      - apt update && apt install curl git python g++ build-essential bzip2 -y
-      - export HOME=/drone
-      - export PATH="/drone/.meteor:$PATH"
-      - if [ ! -e "/drone/.meteor/meteor" ]; then export HOME=/drone; curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
-      - which meteor
-      - meteor npm install
-      - set +e
-      - meteor add rocketchat:lib
-      - set -e
-      - mkdir /drone/build
-      - meteor build --allow-superuser --server-only --directory /drone/build
-      - cp .docker/Dockerfile.local /drone/build/Dockerfile
-  rebuild-cache:
-    image: drillster/drone-volume-cache
-    rebuild: true
-    mount:
-      - /drone/.meteor/
-      - ./node_modules
-      - ./.meteor/local
-    volumes:
-      - /tmp/cache/Rocket.Chat:/cache
-  docker:
-    image: plugins/docker
-    repo: rocketchat/rocket.chat
-    dockerfile: /drone/build/Dockerfile
-    storage_driver: overlay
-    context: /drone/build
-    secrets: [ docker_username, docker_password ]
-    tag: designpreview
+kind: pipeline
+name: default
+
+steps:
+- name: Install Meteor
+  image: ubuntu
+  volumes:
+  - name: meteor
+    path: /drone/home
+  environment:
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - apt update && apt install curl bzip2 -y
+    - if [ ! -e "/drone/home/.meteor" ]; then export HOME=/drone/home; curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+    - curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
+- name: Show versions
+  image: ubuntu
+  volumes:
+  - name: meteor
+    path: /drone/home
+  environment:
+    METEOR_ALLOW_SUPERUSER: 'true'
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - pwd
+    - whoami
+    - meteor --version
+    - meteor npm --versions
+    - meteor node -v
+  depends_on:
+    - Install Meteor
+
+- name: Npm install
+  image: ubuntu
+  volumes:
+  - name: meteor
+    path: /drone/home
+  environment:
+    TOOL_NODE_FLAGS: --max_old_space_size=3072
+    METEOR_ALLOW_SUPERUSER: 'true'
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - apt update && apt install curl git python g++ build-essential bzip2 -y
+    - meteor npm install
+    - cd packages/rocketchat-livechat/.app/
+    - meteor npm install
+  depends_on:
+    - Show versions
+
+- name: Meteor build
+  image: node:8.11-stretch
+  volumes:
+  - name: meteor
+    path: /drone/home
+  - name: build
+    path: /tmp/build-test
+  environment:
+    TOOL_NODE_FLAGS: --max_old_space_size=3072
+    METEOR_ALLOW_SUPERUSER: 'true'
+    HOME: /drone/home
+  commands:
+    - export PATH="/drone/home/.meteor:$PATH"
+    - apt update && apt install curl bzip2 -y
+    - meteor build --server-only --directory /tmp/build-test
+  depends_on:
+    - Npm install
+
+- name: Deploy
+  image: node:8.11-stretch
+  volumes:
+  - name: build
+    path: /tmp/build-test
+  commands:
+    - cp .docker/Dockerfile /tmp/build-test
+  depends_on:
+    - Meteor build
+
+- name: Docker
+  image: plugins/docker
+  volumes:
+  - name: build
+    path: /tmp/build-test
+  settings:
+    repo: rocketchat/caixa.rocket.chat
+    context: /tmp/build-test
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    tags: '1.1.0'
+  depends_on:
+    - Deploy
+
+volumes:
+- name: meteor
+  temp: {}
+
+- name: build
+  temp: {}
