@@ -69,16 +69,6 @@ steps:
   depends_on:
     - Npm install
 
-- name: Deploy
-  image: node:8.11-stretch
-  volumes:
-  - name: build
-    path: /tmp/build-test
-  commands:
-    - cp .docker/Dockerfile /tmp/build-test
-  depends_on:
-    - Meteor build
-
 - name: Docker
   image: plugins/docker
   volumes:
@@ -86,6 +76,7 @@ steps:
     path: /tmp/build-test
   settings:
     repo: rocketchat/caixa.rocket.chat
+    dockerfile: .docker/Dockerfile
     context: /tmp/build-test
     username:
       from_secret: docker_username
@@ -93,7 +84,7 @@ steps:
       from_secret: docker_password
     tags: '1.1.0'
   depends_on:
-    - Deploy
+    - Meteor build
 
 volumes:
 - name: meteor
