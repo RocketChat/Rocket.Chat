@@ -64,8 +64,12 @@ steps:
     HOME: /drone/home
   commands:
     - export PATH="/drone/home/.meteor:$PATH"
+    - du -s /tmp/build-test
+    - ls -la /tmp/build-test
     - apt update && apt install curl bzip2 -y
     - meteor build --server-only --directory /tmp/build-test
+    - ls -la /tmp/build-test/bundle
+    - du -s /tmp/build-test
   depends_on:
     - Npm install
 
