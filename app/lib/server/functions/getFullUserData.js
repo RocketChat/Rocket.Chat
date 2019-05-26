@@ -2,7 +2,7 @@ import s from 'underscore.string';
 
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
-import { Users } from '../../../models/server';
+import { Users, LivechatVisitors } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 
 const logger = new Logger('getFullUserData');
@@ -84,8 +84,12 @@ export const getFullUserData = function({ userId, filter, limit: l }) {
 		return Users.find({}, options);
 	}
 
-	if (limit === 1) {
+	if (limit === 1 && userToRetrieveFullUserData) {
 		return Users.findByUsername(userToRetrieveFullUserData.username, options);
+	}
+
+	if (!userToRetrieveFullUserData && limit === 1) {
+		return LivechatVisitors.findByUsername(username, options);
 	}
 
 	const usernameReg = new RegExp(s.escapeRegExp(username), 'i');

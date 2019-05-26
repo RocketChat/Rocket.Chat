@@ -218,7 +218,7 @@ export class RoomTypeConfig {
 	}
 
 	enableMembersListProfile() {
-		return false;
+		return true;
 	}
 
 	/**

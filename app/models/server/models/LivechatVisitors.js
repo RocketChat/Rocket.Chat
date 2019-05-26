@@ -57,6 +57,12 @@ export class LivechatVisitors extends Base {
 		return this.find(query);
 	}
 
+	findByUsername(username, options) {
+		const query = { username };
+
+		return this.find(query, options);
+	}
+
 	updateLivechatDataByToken(token, key, value, overwrite = true) {
 		const query = {
 			token,
