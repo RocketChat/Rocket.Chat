@@ -1,3 +1,3 @@
-console.log('Server side loaded');
-
 import './settings';
+
+console.log('Server side loaded');

@@ -1,5 +1,6 @@
-import { settings } from '../../settings';
 import { Meteor } from 'meteor/meteor';
+
+import { settings } from '../../settings';
 
 const defaults = {
 	enable: true,
