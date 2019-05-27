@@ -1,7 +1,7 @@
 import _ from 'underscore';
+import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 
@@ -9,10 +9,10 @@ import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
-import { AutoTranslate } from '../../autotranslate/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
+import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
 import './messageThread.html';
@@ -249,9 +249,8 @@ Template.message.helpers({
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
 		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
-			const language = AutoTranslate.getLanguage(msg.rid);
 			const autoTranslate = subscription && subscription.autoTranslate;
-			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[language]);
+			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
 		}
 	},
 	edited() {
@@ -400,7 +399,7 @@ Template.message.helpers({
 			context = 'message';
 		}
 
-		return MessageAction.getButtons(msg, context, messageGroup);
+		return MessageAction.getButtons(this, context, messageGroup);
 	},
 	isSnippet() {
 		const { msg } = this;
@@ -408,7 +407,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { msg: { tmid, t }, settings: { showreply } } = this;
-		return !!(tmid && showreply && !t);
+		return !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -435,24 +434,7 @@ const findParentMessage = (() => {
 		const uid = Tracker.nonreactive(() => Meteor.userId());
 		const _tmp = [...waiting];
 		waiting.length = 0;
-		const messages = await call('getMessages', _tmp);
-		messages.forEach((message) => {
-			if (!message) {
-				return;
-			}
-			const { _id, ...msg } = message;
-			Messages.update({ tmid: _id, repliesCount: { $exists: 0 } }, {
-				$set: {
-					following: message.replies && message.replies.indexOf(uid) > -1,
-					threadMsg: normalizeThreadMessage(msg),
-					repliesCount: msg.tcount,
-				},
-			}, { multi: true });
-			if (!Messages.findOne({ _id })) {
-				msg._hidden = true;
-				Messages.upsert({ _id }, msg);
-			}
-		});
+		(await call('getMessages', _tmp)).map((msg) => upsertMessage({ msg, uid }));
 	}, 500);
 
 	return (tmid) => {
@@ -553,6 +535,10 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	}
 
 	if (previousDataset.username !== currentDataset.username) {
+		return false;
+	}
+
+	if (previousDataset.alias !== currentDataset.alias) {
 		return false;
 	}
 
