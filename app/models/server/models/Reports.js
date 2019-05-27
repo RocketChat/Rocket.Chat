@@ -1,17 +1,19 @@
-import { Base } from './_Base';
 import _ from 'underscore';
+import { Base } from './_Base';
 
 export const ReportStatus = {
 	UNREAD: 0,
 	READ: 1,
 	RESOLVED: 2,
 };
+
 export class Reports extends Base {
 	constructor(...args) {
 		super(...args);
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ status: 1 });
 	}
+
 	createWithMessageDescriptionAndUserId(message, description, userId, extraData) {
 		const record = {
 			message,

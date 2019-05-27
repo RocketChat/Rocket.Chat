@@ -1,7 +1,6 @@
-import { Users, Subscriptions, Rooms } from '../../../../models';
-
-import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
+import { Users, Subscriptions, Rooms } from '../../../../models';
+import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/channelsByUser.graphqls';
 
 const resolver = {

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+
 import { Users } from '../../app/models';
 
 Meteor.methods({
@@ -10,8 +11,6 @@ Meteor.methods({
 		if (this.userId == null) {
 			return;
 		}
-
-		this.unblock();
 
 		return Users.setUtcOffset(this.userId, utcOffset);
 	},

@@ -4,7 +4,7 @@ import { Users } from '../../../models';
 export function retrieveRegistrationStatus() {
 	const info = {
 		connectToCloud: settings.get('Register_Server'),
-		workspaceRegistered: (settings.get('Cloud_Workspace_Client_Id')) ? true : false,
+		workspaceRegistered: !!settings.get('Cloud_Workspace_Client_Id'),
 		workspaceId: settings.get('Cloud_Workspace_Id'),
 		uniqueId: settings.get('uniqueID'),
 		token: '',

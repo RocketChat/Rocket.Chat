@@ -1,5 +1,4 @@
 import Page from './Page';
-
 import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';

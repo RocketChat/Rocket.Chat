@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../settings';
-import { call, roomTypes, RoomManager, RoomHistoryManager } from '../../../ui-utils';
+import { call, RoomManager, RoomHistoryManager } from '../../../ui-utils';
+import { roomTypes } from '../../../utils';
 import { hasAllPermission } from '../../../authorization';
 import './messageBoxNotSubscribed.html';
 
@@ -23,13 +25,13 @@ Template.messageBoxNotSubscribed.helpers({
 		return room && room.joinCodeRequired;
 	},
 	isAnonymousReadAllowed() {
-		return (Meteor.userId() == null) &&
-			settings.get('Accounts_AllowAnonymousRead') === true;
+		return (Meteor.userId() == null)
+			&& settings.get('Accounts_AllowAnonymousRead') === true;
 	},
 	isAnonymousWriteAllowed() {
-		return (Meteor.userId() == null) &&
-			settings.get('Accounts_AllowAnonymousRead') === true &&
-			settings.get('Accounts_AllowAnonymousWrite') === true;
+		return (Meteor.userId() == null)
+			&& settings.get('Accounts_AllowAnonymousRead') === true
+			&& settings.get('Accounts_AllowAnonymousWrite') === true;
 	},
 });
 

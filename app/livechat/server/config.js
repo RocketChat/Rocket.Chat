@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
@@ -156,11 +157,12 @@ Meteor.startup(function() {
 		i18nLabel: 'Webhook_URL',
 	});
 
-	settings.add('Livechat_secret_token', false, {
+	settings.add('Livechat_secret_token', '', {
 		type: 'string',
 		group: 'Livechat',
 		section: 'CRM_Integration',
 		i18nLabel: 'Secret_token',
+		secret: true,
 	});
 
 	settings.add('Livechat_webhook_on_close', false, {
@@ -235,6 +237,7 @@ Meteor.startup(function() {
 		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Key',
+		secret: true,
 	});
 
 	settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
@@ -426,5 +429,4 @@ Meteor.startup(function() {
 		i18nDescription: 'Data_processing_consent_text_description',
 		enableQuery: { _id: 'Livechat_force_accept_data_processing_consent', value: true },
 	});
-
 });

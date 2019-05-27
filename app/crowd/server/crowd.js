@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { SHA256 } from 'meteor/sha';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
+import _ from 'underscore';
+
 import { Logger } from '../../logger';
 import { _setRealName } from '../../lib';
 import { Users } from '../../models';
 import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
-import _ from 'underscore';
 
 const logger = new Logger('CROWD', {});
 
@@ -40,7 +41,7 @@ export class CROWD {
 
 		this.options = {
 			crowd: {
-				base: (!/\/$/.test(url) ? url += '/' : url),
+				base: !/\/$/.test(url) ? url += '/' : url,
 			},
 			application: {
 				name: settings.get('CROWD_APP_USERNAME'),
@@ -149,7 +150,7 @@ export class CROWD {
 			username: self.cleanUsername(crowdUser.username),
 			crowd_username: crowdUser.crowd_username,
 			emails: [{
-				address : crowdUser.email,
+				address: crowdUser.email,
 				verified: true,
 			}],
 			active: crowdUser.active,
@@ -201,7 +202,7 @@ export class CROWD {
 
 				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
 				if (!response || response.users.length === 0) {
-					logger.warning('Could not find user in CROWD with username or email:', crowd_username, email);
+					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
 					return;
 				}
 				crowd_username = response.users[0].name;
