@@ -100,11 +100,11 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			.replace(/^\w/, function($1) { return $1.toUpperCase(); });
 	};
 
-	if (!loginRequest.saml) {
+	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
 
-	const loginResult = Accounts.saml.retrieveCredential(this.connection.id);
+	const loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
 	if (Accounts.saml.settings.debug) {
 		console.log(`RESULT :${ JSON.stringify(loginResult) }`);
 	}

@@ -276,6 +276,7 @@ Template.room.helpers({
 		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
 		const query = {
 			rid,
+			_hidden: { $ne: true },
 			...((ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } }),
 		};
 
@@ -596,13 +597,14 @@ Template.room.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { tabBar } = Template.instance();
+		const { tabBar, subscription } = Template.instance();
 
 		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
 		const $flexTab = $('.flex-tab-container .flex-tab');
 		$flexTab.attr('template', 'thread');
 
 		tabBar.setData({
+			subscription: subscription.get(),
 			msg,
 			rid,
 			mid: tmid || _id,

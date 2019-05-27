@@ -59,6 +59,67 @@ Reason for this quite unusual behavior is that we wanted to return closer to the
 
 Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
+# 1.0.3
+`2019-05-09  ·  3 🚀  ·  22 🐛  ·  6 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🚀 Improvements
+
+- Don't use regex to find users ([#14397](https://github.com/RocketChat/Rocket.Chat/pull/14397))
+- Added flag `skipActiveUsersToBeReady` to not wait the load of `active users` to present the Web interface ([#14431](https://github.com/RocketChat/Rocket.Chat/pull/14431))
+- Allow change Discussion's properties ([#14389](https://github.com/RocketChat/Rocket.Chat/pull/14389))
+
+### 🐛 Bug fixes
+
+- Channel Leader Bar is in the way of Thread Header  ([#14443](https://github.com/RocketChat/Rocket.Chat/pull/14443))
+- Discussion name being invalid ([#14442](https://github.com/RocketChat/Rocket.Chat/pull/14442))
+- Room name was undefined in some info dialogs ([#14415](https://github.com/RocketChat/Rocket.Chat/pull/14415))
+- Exception on crowd sync due to a wrong logging method ([#14405](https://github.com/RocketChat/Rocket.Chat/pull/14405))
+- IE11 support ([#14422](https://github.com/RocketChat/Rocket.Chat/pull/14422))
+- Escape unrecognized slash command message ([#14432](https://github.com/RocketChat/Rocket.Chat/pull/14432))
+- Mentions message missing 'jump to message' action ([#14430](https://github.com/RocketChat/Rocket.Chat/pull/14430))
+- preview pdf its not working ([#14419](https://github.com/RocketChat/Rocket.Chat/pull/14419))
+- Messages on thread panel were receiving wrong context/subscription ([#14404](https://github.com/RocketChat/Rocket.Chat/pull/14404))
+- Error 400 on send a reply to an old thread ([#14402](https://github.com/RocketChat/Rocket.Chat/pull/14402))
+- Users actions in administration were returning error ([#14400](https://github.com/RocketChat/Rocket.Chat/pull/14400))
+- Fallback to mongo version that doesn't require clusterMonitor role ([#14403](https://github.com/RocketChat/Rocket.Chat/pull/14403))
+- SAML credentialToken removal was preventing mobile from being able to authenticate ([#14345](https://github.com/RocketChat/Rocket.Chat/pull/14345))
+- Stream not connecting connect when using subdir and multi-instance ([#14376](https://github.com/RocketChat/Rocket.Chat/pull/14376))
+- Pressing Enter in User Search field at channel causes reload ([#14388](https://github.com/RocketChat/Rocket.Chat/pull/14388))
+- Wrong token name was generating error on Gitlab OAuth login ([#14379](https://github.com/RocketChat/Rocket.Chat/pull/14379))
+- more message actions to threads context(follow, unfollow, copy, delete) ([#14387](https://github.com/RocketChat/Rocket.Chat/pull/14387))
+- Unnecessary meteor.defer on openRoom ([#14396](https://github.com/RocketChat/Rocket.Chat/pull/14396))
+- Messages on threads disappearing ([#14393](https://github.com/RocketChat/Rocket.Chat/pull/14393))
+- Bell was too small on threads ([#14394](https://github.com/RocketChat/Rocket.Chat/pull/14394))
+- Main thread title on replies ([#14372](https://github.com/RocketChat/Rocket.Chat/pull/14372))
+- New day separator overlapping above system message ([#14362](https://github.com/RocketChat/Rocket.Chat/pull/14362))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix i18n files keys sort ([#14433](https://github.com/RocketChat/Rocket.Chat/pull/14433))
+- Fixes on DAU and MAU aggregations ([#14418](https://github.com/RocketChat/Rocket.Chat/pull/14418))
+- Add missing german translations ([#14386](https://github.com/RocketChat/Rocket.Chat/pull/14386))
+- LingoHub based on develop ([#14426](https://github.com/RocketChat/Rocket.Chat/pull/14426))
+- Fix: Message body was not being updated when user disabled nrr message ([#14390](https://github.com/RocketChat/Rocket.Chat/pull/14390))
+- Improve German translations ([#14351](https://github.com/RocketChat/Rocket.Chat/pull/14351))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@mrsimpson](https://github.com/mrsimpson)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 1.0.2
 `2019-04-30  ·  2 🚀  ·  8 🐛  ·  5 🔍  ·  10 👩‍💻👨‍💻`
 
@@ -884,7 +945,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - Syncloud deploy option ([#12867](https://github.com/RocketChat/Rocket.Chat/pull/12867) by [@cyberb](https://github.com/cyberb))
 - Config hooks for snap ([#12351](https://github.com/RocketChat/Rocket.Chat/pull/12351))
 - Livechat registration form message ([#12597](https://github.com/RocketChat/Rocket.Chat/pull/12597))
-- Include message type & id in push notification payload ([#12771](https://github.com/RocketChat/Rocket.Chat/pull/12771) by [@cardoso](https://github.com/cardoso))
+- Include message type & id in push notification payload ([#12771](https://github.com/RocketChat/Rocket.Chat/pull/12771))
 
 ### 🚀 Improvements
 
@@ -1028,7 +1089,6 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@alexbartsch](https://github.com/alexbartsch)
-- [@cardoso](https://github.com/cardoso)
 - [@cyberb](https://github.com/cyberb)
 - [@hypery2k](https://github.com/hypery2k)
 - [@karakayasemi](https://github.com/karakayasemi)
@@ -1047,6 +1107,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@Hudell](https://github.com/Hudell)
 - [@LuluGO](https://github.com/LuluGO)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@cardoso](https://github.com/cardoso)
 - [@d-gubert](https://github.com/d-gubert)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
@@ -1142,7 +1203,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 - Add permission to enable personal access token to specific roles ([#12309](https://github.com/RocketChat/Rocket.Chat/pull/12309))
 - Option to reset e2e key ([#12483](https://github.com/RocketChat/Rocket.Chat/pull/12483))
-- /api/v1/spotlight: return joinCodeRequired field for rooms ([#12651](https://github.com/RocketChat/Rocket.Chat/pull/12651) by [@cardoso](https://github.com/cardoso))
+- /api/v1/spotlight: return joinCodeRequired field for rooms ([#12651](https://github.com/RocketChat/Rocket.Chat/pull/12651))
 - New API Endpoints for the new version of JS SDK ([#12623](https://github.com/RocketChat/Rocket.Chat/pull/12623))
 - Setting to configure robots.txt content ([#12547](https://github.com/RocketChat/Rocket.Chat/pull/12547))
 - Make Livechat's widget draggable ([#12378](https://github.com/RocketChat/Rocket.Chat/pull/12378))
@@ -1280,7 +1341,6 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 - [@AndreamApp](https://github.com/AndreamApp)
 - [@Ismaw34](https://github.com/Ismaw34)
-- [@cardoso](https://github.com/cardoso)
 - [@imronras](https://github.com/imronras)
 - [@karlprieb](https://github.com/karlprieb)
 - [@mbrodala](https://github.com/mbrodala)
@@ -1297,6 +1357,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 - [@Hudell](https://github.com/Hudell)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@cardoso](https://github.com/cardoso)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@ggazzo](https://github.com/ggazzo)
 - [@marceloschmidt](https://github.com/marceloschmidt)
@@ -1512,7 +1573,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 <summary>🔍 Minor changes</summary>
 
 - Release 0.70.1 ([#12270](https://github.com/RocketChat/Rocket.Chat/pull/12270) by [@edzluhan](https://github.com/edzluhan))
-- Merge master into develop & Set version to 0.71.0-develop ([#12264](https://github.com/RocketChat/Rocket.Chat/pull/12264) by [@cardoso](https://github.com/cardoso) & [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Merge master into develop & Set version to 0.71.0-develop ([#12264](https://github.com/RocketChat/Rocket.Chat/pull/12264) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
 - Regression: fix modal submit ([#12233](https://github.com/RocketChat/Rocket.Chat/pull/12233))
 - Add reetp to the issues' bot whitelist ([#12227](https://github.com/RocketChat/Rocket.Chat/pull/12227))
 - Fix: Remove semver satisfies from Apps details that is already done my marketplace ([#12268](https://github.com/RocketChat/Rocket.Chat/pull/12268))
@@ -1521,13 +1582,13 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
-- [@cardoso](https://github.com/cardoso)
 - [@edzluhan](https://github.com/edzluhan)
 - [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@Hudell](https://github.com/Hudell)
+- [@cardoso](https://github.com/cardoso)
 - [@ggazzo](https://github.com/ggazzo)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
@@ -1553,7 +1614,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - Allow multiple subcommands in MIGRATION_VERSION env variable ([#11184](https://github.com/RocketChat/Rocket.Chat/pull/11184) by [@arch119](https://github.com/arch119))
 - Support for end to end encryption ([#10094](https://github.com/RocketChat/Rocket.Chat/pull/10094) by [@mrinaldhar](https://github.com/mrinaldhar))
 - Livechat Analytics and Reports ([#11238](https://github.com/RocketChat/Rocket.Chat/pull/11238) by [@pkgodara](https://github.com/pkgodara))
-- Apps: Add handlers for message updates ([#11993](https://github.com/RocketChat/Rocket.Chat/pull/11993) by [@cardoso](https://github.com/cardoso))
+- Apps: Add handlers for message updates ([#11993](https://github.com/RocketChat/Rocket.Chat/pull/11993))
 - Livechat notifications on new incoming inquiries for guest-pool ([#10588](https://github.com/RocketChat/Rocket.Chat/pull/10588))
 - Customizable default directory view ([#11965](https://github.com/RocketChat/Rocket.Chat/pull/11965) by [@ohmonster](https://github.com/ohmonster))
 - Blockstack as decentralized auth provider ([#12047](https://github.com/RocketChat/Rocket.Chat/pull/12047))
@@ -1612,13 +1673,13 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 <details>
 <summary>🔍 Minor changes</summary>
 
-- Release 0.69.2 ([#12026](https://github.com/RocketChat/Rocket.Chat/pull/12026) by [@cardoso](https://github.com/cardoso) & [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Release 0.69.2 ([#12026](https://github.com/RocketChat/Rocket.Chat/pull/12026) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
 - LingoHub based on develop ([#11936](https://github.com/RocketChat/Rocket.Chat/pull/11936))
 - Better organize package.json ([#12115](https://github.com/RocketChat/Rocket.Chat/pull/12115))
 - Fix using wrong variable ([#12114](https://github.com/RocketChat/Rocket.Chat/pull/12114))
 - Fix the style lint ([#11991](https://github.com/RocketChat/Rocket.Chat/pull/11991))
 - Merge master into develop & Set version to 0.70.0-develop ([#11921](https://github.com/RocketChat/Rocket.Chat/pull/11921) by [@c0dzilla](https://github.com/c0dzilla) & [@rndmh3ro](https://github.com/rndmh3ro) & [@ubarsaiyan](https://github.com/ubarsaiyan) & [@vynmera](https://github.com/vynmera))
-- Release 0.69.2 ([#12026](https://github.com/RocketChat/Rocket.Chat/pull/12026) by [@cardoso](https://github.com/cardoso) & [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Release 0.69.2 ([#12026](https://github.com/RocketChat/Rocket.Chat/pull/12026) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
 - Regression: fix message box autogrow ([#12138](https://github.com/RocketChat/Rocket.Chat/pull/12138))
 - Regression: Modal height ([#12122](https://github.com/RocketChat/Rocket.Chat/pull/12122))
 - Fix: Change wording on e2e to make a little more clear ([#12124](https://github.com/RocketChat/Rocket.Chat/pull/12124))
@@ -1643,7 +1704,6 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@aferreira44](https://github.com/aferreira44)
 - [@arch119](https://github.com/arch119)
 - [@c0dzilla](https://github.com/c0dzilla)
-- [@cardoso](https://github.com/cardoso)
 - [@crazy-max](https://github.com/crazy-max)
 - [@edzluhan](https://github.com/edzluhan)
 - [@flaviogrossi](https://github.com/flaviogrossi)
@@ -1664,6 +1724,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@Hudell](https://github.com/Hudell)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@cardoso](https://github.com/cardoso)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -1689,17 +1750,17 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 ### 🐛 Bug fixes
 
 - Reset password link error if already logged in ([#12022](https://github.com/RocketChat/Rocket.Chat/pull/12022))
-- Apps: setting with 'code' type only saving last line ([#11992](https://github.com/RocketChat/Rocket.Chat/pull/11992) by [@cardoso](https://github.com/cardoso))
+- Apps: setting with 'code' type only saving last line ([#11992](https://github.com/RocketChat/Rocket.Chat/pull/11992))
 - Update user information not possible by admin if disabled to users ([#11955](https://github.com/RocketChat/Rocket.Chat/pull/11955) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
 - Hidden admin sidenav on embedded layout ([#12025](https://github.com/RocketChat/Rocket.Chat/pull/12025))
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
-- [@cardoso](https://github.com/cardoso)
 - [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
+- [@cardoso](https://github.com/cardoso)
 - [@ggazzo](https://github.com/ggazzo)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -1997,7 +2058,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 ### 🚀 Improvements
 
-- Set default max upload size to 100mb ([#11327](https://github.com/RocketChat/Rocket.Chat/pull/11327) by [@cardoso](https://github.com/cardoso))
+- Set default max upload size to 100mb ([#11327](https://github.com/RocketChat/Rocket.Chat/pull/11327))
 - Typing indicators now use Real Names ([#11164](https://github.com/RocketChat/Rocket.Chat/pull/11164) by [@vynmera](https://github.com/vynmera))
 - Allow markdown in room topic, announcement, and description including single quotes ([#11408](https://github.com/RocketChat/Rocket.Chat/pull/11408))
 
@@ -2050,7 +2111,6 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@PhpXp](https://github.com/PhpXp)
 - [@arminfelder](https://github.com/arminfelder)
 - [@arungalva](https://github.com/arungalva)
-- [@cardoso](https://github.com/cardoso)
 - [@karlprieb](https://github.com/karlprieb)
 - [@soundstorm](https://github.com/soundstorm)
 - [@tpDBL](https://github.com/tpDBL)
@@ -2062,6 +2122,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@brunosquadros](https://github.com/brunosquadros)
+- [@cardoso](https://github.com/cardoso)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -2291,7 +2352,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - Allow inviting livechat managers to the same LiveChat room ([#10956](https://github.com/RocketChat/Rocket.Chat/pull/10956))
 - Cannot read property 'debug' of undefined when trying to use REST API ([#10805](https://github.com/RocketChat/Rocket.Chat/pull/10805) by [@haffla](https://github.com/haffla))
 - Icons svg xml structure ([#10771](https://github.com/RocketChat/Rocket.Chat/pull/10771))
-- Remove outdated 2FA warning for mobile clients ([#10916](https://github.com/RocketChat/Rocket.Chat/pull/10916) by [@cardoso](https://github.com/cardoso))
+- Remove outdated 2FA warning for mobile clients ([#10916](https://github.com/RocketChat/Rocket.Chat/pull/10916))
 - Update Sandstorm build config ([#10867](https://github.com/RocketChat/Rocket.Chat/pull/10867) by [@ocdtrekkie](https://github.com/ocdtrekkie))
 - "blank messages" on iOS < 11 ([#11221](https://github.com/RocketChat/Rocket.Chat/pull/11221))
 - "blank" screen on iOS < 11 ([#11199](https://github.com/RocketChat/Rocket.Chat/pull/11199))
@@ -2360,7 +2421,6 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@JoseRenan](https://github.com/JoseRenan)
 - [@brylie](https://github.com/brylie)
 - [@c0dzilla](https://github.com/c0dzilla)
-- [@cardoso](https://github.com/cardoso)
 - [@cliffparnitzky](https://github.com/cliffparnitzky)
 - [@cpitman](https://github.com/cpitman)
 - [@filipealva](https://github.com/filipealva)
@@ -2395,6 +2455,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@Hudell](https://github.com/Hudell)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@alansikora](https://github.com/alansikora)
+- [@cardoso](https://github.com/cardoso)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -2476,7 +2537,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - Now is possible to access files using header authorization (`x-user-id` and `x-auth-token`) ([#10741](https://github.com/RocketChat/Rocket.Chat/pull/10741))
 - Add REST API endpoints `channels.counters`, `groups.counters and `im.counters` ([#9679](https://github.com/RocketChat/Rocket.Chat/pull/9679) by [@xbolshe](https://github.com/xbolshe))
 - Add REST API endpoints `channels.setCustomFields` and `groups.setCustomFields` ([#9733](https://github.com/RocketChat/Rocket.Chat/pull/9733) by [@xbolshe](https://github.com/xbolshe))
-- Add permission `view-broadcast-member-list` ([#10753](https://github.com/RocketChat/Rocket.Chat/pull/10753) by [@cardoso](https://github.com/cardoso))
+- Add permission `view-broadcast-member-list` ([#10753](https://github.com/RocketChat/Rocket.Chat/pull/10753))
 
 ### 🐛 Bug fixes
 
@@ -2500,7 +2561,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 <details>
 <summary>🔍 Minor changes</summary>
 
-- Release 0.65.0 ([#10893](https://github.com/RocketChat/Rocket.Chat/pull/10893) by [@Sameesunkaria](https://github.com/Sameesunkaria) & [@cardoso](https://github.com/cardoso) & [@erhan-](https://github.com/erhan-) & [@gdelavald](https://github.com/gdelavald) & [@karlprieb](https://github.com/karlprieb) & [@peccu](https://github.com/peccu) & [@winterstefan](https://github.com/winterstefan))
+- Release 0.65.0 ([#10893](https://github.com/RocketChat/Rocket.Chat/pull/10893) by [@Sameesunkaria](https://github.com/Sameesunkaria) & [@erhan-](https://github.com/erhan-) & [@gdelavald](https://github.com/gdelavald) & [@karlprieb](https://github.com/karlprieb) & [@peccu](https://github.com/peccu) & [@winterstefan](https://github.com/winterstefan))
 - Apps: Command Previews, Message and Room Removal Events ([#10822](https://github.com/RocketChat/Rocket.Chat/pull/10822))
 - Develop sync ([#10815](https://github.com/RocketChat/Rocket.Chat/pull/10815) by [@nsuchy](https://github.com/nsuchy))
 - Major dependencies update ([#10661](https://github.com/RocketChat/Rocket.Chat/pull/10661))
@@ -2524,7 +2585,6 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@Sameesunkaria](https://github.com/Sameesunkaria)
 - [@ThomasRoehl](https://github.com/ThomasRoehl)
 - [@c0dzilla](https://github.com/c0dzilla)
-- [@cardoso](https://github.com/cardoso)
 - [@cfunkles](https://github.com/cfunkles)
 - [@chuckAtCataworx](https://github.com/chuckAtCataworx)
 - [@erhan-](https://github.com/erhan-)
@@ -2540,6 +2600,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 - [@Hudell](https://github.com/Hudell)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@cardoso](https://github.com/cardoso)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -2558,11 +2619,11 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 ### 🎉 New features
 
-- Add REST endpoints `channels.roles` & `groups.roles` ([#10607](https://github.com/RocketChat/Rocket.Chat/pull/10607) by [@cardoso](https://github.com/cardoso))
+- Add REST endpoints `channels.roles` & `groups.roles` ([#10607](https://github.com/RocketChat/Rocket.Chat/pull/10607))
 - Add more options for Wordpress OAuth configuration ([#10724](https://github.com/RocketChat/Rocket.Chat/pull/10724))
 - Setup Wizard ([#10523](https://github.com/RocketChat/Rocket.Chat/pull/10523) by [@karlprieb](https://github.com/karlprieb))
 - Improvements to notifications logic ([#10686](https://github.com/RocketChat/Rocket.Chat/pull/10686))
-- Add REST endpoints `channels.roles` & `groups.roles` ([#10607](https://github.com/RocketChat/Rocket.Chat/pull/10607) by [@cardoso](https://github.com/cardoso))
+- Add REST endpoints `channels.roles` & `groups.roles` ([#10607](https://github.com/RocketChat/Rocket.Chat/pull/10607))
 - Add more options for Wordpress OAuth configuration ([#10724](https://github.com/RocketChat/Rocket.Chat/pull/10724))
 - Setup Wizard ([#10523](https://github.com/RocketChat/Rocket.Chat/pull/10523) by [@karlprieb](https://github.com/karlprieb))
 - Improvements to notifications logic ([#10686](https://github.com/RocketChat/Rocket.Chat/pull/10686))
@@ -2589,7 +2650,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 <details>
 <summary>🔍 Minor changes</summary>
 
-- Release 0.64.2 ([#10812](https://github.com/RocketChat/Rocket.Chat/pull/10812) by [@Sameesunkaria](https://github.com/Sameesunkaria) & [@cardoso](https://github.com/cardoso) & [@erhan-](https://github.com/erhan-) & [@gdelavald](https://github.com/gdelavald) & [@karlprieb](https://github.com/karlprieb) & [@peccu](https://github.com/peccu) & [@winterstefan](https://github.com/winterstefan))
+- Release 0.64.2 ([#10812](https://github.com/RocketChat/Rocket.Chat/pull/10812) by [@Sameesunkaria](https://github.com/Sameesunkaria) & [@erhan-](https://github.com/erhan-) & [@gdelavald](https://github.com/gdelavald) & [@karlprieb](https://github.com/karlprieb) & [@peccu](https://github.com/peccu) & [@winterstefan](https://github.com/winterstefan))
 - Prometheus: Add metric to track hooks time ([#10798](https://github.com/RocketChat/Rocket.Chat/pull/10798))
 - Regression: Autorun of wizard was not destroyed after completion ([#10802](https://github.com/RocketChat/Rocket.Chat/pull/10802))
 - Prometheus: Fix notification metric ([#10803](https://github.com/RocketChat/Rocket.Chat/pull/10803))
@@ -2626,7 +2687,6 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Sameesunkaria](https://github.com/Sameesunkaria)
-- [@cardoso](https://github.com/cardoso)
 - [@erhan-](https://github.com/erhan-)
 - [@gdelavald](https://github.com/gdelavald)
 - [@karlprieb](https://github.com/karlprieb)
@@ -2637,6 +2697,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 - [@Hudell](https://github.com/Hudell)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@cardoso](https://github.com/cardoso)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@rafaelks](https://github.com/rafaelks)
 - [@rodrigok](https://github.com/rodrigok)
@@ -2764,7 +2825,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 - Release 0.64.0 ([#10613](https://github.com/RocketChat/Rocket.Chat/pull/10613) by [@christianh814](https://github.com/christianh814) & [@gdelavald](https://github.com/gdelavald) & [@tttt-conan](https://github.com/tttt-conan))
 - Regression: Various search provider fixes ([#10591](https://github.com/RocketChat/Rocket.Chat/pull/10591) by [@tkurz](https://github.com/tkurz))
-- Regression: /api/v1/settings.oauth not sending needed info for SAML & CAS ([#10596](https://github.com/RocketChat/Rocket.Chat/pull/10596) by [@cardoso](https://github.com/cardoso))
+- Regression: /api/v1/settings.oauth not sending needed info for SAML & CAS ([#10596](https://github.com/RocketChat/Rocket.Chat/pull/10596))
 - Regression: Apps and Livechats not getting along well with each other ([#10598](https://github.com/RocketChat/Rocket.Chat/pull/10598))
 - Development: Add Visual Studio Code debugging configuration ([#10586](https://github.com/RocketChat/Rocket.Chat/pull/10586))
 - Included missing lib for migrations ([#10532](https://github.com/RocketChat/Rocket.Chat/pull/10532))
@@ -2785,7 +2846,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - Regression: Revert announcement structure ([#10544](https://github.com/RocketChat/Rocket.Chat/pull/10544) by [@gdelavald](https://github.com/gdelavald))
 - Regression: Upload was not working ([#10543](https://github.com/RocketChat/Rocket.Chat/pull/10543))
 - Deps update ([#10549](https://github.com/RocketChat/Rocket.Chat/pull/10549))
-- Regression: /api/v1/settings.oauth not returning clientId for Twitter ([#10560](https://github.com/RocketChat/Rocket.Chat/pull/10560) by [@cardoso](https://github.com/cardoso))
+- Regression: /api/v1/settings.oauth not returning clientId for Twitter ([#10560](https://github.com/RocketChat/Rocket.Chat/pull/10560))
 - Regression: Webhooks breaking due to restricted test ([#10555](https://github.com/RocketChat/Rocket.Chat/pull/10555))
 - Regression: Rooms and Apps weren't playing nice with each other ([#10559](https://github.com/RocketChat/Rocket.Chat/pull/10559))
 - Regression: Fix announcement bar being displayed without content ([#10554](https://github.com/RocketChat/Rocket.Chat/pull/10554) by [@gdelavald](https://github.com/gdelavald))
@@ -2803,7 +2864,6 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@abernix](https://github.com/abernix)
 - [@brendangadd](https://github.com/brendangadd)
 - [@c0dzilla](https://github.com/c0dzilla)
-- [@cardoso](https://github.com/cardoso)
 - [@christianh814](https://github.com/christianh814)
 - [@dschuan](https://github.com/dschuan)
 - [@gdelavald](https://github.com/gdelavald)
@@ -2823,6 +2883,7 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@Hudell](https://github.com/Hudell)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@TwizzyDizzy](https://github.com/TwizzyDizzy)
+- [@cardoso](https://github.com/cardoso)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)

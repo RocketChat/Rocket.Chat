@@ -3,7 +3,6 @@ import os from 'os';
 import { getUsages } from './getUsages';
 
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import {
@@ -17,7 +16,7 @@ import {
 	LivechatVisitors,
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { Info } from '../../../utils/server';
+import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 
 import { statistics } from '../statisticsNamespace';
@@ -137,37 +136,19 @@ statistics.get = function _getStatistics() {
 	statistics.migration = Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry) {
-		statistics.oplogEnabled = true;
-	}
-
-	statistics.usages = getUsages();
-
-	try {
-		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
-		statistics.mongoVersion = version;
-		statistics.mongoStorageEngine = storageEngine.name;
-	} catch (e) {
-		console.error('=== Error getting MongoDB info ===');
-		console.error(e && e.toString());
-		console.error('----------------------------------');
-		console.error('Without mongodb version we can\'t ensure you are running a compatible version.');
-		console.error('If you are running your mongodb with auth enabled and an user different from admin');
-		console.error('you may need to grant permissions for this user to check cluster data.');
-		console.error('You can do it via mongo shell running the following command replacing');
-		console.error('the string YOUR_USER by the correct user\'s name:');
-		console.error('');
-		console.error('   db.runCommand({ grantRolesToUser: "YOUR_USER" , roles: [{role: "clusterMonitor", db: "admin"}]})');
-		console.error('');
-		console.error('==================================');
-	}
+	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+	statistics.oplogEnabled = oplogEnabled;
+	statistics.mongoVersion = mongoVersion;
+	statistics.mongoStorageEngine = mongoStorageEngine;
 
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
 	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
 	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+	statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
+	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
+
+	statistics.usages = getUsages();
 
 	return statistics;
 };

@@ -71,6 +71,7 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/node:8.11-stretch
+      - image: mongo:3.2
 
     steps:
       - checkout
@@ -131,7 +132,7 @@ jobs:
       - run:
           name: Unit Test
           command: |
-            meteor npm run testunit
+            MONGO_URL=mongodb://localhost:27017 meteor npm run testunit
 
       - restore_cache:
           keys:

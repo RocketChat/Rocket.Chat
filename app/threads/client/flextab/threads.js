@@ -37,6 +37,9 @@ Template.threads.events({
 });
 
 Template.threads.helpers({
+	subscription() {
+		return Template.currentData().subscription;
+	},
 	doDotLoadThreads() {
 		return Template.instance().state.get('close');
 	},
@@ -45,7 +48,7 @@ Template.threads.helpers({
 		const { tabBar } = data;
 		return () => (state.get('close') ? tabBar.close() : state.set('mid', null));
 	},
-	message() {
+	msg() {
 		return Template.instance().state.get('thread');
 	},
 	isLoading() {
@@ -71,6 +74,7 @@ Template.threads.onCreated(async function() {
 		thread: msg,
 	});
 
+	this.rid = rid;
 
 	this.incLimit = () => {
 
@@ -114,6 +118,9 @@ Template.threads.onCreated(async function() {
 	});
 
 	this.autorun(() => {
+		if (mid) {
+			return;
+		}
 		const rid = this.state.get('rid');
 		this.rid = rid;
 		this.state.set({
@@ -125,7 +132,7 @@ Template.threads.onCreated(async function() {
 	this.autorun(() => {
 		const rid = this.state.get('rid');
 		this.threadsObserve && this.threadsObserve.stop();
-		this.threadsObserve = Messages.find({ rid, _updatedAt: { $gt: new Date() }, tcount: { $exists: true }, _hidden: { $ne: true } }).observe({
+		this.threadsObserve = Messages.find({ rid, tcount: { $exists: true }, _hidden: { $ne: true } }).observe({
 			added: ({ _id, ...message }) => {
 				this.Threads.upsert({ _id }, message);
 			}, // Update message to re-render DOM
