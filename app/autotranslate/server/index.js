@@ -18,6 +18,5 @@ import './methods/saveSettings';
 import './methods/translateMessage';
 import './googleTranslate.js';
 import './deeplTranslate.js';
-import './dbsTranslate.js';
 import './models/Settings.js';
 import './methods/getProviderUiMetadata.js';
