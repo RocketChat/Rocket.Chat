@@ -14,26 +14,24 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 		let guest = LivechatVisitors.findOneVisitorByPhone(id_cliente);
 
 		const config = WhatsAppService.getConfig() || {};
-		const { defaultDepartmentName, offlineServiceMessage } = config;
+		const { defaultDepartmentName, offlineServiceMessage, welcomeMessage } = config;
 		let department;
 		if (defaultDepartmentName) {
 			const dep = LivechatDepartment.findOneByIdOrName(defaultDepartmentName);
 			department = dep && dep._id;
 		}
 
-		let rid;
 		let token;
+		let room;
+
 		if (guest) {
 			const rooms = department ? Rooms.findOpenByVisitorTokenAndDepartmentId(guest.token, department).fetch() : Rooms.findOpenByVisitorToken(guest.token).fetch();
-
-			rid = rooms && rooms.length > 0 ? rooms[0]._id : Random.id();
+			room = rooms && rooms.length > 0 && rooms[0];
 			token = guest.token;
 			// Update Guest department..
 			Livechat.registerGuest({ token, department });
 		} else {
-			rid = Random.id();
 			token = Random.id();
-
 			const visitorId = Livechat.registerGuest({
 				username: id_cliente.replace(/[^0-9]/g, ''),
 				token,
@@ -42,7 +40,6 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 				},
 				department,
 			});
-
 			guest = LivechatVisitors.findOneById(visitorId);
 		}
 
@@ -63,6 +60,9 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			}
 			attachments = [attachment];
 		}
+
+		const rid = (room && room._id) || Random.id();
+
 		const sendMessage = {
 			message: {
 				_id: Random.id(),
@@ -80,8 +80,15 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			guest,
 		};
 
+
+		const triggerWelcomeMessage = !room && welcomeMessage !== '';
 		try {
 			const message = Livechat.sendMessage(sendMessage);
+
+			if (triggerWelcomeMessage) {
+				WhatsAppService.send(from, id_cliente, welcomeMessage)
+			}
+
 			const { _id, msg } = message;
 			return { success: true, _id, msg };
 		} catch (e) {
@@ -89,6 +96,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			if (error && error === offlineServiceError && offlineServiceMessage) {
 				WhatsAppService.send(from, id_cliente, offlineServiceMessage);
 			}
+
 			return { success: false, error, reason, message };
 		}
 	},

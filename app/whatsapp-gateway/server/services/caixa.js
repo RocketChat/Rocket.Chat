@@ -10,6 +10,8 @@ class Caixa {
 			baseApiUrl: settings.get('WhatsApp_Gateway_Base_API_URL'),
 			defaultDepartmentName: settings.get('WhatsApp_Gateway_Default_Department'),
 			offlineServiceMessage: settings.get('WhatsApp_Gateway_Fallback_Message'),
+			allowInvalidSelfSignedCerts: settings.get('WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs'),
+			welcomeMessage: settings.get('WhatsApp_Gateway_Welcome_Message'),
 		};
 	}
 
@@ -18,7 +20,7 @@ class Caixa {
 	}
 
 	send(fromNumber, toNumber, message) {
-		let baseUrl = this.config.baseApiUrl;
+		const {baseApiUrl: baseUrl, allowInvalidSelfSignedCerts } = this.config;
 
 		if (!baseUrl) {
 			throw new Meteor.Error('(WhatsAppGateway)Base API URL is not defined.');
@@ -38,8 +40,8 @@ class Caixa {
 				texto: message,
 			},
 			npmRequestOptions: {
-				rejectUnauthorized: !settings.get('WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs'),
-				strictSSL: !settings.get('WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs'),
+				rejectUnauthorized: !allowInvalidSelfSignedCerts,
+				strictSSL: !allowInvalidSelfSignedCerts,
 			},
 		};
 
