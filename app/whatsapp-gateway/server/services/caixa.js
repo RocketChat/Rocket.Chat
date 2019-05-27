@@ -20,7 +20,8 @@ class Caixa {
 	}
 
 	send(fromNumber, toNumber, message) {
-		let { baseApiUrl: baseUrl, allowInvalidSelfSignedCerts } = this.config;
+		let { baseApiUrl: baseUrl } = this.config;
+		const { allowInvalidSelfSignedCerts } = this.config;
 
 		if (!baseUrl) {
 			throw new Meteor.Error('(WhatsAppGateway)Base API URL is not defined.');
