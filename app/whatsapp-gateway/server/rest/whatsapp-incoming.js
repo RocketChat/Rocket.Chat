@@ -86,7 +86,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			const message = Livechat.sendMessage(sendMessage);
 
 			if (triggerWelcomeMessage) {
-				WhatsAppService.send(from, id_cliente, welcomeMessage)
+				WhatsAppService.send(from, id_cliente, welcomeMessage);
 			}
 
 			const { _id, msg } = message;
