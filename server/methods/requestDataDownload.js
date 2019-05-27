@@ -6,6 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { ExportOperations } from '../../app/models';
 import { settings } from '../../app/settings';
 
+import mkdirp from 'mkdirp';
+
 let tempFolder = '/tmp/userData';
 if (settings.get('UserData_FileSystemPath') != null) {
 	if (settings.get('UserData_FileSystemPath').trim() !== '') {
@@ -33,22 +35,22 @@ Meteor.methods({
 		}
 
 		if (!fs.existsSync(tempFolder)) {
-			fs.mkdirSync(tempFolder);
+			mkdirp.sync(tempFolder);
 		}
 
 		const subFolderName = fullExport ? 'full' : 'partial';
 		const baseFolder = path.join(tempFolder, userId);
 		if (!fs.existsSync(baseFolder)) {
-			fs.mkdirSync(baseFolder);
+			mkdirp.sync(baseFolder);
 		}
 
 		const folderName = path.join(baseFolder, subFolderName);
 		if (!fs.existsSync(folderName)) {
-			fs.mkdirSync(folderName);
+			mkdirp.sync(folderName);
 		}
 		const assetsFolder = path.join(folderName, 'assets');
 		if (!fs.existsSync(assetsFolder)) {
-			fs.mkdirSync(assetsFolder);
+			mkdirp.sync(assetsFolder);
 		}
 
 		const exportOperation = {
