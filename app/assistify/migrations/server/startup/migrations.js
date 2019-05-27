@@ -96,6 +96,7 @@ Meteor.startup(() => {
 							'attachments.0.author_name': msg.u.name,
 							'attachments.0.author_icon': getUserAvatarURL(msg.u.name),
 							'attachments.0.message_link' : msg.urls && fixMessageLink(msg.urls[0].url),
+							'attachments.0.ts': msg.ts,
 						});
 					} else {
 						// Thread created from the side Nav without initial message => nothing to quote
