@@ -52,6 +52,7 @@ Meteor.startup(function() {
 			});
 			this.add('WhatsApp_Gateway_Fallback_Message', '', {
 				type: 'string',
+				multiline: true,
 				enableQuery: {
 					_id: 'WhatsApp_Gateway_Service',
 					value: 'caixa',
@@ -69,6 +70,17 @@ Meteor.startup(function() {
 				},
 				i18nLabel: 'WhatsApp_Gateway_Welcome_Message',
 				i18nDescription: 'WhatsApp_Gateway_Welcome_Message_Description',
+				secret: true,
+			});
+			this.add('WhatsApp_Gateway_Queue_Message', '', {
+				type: 'string',
+				multiline: true,
+				enableQuery: {
+					_id: 'WhatsApp_Gateway_Service',
+					value: 'caixa',
+				},
+				i18nLabel: 'WhatsApp_Gateway_Queue_Message',
+				i18nDescription: 'WhatsApp_Gateway_Queue_Message_Description',
 				secret: true,
 			});
 		});

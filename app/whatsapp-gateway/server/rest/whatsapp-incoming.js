@@ -1,6 +1,7 @@
 import { Random } from 'meteor/random';
 
 import { Rooms, LivechatVisitors, LivechatDepartment } from '../../../models';
+import { settings } from '../../../settings';
 import { API } from '../../../api';
 import WhatsAppGateway from '../WhatsAppGateway';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
@@ -14,7 +15,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 		let guest = LivechatVisitors.findOneVisitorByPhone(id_cliente);
 
 		const config = WhatsAppService.getConfig() || {};
-		const { defaultDepartmentName, offlineServiceMessage, welcomeMessage } = config;
+		const { defaultDepartmentName, offlineServiceMessage, welcomeMessage, queueMessage } = config;
 		let department;
 		if (defaultDepartmentName) {
 			const dep = LivechatDepartment.findOneByIdOrName(defaultDepartmentName);
@@ -80,13 +81,13 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			guest,
 		};
 
-
-		const triggerWelcomeMessage = !room && welcomeMessage !== '';
+		const roomOpeningMessage = settings.get('Livechat_Routing_Method') !== 'Guest_Pool' ? welcomeMessage : queueMessage;
+		const triggerRoomOpeningMessage = !room && roomOpeningMessage !== '';
 		try {
 			const message = Livechat.sendMessage(sendMessage);
 
-			if (triggerWelcomeMessage) {
-				WhatsAppService.send(from, id_cliente, welcomeMessage);
+			if (triggerRoomOpeningMessage) {
+				WhatsAppService.send(from, id_cliente, roomOpeningMessage);
 			}
 
 			const { _id, msg } = message;

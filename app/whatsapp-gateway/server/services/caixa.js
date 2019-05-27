@@ -12,6 +12,7 @@ class Caixa {
 			offlineServiceMessage: settings.get('WhatsApp_Gateway_Fallback_Message'),
 			allowInvalidSelfSignedCerts: settings.get('WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs'),
 			welcomeMessage: settings.get('WhatsApp_Gateway_Welcome_Message'),
+			queueMessage: settings.get('WhatsApp_Gateway_Queue_Message'),
 		};
 	}
 
