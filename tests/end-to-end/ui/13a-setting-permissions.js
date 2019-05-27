@@ -6,6 +6,7 @@ import sideNav from '../../pageobjects/side-nav.page';
 import { assert } from 'chai';
 
 function openAdminView() {
+	sideNav.sidebarMenu.waitForVisible(5000);
 	sideNav.sidebarMenu.click();
 	sideNav.admin.waitForVisible(5000);
 	sideNav.admin.click();
@@ -80,11 +81,10 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 		it('Change titlepage title is allowed', function(done) {
 			admin.layoutLink.waitForVisible(10000);
 			admin.layoutLink.click();
-			admin.buttonFirstSectionExpand.waitForVisible(5000);
-			admin.buttonFirstSectionExpand.click();
 			admin.generalLayoutTitle.waitForVisible(5000);
+			browser.pause(1000); // there is some delayed focus on the menu - wait, til this is set so the input does not get interrupted
 			admin.generalLayoutTitle.setValue(newTitle);
-			browser.pause(2000);
+			browser.pause(5000); // wait after the input so that the value is available to the reactive var
 			admin.buttonSave.click();
 			done();
 		});

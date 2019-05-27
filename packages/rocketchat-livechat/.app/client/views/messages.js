@@ -1,4 +1,8 @@
-/* globals Livechat, LivechatVideoCall, MsgTyping, fileUpload */
+/* globals Livechat, LivechatVideoCall, MsgTyping, fileUpload, showError, hideError */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 import mime from 'mime-type/with-db';
@@ -35,9 +39,6 @@ Template.messages.helpers({
 	},
 	fileUploadEnabled() {
 		return Livechat.fileUpload && Template.instance().isMessageFieldEmpty.get();
-	},
-	showConnecting() {
-		return Livechat.connecting;
 	},
 	usersTyping() {
 		const users = MsgTyping.get(visitor.getRoom());
@@ -132,6 +133,7 @@ Template.messages.events({
 				}
 
 				visitor.setId(result.userId);
+				visitor.setData(result.visitor);
 				LivechatVideoCall.request();
 			});
 		} else {
@@ -239,4 +241,8 @@ Template.messages.onRendered(function() {
 			onscroll();
 		});
 	}
+
+	Tracker.autorun(() => {
+		Livechat.connecting ? showError(t('Please_wait_for_the_next_available_agent')) : hideError();
+	});
 });

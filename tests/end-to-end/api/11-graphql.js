@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 const supertest = require('supertest');
 const request = supertest('http://localhost:3000');
 
@@ -67,6 +65,7 @@ describe('GraphQL Tests', function() {
 	});
 
 	it('Is able to login with username and password', (done) => {
+		browser.pause(500);
 		const query = `
 			mutation login {
 			loginWithPassword(user: "${ user.username }", password: "${ user.password }") {

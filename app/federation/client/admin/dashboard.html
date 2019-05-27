@@ -1,0 +1,33 @@
+<template name="dashboard">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			{{> header sectionName="Federation_Dashboard"}}
+			<div class="content">
+				<div class="section">
+					<div class="section-content">
+						<div class="group border-component-color">
+							{{#each federationOverviewData}}
+							<div class="overview-column">
+								<div class="overview-item">
+									<span class="value">{{value}}</span>
+									<span class="title">{{_ title}}</span>
+								</div>
+							</div>
+							{{/each}}
+						</div>
+						<div class="group left wrap border-component-color">
+							{{#each federationPeerStatuses}}
+							<div class="overview-column small">
+								<div class="overview-pill" title="{{status}} - {{statusAt}}">
+									<div class="status {{status}}"></div>
+									<span class="title">{{peer}}</span>
+								</div>
+							</div>
+							{{/each}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</template>

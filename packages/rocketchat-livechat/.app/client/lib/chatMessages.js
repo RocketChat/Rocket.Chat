@@ -1,4 +1,6 @@
 /* globals MsgTyping, showError, Livechat */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -140,7 +142,7 @@ this.ChatMessages = class ChatMessages {
 			});
 		};
 
-		if (!visitor.getId()) {
+		if (!visitor.getId() || visitor.getDepartment() !== Livechat.department) {
 			const guest = {
 				token: visitor.getToken(),
 			};

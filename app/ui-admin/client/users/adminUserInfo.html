@@ -1,0 +1,9 @@
+<template name="adminUserInfo">
+	{{#if _id}}
+		{{> userInfo .}}
+	{{else}}
+		<section class="contextual-bar__content">
+			<div>{{_ "Please_select_an_user"}}</div>
+		</section>
+	{{/if}}
+</template>

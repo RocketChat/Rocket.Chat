@@ -32,7 +32,7 @@ export function checkIfUserIsValid(username, email, password) {
 			loginPage.gotToRegister();
 			loginPage.registerNewUser({ username, email, password });
 			browser.waitForExist('form#login-card input#username', 5000);
-			browser.click('.submit > button');
+			browser.click('button.login');
 			mainContent.mainContent.waitForExist(5000);
 		}
 	} else if (browser.execute(() => Meteor.user().username).value !== username) {
@@ -65,7 +65,7 @@ export function checkIfUserIsAdmin(username, email, password) {
 			loginPage.gotToRegister();
 			loginPage.registerNewUser({ username, email, password });
 			browser.waitForExist('form#login-card input#username', 5000);
-			browser.click('.submit > button');
+			browser.click('button.login');
 			mainContent.mainContent.waitForExist(5000);
 		}
 	} else if (browser.execute(() => Meteor.user().username).value !== username) {

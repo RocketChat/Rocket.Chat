@@ -1,0 +1,79 @@
+<template name="permissionsTable">
+	<table class="permission-grid secondary-background-color">
+		<thead class="content-background-color">
+			<tr>
+				<th class="permission-name border-component-color"></th>
+				{{#each role in allRoles}}
+				<th class="edit-icon role-name border-component-color" title="{{role.description}}">
+					<a href="{{pathFor "admin-permissions-edit" name=role._id}}">
+						<p class="rotator">
+							{{role._id}}
+						</p>
+					</a>
+				</th>
+				{{/each}}
+			</tr>
+		</thead>
+		<tbody>
+			{{#each permission in permissions}}
+			<tr class="admin-table-row">
+				<td class="permission-name border-component-color" title="{{permissionDescription permission}}">
+					{{permissionName permission}}<br><span class="id-styler">[ID: {{permission._id}}]</span></td>
+				{{#each role in allRoles}}
+				<td class="permission-checkbox border-component-color">
+					<input type="checkbox" name="perm[{{role._id}}][{{permission._id}}]" class="role-permission"
+						value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}"
+						data-permission="{{permission._id}}">
+				</td>
+				{{/each}}
+			</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</template>
+<template name="permissions">
+	<div class="page-container permissions-manager">
+		<section class="page-home page-static page-list">
+			{{#if hasPermission}}
+			{{# header sectionName=pageTitle}}
+			<div class="rc-header__section-button">
+				<a href="{{pathFor"admin-permissions-new"}}"
+					class="rc-button rc-button--primary new-role">{{_ "New_role"}}</a>
+			</div>
+			{{/header}}
+
+			<div class="content">
+				{{> permissionsTable permissions=permissions allRoles=roles collection='Chat'}}
+			</div>
+			{{/if}}
+			{{#if hasSettingPermission}}
+			{{# header sectionName="Setting_permissions"}}
+			<div class="rc-header__section-button">
+				<button class="rc-button rc-button--primary js-toggle-setting-permissions"><span>
+						{{#if settingPermissionExpanded }}
+						{{_ "Collapse"}}
+						{{else}}
+						{{_ "Expand"}}
+						{{/if}}
+					</span>
+				</button>
+			</div>
+			{{/header}}
+			<section class="page-home page-static page-list">
+				{{#if settingPermissionExpanded }}
+				<div class="content">
+					{{> permissionsTable permissions=settingPermissions allRoles=roles collection='Setting'}}
+				</div>
+				{{/if}}
+			</section>
+			{{/if}}
+			{{#if hasNoPermission}}
+			<div class="content">
+				{{#if i18nPageTitle}} {{> header sectionName=i18nPageTitle}} {{else}} {{> header sectionName=pageTitle}}
+				{{/if}}
+				{{_ "Not_authorized"}}
+			</div>
+			{{/if}}
+		</section>
+	</div>
+</template>
