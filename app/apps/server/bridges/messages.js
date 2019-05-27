@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+
 import { Messages, Users, Subscriptions } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';

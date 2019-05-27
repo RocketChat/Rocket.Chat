@@ -15,19 +15,19 @@ Meteor.startup(function() {
 			id: 'follow-message',
 			icon: 'bell',
 			label: 'Follow_message',
-			context: ['threads'],
+			context: ['message', 'message-mobile', 'threads'],
 			async action() {
 				const { msg } = messageArgs(this);
 				call('followMessage', { mid: msg._id });
 			},
-			condition({ tmid, replies = [] }) {
+			condition({ msg: { tmid, replies = [] }, u }) {
 				if (tmid) {
 					const parentMessage = Messages.findOne({ _id: tmid }, { fields: { replies: 1 } });
 					if (parentMessage) {
 						replies = parentMessage.replies || [];
 					}
 				}
-				return !replies.includes(Meteor.userId());
+				return !replies.includes(u._id);
 			},
 			order: 0,
 			group: 'menu',

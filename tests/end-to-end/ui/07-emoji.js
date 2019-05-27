@@ -1,6 +1,5 @@
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
-
 import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 
@@ -137,6 +136,17 @@ describe('[Emoji]', () => {
 				mainContent.lastMessage.getText().should.equal('😄');
 			});
 		});
-	});
 
+		describe('send texts and make sure they\'re not converted to emojis:', () => {
+			it('should render numbers', () => {
+				mainContent.sendMessage('0 1 2 3 4 5 6 7 8 9');
+				mainContent.waitForLastMessageEqualsHtml('0 1 2 3 4 5 6 7 8 9');
+			});
+
+			it('should render special characters', () => {
+				mainContent.sendMessage('# * ® © ™');
+				mainContent.waitForLastMessageEqualsHtml('# * ® © ™');
+			});
+		});
+	});
 });
