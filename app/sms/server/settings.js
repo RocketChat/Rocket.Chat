@@ -20,6 +20,10 @@ Meteor.startup(function() {
 					key: 'voxtelesys',
 					i18nLabel: 'Voxtelesys',
 				},
+				{
+					key: 'mobex',
+					i18nLabel: 'Mobex',
+				}
 			],
 			i18nLabel: 'Service',
 		});
@@ -63,6 +67,61 @@ Meteor.startup(function() {
 				},
 				i18nLabel: 'URL',
 				secret: true,
+			});
+		});
+
+		this.section('Mobex', function() {
+			this.add('SMS_Mobex_gateway_address', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'mobex',
+				},
+				i18nLabel: 'Mobex_sms_gateway_address',
+				i18nDescription: 'Mobex_sms_gateway_address_desc',
+			});
+			this.add('SMS_Mobex_restful_address', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'mobex',
+				},
+				i18nLabel: 'Mobex_sms_gateway_restful_address',
+				i18nDescription: 'Mobex_sms_gateway_restful_address_desc',
+			});
+			this.add('SMS_Mobex_username', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'mobex',
+				},
+				i18nLabel: 'Mobex_sms_gateway_username',
+			});
+			this.add('SMS_Mobex_password', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'mobex',
+				},
+				i18nLabel: 'Mobex_sms_gateway_password',
+			});
+			this.add('SMS_Mobex_from_number', '', {
+				type: 'int',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'mobex',
+				},
+				i18nLabel: 'Mobex_sms_gateway_from_number',
+				i18nDescription: 'Mobex_sms_gateway_from_number_desc',
+			});
+			this.add('SMS_Mobex_from_numbers_list', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'mobex',
+				},
+				i18nLabel: 'Mobex_sms_gateway_from_numbers_list',
+				i18nDescription: 'Mobex_sms_gateway_from_numbers_list_desc',
 			});
 		});
 	});
