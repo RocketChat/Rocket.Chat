@@ -134,6 +134,14 @@ export const EmojiPicker = {
 		emoji.packages.base.emojisByCategory.recent = this.recent;
 		this.updateRecent('recent');
 	},
+	removeFromRecent(_emoji) {
+		const pos = this.recent.indexOf(_emoji);
+		if (pos === -1) {
+			return;
+		}
+		this.recent.splice(pos, 1);
+		window.localStorage.setItem('emoji.recent', this.recent);
+	},
 	updateRecent(category) {
 		updateRecentEmoji(category);
 	},

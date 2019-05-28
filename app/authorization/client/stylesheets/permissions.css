@@ -1,4 +1,37 @@
 .permissions-manager {
+	&.page-container {
+		padding-bottom: 0 !important;
+	}
+
+	.permission-edit {
+		display: flex;
+		flex-direction: column;
+
+		height: 100%;
+
+		padding: 10px;
+		align-items: center;
+	}
+
+	.permission-label,
+	.permission-icon {
+		display: flex;
+
+		align-items: flex-end;
+		flex-grow: 1;
+	}
+
+	.permission-icon {
+		width: 30px;
+
+		margin-bottom: 0;
+		flex-grow: 0;
+	}
+
+	.content {
+		padding: 0 !important;
+	}
+
 	.permission-grid {
 		overflow-x: scroll;
 
@@ -7,21 +40,29 @@
 		border-collapse: collapse;
 
 		.id-styler {
+			white-space: nowrap;
+
 			color: #7f7f7f;
 
 			font-size: smaller;
 		}
 
+		.edit-icon.role-name-edit-icon {
+			height: 30px;
+		}
+
 		.role-name {
+			position: sticky;
+
+			top: 0;
+
 			width: 70px;
-			height: 80px;
 
 			text-align: left;
 
 			vertical-align: middle;
 
-			border-right: 1px solid	black;
-			border-left: 1px solid black;
+			background: white;
 		}
 
 		.role-name-edit-icon {
@@ -31,16 +72,22 @@
 			text-align: center;
 
 			vertical-align: middle;
-
-			border-right: 1px solid	black;
-			border-left: 1px solid black;
 		}
 
 		.rotator {
-			width: 80px;
-			margin: 0 auto;
+			overflow: hidden;
 
-			transform: rotate(-90deg);
+			width: 30px;
+			height: 130px;
+
+			padding: 10px 0;
+
+			transform: rotate(-180deg);
+
+			white-space: nowrap;
+
+			text-overflow: ellipsis;
+			writing-mode: vertical-rl;
 		}
 
 		.admin-table-row {
@@ -58,16 +105,9 @@
 			vertical-align: middle;
 		}
 
-		.admin-table-row .permission-name {
-			border-top: 1px solid black;
-			border-bottom: 1px solid black;
-		}
-
 		.permission-checkbox {
 			text-align: center;
 			vertical-align: middle;
-
-			border: 1px solid black;
 		}
 
 		.icon-edit {
