@@ -1,107 +1,11 @@
 
-# 1.1.0 (Under Release Candidate Process)
+# 1.1.0
+`2019-05-27  ·  5 🎉  ·  10 🚀  ·  52 🐛  ·  35 🔍  ·  27 👩‍💻👨‍💻`
 
-## 1.1.0-rc.5
-`2019-05-27  ·  1 🐛  ·  3 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- "Blank page" on safari 10.x ([#14651](https://github.com/RocketChat/Rocket.Chat/pull/14651))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Improvement: Permissions table ([#14646](https://github.com/RocketChat/Rocket.Chat/pull/14646))
-- Regression: Handle missing emojis ([#14641](https://github.com/RocketChat/Rocket.Chat/pull/14641))
-- LingoHub based on develop ([#14643](https://github.com/RocketChat/Rocket.Chat/pull/14643))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 1.1.0-rc.4
-`2019-05-24  ·  3 🐛  ·  3 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Role name spacing on Permissions page ([#14625](https://github.com/RocketChat/Rocket.Chat/pull/14625))
-- Avatar images on old Livechat client ([#14590](https://github.com/RocketChat/Rocket.Chat/pull/14590) by [@arminfelder](https://github.com/arminfelder))
-- Inject code at the end of <head> tag ([#14623](https://github.com/RocketChat/Rocket.Chat/pull/14623))
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@arminfelder](https://github.com/arminfelder)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 1.1.0-rc.3
-`2019-05-23  ·  1 🐛  ·  1 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Mailer breaking if user doesn't have an email address ([#14614](https://github.com/RocketChat/Rocket.Chat/pull/14614))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
-
-## 1.1.0-rc.2
-`2019-05-22  ·  2 🐛  ·  7 🔍  ·  8 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- E2E messages not decrypting in message threads ([#14580](https://github.com/RocketChat/Rocket.Chat/pull/14580))
-- Send replyTo for livechat offline messages ([#14568](https://github.com/RocketChat/Rocket.Chat/pull/14568))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Ci improvements ([#14600](https://github.com/RocketChat/Rocket.Chat/pull/14600))
-- Fix: emoji render performance for alias ([#14593](https://github.com/RocketChat/Rocket.Chat/pull/14593))
-- Federation i18n message changes ([#14595](https://github.com/RocketChat/Rocket.Chat/pull/14595))
-- [REGRESSION] Fix Slack bridge channel owner on channel creation ([#14565](https://github.com/RocketChat/Rocket.Chat/pull/14565))
-- Fix thumbs up emoji shortname ([#14581](https://github.com/RocketChat/Rocket.Chat/pull/14581))
-- [Fix] broken logo url in app.json ([#14572](https://github.com/RocketChat/Rocket.Chat/pull/14572) by [@jaredmoody](https://github.com/jaredmoody))
-- Add digitalocean button to readme ([#14583](https://github.com/RocketChat/Rocket.Chat/pull/14583))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@jaredmoody](https://github.com/jaredmoody)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
-- [@alansikora](https://github.com/alansikora)
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
-- [@ggazzo](https://github.com/ggazzo)
-- [@renatobecker](https://github.com/renatobecker)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 1.1.0-rc.1
-`2019-05-21  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Fix: Add emoji shortnames to emoji's list ([#14576](https://github.com/RocketChat/Rocket.Chat/pull/14576))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 1.1.0-rc.0
-`2019-05-20  ·  5 🎉  ·  10 🚀  ·  45 🐛  ·  24 🔍  ·  24 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
 
 ### 🎉 New features
 
@@ -171,6 +75,13 @@
 - Bell was too small on threads ([#14394](https://github.com/RocketChat/Rocket.Chat/pull/14394))
 - Main thread title on replies ([#14372](https://github.com/RocketChat/Rocket.Chat/pull/14372))
 - New day separator overlapping above system message ([#14362](https://github.com/RocketChat/Rocket.Chat/pull/14362))
+- E2E messages not decrypting in message threads ([#14580](https://github.com/RocketChat/Rocket.Chat/pull/14580))
+- Send replyTo for livechat offline messages ([#14568](https://github.com/RocketChat/Rocket.Chat/pull/14568))
+- Mailer breaking if user doesn't have an email address ([#14614](https://github.com/RocketChat/Rocket.Chat/pull/14614))
+- Role name spacing on Permissions page ([#14625](https://github.com/RocketChat/Rocket.Chat/pull/14625))
+- Avatar images on old Livechat client ([#14590](https://github.com/RocketChat/Rocket.Chat/pull/14590) by [@arminfelder](https://github.com/arminfelder))
+- Inject code at the end of <head> tag ([#14623](https://github.com/RocketChat/Rocket.Chat/pull/14623))
+- "Blank page" on safari 10.x ([#14651](https://github.com/RocketChat/Rocket.Chat/pull/14651))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -199,6 +110,17 @@
 - Improve German translations ([#14351](https://github.com/RocketChat/Rocket.Chat/pull/14351))
 - Merge master into develop & Set version to 1.1.0-develop ([#14317](https://github.com/RocketChat/Rocket.Chat/pull/14317) by [@wreiske](https://github.com/wreiske))
 - Merge master into develop & Set version to 1.1.0-develop ([#14294](https://github.com/RocketChat/Rocket.Chat/pull/14294))
+- Fix: Add emoji shortnames to emoji's list ([#14576](https://github.com/RocketChat/Rocket.Chat/pull/14576))
+- Ci improvements ([#14600](https://github.com/RocketChat/Rocket.Chat/pull/14600))
+- Fix: emoji render performance for alias ([#14593](https://github.com/RocketChat/Rocket.Chat/pull/14593))
+- Federation i18n message changes ([#14595](https://github.com/RocketChat/Rocket.Chat/pull/14595))
+- [REGRESSION] Fix Slack bridge channel owner on channel creation ([#14565](https://github.com/RocketChat/Rocket.Chat/pull/14565))
+- Fix thumbs up emoji shortname ([#14581](https://github.com/RocketChat/Rocket.Chat/pull/14581))
+- [Fix] broken logo url in app.json ([#14572](https://github.com/RocketChat/Rocket.Chat/pull/14572) by [@jaredmoody](https://github.com/jaredmoody))
+- Add digitalocean button to readme ([#14583](https://github.com/RocketChat/Rocket.Chat/pull/14583))
+- Improvement: Permissions table ([#14646](https://github.com/RocketChat/Rocket.Chat/pull/14646))
+- Regression: Handle missing emojis ([#14641](https://github.com/RocketChat/Rocket.Chat/pull/14641))
+- LingoHub based on develop ([#14643](https://github.com/RocketChat/Rocket.Chat/pull/14643))
 
 </details>
 
@@ -206,9 +128,11 @@
 
 - [@AnBo83](https://github.com/AnBo83)
 - [@Kailash0311](https://github.com/Kailash0311)
+- [@arminfelder](https://github.com/arminfelder)
 - [@ashwaniYDV](https://github.com/ashwaniYDV)
 - [@bhardwajaditya](https://github.com/bhardwajaditya)
 - [@gsunit](https://github.com/gsunit)
+- [@jaredmoody](https://github.com/jaredmoody)
 - [@jungeonkim](https://github.com/jungeonkim)
 - [@knrt10](https://github.com/knrt10)
 - [@kukkjanos](https://github.com/kukkjanos)
@@ -223,6 +147,7 @@
 
 - [@Hudell](https://github.com/Hudell)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@alansikora](https://github.com/alansikora)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
