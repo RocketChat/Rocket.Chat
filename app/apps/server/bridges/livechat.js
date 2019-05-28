@@ -1,6 +1,7 @@
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import { Rooms } from '../../../models/server/models/Rooms';
+import { LivechatVisitors } from '../../../models/server/models/LivechatVisitors';
 
 export class AppLivechatBridge {
 	constructor(orch) {
@@ -47,6 +48,16 @@ export class AppLivechatBridge {
 		return this.orch.getConverters().get('rooms').convertRoom(getRoom({ guest: visitor, agent }).room);
 	}
 
+	async closeRoom(room, comment, appId) {
+		this.orch.debugLog(`The App ${ appId } is closing a livechat room.`);
+
+		return Livechat.closeRoom({
+			visitor: room.visitor,
+			room: this.orch.getConverters().get('rooms').convertAppRoom(room),
+			comment,
+		});
+	}
+
 	async findRooms(visitor, departmentId, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
@@ -83,7 +94,21 @@ export class AppLivechatBridge {
 		return Livechat.registerGuest(registerData);
 	}
 
+	async transferVisitor(visitor, transferData, appId) {
+		this.orch.debugLog(`The App ${ appId } is transfering a livechat.`);
+
+		const {
+			targetAgent: userId,
+			targetDepartment: departmentId,
+			currentRoom,
+		} = transferData;
+
+		return Livechat.transfer(currentRoom, visitor, { userId, departmentId });
+	}
+
 	async findVisitors(query, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return LivechatVisitors.find(query);
 	}
 }

@@ -32,6 +32,7 @@ export class AppMessagesConverter {
 			alias: 'alias',
 			customFields: 'customFields',
 			groupable: 'groupable',
+			token: 'token',
 			room: (message) => {
 				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
 				delete message.rid;

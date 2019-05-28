@@ -7,6 +7,7 @@ import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsers
 import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { settings } from '../../settings';
 import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
+import { AppVisitorsConverter } from './converters/visitors';
 
 class AppServerOrchestrator {
 	constructor() {
@@ -31,6 +32,7 @@ class AppServerOrchestrator {
 		this._converters.set('rooms', new AppRoomsConverter(this));
 		this._converters.set('settings', new AppSettingsConverter(this));
 		this._converters.set('users', new AppUsersConverter(this));
+		this._converters.set('visitors', new AppVisitorsConverter(this));
 
 		this._bridges = new RealAppBridges(this);
 

@@ -61,19 +61,40 @@ export class AppRoomsConverter {
 			creator = this.orch.getConverters().get('users').convertById(room.u._id);
 		}
 
+		let visitor;
+		if (room.v) {
+			visitor = this.orch.getConverters().get('visitors').convertById(room.v._id);
+		}
+
+		let servedBy;
+		if (room.servedBy) {
+			servedBy = this.orch.getConverters().get('users').convertById(room.servedBy._id);
+		}
+
+		let responseBy;
+		if (room.responseBy) {
+			responseBy = this.orch.getConverters().get('users').convertById(room.responseBy._id);
+		}
+
 		return {
 			id: room._id,
 			displayName: room.fname,
 			slugifiedName: room.name,
 			type: this._convertTypeToApp(room.t),
 			creator,
+			visitor,
+			servedBy,
+			responseBy,
 			members: room.members,
 			isDefault: typeof room.default === 'undefined' ? false : room.default,
 			isReadOnly: typeof room.ro === 'undefined' ? false : room.ro,
 			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
+			isWaitingResponse: room.waitingResponse !== undefined ? !!room.waitingResponse : undefined,
+			isOpen: room.open !== undefined ? !!room.open : undefined,
 			messageCount: room.msgs,
 			createdAt: room.ts,
 			updatedAt: room._updatedAt,
+			closedAt: room.closedAt,
 			lastModifiedAt: room.lm,
 			customFields: {},
 		};
