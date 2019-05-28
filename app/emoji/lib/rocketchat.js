@@ -3,15 +3,14 @@ import { Meteor } from 'meteor/meteor';
 import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
 
 let EmojiPicker;
-const removeFromRecent = (emoji) => {
-	if (!Meteor.isClient) {
-		return;
-	}
-	if (!EmojiPicker) {
-		({ EmojiPicker } = require('../client/lib/EmojiPicker'));
-	}
-	EmojiPicker.removeFromRecent(emoji.replace(/(^:|:$)/g, ''));
-};
+const removeFromRecent = !Meteor.isClient
+	? () => {}
+	: (emoji) => {
+		if (!EmojiPicker) {
+			({ EmojiPicker } = require('../client/lib/EmojiPicker'));
+		}
+		EmojiPicker.removeFromRecent(emoji.replace(/(^:|:$)/g, ''));
+	};
 
 export const emoji = {
 	packages: {
