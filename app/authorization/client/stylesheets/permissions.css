@@ -57,7 +57,6 @@
 			top: 0;
 
 			width: 70px;
-			height: 190px;
 
 			text-align: left;
 
@@ -76,13 +75,18 @@
 		}
 
 		.rotator {
+			overflow: hidden;
+
 			width: 30px;
+			height: 130px;
 
 			padding: 10px 0;
 
 			transform: rotate(-180deg);
 
 			white-space: nowrap;
+
+			text-overflow: ellipsis;
 			writing-mode: vertical-rl;
 		}
 
