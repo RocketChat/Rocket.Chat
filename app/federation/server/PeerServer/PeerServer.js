@@ -2,9 +2,9 @@ import { callbacks } from '../../../callbacks';
 import { setReaction } from '../../../reactions/server';
 import { addUserToRoom, removeUserFromRoom, deleteMessage } from '../../../lib';
 import { Rooms, Subscriptions, FederationPeers } from '../../../models';
-
 import { FederatedMessage, FederatedRoom, FederatedUser } from '../federatedResources';
 import { logger } from '../logger.js';
+
 import { Federation } from '..';
 
 export class PeerServer {

@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
+import { SlackBridge } from './slackbridge';
 import { Rooms } from '../../models';
 import { msgStream } from '../../lib';
 import { slashCommands } from '../../utils';
-import { SlackBridge } from './slackbridge';
 
 function SlackBridgeImport(command, params, item) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {

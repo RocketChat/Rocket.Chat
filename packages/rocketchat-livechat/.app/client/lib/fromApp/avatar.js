@@ -8,7 +8,7 @@ this.getAvatarUrlFromUsername = (username) => {
 		return;
 	}
 
-	return `${ Meteor.absoluteUrl() }avatar/${ username }.jpg?_dc=${ random }`;
+	return Meteor.absoluteUrl(`/avatar/${ username }?_dc=${ random }`);
 };
 
 this.updateAvatarOfUsername = (username) => {

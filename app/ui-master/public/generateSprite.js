@@ -69,9 +69,7 @@ const start = async () => {
 
 				resolve(Promise.all(promises));
 			});
-
 		});
-
 	} catch (error) {
 		console.error(error);
 	} finally {

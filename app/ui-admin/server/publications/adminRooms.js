@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { hasPermission } from '../../../authorization';
+import { Rooms } from '../../../models';
 
 Meteor.publish('adminRooms', function(filter, types, limit) {
 	if (!this.userId) {
@@ -24,6 +25,7 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 			usernames: 1,
 			usersCount: 1,
 			muted: 1,
+			unmuted: 1,
 			ro: 1,
 			default: 1,
 			topic: 1,
@@ -42,11 +44,10 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 	if (filter && types.length) {
 		// CACHE: can we stop using publications here?
 		return Rooms.findByNameContainingAndTypes(filter, types, options);
-	} else if (types.length) {
+	} if (types.length) {
 		// CACHE: can we stop using publications here?
 		return Rooms.findByTypes(types, options);
-	} else {
-		// CACHE: can we stop using publications here?
-		return Rooms.findByNameContaining(filter, options);
 	}
+	// CACHE: can we stop using publications here?
+	return Rooms.findByNameContaining(filter, options);
 });

@@ -1,10 +1,12 @@
+import crypto from 'crypto';
+
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
+
 import { registerAccessTokenService } from './oauth';
 
-import crypto from 'crypto';
 
 const whitelisted = [
 	'id',
@@ -50,7 +52,7 @@ registerAccessTokenService('facebook', function(options) {
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
+		expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
 	};
 
 	const fields = _.pick(identity, whitelisted);
@@ -65,4 +67,3 @@ registerAccessTokenService('facebook', function(options) {
 		},
 	};
 });
-

@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Users, Subscriptions } from '../../../models';
+import _ from 'underscore';
+import Busboy from 'busboy';
+
+import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -13,9 +16,8 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
+import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
-import _ from 'underscore';
-import Busboy from 'busboy';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -122,7 +124,6 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
-
 	},
 });
 
@@ -149,18 +150,18 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
 		const { username } = this.getUserFromParams();
 		const { fields } = this.parseJsonQuery();
-		let user = {};
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getFullUserData', { username, limit: 1 });
+
+		const result = getFullUserData({
+			userId: this.userId,
+			filter: username,
+			limit: 1,
 		});
-
-		if (!result || result.length !== 1) {
-			return API.v1.failure(`Failed to get the user data for the userId of "${ username }".`);
+		if (!result || result.count() !== 1) {
+			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
-
-		user = result[0];
-		if (fields.userRooms === 1 && hasPermission(this.userId, 'view-other-user-channels')) {
+		const [user] = result.fetch();
+		const myself = user._id === this.userId;
+		if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {
 					rid: 1,
@@ -191,7 +192,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		const users = Users.find(query, {
-			sort: sort ? sort : { username: 1 },
+			sort: sort || { username: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -409,9 +410,8 @@ API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 			return API.v1.success({
 				preferences,
 			});
-		} else {
-			return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		}
+		return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
 	},
 });
 
@@ -450,6 +450,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarViewMode: Match.Optional(String),
 				sidebarHideAvatar: Match.Optional(Boolean),
 				sidebarGroupByType: Match.Optional(Boolean),
+				sidebarShowDiscussion: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});
@@ -567,5 +568,37 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 		}));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.presence', { authRequired: true }, {
+	get() {
+		const { from } = this.queryParams;
+
+		const options = {
+			fields: {
+				username: 1,
+				name: 1,
+				status: 1,
+				utcOffset: 1,
+			},
+		};
+
+		if (from) {
+			const ts = new Date(from);
+			const diff = (Date.now() - ts) / 1000 / 60;
+
+			if (diff < 10) {
+				return API.v1.success({
+					users: Users.findNotIdUpdatedFrom(this.userId, ts, options).fetch(),
+					full: false,
+				});
+			}
+		}
+
+		return API.v1.success({
+			users: Users.findUsersNotOffline(options).fetch(),
+			full: true,
+		});
 	},
 });

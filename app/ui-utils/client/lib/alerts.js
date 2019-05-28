@@ -7,7 +7,7 @@ export const alerts = {
 	open(config) {
 		this.close(false);
 
-		config.closable = typeof(config.closable) === typeof(true) ? config.closable : true;
+		config.closable = typeof config.closable === typeof true ? config.closable : true;
 
 		if (config.timer) {
 			this.timer = setTimeout(() => this.close(), config.timer);

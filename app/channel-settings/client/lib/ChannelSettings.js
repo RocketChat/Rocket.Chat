@@ -38,4 +38,4 @@ export const ChannelSettings = new class {
 		});
 		return _.sortBy(allowedOptions, 'order');
 	}
-};
+}();

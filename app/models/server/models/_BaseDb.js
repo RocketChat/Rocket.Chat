@@ -1,7 +1,8 @@
+import { EventEmitter } from 'events';
+
 import { Match } from 'meteor/check';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
-import { EventEmitter } from 'events';
 
 const baseName = 'rocketchat_';
 
@@ -60,7 +61,6 @@ export class BaseDb extends EventEmitter {
 	}
 
 	setUpdatedAt(record = {}) {
-
 		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
 		// setUpdatedAt(record = {}, checkQuery = false, query) {
 		// if (checkQuery === true) {
@@ -71,9 +71,9 @@ export class BaseDb extends EventEmitter {
 
 		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
 			record.$set = record.$set || {};
-			record.$set._updatedAt = new Date;
+			record.$set._updatedAt = new Date();
 		} else {
-			record._updatedAt = new Date;
+			record._updatedAt = new Date();
 		}
 
 		return record;
@@ -190,7 +190,6 @@ export class BaseDb extends EventEmitter {
 				id: action.id,
 				oplog: true,
 			});
-			return;
 		}
 	}
 
@@ -223,7 +222,7 @@ export class BaseDb extends EventEmitter {
 		for (const record of records) {
 			ids.push(record._id);
 
-			record._deletedAt = new Date;
+			record._deletedAt = new Date();
 			record.__collection__ = this.name;
 
 			trash.upsert({ _id: record._id }, _.omit(record, '_id'));
@@ -244,9 +243,8 @@ export class BaseDb extends EventEmitter {
 
 			this.upsert(...args);
 			return _id;
-		} else {
-			return this.insert(...args);
 		}
+		return this.insert(...args);
 	}
 
 	allow(...args) {

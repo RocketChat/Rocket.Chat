@@ -1,12 +1,13 @@
 import { Template } from 'meteor/templating';
-import { popover } from '../../../../../ui-utils';
 import moment from 'moment';
+
+import { popover } from '../../../../../ui-utils';
 import { setDateRange } from '../../../lib/dateHandler';
 import './livechatAnalyticsDaterange.html';
 
 Template.livechatAnalyticsDaterange.helpers({
 	bold(prop) {
-		return (prop === Template.currentData().daterange.get().value) ? 'rc-popover__item--bold' : '';
+		return prop === Template.currentData().daterange.get().value ? 'rc-popover__item--bold' : '';
 	},
 });
 

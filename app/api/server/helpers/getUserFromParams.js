@@ -1,5 +1,6 @@
 // Convenience method, almost need to turn it into a middleware of sorts
 import { Meteor } from 'meteor/meteor';
+
 import { Users } from '../../../models';
 import { API } from '../api';
 

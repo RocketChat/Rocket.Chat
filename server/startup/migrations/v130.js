@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
+
 import { Migrations } from '../../../app/migrations';
 import { Rooms, Subscriptions, Users } from '../../../app/models';
 

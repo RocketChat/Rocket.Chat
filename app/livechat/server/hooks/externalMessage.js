@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SystemLogger } from '../../../logger';
-import { HTTP } from 'meteor/http';
 import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
-import _ from 'underscore';
 
 let knowledgeEnabled = false;
 let apiaiKey = '';

@@ -55,9 +55,9 @@
 			{{#if title}}
 				<div class="attachment-title">
 					{{#if title_link}}
-						<a href="{{title_link}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
+						<a href="{{getURL title_link}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
 						{{#if title_link_download}}
-							<a class="attachment-download-icon rc-tooltip" aria-label="{{_ 'Download'}}" href="{{title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
+							<a class="attachment-download-icon rc-tooltip" aria-label="{{_ 'Download'}}" href="{{getURL title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
 						{{/if}}
 					{{else}}
 						{{title}}

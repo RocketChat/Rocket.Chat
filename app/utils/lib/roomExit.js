@@ -1,5 +1,6 @@
 import { Blaze } from 'meteor/blaze';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+
 import { callbacks } from '../../callbacks';
 
 export const roomExit = function() {
