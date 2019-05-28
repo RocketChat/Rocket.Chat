@@ -1,4 +1,5 @@
 import limax from 'limax';
+
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 
@@ -25,7 +26,6 @@ export function generateUsernameSuggestion(user) {
 	let usernames = [];
 
 	if (user.name) {
-
 		usernames.push(name(user.name));
 
 		const nameParts = user.name.split(' ');

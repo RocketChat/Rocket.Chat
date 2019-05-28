@@ -15,4 +15,3 @@ API.helperMethods.set('insertUserObject', function _addUserToObject({ object, us
 
 	return object;
 });
-

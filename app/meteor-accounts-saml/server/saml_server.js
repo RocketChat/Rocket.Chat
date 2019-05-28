@@ -3,18 +3,21 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
-import { CredentialTokens } from '../../models';
-import { generateUsernameSuggestion } from '../../lib';
-import { SAML } from './saml_utils';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 import _ from 'underscore';
+
+import { SAML } from './saml_utils';
+import { CredentialTokens } from '../../models';
+import { generateUsernameSuggestion } from '../../lib';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
 		settings: {
 			debug: false,
 			generateUsername: false,
+			nameOverwrite: false,
+			mailOverwrite: false,
 			providers: [],
 		},
 	};
@@ -32,7 +35,7 @@ function getSamlProviderConfig(provider) {
 			{ method: 'getSamlProviderConfig' });
 	}
 	const samlProvider = function(element) {
-		return (element.provider === provider);
+		return element.provider === provider;
 	};
 	return Accounts.saml.settings.providers.filter(samlProvider)[0];
 }
@@ -111,14 +114,33 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
 		const emailList = Array.isArray(loginResult.profile.email) ? loginResult.profile.email : [loginResult.profile.email];
 		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
+
+		const eduPersonPrincipalName = loginResult.profile.eppn;
+		const fullName = loginResult.profile.cn || loginResult.profile.username || loginResult.profile.displayName;
+
+		let eppnMatch = false;
+
+		// Check eppn
 		let user = Meteor.users.findOne({
-			'emails.address': emailRegex,
+			eppn: eduPersonPrincipalName,
 		});
+
+		if (user) {
+			eppnMatch = true;
+		}
+
+		// If eppn is not exist
+		if (!user) {
+			user = Meteor.users.findOne({
+				'emails.address': emailRegex,
+			});
+		}
 
 		if (!user) {
 			const newUser = {
-				name: loginResult.profile.displayName || loginResult.profile.cn || loginResult.profile.username,
+				name: fullName,
 				active: true,
+				eppn: eduPersonPrincipalName,
 				globalRoles: ['user'],
 				emails: emailList.map((email) => ({
 					address: email,
@@ -137,6 +159,17 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
+		}
+
+		// If eppn is not exist then update
+		if (eppnMatch === false) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					eppn: eduPersonPrincipalName,
+				},
+			});
 		}
 
 		// creating the token and adding to the user
@@ -163,6 +196,31 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			},
 		});
 
+		// Overwrite fullname if needed
+		if (Accounts.saml.settings.nameOverwrite === true) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					name: fullName,
+				},
+			});
+		}
+
+		// Overwrite mail if needed
+		if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					emails: emailList.map((email) => ({
+						address: email,
+						verified: true,
+					})),
+				},
+			});
+		}
+
 		// sending token along with the userId
 		const result = {
 			userId: user._id,
@@ -170,10 +228,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 
 		return result;
-
-	} else {
-		throw new Error('SAML Profile did not contain an email address');
 	}
+	throw new Error('SAML Profile did not contain an email address');
 });
 
 Accounts.saml.hasCredential = function(credentialToken) {
@@ -308,7 +364,6 @@ const middleware = function(req, res, next) {
 							if (loggedOutUser.length === 1) {
 								logoutRemoveTokens(loggedOutUser[0]._id);
 							}
-
 						};
 
 						fiber(function() {
@@ -330,9 +385,7 @@ const middleware = function(req, res, next) {
 								Location: url,
 							});
 							res.end();
-
 						});
-
 					});
 				} else {
 					_saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
@@ -418,7 +471,6 @@ const middleware = function(req, res, next) {
 				break;
 			default:
 				throw new Error(`Unexpected SAML action ${ samlObject.actionName }`);
-
 		}
 	} catch (err) {
 		closePopup(res, err);

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+
 import { API } from '../api';
 
 API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
 	get() {
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('e2e.fetchMyKeys'));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('e2e.fetchMyKeys'); });
 
 		return API.v1.success(result);
 	},
@@ -15,7 +16,7 @@ API.v1.addRoute('e2e.getUsersOfRoomWithoutKey', { authRequired: true }, {
 		const { rid } = this.queryParams;
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('e2e.getUsersOfRoomWithoutKey', rid));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('e2e.getUsersOfRoomWithoutKey', rid); });
 
 		return API.v1.success(result);
 	},

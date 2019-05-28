@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { Users } from '../../models/client';
