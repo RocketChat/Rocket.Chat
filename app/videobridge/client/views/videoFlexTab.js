@@ -62,7 +62,11 @@ Template.videoFlexTab.onRendered(function() {
 			if (jitsiTimeout && (new Date() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
 				return;
 			}
-			return Meteor.status().connected && Meteor.call('jitsi:updateTimeout', rid);
+			if (Meteor.status().connected) {
+				return Meteor.call('jitsi:updateTimeout', rid);
+			}
+			closePanel();
+			return this.stop();
 		};
 		update();
 		this.intervalHandler = Meteor.setInterval(update, CONSTANTS.HEARTBEAT);

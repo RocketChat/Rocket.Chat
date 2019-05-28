@@ -2,7 +2,7 @@ import s from 'underscore.string';
 
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 
 const logger = new Logger('getFullUserData');
@@ -56,7 +56,8 @@ settings.get('Accounts_CustomFields', (key, value) => {
 
 export const getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
-	const userToRetrieveFullUserData = Users.findOneByUsername(username);
+	const userToRetrieveFullUserData = Users.findOneByUsername(username, { fields: { username: 1 } });
+
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
 	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
 	const limit = !viewFullOtherUserInfo ? 1 : l;
@@ -65,9 +66,13 @@ export const getFullUserData = function({ userId, filter, limit: l }) {
 		return undefined;
 	}
 
-	const _customFields = isMyOwnInfo || viewFullOtherUserInfo ? customFields : publicCustomFields;
+	const _customFields = isMyOwnInfo || viewFullOtherUserInfo
+		? customFields
+		: publicCustomFields;
 
-	const fields = viewFullOtherUserInfo ? { ...defaultFields, ...fullFields, ..._customFields } : { ...defaultFields, ..._customFields };
+	const fields = isMyOwnInfo || viewFullOtherUserInfo
+		? { ...defaultFields, ...fullFields, ..._customFields }
+		: { ...defaultFields, ..._customFields };
 
 	const options = {
 		fields,
@@ -78,9 +83,11 @@ export const getFullUserData = function({ userId, filter, limit: l }) {
 	if (!username) {
 		return Users.find({}, options);
 	}
+
 	if (limit === 1) {
-		return Users.findByUsername(username, options);
+		return Users.findByUsername(userToRetrieveFullUserData.username, options);
 	}
+
 	const usernameReg = new RegExp(s.escapeRegExp(username), 'i');
 	return Users.findByUsernameNameOrEmailAddress(usernameReg, options);
 };

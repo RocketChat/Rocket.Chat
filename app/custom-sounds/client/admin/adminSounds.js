@@ -146,4 +146,20 @@ Template.adminSounds.events({
 			$audio[0].play();
 		}
 	},
+	'click .icon-pause-circled'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		const audio = document.getElementById(this._id);
+		if (audio && !audio.paused) {
+			audio.pause();
+		}
+	},
+	'click .icon-reset-circled'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		const audio = document.getElementById(this._id);
+		if (audio) {
+			audio.currentTime = 0;
+		}
+	},
 });
