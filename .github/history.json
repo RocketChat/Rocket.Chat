@@ -15362,6 +15362,9 @@
         }
       ]
     },
+    "HEAD": {
+      "pull_requests": []
+    },
     "0.66.0-rc.0": {
       "node_version": "8.11.1",
       "npm_version": "5.6.0",
@@ -29978,6 +29981,22 @@
       ],
       "pull_requests": [
         {
+          "pr": "14339",
+          "title": "Release 1.0.2",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "mohamedar97",
+            "ggazzo",
+            "thaiphv",
+            "knrt10",
+            "lolimay",
+            "AnBo83",
+            "sampaiodiego"
+          ]
+        },
+        {
           "pr": "14338",
           "title": "[FIX] Unread line and new day separator were not aligned ",
           "userLogin": "ggazzo",
@@ -30133,6 +30152,511 @@
       ],
       "pull_requests": [
         {
+          "pr": "14446",
+          "title": "Release 1.0.3",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.3",
+          "contributors": [
+            "rodrigok",
+            "mrsimpson",
+            "ggazzo",
+            "MarcosSpessatto",
+            "geekgonecrazy",
+            "tassoevan",
+            "engelgabriel",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "1.1.0-rc.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14252",
+          "title": "[IMPROVE] Message rendering time",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14488",
+          "title": "[IMPROVE] Change user presence events to Meteor Streams",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13641",
+          "title": "Removed unnecessary DDP unblocks",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14485",
+          "title": "[FIX] Downloading files when running in sub directory",
+          "userLogin": "miolane",
+          "milestone": "1.1.0",
+          "contributors": [
+            null,
+            "miolane",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14567",
+          "title": "[FIX] Broken layout when sidebar is open on IE/Edge",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14542",
+          "title": "[FIX] Channel names on Directory got cut on small screens",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14505",
+          "title": "[FIX] Duplicated link to jump to message ",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14369",
+          "title": "[FIX] Edit Message when down arrow is pressed.",
+          "userLogin": "Kailash0311",
+          "milestone": "1.1.0",
+          "contributors": [
+            "Kailash0311",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14570",
+          "title": "Fix emoji replacing some chars",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13807",
+          "title": "[IMPROVE] Upgrade EmojiOne to JoyPixels 4.5.0",
+          "userLogin": "wreiske",
+          "milestone": "1.1.0",
+          "contributors": [
+            "wreiske",
+            "web-flow",
+            "sampaiodiego",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "13919",
+          "title": "[FIX] Unread property of the room's lastMessage object was being wrong some times",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14561",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "10273",
+          "title": "[NEW] Setting option to mark as containing a secret/password",
+          "userLogin": "kb0304",
+          "milestone": "1.1.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13736",
+          "title": "Refactor WebRTC class",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14551",
+          "title": "Update Meteor Streamer package",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12084",
+          "title": "[FIX] Multiple Slack Importer Bugs",
+          "userLogin": "Hudell",
+          "milestone": "1.1.0",
+          "contributors": [
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14534",
+          "title": "[FIX] No feedback when adding users that already exists in a room",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "gsunit",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14543",
+          "title": "Regression: unit tests were being skipped",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14516",
+          "title": "[FIX] Custom scripts descriptions were not clear enough ",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14263",
+          "title": "[FIX] Role `user` has being added after email verification even for non anonymous users",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14495",
+          "title": "MsgTyping refactor",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11311",
+          "title": "[FIX] Several problems with read-only rooms and muted users",
+          "userLogin": "Hudell",
+          "milestone": "1.1.0",
+          "contributors": [
+            "Hudell",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13328",
+          "title": "[FIX] Channel settings form to textarea for Topic and Description",
+          "userLogin": "supra08",
+          "milestone": "1.1.0",
+          "contributors": [
+            "supra08",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "12971",
+          "title": "[IMPROVE] Don't show unread count badge in burger menu if it is from the opened room",
+          "userLogin": "tassoevan",
+          "milestone": "1.1.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14503",
+          "title": "Google Plus account is no longer accessible",
+          "userLogin": "zdumitru",
+          "contributors": [
+            "zdumitru",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13640",
+          "title": "[FIX] Elements in User Info require some padding",
+          "userLogin": "mushroomgenie",
+          "milestone": "1.1.0",
+          "contributors": [
+            "mushroomgenie",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "13660",
+          "title": "[FIX] Showing the id instead of the name of custom notification sound",
+          "userLogin": "knrt10",
+          "milestone": "1.1.0",
+          "contributors": [
+            "knrt10",
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13872",
+          "title": "[IMPROVEMENT] Add tooltip to to notify user the purpose of back button in discussion",
+          "userLogin": "ashwaniYDV",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ashwaniYDV",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14518",
+          "title": "eslint errors currently on develop",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14022",
+          "title": "[IMPROVE] Livechat CRM secret token optional",
+          "userLogin": "renatobecker",
+          "milestone": "1.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14509",
+          "title": "[FIX] Remove Livechat guest data was removing more rooms than expected",
+          "userLogin": "renatobecker",
+          "milestone": "1.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14456",
+          "title": "[FIX] Save custom emoji with special characters causes some errors",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14242",
+          "title": "[FIX] Verify if the user is requesting your own information in users.info",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13682",
+          "title": "Allow removing description, topic and annoucement of rooms(set as empty string)",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14381",
+          "title": "[NEW] Custom user name field from Custom OAuth",
+          "userLogin": "mjovanovic0",
+          "milestone": "1.1.0",
+          "contributors": [
+            "mjovanovic0",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "13615",
+          "title": "[NEW] Add pause and reset button when adding custom sound  ",
+          "userLogin": "knrt10",
+          "milestone": "1.1.0",
+          "contributors": [
+            "knrt10"
+          ]
+        },
+        {
+          "pr": "14496",
+          "title": "[FIX] RocketChat client sending out video call requests unnecessarily",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14490",
+          "title": "[FIX] `Alphabetical` translation in DE",
+          "userLogin": "AnBo83",
+          "contributors": [
+            "AnBo83",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13680",
+          "title": "[NEW] Missing \"view-outside-room_description\" translation key",
+          "userLogin": "bhardwajaditya",
+          "contributors": [
+            "bhardwajaditya"
+          ]
+        },
+        {
+          "pr": "14434",
+          "title": "[FIX] Fix redirect to First channel after login",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14257",
+          "title": "[IMPROVEMENT] Don't group messages with different alias",
+          "userLogin": "jungeonkim",
+          "milestone": "1.1.0",
+          "contributors": [
+            "jungeonkim",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14460",
+          "title": "[IMPROVE] jump to selected message on open thread",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14465",
+          "title": "[FIX] Ignored messages",
+          "userLogin": "tassoevan",
+          "milestone": "1.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14478",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14464",
+          "title": "[FIX] Allow data URLs in isURL/getURL helpers",
+          "userLogin": "tassoevan",
+          "milestone": "1.1.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14461",
+          "title": "[FIX] You must join to view messages in this channel",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14459",
+          "title": "Remove specific eslint rules",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14332",
+          "title": "New eslint rules",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
           "pr": "14443",
           "title": "[FIX] Channel Leader Bar is in the way of Thread Header ",
           "userLogin": "ggazzo",
@@ -30266,6 +30790,16 @@
           ]
         },
         {
+          "pr": "12891",
+          "title": "[IMPROVE] SAML login process refactoring",
+          "userLogin": "kukkjanos",
+          "milestone": "1.1.0",
+          "contributors": [
+            "kukkjanos",
+            "web-flow"
+          ]
+        },
+        {
           "pr": "14404",
           "title": "[FIX] Messages on thread panel were receiving wrong context/subscription",
           "userLogin": "ggazzo",
@@ -30341,6 +30875,18 @@
           ]
         },
         {
+          "pr": "14039",
+          "title": "fix discussions: remove restriction for editing room info, server side",
+          "userLogin": "mrsimpson",
+          "milestone": "1.1.0",
+          "contributors": [
+            "mrsimpson",
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
           "pr": "14387",
           "title": "[FIX] more message actions to threads context(follow, unfollow, copy, delete)",
           "userLogin": "ggazzo",
@@ -30406,6 +30952,15 @@
           ]
         },
         {
+          "pr": "14370",
+          "title": "[NEW] Returns custom emojis through the Livechat REST API",
+          "userLogin": "renatobecker",
+          "milestone": "1.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
           "pr": "14351",
           "title": "Improve German translations",
           "userLogin": "mrsimpson",
@@ -30421,6 +30976,642 @@
           "milestone": "1.0.3",
           "contributors": [
             "rodrigok"
+          ]
+        },
+        {
+          "pr": "14338",
+          "title": "[FIX] Unread line and new day separator were not aligned ",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14336",
+          "title": "[FIX] Audio notification for messages on DM",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14334",
+          "title": "[IMPROVE] i18n of threads and discussion buttons",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14330",
+          "title": "[FIX] Duplicate thread message after editing",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14328",
+          "title": "[FIX] New day separator rendered over thread reply",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14320",
+          "title": "[IMPROVE] Better error message when not able to get MongoDB Version",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.2",
+          "contributors": [
+            "rodrigok",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14318",
+          "title": "Add cross-browser select arrow positioning",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14182",
+          "title": "i18n: Update German strings",
+          "userLogin": "AnBo83",
+          "milestone": "1.0.2",
+          "contributors": [
+            "AnBo83",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14011",
+          "title": "[FIX] Missing i18n for some new Permissions",
+          "userLogin": "lolimay",
+          "milestone": "1.0.2",
+          "contributors": [
+            "lolimay",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14316",
+          "title": "[FIX] View Logs admin page was broken and not rendering color logs",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14317",
+          "title": "Merge master into develop & Set version to 1.1.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "wreiske",
+            "rodrigok",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14301",
+          "title": "[Regression] Anonymous user fix",
+          "userLogin": "knrt10",
+          "milestone": "1.0.2",
+          "contributors": [
+            "knrt10"
+          ]
+        },
+        {
+          "pr": "14299",
+          "title": "Coerces the MongoDB version string",
+          "userLogin": "thaiphv",
+          "milestone": "1.0.2",
+          "contributors": [
+            "thaiphv"
+          ]
+        },
+        {
+          "pr": "14313",
+          "title": "[FIX] show roles on message",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14075",
+          "title": "[Fix] group name appears instead of the room id",
+          "userLogin": "mohamedar97",
+          "milestone": "1.0.2",
+          "contributors": [
+            "mohamedar97"
+          ]
+        },
+        {
+          "pr": "14311",
+          "title": "[FIX] Remove reference to inexistent field when deleting message in thread",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14296",
+          "title": "[FIX] Popup cloud console in new window",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14288",
+          "title": "[FIX] Switch oplog required doc link to more accurate link",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14291",
+          "title": "[FIX] Optional exit on Unhandled Promise Rejection",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14293",
+          "title": "[FIX] Error when accessing avatar with no token",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14286",
+          "title": "[FIX] Startup error in registration check",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14290",
+          "title": "[FIX] Wrong header at Apps admin section",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14294",
+          "title": "Merge master into develop & Set version to 1.1.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14282",
+          "title": "[FIX] Error when accessing an invalid file upload url",
+          "userLogin": "wreiske",
+          "milestone": "1.0.1",
+          "contributors": [
+            "wreiske",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14446",
+          "title": "Release 1.0.3",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.3",
+          "contributors": [
+            "rodrigok",
+            "mrsimpson",
+            "ggazzo",
+            "MarcosSpessatto",
+            "geekgonecrazy",
+            "tassoevan",
+            "engelgabriel",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14339",
+          "title": "Release 1.0.2",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "mohamedar97",
+            "ggazzo",
+            "thaiphv",
+            "knrt10",
+            "lolimay",
+            "AnBo83",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14338",
+          "title": "[FIX] Unread line and new day separator were not aligned ",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14336",
+          "title": "[FIX] Audio notification for messages on DM",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14334",
+          "title": "[IMPROVE] i18n of threads and discussion buttons",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14330",
+          "title": "[FIX] Duplicate thread message after editing",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14328",
+          "title": "[FIX] New day separator rendered over thread reply",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14320",
+          "title": "[IMPROVE] Better error message when not able to get MongoDB Version",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.2",
+          "contributors": [
+            "rodrigok",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14318",
+          "title": "Add cross-browser select arrow positioning",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14182",
+          "title": "i18n: Update German strings",
+          "userLogin": "AnBo83",
+          "milestone": "1.0.2",
+          "contributors": [
+            "AnBo83",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14011",
+          "title": "[FIX] Missing i18n for some new Permissions",
+          "userLogin": "lolimay",
+          "milestone": "1.0.2",
+          "contributors": [
+            "lolimay",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14316",
+          "title": "[FIX] View Logs admin page was broken and not rendering color logs",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14301",
+          "title": "[Regression] Anonymous user fix",
+          "userLogin": "knrt10",
+          "milestone": "1.0.2",
+          "contributors": [
+            "knrt10"
+          ]
+        },
+        {
+          "pr": "14299",
+          "title": "Coerces the MongoDB version string",
+          "userLogin": "thaiphv",
+          "milestone": "1.0.2",
+          "contributors": [
+            "thaiphv"
+          ]
+        },
+        {
+          "pr": "14313",
+          "title": "[FIX] show roles on message",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14075",
+          "title": "[Fix] group name appears instead of the room id",
+          "userLogin": "mohamedar97",
+          "milestone": "1.0.2",
+          "contributors": [
+            "mohamedar97"
+          ]
+        },
+        {
+          "pr": "14311",
+          "title": "[FIX] Remove reference to inexistent field when deleting message in thread",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "1.1.0-rc.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14576",
+          "title": "Fix: Add emoji shortnames to emoji's list",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "1.1.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14600",
+          "title": "Ci improvements",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14580",
+          "title": "[FIX] E2E messages not decrypting in message threads",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14593",
+          "title": "Fix: emoji render performance for alias",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14568",
+          "title": "[FIX] Send replyTo for livechat offline messages",
+          "userLogin": "renatobecker",
+          "milestone": "1.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "14595",
+          "title": "Federation i18n message changes",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "14565",
+          "title": "[REGRESSION] Fix Slack bridge channel owner on channel creation",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14581",
+          "title": "Fix thumbs up emoji shortname",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14572",
+          "title": "[Fix] broken logo url in app.json",
+          "userLogin": "jaredmoody",
+          "contributors": [
+            "jaredmoody"
+          ]
+        },
+        {
+          "pr": "14583",
+          "title": "Add digitalocean button to readme",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "1.1.0-rc.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14614",
+          "title": "[FIX] Mailer breaking if user doesn't have an email address",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        }
+      ]
+    },
+    "1.1.0-rc.4": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14625",
+          "title": "[FIX] Role name spacing on Permissions page",
+          "userLogin": "tassoevan",
+          "milestone": "1.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14590",
+          "title": "[FIX] Avatar images on old Livechat client",
+          "userLogin": "arminfelder",
+          "contributors": [
+            "arminfelder",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14623",
+          "title": "[FIX] Inject code at the end of <head> tag",
+          "userLogin": "tassoevan",
+          "milestone": "1.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "1.1.0-rc.5": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14646",
+          "title": "Improvement: Permissions table",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14641",
+          "title": "Regression: Handle missing emojis",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14651",
+          "title": "[FIX] \"Blank page\" on safari 10.x",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14643",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
           ]
         }
       ]

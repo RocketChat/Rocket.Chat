@@ -1,8 +1,9 @@
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
+
 const semver = require('semver');
 const _ = require('underscore');
-const { execSync } = require('child_process');
 
 const historyDataFile = path.join(__dirname, '../.github/history.json');
 const historyManualDataFile = path.join(__dirname, '../.github/history-manual.json');
@@ -50,7 +51,7 @@ const SummaryNameEmoticons = {
 
 const historyData = (() => {
 	try {
-		return require(historyDataFile);
+		return require(historyDataFile); // eslint-disable-line import/no-dynamic-require
 	} catch (error) {
 		return {};
 	}
@@ -58,7 +59,7 @@ const historyData = (() => {
 
 const historyManualData = (() => {
 	try {
-		return require(historyManualDataFile);
+		return require(historyManualDataFile); // eslint-disable-line import/no-dynamic-require
 	} catch (error) {
 		return {};
 	}

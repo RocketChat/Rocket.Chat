@@ -4,20 +4,21 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { roomTypes } from '../../../utils';
+import _ from 'underscore';
+
 import { fireGlobalEvent } from './fireGlobalEvent';
-import { promises } from '../../../promises/client';
+import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { mainReady } from './mainReady';
+import { roomTypes } from '../../../utils';
+import { call } from '../..';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import _ from 'underscore';
-import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
-import { mainReady } from './mainReady';
 import { getConfig } from '../config';
 
 
-const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5 ;
+const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });
@@ -49,58 +50,53 @@ export const RoomManager = new function() {
 			this.prototype.openedRooms = openedRooms;
 			this.prototype.onlineUsers = onlineUsers;
 			this.prototype.computation = Tracker.autorun(() => {
-				Object.keys(openedRooms).forEach((typeName) => {
-					const record = openedRooms[typeName];
+				const ready = CachedChatRoom.ready.get() && mainReady.get();
+				if (ready !== true) { return; }
+				const user = Meteor.user();
+				Tracker.nonreactive(() => Object.entries(openedRooms).forEach(([typeName, record]) => {
 					if (record.active !== true || record.ready === true) { return; }
-					const ready = CachedChatRoom.ready.get() && mainReady.get();
-					if (ready !== true) { return; }
-					const user = Meteor.user();
 
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-					const room = Tracker.nonreactive(() => roomTypes.findRoom(type, name, user));
+					const room = roomTypes.findRoom(type, name, user);
 
 					if (room != null) {
-						openedRooms[typeName].rid = room._id;
+						record.rid = room._id;
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
 
-						if (openedRooms[typeName].streamActive !== true) {
-							openedRooms[typeName].streamActive = true;
-							msgStream.on(openedRooms[typeName].rid, (msg) =>
+						if (record.streamActive !== true) {
+							record.streamActive = true;
+							msgStream.on(record.rid, async (msg) => {
+								// Should not send message to room if room has not loaded all the current messages
+								if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+									return;
+								}
+								// Do not load command messages into channel
+								if (msg.t !== 'command') {
+									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+									upsertMessage({ msg, subscription });
+									msg.room = {
+										type,
+										name,
+									};
+								}
+								msg.name = room.name;
+								RoomManager.updateMentionsMarksOfRoom(typeName);
 
-								promises.run('onClientMessageReceived', msg).then(function(msg) {
+								callbacks.run('streamMessage', msg);
 
-									// Should not send message to room if room has not loaded all the current messages
-									if (RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) === false) {
+								return fireGlobalEvent('new-message', msg);
+							});
 
-										// Do not load command messages into channel
-										if (msg.t !== 'command') {
-											const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid });
-											upsertMessage({ msg, subscription });
-											msg.room = {
-												type,
-												name,
-											};
-										}
-										msg.name = room.name;
-										RoomManager.updateMentionsMarksOfRoom(typeName);
-
-										callbacks.run('streamMessage', msg);
-
-										return fireGlobalEvent('new-message', msg);
-									}
-								})
-							);
-
-							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
-							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 						}
 					}
 
 					record.ready = true;
-					Dep.changed();
-				});
+				}));
+				Dep.changed();
 			});
 		}
 
@@ -110,7 +106,7 @@ export const RoomManager = new function() {
 
 		getDomOfRoom(typeName, rid) {
 			const room = openedRooms[typeName];
-			if ((room == null)) {
+			if (room == null) {
 				return;
 			}
 
@@ -172,7 +168,7 @@ export const RoomManager = new function() {
 
 
 		open(typeName) {
-			if ((openedRooms[typeName] == null)) {
+			if (openedRooms[typeName] == null) {
 				openedRooms[typeName] = {
 					typeName,
 					active: false,
@@ -181,14 +177,13 @@ export const RoomManager = new function() {
 				};
 			}
 
-			openedRooms[typeName].lastSeen = new Date;
+			openedRooms[typeName].lastSeen = new Date();
 
 			if (openedRooms[typeName].ready) {
 				this.closeOlderRooms();
 			}
 
 			if (CachedChatSubscription.ready.get() === true) {
-
 				if (openedRooms[typeName].active !== true) {
 					openedRooms[typeName].active = true;
 					if (this.computation) {
@@ -207,7 +202,7 @@ export const RoomManager = new function() {
 
 		existsDomOfRoom(typeName) {
 			const room = openedRooms[typeName];
-			return ((room != null ? room.dom : undefined) != null);
+			return (room != null ? room.dom : undefined) != null;
 		}
 
 		updateUserStatus(user, status, utcOffset) {
@@ -254,22 +249,27 @@ export const RoomManager = new function() {
 		}
 	};
 	Cls.initClass();
-	return new Cls;
-};
+	return new Cls();
+}();
 
-const loadMissedMessages = function(rid) {
+const loadMissedMessages = async function(rid) {
 	const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true }, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
+
 	if (lastMessage == null) {
 		return;
 	}
-	const subscription = ChatSubscription.findOne({ rid });
-	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) => {
+
+
+	try {
+		const result = await call('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
-			return Array.from(result).map((item) => promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })));
-		} else {
-			return [];
+			const subscription = ChatSubscription.findOne({ rid });
+			return Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
 		}
-	});
+		return [];
+	} catch (error) {
+		return [];
+	}
 };
 
 let connectionWasOnline = true;
@@ -284,11 +284,10 @@ Tracker.autorun(function() {
 			}
 		});
 	}
-	return connectionWasOnline = connected;
+	connectionWasOnline = connected;
 });
 
 Meteor.startup(() => {
-
 	// Reload rooms after login
 	let currentUsername = undefined;
 	Tracker.autorun(() => {
@@ -311,12 +310,12 @@ Meteor.startup(() => {
 			if (RoomManager.getOpenedRoomByRid(record.rid) != null) {
 				const recordBefore = ChatMessage.findOne({ ts: { $lt: record.ts } }, { sort: { ts: -1 } });
 				if (recordBefore != null) {
-					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date } });
+					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date() } });
 				}
 
 				const recordAfter = ChatMessage.findOne({ ts: { $gt: record.ts } }, { sort: { ts: 1 } });
 				if (recordAfter != null) {
-					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date } });
+					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date() } });
 				}
 			}
 		},
@@ -342,7 +341,7 @@ CachedCollectionManager.onLogin(() => {
 
 		ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true });
 		if (sub && sub.ignored) {
-			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in : sub.ignored } }, { $set: { ignored : true } }, { multi : true });
+			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in: sub.ignored } }, { $set: { ignored: true } }, { multi: true });
 		}
 	});
 });

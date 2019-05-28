@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+
 import { roomTypes } from '../../../utils';
 import './messageBoxReadOnly.html';
 

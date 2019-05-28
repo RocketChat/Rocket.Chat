@@ -3,12 +3,13 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { UserPresence } from 'meteor/konecty:user-presence';
+import toastr from 'toastr';
+import hljs from 'highlight.js';
+
 import { fireGlobalEvent } from '../../app/ui-utils';
 import { settings } from '../../app/settings';
 import { Users } from '../../app/models';
 import { getUserPreference } from '../../app/utils';
-import toastr from 'toastr';
-import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
 
 hljs.initHighlightingOnLoad();
@@ -33,7 +34,6 @@ Meteor.startup(function() {
 			return;
 		}
 		Meteor.subscribe('userData');
-		Meteor.subscribe('activeUsers');
 		computation.stop();
 	});
 

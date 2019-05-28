@@ -38,5 +38,3 @@ export const canDeleteMessage = ({ rid, ts, uid }) => {
 
 	return true;
 };
-
-

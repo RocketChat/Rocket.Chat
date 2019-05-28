@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import Autolinker from 'autolinker';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-import Autolinker from 'autolinker';
 
 const createAutolinker = () => {
 	const regUrls = new RegExp(settings.get('AutoLinker_UrlsRegExp'));
