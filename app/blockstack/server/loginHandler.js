@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from '../../settings';
-import { Users } from '../../models';
-import { setUserAvatar } from '../../lib';
+
 import { updateOrCreateUser } from './userHandler';
 import { handleAccessToken } from './tokenHandler';
 import { logger } from './logger';
+import { settings } from '../../settings';
+import { Users } from '../../models';
+import { setUserAvatar } from '../../lib';
 
 // Blockstack login handler, triggered by a blockstack authResponse in route
 Accounts.registerLoginHandler('blockstack', (loginRequest) => {

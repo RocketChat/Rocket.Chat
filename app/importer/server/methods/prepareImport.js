@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Importers } from '../..';
+
+import { Importers } from '..';
+
 import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
@@ -27,8 +29,7 @@ Meteor.methods({
 
 		if (results instanceof Promise) {
 			return results.catch((e) => { throw new Meteor.Error(e); });
-		} else {
-			return results;
 		}
+		return results;
 	},
 });

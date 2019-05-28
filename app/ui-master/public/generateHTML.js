@@ -38,12 +38,12 @@ const header = `<html><body><style>
 }
 </style><div class="grid">`;
 
-const start = async() => {
+const start = async () => {
 	const html = fs.createWriteStream('icons.html', { flags: 'w' });
 	html.write(header);
 	try {
 		await new Promise((resolve) => {
-			fs.readdir('./icons', async(err, files) => {
+			fs.readdir('./icons', async (err, files) => {
 				files
 					.sort(sort)
 					.filter((file) => {
@@ -52,16 +52,14 @@ const start = async() => {
 							return false;
 						}
 						return true;
-					}).forEach(async(file) => {
+					}).forEach(async (file) => {
 						const name = file.replace('.svg', '').toLocaleLowerCase();
 						console.log(name);
 						html.write(iconHTML(name));
 					});
 				resolve();
 			});
-
 		});
-
 	} catch (error) {
 		console.error(error);
 	} finally {
@@ -73,7 +71,6 @@ const start = async() => {
 
 try {
 	start();
-
 } catch (error) {
 	console.error(error);
 }

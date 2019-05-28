@@ -1,8 +1,10 @@
+import fs from 'fs';
+
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { settings } from '../../../settings';
 import _ from 'underscore';
-import fs from 'fs';
+
+import { settings } from '../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 
 const FileSystemUploads = new FileUploadClass({
@@ -27,7 +29,6 @@ const FileSystemUploads = new FileUploadClass({
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
-			return;
 		}
 	},
 
@@ -43,7 +44,6 @@ const FileSystemUploads = new FileUploadClass({
 			}
 		} catch (e) {
 			out.end();
-			return;
 		}
 	},
 });
@@ -66,7 +66,6 @@ const FileSystemAvatars = new FileUploadClass({
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
-			return;
 		}
 	},
 });
@@ -92,7 +91,6 @@ const FileSystemUserDataFiles = new FileUploadClass({
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
-			return;
 		}
 	},
 });

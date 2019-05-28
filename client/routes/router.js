@@ -1,3 +1,4 @@
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
@@ -5,8 +6,8 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
+
 import { KonchatNotification } from '../../app/ui';
-import s from 'underscore.string';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
 	return FlowRouter.path(path, kw.hash);
@@ -18,11 +19,9 @@ FlowRouter.subscriptions = function() {
 	Tracker.autorun(() => {
 		if (Meteor.userId()) {
 			this.register('userData', Meteor.subscribe('userData'));
-			this.register('activeUsers', Meteor.subscribe('activeUsers'));
 		}
 	});
 };
-
 
 FlowRouter.route('/', {
 	name: 'index',
@@ -186,4 +185,3 @@ FlowRouter.notFound = {
 		BlazeLayout.render('pageNotFound');
 	},
 };
-

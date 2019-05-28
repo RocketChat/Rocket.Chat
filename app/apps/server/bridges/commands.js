@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from '../../../utils';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+
+import { slashCommands } from '../../../utils';
 import { Utilities } from '../../lib/misc/Utilities';
 
 export class AppCommandsBridge {
@@ -10,7 +11,7 @@ export class AppCommandsBridge {
 	}
 
 	doesCommandExist(command, appId) {
-		console.log(`The App ${ appId } is checking if "${ command }" command exists.`);
+		this.orch.debugLog(`The App ${ appId } is checking if "${ command }" command exists.`);
 
 		if (typeof command !== 'string' || command.length === 0) {
 			return false;
@@ -21,7 +22,7 @@ export class AppCommandsBridge {
 	}
 
 	enableCommand(command, appId) {
-		console.log(`The App ${ appId } is attempting to enable the command: "${ command }"`);
+		this.orch.debugLog(`The App ${ appId } is attempting to enable the command: "${ command }"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
 			throw new Error('Invalid command parameter provided, must be a string.');
@@ -39,7 +40,7 @@ export class AppCommandsBridge {
 	}
 
 	disableCommand(command, appId) {
-		console.log(`The App ${ appId } is attempting to disable the command: "${ command }"`);
+		this.orch.debugLog(`The App ${ appId } is attempting to disable the command: "${ command }"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
 			throw new Error('Invalid command parameter provided, must be a string.');
@@ -63,7 +64,7 @@ export class AppCommandsBridge {
 
 	// command: { command, paramsExample, i18nDescription, executor: function }
 	modifyCommand(command, appId) {
-		console.log(`The App ${ appId } is attempting to modify the command: "${ command }"`);
+		this.orch.debugLog(`The App ${ appId } is attempting to modify the command: "${ command }"`);
 
 		this._verifyCommand(command);
 
@@ -85,7 +86,7 @@ export class AppCommandsBridge {
 	}
 
 	registerCommand(command, appId) {
-		console.log(`The App ${ appId } is registering the command: "${ command.command }"`);
+		this.orch.debugLog(`The App ${ appId } is registering the command: "${ command.command }"`);
 
 		this._verifyCommand(command);
 
@@ -104,7 +105,7 @@ export class AppCommandsBridge {
 	}
 
 	unregisterCommand(command, appId) {
-		console.log(`The App ${ appId } is unregistering the command: "${ command }"`);
+		this.orch.debugLog(`The App ${ appId } is unregistering the command: "${ command }"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
 			throw new Error('Invalid command parameter provided, must be a string.');

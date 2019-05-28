@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import _ from 'underscore';
+
 import { RocketChatFile } from '../../../file';
 import { settings } from '../../../settings';
-import _ from 'underscore';
 
 export let RocketChatFileCustomSoundsInstance;
 
@@ -34,8 +35,7 @@ Meteor.startup(function() {
 	});
 
 	return WebApp.connectHandlers.use('/custom-sounds/', Meteor.bindEnvironment(function(req, res/* , next*/) {
-		const params =
-			{ sound: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
+		const params =			{ sound: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
 		if (_.isEmpty(params.sound)) {
 			res.writeHead(403);

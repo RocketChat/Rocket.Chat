@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { RocketChatFile } from '../../../file';
-import _ from 'underscore';
 
 export let RocketChatFileEmojiCustomInstance;
 
@@ -35,8 +36,7 @@ Meteor.startup(function() {
 
 
 	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/* , next*/) {
-		const params =
-			{ emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
+		const params =			{ emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
 		if (_.isEmpty(params.emoji)) {
 			res.writeHead(403);

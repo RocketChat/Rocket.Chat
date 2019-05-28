@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import Busboy from 'busboy';
+
 import { FileUpload } from '../../../file-upload';
 import { Rooms } from '../../../models';
-import Busboy from 'busboy';
 import { API } from '../api';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
@@ -41,7 +42,7 @@ API.v1.addRoute('rooms.get', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('rooms/get', updatedSinceDate));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('rooms/get', updatedSinceDate); });
 
 		if (Array.isArray(result)) {
 			result = {
@@ -83,7 +84,7 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 				});
 			});
 
-			busboy.on('field', (fieldname, value) => fields[fieldname] = value);
+			busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
 
 			busboy.on('finish', Meteor.bindEnvironment(() => callback()));
 
@@ -216,5 +217,56 @@ API.v1.addRoute('rooms.leave', { authRequired: true }, {
 		});
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
+	post() {
+		const { prid, pmid, reply, t_name, users } = this.bodyParams;
+		if (!prid) {
+			return API.v1.failure('Body parameter "prid" is required.');
+		}
+		if (!t_name) {
+			return API.v1.failure('Body parameter "t_name" is required.');
+		}
+		if (users && !Array.isArray(users)) {
+			return API.v1.failure('Body parameter "users" must be an array.');
+		}
+
+		const discussion = Meteor.runAsUser(this.userId, () => Meteor.call('createDiscussion', {
+			prid,
+			pmid,
+			t_name,
+			reply,
+			users: users || [],
+		}));
+
+		return API.v1.success({ discussion });
+	},
+});
+
+API.v1.addRoute('rooms.getDiscussions', { authRequired: true }, {
+	get() {
+		const room = findRoomByIdOrName({ params: this.requestParams() });
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+		const ourQuery = Object.assign(query, { prid: room._id });
+
+		const discussions = Rooms.find(ourQuery, {
+			sort: sort || { fname: 1 },
+			skip: offset,
+			limit: count,
+			fields,
+		}).fetch();
+
+		return API.v1.success({
+			discussions,
+			count: discussions.length,
+			offset,
+			total: Rooms.find(ourQuery).count(),
+		});
 	},
 });

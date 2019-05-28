@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { t, handleError } from '../../utils';
 import { ChatRoom } from '../../models';
-import toastr from 'toastr';
 
 Template.channelSettings__tokenpass.helpers({
 	addDisabled() {
@@ -36,7 +37,7 @@ Template.channelSettings__tokenpass.helpers({
 });
 
 Template.channelSettings__tokenpass.onCreated(function() {
-	const room = ChatRoom.findOne(this.data.rid, { fields: { tokenpass : 1 } });
+	const room = ChatRoom.findOne(this.data.rid, { fields: { tokenpass: 1 } });
 
 	this.editing = new ReactiveVar(false);
 	this.initial = room.tokenpass;
@@ -60,10 +61,10 @@ Template.channelSettings__tokenpass.events({
 		e.preventDefault();
 		const instance = Template.instance();
 		const { balance, token, list } = instance;
-		list.set([...list.get().filter((t) => t.token !== token), { token:token.get(), balance: balance.get() }]);
+		list.set([...list.get().filter((t) => t.token !== token), { token: token.get(), balance: balance.get() }]);
 
 
-		[...i.findAll('input')].forEach((el) => el.value = '');
+		[...i.findAll('input')].forEach((el) => { el.value = ''; });
 		return balance.set('') && token.set('');
 	},
 	'click .js-remove'(e, instance) {
@@ -74,7 +75,6 @@ Template.channelSettings__tokenpass.events({
 			return;
 		}
 		list.set(list.get().filter((t) => t.token !== this.token));
-
 	},
 	'click .js-save'(e, i) {
 		e.preventDefault();
@@ -92,7 +92,7 @@ Template.channelSettings__tokenpass.events({
 			i.token.set('');
 			i.balance.set('');
 			i.initial = tokenpass;
-			[...i.findAll('input')].forEach((el) => el.value = '');
+			[...i.findAll('input')].forEach((el) => { el.value = ''; });
 			return toastr.success(TAPi18n.__('Room_tokenpass_config_changed_successfully'));
 		});
 	},
@@ -102,7 +102,7 @@ Template.channelSettings__tokenpass.events({
 		i.list.set(i.initial.tokens);
 		i.token.set('');
 		i.balance.set('');
-		[...i.findAll('input')].forEach((el) => el.value = '');
+		[...i.findAll('input')].forEach((el) => { el.value = ''; });
 	},
 	'change [name=requireAllTokens]'(e, instance) {
 		instance.requireAll.set(e.currentTarget.checked);

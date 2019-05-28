@@ -4,14 +4,15 @@ import { Tracker } from 'meteor/tracker';
 import { Reload } from 'meteor/reload';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+
 import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
 import { settings } from '../../settings';
-import { CustomSounds } from '../../custom-sounds';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
+import { CustomSounds } from '../../custom-sounds/client';
 
 const notificationLabels = {
 	all: 'All_messages',

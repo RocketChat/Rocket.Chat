@@ -1,7 +1,8 @@
+import { Match, check } from 'meteor/check';
+
 import { Users } from '../../../../models';
 import { API } from '../../../../api';
 import { findGuest, settings, online, findOpenRoom } from '../lib/livechat';
-import { Match, check } from 'meteor/check';
 
 API.v1.addRoute('livechat/config', {
 	get() {
@@ -17,14 +18,13 @@ API.v1.addRoute('livechat/config', {
 
 			const status = online();
 
-			let guest;
+			const { token } = this.queryParams;
+			const guest = token && findGuest(token);
+
 			let room;
 			let agent;
 
-			const { token } = this.queryParams;
-
-			if (token) {
-				guest = findGuest(token);
+			if (guest) {
 				room = findOpenRoom(token);
 				agent = room && room.servedBy && Users.getAgentInfo(room.servedBy._id);
 			}

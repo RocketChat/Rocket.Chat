@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Rooms, Subscriptions } from '../../../models';
-import { callbacks } from '../../../callbacks';
-import { hasPermission, addUserRoles } from '../../../authorization';
-import { getValidRoomName } from '../../../utils';
-import { Apps } from '../../../apps';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { Users, Rooms, Subscriptions } from '../../../models';
+import { callbacks } from '../../../callbacks';
+import { addUserRoles } from '../../../authorization';
+import { getValidRoomName } from '../../../utils';
+import { Apps } from '../../../apps/server';
 
 function createDirectRoom(source, target, extraData, options) {
 	const rid = [source._id, target._id].sort().join('');
@@ -66,7 +67,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
 	}
 
-	owner = Users.findOneByUsername(owner, { fields: { username: 1 } });
+	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
@@ -131,14 +132,8 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 
 	for (const username of members) {
 		const member = Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });
-		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
-		}
-
-		// make all room members (Except the owner) muted by default, unless they have the post-readonly permission
-		if (readOnly === true && !hasPermission(member._id, 'post-readonly') && !isTheOwner) {
-			Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
 		const extra = options.subscriptionExtra || {};

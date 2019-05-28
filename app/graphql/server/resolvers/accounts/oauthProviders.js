@@ -14,7 +14,7 @@ function isJSON(obj) {
 
 const resolver = {
 	Query: {
-		oauthProviders: async() => {
+		oauthProviders: async () => {
 			// depends on rocketchat:grant package
 			try {
 				const result = HTTP.get(Meteor.absoluteUrl('_oauth_apps/providers')).content;
@@ -23,9 +23,8 @@ const resolver = {
 					const providers = JSON.parse(result).data;
 
 					return providers.map((name) => ({ name }));
-				} else {
-					throw new Error('Could not parse the result');
 				}
+				throw new Error('Could not parse the result');
 			} catch (e) {
 				throw new Error('rocketchat:grant not installed');
 			}

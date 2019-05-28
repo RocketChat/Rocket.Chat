@@ -1,25 +1,37 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import _ from 'underscore';
+import mem from 'mem';
+
 import { Subscriptions, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import _ from 'underscore';
-import mem from 'mem';
 
-const findSubscriptionByRid = mem((rid) => Subscriptions.findOne({ rid }));
+let userLanguage = 'en';
+let username = '';
+
+Meteor.startup(() => Tracker.autorun(() => {
+	const user = Meteor.user();
+	if (!user) {
+		return;
+	}
+	userLanguage = user.language || 'en';
+	username = user.username;
+}));
 
 export const AutoTranslate = {
+	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
 	messageIdsToWait: {},
 	supportedLanguages: [],
 
 	getLanguage(rid) {
 		let subscription = {};
 		if (rid) {
-			subscription = findSubscriptionByRid(rid);
+			subscription = this.findSubscriptionByRid(rid);
 		}
-		const language = (subscription && subscription.autoTranslateLanguage) || Meteor.user().language || window.defaultUserLanguage();
+		const language = (subscription && subscription.autoTranslateLanguage) || userLanguage || window.defaultUserLanguage();
 		if (language.indexOf('-') !== -1) {
 			if (!_.findWhere(this.supportedLanguages, { language })) {
 				return language.substr(0, 2);
@@ -30,7 +42,7 @@ export const AutoTranslate = {
 
 	translateAttachments(attachments, language) {
 		for (const attachment of attachments) {
-			if (attachment.author_name !== Meteor.user().username) {
+			if (attachment.author_name !== username) {
 				if (attachment.text && attachment.translations && attachment.translations[language]) {
 					attachment.text = attachment.translations[language];
 				}
@@ -53,15 +65,25 @@ export const AutoTranslate = {
 		});
 
 		Tracker.autorun(() => {
+			Subscriptions.find().observeChanges({
+				changed: (id, fields) => {
+					if (fields.hasOwnProperty('autoTranslate')) {
+						mem.clear(this.findSubscriptionByRid);
+					}
+				},
+			});
+		});
+
+		Tracker.autorun(() => {
 			if (settings.get('AutoTranslate_Enabled') && hasAtLeastOnePermission(['auto-translate'])) {
 				callbacks.add('renderMessage', (message) => {
-					const subscription = findSubscriptionByRid(message.rid);
+					const subscription = this.findSubscriptionByRid(message.rid);
 					const autoTranslateLanguage = this.getLanguage(message.rid);
 					if (message.u && message.u._id !== Meteor.userId()) {
 						if (!message.translations) {
 							message.translations = {};
 						}
-						if (subscription && subscription.autoTranslate !== message.autoTranslateShowInverse) {
+						if (!!(subscription && subscription.autoTranslate) !== !!message.autoTranslateShowInverse) {
 							message.translations.original = message.html;
 							if (message.translations[autoTranslateLanguage]) {
 								message.html = message.translations[autoTranslateLanguage];
@@ -79,7 +101,7 @@ export const AutoTranslate = {
 
 				callbacks.add('streamMessage', (message) => {
 					if (message.u && message.u._id !== Meteor.userId()) {
-						const subscription = findSubscriptionByRid(message.rid);
+						const subscription = this.findSubscriptionByRid(message.rid);
 						const language = this.getLanguage(message.rid);
 						if (subscription && subscription.autoTranslate === true && ((message.msg && (!message.translations || !message.translations[language])))) { // || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 							Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });

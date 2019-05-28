@@ -33,13 +33,13 @@ const toSymbol = (id, viewBox, { id: _, ...args }) => ({
 });
 
 const xml = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none">';
-const start = async() => {
+const start = async () => {
 	const stream = fs.createWriteStream('icons.svg', { flags: 'w' });
 	stream.write(`${ xml }\n`);
 	try {
 		await new Promise((resolve) => {
 			const path = './icons';
-			fs.readdir(path, async(err, files) => {
+			fs.readdir(path, async (err, files) => {
 				const promises = files
 					.sort(sort)
 					.filter((file) => {
@@ -48,7 +48,7 @@ const start = async() => {
 							return false;
 						}
 						return true;
-					}).map(async(file) => {
+					}).map(async (file) => {
 						const name = file.replace('.svg', '').toLocaleLowerCase();
 						try {
 							const content = fs.readFileSync(`${ path }/${ file }`, 'utf8');
@@ -69,9 +69,7 @@ const start = async() => {
 
 				resolve(Promise.all(promises));
 			});
-
 		});
-
 	} catch (error) {
 		console.error(error);
 	} finally {

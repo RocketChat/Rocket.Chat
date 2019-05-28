@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { ChatSubscription, ChatMessage } from '../../../models';
+import _ from 'underscore';
+import EventEmitter from 'wolfy87-eventemitter';
+
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
-import _ from 'underscore';
-
+import { ChatSubscription, ChatMessage } from '../../../models';
 /* DEFINITIONS
 - If window loses focus user needs to scroll or click/touch some place
 - On hit ESC enable read, force read of current room and remove unread mark
@@ -18,10 +19,10 @@ import _ from 'underscore';
 // window.addEventListener 'focus', ->
 // readMessage.refreshUnreadMark(undefined, true)
 
-export const readMessage = new class {
+export const readMessage = new class extends EventEmitter {
 	constructor() {
+		super();
 		this.debug = false;
-		this.callbacks = [];
 		this.read = _.debounce((force) => this.readNow(force), 1000);
 		this.canReadMessage = false;
 	}
@@ -48,10 +49,10 @@ export const readMessage = new class {
 
 		if (force === true) {
 			if (this.debug) { console.log('readMessage -> readNow via force rid:', rid); }
-			return Meteor.call('readMessages', rid, function() {
+			return Meteor.call('readMessages', rid, () => {
 				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-				self.refreshUnreadMark();
-				return self.fireRead(rid);
+				this.refreshUnreadMark();
+				return this.emit(rid);
 			});
 		}
 
@@ -78,7 +79,7 @@ export const readMessage = new class {
 			const position = unreadMark.position();
 			const visible = (position != null ? position.top : undefined) >= 0;
 			if (!visible && (room.unreadSince.get() != null)) {
-				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', (room.unreadSince.get() != null)); }
+				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get() != null); }
 				return;
 			}
 		// if unread mark is not visible and there is more more not loaded unread messages
@@ -87,31 +88,23 @@ export const readMessage = new class {
 		}
 
 		if (this.debug) { console.log('readMessage -> readNow rid:', rid); }
-		Meteor.call('readMessages', rid, function() {
+		Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-			self.refreshUnreadMark();
-			return self.fireRead(rid);
+			this.refreshUnreadMark();
+			return this.emit(rid);
 		});
 	}
 
 	disable() {
-		return this.canReadMessage = false;
+		this.canReadMessage = false;
 	}
 
 	enable() {
-		return this.canReadMessage = document.hasFocus();
+		this.canReadMessage = document.hasFocus();
 	}
 
 	isEnable() {
 		return this.canReadMessage === true;
-	}
-
-	onRead(cb) {
-		return this.callbacks.push(cb);
-	}
-
-	fireRead(rid) {
-		return Array.from(this.callbacks).map((cb) =>	cb(rid));
 	}
 
 	refreshUnreadMark(rid, force) {
@@ -152,8 +145,7 @@ export const readMessage = new class {
 		});
 
 		if ((lastReadRecord == null) && (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() === 0)) {
-			lastReadRecord =
-				{ ts: new Date(0) };
+			lastReadRecord =				{ ts: new Date(0) };
 		}
 
 		if ((lastReadRecord != null) || (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() > 0)) {
@@ -184,7 +176,7 @@ export const readMessage = new class {
 			}
 		}
 	}
-};
+}();
 
 
 Meteor.startup(function() {

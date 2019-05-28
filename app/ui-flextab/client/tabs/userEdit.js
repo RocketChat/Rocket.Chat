@@ -3,11 +3,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from '../../../utils';
-import { Roles } from '../../../models';
-import { hasAtLeastOnePermission } from '../../../authorization';
 import toastr from 'toastr';
 import s from 'underscore.string';
+
+import { t, handleError } from '../../../utils';
+import { Roles } from '../../../models';
+import { Notifications } from '../../../notifications';
+import { hasAtLeastOnePermission } from '../../../authorization';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
 
 Template.userEdit.helpers({
 
@@ -18,8 +22,21 @@ Template.userEdit.helpers({
 		return (Template.instance().user && hasAtLeastOnePermission('edit-other-user-info')) || (!Template.instance().user && hasAtLeastOnePermission('create-user'));
 	},
 
+	selectUrl() {
+		return Template.instance().url.get().trim() ? '' : 'disabled';
+	},
+
 	user() {
 		return Template.instance().user;
+	},
+
+	initialsUsername() {
+		const { user } = Template.instance();
+		return `@${ user && user.username }`;
+	},
+
+	avatarPreview() {
+		return Template.instance().avatar.get();
 	},
 
 	requirePasswordChange() {
@@ -28,7 +45,7 @@ Template.userEdit.helpers({
 
 	role() {
 		const roles = Template.instance().roles.get();
-		return Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
+		return Roles.find({ _id: { $nin: roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {
@@ -41,6 +58,54 @@ Template.userEdit.helpers({
 });
 
 Template.userEdit.events({
+	'click .js-select-avatar-initials'(e, template) {
+		template.avatar.set({
+			service: 'initials',
+			blob: `@${ template.user.username }`,
+		});
+	},
+
+	'click .js-select-avatar-url'(e, template) {
+		const url = template.url.get().trim();
+		if (!url) {
+			return;
+		}
+
+		template.avatar.set({
+			service: 'url',
+			contentType: '',
+			blob: url,
+		});
+	},
+
+	'input .js-avatar-url-input'(e, template) {
+		const text = e.target.value;
+		template.url.set(text);
+	},
+
+	'change .js-select-avatar-upload [type=file]'(event, template) {
+		const e = event.originalEvent || event;
+		let { files } = e.target;
+		if (!files || files.length === 0) {
+			files = (e.dataTransfer && e.dataTransfer.files) || [];
+		}
+		Object.keys(files).forEach((key) => {
+			const blob = files[key];
+			if (!/image\/.+/.test(blob.type)) {
+				return;
+			}
+			const reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.onloadend = function() {
+				template.avatar.set({
+					service: 'upload',
+					contentType: blob.type,
+					blob: reader.result,
+				});
+			};
+		});
+	},
+
 	'click .cancel'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -98,7 +163,9 @@ Template.userEdit.events({
 Template.userEdit.onCreated(function() {
 	this.user = this.data != null ? this.data.user : undefined;
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
-
+	this.avatar = new ReactiveVar();
+	this.url = new ReactiveVar('');
+	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 
 	const { tabBar } = Template.currentData();
 
@@ -107,13 +174,12 @@ Template.userEdit.onCreated(function() {
 		this.$('input[type=checkbox]').prop('checked', true);
 		if (this.user) {
 			return this.data.back(username);
-		} else {
-			return tabBar.close();
 		}
+		return tabBar.close();
 	};
 
 	this.getUserData = () => {
-		const userData = { _id: (this.user != null ? this.user._id : undefined) };
+		const userData = { _id: this.user != null ? this.user._id : undefined };
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
 		userData.email = s.trim(this.$('#email').val());
@@ -136,7 +202,7 @@ Template.userEdit.onCreated(function() {
 		const userData = this.getUserData();
 
 		const errors = [];
-		if (!userData.name) {
+		if (settings.get('Accounts_RequireNameForSignUp') && !userData.name) {
 			errors.push('Name');
 		}
 		if (!userData.username) {
@@ -162,7 +228,6 @@ Template.userEdit.onCreated(function() {
 			return;
 		}
 		const userData = this.getUserData();
-
 		if (this.user != null) {
 			for (const key in userData) {
 				if (key) {
@@ -174,6 +239,28 @@ Template.userEdit.onCreated(function() {
 					}
 				}
 			}
+		}
+
+		const avatar = this.avatar.get();
+		if (avatar) {
+			let method;
+			const params = [];
+
+			if (avatar.service === 'initials') {
+				method = 'resetAvatar';
+			} else {
+				method = 'setAvatarFromService';
+				params.push(avatar.blob, avatar.contentType, avatar.service);
+			}
+
+			Meteor.call(method, ...params, Template.instance().user._id, function(err) {
+				if (err && err.details) {
+					toastr.error(t(err.message));
+				} else {
+					toastr.success(t('Avatar_changed_successfully'));
+					callbacks.run('userAvatarSet', avatar.service);
+				}
+			});
 		}
 
 		Meteor.call('insertOrUpdateUser', userData, (error) => {

@@ -1,15 +1,16 @@
+import _ from 'underscore';
+import moment from 'moment';
+import { Blaze } from 'meteor/blaze';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { modal, call } from '/app/ui-utils';
-import { t } from '/app/utils';
 
-import _ from 'underscore';
-import moment from 'moment';
-import { Blaze } from 'meteor/blaze';
+import { modal, call } from '../../../../ui-utils';
+import { t } from '../../../../utils/client';
+import './livechatCurrentChats.html';
+
 const LivechatRoom = new Mongo.Collection('livechatRoom');
 
 Template.livechatCurrentChats.helpers({
@@ -104,7 +105,7 @@ Template.livechatCurrentChats.events({
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
 			html: false,
-		}, async(confirmed) => {
+		}, async (confirmed) => {
 			if (!confirmed) {
 				return;
 			}
@@ -137,9 +138,9 @@ Template.livechatCurrentChats.onCreated(function() {
 		this.selectedAgents.set([agent]);
 	};
 
-	this.onClickTagAgent = (({ username }) => {
+	this.onClickTagAgent = ({ username }) => {
 		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
-	});
+	};
 
 	this.autorun(() => {
 		this.ready.set(this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get()).ready());
@@ -197,7 +198,6 @@ Template.SearchSelect.events({
 			const { deleteLastItem } = t;
 			return deleteLastItem && deleteLastItem();
 		}
-
 	},
 	'keyup input'(e, t) {
 		t.ac.onKeyUp(e);
@@ -215,7 +215,6 @@ Template.SearchSelect.events({
 });
 
 Template.SearchSelect.onRendered(function() {
-
 	const { name } = this.data;
 
 	this.ac.element = this.firstNode.querySelector(`[name=${ name }]`);

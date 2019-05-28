@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { popover } from '../../ui-utils';
+
+import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
 import { t, getUserPreference, handleError } from '../../utils';
-import { AccountBox, menu, SideNav } from '../../ui-utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
-import { modal } from '../../ui-utils';
+
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
 	callbacks.run('userStatusManuallySet', status);
@@ -36,25 +36,12 @@ const extendedViewOption = (user) => {
 			},
 		};
 	}
-
-	return;
 };
 
 const showToolbar = new ReactiveVar(false);
 
-const selectorSearch = '.toolbar__search .rc-input__element';
 export const toolbarSearch = {
 	shortcut: false,
-	clear() {
-		const $inputMessage = $('.js-input-message');
-
-		if (0 === $inputMessage.length) {
-			return;
-		}
-
-		$inputMessage.focus();
-		$(selectorSearch).val('');
-	},
 	show(fromShortcut) {
 		menu.open();
 		showToolbar.set(true);
@@ -167,8 +154,6 @@ const toolbarButtons = (user) => [{
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
 	action: (e) => {
-
-
 		const createChannel = (e) => {
 			e.preventDefault();
 			modal.open({
