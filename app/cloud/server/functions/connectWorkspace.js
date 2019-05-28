@@ -1,10 +1,11 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
-import { Settings } from '../../../models';
+
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
+import { Settings } from '../../../models';
+import { settings } from '../../../settings';
 
 export function connectWorkspace(token) {
 	const { connectToCloud } = retrieveRegistrationStatus();

@@ -4,12 +4,13 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import swal from 'sweetalert2';
+
 import visitor from '../../imports/client/visitor';
 
 // Functions to call on messages of type 'command'
 this.Commands = {
 	survey() {
-		if (!($('body #survey').length)) {
+		if (!$('body #survey').length) {
 			Blaze.render(Template.survey, $('body').get(0));
 		}
 	},
@@ -22,7 +23,7 @@ this.Commands = {
 		if (Livechat.transcript) {
 			const visitorData = visitor.getData();
 			const email = visitorData && visitorData.visitorEmails && visitorData.visitorEmails.length > 0 ? visitorData.visitorEmails[0].address : '';
-			const transcriptMessage = (Livechat.transcriptMessage) ? Livechat.transcriptMessage : (TAPi18n.__('Would_you_like_a_copy_if_this_chat_emailed'));
+			const transcriptMessage = Livechat.transcriptMessage ? Livechat.transcriptMessage : TAPi18n.__('Would_you_like_a_copy_if_this_chat_emailed');
 
 			swal({
 				title: t('Chat_ended'),

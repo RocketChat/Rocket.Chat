@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { CustomSounds } from '../../../models';
 import s from 'underscore.string';
+
+import { CustomSounds } from '../../../models';
 
 Meteor.publish('customSounds', function(filter, limit) {
 	if (!this.userId) {

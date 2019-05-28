@@ -1,4 +1,4 @@
-html.rtl .flex-tab {
+.rtl .flex-tab {
 	direction: rtl;
 
 	& .channel-settings {

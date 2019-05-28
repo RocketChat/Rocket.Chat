@@ -1,5 +1,5 @@
-import { settings } from '../../settings';
 import { getAvatarURL } from './getAvatarURL';
+import { settings } from '../../settings';
 
 export const getRoomAvatarURL = function(roomId) {
 	const externalSource = (settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');

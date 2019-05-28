@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { ChatSubscription, ChatMessage } from '../../../models';
-import { RoomHistoryManager } from './RoomHistoryManager';
-import { RoomManager } from './RoomManager';
 import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
+
+import { RoomHistoryManager } from './RoomHistoryManager';
+import { RoomManager } from './RoomManager';
+import { ChatSubscription, ChatMessage } from '../../../models';
 /* DEFINITIONS
 - If window loses focus user needs to scroll or click/touch some place
 - On hit ESC enable read, force read of current room and remove unread mark
@@ -78,7 +79,7 @@ export const readMessage = new class extends EventEmitter {
 			const position = unreadMark.position();
 			const visible = (position != null ? position.top : undefined) >= 0;
 			if (!visible && (room.unreadSince.get() != null)) {
-				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', (room.unreadSince.get() != null)); }
+				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get() != null); }
 				return;
 			}
 		// if unread mark is not visible and there is more more not loaded unread messages
@@ -95,11 +96,11 @@ export const readMessage = new class extends EventEmitter {
 	}
 
 	disable() {
-		return this.canReadMessage = false;
+		this.canReadMessage = false;
 	}
 
 	enable() {
-		return this.canReadMessage = document.hasFocus();
+		this.canReadMessage = document.hasFocus();
 	}
 
 	isEnable() {
@@ -144,8 +145,7 @@ export const readMessage = new class extends EventEmitter {
 		});
 
 		if ((lastReadRecord == null) && (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() === 0)) {
-			lastReadRecord =
-				{ ts: new Date(0) };
+			lastReadRecord =				{ ts: new Date(0) };
 		}
 
 		if ((lastReadRecord != null) || (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() > 0)) {
@@ -176,7 +176,7 @@ export const readMessage = new class extends EventEmitter {
 			}
 		}
 	}
-};
+}();
 
 
 Meteor.startup(function() {

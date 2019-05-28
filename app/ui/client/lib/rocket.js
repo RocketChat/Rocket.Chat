@@ -35,7 +35,8 @@ export const Button = (function() {
 		const next = el.attr('data-loading-text');
 		const html = el.find('span').html();
 		el.addClass('-progress').attr('data-def-text', html).find('span').html(next);
-		return time = setTimeout(() => el.addClass('going'), 1);
+		time = setTimeout(() => el.addClass('going'), 1);
+		return time;
 	};
 	const done = function(el) {
 		return el.addClass('done');
@@ -82,13 +83,11 @@ export const animeBack = function(e, callback, type) {
 		return;
 	}
 	const s = animationSupport();
-	const p = ((type ? s.animation : s.transition));
+	const p = type ? s.animation : s.transition;
 	el.one(p, function(e) {
-
 		// el.off(p);
 		callback(e);
 	});
-
 };
 
 export const preLoadImgs = function(urls, callback) {
@@ -116,5 +115,4 @@ export const preLoadImgs = function(urls, callback) {
 		if (im.width > 0) { l_(im); }
 		return im;
 	});
-
 };

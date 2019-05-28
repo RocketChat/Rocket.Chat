@@ -465,6 +465,7 @@
 }
 
 .burger {
+	position: relative;
 
 	cursor: pointer;
 	transition: transform 0.2s ease-out 0.1s;

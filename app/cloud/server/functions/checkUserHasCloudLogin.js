@@ -1,5 +1,5 @@
-import { Users } from '../../../models';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { Users } from '../../../models';
 
 export function checkUserHasCloudLogin(userId) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
