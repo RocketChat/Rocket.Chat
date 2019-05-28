@@ -1,6 +1,27 @@
 
 # 1.1.0 (Under Release Candidate Process)
 
+## 1.1.0-rc.5
+`2019-05-27  ·  1 🐛  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- "Blank page" on safari 10.x ([#14651](https://github.com/RocketChat/Rocket.Chat/pull/14651))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Improvement: Permissions table ([#14646](https://github.com/RocketChat/Rocket.Chat/pull/14646))
+- Regression: Handle missing emojis ([#14641](https://github.com/RocketChat/Rocket.Chat/pull/14641))
+- LingoHub based on develop ([#14643](https://github.com/RocketChat/Rocket.Chat/pull/14643))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 1.1.0-rc.4
 `2019-05-24  ·  3 🐛  ·  3 👩‍💻👨‍💻`
 

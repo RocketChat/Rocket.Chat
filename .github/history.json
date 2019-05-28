@@ -31567,6 +31567,54 @@
           ]
         }
       ]
+    },
+    "1.1.0-rc.5": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14646",
+          "title": "Improvement: Permissions table",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14641",
+          "title": "Regression: Handle missing emojis",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14651",
+          "title": "[FIX] \"Blank page\" on safari 10.x",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14643",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
