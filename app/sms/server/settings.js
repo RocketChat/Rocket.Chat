@@ -23,7 +23,7 @@ Meteor.startup(function() {
 				{
 					key: 'mobex',
 					i18nLabel: 'Mobex',
-				}
+				},
 			],
 			i18nLabel: 'Service',
 		});
@@ -98,7 +98,7 @@ Meteor.startup(function() {
 				i18nLabel: 'Mobex_sms_gateway_username',
 			});
 			this.add('SMS_Mobex_password', '', {
-				type: 'string',
+				type: 'password',
 				enableQuery: {
 					_id: 'SMS_Service',
 					value: 'mobex',

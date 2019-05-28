@@ -1,5 +1,6 @@
 import { HTTP } from 'meteor/http';
 import { Base64 } from 'meteor/base64';
+
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
 
@@ -11,6 +12,7 @@ class Mobex {
 		this.password = settings.get('SMS_Mobex_password');
 		this.from = settings.get('SMS_Mobex_from_number');
 	}
+
 	parse(data) {
 		let numMedia = 0;
 
@@ -61,8 +63,8 @@ class Mobex {
 
 		return returnData;
 	}
-	send(fromNumber, toNumber, message, username = null, password = null, address = null) {
 
+	send(fromNumber, toNumber, message, username = null, password = null, address = null) {
 		console.log('Mobex send fromNumber', fromNumber);
 		console.log('Mobex send toNumber', toNumber);
 		console.log('Mobex send message', message);
@@ -81,7 +83,7 @@ class Mobex {
 		}
 		if (username && password) {
 			currentUsername = username;
-			currentPassword = password
+			currentPassword = password;
 		}
 		if (address) {
 			currentAddress = address;
@@ -111,10 +113,9 @@ class Mobex {
 		}
 
 		return result;
-
 	}
-	async sendBatch(fromNumber, toNumbersArr, message) {
 
+	async sendBatch(fromNumber, toNumbersArr, message) {
 		console.log('Mobex send fromNumber', fromNumber);
 		console.log('Mobex send toNumbersArr', toNumbersArr);
 		console.log('Mobex send message', message);
@@ -160,15 +161,14 @@ class Mobex {
 			result.isSuccess = true;
 			result.resultMsg = 'Success';
 			result.response = response;
-
 		} catch (e) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${ e }`;
 			console.error('Error while sending SMS with Mobex', e);
 		}
 
 		return result;
-
 	}
+
 	response(/* message */) {
 		console.log('Mobex response called');
 		return {
@@ -178,6 +178,7 @@ class Mobex {
 			body: 'ACK/Jasmin',
 		};
 	}
+
 	error(error) {
 		console.error('Mobex error called', error);
 		let message = '';
