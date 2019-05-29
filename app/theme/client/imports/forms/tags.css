@@ -20,7 +20,7 @@
 	&__tag {
 		display: flex;
 
-		margin: 0.25rem;
+		margin: 0.15rem;
 		padding: 0.35rem 0.5rem;
 
 		color: var(--tags-text-color);

@@ -3,11 +3,10 @@
 		<fieldset>
 			<form class="form-inline" method="post">
 				<div class="form-group">
-					<label for="name">{{_ "Name"}}</label>
-					<input type="text" class="rc-input__element" name="name">
+					<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
 				</div>
 				<div class="form-group">
-					{{> SearchSelect
+					{{> livechatAutocompleteUser
 						onClickTag=onClickTagAgent
 						list=selectedAgents
 						onSelect=onSelectAgents
@@ -35,10 +34,8 @@
 					</div>
 				</div>
 				<div class="form-group input-daterange">
-					<span class="input-group-addon">{{_ "Date_From"}}</span>
-					<input autocomplete="off" type="text" class="form-control rc-input__element" id="from" name="from" >
-						<span class="input-group-addon">{{_ "Date_to"}}</span>
-					<input autocomplete="off" type="text" class="form-control rc-input__element" id="to" name="to">
+					<input autocomplete="off" type="text" placeholder="{{_ "Date_From"}}" class="rc-input__element" id="from" name="from" >
+					<input autocomplete="off" type="text" placeholder="{{_ "Date_to"}}" class="rc-input__element" id="to" name="to">
 				</div>
 				<div class="form-group">
 					<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
@@ -99,39 +96,16 @@
 					{{/each}}
 					{{#unless isReady}}
 						<tr class="table-no-click">
-							<td class="table-loading-td">{{> loading}}</td>
+							<td colspan="5" class="table-loading-td">{{> loading}}</td>
 						</tr>
 					{{/unless}}
 				</tbody>
 			{{/table}}
 		</div>
-		<div class="text-center">
-			<button class="button rc-button load-more">{{_ "Load_more"}}</button>
-		</div>
+		{{#if hasMore}}
+			<div class="rc-button__group">
+				<button class="rc-button rc-button--primary js-load-more">{{_ "Load_more"}}</button>
+			</div>
+		{{/if}}
 	{{/requiresPermission}}
 </template>
-
-<template name="SearchSelect">
-		<div class="rc-input" id='search-{{name}}' {{disabled}}>
-			<label class="rc-input__label">
-				<div class="rc-input__wrapper">
-					{{# if icon}}
-					<div class="rc-input__icon">
-						{{> icon block="rc-input__icon-svg" icon=icon}}
-					</div>
-					{{/if}}
-					<div class="rc-tags{{# unless icon}} rc-tags--no-icon{{/unless}}">
-						{{#each item in list}} {{> tag item}} {{/each}}
-						<input type="text" id="{{name}}" class="rc-tags__input" placeholder="{{_ placeholder}}" name="{{name}}" autocomplete="off" {{disabled}} />
-					</div>
-				</div>
-				{{#with config}} {{#if autocomplete 'isShowing'}}
-				<div class="dropdown-in">
-					{{#if autocomplete 'isLoaded'}}
-						{{> popupList data=config items=items}}
-					{{/if}}
-				</div>
-				{{/if}} {{/with}}
-			</label>
-		</div>
-	</template>

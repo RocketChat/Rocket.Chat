@@ -145,7 +145,17 @@
 }
 
 .rc-old .text-center {
+	display: flex;
+
 	text-align: center;
+	justify-content: center;
+}
+
+.rc-old .text-left {
+	display: flex;
+
+	text-align: left;
+	justify-content: start;
 }
 
 .connection-status > .alert {
