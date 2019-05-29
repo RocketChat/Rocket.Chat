@@ -1935,8 +1935,6 @@
   "Markdown_SupportSchemesForLink": "Protocolos Suportados para Markdown de Links",
   "Markdown_SupportSchemesForLink_Description": "Lista de protocolos separados por vírgulas",
   "Max_length_is": "Tamanho máximo é %s",
-  "Max_number_incoming_livechats_displayed": "Número máximo de itens exibidos na fila",
-  "Max_number_incoming_livechats_displayed_description": "(Opcional) Define o número máximo de items exibidos na fila de entrada de Livechats.",
   "Media": "meios de comunicação",
   "Medium": "Médio",
   "Members_List": "Lista de Membros",

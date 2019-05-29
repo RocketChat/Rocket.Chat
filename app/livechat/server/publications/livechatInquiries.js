@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
-import { settings } from '../../../settings';
 
 Meteor.publish('livechat:inquiry', function(_id) {
 	if (!this.userId) {
@@ -14,19 +13,12 @@ Meteor.publish('livechat:inquiry', function(_id) {
 	}
 
 	const publication = this;
-	const limit = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed');
 
-	const filter = {
+	const cursorHandle = LivechatInquiry.find({
 		agents: this.userId,
 		status: 'open',
 		..._id && { _id },
-	};
-
-	const options = {
-		...limit && { limit },
-	};
-
-	const cursorHandle = LivechatInquiry.find(filter, options).observeChanges({
+	}).observeChanges({
 		added(_id, record) {
 			return publication.added('rocketchat_livechat_inquiry', _id, record);
 		},

@@ -1967,8 +1967,6 @@
   "Markdown_SupportSchemesForLink": "Markdown Support Schemes for Link",
   "Markdown_SupportSchemesForLink_Description": "Comma-separated list of allowed schemes",
   "Max_length_is": "Max length is %s",
-  "Max_number_incoming_livechats_displayed": "Max number of items displayed in the queue",
-  "Max_number_incoming_livechats_displayed_description": "(Optional) Max number of items displayed in the incoming Livechats queue.",
   "Media": "Media",
   "Medium": "Medium",
   "Members_List": "Members List",
