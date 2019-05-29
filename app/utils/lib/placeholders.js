@@ -2,9 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { settings } from '../../settings';
-
-import { getAvatarUrlFromUsername } from '..';
-
+import { getAvatarURL } from './getAvatarURL';
 
 export const placeholders = {
 	replace: (str, data) => {
@@ -25,7 +23,7 @@ export const placeholders = {
 		}
 
 		if (str.includes('[Avatar_Link]')) {
-			str = str.replace(/\[Avatar_Link\]/g, `${ settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`);
+			str = str.replace(/\[Avatar_Link\]/g, `${ settings.get('Site_Url').slice(0, -1) }${ getAvatarURL(Meteor.user().username) }`);
 		}
 
 		if (data) {
