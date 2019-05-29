@@ -7,7 +7,7 @@ FlowRouter.route('/admin/serviceaccount', {
 	action() {
 		return BlazeLayout.render('main', {
 			center: 'serviceAccountDashboard',
-			pageTitle: t('Service_account'),
+			pageTitle: t('Service_account_applied'),
 		});
 	},
 });
