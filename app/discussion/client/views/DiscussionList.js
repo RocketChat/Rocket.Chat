@@ -26,4 +26,8 @@ Template.DiscussionList.helpers({
 		query.prid = { $exists: true };
 		return ChatSubscription.find(query, { sort });
 	},
+
+	shouldAppear() {
+		return settings.get('Discussion_enabled');
+	},
 });
