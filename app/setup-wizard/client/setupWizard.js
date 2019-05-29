@@ -5,12 +5,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { hasRole } from '../../authorization';
 import { Users } from '../../models';
 import { t, handleError } from '../../utils';
-import toastr from 'toastr';
 
 const cannotSetup = () => {
 	const showSetupWizard = settings.get('Show_Setup_Wizard');
@@ -36,7 +37,7 @@ const cannotSetup = () => {
 const registerAdminUser = (state, callback) => {
 	const registrationData = Object.entries(state)
 		.filter(([key]) => /registration-/.test(key))
-		.map(([key, value]) => ([key.replace('registration-', ''), value]))
+		.map(([key, value]) => [key.replace('registration-', ''), value])
 		.reduce((o, [key, value]) => ({ ...o, [key]: value }), {});
 
 	Meteor.call('registerUser', registrationData, (error) => {
@@ -50,9 +51,8 @@ const registerAdminUser = (state, callback) => {
 				if (error.error === 'error-invalid-email') {
 					toastr.success(t('We_have_sent_registration_email'));
 					return false;
-				} else {
-					return handleError(error);
 				}
+				return handleError(error);
 			}
 
 			Session.set('forceLogin', false);
@@ -344,19 +344,19 @@ Template.setupWizard.helpers({
 					label: i18nLabel,
 					value: t.state.get(_id),
 					options: (
-						type === 'select' &&
-						values &&
-						values.map(({ i18nLabel, key }) => ({ optionLabel: i18nLabel, optionValue: key }))
+						type === 'select'
+						&& values
+						&& values.map(({ i18nLabel, key }) => ({ optionLabel: i18nLabel, optionValue: key }))
 					) || (
-						type === 'language' &&
-						([{
+						type === 'language'
+						&& [{
 							optionLabel: 'Default',
 							optionValue: '',
 						}].concat(
 							Object.entries(TAPi18n.getLanguages())
 								.map(([key, { name }]) => ({ optionLabel: name, optionValue: key }))
 								.sort((a, b) => a.key - b.key)
-						))
+						)
 					),
 					isValueSelected: (value) => value === t.state.get(_id),
 				})),

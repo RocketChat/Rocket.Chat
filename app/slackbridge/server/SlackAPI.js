@@ -1,7 +1,6 @@
 import { HTTP } from 'meteor/http';
 
 export class SlackAPI {
-
 	constructor(apiToken) {
 		this.apiToken = apiToken;
 	}
@@ -114,5 +113,4 @@ export class SlackAPI {
 		});
 		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.user;
 	}
-
 }

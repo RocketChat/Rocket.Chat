@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
+import _ from 'underscore';
+import toastr from 'toastr';
+
 import { modal } from '../../../../ui-utils';
 import { t, handleError } from '../../../../utils';
 import { AgentUsers } from '../../collections/AgentUsers';
-import _ from 'underscore';
-import toastr from 'toastr';
 import './livechatUsers.html';
 
 let ManagerUsers;

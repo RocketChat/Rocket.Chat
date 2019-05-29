@@ -1,11 +1,9 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
 import { hasPermission, canAccessRoom } from '../../../authorization/server';
-import { composeMessageObjectWithUser } from '../../../utils/server';
-
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -24,9 +22,9 @@ function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) 
 			archived: 1,
 		},
 	};
-	const room = params.roomId ?
-		Rooms.findOneById(params.roomId, roomOptions) :
-		Rooms.findOneByName(params.roomName, roomOptions);
+	const room = params.roomId
+		? Rooms.findOneById(params.roomId, roomOptions)
+		: Rooms.findOneByName(params.roomName, roomOptions);
 
 	if (!room || room.t !== 'p') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
@@ -181,7 +179,7 @@ API.v1.addRoute('groups.counters', { authRequired: true }, {
 		const lm = room.lm ? room.lm : room._updatedAt;
 
 		if (typeof subscription !== 'undefined' && subscription.open) {
-			unreads = Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, (subscription.ls || subscription.ts), lm);
+			unreads = Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls || subscription.ts, lm);
 			unreadsFrom = subscription.ls || subscription.ts;
 			userMentions = subscription.userMentions;
 			joined = true;
@@ -265,7 +263,7 @@ API.v1.addRoute('groups.files', { authRequired: true }, {
 		const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
 		const files = Uploads.find(ourQuery, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -303,7 +301,7 @@ API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { channel: { $in: channelsToSearch } });
 		const integrations = Integrations.find(ourQuery, {
-			sort: sort ? sort : { _createdAt: 1 },
+			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -427,7 +425,7 @@ API.v1.addRoute('groups.list', { authRequired: true }, {
 
 		// TODO: CACHE: Add Breacking notice since we removed the query param
 		const cursor = Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -460,7 +458,7 @@ API.v1.addRoute('groups.listAll', { authRequired: true }, {
 		const totalCount = rooms.length;
 
 		rooms = Rooms.processQueryOptionsOnResult(rooms, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -500,7 +498,7 @@ API.v1.addRoute('groups.members', { authRequired: true }, {
 
 		const users = Users.find({ _id: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
-			sort: { username:  sort.username != null ? sort.username : 1 },
+			sort: { username: sort.username != null ? sort.username : 1 },
 		}).fetch();
 
 		return API.v1.success({
@@ -521,14 +519,14 @@ API.v1.addRoute('groups.messages', { authRequired: true }, {
 		const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
 		const messages = Messages.find(ourQuery, {
-			sort: sort ? sort : { ts: -1 },
+			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
 			fields,
 		}).fetch();
 
 		return API.v1.success({
-			messages: messages.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
 			total: Messages.find(ourQuery).count(),
@@ -666,7 +664,7 @@ API.v1.addRoute('groups.setCustomFields', { authRequired: true }, {
 
 API.v1.addRoute('groups.setDescription', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.description || !this.bodyParams.description.trim()) {
+		if (!this.bodyParams.hasOwnProperty('description')) {
 			return API.v1.failure('The bodyParam "description" is required');
 		}
 
@@ -684,7 +682,7 @@ API.v1.addRoute('groups.setDescription', { authRequired: true }, {
 
 API.v1.addRoute('groups.setPurpose', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.purpose || !this.bodyParams.purpose.trim()) {
+		if (!this.bodyParams.hasOwnProperty('purpose')) {
 			return API.v1.failure('The bodyParam "purpose" is required');
 		}
 
@@ -724,7 +722,7 @@ API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
 
 API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
+		if (!this.bodyParams.hasOwnProperty('topic')) {
 			return API.v1.failure('The bodyParam "topic" is required');
 		}
 
@@ -764,7 +762,7 @@ API.v1.addRoute('groups.setType', { authRequired: true }, {
 
 API.v1.addRoute('groups.setAnnouncement', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+		if (!this.bodyParams.hasOwnProperty('announcement')) {
 			return API.v1.failure('The bodyParam "announcement" is required');
 		}
 
@@ -815,4 +813,3 @@ API.v1.addRoute('groups.moderators', { authRequired: true }, {
 		});
 	},
 });
-

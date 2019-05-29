@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+
+import { importNewUsers } from './sync';
 import { hasRole } from '../../authorization';
 import { settings } from '../../settings';
-import { importNewUsers } from './sync';
 
 Meteor.methods({
 	ldap_sync_now() {
