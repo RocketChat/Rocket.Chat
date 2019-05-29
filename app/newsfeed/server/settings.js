@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
-
-import {initializeNewsfeed} from "./initialize";
-import {deinitializeNewsfeed} from "./deinitialize";
+import { initializeNewsfeed } from './initialize';
+import { deinitializeNewsfeed } from './deinitialize';
 
 const defaults = {
 	enable: true,
@@ -19,10 +18,9 @@ Meteor.startup(() => {
 });
 
 settings.get('Newsfeed_enable', (key, value) => {
-	if(value === true){
+	if (value === true) {
 		initializeNewsfeed();
-	}
-	else {
+	} else {
 		deinitializeNewsfeed();
 	}
 });
