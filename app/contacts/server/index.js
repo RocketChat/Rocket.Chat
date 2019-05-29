@@ -4,7 +4,8 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
-import { getAvatarUrlFromUsername, getUserPreference } from '../../utils';
+import { getUserPreference } from '../../utils';
+import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 import { settings } from '../../settings';
 
 const service = require('./service.js');
@@ -142,7 +143,7 @@ Meteor.methods({
 							socialMetaTagInfo: {
 								socialTitle: user.username,
 								socialDescription: `Chat with ${ user.username } on ${ server }`,
-								socialImageLink: `${ server.slice(0, -1) }${ getAvatarUrlFromUsername(user.username) }`,
+								socialImageLink: `${ server.slice(0, -1) }${ getAvatarURL(user.username) }`,
 							},
 						},
 					},

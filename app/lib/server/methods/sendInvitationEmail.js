@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import * as Mailer from '../../../mailer';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { getAvatarUrlFromUsername } from '../../../utils';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 let html = '';
 Meteor.startup(() => {
@@ -47,7 +47,7 @@ Meteor.methods({
 						email,
 						Invite_Link: Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
 						Username: inviter,
-						Avatar_Link: `${ settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
+						Avatar_Link: `${ settings.get('Site_Url').slice(0, -1) }${ getAvatarURL(Meteor.user().username) }`,
 					},
 					lng: language,
 				});
