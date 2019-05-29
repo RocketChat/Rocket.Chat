@@ -1,6 +1,7 @@
 import emojione from 'emojione';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import mem from 'mem';
 
 import { emojioneRender, emojioneRenderFromShort } from './emojioneRender';
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
@@ -166,76 +167,78 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 
 // fix for :+1: - had to replace all function that does its conversion: https://github.com/joypixels/emojione/blob/4.5.0/lib/js/emojione.js#L249
 (function(ns) {
+	ns.shortnameConversionMap = mem(ns.shortnameConversionMap);
+	ns.unicodeCharRegex = mem(ns.unicodeCharRegex);
+
+	const convertShortName = mem(function(shortname) {
+		// the fix is basically adding this .replace(/[+]/g, '\\$&')
+		if ((typeof shortname === 'undefined') || (shortname === '') || (ns.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1)) {
+			// if the shortname doesnt exist just return the entire match
+			return shortname;
+		}
+
+		// map shortname to parent
+		if (!ns.emojioneList[shortname]) {
+			for (const emoji in ns.emojioneList) {
+				if (!ns.emojioneList.hasOwnProperty(emoji) || (emoji === '')) { continue; }
+				if (ns.emojioneList[emoji].shortnames.indexOf(shortname) === -1) { continue; }
+				shortname = emoji;
+				break;
+			}
+		}
+
+		const unicode = ns.emojioneList[shortname].uc_output;
+		const fname = ns.emojioneList[shortname].uc_base;
+		const category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
+		const title = ns.imageTitleTag ? `title="${ shortname }"` : '';
+		// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
+		// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
+		const ePath = ns.defaultPathPNG !== ns.imagePathPNG ? ns.imagePathPNG : `${ ns.defaultPathPNG + ns.emojiSize }/`;
+
+		// depending on the settings, we'll either add the native unicode as the alt tag, otherwise the shortname
+		const alt = ns.unicodeAlt ? ns.convert(unicode.toUpperCase()) : shortname;
+
+		if (ns.sprites) {
+			return `<span class="emojione emojione-${ category } _${ fname }" ${ title }>${ alt }</span>`;
+		}
+		return `<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ fname }${ ns.fileExtension }"/>`;
+	});
+
+	const convertUnicode = mem(function(entire, m1, m2, m3) {
+		const mappedUnicode = ns.mapUnicodeToShort();
+
+		if ((typeof m3 === 'undefined') || (m3 === '') || !(ns.unescapeHTML(m3) in ns.asciiList)) {
+			// if the ascii doesnt exist just return the entire match
+			return entire;
+		}
+
+		m3 = ns.unescapeHTML(m3);
+		const unicode = ns.asciiList[m3];
+		const shortname = mappedUnicode[unicode];
+		const category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
+		const title = ns.imageTitleTag ? `title="${ ns.escapeHTML(m3) }"` : '';
+		// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
+		// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
+		const ePath = ns.defaultPathPNG !== ns.imagePathPNG ? ns.imagePathPNG : `${ ns.defaultPathPNG + ns.emojiSize }/`;
+
+		// depending on the settings, we'll either add the native unicode as the alt tag, otherwise the shortname
+		const alt = ns.unicodeAlt ? ns.convert(unicode.toUpperCase()) : ns.escapeHTML(m3);
+
+		if (ns.sprites) {
+			return `${ m2 }<span class="emojione emojione-${ category } _${ unicode }"  ${ title }>${ alt }</span>`;
+		}
+		return `${ m2 }<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ unicode }${ ns.fileExtension }"/>`;
+	});
+
 	ns.shortnameToImage = function(str) {
 		// replace regular shortnames first
-		let replaceWith; let shortname; let unicode; let fname; let alt; let category; let title; let size; let ePath;
-		const mappedUnicode = ns.mapUnicodeToShort();
-		str = str.replace(ns.regShortNames, function(shortname) {
-			// the fix is basically adding this .replace(/[+]/g, '\\$&')
-			if ((typeof shortname === 'undefined') || (shortname === '') || (ns.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1)) {
-				// if the shortname doesnt exist just return the entire match
-				return shortname;
-			}
-
-			// map shortname to parent
-			if (!ns.emojioneList[shortname]) {
-				for (const emoji in ns.emojioneList) {
-					if (!ns.emojioneList.hasOwnProperty(emoji) || (emoji === '')) { continue; }
-					if (ns.emojioneList[emoji].shortnames.indexOf(shortname) === -1) { continue; }
-					shortname = emoji;
-					break;
-				}
-			}
-			unicode = ns.emojioneList[shortname].uc_output;
-			fname = ns.emojioneList[shortname].uc_base;
-			category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
-			title = ns.imageTitleTag ? `title="${ shortname }"` : '';
-			size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
-			// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
-			ePath = ns.defaultPathPNG !== ns.imagePathPNG ? ns.imagePathPNG : `${ ns.defaultPathPNG + ns.emojiSize }/`;
-
-			// depending on the settings, we'll either add the native unicode as the alt tag, otherwise the shortname
-			alt = ns.unicodeAlt ? ns.convert(unicode.toUpperCase()) : shortname;
-
-			if (ns.sprites) {
-				replaceWith = `<span class="emojione emojione-${ size }-${ category } _${ fname }" ${ title }>${ alt }</span>`;
-			} else {
-				replaceWith = `<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ fname }${ ns.fileExtension }"/>`;
-			}
-
-			return replaceWith;
-		});
+		str = str.replace(ns.regShortNames, convertShortName);
 
 		// if ascii smileys are turned on, then we'll replace them!
 		if (ns.ascii) {
 			const asciiRX = ns.riskyMatchAscii ? ns.regAsciiRisky : ns.regAscii;
 
-			str = str.replace(asciiRX, function(entire, m1, m2, m3) {
-				if ((typeof m3 === 'undefined') || (m3 === '') || !(ns.unescapeHTML(m3) in ns.asciiList)) {
-					// if the ascii doesnt exist just return the entire match
-					return entire;
-				}
-
-				m3 = ns.unescapeHTML(m3);
-				unicode = ns.asciiList[m3];
-				shortname = mappedUnicode[unicode];
-				category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
-				title = ns.imageTitleTag ? `title="${ ns.escapeHTML(m3) }"` : '';
-				size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
-				// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
-				ePath = ns.defaultPathPNG !== ns.imagePathPNG ? ns.imagePathPNG : `${ ns.defaultPathPNG + ns.emojiSize }/`;
-
-				// depending on the settings, we'll either add the native unicode as the alt tag, otherwise the shortname
-				alt = ns.unicodeAlt ? ns.convert(unicode.toUpperCase()) : ns.escapeHTML(m3);
-
-				if (ns.sprites) {
-					replaceWith = `${ m2 }<span class="emojione emojione-${ size }-${ category } _${ unicode }"  ${ title }>${ alt }</span>`;
-				} else {
-					replaceWith = `${ m2 }<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ unicode }${ ns.fileExtension }"/>`;
-				}
-
-				return replaceWith;
-			});
+			return str.replace(asciiRX, convertUnicode);
 		}
 
 		return str;
