@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
 
+import {initializeNewsfeed} from "./initialize";
+import {deinitializeNewsfeed} from "./deinitialize";
+
 const defaults = {
 	enable: true,
 };
@@ -13,4 +16,13 @@ Meteor.startup(() => {
 			i18nLabel: 'Enable',
 		});
 	});
+});
+
+settings.get('Newsfeed_enable', (key, value) => {
+	if(value === true){
+		initializeNewsfeed();
+	}
+	else {
+		deinitializeNewsfeed();
+	}
 });
