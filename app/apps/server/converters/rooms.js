@@ -1,6 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { Rooms, Users } from '../../../models';
+import { LivechatVisitors } from '../../../models/server/models/LivechatVisitors';
 
 export class AppRoomsConverter {
 	constructor(orch) {
@@ -33,19 +34,53 @@ export class AppRoomsConverter {
 			};
 		}
 
+		let v;
+		if (room.visitor) {
+			const visitor = LivechatVisitors.findOneById(room.visitor.id);
+			v = {
+				_id: visitor._id,
+				username: visitor.username,
+				token: visitor.token,
+			};
+		}
+
+		let servedBy;
+		if (room.servedBy) {
+			const user = Users.findOneById(room.servedBy.id);
+			servedBy = {
+				_id: user._id,
+				username: user.username,
+			};
+		}
+
+		let closedBy;
+		if (room.closedBy) {
+			const user = Users.findOneById(room.closedBy.id);
+			closedBy = {
+				_id: user._id,
+				username: user.username,
+			};
+		}
+
 		return {
 			_id: room.id,
 			fname: room.displayName,
 			name: room.slugifiedName,
 			t: room.type,
 			u,
+			v,
+			servedBy,
+			closedBy,
 			members: room.members,
 			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
 			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
 			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
+			waitingResponse: typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
+			open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
 			msgs: room.messageCount || 0,
 			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
+			closedAt: room.closedAt,
 			lm: room.lastModifiedAt,
 			customFields: room.customFields,
 		};
@@ -89,14 +124,14 @@ export class AppRoomsConverter {
 			isDefault: typeof room.default === 'undefined' ? false : room.default,
 			isReadOnly: typeof room.ro === 'undefined' ? false : room.ro,
 			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
-			isWaitingResponse: room.waitingResponse !== undefined ? !!room.waitingResponse : undefined,
-			isOpen: room.open !== undefined ? !!room.open : undefined,
+			isWaitingResponse: typeof room.waitingResponse === 'undefined' ? undefined : !!room.waitingResponse,
+			isOpen: typeof room.open === 'undefined' ? undefined : !!room.open,
 			messageCount: room.msgs,
 			createdAt: room.ts,
 			updatedAt: room._updatedAt,
 			closedAt: room.closedAt,
 			lastModifiedAt: room.lm,
-			customFields: {},
+			customFields: room.customFields,
 		};
 	}
 
