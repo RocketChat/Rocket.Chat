@@ -87,8 +87,8 @@ Template.serviceAccountDashboard.onCreated(function() {
 		instance.ready.set(subscription.ready());
 	});
 	this.users = function() {
-  	const roles = [].concat('service-account-applied');
-  	const query = {
+		const roles = [].concat('service-account-applied');
+		const query = {
 			roles: { $in: roles },
 		};
 		const limit = instance.limit && instance.limit.get();
