@@ -31802,6 +31802,45 @@
           ]
         }
       ]
+    },
+    "1.1.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14686",
+          "title": "[FIX] SAML login error.",
+          "userLogin": "Hudell",
+          "milestone": "1.1.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14668",
+          "title": "[FIX] Load messages after disconnect and message box scroll missing",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14674",
+          "title": "Removing unnecesary federation configs",
+          "userLogin": "alansikora",
+          "milestone": "1.1.1",
+          "contributors": [
+            "alansikora"
+          ]
+        }
+      ]
     }
   }
 }
