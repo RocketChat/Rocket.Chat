@@ -1,5 +1,5 @@
 import './startup';
 import './route';
 
-//views
+// views
 import './views/serviceAccountDashboard';

@@ -12,8 +12,8 @@ Meteor.startup(() => {
 		Roles.createOrUpdate('service-account-approved');
 	}
 	if (Permissions) {
-        Permissions.createOrUpdate('view-sa-request', ['admin']);
-        Permissions.createOrUpdate('create-service-account', ['service-account-approved', 'admin']);
-        Permissions.createOrUpdate('delete-service-account', ['admin']);
+		Permissions.createOrUpdate('view-sa-request', ['admin']);
+		Permissions.createOrUpdate('create-service-account', ['service-account-approved', 'admin']);
+		Permissions.createOrUpdate('delete-service-account', ['admin']);
 	}
 });
