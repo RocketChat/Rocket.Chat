@@ -191,6 +191,7 @@ export class CustomOAuth {
 
 			const serviceData = {
 				_OAuthCustom: true,
+				serverURL: self.serverURL,
 				accessToken: response.access_token,
 				idToken: response.id_token,
 				expiresAt: +new Date() + (1000 * parseInt(response.expires_in, 10)),
@@ -218,6 +219,7 @@ export class CustomOAuth {
 		});
 	}
 
+	// eslint-disable-next-line complexity
 	normalizeIdentity(identity) {
 		if (identity) {
 			// Set 'id' to '_id' for any sources that provide it

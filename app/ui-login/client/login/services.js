@@ -62,7 +62,7 @@ Template.loginServices.helpers({
 	},
 });
 
-const longinMethods = {
+const loginMethods = {
 	'meteor-developer': 'MeteorDeveloperAccount',
 	linkedin: 'Linkedin',
 };
@@ -77,7 +77,7 @@ Template.loginServices.events({
 		loadingIcon.removeClass('hidden');
 		serviceIcon.addClass('hidden');
 
-		const loginWithService = `loginWith${ longinMethods[this.service.service] || s.capitalize(this.service.service) }`;
+		const loginWithService = `loginWith${ loginMethods[this.service.service] || s.capitalize(this.service.service) }`;
 		const serviceConfig = this.service.clientConfig || {};
 		return Meteor[loginWithService](serviceConfig, function(error) {
 			loadingIcon.addClass('hidden');

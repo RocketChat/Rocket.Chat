@@ -44,11 +44,59 @@ Meteor.methods({
 			password: formData.pass,
 			name: formData.name,
 		};
+
 		try {
 			WebdavAccounts.insert(accountData);
 			return { success: true, message: 'webdav-account-saved' };
 		} catch (error) {
 			return { success: false, message: error.code === 11000 ? 'duplicated-account' : 'unknown-write-error', error };
+		}
+	},
+
+	async addWebdavAccountByToken(data) {
+		const userId = Meteor.userId();
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'addWebdavAccount' });
+		}
+
+		if (!settings.get('Webdav_Integration_Enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'addWebdavAccount' });
+		}
+
+		check(data, Match.ObjectIncluding({
+			serverURL: String,
+		}));
+
+		const client = createClient(
+			data.serverURL,
+			{
+				token: data.token,
+			});
+
+		try {
+			await client.stat('/');
+		} catch (error) {
+			return { success: false, message: 'could-not-access-webdav', error };
+		}
+
+		const accountData = {
+			user_id: userId,
+			server_url: data.serverURL,
+			token: data.token,
+			name: data.name,
+		};
+
+		try {
+			WebdavAccounts.upsert({
+				user_id: userId,
+				name: data.name,
+			}, {
+				$set: accountData,
+			});
+			return { success: true, message: 'webdav-account-saved' };
+		} catch (error) {
+			return { success: false, message: 'unknown-write-error', error };
 		}
 	},
 });
