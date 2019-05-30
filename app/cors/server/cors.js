@@ -48,6 +48,9 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	if (/^\/(api|_timesync|sockjs|tap-i18n)(\/|$)/.test(req.url)) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 	}
+	if (!settings.get('Allow_Loading_In_Iframe')) {
+		res.setHeader('X-Frame-Options', settings.get('X_Frame_Options'));
+	}
 
 	const { setHeader } = res;
 	res.setHeader = function(key, val, ...args) {
@@ -56,6 +59,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 		}
 		return setHeader.apply(this, [key, val, ...args]);
 	};
+
 	return next();
 });
 

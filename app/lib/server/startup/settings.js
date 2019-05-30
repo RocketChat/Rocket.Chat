@@ -752,6 +752,18 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		secret: true,
 	});
+	this.add('Allow_Loading_In_Iframe', false, {
+		type: 'boolean',
+		secret: true,
+	});
+	this.add('X_Frame_Options', 'sameorigin', {
+		type: 'string',
+		secret: true,
+		enableQuery: {
+			_id: 'Allow_Loading_In_Iframe',
+			value: false,
+		},
+	});
 	this.add('Favorite_Rooms', true, {
 		type: 'boolean',
 		public: true,
