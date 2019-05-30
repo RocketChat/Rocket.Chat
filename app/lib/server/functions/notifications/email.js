@@ -120,7 +120,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 
 	// If direct reply enabled, email content with headers
 	if (settings.get('Direct_Reply_Enable')) {
-		let replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
+		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
 		if (settings.get('Direct_Reply_Method') && settings.get('Direct_Reply_Method') === 'to') {
 			email.headers = {
 				// Reply-To header with format "username+messageId@domain"

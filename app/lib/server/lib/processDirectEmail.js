@@ -134,8 +134,7 @@ export const processDirectEmail = function(email) {
 	}
 	if (email.headers.mid) {
 		return sendMessage(email);
-	} else {
-		console.log('Invalid Email....If not. Please report it.');
-		return false;
 	}
+	console.log('Invalid Email....If not. Please report it.');
+	return false;
 };
