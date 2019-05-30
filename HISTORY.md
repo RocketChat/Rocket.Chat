@@ -1,4 +1,30 @@
 
+# 1.1.1
+`2019-05-30  ·  2 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- SAML login error. ([#14686](https://github.com/RocketChat/Rocket.Chat/pull/14686))
+- Load messages after disconnect and message box scroll missing ([#14668](https://github.com/RocketChat/Rocket.Chat/pull/14668))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Removing unnecesary federation configs ([#14674](https://github.com/RocketChat/Rocket.Chat/pull/14674))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@alansikora](https://github.com/alansikora)
+- [@ggazzo](https://github.com/ggazzo)
+
 # 1.1.0
 `2019-05-27  ·  5 🎉  ·  10 🚀  ·  52 🐛  ·  35 🔍  ·  27 👩‍💻👨‍💻`
 
