@@ -1054,6 +1054,8 @@
   "Direct_Reply_Password": "Password",
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_Protocol": "Direct Reply Protocol",
+  "Direct_Reply_Method": "Method",
+  "Direct_Reply_Method_Description": "To reply directly to messages by email, the message ID must be included in the email notification. The id can either be encoded in the recipient ('To') or in the subject ('Subject'). If you are using an email service (IMAP server) that supports rfc5233, you can use the 'To' method, all others should select 'Subject'.",
   "Direct_Reply_Separator": "Separator",
   "Direct_Reply_Separator_Description": "[Alter only if you know exactly what you are doing, refer docs]<br/>Separator between base & tag part of email",
   "Direct_Reply_Username": "Username",

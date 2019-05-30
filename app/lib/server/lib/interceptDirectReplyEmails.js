@@ -89,7 +89,7 @@ export class IMAPIntercepter {
 			if (newEmails.length > 0) {
 				const f = this.imap.fetch(newEmails, {
 					// fetch headers & first body part.
-					bodies: ['HEADER.FIELDS (FROM TO DATE MESSAGE-ID)', '1'],
+					bodies: ['HEADER.FIELDS (FROM TO DATE MESSAGE-ID SUBJECT)', '1'],
 					struct: true,
 					markSeen: true,
 				});
@@ -119,19 +119,20 @@ export class IMAPIntercepter {
 								email.headers.to = email.headers.to[0];
 								email.headers.date = email.headers.date[0];
 								email.headers.from = email.headers.from[0];
+								email.headers.subject = email.headers.subject[0];
 							}
 						});
 					});
 
 					// On fetched each message, pass it further
 					msg.once('end', Meteor.bindEnvironment(() => {
+						processDirectEmail(email);
 						// delete message from inbox
 						if (this.delete) {
 							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
 								if (err) { console.log(`Mark deleted error: ${ err }`); }
 							});
 						}
-						processDirectEmail(email);
 					}));
 				}));
 				f.once('error', (err) => {

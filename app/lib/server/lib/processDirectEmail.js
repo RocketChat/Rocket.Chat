@@ -123,13 +123,19 @@ export const processDirectEmail = function(email) {
 	if (email.headers.from.indexOf('<') >= 0 && email.headers.from.indexOf('>') >= 0) {
 		email.headers.from = email.headers.from.split('<')[1].split('>')[0];
 	}
-
-	// 'To' email format "username+messageId@domain"
-	if (email.headers.to.indexOf('+') >= 0) {
+	const ind = email.headers.subject.indexOf('reply:');
+	if (ind > 0) {
+		// message id to reply to is encoded by email 'subject'
+		email.headers.mid = email.headers.subject.substring(ind + 6, ind + 23);
+	} else if (email.headers.to.indexOf('+') >= 0) {
+		// message id to reply to is encoded by email 'to'
 		// Valid 'To' format
 		email.headers.mid = email.headers.to.split('@')[0].split('+')[1];
-		sendMessage(email);
+	}
+	if (email.headers.mid) {
+		return sendMessage(email);
 	} else {
 		console.log('Invalid Email....If not. Please report it.');
+		return false;
 	}
 };

@@ -1054,6 +1054,8 @@
   "Direct_Reply_Password": "Passwort",
   "Direct_Reply_Port": "Port für Direktantworten",
   "Direct_Reply_Protocol": "Protokoll für Direktantworten",
+  "Direct_Reply_Method": "Methode",
+  "Direct_Reply_Method_Description": "Um direkt per Mail auf Nachrichten zu antworten, muss die Nachrichten-ID in der E-Mail-Benachrichtigung enthalten sein. Diese kann entweder im Empfänger ('To') kodiert werden oder im Betreff ('Subject'). Wer einen E-Mail-Dienst (IMAP-Server) verwendet, der rfc5233 unterstützt, kann die Methode 'To' verwenden, alle anderen sollten hier ('Subject') einstellen.",
   "Direct_Reply_Separator": "Trennzeichen",
   "Direct_Reply_Separator_Description": "[Nur verändern, wenn Sie wirklich sicher sind, was Sie tun (s. Dokumentation)]<br/>Separator zwischen Base- und Tag-Teil der E-Mail",
   "Direct_Reply_Username": "Benutzername",
