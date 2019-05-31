@@ -10,14 +10,15 @@ const defaults = {
 
 Meteor.startup(() => {
 	settings.addGroup('Newsfeed', function() {
-		this.add('Newsfeed_enable', defaults.enable, {
+		this.add('Newsfeed_enabled', defaults.enable, {
 			type: 'boolean',
 			i18nLabel: 'Enable',
+			public: true,
 		});
 	});
 });
 
-settings.get('Newsfeed_enable', (key, value) => {
+settings.get('Newsfeed_enabled', (key, value) => {
 	if (value === true) {
 		initializeNewsfeed();
 	} else {

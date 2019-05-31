@@ -4,6 +4,7 @@ import { FavoriteRoomType } from './favorite';
 import { PrivateRoomType } from './private';
 import { PublicRoomType } from './public';
 import { UnreadRoomType } from './unread';
+import { NewsfeedRoomType } from './newsfeed';
 
 export {
 	ConversationRoomType,
@@ -12,4 +13,5 @@ export {
 	PrivateRoomType,
 	PublicRoomType,
 	UnreadRoomType,
+	NewsfeedRoomType,
 };

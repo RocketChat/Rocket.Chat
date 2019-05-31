@@ -2,6 +2,11 @@
 	{{#if isLivechat}}
 		{{> livechat . }}
 	{{else}}
+		{{#if isNewsfeedEnabled}}
+			<h3 class="rooms-list__type">
+				<span class="rooms-list__type-text">Newsfeed</span>
+			</h3>
+		{{/if}}
 		{{#with rooms}}
 			{{#if shouldAppear .. .}}
 					<h3 class="rooms-list__type">
