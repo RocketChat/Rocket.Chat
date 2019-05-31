@@ -3,10 +3,11 @@
  */
 
 import { TAPi18n } from 'meteor/tap:i18n';
-import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+
+import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
+import { SystemLogger } from '../../logger/server';
 
 /**
  * Represents google translate class
@@ -79,11 +80,12 @@ class GoogleAutoTranslate extends AutoTranslate {
 				}
 			} finally {
 				if (this.supportedLanguages[target]) {
+					// eslint-disable-next-line no-unsafe-finally
 					return this.supportedLanguages[target];
-				} else {
-					this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-					return this.supportedLanguages[target || 'en'];
 				}
+				this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
+				// eslint-disable-next-line no-unsafe-finally
+				return this.supportedLanguages[target || 'en'];
 			}
 		}
 	}
@@ -111,7 +113,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params: {
 						key: this.apiKey,
 						target: language,
-					}, query,
+					},
+					query,
 				});
 				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 					const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
@@ -144,7 +147,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params: {
 						key: this.apiKey,
 						target: language,
-					}, query,
+					},
+					query,
 				});
 				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
@@ -152,7 +156,6 @@ class GoogleAutoTranslate extends AutoTranslate {
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);
 			}
-
 		});
 		return translations;
 	}
@@ -160,4 +163,3 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 // Register Google translation provider.
 TranslationProviderRegistry.registerProvider(new GoogleAutoTranslate());
-

@@ -86,6 +86,7 @@ class Administration extends Page {
 	get rolesAddBtn() { return browser.element('button.add'); }
 
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
+
 	get rolesSettingPermissionsButton() { return browser.element('.js-toggle-setting-permissions'); }
 
 	// permissions grids checkboxes
@@ -111,7 +112,9 @@ class Administration extends Page {
 	get rolesOwnerDeleteMessage() { return browser.element('[name="perm[owner][delete-message]"]'); }
 
 	get rolesOwnerEditMessage() { return browser.element('[name="perm[owner][edit-message]"]'); }
+
 	get rolesManageSettingsPermissions() { return browser.element('[name="perm[user][manage-selected-settings]"]'); }
+
 	get rolesSettingLayoutTitle() {	return browser.element('[name="perm[user][change-setting-Layout_Home_Title]"');	}
 
 	get emojiFilter() { return browser.element('#emoji-filter'); }
@@ -228,6 +231,7 @@ class Administration extends Page {
 	get generalUTF8NamesSlugFalse() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
 
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
+
 	get generalLayoutTitle() { return browser.element('[name="Layout_Home_Title"]'); }
 
 	// accounts

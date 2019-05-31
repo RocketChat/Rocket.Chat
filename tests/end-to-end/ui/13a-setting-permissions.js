@@ -1,9 +1,10 @@
 /* eslint-env mocha */
+import { assert } from 'chai';
+
 import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../data/user.js';
 import admin from '../../pageobjects/administration.page';
 import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
-import { assert } from 'chai';
 
 function openAdminView() {
 	sideNav.sidebarMenu.waitForVisible(5000);
@@ -21,7 +22,6 @@ function logoutRocketchat() {
 }
 
 describe('[Rocket.Chat Settings based permissions]', function() {
-
 	const newTitle = 'Testtitle';
 
 	describe('Give User Permissions', function() {
@@ -67,7 +67,6 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 	});
 
 	describe('Test new user setting permissions', function() {
-
 		before(() => {
 			try {
 				checkIfUserIsValid(username, email, password);
@@ -91,7 +90,6 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 	});
 
 	describe('Verify settings change and cleanup', function() {
-
 		it('New settings value visible for admin as well', function(done) {
 			admin.layoutLink.waitForVisible(10000);
 			admin.layoutLink.click();

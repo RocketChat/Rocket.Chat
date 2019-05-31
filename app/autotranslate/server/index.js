@@ -5,11 +5,6 @@
  */
 
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
-
-export {
-	AutoTranslate,
-	TranslationProviderRegistry,
-};
 import './settings';
 import './permissions';
 import './autotranslate';
@@ -21,3 +16,8 @@ import './deeplTranslate.js';
 import './dbsTranslate.js';
 import './models/Settings.js';
 import './methods/getProviderUiMetadata.js';
+
+export {
+	AutoTranslate,
+	TranslationProviderRegistry,
+};

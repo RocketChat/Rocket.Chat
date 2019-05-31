@@ -45,6 +45,7 @@ class SideNav extends Page {
 
 	// Toolbar
 	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--inbox'); }
+
 	get spotlightSearch() { return browser.element('.toolbar__search input'); }
 
 	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }

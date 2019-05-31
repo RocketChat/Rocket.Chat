@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 import supertest from 'supertest';
+
 export const request = supertest.agent('http://localhost:8080');
 
 export const credentials = {

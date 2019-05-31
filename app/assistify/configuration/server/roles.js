@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Permissions, Roles } from '../../../models/server';
+
 const CONFIGURATION_ROLE_NAME = 'config-expert';
 const MANAGER_ROLE_NAME = 'manager';
 const USER_ROLE_NAME = 'user';
@@ -260,7 +262,6 @@ const adjustStandardRoles = function() {
 	];
 
 	assignPermissions(GUEST_ROLE_NAME, additionalGuestPermissions);
-
 };
 
 Meteor.startup(() => {

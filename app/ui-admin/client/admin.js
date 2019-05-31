@@ -454,7 +454,6 @@ Template.admin.events({
 				return TAPi18n._loadLanguage(lng).then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })));
 			}
 			toastr.success(TAPi18n.__('Settings_updated'));
-
 		});
 	},
 	'click .rc-header__section-button .refresh-clients'() {

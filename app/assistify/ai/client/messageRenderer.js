@@ -1,4 +1,5 @@
 import s from 'underscore.string';
+
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
 
@@ -18,7 +19,6 @@ const highlightrecognizedTokens = function(message) {
 		if (recognizedTokens) {
 			recognizedTokens.forEach((term) => {
 				if (!excludedTypes.has(term.type)) {
-
 					/* depending on the previous renderers, the content of the message will be wrapped in a <p>
 						we'll remove it for this processing since else, the negative lookahead of the regex,
 						which prevents replacement inside html-tags such as links, will prevent replacing of any content

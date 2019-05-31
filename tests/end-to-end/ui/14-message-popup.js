@@ -6,7 +6,6 @@ import {
 } from '../../data/api-data.js';
 import sideNav from '../../pageobjects/side-nav.page';
 import mainContent from '../../pageobjects/main-content.page';
-
 import { username, password, email } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 
@@ -64,7 +63,6 @@ const createTestUser = async ({ email, name, username, password, isMentionable }
 describe('[Message Popup]', () => {
 	describe('test user mentions in message popup', () => {
 		before(() => {
-
 			browser.call(async () => {
 				for (const user of users) {
 					await createTestUser(user); // eslint-disable-line no-await-in-loop

@@ -1,5 +1,4 @@
 import Page from './Page';
-
 import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
@@ -12,7 +11,6 @@ const Keys = {
 };
 
 class Assistify extends Page {
-
 	get knowledgebaseIcon() {
 		return browser.element('.tab-button-icon--lightbulb');
 	}
@@ -68,6 +66,7 @@ class Assistify extends Page {
 	get knowledgebaseFilter() {
 		return browser.element('#innerTabFilter .title');
 	}
+
 	get knowledgebaseContainer() {
 		return browser.element('#widgetContainer');
 	}
@@ -114,7 +113,6 @@ class Assistify extends Page {
 
 	get wordCloudLink() {
 		return browser.element('[id="more-topics"]');
-
 	}
 
 	get wordCloudButton() {
@@ -145,10 +143,13 @@ class Assistify extends Page {
 	get numberOfRequests() {
 		return browser.element('#rocket-chat > aside > div.rooms-list > h3:nth-child(9) > span.badge');
 	}
+
 	get resync() {
 		return browser.element('[data-setting="Assistify_AI_Resync_Full"]');
 	}
+
 	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
+
 	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
 
 

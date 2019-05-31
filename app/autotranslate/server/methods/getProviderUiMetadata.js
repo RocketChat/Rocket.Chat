@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { TranslationProviderRegistry } from '../autotranslate';
 
 Meteor.methods({
@@ -16,4 +17,3 @@ Meteor.methods({
 		return providersMetadata;
 	},
 });
-

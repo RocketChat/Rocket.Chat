@@ -1,18 +1,19 @@
 /* eslint-env mocha */
 
+import supertest from 'supertest';
+
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
 import mainContent from '../../pageobjects/main-content.page';
 import Global from '../../pageobjects/global';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
+import { checkIfUserIsAdmin } from '../../data/checks';
 
 const room1 = `smarti-test-topic1-${ Date.now() }`;
 const room2 = `smarti-test-topic2-${ Date.now() }`;
 const room3 = `smarti-test-topic3-${ Date.now() }`;
 const shortTopicMessage = 'Das ist das neue Thema zu dem Anfragen erstellt werden und die Wissensbasis genutzt wird!';
 const message = 'Mit allgemeinen Anfragen verschaffen Sie sich einen Überblick über den Markt, indem Sie Produkte, Preise und Bestellbedingungen unterschiedlicher Lieferanten und Dienstleister kennen lernen. In einem allgemeinen Anfragebrief bitten Sie zum die Zusendung von Katalogen, Prospekten, Preislisten und Produktmustern. Wie kann ich dieses Wissen nutzen?';
-import { checkIfUserIsAdmin } from '../../data/checks';
-import supertest from 'supertest';
 
 // the following should actually be imported from 00-preparation
 const smarti = supertest.agent('http://localhost:8080');
@@ -22,7 +23,6 @@ const credentials = {
 };
 
 describe('[Smarti Integration]', () => {
-
 	before(() => {
 		browser.pause(5000); // wait some time to make sure that all settings on both sides are actually persisted
 
@@ -143,16 +143,13 @@ describe('[Smarti Integration]', () => {
 	});
 
 	describe('[Request]', () => {
-
 		describe('First request', () => {
-
 			it('create is successful', () => {
 				sideNav.createChannel(room2, false, false);
 				mainContent.sendMessage(message);
 			});
 		});
 		describe('Second request', () => {
-
 			it('create is successful', () => {
 				sideNav.createChannel(room3, false, false);
 				mainContent.sendMessage(message);

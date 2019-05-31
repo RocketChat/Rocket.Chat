@@ -3,13 +3,13 @@
  */
 
 import { Meteor } from 'meteor/meteor';
-
-import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { Promise } from 'meteor/promise';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import cld from 'cld'; // import the local package dependencies
+
+import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { SystemLogger } from '../../logger/server';
 
 /**
@@ -63,6 +63,7 @@ class DBSAutoTranslate extends AutoTranslate {
 			if (this.supportedLanguages[target]) {
 				return this.supportedLanguages[target];
 			}
+			// eslint-disable-next-line no-return-assign
 			return this.supportedLanguages[target] = [
 				{
 					language: 'de',
@@ -141,7 +142,8 @@ class DBSAutoTranslate extends AutoTranslate {
 						const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
 							params: {
 								key: this.apiKey,
-							}, data: {
+							},
+							data: {
 								text: query,
 								to: language,
 								from: sourceLanguage,
@@ -188,7 +190,8 @@ class DBSAutoTranslate extends AutoTranslate {
 						const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
 							params: {
 								key: this.apiKey,
-							}, data: {
+							},
+							data: {
 								text: query,
 								to: language,
 								from: sourceLanguage,
@@ -210,4 +213,3 @@ class DBSAutoTranslate extends AutoTranslate {
 }
 // Register provider to the registry.
 TranslationProviderRegistry.registerProvider(new DBSAutoTranslate());
-

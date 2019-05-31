@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { SystemLogger } from '../../../../logger/server';
 import { SmartiProxy, verbs } from '../SmartiProxy';
 import { SmartiAdapter } from '../lib/SmartiAdapter';
@@ -91,7 +92,6 @@ Meteor.methods({
 	},
 
 	searchConversations(queryParams) {
-
 		function unique(value, index, array) {
 			return array.indexOf(value) === index;
 		}
@@ -149,9 +149,8 @@ function loadSmarti() {
 			throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
 		}
 		return script;
-	} else {
-		return ''; // there is no script to be added, so return an empty source (and not null) - hte consumer expects a string
 	}
+	return ''; // there is no script to be added, so return an empty source (and not null) - hte consumer expects a string
 }
 
 function delayedReload() {

@@ -1,5 +1,6 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
+
 import { Roles, Permissions, Settings } from '../../models';
 import { settings } from '../../settings/server';
 

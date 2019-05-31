@@ -1,4 +1,5 @@
 import hasha from 'hasha';
+
 import { Messages, Users, Statistics, Subscriptions } from '../../../models/server';
 
 /**
@@ -118,7 +119,6 @@ export function getUsages() {
 		delete user.emails.address;
 		delete user.emails;
 		usages.push(user);
-
 	}
 	return usages;
 }

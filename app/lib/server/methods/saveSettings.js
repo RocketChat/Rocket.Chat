@@ -19,7 +19,7 @@ Meteor.methods({
 			// Verify the _id passed in is a string.
 			check(_id, String);
 			if (!hasPermission(Meteor.userId(), 'edit-privileged-setting')
-				&& !(hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`]))) {
+				&& !hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])) {
 				settingsNotAllowed.push(_id);
 				return;
 			}

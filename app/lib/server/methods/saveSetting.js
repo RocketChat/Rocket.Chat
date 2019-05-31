@@ -15,9 +15,8 @@ Meteor.methods({
 		}
 
 		if (!hasPermission(Meteor.userId(), 'edit-privileged-setting')
-			&& !(
-				hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])
-			)) {
+			&& !hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
 				settingId: _id,

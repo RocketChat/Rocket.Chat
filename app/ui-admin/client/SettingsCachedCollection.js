@@ -1,8 +1,10 @@
 import _ from 'underscore';
+
 import { CachedCollection } from '../../ui-cached-collection';
 import { Notifications } from '../../notifications/client';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../authorization/client';
 import { RoomManager } from '../../ui-utils/client';
+
 export class PrivateSettingsCachedCollection extends CachedCollection {
 	constructor() {
 		super({

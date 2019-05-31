@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+
 import { slashCommands } from '../../../app/utils/client';
 
 function createDiscussion(command, params, item) {
