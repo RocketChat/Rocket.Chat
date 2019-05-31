@@ -94,7 +94,6 @@ Meteor.startup(function() {
 				i18nDescription: 'WhatsApp_Gateway_conversation_finished_message_Description',
 				secret: true,
 			});
-
 		});
 	});
 });
