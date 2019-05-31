@@ -117,6 +117,11 @@
 		align-items: center;
 	}
 
+	/* support additional headers within a page */
+	& + .content + & {
+		margin-top: 20px;
+	}
+
 	&--burger {
 		display: none;
 	}
