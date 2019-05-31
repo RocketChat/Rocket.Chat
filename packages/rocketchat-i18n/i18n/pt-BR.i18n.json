@@ -3159,6 +3159,7 @@
   "WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs": "Permitir certificados auto-assinados inválidos",
   "WhatsApp_Gateway_Base_API_URL": "Base URL da API do gateway do WhatsApp",
   "Whatsapp_Gateway_Base_API_URL_Description": "Base URL da API do gateway onde o serviço está sendo executado.",
+  "WhatsApp_Gateway_conversation_finished_message_Description": "(Opcional) Mensagem default que será enviada aos usuários quando uma conversa terminar.",
   "WhatsApp_Gateway_Default_Department": "Departmento default",
   "WhatsApp_Gateway_Default_Department_Description": "(Opcional) Nome ou ID do departmento que receberá as conversas de WhatsApp.",
   "WhatsApp_Gateway_Fallback_Message": "Mensagem default para serviço offline",

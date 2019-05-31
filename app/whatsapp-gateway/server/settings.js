@@ -83,6 +83,18 @@ Meteor.startup(function() {
 				i18nDescription: 'WhatsApp_Gateway_Queue_Message_Description',
 				secret: true,
 			});
+			this.add('WhatsApp_Gateway_conversation_finished_message', '', {
+				type: 'string',
+				multiline: true,
+				enableQuery: {
+					_id: 'WhatsApp_Gateway_Service',
+					value: 'caixa',
+				},
+				i18nLabel: 'Conversation_finished_message',
+				i18nDescription: 'WhatsApp_Gateway_conversation_finished_message_Description',
+				secret: true,
+			});
+
 		});
 	});
 });

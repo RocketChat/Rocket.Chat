@@ -13,6 +13,7 @@ class Caixa {
 			allowInvalidSelfSignedCerts: settings.get('WhatsApp_Gateway_Allow_Invalid_SelfSigned_Certs'),
 			welcomeMessage: settings.get('WhatsApp_Gateway_Welcome_Message'),
 			queueMessage: settings.get('WhatsApp_Gateway_Queue_Message'),
+			conversationFinishedMessage: settings.get('WhatsApp_Gateway_conversation_finished_message'),
 		};
 	}
 

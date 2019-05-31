@@ -40,3 +40,33 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 	return message;
 }, callbacks.priority.LOW, 'sendToWhatsAppGateway');
+
+callbacks.add('livechat.closeRoom', (room) => {
+	if (!WhatsAppGateway.enabled) {
+		return room;
+	}
+
+	const WhatsAppService = WhatsAppGateway.getService(settings.get('WhatsApp_Gateway_Service'));
+
+	if (!WhatsAppService) {
+		return room;
+	}
+
+	const config = WhatsAppService.getConfig() || {};
+	const { conversationFinishedMessage } = config;
+	if (!conversationFinishedMessage) {
+		return room;
+	}
+
+	if (!(room.whatsAppGateway && room.v && room.v.token && room.closer && room.closer === 'user')) {
+		return room;
+	}
+
+	const visitor = LivechatVisitors.getVisitorByToken(room.v.token);
+	if (!visitor || !visitor.phone || visitor.phone.length === 0) {
+		return room;
+	}
+
+	WhatsAppService.send(room.whatsAppGateway.from, visitor.phone[0].phoneNumber, conversationFinishedMessage);
+
+}, callbacks.priority.MEDIUM, 'send-whatsapp-gateway-close-room');
