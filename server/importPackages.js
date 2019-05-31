@@ -67,6 +67,7 @@ import '../app/push-notifications/server';
 import '../app/retention-policy';
 import '../app/apps/server';
 import '../app/setup-wizard/server';
+import '../app/service-accounts/server';
 import '../app/slackbridge/server';
 import '../app/slashcommands-archiveroom/server';
 import '../app/slashcommand-asciiarts/server';
