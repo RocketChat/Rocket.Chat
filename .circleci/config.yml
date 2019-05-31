@@ -154,8 +154,8 @@ jobs:
             if [[ -z $CIRCLE_PR_NUMBER ]]; then
               meteor build --server-only --directory /tmp/build-test
             else
-              # export METEOR_PROFILE=1000
-              meteor build --server-only --directory /tmp/build-test
+              export METEOR_PROFILE=1000
+              meteor build --server-only --debug --directory /tmp/build-test
             fi;
 
       - run:
