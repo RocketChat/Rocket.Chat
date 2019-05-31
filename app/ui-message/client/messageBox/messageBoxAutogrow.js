@@ -34,15 +34,12 @@ export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElem
 			return true;
 		}
 
-		const shadowText = (
-			text.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/&/g, '&amp;')
-				.replace(/\n$/, '<br/>&nbsp;')
-				.replace(/\n/g, '<br/>')
-				.replace(/ {2,}/g, replaceWhitespaces)
-		);
-
+		const shadowText = text.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/&/g, '&amp;')
+			.replace(/\n$/, '<br/>&nbsp;')
+			.replace(/\n/g, '<br/>')
+			.replace(/ {2,}/g, replaceWhitespaces);
 		if (wasWidthChanged) {
 			shadow.style.width = `${ width }px`;
 			lastWidth = width;
@@ -59,7 +56,7 @@ export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElem
 
 		lastHeight = height;
 
-		const overflow = (height === maxHeight) ? 'hidden' : '';
+		const overflow = height < maxHeight ? 'hidden' : '';
 
 		if (height < maxHeight) {
 			textLenght = text.length;

@@ -1,17 +1,19 @@
+import vm from 'vm';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
+import _ from 'underscore';
+import s from 'underscore.string';
+import moment from 'moment';
+import Fiber from 'fibers';
+import Future from 'fibers/future';
+
 import * as Models from '../../../models';
 import { settings } from '../../../settings';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib';
 import { logger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
-import _ from 'underscore';
-import s from 'underscore.string';
-import moment from 'moment';
-import vm from 'vm';
-import Fiber from 'fibers';
-import Future from 'fibers/future';
 
 integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	constructor() {
@@ -155,10 +157,9 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		if (historyId) {
 			Models.IntegrationHistory.update({ _id: historyId }, { $set: history });
 			return historyId;
-		} else {
-			history._createdAt = new Date();
-			return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
 		}
+		history._createdAt = new Date();
+		return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
@@ -220,7 +221,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			Fiber,
 			Promise,
 			Store: {
-				set: (key, val) => store[key] = val,
+				set: (key, val) => { store[key] = val; },
 				get: (key) => store[key],
 			},
 			HTTP: (method, url, options) => {
@@ -345,7 +346,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			logger.outgoing.debug(integration.scriptCompiled.replace(/^/gm, '  ')); // Only output the compiled script if debugging is enabled, so the logs don't get spammed.
 			logger.outgoing.error('Stack:');
 			logger.outgoing.error(e.stack.replace(/^/gm, '  '));
-			return;
 		}
 	}
 
@@ -813,4 +813,4 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 
 		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
 	}
-};
+}();

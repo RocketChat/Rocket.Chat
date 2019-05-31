@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { MessageTypes } from '../../ui-utils';
 import { callbacks } from '../../callbacks';
 

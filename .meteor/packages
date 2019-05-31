@@ -85,7 +85,6 @@ accounts-base
 accounts-oauth
 autoupdate
 babel-compiler
-emojione:emojione@2.2.6
 google-oauth
 htmljs
 less

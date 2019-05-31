@@ -1,6 +1,7 @@
 
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { roomTypes } from '../../../utils';
+
 export const attachMessage = function(message, room) {
 	const { msg, u: { username }, ts, attachments, _id } = message;
 	return {

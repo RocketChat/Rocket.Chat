@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions, Settings } from '../../../models/server';
+
+import Permissions from '../../../models/server/models/Permissions';
+import Settings from '../../../models/server/models/Settings';
+
 import { Notifications } from '../../../notifications';
 
 Meteor.methods({
 	'permissions/get'(updatedAt) {
-		this.unblock();
 		// TODO: should we return this for non logged users?
 		// TODO: we could cache this collection
 

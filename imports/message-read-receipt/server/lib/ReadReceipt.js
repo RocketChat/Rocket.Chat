@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+
 import { ReadReceipts, Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models';
 import { settings } from '../../../../app/settings';
 import { roomTypes } from '../../../../app/utils';
@@ -15,10 +16,14 @@ const debounceByRoomId = function(fn) {
 	};
 };
 
-const updateMessages = debounceByRoomId(Meteor.bindEnvironment((roomId) => {
+const updateMessages = debounceByRoomId(Meteor.bindEnvironment(({ _id, lm }) => {
 	// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
-	const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(roomId);
-	Messages.setAsRead(roomId, firstSubscription.ls);
+	const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(_id);
+	Messages.setAsRead(_id, firstSubscription.ls);
+
+	if (lm <= firstSubscription.ls) {
+		Rooms.setLastMessageAsRead(_id);
+	}
 }));
 
 export const ReadReceipt = {
@@ -38,7 +43,7 @@ export const ReadReceipt = {
 			this.storeReadReceipts(Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
 		}
 
-		updateMessages(roomId);
+		updateMessages(room);
 	},
 
 	markMessageAsReadBySender(message, roomId, userId) {

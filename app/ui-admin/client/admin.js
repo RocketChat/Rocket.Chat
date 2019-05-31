@@ -6,12 +6,13 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../settings';
-import { SideNav, modal } from '../../ui-utils';
-import { t, handleError } from '../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
+import { settings } from '../../settings';
+import { SideNav, modal } from '../../ui-utils';
+import { t, handleError } from '../../utils';
 import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
 import { hasAtLeastOnePermission } from '../../authorization/client';
 
@@ -188,11 +189,10 @@ Template.admin.helpers({
 		});
 		if (found === enableQuery.length) {
 			return {};
-		} else {
-			return {
-				disabled: 'disabled',
-			};
 		}
+		return {
+			disabled: 'disabled',
+		};
 	},
 	isReadonly() {
 		if (this.readonly === true) {
@@ -456,7 +456,6 @@ Template.admin.events({
 			toastr.success(TAPi18n.__('Settings_updated'));
 
 		});
-
 	},
 	'click .rc-header__section-button .refresh-clients'() {
 		Meteor.call('refreshClients', function() {
@@ -492,9 +491,8 @@ Template.admin.events({
 		return Meteor.call('refreshOAuthService', function(err) {
 			if (err) {
 				return handleError(err);
-			} else {
-				return toastr.success(TAPi18n.__('Done'));
 			}
+			return toastr.success(TAPi18n.__('Done'));
 		});
 	},
 	'click .remove-custom-oauth'() {

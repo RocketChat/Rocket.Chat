@@ -3,11 +3,9 @@ import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import preferencesMainContent from '../../pageobjects/preferences-main-content.page';
 import admin from '../../pageobjects/administration.page';
-
 import { username, password, email, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
-// import {imgURL} from '../../data/interactions.js';
-
 import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
+// import {imgURL} from '../../data/interactions.js';
 
 
 describe('[User Preferences]', () => {
@@ -52,7 +50,6 @@ describe('[User Preferences]', () => {
 			it('it should show the submit button', () => {
 				preferencesMainContent.submitBtn.isVisible().should.be.true;
 			});
-
 		});
 
 		describe('user info change:', () => {

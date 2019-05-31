@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import s from 'underscore.string';
 
 Meteor.methods({
 	removeOAuthService(name) {
-
 		check(name, String);
 
 		if (!Meteor.userId()) {
@@ -35,6 +35,7 @@ Meteor.methods({
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-button_color`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-login_style`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-username_field`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-name_field`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-avatar_field`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-roles_claim`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_roles`);

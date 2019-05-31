@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { Rooms, Subscriptions } from '../../models';
 import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
@@ -31,7 +32,7 @@ function Hide(command, param, item) {
 			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
-				ts: new Date,
+				ts: new Date(),
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [room],
@@ -43,7 +44,7 @@ function Hide(command, param, item) {
 			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
-				ts: new Date,
+				ts: new Date(),
 				msg: TAPi18n.__('error-logged-user-not-in-room', {
 					postProcess: 'sprintf',
 					sprintf: [room],
@@ -58,7 +59,7 @@ function Hide(command, param, item) {
 			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
-				ts: new Date,
+				ts: new Date(),
 				msg: TAPi18n.__(error, null, user.language),
 			});
 		}

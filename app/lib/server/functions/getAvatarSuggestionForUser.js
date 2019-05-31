@@ -2,6 +2,7 @@ import { check } from 'meteor/check';
 import { HTTP } from 'meteor/http';
 import { Gravatar } from 'meteor/jparker:gravatar';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+
 import { settings } from '../../../settings';
 
 export function getAvatarSuggestionForUser(user) {

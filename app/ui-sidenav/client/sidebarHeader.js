@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
 import { t, getUserPreference, handleError } from '../../utils';
-
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
@@ -36,8 +36,6 @@ const extendedViewOption = (user) => {
 			},
 		};
 	}
-
-	return;
 };
 
 const showToolbar = new ReactiveVar(false);
@@ -156,8 +154,6 @@ const toolbarButtons = (user) => [{
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
 	action: (e) => {
-
-
 		const createChannel = (e) => {
 			e.preventDefault();
 			modal.open({

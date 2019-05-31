@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+
 import { sendMessage, updateMessage } from '../../../lib';
 import { Messages, Rooms, Users } from '../../../models';
 import { FileUpload } from '../../../file-upload';
-
 import { FederatedResource } from './FederatedResource';
 import { FederatedRoom } from './FederatedRoom';
 import { FederatedUser } from './FederatedUser';
+
 import { Federation } from '..';
 
 export class FederatedMessage extends FederatedResource {
@@ -57,7 +58,6 @@ export class FederatedMessage extends FederatedResource {
 
 			// Prepare mentions
 			for (const mention of message.mentions) {
-
 				mention.federation = mention.federation || {};
 
 				if (mention.username.indexOf('@') === -1) {

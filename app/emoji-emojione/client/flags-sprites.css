@@ -1,0 +1,1615 @@
+/* stylelint-disable */
+
+.emojione-flags {
+  background-image: url('/packages/emojione/flags-sprites.png');
+
+  &._1f1f1-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 0%;
+  }
+
+  &._1f3f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 0%;
+  }
+
+  &._1f3c1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 6.666666666666667%;
+  }
+
+  &._1f6a9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 6.666666666666667%;
+  }
+
+  &._1f3f3-1f308 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 0%;
+  }
+
+  &._1f3f4-2620 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 6.666666666666667%;
+  }
+
+  &._1f1e6-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 13.333333333333334%;
+  }
+
+  &._1f1e6-1f1fd {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 13.333333333333334%;
+  }
+
+  &._1f1e6-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 13.333333333333334%;
+  }
+
+  &._1f1e9-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 0%;
+  }
+
+  &._1f1e6-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 6.666666666666667%;
+  }
+
+  &._1f1e6-1f1e9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 13.333333333333334%;
+  }
+
+  &._1f1e6-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 20%;
+  }
+
+  &._1f1e6-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 20%;
+  }
+
+  &._1f1e6-1f1f6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 20%;
+  }
+
+  &._1f1e6-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 20%;
+  }
+
+  &._1f1e6-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 0%;
+  }
+
+  &._1f1e6-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 6.666666666666667%;
+  }
+
+  &._1f1e6-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 13.333333333333334%;
+  }
+
+  &._1f1e6-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 20%;
+  }
+
+  &._1f1e6-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 26.666666666666668%;
+  }
+
+  &._1f1e6-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 26.666666666666668%;
+  }
+
+  &._1f1e7-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 26.666666666666668%;
+  }
+
+  &._1f1e7-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 26.666666666666668%;
+  }
+
+  &._1f1e7-1f1e9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 26.666666666666668%;
+  }
+
+  &._1f1e7-1f1e7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 0%;
+  }
+
+  &._1f1e7-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 6.666666666666667%;
+  }
+
+  &._1f1e7-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 13.333333333333334%;
+  }
+
+  &._1f1e7-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 20%;
+  }
+
+  &._1f1e7-1f1ef {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 26.666666666666668%;
+  }
+
+  &._1f1e7-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 33.333333333333336%;
+  }
+
+  &._1f1e7-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 33.333333333333336%;
+  }
+
+  &._1f1e7-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 33.333333333333336%;
+  }
+
+  &._1f1e7-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 33.333333333333336%;
+  }
+
+  &._1f1e7-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 33.333333333333336%;
+  }
+
+  &._1f1e7-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 33.333333333333336%;
+  }
+
+  &._1f1ee-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 0%;
+  }
+
+  &._1f1fb-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 6.666666666666667%;
+  }
+
+  &._1f1e7-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 13.333333333333334%;
+  }
+
+  &._1f1e7-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 20%;
+  }
+
+  &._1f1e7-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 26.666666666666668%;
+  }
+
+  &._1f1e7-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 33.333333333333336%;
+  }
+
+  &._1f1f0-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 40%;
+  }
+
+  &._1f1e8-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 40%;
+  }
+
+  &._1f1e8-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 40%;
+  }
+
+  &._1f1ee-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 40%;
+  }
+
+  &._1f1e8-1f1fb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 40%;
+  }
+
+  &._1f1e7-1f1f6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 40%;
+  }
+
+  &._1f1f0-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 40%;
+  }
+
+  &._1f1e8-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 0%;
+  }
+
+  &._1f1f9-1f1e9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 6.666666666666667%;
+  }
+
+  &._1f1e8-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 13.333333333333334%;
+  }
+
+  &._1f1e8-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 20%;
+  }
+
+  &._1f1e8-1f1fd {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 26.666666666666668%;
+  }
+
+  &._1f1e8-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 33.333333333333336%;
+  }
+
+  &._1f1e8-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 40%;
+  }
+
+  &._1f1f0-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 46.666666666666664%;
+  }
+
+  &._1f1e8-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 46.666666666666664%;
+  }
+
+  &._1f1e8-1f1e9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 46.666666666666664%;
+  }
+
+  &._1f1e8-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 46.666666666666664%;
+  }
+
+  &._1f1e8-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 46.666666666666664%;
+  }
+
+  &._1f1e8-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 46.666666666666664%;
+  }
+
+  &._1f1ed-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 46.666666666666664%;
+  }
+
+  &._1f1e8-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 46.666666666666664%;
+  }
+
+  &._1f1e8-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 0%;
+  }
+
+  &._1f1e8-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 6.666666666666667%;
+  }
+
+  &._1f1e8-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 13.333333333333334%;
+  }
+
+  &._1f1e9-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 20%;
+  }
+
+  &._1f1e9-1f1ef {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 26.666666666666668%;
+  }
+
+  &._1f1e9-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 33.333333333333336%;
+  }
+
+  &._1f1e9-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 40%;
+  }
+
+  &._1f1ea-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 46.666666666666664%;
+  }
+
+  &._1f1ea-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 53.333333333333336%;
+  }
+
+  &._1f1f8-1f1fb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 53.333333333333336%;
+  }
+
+  &._1f1ec-1f1f6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 53.333333333333336%;
+  }
+
+  &._1f1ea-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 53.333333333333336%;
+  }
+
+  &._1f1ea-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 53.333333333333336%;
+  }
+
+  &._1f1ea-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 53.333333333333336%;
+  }
+
+  &._1f1ea-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 53.333333333333336%;
+  }
+
+  &._1f1eb-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 53.333333333333336%;
+  }
+
+  &._1f1eb-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 53.333333333333336%;
+  }
+
+  &._1f1eb-1f1ef {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 0%;
+  }
+
+  &._1f1eb-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 6.666666666666667%;
+  }
+
+  &._1f1eb-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 13.333333333333334%;
+  }
+
+  &._1f1ec-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 20%;
+  }
+
+  &._1f1f5-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 26.666666666666668%;
+  }
+
+  &._1f1f9-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 33.333333333333336%;
+  }
+
+  &._1f1ec-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 40%;
+  }
+
+  &._1f1ec-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 46.666666666666664%;
+  }
+
+  &._1f1ec-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 53.333333333333336%;
+  }
+
+  &._1f1e9-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 60%;
+  }
+
+  &._1f1ec-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 60%;
+  }
+
+  &._1f1ec-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 60%;
+  }
+
+  &._1f1ec-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 60%;
+  }
+
+  &._1f1ec-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 60%;
+  }
+
+  &._1f1ec-1f1e9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 60%;
+  }
+
+  &._1f1ec-1f1f5 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 60%;
+  }
+
+  &._1f1ec-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 60%;
+  }
+
+  &._1f1ec-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 60%;
+  }
+
+  &._1f1ec-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 60%;
+  }
+
+  &._1f1ec-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 0%;
+  }
+
+  &._1f1ec-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 6.666666666666667%;
+  }
+
+  &._1f1ec-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 13.333333333333334%;
+  }
+
+  &._1f1ed-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 20%;
+  }
+
+  &._1f1ed-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 26.666666666666668%;
+  }
+
+  &._1f1ed-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 33.333333333333336%;
+  }
+
+  &._1f1ed-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 40%;
+  }
+
+  &._1f1ee-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 46.666666666666664%;
+  }
+
+  &._1f1ee-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 53.333333333333336%;
+  }
+
+  &._1f1ee-1f1e9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 60%;
+  }
+
+  &._1f1ee-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 66.66666666666667%;
+  }
+
+  &._1f1ee-1f1f6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 66.66666666666667%;
+  }
+
+  &._1f1ee-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 66.66666666666667%;
+  }
+
+  &._1f1ee-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 66.66666666666667%;
+  }
+
+  &._1f1ee-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 66.66666666666667%;
+  }
+
+  &._1f1ee-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 66.66666666666667%;
+  }
+
+  &._1f1ef-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 66.66666666666667%;
+  }
+
+  &._1f1ef-1f1f5 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 66.66666666666667%;
+  }
+
+  &._1f38c {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 66.66666666666667%;
+  }
+
+  &._1f1ef-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 66.66666666666667%;
+  }
+
+  &._1f1ef-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 66.66666666666667%;
+  }
+
+  &._1f1f0-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 0%;
+  }
+
+  &._1f1f0-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 6.666666666666667%;
+  }
+
+  &._1f1f0-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 13.333333333333334%;
+  }
+
+  &._1f1fd-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 20%;
+  }
+
+  &._1f1f0-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 26.666666666666668%;
+  }
+
+  &._1f1f0-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 33.333333333333336%;
+  }
+
+  &._1f1f1-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 40%;
+  }
+
+  &._1f1f1-1f1fb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 46.666666666666664%;
+  }
+
+  &._1f1f1-1f1e7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 53.333333333333336%;
+  }
+
+  &._1f1f1-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 60%;
+  }
+
+  &._1f1f1-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 66.66666666666667%;
+  }
+
+  &._1f1f1-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 73.33333333333333%;
+  }
+
+  &._1f1f1-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 73.33333333333333%;
+  }
+
+  &._1f3f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 73.33333333333333%;
+  }
+
+  &._1f1f1-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1fb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 0%;
+  }
+
+  &._1f1f2-1f1f6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 6.666666666666667%;
+  }
+
+  &._1f1f2-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 13.333333333333334%;
+  }
+
+  &._1f1f2-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 20%;
+  }
+
+  &._1f1fe-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 26.666666666666668%;
+  }
+
+  &._1f1f2-1f1fd {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 33.333333333333336%;
+  }
+
+  &._1f1eb-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 40%;
+  }
+
+  &._1f1f2-1f1e9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 46.666666666666664%;
+  }
+
+  &._1f1f2-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 53.333333333333336%;
+  }
+
+  &._1f1f2-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 60%;
+  }
+
+  &._1f1f2-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 66.66666666666667%;
+  }
+
+  &._1f1f2-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 73.33333333333333%;
+  }
+
+  &._1f1f2-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 80%;
+  }
+
+  &._1f1f2-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 80%;
+  }
+
+  &._1f1f2-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 80%;
+  }
+
+  &._1f1f3-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 80%;
+  }
+
+  &._1f1f3-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 80%;
+  }
+
+  &._1f1f3-1f1f5 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 80%;
+  }
+
+  &._1f1f3-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 80%;
+  }
+
+  &._1f1f3-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 80%;
+  }
+
+  &._1f1f3-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 80%;
+  }
+
+  &._1f1f3-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 80%;
+  }
+
+  &._1f1f3-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 80%;
+  }
+
+  &._1f1f3-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 80%;
+  }
+
+  &._1f1f3-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 80%;
+  }
+
+  &._1f1f3-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 0%;
+  }
+
+  &._1f1f0-1f1f5 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 6.666666666666667%;
+  }
+
+  &._1f1f2-1f1f5 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 13.333333333333334%;
+  }
+
+  &._1f1f3-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 20%;
+  }
+
+  &._1f1f4-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 26.666666666666668%;
+  }
+
+  &._1f1f5-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 33.333333333333336%;
+  }
+
+  &._1f1f5-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 40%;
+  }
+
+  &._1f1f5-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 46.666666666666664%;
+  }
+
+  &._1f1f5-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 53.333333333333336%;
+  }
+
+  &._1f1f5-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 60%;
+  }
+
+  &._1f1f5-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 66.66666666666667%;
+  }
+
+  &._1f1f5-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 73.33333333333333%;
+  }
+
+  &._1f1f5-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 80%;
+  }
+
+  &._1f1f5-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 86.66666666666667%;
+  }
+
+  &._1f1f5-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 86.66666666666667%;
+  }
+
+  &._1f1f5-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 86.66666666666667%;
+  }
+
+  &._1f1f5-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 86.66666666666667%;
+  }
+
+  &._1f1f6-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 86.66666666666667%;
+  }
+
+  &._1f1f7-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 86.66666666666667%;
+  }
+
+  &._1f1f7-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 86.66666666666667%;
+  }
+
+  &._1f1f7-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 86.66666666666667%;
+  }
+
+  &._1f1f7-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 86.66666666666667%;
+  }
+
+  &._1f1fc-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 86.66666666666667%;
+  }
+
+  &._1f1f8-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 86.66666666666667%;
+  }
+
+  &._1f1f8-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 86.66666666666667%;
+  }
+
+  &._1f1f8-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 86.66666666666667%;
+  }
+
+  &._1f1f8-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 86.66666666666667%;
+  }
+
+  &._1f1f7-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 0%;
+  }
+
+  &._1f1f8-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 6.666666666666667%;
+  }
+
+  &._1f1f8-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 13.333333333333334%;
+  }
+
+  &._1f1f8-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 20%;
+  }
+
+  &._1f1f8-1f1fd {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 26.666666666666668%;
+  }
+
+  &._1f1f8-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 33.333333333333336%;
+  }
+
+  &._1f1f8-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 40%;
+  }
+
+  &._1f1ec-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 46.666666666666664%;
+  }
+
+  &._1f1f8-1f1e7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 53.333333333333336%;
+  }
+
+  &._1f1f8-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 60%;
+  }
+
+  &._1f1ff-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 66.66666666666667%;
+  }
+
+  &._1f1f0-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 73.33333333333333%;
+  }
+
+  &._1f1f8-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 80%;
+  }
+
+  &._1f1ea-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 86.66666666666667%;
+  }
+
+  &._1f1f1-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 93.33333333333333%;
+  }
+
+  &._1f1e7-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 93.33333333333333%;
+  }
+
+  &._1f1f8-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 93.33333333333333%;
+  }
+
+  &._1f1f0-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 93.33333333333333%;
+  }
+
+  &._1f1f1-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 93.33333333333333%;
+  }
+
+  &._1f1f5-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 93.33333333333333%;
+  }
+
+  &._1f1fb-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 93.33333333333333%;
+  }
+
+  &._1f1f8-1f1e9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 93.33333333333333%;
+  }
+
+  &._1f1f8-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 93.33333333333333%;
+  }
+
+  &._1f1f8-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 93.33333333333333%;
+  }
+
+  &._1f1f8-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 93.33333333333333%;
+  }
+
+  &._1f1e8-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 93.33333333333333%;
+  }
+
+  &._1f1f8-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 93.33333333333333%;
+  }
+
+  &._1f1f9-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 93.33333333333333%;
+  }
+
+  &._1f1f9-1f1ef {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 93.33333333333333%;
+  }
+
+  &._1f1f9-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 0%;
+  }
+
+  &._1f1f9-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 6.666666666666667%;
+  }
+
+  &._1f1f9-1f1f1 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 13.333333333333334%;
+  }
+
+  &._1f1f9-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 20%;
+  }
+
+  &._1f1f9-1f1f0 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 26.666666666666668%;
+  }
+
+  &._1f1f9-1f1f4 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 33.333333333333336%;
+  }
+
+  &._1f1f9-1f1f9 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 40%;
+  }
+
+  &._1f1f9-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 46.666666666666664%;
+  }
+
+  &._1f1f9-1f1f7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 53.333333333333336%;
+  }
+
+  &._1f1f9-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 60%;
+  }
+
+  &._1f1f9-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 66.66666666666667%;
+  }
+
+  &._1f1fb-1f1ee {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 73.33333333333333%;
+  }
+
+  &._1f1f9-1f1fb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 80%;
+  }
+
+  &._1f1fa-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 86.66666666666667%;
+  }
+
+  &._1f1fa-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 93.33333333333333%;
+  }
+
+  &._1f1e6-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 0% 100%;
+  }
+
+  &._1f1ec-1f1e7 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 6.25% 100%;
+  }
+
+  &._1f3f4-e0067-e0062-e0065-e006e-e0067-e007f {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 12.5% 100%;
+  }
+
+  &._1f3f4-e0067-e0062-e0073-e0063-e0074-e007f {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 18.75% 100%;
+  }
+
+  &._1f3f4-e0067-e0062-e0077-e006c-e0073-e007f {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 25% 100%;
+  }
+
+  &._1f1fa-1f1f8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 31.25% 100%;
+  }
+
+  &._1f1fa-1f1fe {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 37.5% 100%;
+  }
+
+  &._1f1fa-1f1ff {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 43.75% 100%;
+  }
+
+  &._1f1fb-1f1fa {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 50% 100%;
+  }
+
+  &._1f1fb-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 56.25% 100%;
+  }
+
+  &._1f1fb-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 62.5% 100%;
+  }
+
+  &._1f1fb-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 68.75% 100%;
+  }
+
+  &._1f1fc-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 75% 100%;
+  }
+
+  &._1f1ea-1f1ed {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 81.25% 100%;
+  }
+
+  &._1f1fe-1f1ea {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 87.5% 100%;
+  }
+
+  &._1f1ff-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 93.75% 100%;
+  }
+
+  &._1f1ff-1f1fc {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 0%;
+  }
+
+  &._1f1e6-1f1e8 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 6.666666666666667%;
+  }
+
+  &._1f1e7-1f1fb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 13.333333333333334%;
+  }
+
+  &._1f1e8-1f1f5 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 20%;
+  }
+
+  &._1f1ea-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 26.666666666666668%;
+  }
+
+  &._1f1e9-1f1ec {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 33.333333333333336%;
+  }
+
+  &._1f1ed-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 40%;
+  }
+
+  &._1f1f2-1f1eb {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 46.666666666666664%;
+  }
+
+  &._1f1f8-1f1ef {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 53.333333333333336%;
+  }
+
+  &._1f1f9-1f1e6 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 60%;
+  }
+
+  &._1f1fa-1f1f2 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 66.66666666666667%;
+  }
+
+  &._1f1fa-1f1f3 {
+    background-repeat: no-repeat;
+    background-size: 1700% 1600%;
+    background-position: 100% 73.33333333333333%;
+  }
+
+}
+

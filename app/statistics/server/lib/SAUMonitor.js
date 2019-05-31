@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
+
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { Sessions } from '../../../models/server';
 import { Logger } from '../../../logger';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { aggregates } from '../../../models/server/models/Sessions';
 
 const getDateObj = (dateTime = new Date()) => ({
@@ -148,13 +149,13 @@ export class SAUMonitorClass {
 			const beforeDateTime = new Date(this._today.year, this._today.month - 1, this._today.day, 23, 59, 59, 999);
 			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
 
-			const createSessions = ((objects, ids) => {
+			const createSessions = (objects, ids) => {
 				Sessions.createBatch(objects);
 
 				Meteor.defer(() => {
 					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
 				});
-			});
+			};
 			this._applyAllServerSessionsBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay });
 			this._today = currentDay;
 			return;

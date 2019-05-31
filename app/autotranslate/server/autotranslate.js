@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
 import { Logger } from '../../logger';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 export class TranslationProviderRegistry {
 	static registerProvider(provider) {
@@ -198,7 +199,7 @@ export class AutoTranslate {
 	deTokenize(message) {
 		if (message.tokens && message.tokens.length > 0) {
 			for (const { token, text, noHtml } of message.tokens) {
-				message.msg = message.msg.replace(token, () => (noHtml ? noHtml : text));
+				message.msg = message.msg.replace(token, () => noHtml || text);
 			}
 		}
 		return message.msg;

@@ -1,17 +1,19 @@
+import crypto from 'crypto';
+
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
+import { WebAppHashing } from 'meteor/webapp-hashing';
+import _ from 'underscore';
+import sizeOf from 'image-size';
+import sharp from 'sharp';
+
 import { settings } from '../../settings';
 import { Settings } from '../../models';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
 import { RocketChatFile } from '../../file';
-import { WebAppHashing } from 'meteor/webapp-hashing';
 
-import _ from 'underscore';
-import sizeOf from 'image-size';
-import crypto from 'crypto';
-import sharp from 'sharp';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
@@ -184,7 +186,7 @@ const assets = {
 	},
 };
 
-export const RocketChatAssets = new (class {
+export const RocketChatAssets = new class {
 	get mime() {
 		return mime;
 	}
@@ -290,7 +292,7 @@ export const RocketChatAssets = new (class {
 		const hash = crypto.createHash('sha1').update(file.buffer).digest('hex');
 		const extension = settingValue.url.split('.').pop();
 
-		return assetValue.cache = {
+		assetValue.cache = {
 			path: `assets/${ assetKey }.${ extension }`,
 			cacheable: false,
 			sourceMapUrl: undefined,
@@ -304,6 +306,8 @@ export const RocketChatAssets = new (class {
 			contentType: file.contentType,
 			hash,
 		};
+
+		return assetValue.cache;
 	}
 
 	getURL(assetName, options = { cdn: false, full: true }) {
@@ -312,7 +316,7 @@ export const RocketChatAssets = new (class {
 
 		return getURL(url, options);
 	}
-});
+}();
 
 settings.addGroup('Assets');
 
