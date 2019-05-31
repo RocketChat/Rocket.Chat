@@ -50,7 +50,7 @@ API.v1.addRoute('me', { authRequired: true }, {
 let onlineCache = 0;
 let onlineCacheDate = 0;
 const cacheInvalid = 60000; // 1 minute
-API.v1.addRoute('shield.svg', { authRequired: false }, {
+API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRequestsAllowed: 60, intervalTimeInMS: 60000 } }, {
 	get() {
 		const { type, icon } = this.queryParams;
 		let { channel, name } = this.queryParams;
