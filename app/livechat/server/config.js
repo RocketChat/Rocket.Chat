@@ -375,6 +375,15 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
 	});
 
+	settings.add('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0, {
+		type: 'int',
+		group: 'Livechat',
+		section: 'Routing',
+		i18nLabel: 'Max_number_incoming_livechats_displayed',
+		i18nDescription: 'Max_number_incoming_livechats_displayed_description',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
+	});
+
 	settings.add('Livechat_show_queue_list_link', false, {
 		type: 'boolean',
 		group: 'Livechat',
