@@ -4,15 +4,15 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor@1.9.2
-webapp@1.7.1
+meteor@1.9.3
+webapp@1.7.3
 logging@1.1.20
 tracker@1.2.0
 deps@1.0.12
 session@1.2.0
 ddp@1.4.0
 livedata@1.0.18
-mongo@1.6.0
+mongo@1.6.2
 blaze
 ui
 spacebars
@@ -31,11 +31,11 @@ mizzao:timesync
 reactive-var@1.0.11
 accounts-password@1.5.1
 tap:i18n
-ecmascript@0.12.3
+ecmascript@0.12.4
 es5-shim@4.8.0
-standard-minifier-css@1.5.2
-standard-minifier-js@2.4.0
+standard-minifier-css@1.5.3
+standard-minifier-js@2.4.1
 shell-server@0.4.0
-dynamic-import@0.5.0
+dynamic-import@0.5.1
 
 konecty:user-presence
