@@ -172,41 +172,64 @@ const toolbarButtons = (user) => [{
 		};
 
 		const discussionEnabled = settings.get('Discussion_enabled');
-		if (!discussionEnabled) {
-			return createChannel(e);
+		const serviceAccountEnabled = settings.get('Service_account_enabled');
+		const items = [{
+			icon: 'hashtag',
+			name: t('Channel'),
+			action: createChannel,
+		}];
+		if (discussionEnabled) {
+			items.push({
+				icon: 'discussion',
+				name: t('Discussion'),
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Discussion_title'),
+						content: 'CreateDiscussion',
+						data: {
+							onCreate() {
+								modal.close();
+							},
+						},
+						modifier: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			});
 		}
+
+		if (serviceAccountEnabled) {
+			items.push({
+				icon: 'user',
+				name: t('Service_account'),
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Service_account_title'),
+						content: 'createServiceAccount',
+						data: {
+							onCreate() {
+								modal.close();
+							},
+						},
+						modifier: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			});
+		}
+
 		const config = {
 			columns: [
 				{
 					groups: [
 						{
-							items: [
-								{
-									icon: 'hashtag',
-									name: t('Channel'),
-									action: createChannel,
-								},
-								{
-									icon: 'discussion',
-									name: t('Discussion'),
-									action: (e) => {
-										e.preventDefault();
-										modal.open({
-											title: t('Discussion_title'),
-											content: 'CreateDiscussion',
-											data: {
-												onCreate() {
-													modal.close();
-												},
-											},
-											modifier: 'modal',
-											showConfirmButton: false,
-											showCancelButton: false,
-											confirmOnEnter: false,
-										});
-									},
-								},
-							],
+							items,
 						},
 					],
 				},
