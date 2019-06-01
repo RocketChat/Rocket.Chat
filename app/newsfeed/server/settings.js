@@ -5,7 +5,7 @@ import { initializeNewsfeed } from './initialize';
 import { deinitializeNewsfeed } from './deinitialize';
 
 const defaults = {
-	enable: true,
+	enable: false,
 };
 
 Meteor.startup(() => {
