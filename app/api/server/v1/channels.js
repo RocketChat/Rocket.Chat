@@ -1026,7 +1026,6 @@ API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
 				method: 'channels.anonymousread',
 			});
 		}
-		
 
 		const cursor = Messages.find(ourQuery, {
 			sort: sort || { ts: -1 },
