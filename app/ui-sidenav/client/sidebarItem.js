@@ -14,6 +14,9 @@ Template.sidebarItem.helpers({
 	streaming() {
 		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},
+	isNewsfeed() {
+		return this.t === 'n';
+	},
 	isRoom() {
 		return this.rid || this._id;
 	},
