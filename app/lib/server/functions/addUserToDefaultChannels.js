@@ -1,5 +1,6 @@
 import { Rooms, Subscriptions, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
+import { createRoom } from './createRoom';
 
 export const addUserToDefaultChannels = function(user, silenced) {
 	callbacks.run('beforeJoinDefaultChannels', user);
@@ -22,4 +23,11 @@ export const addUserToDefaultChannels = function(user, silenced) {
 			}
 		}
 	});
+
+	// Create a newsfeed for the user
+	if (user.type === 'user') {
+		if (!Rooms.findOneByName(`news_${ user._id }`)) {
+			createRoom('n', `news_${ user._id }`, user.name, [], true, {}, {});
+		}
+	}
 };
