@@ -159,7 +159,9 @@ export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 
 	if (!userData._id) {
-		validateEmailDomain(userData.email);
+		if (userData.email) {
+			validateEmailDomain(userData.email);
+		}
 
 		// insert user
 		const createUser = {
@@ -190,6 +192,12 @@ export const saveUser = function(userId, userData) {
 
 		if (typeof userData.verified === 'boolean') {
 			updateUser.$set['emails.0.verified'] = userData.verified;
+		}
+
+		if (typeof userData.u !== 'undefined') {
+			updateUser.$set.u = userData.u;
+			updateUser.$set.description = userData.description;
+			updateUser.$set.active = true;
 		}
 
 		Meteor.users.update({ _id }, updateUser);

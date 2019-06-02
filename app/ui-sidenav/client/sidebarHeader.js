@@ -7,7 +7,7 @@ import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
 import { t, getUserPreference, handleError } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { hasAtLeastOnePermission } from '../../authorization';
+import { hasAtLeastOnePermission, hasPermission } from '../../authorization';
 
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
@@ -201,7 +201,7 @@ const toolbarButtons = (user) => [{
 			});
 		}
 
-		if (serviceAccountEnabled) {
+		if (serviceAccountEnabled && hasPermission('create-service-account')) {
 			items.push({
 				icon: 'user',
 				name: t('Service_account'),
