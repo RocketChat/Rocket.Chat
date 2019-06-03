@@ -7,6 +7,7 @@ import {
 	channel,
 } from '../../data/api-data.js';
 import { adminUsername } from '../../data/user.js';
+import { updateSetting } from '../../data/permissions.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -1150,6 +1151,41 @@ describe('[Channels]', function() {
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
 				.end(done);
+		});
+	});
+	describe('/channels.anonymousread', () => {
+		it('should return an error when the setting "Accounts_AllowAnonymousRead" is disabled', (done) => {
+			updateSetting('Accounts_AllowAnonymousRead', false).then(() => {
+				request.get(api('channels.anonymousread'))
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body).to.have.a.property('error');
+						expect(res.body).to.have.a.property('errorType');
+						expect(res.body.errorType).to.be.equal('error-not-allowed');
+						expect(res.body.error).to.be.equal('Enable \"Allow Anonymous Read\" [error-not-allowed]');
+					})
+					.end(done);
+			});
+		});
+		it('should return the messages list when the setting "Accounts_AllowAnonymousRead" is enabled', (done) => {
+			updateSetting('Accounts_AllowAnonymousRead', true).then(() => {
+				request.get(api('channels.anonymousread'))
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('messages').that.is.an('array');
+					})
+					.end(done);
+			});
 		});
 	});
 });
