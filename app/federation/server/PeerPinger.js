@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { logger } from './logger';
 import { ping } from './methods/ping';
-import { FederationPeers } from '../../models';
+import { FederationPeers, Rooms } from '../../models';
 
 
 export class PeerPinger {
@@ -31,6 +31,17 @@ export class PeerPinger {
 		const pingResults = ping(peers.map((p) => p.peer));
 
 		FederationPeers.updateStatuses(pingResults);
+
+		//
+		// This could be used to notify rooms that something is wrong (ephemeral messages)
+		//
+		// const outdatedPeers = FederationPeers.getPeersWithOutdatedFailureNotifications();
+		// const outdatedPeerDomains = outdatedPeers.map((p) => p.peer);
+		//
+		// const rooms = Rooms.find({ 'federation.peers': { $in: outdatedPeerDomains } }).fetch();
+		//
+		// // Update rooms
+		// // Rooms.update({ 'federation.peers': { $in: } });
 
 		Meteor.setTimeout(this.pingAllPeers.bind(this), this.config.pingInterval);
 	}

@@ -1365,6 +1365,7 @@
   "FEDERATION_Hub_URL_Description": "Set the hub URL, for example: https://hub.rocket.chat. Ports are accepted as well.",
   "FEDERATION_Public_Key": "Public Key",
   "FEDERATION_Public_Key_Description": "This is the key you need to share with your peers.",
+  "FEDERATION_Room_Status": "Federation Status",
   "FEDERATION_Status": "Status",
   "FEDERATION_Test_Setup": "Test setup",
   "FEDERATION_Test_Setup_Error": "Could not find your server using your setup, please review your settings.",
