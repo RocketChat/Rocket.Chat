@@ -13,8 +13,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'leaveRoom' });
 		}
 
-		this.unblock();
-
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user();
 

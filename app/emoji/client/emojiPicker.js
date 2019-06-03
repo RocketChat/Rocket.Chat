@@ -1,67 +1,48 @@
+import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
 
-import { isSetNotNull } from './function-isSet';
+import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
 
-const emojiCategories = {};
-/**
- * Turns category hash to a nice readable translated name
- * @param {string} category hash
- * @return {string} readable and translated
- */
-function categoryName(category) {
-	for (const emojiPackage in emoji.packages) {
-		if (emoji.packages.hasOwnProperty(emojiPackage)) {
-			if (emoji.packages[emojiPackage].emojiCategories.hasOwnProperty(category)) {
-				const categoryTag = emoji.packages[emojiPackage].emojiCategories[category];
-				return TAPi18n.__(categoryTag);
-			}
+const emojiListByCategory = new ReactiveDict('emojiList');
+
+const getEmojiElement = (emoji, image) => image && `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
+
+const createEmojiList = (category, actualTone) => {
+	const html = Object.values(emoji.packages).map((emojiPackage) => {
+		if (!emojiPackage.emojisByCategory[category]) {
+			return;
 		}
-	}
-	if (emojiCategories.hasOwnProperty(category)) {
-		return emojiCategories[category];
-	}
-	// unknown category; better hash than nothing
-	return category;
-}
 
-function getEmojisByCategory(category) {
-	const t = Template.instance();
-	const actualTone = t.tone;
-	let html = '';
-	for (const emojiPackage in emoji.packages) {
-		if (emoji.packages.hasOwnProperty(emojiPackage)) {
-			if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
-				const total = emoji.packages[emojiPackage].emojisByCategory[category].length;
-				for (let i = 0; i < total; i++) {
-					const _emoji = emoji.packages[emojiPackage].emojisByCategory[category][i];
-					let tone = '';
+		return emojiPackage.emojisByCategory[category].map((current) => {
+			const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${ actualTone }` : '';
+			return getEmojiElement(current, emojiPackage.renderPicker(`:${ current }${ tone }:`));
+		}).join('');
+	}).join('') || `<li>${ t('No_emojis_found') }</li>`;
 
-					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-						tone = `_tone${ actualTone }`;
-					}
-
-					// set correctPackage here to allow for recent emojis to work properly
-					if (isSetNotNull(() => emoji.list[`:${ _emoji }:`].emojiPackage)) {
-						const correctPackage = emoji.list[`:${ _emoji }:`].emojiPackage;
-						const image = emoji.packages[correctPackage].render(`:${ _emoji }${ tone }:`);
-
-						html += `<li class="emoji-${ _emoji }" data-emoji="${ _emoji }" title="${ _emoji }">${ image }</li>`;
-					}
-				}
-			}
-		}
-	}
 	return html;
+};
+
+export function updateRecentEmoji(category) {
+	emojiListByCategory.set(category, createEmojiList(category));
 }
+
+const createPickerEmojis = (instance) => {
+	const categories = instance.categoriesList;
+	const actualTone = instance.tone;
+
+	categories.forEach((category) => emojiListByCategory.set(category.key, createEmojiList(category.key, actualTone)));
+};
 
 function getEmojisBySearchTerm(searchTerm) {
-	let html = '';
+	let html = '<ul class="emoji-list">';
 	const t = Template.instance();
 	const actualTone = t.tone;
+
+	EmojiPicker.currentCategory.set('');
 
 	const searchRegExp = new RegExp(RegExp.escape(searchTerm.replace(/:/g, '')), 'i');
 
@@ -93,28 +74,19 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				const image = emoji.packages[emojiPackage].render(`:${ current }${ tone }:`);
-				html += `<li class="emoji-${ current }" data-emoji="${ current }" title="${ current }">${ image }</li>`;
+				const image = emoji.packages[emojiPackage].renderPicker(`:${ current }${ tone }:`);
+				html += getEmojiElement(current, image);
 			}
 		}
 	}
+	html += '</ul>';
 
 	return html;
 }
 
 Template.emojiPicker.helpers({
-	category() {
-		const categories = [];
-		for (const emojiPackage in emoji.packages) {
-			if (emoji.packages.hasOwnProperty(emojiPackage)) {
-				for (const key in emoji.packages[emojiPackage].emojisByCategory) {
-					if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
-						categories.push(key);
-					}
-				}
-			}
-		}
-		return categories;
+	emojiCategories() {
+		return Template.instance().categoriesList;
 	},
 	emojiByCategory(category) {
 		let emojisByCategory = [];
@@ -127,25 +99,14 @@ Template.emojiPicker.helpers({
 		}
 		return emojisByCategory;
 	},
-	isVisible(category) {
-		return Template.instance().currentCategory.get() === category ? 'visible' : '';
+	searching() {
+		return Template.instance().currentSearchTerm.get().length > 0;
+	},
+	searchResults() {
+		return getEmojisBySearchTerm(Template.instance().currentSearchTerm.get());
 	},
 	emojiList(category) {
-		const t = Template.instance();
-		const searchTerm = t.currentSearchTerm.get();
-		const activeCategory = t.currentCategory.get();
-		// this will cause the reflow when recent list gets updated
-		t.recentNeedsUpdate.get();
-
-		// we only need to replace the active category, since switching tabs resets the filter
-		if (activeCategory !== category) {
-			return;
-		}
-
-		if (searchTerm.length > 0) {
-			return getEmojisBySearchTerm(searchTerm);
-		}
-		return getEmojisByCategory(category);
+		return emojiListByCategory.get(category);
 	},
 	currentTone() {
 		return `tone-${ Template.instance().tone }`;
@@ -157,23 +118,15 @@ Template.emojiPicker.helpers({
 	 * @return {boolean} true if active, false otherwise
 	 */
 	activeCategory(category) {
-		return Template.instance().currentCategory.get() === category ? 'active' : '';
+		return EmojiPicker.currentCategory.get() === category ? 'active' : '';
 	},
-	categoryName,
 	/**
 	 * Returns currently active emoji category hash
 	 *
 	 * @return {string} category hash
 	 */
 	currentCategory() {
-		const t = Template.instance();
-		const hash = t.currentCategory.get();
-		const searchTerm = t.currentSearchTerm.get();
-
-		if (searchTerm.length > 0) {
-			return TAPi18n.__('Search');
-		}
-		return categoryName(hash);
+		return EmojiPicker.currentCategory.get();
 	},
 });
 
@@ -182,17 +135,36 @@ Template.emojiPicker.events({
 		event.stopPropagation();
 		event.preventDefault();
 	},
-	'click .category-link'(event, instance) {
+	'click .category-link'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
-		instance.$('.emoji-filter .search').val('').change();
-		instance.$('.emoji-filter .search').focus();
-
-		instance.currentCategory.set(event.currentTarget.hash.substr(1));
+		EmojiPicker.showCategory(event.currentTarget.hash.substr(1));
 
 		return false;
 	},
+	'scroll .emojis': _.throttle((event, instance) => {
+		if (EmojiPicker.scrollingToCategory) {
+			return;
+		}
+
+		const container = instance.$(event.currentTarget);
+		const scrollTop = container.scrollTop() + 8;
+
+		const last = EmojiPicker.getCategoryPositions()
+			.filter((pos) => pos.top <= scrollTop)
+			.pop();
+
+		if (!last) {
+			return;
+		}
+
+		const { el } = last;
+
+		const category = el.id.replace('emoji-list-category-', '');
+
+		EmojiPicker.currentCategory.set(category);
+	}, 300),
 	'click .change-tone > a'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
@@ -230,7 +202,7 @@ Template.emojiPicker.events({
 
 		$('.tone-selector').toggleClass('show');
 	},
-	'click .emoji-list li'(event, instance) {
+	'click .emoji-list .emoji-picker-item'(event, instance) {
 		event.stopPropagation();
 
 		const _emoji = event.currentTarget.dataset.emoji;
@@ -245,7 +217,7 @@ Template.emojiPicker.events({
 			}
 		}
 
-		const input = $('.emoji-filter input.search');
+		const input = $('.emoji-picker .js-emojipicker-search');
 		if (input) {
 			input.val('');
 		}
@@ -266,9 +238,21 @@ Template.emojiPicker.events({
 Template.emojiPicker.onCreated(function() {
 	this.tone = EmojiPicker.getTone();
 	const recent = EmojiPicker.getRecent();
-	this.recentNeedsUpdate = new ReactiveVar(false);
-	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
+
 	this.currentSearchTerm = new ReactiveVar('');
+
+	this.categoriesList = [];
+	for (const emojiPackage in emoji.packages) {
+		if (emoji.packages.hasOwnProperty(emojiPackage)) {
+			if (emoji.packages[emojiPackage].emojiCategories) {
+				if (typeof emoji.packages[emojiPackage].categoryIndex !== 'undefined') {
+					this.categoriesList.splice(emoji.packages[emojiPackage].categoryIndex, 0, ...emoji.packages[emojiPackage].emojiCategories);
+				} else {
+					this.categoriesList = this.categoriesList.concat(emoji.packages[emojiPackage].emojiCategories);
+				}
+			}
+		}
+	}
 
 	recent.forEach((_emoji) => {
 		emoji.packages.base.emojisByCategory.recent.push(_emoji);
@@ -280,9 +264,5 @@ Template.emojiPicker.onCreated(function() {
 		this.tone = newTone;
 	};
 
-	this.autorun(() => {
-		if (this.recentNeedsUpdate.get()) {
-			this.recentNeedsUpdate.set(false);
-		}
-	});
+	createPickerEmojis(this);
 });

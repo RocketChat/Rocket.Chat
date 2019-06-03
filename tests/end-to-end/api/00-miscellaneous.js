@@ -106,12 +106,43 @@ describe('miscellaneous', function() {
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
-				const allUserPreferencesKeys = ['enableAutoAway', 'idleTimeLimit', 'desktopNotificationDuration', 'audioNotifications',
-					'desktopNotifications', 'mobileNotifications', 'unreadAlert', 'useEmojis', 'convertAsciiEmoji', 'autoImageLoad',
-					'saveMobileBandwidth', 'collapseMediaByDefault', 'hideUsernames', 'hideRoles', 'hideFlexTab', 'hideAvatars',
-					'sidebarViewMode', 'sidebarHideAvatar', 'sidebarShowUnread', 'sidebarShowDiscussion', 'sidebarShowFavorites', 'sidebarGroupByType',
-					'sendOnEnter', 'messageViewMode', 'emailNotificationMode', 'roomCounterSidebar', 'newRoomNotification', 'newMessageNotification',
-					'muteFocusedConversations', 'notificationsSoundVolume'];
+				const allUserPreferencesKeys = [
+					'audioNotifications',
+					// 'language',
+					'newRoomNotification',
+					'newMessageNotification',
+					// 'clockMode',
+					'useEmojis',
+					'convertAsciiEmoji',
+					'saveMobileBandwidth',
+					'collapseMediaByDefault',
+					'autoImageLoad',
+					'emailNotificationMode',
+					'unreadAlert',
+					'notificationsSoundVolume',
+					'desktopNotifications',
+					'mobileNotifications',
+					'enableAutoAway',
+					// 'highlights',
+					'desktopNotificationDuration',
+					'messageViewMode',
+					'hideUsernames',
+					'hideRoles',
+					'hideAvatars',
+					'hideFlexTab',
+					'sendOnEnter',
+					'roomCounterSidebar',
+					'idleTimeLimit',
+					'sidebarShowFavorites',
+					'sidebarShowUnread',
+					// 'sidebarSortby',
+					'sidebarViewMode',
+					'sidebarHideAvatar',
+					'sidebarGroupByType',
+					'muteFocusedConversations',
+					'sidebarShowDiscussion',
+				];
+
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
 				expect(res.body).to.have.property('username', login.user);

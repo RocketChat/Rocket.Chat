@@ -432,6 +432,18 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findNotIdUpdatedFrom(uid, from, options) {
+		const query = {
+			_id: { $ne: uid },
+			username: {
+				$exists: 1,
+			},
+			_updatedAt: { $gte: from },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomId(rid, options) {
 		const data = Subscriptions.findByRoomId(rid).fetch().map((item) => item.u._id);
 		const query = {
@@ -1021,6 +1033,17 @@ export class Users extends Base {
 		};
 
 		return this.update({ _id }, update);
+	}
+
+	updateDefaultStatus(_id, statusDefault) {
+		return this.update({
+			_id,
+			statusDefault: { $ne: statusDefault },
+		}, {
+			$set: {
+				statusDefault,
+			},
+		});
 	}
 
 	// INSERT

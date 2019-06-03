@@ -6,7 +6,6 @@ import { MessageAction } from '../../../ui-utils/client';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { chatMessages } from '../../../ui/client';
 import { addMessageToList } from '../../../ui-utils/client/lib/MessageAction';
-import { Subscriptions } from '../../../models/client';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
@@ -31,8 +30,8 @@ Meteor.startup(function() {
 					.data('reply', messages)
 					.trigger('dataChange');
 			},
-			condition(message) {
-				return Boolean(Subscriptions.findOne({ rid: message.rid }));
+			condition({ subscription }) {
+				return Boolean(subscription);
 			},
 			order: 1,
 			group: 'menu',

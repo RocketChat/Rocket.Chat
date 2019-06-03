@@ -737,7 +737,7 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-		Rooms.incMsgCountById(room._id, 1);
+		Rooms.incMsgCountById(roomId, 1);
 		return record;
 	}
 
