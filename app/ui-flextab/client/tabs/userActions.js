@@ -120,7 +120,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				icon: 'plus',
 				name: t('Follow'),
 				action: prevent(getUser, ({ username }) =>
-					console.log('FOllow button')
+					Meteor.call('followUser')
 				),
 				condition() {
 					return settings.get('Newsfeed_enabled');

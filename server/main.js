@@ -26,6 +26,7 @@ import './methods/createDirectMessage';
 import './methods/deleteFileMessage';
 import './methods/deleteUser';
 import './methods/eraseRoom';
+import './methods/followUser';
 import './methods/getAvatarSuggestion';
 import './methods/getRoomById';
 import './methods/getRoomIdByNameOrId';
