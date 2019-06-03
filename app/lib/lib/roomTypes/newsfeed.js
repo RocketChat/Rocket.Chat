@@ -11,7 +11,7 @@ export class NewsfeedRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'newsfeed',
-			path: '/newsfeed/',
+			path: '/newsfeed/:name',
 		});
 	}
 
@@ -25,7 +25,7 @@ export class NewsfeedRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'n',
 			order: 30,
-			icon: 'hashtag',
+			icon: 'star',
 			label: 'Newsfeed',
 			route: new NewsfeedRoomRoute(),
 		});
@@ -78,7 +78,7 @@ export class NewsfeedRoomType extends RoomTypeConfig {
 	}
 
 	canSendMessage(roomId) {
-		const room = ChatRoom.findOne({ _id: roomId, t: 'c' }, { fields: { prid: 1 } });
+		const room = ChatRoom.findOne({ _id: roomId, t: 'n' }, { fields: { prid: 1 } });
 		if (room.prid) {
 			return true;
 		}
