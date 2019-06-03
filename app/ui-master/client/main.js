@@ -194,7 +194,7 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (user.services.totp !== undefined && user.services.totp.enabled) {
+		if (!user || (user.services.totp !== undefined && user.services.totp.enabled)) {
 			return false;
 		}
 
