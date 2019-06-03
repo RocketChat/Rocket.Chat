@@ -14,7 +14,7 @@ Template.createServiceAccount.helpers({
 		return Template.instance().inUse.get();
 	},
 	notMatch() {
-        return Template.instance().notMatch.get();
+		return Template.instance().notMatch.get();
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
@@ -91,7 +91,7 @@ Template.createServiceAccount.events({
 	},
 });
 
-Template.createServiceAccount.onCreated(function () {
+Template.createServiceAccount.onCreated(function() {
 	this.username = new ReactiveVar('');
 	this.name = new ReactiveVar('');
 	this.password = new ReactiveVar('');
@@ -107,7 +107,7 @@ Template.createServiceAccount.onCreated(function () {
 			this.inUse.set(result);
 		});
 	}, 1000);
-	this.matchPassword = function (password, confirmPassword) {
+	this.matchPassword = function(password, confirmPassword) {
 		if (password !== confirmPassword) {
 			this.notMatch.set(true);
 		} else {

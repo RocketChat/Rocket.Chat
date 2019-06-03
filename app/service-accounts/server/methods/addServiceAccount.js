@@ -32,7 +32,7 @@ Meteor.methods({
 		if (!checkUsernameAvailability(userData.username)) {
 			throw new Meteor.Error('error-field-unavailable', `<strong>${ _.escape(userData.username) }</strong> is already in use :(`, { method: 'addServiceAccount' });
 		}
-        
+
 		const user = Meteor.user();
 		userData.u = {
 			_id: user._id,
