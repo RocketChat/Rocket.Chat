@@ -13,8 +13,8 @@ import { Logger } from '../../logger';
 import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
 import { FileUpload } from '../../file-upload';
-import { addUserToRoom, removeUserFromRoom } from '../../lib/server/functions';
-import _ from 'underscore';
+import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
+
 
 const logger = new Logger('LDAPSync', {});
 let ldap = new LDAP();
@@ -36,11 +36,11 @@ export function isUserInLDAPGroup(ldapUser, user, ldapGroup) {
 	const result = ldap.searchAllSync(syncUserRolesBaseDN, searchOptions);
 	if (!Array.isArray(result) || result.length === 0) {
 		logger.debug(`${ user.username } is not in ${ ldapGroup } group!!!`);
-		return false;
 	} else {
 		logger.debug(`${ user.username } is in ${ ldapGroup } group.`);
 		return true;
 	}
+	return false;
 }
 
 export function slug(text) {
@@ -219,7 +219,6 @@ export function mapLdapGroupsToUserRoles(ldapUser, user) {
 			const [roleName] = userField.split(/\.(.+)/);
 			if (!_.find(roles, (el) => el._id === roleName)) {
 				logger.debug(`User Role doesn't exist: ${ roleName }`);
-				return;
 			} else {
 				logger.debug(`User role exists for mapping ${ roleName } -> ${ ldapField }`);
 
@@ -247,6 +246,17 @@ export function mapLdapGroupsToUserRoles(ldapUser, user) {
 		return userRoles;
 	}
 }
+export function createRoomForSync(channel) {
+	logger.info(`Channel '${ channel }' doesn't exist, creating it.`);
+
+	const room = createRoom('c', channel, settings.get('LDAP_Sync_User_Data_Groups_AutoChannels_Admin'), [], false, { customFields: { ldap: true } });
+	if (!room || !room.rid) {
+		logger.error(`Unable to auto-create channel '${ channel }' during ldap sync.`);
+		return;
+	}
+	room._id = room.rid;
+	return room;
+}
 export function mapLDAPGroupsToChannels(ldapUser, user) {
 	const syncUserRoles = settings.get('LDAP_Sync_User_Data_Groups');
 	const syncUserRolesAutoChannels = settings.get('LDAP_Sync_User_Data_Groups_AutoChannels');
@@ -258,13 +268,13 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 		const fieldMap = JSON.parse(syncUserRolesChannelFieldMap);
 
 		_.map(fieldMap, function(channels, ldapField) {
-			if (typeof (channels) === 'object') {
+			if (typeof channels === 'object') {
 				_.each(channels, function(channel) {
-					const room = Rooms.findOneByName(channel);
+					let room = Rooms.findOneByName(channel);
 					if (!room) {
-						logger.error(`Channel '${ channel }' doesn't exist but is in Auto Channels map.`);
-						return;
-					} else if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
+						room = createRoomForSync(channel);
+					}
+					if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
 						userChannels.push(room._id);
 					}	else if (syncUserRolesEnforceAutoChannels) {
 						const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
@@ -274,10 +284,9 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 					}
 				});
 			} else {
-				const room = Rooms.findOneByName(channels);
+				let room = Rooms.findOneByName(channels);
 				if (!room) {
-					logger.error(`Channel '${ channels }' doesn't exist but is in Auto Channels map.`);
-					return;
+					room = createRoomForSync(channels);
 				}
 				if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
 					userChannels.push(room._id);

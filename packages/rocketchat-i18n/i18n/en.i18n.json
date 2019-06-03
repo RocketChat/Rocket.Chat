@@ -1823,6 +1823,8 @@
   "LDAP_Sync_User_Data_FieldMap_Description": "Configure how user account fields (like email) are populated from a record in LDAP (once found). <br/>As an example, `{\"cn\":\"name\", \"mail\":\"email\"}` will choose a person's human readable name from the cn attribute, and their email from the mail attribute. Additionally it is possible to use variables, for example: `{ \"#{givenName} #{sn}\": \"name\", \"mail\": \"email\" }` uses a combination of the user's first name and last name for the rocket chat `name` field.<br/>Available fields in Rocket.Chat: `name`, `email` and `customFields`.",
   "LDAP_Sync_User_Data_Groups": "Sync LDAP Groups",
   "LDAP_Sync_User_Data_Groups_AutoChannels": "Auto Sync LDAP Groups to Channels",
+  "LDAP_Sync_User_Data_Groups_AutoChannels_Admin": "Channel Admin",
+  "LDAP_Sync_User_Data_Groups_AutoChannels_Admin_Description": "When channels are auto-created that do not exist during a sync, this user will automatically become the admin for the channel.",
   "LDAP_Sync_User_Data_Groups_AutoChannels_Description": "Enable this feature to automatically add users to a channel based on their LDAP group. If you would like to also remove users from a channel, see the option below about auto removing users.",
   "LDAP_Sync_User_Data_Groups_AutoChannelsMap": "LDAP Group Channel Map",
   "LDAP_Sync_User_Data_Groups_AutoChannelsMap_Default": "// Enable Auto Sync LDAP Groups to Channels above",

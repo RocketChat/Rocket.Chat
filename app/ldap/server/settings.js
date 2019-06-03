@@ -106,6 +106,7 @@ settings.addGroup('LDAP', function() {
 			enableQuery: syncGroupsQuery,
 		});
 		this.add('LDAP_Sync_User_Data_Groups_AutoChannels', false, { type: 'boolean', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_AutoChannels_Admin', 'rocket.cat', { type: 'string', enableQuery: syncGroupsQuery });
 		this.add('LDAP_Sync_User_Data_Groups_AutoChannelsMap', '{\n\t"employee": "general",\n\t"techsupport": [\n\t\t"helpdesk",\n\t\t"support"\n\t]\n}', {
 			type: 'code',
 			multiline: true,
