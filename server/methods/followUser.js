@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
-	followUser(){
-		console.log('Follow user method called');
+	followUser(username) {
+		console.log(`${ username } has been followed by ${ Meteor.user().username }`);
 	},
 });
