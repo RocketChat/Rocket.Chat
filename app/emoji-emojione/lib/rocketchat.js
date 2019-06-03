@@ -230,6 +230,23 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 		return `${ m2 }<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ unicode }${ ns.fileExtension }"/>`;
 	});
 
+	ns.convert = mem(ns.convert);
+
+	const reg = (escapedFind) =>
+		new RegExp(
+			`<object[^>]*>.*?</object>|<span[^>]*>.*?</span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ escapedFind })`,
+			'gi'
+		);
+	// callback prevents replacing anything inside of these common html tags as well as between an <object></object> tag
+	const replace = function(entire, m1) {
+		return typeof m1 === 'undefined' || m1 === '' ? entire : '';
+	};
+	ns.escapeRegExp = mem(ns.escapeRegExp);
+	ns.replaceAllVS16 = function(string, find) {
+		const escapedFind = ns.escapeRegExp(find); // sorted largest output to smallest output
+		const search = reg(escapedFind);
+		return string.replace(search, replace);
+	};
 	ns.shortnameToImage = function(str) {
 		// replace regular shortnames first
 		str = str.replace(ns.regShortNames, convertShortName);

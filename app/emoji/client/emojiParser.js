@@ -11,6 +11,9 @@ import { emoji } from '../lib/rocketchat';
  * @param {Object} message - The message object
  */
 
+const combine = (f, x) => (e) => x(f(e));
+const parser = Object.entries(emoji.packages).map(([, emojiPackage]) => emojiPackage.render.bind(emojiPackage)).reduce(combine);
+
 Tracker.autorun(() => {
 	if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
 		return callbacks.remove('renderMessage', 'emoji');
@@ -24,7 +27,7 @@ Tracker.autorun(() => {
 			// '<br>' to ' <br> ' for emojis such at line breaks
 			html = html.replace(/<br>/g, ' <br> ');
 
-			html = Object.entries(emoji.packages).reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
+			html = parser(html);
 
 			const checkEmojiOnly = document.createElement('div');
 
