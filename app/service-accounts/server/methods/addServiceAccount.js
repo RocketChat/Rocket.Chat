@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import _ from 'underscore';
 
 import { saveUser, checkUsernameAvailability } from '../../../lib/server/functions';
 import { settings } from '../../../settings';
@@ -11,13 +12,13 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addServiceAccount' });
-        }
+		}
 
-        if (!hasPermission(Meteor.userId(), 'create-service-account')) {
-            throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addServiceAccount' });
-        }
+		if (!hasPermission(Meteor.userId(), 'create-service-account')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addServiceAccount' });
+		}
 
-        let nameValidation;
+		let nameValidation;
 		try {
 			nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 		} catch (error) {
@@ -25,20 +26,20 @@ Meteor.methods({
 		}
 
 		if (!nameValidation.test(userData.username)) {
-			throw new Meteor.Error('username-invalid', `${ _.escape(username) } is not a valid username, use only letters, numbers, dots, hyphens and underscores`);
+			throw new Meteor.Error('username-invalid', `${ _.escape(userData.username) } is not a valid username, use only letters, numbers, dots, hyphens and underscores`);
 		}
 
 		if (!checkUsernameAvailability(userData.username)) {
-			throw new Meteor.Error('error-field-unavailable', `<strong>${ _.escape(username) }</strong> is already in use :(`, { method: 'addServiceAccount' });
-        }
+			throw new Meteor.Error('error-field-unavailable', `<strong>${ _.escape(userData.username) }</strong> is already in use :(`, { method: 'addServiceAccount' });
+		}
         
-        const user = Meteor.user();
-        userData.u = {
-            _id: user._id,
-            username: user.username,
-        };
-        userData.joinDefaultChannels = false;
-        userData.roles = ['user'];
+		const user = Meteor.user();
+		userData.u = {
+			_id: user._id,
+			username: user.username,
+		};
+		userData.joinDefaultChannels = false;
+		userData.roles = ['user'];
 
 		return saveUser(Meteor.userId(), userData);
 	},
