@@ -1046,6 +1046,17 @@ export class Users extends Base {
 		});
 	}
 
+	setOwnerUsernameByUserId(userId, username) {
+		const query = { 'u._id': userId };
+		const update = {
+			$set: {
+				'u.username': username,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
