@@ -1154,6 +1154,7 @@ describe('[Channels]', function() {
 		});
 	});
 	describe('/channels.anonymousread', () => {
+		after(() => updateSetting('Accounts_AllowAnonymousRead', false));
 		it('should return an error when the setting "Accounts_AllowAnonymousRead" is disabled', (done) => {
 			updateSetting('Accounts_AllowAnonymousRead', false).then(() => {
 				request.get(api('channels.anonymousread'))
