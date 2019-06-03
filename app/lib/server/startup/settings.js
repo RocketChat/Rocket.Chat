@@ -752,16 +752,16 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		secret: true,
 	});
-	this.add('Allow_Loading_In_Iframe', false, {
+	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
 	});
-	this.add('X_Frame_Options', 'sameorigin', {
+	this.add('Iframe_X_Frame_Options', 'sameorigin', {
 		type: 'string',
 		secret: true,
 		enableQuery: {
-			_id: 'Allow_Loading_In_Iframe',
-			value: false,
+			_id: 'Iframe_Restrict_Access',
+			value: true,
 		},
 	});
 	this.add('Favorite_Rooms', true, {
