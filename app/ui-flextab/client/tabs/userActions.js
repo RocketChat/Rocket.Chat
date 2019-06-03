@@ -115,6 +115,23 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (isSelf(this.username) || !directActions) {
 				return;
 			}
+
+			return {
+				icon: 'plus',
+				name: t('Follow'),
+				action: prevent(getUser, ({ username }) =>
+					console.log('FOllow button')
+				),
+				condition() {
+					return settings.get('Newsfeed_enabled');
+				},
+			};
+		},
+
+		function() {
+			if (isSelf(this.username) || !directActions) {
+				return;
+			}
 			// videoAvaliable
 			if (!WebRTC.getInstanceByRoomId(Session.get('openedRoom'))) {
 				return;
