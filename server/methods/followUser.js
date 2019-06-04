@@ -1,7 +1,17 @@
 import { Meteor } from 'meteor/meteor';
+import {Users} from "../../app/models";
+import {settings} from "../../app/settings";
+
 
 Meteor.methods({
 	followUser(username) {
-		console.log(`${ username } has been followed by ${ Meteor.user().username }`);
+		if(settings.get('Newsfeed_enabled')) {
+			Users.update(Users.findOneByUsername(username)._id, {$push: {followers: Meteor.user().username}});
+			Users.update(Users.findOneByUsername(Meteor.user().username)._id, {$push: {following: username}});
+			return true;
+		}
+		else{
+			return false;
+		}
 	},
 });
