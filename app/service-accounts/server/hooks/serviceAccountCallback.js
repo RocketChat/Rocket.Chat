@@ -1,5 +1,4 @@
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 
 import { callbacks } from '../../../callbacks/server';
 import { Users, Rooms } from '../../../models/server';
@@ -19,7 +18,7 @@ callbacks.add('afterCreateUser', (user) => {
 	});
 
 	const extraData = {
-		sa: true
+		sa: true,
 	};
 
 	if (!Rooms.findOneByName(`broadcast_${ user.username }`)) {
