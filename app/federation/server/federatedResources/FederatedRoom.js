@@ -104,16 +104,22 @@ export class FederatedRoom extends FederatedResource {
 			users: [],
 		};
 
+		const domains = [];
+
 		// Check all the peers
 		for (const federatedUser of this.federatedUsers) {
 			// Add federation data to the room
 			const { user: { federation: { _id, peer } } } = federatedUser;
 
-			federation.peers.push(peer);
+			domains.push(peer);
+
 			federation.users.push({ _id, peer });
 		}
 
-		federation.peers = [...new Set(federation.peers)];
+		federation.peers = [...new Set(domains)].map((d) => ({
+			domain: d,
+			status: 'stable',
+		}));
 
 		federation = Object.assign(room.federation || {}, federation);
 

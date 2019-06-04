@@ -2,16 +2,18 @@ import { Meteor } from 'meteor/meteor';
 
 import { Base } from './_Base';
 
-const normalizePeers = (basePeers, options) => {
-	const { peers: sentPeers, skipPeers } = options;
+const getPeerDomains = (peers, options) => {
+	const { domains, skipDomains } = options;
 
-	let peers = sentPeers || basePeers || [];
+	let peerDomains = domains || peers.filter((p) => skipDomains.indexOf(p.domain) === -1);
 
-	if (skipPeers) {
-		peers = peers.filter((p) => skipPeers.indexOf(p) === -1);
+	console.log(skipDomains);
+
+	if (skipDomains) {
+		peerDomains = peerDomains.filter((p) => skipDomains.indexOf(p.domain) === -1);
 	}
 
-	return peers;
+	return peerDomains;
 };
 
 //
@@ -21,9 +23,7 @@ class FederationEventsModel extends Base {
 	constructor() {
 		super('federation_events');
 
-		this.tryEnsureIndex({ t: 1 });
-		this.tryEnsureIndex({ fulfilled: 1 });
-		this.tryEnsureIndex({ ts: 1 });
+		this.tryEnsureIndex({ ts: 1 }, { partialFilterExpression: { t: 'png' }, expireAfterSeconds: 60 * 15 });
 	}
 
 	// Sometimes events errored but the error is final
@@ -82,7 +82,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `directRoomCreated(drc)` event
 	directRoomCreated(federatedRoom, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			room: federatedRoom.getRoom(),
@@ -95,7 +95,9 @@ class FederationEventsModel extends Base {
 
 	// Create a `roomCreated(roc)` event
 	roomCreated(federatedRoom, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		console.log(federatedRoom, federatedRoom.getPeers());
+
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			room: federatedRoom.getRoom(),
@@ -108,7 +110,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `userJoined(usj)` event
 	userJoined(federatedRoom, federatedUser, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -120,7 +122,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `userAdded(usa)` event
 	userAdded(federatedRoom, federatedUser, federatedInviter, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -133,7 +135,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `userLeft(usl)` event
 	userLeft(federatedRoom, federatedUser, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -145,7 +147,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `userRemoved(usr)` event
 	userRemoved(federatedRoom, federatedUser, federatedRemovedByUser, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -158,7 +160,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `userMuted(usm)` event
 	userMuted(federatedRoom, federatedUser, federatedMutedByUser, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -171,7 +173,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `userUnmuted(usu)` event
 	userUnmuted(federatedRoom, federatedUser, federatedUnmutedByUser, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -184,7 +186,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `messageCreated(msc)` event
 	messageCreated(federatedRoom, federatedMessage, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			message: federatedMessage.getMessage(),
@@ -195,7 +197,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `messageUpdated(msu)` event
 	messageUpdated(federatedRoom, federatedMessage, federatedUser, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			message: federatedMessage.getMessage(),
@@ -207,7 +209,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `deleteMessage(msd)` event
 	messageDeleted(federatedRoom, federatedMessage, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_message_id: federatedMessage.getFederationId(),
@@ -218,7 +220,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `messagesRead(msr)` event
 	messagesRead(federatedRoom, federatedUser, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -230,7 +232,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `messagesSetReaction(mrs)` event
 	messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -245,7 +247,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `messagesUnsetReaction(mru)` event
 	messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
-		const peers = normalizePeers(federatedRoom.getPeers(), options);
+		const peers = getPeerDomains(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -260,11 +262,7 @@ class FederationEventsModel extends Base {
 
 	// Get all unfulfilled events
 	getUnfulfilled() {
-		return this.find({ fulfilled: false }, { sort: { ts: 1 } });
-	}
-
-	findByType(t) {
-		return this.find({ t });
+		return this.find({ fulfilled: false }, { sort: { ts: 1 } }).fetch();
 	}
 }
 

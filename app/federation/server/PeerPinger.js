@@ -24,6 +24,7 @@ export class PeerPinger {
 	}
 
 	pingAllPeers() {
+		// Ping peers
 		const lastSeenAt = moment().subtract(10, 'm').toDate();
 
 		const peers = FederationPeers.find({ $or: [{ last_seen_at: null }, { last_seen_at: { $lte: lastSeenAt } }] }).fetch();
@@ -32,16 +33,26 @@ export class PeerPinger {
 
 		FederationPeers.updateStatuses(pingResults);
 
-		//
-		// This could be used to notify rooms that something is wrong (ephemeral messages)
-		//
-		// const outdatedPeers = FederationPeers.getPeersWithOutdatedFailureNotifications();
-		// const outdatedPeerDomains = outdatedPeers.map((p) => p.peer);
-		//
-		// const rooms = Rooms.find({ 'federation.peers': { $in: outdatedPeerDomains } }).fetch();
-		//
-		// // Update rooms
-		// // Rooms.update({ 'federation.peers': { $in: } });
+		// Update rooms
+		const outdatedPeers = FederationPeers.getPeersWithOutdatedFailureNotifications();
+
+		for (const outdatedPeer of outdatedPeers) {
+			const domain = outdatedPeer.peer;
+
+			Rooms.update(
+				{
+					'federation.peers': domain,
+					'federation.statuses': { $elemMatch: { domain } },
+				},
+				{ $set: { 'federation.statuses.$.status': outdatedPeer.status } }
+			);
+
+			// Rooms.update({ 'federation.peers': domain }, {
+			// 	$set: {
+			// 		[`federation.statuses.0.${ domain }`]: outdatedPeer.status,
+			// 	},
+			// });
+		}
 
 		Meteor.setTimeout(this.pingAllPeers.bind(this), this.config.pingInterval);
 	}

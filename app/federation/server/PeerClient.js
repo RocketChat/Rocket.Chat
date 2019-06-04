@@ -316,7 +316,7 @@ export class PeerClient {
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
 
-		FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
+		FederationEvents.directRoomCreated(federatedRoom, { skipDomains: [localPeerDomain] });
 
 		return room;
 	}
@@ -344,7 +344,7 @@ export class PeerClient {
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
 
-		FederationEvents.roomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
+		FederationEvents.roomCreated(federatedRoom, { skipDomains: [localPeerDomain] });
 
 		return roomOwner;
 	}
@@ -402,7 +402,7 @@ export class PeerClient {
 		// If the user who joined is from a different peer...
 		if (userWhoJoined.federation && userWhoJoined.federation.peer !== localPeerDomain) {
 			// ...create a "create room" event for that peer
-			FederationEvents.roomCreated(federatedRoom, { peers: [userWhoJoined.federation.peer] });
+			FederationEvents.roomCreated(federatedRoom, { domains: [userWhoJoined.federation.peer] });
 		}
 
 		// Then, create a "user join/added" event to the other peers
@@ -411,9 +411,9 @@ export class PeerClient {
 		if (userWhoInvited) {
 			const federatedInviter = FederatedUser.loadOrCreate(localPeerDomain, userWhoInvited);
 
-			FederationEvents.userAdded(federatedRoom, federatedUserWhoJoined, federatedInviter, { skipPeers: [localPeerDomain] });
+			FederationEvents.userAdded(federatedRoom, federatedUserWhoJoined, federatedInviter, { skipDomains: [localPeerDomain] });
 		} else {
-			FederationEvents.userJoined(federatedRoom, federatedUserWhoJoined, { skipPeers: [localPeerDomain] });
+			FederationEvents.userJoined(federatedRoom, federatedUserWhoJoined, { skipDomains: [localPeerDomain] });
 		}
 
 		return users;
@@ -435,7 +435,7 @@ export class PeerClient {
 		const federatedUserWhoLeft = FederatedUser.loadByFederationId(localPeerDomain, userWhoLeft.federation._id);
 
 		// Then, create a "user left" event to the other peers
-		FederationEvents.userLeft(federatedRoom, federatedUserWhoLeft, { skipPeers: [localPeerDomain] });
+		FederationEvents.userLeft(federatedRoom, federatedUserWhoLeft, { skipDomains: [localPeerDomain] });
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -465,7 +465,7 @@ export class PeerClient {
 
 		const federatedUserWhoRemoved = FederatedUser.loadByFederationId(localPeerDomain, userWhoRemoved.federation._id);
 
-		FederationEvents.userRemoved(federatedRoom, federatedRemovedUser, federatedUserWhoRemoved, { skipPeers: [localPeerDomain] });
+		FederationEvents.userRemoved(federatedRoom, federatedRemovedUser, federatedUserWhoRemoved, { skipDomains: [localPeerDomain] });
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -497,9 +497,9 @@ export class PeerClient {
 
 			const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, user.federation._id);
 
-			FederationEvents.messageUpdated(federatedRoom, federatedMessage, federatedUser, { skipPeers: [localPeerDomain] });
+			FederationEvents.messageUpdated(federatedRoom, federatedMessage, federatedUser, { skipDomains: [localPeerDomain] });
 		} else {
-			FederationEvents.messageCreated(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
+			FederationEvents.messageCreated(federatedRoom, federatedMessage, { skipDomains: [localPeerDomain] });
 		}
 
 		return message;
@@ -522,7 +522,7 @@ export class PeerClient {
 
 		const federatedMessage = new FederatedMessage(localPeerDomain, message);
 
-		FederationEvents.messageDeleted(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
+		FederationEvents.messageDeleted(federatedRoom, federatedMessage, { skipDomains: [localPeerDomain] });
 
 		return message;
 	}
@@ -547,7 +547,7 @@ export class PeerClient {
 
 		const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, user.federation._id);
 
-		FederationEvents.messagesRead(federatedRoom, federatedUser, { skipPeers: [localPeerDomain] });
+		FederationEvents.messagesRead(federatedRoom, federatedUser, { skipDomains: [localPeerDomain] });
 
 		return roomId;
 	}
@@ -568,7 +568,7 @@ export class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
-		FederationEvents.messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
+		FederationEvents.messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipDomains: [localPeerDomain] });
 
 		return message;
 	}
@@ -589,7 +589,7 @@ export class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
-		FederationEvents.messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
+		FederationEvents.messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipDomains: [localPeerDomain] });
 
 		return message;
 	}
@@ -610,7 +610,7 @@ export class PeerClient {
 
 		const federatedUserWhoMuted = FederatedUser.loadByFederationId(localPeerDomain, fromUser.federation._id);
 
-		FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipPeers: [localPeerDomain] });
+		FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipDomains: [localPeerDomain] });
 
 		return users;
 	}
@@ -631,7 +631,7 @@ export class PeerClient {
 
 		const federatedUserWhoUnmuted = FederatedUser.loadByFederationId(localPeerDomain, fromUser.federation._id);
 
-		FederationEvents.userUnmuted(federatedRoom, federatedUnmutedUser, federatedUserWhoUnmuted, { skipPeers: [localPeerDomain] });
+		FederationEvents.userUnmuted(federatedRoom, federatedUnmutedUser, federatedUserWhoUnmuted, { skipDomains: [localPeerDomain] });
 
 		return users;
 	}

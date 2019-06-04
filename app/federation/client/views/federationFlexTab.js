@@ -1,14 +1,27 @@
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Random } from 'meteor/random';
+// import { Meteor } from 'meteor/meteor';
+// import { ReactiveVar } from 'meteor/reactive-var';
+// import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
-import _ from 'underscore';
-import toastr from 'toastr';
+import { Session } from 'meteor/session';
 
-import { ChatSubscription, Subscriptions, Messages } from '../../../models';
-import { t, handleError } from '../../../utils';
+import { ChatRoom } from '../../../models';
+// import _ from 'underscore';
+// import toastr from 'toastr';
+//
+// import { ChatSubscription, Subscriptions, Messages } from '../../../models';
+// import { t, handleError } from '../../../utils';
 
 Template.federationFlexTab.helpers({
+	federationPeerStatuses() {
+		const room = ChatRoom.findOne(Session.get('openedRoom'));
+
+		// Only add if the room is federated
+		if (!room || !room.federation) { return []; }
+
+		console.log(room);
+
+		return [];
+	},
 	// autoTranslate() {
 	// 	const sub = ChatSubscription.findOne({
 	// 		rid: Template.instance().rid,

@@ -9,10 +9,10 @@ import { settings } from '../../settings';
 Meteor.startup(() => {
 	Tracker.autorun(function() {
 		if (settings.get('FEDERATION_Enabled')) {
-
 			const room = ChatRoom.findOne(Session.get('openedRoom'));
 
-			console.log(room);
+			// Only add if the room is federated
+			if (!room || !room.federation) { return; }
 
 			return TabBar.addButton({
 				groups: ['channel', 'group', 'direct'],
