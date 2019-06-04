@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings';
 import WhatsAppGateway from '../WhatsAppGateway';
@@ -25,7 +26,7 @@ class Caixa {
 
 	send(fromNumber, toNumber, message, extraData = {}) {
 		let { baseApiUrl: baseUrl } = this.config;
-		const { allowInvalidSelfSignedCerts } = this.config;
+		const { allowInvalidSelfSignedCerts, notificationMessageNotDelivered } = this.config;
 
 		if (!baseUrl) {
 			throw new Meteor.Error('(WhatsAppGateway)Base API URL is not defined.');
@@ -54,7 +55,6 @@ class Caixa {
 			return HTTP.call('POST', `${ baseUrl }mensagens/enviamensagem`, options);
 		} catch (e) {
 			const { response: { data } = {} } = e;
-			const { notificationMessageNotDelivered } = this.config;
 
 			let errorMessage = notificationMessageNotDelivered || 'Error sending message to WhatsAppGateway';
 			if (data && data.status && data.status === 404 && data.mensagem) {
