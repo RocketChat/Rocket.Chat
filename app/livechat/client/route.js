@@ -41,11 +41,19 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
-	name: 'livechat-users',
-	path: '/users',
+	name: 'livechat-managers',
+	path: '/managers',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_Users',
-	pageTemplate: 'livechatUsers',
+	i18nPageTitle: 'Livechat_Managers',
+	pageTemplate: 'livechatManagers',
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-agents',
+	path: '/agents',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Livechat_Agents',
+	pageTemplate: 'livechatAgents',
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
