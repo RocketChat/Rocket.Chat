@@ -110,3 +110,14 @@ Meteor.startup(() => {
 		}
 	});
 });
+
+// re-try to drop index which should have been dropped in migration v122
+Meteor.startup(() => {
+	Subscriptions.tryDropIndex({
+		'u._id' : 1,
+		name : 1,
+		t : 1,
+		code : 1,
+	});
+	console.log('Fixing ChatSubscription u._id_1_name_1_t_1_code_1');
+});
