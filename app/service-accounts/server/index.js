@@ -4,3 +4,5 @@ import './permissions';
 // methods
 import './methods/usernameExists';
 import './methods/addServiceAccount';
+
+import './hooks/createBroadcastServiceAccounts';
