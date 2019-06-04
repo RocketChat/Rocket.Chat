@@ -3164,6 +3164,8 @@
   "WhatsApp_Gateway_conversation_finished_message_Description": "(Opcional) Mensagem default que será enviada aos usuários quando uma conversa terminar.",
   "WhatsApp_Gateway_Default_Department": "Departmento default",
   "WhatsApp_Gateway_Default_Department_Description": "(Opcional) Nome ou ID do departmento que receberá as conversas de WhatsApp.",
+  "WhatsApp_Gateway_Notification_Message_Not_Delivered": "Notificação de mensagem não entregue",
+  "WhatsApp_Gateway_Notification_Message_Not_Delivered_description": "(Optional) Notificação para alertar o agente que uma mensagem não entregue ao Gateway do WhatsApp.",
   "WhatsApp_Gateway_Fallback_Message": "Mensagem default para serviço offline",
   "WhatsApp_Gateway_Fallback_Message_Description": "(Opcional) Mensagem default que será enviada aos usuários quando o serviço estiver offline.",
   "WhatsApp_Gateway_Queue_Message": "Mensagem default de fila de espera",

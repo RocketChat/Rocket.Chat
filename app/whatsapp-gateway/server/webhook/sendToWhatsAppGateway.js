@@ -36,7 +36,8 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	WhatsAppService.send(room.whatsAppGateway.from, visitor.phone[0].phoneNumber, message.msg);
+	const { rid, u: { _id: userId } = {} } = message;
+	WhatsAppService.send(room.whatsAppGateway.from, visitor.phone[0].phoneNumber, message.msg, { rid, userId });
 
 	return message;
 }, callbacks.priority.LOW, 'sendToWhatsAppGateway');
