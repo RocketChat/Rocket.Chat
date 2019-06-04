@@ -119,14 +119,17 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		const fullName = loginResult.profile.cn || loginResult.profile.username || loginResult.profile.displayName;
 
 		let eppnMatch = false;
+		let user = null;
 
 		// Check eppn
-		let user = Meteor.users.findOne({
-			eppn: eduPersonPrincipalName,
-		});
+		if (eduPersonPrincipalName) {
+			user = Meteor.users.findOne({
+				eppn: eduPersonPrincipalName,
+			});
 
-		if (user) {
-			eppnMatch = true;
+			if (user) {
+				eppnMatch = true;
+			}
 		}
 
 		// If eppn is not exist
