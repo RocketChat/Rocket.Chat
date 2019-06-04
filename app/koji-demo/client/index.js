@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { TabBar } from '../../ui-utils/client';
 
 import './views/koji-demo.html';
@@ -35,7 +36,9 @@ Meteor.startup(function() {
 		try {
 			// Some general metadata to demonstrate sending information
 			// back on a `connect` message
+			const baseUrl = window.location.origin;
 			const { username } = Meteor.user();
+			const avatarUrl = `${ baseUrl }${ getUserAvatarURL(username) }`;
 			const { name: roomName } = Session.get(`roomData${ Session.get('openedRoom') }`);
 
 			const { action } = data.rcEmbeddedSdk;
@@ -47,6 +50,7 @@ Meteor.startup(function() {
 						action: 'connected',
 						connected: {
 							username,
+							avatarUrl,
 							roomName,
 						},
 					},
