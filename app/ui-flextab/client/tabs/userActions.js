@@ -99,6 +99,19 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 		}
 	};
 
+
+	const hasAlreadyFollowed = (username) => {
+		Meteor.call('hasAlreadyFollowed', username, function(error, result) {
+			if (error) {
+				console.log(error);
+				return false;
+			}
+			Session.set('hasFollowed', result);
+			return result;
+		});
+	};
+
+
 	const actions = [
 		{
 			icon: 'message',
@@ -115,6 +128,21 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (isSelf(this.username) || !directActions) {
 				return;
 			}
+			hasAlreadyFollowed(this.username);
+
+			if (Session.get('hasFollowed')) {
+				return {
+					icon: 'plus',
+					name: t('Unfollow'),
+					action: prevent(getUser, ({ username }) =>
+						Meteor.call('unFollowUser', username, success(() => toastr.success(TAPi18n.__('You_have_unfollowed__username_', { username }))))
+					),
+					condition() {
+						return settings.get('Newsfeed_enabled');
+					},
+				};
+			}
+
 
 			return {
 				icon: 'plus',
