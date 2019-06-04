@@ -5,4 +5,4 @@ import './permissions';
 import './methods/usernameExists';
 import './methods/addServiceAccount';
 
-import './hooks/createBroadcastServiceAccounts';
+import './hooks/serviceAccountCallback';
