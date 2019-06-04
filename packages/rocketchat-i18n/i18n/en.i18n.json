@@ -2634,6 +2634,7 @@
   "Service_account_applied": "User applications for creating Service Accounts",
   "Service_account_created_successfully": "Service Account created successfully",
   "Service_account_dashboard": "Service Account Dashboard",
+  "Service_account_description": "Service Accounts are an upgrade to existing user accounts. You can connect to a large number of users using service account with exclusive features such as broadcast account.",
   "Service_account_limit": "Service Accounts per user",
   "Service_account_name_placeholder": "Service Account name",
   "Service_account_username_placeholder": "Service Account username",
