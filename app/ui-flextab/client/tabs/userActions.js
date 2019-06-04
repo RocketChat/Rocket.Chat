@@ -135,7 +135,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					icon: 'plus',
 					name: t('Unfollow'),
 					action: prevent(getUser, ({ username }) =>
-						Meteor.call('unFollowUser', username, success(() => toastr.success(TAPi18n.__('You_have_unfollowed__username_', { username }))))
+						Meteor.call('unfollowUser', username, success(() => toastr.success(TAPi18n.__('You_have_unfollowed__username_', { username }))))
 					),
 					condition() {
 						return settings.get('Newsfeed_enabled');

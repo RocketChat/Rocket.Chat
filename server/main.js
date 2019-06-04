@@ -64,6 +64,7 @@ import './methods/setAvatarFromService';
 import './methods/setUserActiveStatus';
 import './methods/setUserPassword';
 import './methods/toogleFavorite';
+import './methods/unfollowUser';
 import './methods/unmuteUserInRoom';
 import './methods/userSetUtcOffset';
 import './publications/activeUsers';
