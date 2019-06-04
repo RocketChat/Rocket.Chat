@@ -99,7 +99,6 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 
 Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
-
 	user.status = 'offline';
 	user.active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
@@ -174,6 +173,10 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (!user.type) {
 		user.type = 'user';
+	}
+
+	if (!user.u && options.u) {
+		user.u = options.u;
 	}
 
 	const _id = insertUserDoc.call(Accounts, options, user);
