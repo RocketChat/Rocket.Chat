@@ -19,8 +19,8 @@ export COMMIT_SHORT=$(parse_git_hash) # ${TRAVIS_COMMIT}${CIRCLE_SHA1} will retu
 export BUILD_FILE=Assistify_Chat_${BRANCH/\//_}_${COMMIT_SHORT}.tar.gz # replace slashes from the branch name (e. g. "feature/...")
 export DEPLOY_PATH=/tmp/build/
 
-export NODEJS_VERSION="8.9.4"
-export NODEJS_CHECKSUM="21fb4690e349f82d708ae766def01d7fec1b085ce1f5ab30d9bda8ee126ca8fc"
+export NODEJS_VERSION="8.11.4"
+export NODEJS_CHECKSUM="c69abe770f002a7415bd00f7ea13b086650c1dd925ef0c3bf8de90eabecc8790"
 
 # in Circle-Ci, the containers already got a aws-config, so if it exsists, assume it's ok
 if [ ! -f ~/.aws/credentials ]
