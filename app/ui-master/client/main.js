@@ -184,7 +184,7 @@ Template.main.helpers({
 	hasUsername() {
 		const uid = Meteor.userId();
 		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
-		return (user && user.username) || settings.get('Accounts_AllowAnonymousRead');
+		return (user && user.username) || (!uid && settings.get('Accounts_AllowAnonymousRead'));
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
