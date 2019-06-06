@@ -26,6 +26,7 @@ import './methods/getAgentOverviewData';
 import './methods/getAnalyticsChartData';
 import './methods/getAnalyticsOverviewData';
 import './methods/getInitialData';
+import './methods/getOpenInquiries';
 import './methods/getNextAgent';
 import './methods/loadHistory';
 import './methods/loginByToken';
