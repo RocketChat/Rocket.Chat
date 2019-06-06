@@ -13,16 +13,16 @@ RUN apt-get install -y bsdtar \
 
 COPY . /app
 
-# Add Chatpal which is a submodule
 WORKDIR /app
-RUN meteor npm i \
-    && meteor npm run postinstall \
-    && set +e \
-    && meteor add rocketchat:lib --allow-superuser \
-    && set -e \
-    && meteor build --allow-superuser --server-only --headless --directory /tmp/build
 
-FROM assistify/chat-base:latest
+RUN meteor npm install \
+    && cd packages/rocketchat-livechat/.app \
+    && meteor npm install \
+    && cd -
+
+RUN METEOR_PROFILE=1000 meteor build --server-only --allow-superuser --debug --directory /tmp/build
+
+FROM assistify/chat-base:stretch
 
 MAINTAINER buildmaster@rocket.chat
 

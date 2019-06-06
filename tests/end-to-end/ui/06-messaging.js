@@ -1,6 +1,3 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import Global from '../../pageobjects/global';
@@ -170,8 +167,8 @@ function messageActionsTest() {
 				});
 
 				it('it should check if the message was replied', () => {
-					mainContent.lastMessageTextAttachment.waitForVisible(5000);
-					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+					mainContent.lastMessageQuote.waitForVisible(5000);
+					mainContent.lastMessageQuote.getAttribute('data-tmid').should.equal(mainContent.beforeLastMessageQuote.getAttribute('data-id'));
 				});
 			});
 

@@ -1,14 +1,17 @@
-function CreateThread(command, params, item) {
-	if (command !== 'thread' || !Match.test(params, String)) {
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { slashCommands } from '../../../app/utils/client';
+
+function createDiscussion(command, params, item) {
+	if (command !== 'discussion' || !Match.test(params, String)) {
 		return;
 	}
 
 	const openingMessage = params.trim();
-
-	Meteor.call('createThread', item.rid, { msg: openingMessage });
+	Meteor.call('createDiscussion', { prid: item.rid, pmid: item._id, t_name: null, reply: openingMessage });
 }
 
-RocketChat.slashCommands.add('thread', CreateThread, {
-	description: 'Thread_slash_command_description',
-	params: 'Thread_slash_command_params',
+slashCommands.add('discussion', createDiscussion, {
+	description: 'Discussion_slash_command_description',
+	params: 'Discussion_slash_command_params',
 });

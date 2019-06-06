@@ -1,4 +1,8 @@
 /* globals Department, Livechat, LivechatVideoCall */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -8,7 +12,7 @@ Template.register.helpers({
 		return Template.instance().error.get();
 	},
 	welcomeMessage() {
-		return '';
+		return Livechat.registrationFormMessage;
 	},
 	showDepartments() {
 		return Department.find({ showOnRegistration: true }).count() > 1;
@@ -73,9 +77,7 @@ Template.register.events({
 				}
 			}
 
-			if (departmentId) {
-				Livechat.department = departmentId;
-			}
+			Livechat.department = departmentId;
 
 			const guest = {
 				token: visitor.getToken(),

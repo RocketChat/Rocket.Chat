@@ -1,21 +1,14 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
 	directMessage,
-	log,
 	apiUsername,
 	apiEmail,
 } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
-import { adminUsername } from '../../data/user';
+import { password, adminUsername } from '../../data/user.js';
+
 
 describe('[Direct Messages]', function() {
 	this.retries(0);

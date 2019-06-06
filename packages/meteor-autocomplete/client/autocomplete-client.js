@@ -1,6 +1,10 @@
-/* globals Deps, getCaretCoordinates*/
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Blaze } from 'meteor/blaze';
+import { Deps } from 'meteor/deps';
 import _ from 'underscore';
 import AutoCompleteRecords from './collection';
+import { getCaretCoordinates } from 'meteor/dandv:caret-position';
 
 const isServerSearch = function(rule) {
 	return _.isString(rule.collection);
@@ -69,7 +73,7 @@ const getField = function(obj, str) {
 	return obj;
 };
 
-this.AutoComplete = class {
+export default class AutoComplete {
 	constructor(settings) {
 		this.KEYS = [40, 38, 13, 27, 9];
 		this.limit = settings.limit || 5;
@@ -86,6 +90,8 @@ this.AutoComplete = class {
 			const rule = rules[key];
 			validateRule(rule);
 		});
+
+		this.onSelect = settings.onSelect;
 
 		this.expressions = (() => Object.keys(rules).map((key) => {
 			const rule = rules[key];
@@ -118,9 +124,7 @@ this.AutoComplete = class {
 				this.setLoaded(true);
 				return;
 			}
-			const params = getFindParams(rule, filter, this.limit);
-			const selector = params[0];
-			const options = params[1];
+			const [selector, options] = getFindParams(rule, filter, this.limit);
 
 			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
 			this.setLoaded(false);
@@ -338,6 +342,7 @@ this.AutoComplete = class {
 			// TODO this is a hack; see above
 			this.onBlur();
 		}
+		this.onSelect && this.onSelect(doc);
 		this.$element.trigger('autocompleteselect', doc);
 	}
 
@@ -367,10 +372,9 @@ this.AutoComplete = class {
 
 	setText(text) {
 		if (this.$element.is('input,textarea')) {
-			this.$element.val(text);
-		} else {
-			this.$element.html(text);
+			return this.$element.val(text);
 		}
+		this.$element.html(text);
 	}
 
 
@@ -381,7 +385,14 @@ this.AutoComplete = class {
 	positionContainer() {
 		// First render; Pick the first item and set css whenever list gets shown
 		let pos = {};
-		const position = this.$element.position();
+		const element = this.tmplInst.$(this.selector.anchor || this.$element);
+
+		if (this.position === 'fixed') {
+			const width = element.outerWidth();
+			return this.tmplInst.$(this.selector.container).css({ width, position: 'fixed' });
+		}
+
+		const position = element.position();
 		const rule = this.matchedRule();
 		const offset = getCaretCoordinates(this.element, this.element.selectionStart);
 
@@ -390,7 +401,7 @@ this.AutoComplete = class {
 		if (rule && isWholeField(rule)) {
 			pos.left = position.left;
 			if (rule.doNotChangeWidth !== false) {
-				pos.width = this.$element.outerWidth(); // position.offsetWidth
+				pos.width = element.outerWidth(); // position.offsetWidth
 
 			}
 		} else { // Normal positioning, at token word
@@ -399,11 +410,12 @@ this.AutoComplete = class {
 
 		// Position menu from top (above) or from bottom of caret (below, default)
 		if (this.position === 'top') {
-			pos.bottom = this.$element.offsetParent().height() - position.top - offset.top;
+			pos.bottom = element.offsetParent().height() - position.top - offset.top;
 		} else {
-			pos.top = position.top + offset.top + parseInt(this.$element.css('font-size'));
+			pos.top = position.top + offset.top + parseInt(element.css('font-size'));
 		}
-		this.tmplInst.$(this.selector.container).css(pos);
+
+		this.tmplInst.$(this.selector.container).css({ ...pos, position: 'absolute' });
 	}
 
 	ensureSelection() {
@@ -451,4 +463,4 @@ this.AutoComplete = class {
 		return this.rules[this.matched].template;
 	}
 
-};
+}

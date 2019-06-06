@@ -1,4 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Users } from '../../app/models';
 import s from 'underscore.string';
+
+import { Federation } from '../../app/federation/server';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -23,7 +29,7 @@ const sortUsers = function(field, direction) {
 };
 
 Meteor.methods({
-	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
+	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
 		if (!['channels', 'users'].includes(type)) {
@@ -46,53 +52,97 @@ Meteor.methods({
 
 		limit = limit > 0 ? limit : 10;
 
-		const options = {
+		const pagination = {
 			skip,
 			limit,
 		};
 
 		const user = Meteor.user();
-		if (type === 'channels') {
 
+		if (type === 'channels') {
 			const sort = sortChannels(sortBy, sortDirection);
-			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
+			if (!hasPermission(user._id, 'view-c-room')) {
 				return;
 			}
+
+			const result = Rooms.findByNameAndType(regex, 'c', {
+				...pagination,
+				sort,
+				fields: {
+					description: 1,
+					topic: 1,
+					name: 1,
+					lastMessage: 1,
+					ts: 1,
+					archived: 1,
+					usersCount: 1,
+				},
+			});
+
 			return {
-				results: RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
-					...options,
-					sort,
-					fields: {
-						description: 1,
-						topic: 1,
-						name: 1,
-						lastMessage: 1,
-						ts: 1,
-						archived: 1,
-						usersCount: 1,
-					},
-				}).fetch(),
-				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count(),
+				total: result.count(), // count ignores the `skip` and `limit` options
+				results: result.fetch(),
 			};
 		}
 
 		// type === users
-		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
+		if (!hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
 			return;
 		}
-		const sort = sortUsers(sortBy, sortDirection);
+
+		const exceptions = [user.username];
+
+		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
+
+		const options = {
+			...pagination,
+			sort: sortUsers(sortBy, sortDirection),
+			fields: {
+				username: 1,
+				name: 1,
+				createdAt: 1,
+				emails: 1,
+				federation: 1,
+			},
+		};
+
+		let result;
+		if (workspace === 'all') {
+			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
+		} else if (workspace === 'external') {
+			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+		} else {
+			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+		}
+
+		const total = result.count(); // count ignores the `skip` and `limit` options
+		const results = result.fetch();
+
+		// Try to find federated users, when appliable
+		if (Federation.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
+			const federatedUsers = Federation.methods.searchUsers(text);
+
+			for (const federatedUser of federatedUsers) {
+				const { user } = federatedUser;
+
+				const exists = results.findIndex((e) => e.domain === user.federation.peer && e.username === user.username) !== -1;
+
+				if (exists) { continue; }
+
+				// Add the federated user to the results
+				results.unshift({
+					username: user.username,
+					name: user.name,
+					createdAt: user.createdAt,
+					emails: user.emails,
+					federation: user.federation,
+				});
+			}
+		}
+
 		return {
-			results: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
-				...options,
-				sort,
-				fields: {
-					username: 1,
-					name: 1,
-					createdAt: 1,
-					emails: 1,
-				},
-			}).fetch(),
-			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count(),
+			total,
+			results,
 		};
 	},
 });

@@ -37,13 +37,11 @@ export async function getSettingValue(name) {
 		.expect('Content-Type', 'application/json')
 		.expect(200);
 
-	const { value } = responseGetSetting.body;
-
 	await request.post(api('logout'))
 		.set(credentials)
 		.expect('Content-Type', 'application/json')
 		.expect(200);
 
-	return value;
+	return responseGetSetting.body.value;
 }
 

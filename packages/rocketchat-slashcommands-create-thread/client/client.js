@@ -1,4 +1,6 @@
-RocketChat.slashCommands.add('thread', null, {
-	description: 'Thread_slash_command_description',
-	params: 'Thread_slash_command_params',
+import { slashCommands } from '../../../app/utils/client';
+
+slashCommands.add('thread', null, {
+	description: 'Discussion_slash_command_description',
+	params: 'Discussion_slash_command_params',
 });
