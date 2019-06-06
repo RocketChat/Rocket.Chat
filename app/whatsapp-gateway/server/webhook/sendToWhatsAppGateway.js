@@ -1,18 +1,28 @@
+import { Meteor } from 'meteor/meteor';
+
+import { FileUpload } from '../../../file-upload';
+import { Uploads } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import WhatsAppGateway from '../WhatsAppGateway';
 import { LivechatVisitors } from '../../../models';
 
 callbacks.add('afterSaveMessage', function(message, room) {
-	if (message.editedAt) {
-		return message;
-	}
-
 	if (!WhatsAppGateway.enabled) {
 		return message;
 	}
 
+	const WhatsAppService = WhatsAppGateway.getService(settings.get('WhatsApp_Gateway_Service'));
+	if (!WhatsAppService) {
+		return message;
+	}
+
+
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.whatsAppGateway && room.v && room.v.token)) {
+		return message;
+	}
+
+	if (message.editedAt) {
 		return message;
 	}
 
@@ -24,12 +34,25 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	const WhatsAppService = WhatsAppGateway.getService(settings.get('WhatsApp_Gateway_Service'));
+	let attachment;
+	if (message.file) {
+		const { _id } = message.file;
+		const file = Uploads.findOneById(_id);
+		if (file) {
+			const getFileBuffer = Meteor.wrapAsync(FileUpload.getBuffer, FileUpload);
+			const buffer = getFileBuffer(file);
+			const rs = new Buffer(buffer);
+			const dataURI = rs.toString('base64');
+			// const dataURI = `data:${ type };base64,${ data }`;
 
-	if (!WhatsAppService) {
-		return message;
+			const { type, size } = file;
+			attachment = {
+				type,
+				size,
+				dataURI,
+			}
+		}
 	}
-
 	const visitor = LivechatVisitors.getVisitorByToken(room.v.token);
 
 	if (!visitor || !visitor.phone || visitor.phone.length === 0) {
@@ -37,7 +60,9 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	const { rid, u: { _id: userId } = {} } = message;
-	WhatsAppService.send(room.whatsAppGateway.from, visitor.phone[0].phoneNumber, message.msg, { rid, userId });
+	const { from, conversationId } = room.whatsAppGateway;
+	const extraData = { rid, userId, conversationId, attachment };
+	WhatsAppService.send(from, visitor.phone[0].phoneNumber, message.msg, extraData);
 
 	return message;
 }, callbacks.priority.LOW, 'sendToWhatsAppGateway');

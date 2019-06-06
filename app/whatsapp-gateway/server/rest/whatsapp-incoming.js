@@ -11,7 +11,8 @@ const offlineServiceError = 'no-agent-online';
 API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 	post() {
 		const WhatsAppService = WhatsAppGateway.getService(this.urlParams.service);
-		const { id_sessao: sessionId, id_cliente, id_caixa: from, texto: msg, midia } = this.bodyParams;
+		const { id_sessao: sessionId, id_cliente, id_caixa: from, texto: msg, midia, token: conversationId } = this.bodyParams;
+
 		let guest = LivechatVisitors.findOneVisitorByPhone(id_cliente);
 
 		const config = WhatsAppService.getConfig() || {};
@@ -75,6 +76,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			roomInfo: {
 				whatsAppGateway: {
 					sessionId,
+					conversationId,
 					from,
 				},
 			},

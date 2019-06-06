@@ -105,6 +105,38 @@ Meteor.startup(function() {
 				i18nDescription: 'WhatsApp_Gateway_Notification_Message_Not_Delivered_description',
 				secret: true,
 			});
+			this.add('WhatsApp_Gateway_FileUpload_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enableQuery: {
+					_id: 'WhatsApp_Gateway_Service',
+					value: 'caixa',
+				},
+				i18nLabel: 'FileUpload_Enabled',
+				secret: true,
+			});
+			this.add('WhatsApp_Gateway_FileUpload_MaxFileSize', 104857600, {
+				type: 'int',
+				public: true,
+				enableQuery: {
+					_id: 'WhatsApp_Gateway_Service',
+					value: 'caixa',
+				},
+				i18nLabel: 'FileUpload_MaxFileSize',
+				i18nDescription: 'FileUpload_MaxFileSizeDescription',
+				secret: true,
+			});
+			this.add('WhatsApp_Gateway_FileUpload_MediaTypeWhiteList', 'image/*,application/pdf', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'WhatsApp_Gateway_Service',
+					value: 'caixa',
+				},
+				i18nLabel: 'FileUpload_MediaTypeWhiteList',
+				i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+				secret: true,
+			});
 		});
 	});
 });

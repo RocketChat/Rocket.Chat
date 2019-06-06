@@ -1,10 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import filesize from 'filesize';
 
 import { settings } from '../../../settings';
 import WhatsAppGateway from '../WhatsAppGateway';
 import { Notifications } from '../../../notifications';
+import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+
+const notifyAgent = (userId, rid, msg) => Notifications.notifyUser(userId, 'message', {
+	_id: Random.id(),
+	rid,
+	ts: new Date(),
+	msg,
+});
 
 class Caixa {
 	constructor() {
@@ -17,6 +27,9 @@ class Caixa {
 			queueMessage: settings.get('WhatsApp_Gateway_Queue_Message'),
 			conversationFinishedMessage: settings.get('WhatsApp_Gateway_conversation_finished_message'),
 			notificationMessageNotDelivered: settings.get('WhatsApp_Gateway_Notification_Message_Not_Delivered'),
+			fileUploadEnabled: settings.get('WhatsApp_Gateway_FileUpload_Enabled'),
+			fileUploadMaxFileSize: settings.get('WhatsApp_Gateway_FileUpload_MaxFileSize'),
+			fileUploadMediaTypeWhiteList: settings.get('WhatsApp_Gateway_FileUpload_MediaTypeWhiteList'),
 		};
 	}
 
@@ -26,7 +39,15 @@ class Caixa {
 
 	send(fromNumber, toNumber, message, extraData = {}) {
 		let { baseApiUrl: baseUrl } = this.config;
-		const { allowInvalidSelfSignedCerts, notificationMessageNotDelivered } = this.config;
+		const {
+			allowInvalidSelfSignedCerts,
+			notificationMessageNotDelivered,
+			fileUploadEnabled,
+			fileUploadMaxFileSize,
+			fileUploadMediaTypeWhiteList
+		} = this.config;
+
+		const { rid, userId, conversationId: token, attachment } = extraData;
 
 		if (!baseUrl) {
 			throw new Meteor.Error('(WhatsAppGateway)Base API URL is not defined.');
@@ -34,6 +55,29 @@ class Caixa {
 
 		if (!baseUrl.endsWith('/')) {
 			baseUrl = baseUrl.concat('/');
+		}
+
+		let midia;
+		if (attachment) {
+			const user = userId ? Meteor.users.findOne(userId) : null;
+			const language = user ? user.language : 'en';
+			const { type: mime_type, size, dataURI: base64 } = attachment;
+
+			let reason;
+			if (!fileUploadEnabled) {
+				reason = TAPi18n.__('FileUpload_Disabled', language);
+			} else if (fileUploadMaxFileSize > -1 && size > fileUploadMaxFileSize) {
+				reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+					size: filesize(fileUploadMaxFileSize),
+				}, language);
+			} else if (!fileUploadIsValidContentType(mime_type)) {
+				reason = TAPi18n.__('File_type_is_not_accepted', language);
+			}
+
+			if (reason) {
+				rid && userId && notifyAgent(userId, rid, reason);
+				return console.error(`(WhatsAppGateway) -> ${ reason }`);
+			}
 		}
 
 		const options = {
@@ -44,12 +88,18 @@ class Caixa {
 				id_cliente: toNumber,
 				id_caixa: fromNumber,
 				texto: message,
+				midia,
+				...(token && { token }),
 			},
 			npmRequestOptions: {
 				rejectUnauthorized: !allowInvalidSelfSignedCerts,
 				strictSSL: !allowInvalidSelfSignedCerts,
 			},
 		};
+		console.log('payload');
+		console.log(options);
+		console.log('attachment');
+		console.log(attachment);
 
 		try {
 			return HTTP.call('POST', `${ baseUrl }mensagens/enviamensagem`, options);
@@ -61,14 +111,7 @@ class Caixa {
 				errorMessage = data.mensagem;
 			}
 
-			const { rid, userId } = extraData;
-			rid && userId && Notifications.notifyUser(userId, 'message', {
-				_id: Random.id(),
-				rid,
-				ts: new Date(),
-				msg: errorMessage,
-			});
-
+			rid && userId && notifyAgent(userId, rid, errorMessage);
 			console.error(`${ errorMessage } -> ${ e }`);
 		}
 	}
