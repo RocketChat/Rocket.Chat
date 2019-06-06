@@ -43,7 +43,7 @@ Meteor.startup(function() {
 
 			const { action } = data.rcEmbeddedSdk;
 			// ack the successful connect back to the iframe
-			if (action === 'connect') {
+			if (action === 'getUserInfo') {
 				source.postMessage({
 					rcEmbeddedSdk: {
 						version: '0.0.1',
