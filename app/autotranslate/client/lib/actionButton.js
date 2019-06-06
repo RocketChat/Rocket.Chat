@@ -31,8 +31,8 @@ Meteor.startup(function() {
 					const action = message.autoTranslateShowInverse ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition(message) {
-					return message && message.u && message.u._id !== Meteor.userId() && message.translations && !message.translations.original;
+				condition({ msg, u }) {
+					return msg && msg.u && msg.u._id !== u._id && msg.translations && !msg.translations.original;
 				},
 				order: 90,
 			});
@@ -56,8 +56,8 @@ Meteor.startup(function() {
 					const action = message.autoTranslateShowInverse ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition(message) {
-					return message && message.u && message.u._id !== Meteor.userId() && message.translations && message.translations.original;
+				condition({ msg, u }) {
+					return msg && msg.u && msg.u._id !== u._id && msg.translations && msg.translations.original;
 				},
 				order: 90,
 			});

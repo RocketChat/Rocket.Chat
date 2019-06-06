@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { t, getURL } from '../../utils';
-import { Subscriptions, WebdavAccounts } from '../../models';
+import { WebdavAccounts } from '../../models';
 import { settings } from '../../settings';
 import { MessageAction, modal } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
@@ -11,8 +11,8 @@ Meteor.startup(function() {
 		id: 'webdav-upload',
 		icon: 'upload',
 		label: t('Save_To_Webdav'),
-		condition: (message) => {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition: ({ msg: message, subscription }) => {
+			if (subscription == null) {
 				return false;
 			}
 			if (WebdavAccounts.findOne() == null) {

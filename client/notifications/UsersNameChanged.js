@@ -9,6 +9,7 @@ Meteor.startup(function() {
 			'u._id': _id,
 		}, {
 			$set: {
+				'u.username': username,
 				'u.name': name,
 			},
 		}, {
@@ -21,6 +22,7 @@ Meteor.startup(function() {
 			},
 		}, {
 			$set: {
+				'mentions.$.username': username,
 				'mentions.$.name': name,
 			},
 		}, {
