@@ -157,11 +157,12 @@ Meteor.startup(function() {
 		i18nLabel: 'Webhook_URL',
 	});
 
-	settings.add('Livechat_secret_token', false, {
+	settings.add('Livechat_secret_token', '', {
 		type: 'string',
 		group: 'Livechat',
 		section: 'CRM_Integration',
 		i18nLabel: 'Secret_token',
+		secret: true,
 	});
 
 	settings.add('Livechat_webhook_on_close', false, {
@@ -236,6 +237,7 @@ Meteor.startup(function() {
 		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Key',
+		secret: true,
 	});
 
 	settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
@@ -370,6 +372,15 @@ Meteor.startup(function() {
 		section: 'Routing',
 		i18nLabel: 'Accept_with_no_online_agents',
 		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
+	});
+
+	settings.add('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0, {
+		type: 'int',
+		group: 'Livechat',
+		section: 'Routing',
+		i18nLabel: 'Max_number_incoming_livechats_displayed',
+		i18nDescription: 'Max_number_incoming_livechats_displayed_description',
 		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
 	});
 

@@ -193,6 +193,8 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.info]', () => {
+		after((done) => updatePermission('view-other-user-channels', ['admin']).then(done));
+
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
 				.set(credentials)
@@ -240,8 +242,41 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
+		it('should return the rooms when the user request your own rooms but he does NOT have the necessary permission', (done) => {
+			updatePermission('view-other-user-channels', []).then(() => {
+				request.get(api('users.info'))
+					.set(credentials)
+					.query({
+						userId: credentials['X-User-Id'],
+						fields: JSON.stringify({ userRooms: 1 }),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.rooms');
+					})
+					.end(done);
+			});
+		});
+		it('should NOT return the rooms when the user request another user\'s rooms and he does NOT have the necessary permission', (done) => {
+			updatePermission('view-other-user-channels', []).then(() => {
+				request.get(api('users.info'))
+					.set(credentials)
+					.query({
+						userId: targetUser._id,
+						fields: JSON.stringify({ userRooms: 1 }),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.rooms');
+					})
+					.end(done);
+			});
+		});
 	});
-
 	describe('[/users.getPresence]', () => {
 		it('should query a user\'s presence by userId', (done) => {
 			request.get(api('users.getPresence'))
@@ -256,6 +291,75 @@ describe('[Users]', function() {
 					expect(res.body).to.have.nested.property('presence', 'offline');
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/users.presence]', () => {
+		describe('Not logged in:', () => {
+			it('should return 401 unauthorized', (done) => {
+				request.get(api('users.presence'))
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('message');
+					})
+					.end(done);
+			});
+		});
+		describe('Logged in:', () => {
+			it('should return online users full list', (done) => {
+				request.get(api('users.presence'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('full', true);
+						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
+							'_id',
+							'username',
+							'name',
+							'status',
+							'utcOffset',
+						);
+					})
+					.end(done);
+			});
+
+			it('should return no online users updated after now', (done) => {
+				request.get(api(`users.presence?from=${ new Date().toISOString() }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('full', false);
+						expect(res.body).to.have.property('users').that.is.an('array').that.has.lengthOf(0);
+					})
+					.end(done);
+			});
+
+			it('should return full list of online users for more than 10 minutes in the past', (done) => {
+				const date = new Date();
+				date.setMinutes(date.getMinutes() - 11);
+
+				request.get(api(`users.presence?from=${ date.toISOString() }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('full', true);
+						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
+							'_id',
+							'username',
+							'name',
+							'status',
+							'utcOffset',
+						);
+					})
+					.end(done);
+			});
 		});
 	});
 
@@ -1472,6 +1576,85 @@ describe('[Users]', function() {
 			}).end(() => updatePermission('edit-other-user-active-status', ['admin']).then(done));
 			user = undefined;
 		});
+		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
+			request.post(api('users.setActiveStatus'))
+				.set(userCredentials)
+				.send({
+					activeStatus: false,
+					userId: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.active', false);
+				})
+				.end(done);
+		});
+		it('should set other user active status to true when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
+			request.post(api('users.setActiveStatus'))
+				.set(userCredentials)
+				.send({
+					activeStatus: true,
+					userId: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.active', true);
+				})
+				.end(done);
+		});
+		it('should return an error when trying to set other user active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
+			updatePermission('edit-other-user-active-status', []).then(() => {
+				request.post(api('users.setActiveStatus'))
+					.set(userCredentials)
+					.send({
+						activeStatus: false,
+						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
+			request.post(api('users.setActiveStatus'))
+				.set(userCredentials)
+				.send({
+					activeStatus: false,
+					userId: user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', (done) => {
+			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
+				request.post(api('users.setActiveStatus'))
+					.set(userCredentials)
+					.send({
+						activeStatus: false,
+						userId: user._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/users.setActiveStatus]', () => {
 		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
 			request.post(api('users.setActiveStatus'))
 				.set(userCredentials)
