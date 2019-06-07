@@ -7,8 +7,34 @@ import { settings } from '../../app/settings';
 Meteor.methods({
 	followUser(username) {
 		if (settings.get('Newsfeed_enabled')) {
-			Users.update(Users.findOneByUsername(username)._id, { $push: { followers: Meteor.user().username } });
-			Users.update(Users.findOneByUsername(Meteor.user().username)._id, { $push: { following: username } });
+			// Update followers keys
+			let userObject = Users.findOneByUsername(username);
+			if ('followers' in userObject) {
+				const followersObject = userObject.followers;
+				const { _id } = Users.findOneByUsername(Meteor.user().username);
+				followersObject[_id] = '';
+				Users.update(userObject._id, { $set: { followers: followersObject } });
+			} else {
+				const followersObject = new Object();
+				const { _id } = Users.findOneByUsername(Meteor.user().username);
+				followersObject[_id] = '';
+				Users.update(userObject._id, { $set: { followers: followersObject } });
+			}
+
+			// Update followers keys
+			userObject = Users.findOneByUsername(Meteor.user().username);
+			if ('following' in userObject) {
+				const followingObject = userObject.following;
+				const { _id } = Users.findOneByUsername(username);
+				followingObject[_id] = '';
+				Users.update(userObject._id, { $set: { following: followingObject } });
+			} else {
+				const followingObject = new Object();
+				const { _id } = Users.findOneByUsername(username);
+				followingObject[_id] = '';
+				Users.update(userObject._id, { $set: { following: followingObject } });
+			}
+
 			return true;
 		}
 
