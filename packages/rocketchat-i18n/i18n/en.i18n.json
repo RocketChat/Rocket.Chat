@@ -292,6 +292,7 @@
   "API_Enable_CORS": "Enable CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Enable Direct Message History Endpoint",
   "API_Enable_Direct_Message_History_EndPoint_Description": "This enables the `/api/v1/im.history.others` which allows the viewing of direct messages sent by other users that the caller is not part of.",
+  "API_Enable_Rate_Limiter": "Enable Rate Limiter",
   "API_Enable_Rate_Limiter_Dev": "Enable Rate Limiter in development",
   "API_Enable_Rate_Limiter_Dev_Description": "Should limit the amount of calls to the endpoints in the development environment?",
   "API_Enable_Rate_Limiter_Limit_Calls_Default": "Default number calls to the rate limiter",
