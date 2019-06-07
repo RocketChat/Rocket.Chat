@@ -604,13 +604,13 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 });
 
 API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
-	post() {
-		const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: false }));
+	get() {
+		const { fullExport = false } = this.queryParams;
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }));
 
 		return API.v1.success({
 			requested: result.requested,
 			exportOperation: result.exportOperation,
-
 		});
 	},
 });

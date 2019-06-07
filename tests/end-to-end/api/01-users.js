@@ -1654,82 +1654,45 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.setActiveStatus]', () => {
-		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
-			request.post(api('users.setActiveStatus'))
-				.set(userCredentials)
-				.send({
-					activeStatus: false,
-					userId: targetUser._id,
-				})
+	describe('[/users.requestDataDownload]', () => {
+		it('should return the request data with fullExport false when no query parameter was send', (done) => {
+			request.get(api('users.requestDataDownload'))
+				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.active', false);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', false);
 				})
 				.end(done);
 		});
-		it('should set other user active status to true when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
-			request.post(api('users.setActiveStatus'))
-				.set(userCredentials)
-				.send({
-					activeStatus: true,
-					userId: targetUser._id,
-				})
+		it('should return the request data with fullExport false when the fullExport query parameter is false', (done) => {
+			request.get(api('users.requestDataDownload?fullExport=false'))
+				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.active', true);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', false);
 				})
 				.end(done);
 		});
-		it('should return an error when trying to set other user active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
-			updatePermission('edit-other-user-active-status', []).then(() => {
-				request.post(api('users.setActiveStatus'))
-					.set(userCredentials)
-					.send({
-						activeStatus: false,
-						userId: targetUser._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
-			});
-		});
-		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
-			request.post(api('users.setActiveStatus'))
-				.set(userCredentials)
-				.send({
-					activeStatus: false,
-					userId: user._id,
-				})
+		it('should return the request data with fullExport true when the fullExport query parameter is true', (done) => {
+			request.get(api('users.requestDataDownload?fullExport=true'))
+				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', true);
 				})
 				.end(done);
-		});
-		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', (done) => {
-			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				request.post(api('users.setActiveStatus'))
-					.set(userCredentials)
-					.send({
-						activeStatus: false,
-						userId: user._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
-			});
 		});
 	});
 });
