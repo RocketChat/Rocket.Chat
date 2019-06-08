@@ -14,7 +14,7 @@ import { QueueMethods } from './QueueMethods';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
+import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors, LivechatSessions } from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
@@ -927,6 +927,14 @@ export const Livechat = {
 				status,
 			});
 		});
+	},
+
+	checkUserLocation(token) {
+		return LivechatSessions.getUserLocationByToken(token);
+	},
+
+	addUserLocationData(locationData) {
+		return LivechatSessions.saveLocationForUser(locationData);
 	},
 };
 

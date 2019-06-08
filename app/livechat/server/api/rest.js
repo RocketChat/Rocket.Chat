@@ -8,3 +8,4 @@ import './v1/message.js';
 import './v1/customField.js';
 import './v1/room.js';
 import './v1/videoCall.js';
+import './v1/session.js';
