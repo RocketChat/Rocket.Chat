@@ -6,8 +6,8 @@ import { settings } from '../../app/settings';
 Meteor.methods({
 	hasAlreadyFollowed(username) {
 		if (settings.get('Newsfeed_enabled')) {
-			if (Users.findOneByUsername(username).followers) {
-				if (Users.findOneByUsername(username).followers.indexOf(Meteor.user().username) !== -1) {
+			if ('followers' in Users.findOneByUsername(username)) {
+				if (`${ Meteor.user()._id }` in Users.findOneByUsername(username).followers) {
 					return true;
 				}
 			}

@@ -21,7 +21,7 @@ Meteor.methods({
 				Users.update(userObject._id, { $set: { followers: followersObject } });
 			}
 
-			// Update followers keys
+			// Update following keys
 			userObject = Users.findOneByUsername(Meteor.user().username);
 			if ('following' in userObject) {
 				const followingObject = userObject.following;
