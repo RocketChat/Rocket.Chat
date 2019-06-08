@@ -71,6 +71,23 @@ const toolbarButtons = (user) => [{
 	},
 },
 {
+	name: t('Service_account_login'),
+	icon: 'reload',
+	condition: () => !Meteor.user().u || Meteor.user().u && localStorage.getItem('serviceAccountForceLogin'),
+	action: (e) => {
+		const options = [];
+		const config = {
+			template: 'serviceAccountSidebarLogin',
+			currentTarget: e.currentTarget,
+			data: {
+				options,
+			},
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+		popover.open(config);
+	},
+},
+{
 	name: t('View_mode'),
 	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'condensed'],
 	action: (e) => {
