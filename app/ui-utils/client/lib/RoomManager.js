@@ -10,12 +10,13 @@ import { fireGlobalEvent } from './fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { roomTypes } from '../../../utils';
-import { call } from '../..';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
+
+import { call } from '..';
 
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
