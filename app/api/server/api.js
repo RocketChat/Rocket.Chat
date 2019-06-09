@@ -3,13 +3,15 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
+import { RateLimiter } from 'meteor/rate-limit';
+import _ from 'underscore';
+
 import { Logger } from '../../logger';
 import { settings } from '../../settings';
 import { metrics } from '../../metrics';
-import { hasPermission } from '../../authorization';
-import { RateLimiter } from 'meteor/rate-limit';
-import { hasAllPermission } from '../../authorization';
-import _ from 'underscore';
+import { hasPermission, hasAllPermission } from '../../authorization';
+import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
+
 
 const logger = new Logger('API', {});
 const rateLimiterDictionary = {};
@@ -113,7 +115,7 @@ class APIClass extends Restivus {
 			statusCode: 404,
 			body: {
 				success: false,
-				error: msg ? msg : 'Resource not found',
+				error: msg || 'Resource not found',
 			},
 		};
 	}
@@ -123,7 +125,7 @@ class APIClass extends Restivus {
 			statusCode: 403,
 			body: {
 				success: false,
-				error: msg ? msg : 'unauthorized',
+				error: msg || 'unauthorized',
 			},
 		};
 	}
@@ -133,7 +135,7 @@ class APIClass extends Restivus {
 			statusCode: 429,
 			body: {
 				success: false,
-				error: msg ? msg : 'Too many requests',
+				error: msg || 'Too many requests',
 			},
 		};
 	}
@@ -141,7 +143,7 @@ class APIClass extends Restivus {
 	reloadRoutesToRefreshRateLimiter() {
 		const { version } = this._config;
 		this._routes.forEach((route) => {
-			const shouldAddRateLimitToRoute = ((typeof route.options.rateLimiterOptions === 'object' || route.options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS));
+			const shouldAddRateLimitToRoute = (typeof route.options.rateLimiterOptions === 'object' || route.options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
 			if (shouldAddRateLimitToRoute) {
 				this.addRateLimiterRuleForRoutes({
 					routes: [route.path],
@@ -204,7 +206,7 @@ class APIClass extends Restivus {
 			routes = [routes];
 		}
 		const { version } = this._config;
-		const shouldAddRateLimitToRoute = ((typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS));
+		const shouldAddRateLimitToRoute = (typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
 		if (shouldAddRateLimitToRoute) {
 			this.addRateLimiterRuleForRoutes({
 				routes,
@@ -238,8 +240,10 @@ class APIClass extends Restivus {
 					let result;
 					try {
 						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route)
-							&& (!this.userId || !hasPermission(this.userId, 'api-bypass-rate-limit'))
-							&& ((process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') === true) || process.env.NODE_ENV !== 'development');
+							&& settings.get('API_Enable_Rate_Limiter') === true
+							&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
+							&& !(this.userId && hasPermission(this.userId, 'api-bypass-rate-limit'));
+
 						if (shouldVerifyRateLimit) {
 							rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
@@ -381,6 +385,8 @@ class APIClass extends Restivus {
 
 				this.user = Meteor.users.findOne({
 					_id: auth.id,
+				}, {
+					fields: getDefaultUserFields(),
 				});
 
 				this.userId = this.user._id;

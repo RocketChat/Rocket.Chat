@@ -1,6 +1,7 @@
 import mock from 'mock-require';
 import _ from 'underscore';
 import s from 'underscore.string';
+
 _.mixin(s.exports());
 
 mock('meteor/meteor', {

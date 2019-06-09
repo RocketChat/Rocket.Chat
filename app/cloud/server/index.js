@@ -1,7 +1,7 @@
 import './methods';
 import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
-
+import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
 import { Permissions } from '../../models';
 
 if (Permissions) {
@@ -11,4 +11,4 @@ if (Permissions) {
 // Ensure the client/workspace access token is valid
 getWorkspaceAccessToken();
 
-export { getWorkspaceAccessToken, getWorkspaceLicense };
+export { getWorkspaceAccessToken, getWorkspaceLicense, getUserCloudAccessToken };

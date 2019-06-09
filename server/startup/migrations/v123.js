@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Migrations } from '../../../app/migrations';
 import { Messages, Rooms, LivechatPageVisited } from '../../../app/models';
 
@@ -37,11 +38,11 @@ async function migrateHistory(total, current) {
 			ts: item.ts,
 			msg: `${ item.page.title } - ${ item.page.location.href }`,
 			u: {
-				_id : 'rocket.cat',
-				username : 'rocket.cat',
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
 			},
-			groupable : false,
-			navigation : {
+			groupable: false,
+			navigation: {
 				page: item.page,
 				token: item.token,
 			},
@@ -85,7 +86,7 @@ Migrations.add({
 		/*
 		 * Move visitor navigation history to messages
 		 */
-		Meteor.setTimeout(async() => {
+		Meteor.setTimeout(async () => {
 			const pages = pageVisitedCollection.find({});
 			const total = await pages.count();
 			await pages.close();

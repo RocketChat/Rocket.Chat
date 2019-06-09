@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../../settings';
 import EventEmitter from 'wolfy87-eventemitter';
+
+import { settings } from '../../../../settings';
 
 class AudioEncoder extends EventEmitter {
 	constructor(source, {

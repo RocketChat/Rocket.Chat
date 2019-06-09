@@ -89,7 +89,7 @@ button {
 
 	flex: 1 1 auto;
 
-	height: 1%;
+	height: 100%;
 
 	max-height: 100%;
 
@@ -104,6 +104,8 @@ button {
 
 .flex-tab-bar {
 	& .tab-button {
+		position: relative;
+
 		cursor: pointer;
 	}
 

@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Template } from 'meteor/templating';
+import { Accounts } from 'meteor/accounts-base';
+
 import { ChatOAuthApps } from '../admin/collection';
 
 FlowRouter.route('/oauth/authorize', {
@@ -34,7 +36,7 @@ Template.authorize.onCreated(function() {
 
 Template.authorize.helpers({
 	getToken() {
-		return localStorage.getItem('Meteor.loginToken');
+		return localStorage.getItem(Accounts.LOGIN_TOKEN_KEY);
 	},
 	getClient() {
 		return ChatOAuthApps.findOne();

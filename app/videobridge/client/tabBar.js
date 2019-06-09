@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+
 import { settings } from '../../settings';
 import { TabBar } from '../../ui-utils';
 import { Rooms } from '../../models';
 
 Meteor.startup(function() {
-
 	Tracker.autorun(function() {
 		if (!settings.get('bigbluebutton_Enabled')) {
 			return TabBar.removeButton('bbb_video');

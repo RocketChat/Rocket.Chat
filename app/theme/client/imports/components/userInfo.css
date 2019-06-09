@@ -19,6 +19,8 @@
 
 		background-color: var(--color-white);
 
+		will-change: transform;
+
 		&.animated {
 			transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s, -webkit-transform 0.45s cubic-bezier(0.5, 0, 0, 1);
 		}
@@ -85,6 +87,8 @@
 	}
 
 	&__username {
+		padding: 0.1rem 0;
+
 		color: var(--color-gray);
 
 		font-size: 14px;

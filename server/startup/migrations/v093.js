@@ -4,7 +4,6 @@ import { Settings, Permissions } from '../../../app/models';
 Migrations.add({
 	version: 93,
 	up() {
-
 		if (Settings) {
 			const setting = Settings.findOne({ _id: 'Accounts_AllowAnonymousAccess' });
 			if (setting && setting.value === true) {

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../settings';
 import { getUserPreference, handleError, t } from '../../../utils';
 import { popover } from '../../../ui-utils';
@@ -44,12 +45,12 @@ Template.pushNotificationsFlexTab.helpers({
 		return Template.instance().form.audioNotifications.get();
 	},
 	audioNotificationValue() {
-		const value = Template.instance().form.audioNotificationValue.get();
-		if (value === '0') {
+		const value = Template.instance().form.audioNotificationValue.get().split(' ');
+		if (value[0] === '0') {
 			return t('Use_account_preference');
 		}
 
-		return value;
+		return value[1];
 	},
 	desktopNotifications() {
 		return Template.instance().form.desktopNotifications.get();
@@ -159,8 +160,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
 
-	this.saveSetting = async() => {
-		Object.keys(this.original).forEach(async(field) => {
+	this.saveSetting = async () => {
+		Object.keys(this.original).forEach(async (field) => {
 			if (this.original[field].get() === this.form[field].get()) {
 				return;
 			}
@@ -181,7 +182,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 					await call('saveNotificationSettings', rid, field, value);
 			}
 			this.original[field].set(this.form[field].get());
-
 		});
 	};
 });
@@ -200,14 +200,14 @@ Template.pushNotificationsFlexTab.events({
 		e.preventDefault();
 		const user = Meteor.userId();
 
-		let value = Template.instance().form.audioNotificationValue.get();
-		if (value === '0') {
-			value = getUserPreference(user, 'newMessageNotification');
+		const value = Template.instance().form.audioNotificationValue.get().split(' ');
+		if (value[0] === '0') {
+			value[0] = getUserPreference(user, 'newMessageNotification');
 		}
 
-		if (value && value !== 'none') {
+		if (value && value[0] !== 'none') {
 			const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
-			const $audio = $(`audio#${ value }`);
+			const $audio = $(`audio#${ value[0] }`);
 
 			if ($audio && $audio[0] && $audio[0].play) {
 				$audio[0].volume = Number((audioVolume / 100).toPrecision(2));
@@ -236,20 +236,20 @@ Template.pushNotificationsFlexTab.events({
 					id: `audioNotificationValue${ audio.name }`,
 					name: 'audioNotificationValue',
 					label: audio.name,
-					value: audio._id,
+					value: `${ audio._id } ${ audio.name }`,
 				}));
 				options = [
 					{
 						id: 'audioNotificationValueNone',
 						name: 'audioNotificationValue',
 						label: 'None',
-						value: 'none',
+						value: 'none None',
 					},
 					{
 						id: 'audioNotificationValueDefault',
 						name: 'audioNotificationValue',
 						label: 'Default',
-						value: 0,
+						value: '0 Default',
 					},
 					...audioAssetsArray,
 				];
@@ -323,7 +323,7 @@ Template.pushNotificationsFlexTab.events({
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
-				change : (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
+				change: (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
 				value: instance.form[key].get(),
 				options,
 			},
@@ -340,7 +340,7 @@ Template.pushNotificationsPopover.onCreated(function() {
 });
 
 Template.pushNotificationsPopover.onRendered(function() {
-	this.find(`[value=${ this.data.value }]`).checked = true;
+	this.find(`[value='${ this.data.value }']`).checked = true;
 });
 
 Template.pushNotificationsPopover.helpers({

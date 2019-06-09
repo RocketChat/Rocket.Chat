@@ -1,13 +1,17 @@
-const async = require('async');
+/* eslint import/no-unresolved: 0 */
+
 const fs = require('fs');
+
+const async = require('async');
 const _ = require('underscore');
+const translate = require('google-translate');
 
 if (!process.argv[2]) {
 	console.error('\You must inform your Google API key: node auto-translate.js [google-api-key]\n');
 	process.exit();
 }
 
-const googleTranslate = require('google-translate')(process.argv[2]);
+const googleTranslate = translate(process.argv[2]);
 
 googleTranslate.getSupportedLanguages(function(err, langs) {
 	if (err) {
@@ -23,9 +27,8 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		_.keys(enUnsorted).sort(function(a, b) {
 			if (a.toLowerCase() !== b.toLowerCase()) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
-			} else {
-				return a.localeCompare(b);
 			}
+			return a.localeCompare(b);
 		}).forEach(function(key) {
 			en[key] = enUnsorted[key];
 		});

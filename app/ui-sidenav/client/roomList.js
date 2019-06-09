@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '../../callbacks';
 import { Template } from 'meteor/templating';
+
+import { callbacks } from '../../callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
@@ -25,6 +26,7 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarShowUnread': 1,
 				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
+				messageViewMode: 1,
 			},
 		});
 
@@ -43,7 +45,10 @@ Template.roomList.helpers({
 
 		if (this.identifier === 'unread') {
 			query.alert = true;
-			query.hideUnreadStatus = { $ne: true };
+			query.$or = [
+				{ hideUnreadStatus: { $ne: true } },
+				{ unread: { $gt: 0 } },
+			];
 
 			return ChatSubscription.find(query, { sort });
 		}
@@ -64,7 +69,7 @@ Template.roomList.helpers({
 				query.prid = { $exists: true };
 			}
 
-			if (this.identifier === 'unread' || this.identifier === 'tokens') {
+			if (this.identifier === 'tokens') {
 				types = ['c', 'p'];
 			}
 
@@ -82,7 +87,12 @@ Template.roomList.helpers({
 			if (getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{ alert: { $ne: true } },
-					{ hideUnreadStatus: true },
+					{
+						$and: [
+							{ hideUnreadStatus: true },
+							{ unread: 0 },
+						],
+					},
 				];
 			}
 			query.t = { $in: types };

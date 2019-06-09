@@ -12,7 +12,7 @@ Migrations.add({
 				emailNotifications: 'mentions',
 			},
 		}, {
-			multi:true,
+			multi: true,
 		});
 
 		Users.update({
@@ -22,7 +22,7 @@ Migrations.add({
 				'settings.preferences.emailNotificationMode': 'nothing',
 			},
 		}, {
-			multi:true,
+			multi: true,
 		});
 
 		Users.update({
@@ -32,7 +32,7 @@ Migrations.add({
 				'settings.preferences.emailNotificationMode': 'mentions',
 			},
 		}, {
-			multi:true,
+			multi: true,
 		});
 
 		Settings.update({

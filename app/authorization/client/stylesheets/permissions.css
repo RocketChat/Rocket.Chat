@@ -1,70 +1,117 @@
 .permissions-manager {
-	& h2 {
-		margin-top: 1em !important;
-		margin-bottom: 1em !important;
-
-		border-bottom-width: 1px;
-
-		font-size: 16px;
-		font-weight: bold !important;
+	&.page-container {
+		padding-bottom: 0 !important;
 	}
 
-	& .permission-grid {
-		& table {
-			display: block;
-			overflow-x: auto;
+	.permission-edit {
+		display: flex;
+		flex-direction: column;
 
+		height: 100%;
+
+		padding: 10px;
+		align-items: center;
+	}
+
+	.permission-label,
+	.permission-icon {
+		display: flex;
+
+		align-items: flex-end;
+		flex-grow: 1;
+	}
+
+	.permission-icon {
+		width: 30px;
+
+		margin-bottom: 0;
+		flex-grow: 0;
+	}
+
+	.content {
+		padding: 0 !important;
+	}
+
+	.permission-grid {
+		overflow-x: scroll;
+
+		table-layout: fixed;
+
+		border-collapse: collapse;
+
+		.id-styler {
 			white-space: nowrap;
+
+			color: #7f7f7f;
+
+			font-size: smaller;
 		}
 
-		& th {
-			position: relative;
-
-			padding: 20px;
-
-			text-align: center;
-			white-space: nowrap;
+		.edit-icon.role-name-edit-icon {
+			height: 30px;
 		}
 
-		& td {
-			width: 10%;
+		.role-name {
+			position: sticky;
 
-			text-align: center;
-		}
-
-		& .icon-edit {
-			position: absolute;
 			top: 0;
-			left: 50%;
 
-			padding-left: 2px;
+			width: 70px;
 
-			transform: translateX(-50%);
+			text-align: left;
 
-			font-size: 80%;
+			vertical-align: middle;
+
+			background: white;
 		}
 
-		& .permission-name {
-			cursor: default;
+		.role-name-edit-icon {
+			width: 70px;
+			height: 70px;
+
+			text-align: center;
+
+			vertical-align: middle;
+		}
+
+		.rotator {
+			overflow: hidden;
+
+			width: 30px;
+			height: 130px;
+
+			padding: 10px 0;
+
+			transform: rotate(-180deg);
+
 			white-space: nowrap;
-		}
-	}
 
-	& .empty-role {
-		padding: 0.5em !important;
-	}
-
-	& .form-role {
-		& label {
-			display: inline-block;
-
-			width: 150px;
-
-			text-align: right;
+			text-overflow: ellipsis;
+			writing-mode: vertical-rl;
 		}
 
-		& .form-buttons {
-			padding-left: 150px;
+		.admin-table-row {
+			height: 50px;
+		}
+
+		td {
+			overflow: hidden;
+		}
+
+		.permission-name {
+			width: 25%;
+			padding-left: 14px;
+
+			vertical-align: middle;
+		}
+
+		.permission-checkbox {
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		.icon-edit {
+			font-size: 1.5em;
 		}
 	}
 }

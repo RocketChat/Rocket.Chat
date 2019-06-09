@@ -1,10 +1,13 @@
 import dns from 'dns';
+
 import { Meteor } from 'meteor/meteor';
-import { FederationDNSCache } from '../../models';
+
 
 import { logger } from './logger';
 import { updateStatus } from './settingsUpdater';
-import { Federation } from './';
+import { FederationDNSCache } from '../../models';
+
+import { Federation } from '.';
 
 const dnsResolveSRV = Meteor.wrapAsync(dns.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dns.resolveTxt);
@@ -72,9 +75,13 @@ export class PeerDNS {
 
 		// Try to lookup at the DNS Cache
 		if (!peer) {
-			this.updatePeerDNS(domain);
+			try {
+				this.updatePeerDNS(domain);
 
-			peer = FederationDNSCache.findOneByDomain(domain);
+				peer = FederationDNSCache.findOneByDomain(domain);
+			} catch (err) {
+				this.log(`Could not find peer for domain ${ domain }`);
+			}
 		}
 
 		return peer;
@@ -88,20 +95,23 @@ export class PeerDNS {
 
 		const [srvEntry] = srvEntries;
 
-		// Get the public key from the TXT record
-		const txtRecords = dnsResolveTXT(`rocketchat-public-key.${ domain }`);
+		// Get the protocol from the TXT record, if exists
+		let protocol = 'https';
 
-		// Get the first TXT record, this subdomain should have only a single record
-		const txtRecord = txtRecords[0];
+		try {
+			const protocolTxtRecords = dnsResolveTXT(`rocketchat-protocol.${ domain }`);
 
-		// If there is no record, skip
-		if (!txtRecord) {
-			throw new Meteor.Error('ENOTFOUND', 'Could not find public key entry on TXT records');
+			protocol = protocolTxtRecords[0][0].toLowerCase() === 'http' ? 'http' : 'https';
+		} catch (err) {
+			// Ignore the error if the rocketchat-protocol TXT entry does not exist
 		}
 
-		const publicKey = txtRecord.join('');
 
-		const protocol = srvEntry.name === 'localhost' ? 'http' : 'https';
+		// Get the public key from the TXT record
+		const publicKeyTxtRecords = dnsResolveTXT(`rocketchat-public-key.${ domain }`);
+
+		// Get the first TXT record, this subdomain should have only a single record
+		const publicKey = publicKeyTxtRecords[0].join('');
 
 		return {
 			domain,
@@ -127,7 +137,7 @@ export class PeerDNS {
 	updatePeerDNS(domain) {
 		this.log(`updatePeerDNS: ${ domain }`);
 
-		let peer;
+		let peer = null;
 
 		try {
 			peer = this.getPeerUsingDNS(domain);
@@ -138,7 +148,11 @@ export class PeerDNS {
 				throw new Error(`Error trying to fetch SRV DNS entries for ${ domain }`);
 			}
 
-			peer = this.getPeerUsingHub(domain);
+			try {
+				peer = this.getPeerUsingHub(domain);
+			} catch (err) {
+				throw new Error(`Could not find a peer with domain ${ domain } using the hub`);
+			}
 		}
 
 		this.updateDNSCache.call(this, peer);

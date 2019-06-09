@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '../../settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+
+import { settings } from '../../settings';
 import { CustomOAuth } from '../../custom-oauth';
 import { callbacks } from '../../callbacks';
 import { Settings } from '../../models';
@@ -16,6 +17,7 @@ const config = {
 		forLoggedInUser: ['services.dolphin'],
 		forOtherUsers: ['services.dolphin.name'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const Dolphin = new CustomOAuth('dolphin', config);

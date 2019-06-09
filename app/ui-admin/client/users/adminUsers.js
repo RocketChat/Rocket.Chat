@@ -1,11 +1,12 @@
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { SideNav, TabBar, RocketChatTabBar } from '../../../ui-utils';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { SideNav, TabBar, RocketChatTabBar } from '../../../ui-utils';
+import FullUser from '../../../models/client/models/FullUser';
 
 Template.adminUsers.helpers({
 	searchText() {
@@ -45,8 +46,8 @@ Template.adminUsers.helpers({
 		const instance = Template.instance();
 		return function(currentTarget) {
 			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
 			) {
 				return instance.limit.set(instance.limit.get() + 50);
 			}
@@ -70,7 +71,7 @@ Template.adminUsers.onCreated(function() {
 	this.ready = new ReactiveVar(true);
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
-	this.tabBarData = new ReactiveVar;
+	this.tabBarData = new ReactiveVar();
 	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'invite-user',
@@ -120,7 +121,7 @@ Template.adminUsers.onCreated(function() {
 		};
 
 		const limit = instance.limit && instance.limit.get();
-		return Meteor.users.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
+		return FullUser.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
 	};
 });
 
@@ -147,7 +148,7 @@ Template.adminUsers.events({
 	}, DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS),
 	'click .user-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(Meteor.users.findOne(this._id));
+		instance.tabBarData.set(FullUser.findOne(this._id));
 		instance.tabBar.open('admin-user-info');
 	},
 	'click .info-tabs button'(e) {

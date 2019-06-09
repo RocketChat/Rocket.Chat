@@ -1,7 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users } from '../../models';
+
 import { settings } from '../../settings';
+
+let Users;
+if (Meteor.isServer) {
+	Users = require('../../models/server/models/Users').default;
+}
 
 export const RoomSettingsEnum = {
 	NAME: 'roomName',
@@ -170,18 +175,18 @@ export class RoomTypeConfig {
 		if (!hasPermission && typeof hasPermission !== 'function') {
 			throw new Error('You MUST provide the "hasPermission" to canBeCreated function');
 		}
-		return Meteor.isServer ?
-			hasPermission(Meteor.userId(), `create-${ this._identifier }`) :
-			hasPermission([`create-${ this._identifier }`]);
+		return Meteor.isServer
+			? hasPermission(Meteor.userId(), `create-${ this._identifier }`)
+			: hasPermission([`create-${ this._identifier }`]);
 	}
 
 	canBeDeleted(hasPermission, room) {
 		if (!hasPermission && typeof hasPermission !== 'function') {
 			throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 		}
-		return Meteor.isServer ?
-			hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id) :
-			hasPermission(`delete-${ room.t }`, room._id);
+		return Meteor.isServer
+			? hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id)
+			: hasPermission(`delete-${ room.t }`, room._id);
 	}
 
 	supportMembersList(/* room */) {
@@ -232,7 +237,10 @@ export class RoomTypeConfig {
 	 * @return {object} Sender's object from db
 	 */
 	getMsgSender(senderId) {
-		return Meteor.isServer ? Users.findOneById(senderId) : {};
+		if (Meteor.isServer && Users) {
+			return Users.findOneById(senderId);
+		}
+		return {};
 	}
 
 	/**
@@ -268,4 +276,7 @@ export class RoomTypeConfig {
 		return {};
 	}
 
+	getAvatarPath(/* roomData */) {
+		return '';
+	}
 }
