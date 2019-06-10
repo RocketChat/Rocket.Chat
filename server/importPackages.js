@@ -14,6 +14,7 @@ import '../app/channel-settings';
 import '../app/channel-settings-mail-messages/server';
 import '../app/cloud/server';
 import '../app/colors/server';
+import '../app/contacts/server';
 import '../app/crowd/server';
 import '../app/custom-oauth';
 import '../app/custom-sounds/server';

@@ -7,7 +7,7 @@ import Busboy from 'busboy';
 import { Users, Subscriptions } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { getURL } from '../../../utils';
+import { getURL, getUserPreference } from '../../../utils';
 import {
 	validateCustomFields,
 	saveUser,
@@ -567,5 +567,30 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 		}));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.setDiscoverability', { authRequired: true }, {
+	post() {
+		const params = this.bodyParams;
+		if (!params.discoverability) {
+			return API.v1.failure('The \'discoverability\' param is required');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserPreferences', { discoverability: params.discoverability }, function(error, results) {
+			if (results) {
+				return API.v1.success();
+			}
+			if (error) {
+				return API.v1.failure('Saving preference failed');
+			}
+		}));
+	},
+});
+
+API.v1.addRoute('users.getDiscoverability', { authRequired: true }, {
+	get() {
+		const discoverability = getUserPreference(this.userId, 'discoverability');
+		return API.v1.success({ discoverability });
 	},
 });

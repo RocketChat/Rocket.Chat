@@ -164,6 +164,7 @@
 		"fibers": "^3.1.1",
 		"file-type": "^10.6.0",
 		"filesize": "^3.6.1",
+		"google-libphonenumber": "3.2.1",
 		"googleapis": "^25.0.0",
 		"grant-express": "^3.8.0",
 		"grapheme-splitter": "^1.0.4",

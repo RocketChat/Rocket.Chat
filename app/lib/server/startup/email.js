@@ -400,7 +400,7 @@ settings.addGroup('Email', function() {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Invitation_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>', {
+		this.add('Invitation_Email', '{Invitation_Email_Default}', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,

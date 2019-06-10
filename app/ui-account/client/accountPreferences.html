@@ -27,6 +27,15 @@
 				<div class="section">
 					<h1>{{_ "Global"}}</h1>
 					<div class="section-content border-component-color">
+						<div class="input-line double-col" id="discoverability">
+                                                        <label class="setting-label">{{_ "Discoverability"}}</label>
+                                                        <div class="setting-field">
+                                                                <label><input type="radio" name="discoverability" value="all" checked="{{ checked 'discoverability' 'all' }}"/> {{_ "Everyone"}}</label>
+                                                                <label><input type="radio" name="discoverability" value="contacts" checked="{{ checked 'discoverability' 'contacts' }}"/> {{_ "My Contacts"}}</label>
+                                                                <label><input type="radio" name="discoverability" value="none" checked="{{ checked 'discoverability' 'none' }}"/> {{_ "Nobody"}}</label>
+                                                        </div>
+                                                </div>
+
 						<div class="input-line double-col">
 							<label for="dont-ask" class="setting-label">{{_ "Dont_ask_me_again_list"}}</label>
 							<div class="rc-select setting-field">

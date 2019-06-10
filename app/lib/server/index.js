@@ -56,6 +56,7 @@ import './methods/robotMethods';
 import './methods/saveSetting';
 import './methods/saveSettings';
 import './methods/sendInvitationEmail';
+import './methods/sendInvitationSMS';
 import './methods/sendMessage';
 import './methods/sendSMTPTestEmail';
 import './methods/setAdminStatus';
