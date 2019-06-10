@@ -2,8 +2,8 @@ import _ from 'underscore';
 
 import { settings } from '../../settings';
 
-export const fileUploadMediaWhiteList = function() {
-	const mediaTypeWhiteList = settings.get('FileUpload_MediaTypeWhiteList');
+export const fileUploadMediaWhiteList = function(customWhiteList) {
+	const mediaTypeWhiteList = customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
@@ -13,8 +13,8 @@ export const fileUploadMediaWhiteList = function() {
 	});
 };
 
-export const fileUploadIsValidContentType = function(type) {
-	const list = fileUploadMediaWhiteList();
+export const fileUploadIsValidContentType = function(type, customWhiteList) {
+	const list = fileUploadMediaWhiteList(customWhiteList);
 	if (!list) {
 		return true;
 	}
