@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../functions/hasPermission';
+import { hasPermission } from '..';
+
 import { getUsersInRole } from '../functions/getUsersInRole';
 
 Meteor.publish('usersInRole', function(roleName, scope, limit = 50) {

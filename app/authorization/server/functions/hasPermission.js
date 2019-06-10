@@ -1,18 +1,35 @@
-import Roles from '../../../models/server/models/Roles';
-import Permissions from '../../../models/server/models/Permissions';
+import { Permissions, Roles } from '../../../models/server/raw';
 
-function atLeastOne(userId, permissions = [], scope) {
-	return permissions.some((permissionId) => {
-		const permission = Permissions.findOne(permissionId);
-		return Roles.isUserInRoles(userId, permission.roles, scope);
-	});
+async function atLeastOne(userId, permissions = [], scope) {
+	for (let i = 0, total = permissions.length; i < total; i++) {
+		const permissionId = permissions[i];
+
+		// eslint-disable-next-line no-await-in-loop
+		const permission = await Permissions.findOne({ _id: permissionId });
+		// eslint-disable-next-line no-await-in-loop
+		const found = await Roles.isUserInRoles(userId, permission.roles, scope);
+		if (found) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
-function all(userId, permissions = [], scope) {
-	return permissions.every((permissionId) => {
-		const permission = Permissions.findOne(permissionId);
-		return Roles.isUserInRoles(userId, permission.roles, scope);
-	});
+async function all(userId, permissions = [], scope) {
+	for (let i = 0, total = permissions.length; i < total; i++) {
+		const permissionId = permissions[i];
+
+		// eslint-disable-next-line no-await-in-loop
+		const permission = await Permissions.findOne({ _id: permissionId });
+		// eslint-disable-next-line no-await-in-loop
+		const found = await Roles.isUserInRoles(userId, permission.roles, scope);
+		if (!found) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 function _hasPermission(userId, permissions, scope, strategy) {
@@ -22,14 +39,8 @@ function _hasPermission(userId, permissions, scope, strategy) {
 	return strategy(userId, [].concat(permissions), scope);
 }
 
-export const hasAllPermission = (userId, permissions, scope) => _hasPermission(userId, permissions, scope, all);
+export const hasAllPermission = async (userId, permissions, scope) => _hasPermission(userId, permissions, scope, all);
 
-export const hasPermission = (userId, permissionId, scope) => {
-	if (!userId) {
-		return false;
-	}
-	const permission = Permissions.findOne(permissionId);
-	return Roles.isUserInRoles(userId, permission.roles, scope);
-};
+export const hasPermission = async (userId, permissionId, scope) => _hasPermission(userId, permissionId, scope, all);
 
-export const hasAtLeastOnePermission = (userId, permissions, scope) => _hasPermission(userId, permissions, scope, atLeastOne);
+export const hasAtLeastOnePermission = async (userId, permissions, scope) => _hasPermission(userId, permissions, scope, atLeastOne);

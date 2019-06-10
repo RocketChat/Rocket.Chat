@@ -11,7 +11,7 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import filesize from 'filesize';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
 import Avatars from '../../../models/server/models/Avatars';
@@ -20,8 +20,7 @@ import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { roomTypes } from '../../../utils/server/lib/roomTypes';
-import { hasPermission } from '../../../authorization/server/functions/hasPermission';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 
 const cookie = new Cookies();
