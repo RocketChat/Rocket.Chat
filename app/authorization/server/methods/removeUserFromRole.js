@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Roles } from '../../../models';
-import { settings } from '../../../settings';
-import { Notifications } from '../../../notifications';
+import { Roles } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Notifications } from '../../../notifications/server';
 
 import { hasPermission } from '..';
 

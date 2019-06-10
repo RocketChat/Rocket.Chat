@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import * as Models from '../../../models';
+import * as Models from '../../../models/server';
 
 import { hasPermission } from '..';
 
