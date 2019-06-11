@@ -4,8 +4,7 @@ import _ from 'underscore';
 import { Users, Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Notifications } from '../../../notifications/server';
-
-import { hasPermission } from '..';
+import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	'authorization:addUserToRole'(roleName, username, scope) {

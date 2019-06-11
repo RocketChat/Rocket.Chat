@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import * as Models from '../../../models/server';
-
-import { hasPermission } from '..';
+import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	'authorization:deleteRole'(roleName) {

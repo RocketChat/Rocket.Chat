@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Permissions } from '../../../models/server';
-
-import { hasPermission } from '..';
+import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	'authorization:addPermissionToRole'(permission, role) {

@@ -20,7 +20,8 @@ import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { roomTypes } from '../../../utils/server/lib/roomTypes';
-import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 
 const cookie = new Cookies();

@@ -5,7 +5,7 @@ import s from 'underscore.string';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../settings/server/functions/settings';
 
 export class Users extends Base {
 	constructor(...args) {
