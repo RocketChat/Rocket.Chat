@@ -25,7 +25,7 @@ export const roomAccessValidators = [
 	},
 ];
 
-export const canAccessRoom = async (room, user, extraData) => {
+export const canAccessRoomAsync = async (room, user, extraData) => {
 	for (let i = 0, total = roomAccessValidators.length; i < total; i++) {
 		// eslint-disable-next-line no-await-in-loop
 		const permitted = await roomAccessValidators[i](room, user, extraData);
@@ -34,5 +34,7 @@ export const canAccessRoom = async (room, user, extraData) => {
 		}
 	}
 };
+
+export const canAccessRoom = (room, user, extraData) => Promise.await(canAccessRoomAsync(room, user, extraData));
 
 export const addRoomAccessValidator = (validator) => roomAccessValidators.push(validator.bind(this));

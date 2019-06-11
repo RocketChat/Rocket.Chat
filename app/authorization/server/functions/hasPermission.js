@@ -39,8 +39,10 @@ function _hasPermission(userId, permissions, scope, strategy) {
 	return strategy(userId, [].concat(permissions), scope);
 }
 
-export const hasAllPermission = async (userId, permissions, scope) => _hasPermission(userId, permissions, scope, all);
+export const hasAllPermissionAsync = async (userId, permissions, scope) => _hasPermission(userId, permissions, scope, all);
+export const hasPermissionAsync = async (userId, permissionId, scope) => _hasPermission(userId, permissionId, scope, all);
+export const hasAtLeastOnePermissionAsync = async (userId, permissions, scope) => _hasPermission(userId, permissions, scope, atLeastOne);
 
-export const hasPermission = async (userId, permissionId, scope) => _hasPermission(userId, permissionId, scope, all);
-
-export const hasAtLeastOnePermission = async (userId, permissions, scope) => _hasPermission(userId, permissions, scope, atLeastOne);
+export const hasAllPermission = (userId, permissions, scope) => Promise.await(hasAllPermissionAsync(userId, permissions, scope));
+export const hasPermission = (userId, permissionId, scope) => Promise.await(hasPermissionAsync(userId, permissionId, scope));
+export const hasAtLeastOnePermission = (userId, permissions, scope) => Promise.await(hasAtLeastOnePermissionAsync(userId, permissions, scope));
