@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
-import { Users } from '../../../../models';
+import { Users, LivechatDepartment } from '../../../../models';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 
 API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
@@ -13,7 +13,15 @@ API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
 		}
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
-		const cursor = LivechatInquiry.find({ status: 'open' }, {
+		const { department } = this.requestParams();
+		const ourQuery = Object.assign({}, { status: 'open' });
+		if (department) {
+			const departmentFromDB = LivechatDepartment.findOneByIdOrName(department);
+			if (departmentFromDB) {
+				ourQuery.department = departmentFromDB._id;
+			}
+		}
+		const cursor = LivechatInquiry.find(ourQuery, {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
@@ -22,6 +30,7 @@ API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
 				name: 1,
 				ts: 1,
 				status: 1,
+				department: 1,
 			},
 		});
 		const totalCount = cursor.count();
