@@ -136,4 +136,5 @@ language_names = {
 	'vi-VN': ['Vietnamese', 'Tiếng Việt'],
 	wa: ['Walloon', 'Walon'],
 	cy: ['Welsh', 'Cymraeg'],
+	'bas-CM': ['Basa (Cameroon)', 'Bassa (Cameroon)'],
 };

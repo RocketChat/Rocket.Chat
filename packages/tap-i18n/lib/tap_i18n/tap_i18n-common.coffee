@@ -113,7 +113,7 @@ _.extend TAPi18n.prototype,
       languages[lang_tag] =
         name: @.languages_names[lang_tag][1]
         en: @.languages_names[lang_tag][0]
-
+        
     languages
 
   _loadLangFileObject: (language_tag, data) ->

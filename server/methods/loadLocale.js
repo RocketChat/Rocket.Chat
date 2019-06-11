@@ -1,17 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
+const loadMomentLocale = (locale) => Assets.getText(`moment-locales/${ locale.toLowerCase() }.js`);
+
 Meteor.methods({
 	loadLocale(locale) {
 		check(locale, String);
-
 		try {
-			return Assets.getText(`moment-locales/${ locale.toLowerCase() }.js`);
+			return loadMomentLocale(locale);
 		} catch (error) {
 			try {
-				return Assets.getText(`moment-locales/${ locale.split('-').shift().toLowerCase() }.js`);
+				return loadMomentLocale(locale.split('-').shift());
 			} catch (error) {
-				return console.log(error);
+				try {
+					return loadMomentLocale('en-gb');
+				} catch (error) {
+					return console.log(error);
+				}
 			}
 		}
 	},
