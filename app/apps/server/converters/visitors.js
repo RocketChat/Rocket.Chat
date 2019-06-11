@@ -1,4 +1,4 @@
-import { LivechatVisitors } from '../../../models/server/models/LivechatVisitors';
+import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 export class AppVisitorsConverter {
@@ -7,13 +7,13 @@ export class AppVisitorsConverter {
 	}
 
 	convertById(id) {
-		const visitor = LivechatVisitors.findById(id);
+		const visitor = LivechatVisitors.findOneById(id);
 
 		return this.convertVisitor(visitor);
 	}
 
 	convertByToken(token) {
-		const visitor = LivechatVisitors.findByToken(token);
+		const visitor = LivechatVisitors.getVisitorByToken(token);
 
 		return this.convertVisitor(visitor);
 	}

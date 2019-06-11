@@ -30,6 +30,7 @@ export class AppMessagesConverter {
 			emoji: 'emoji',
 			avatarUrl: 'avatar',
 			alias: 'alias',
+			file: 'file',
 			customFields: 'customFields',
 			groupable: 'groupable',
 			token: 'token',
