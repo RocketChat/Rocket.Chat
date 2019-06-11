@@ -94,5 +94,18 @@ export class LivechatDepartment extends Base {
 
 		return this.findOne(query, options);
 	}
+
+	findOneEnabledWithAgentsByIdOrName(_idOrName, options) {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+			$or: [{
+				_id: _idOrName,
+			}, {
+				name: _idOrName,
+			}],
+		};
+		return this.findOne(query, options);
+	}
 }
 export default new LivechatDepartment();

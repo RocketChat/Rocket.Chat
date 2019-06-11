@@ -60,8 +60,8 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	const { rid, u: { _id: userId } = {} } = message;
-	const { from, conversationId } = room.whatsAppGateway;
-	const extraData = { rid, userId, conversationId, attachment };
+	const { from } = room.whatsAppGateway;
+	const extraData = { rid, userId, attachment };
 	WhatsAppService.send(from, visitor.phone[0].phoneNumber, message.msg, extraData);
 
 	return message;

@@ -8,20 +8,26 @@ import { Livechat } from '../../../livechat/server/lib/Livechat';
 
 const offlineServiceError = 'no-agent-online';
 
+const findDepartment = (idOrName) => LivechatDepartment.findOneEnabledWithAgentsByIdOrName(idOrName);
+
 API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 	post() {
 		const WhatsAppService = WhatsAppGateway.getService(this.urlParams.service);
-		const { id_sessao: sessionId, id_cliente, id_caixa: from, texto: msg, midia, token: conversationId } = this.bodyParams;
+		const {
+			id_sessao: sessionId,
+			id_cliente,
+			id_caixa: from,
+			texto: msg,
+			midia,
+			id_departamento: departmentId,
+		} = this.bodyParams;
 
 		let guest = LivechatVisitors.findOneVisitorByPhone(id_cliente);
 
 		const config = WhatsAppService.getConfig() || {};
 		const { defaultDepartmentName, offlineServiceMessage, welcomeMessage, queueMessage } = config;
-		let department;
-		if (defaultDepartmentName) {
-			const dep = LivechatDepartment.findOneByIdOrName(defaultDepartmentName);
-			department = dep && dep._id;
-		}
+		const dep = findDepartment(departmentId) || findDepartment(defaultDepartmentName);
+		const department = dep && dep._id;
 
 		let token;
 		let room;
@@ -32,6 +38,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			token = guest.token;
 			// Update Guest department..
 			Livechat.registerGuest({ token, department });
+			guest = LivechatVisitors.getVisitorByToken(token);
 		} else {
 			token = Random.id();
 			const visitorId = Livechat.registerGuest({
@@ -76,7 +83,6 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			roomInfo: {
 				whatsAppGateway: {
 					sessionId,
-					conversationId,
 					from,
 				},
 			},

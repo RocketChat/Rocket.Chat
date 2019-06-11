@@ -47,7 +47,7 @@ class Caixa {
 			fileUploadMediaTypeWhiteList,
 		} = this.config;
 
-		const { rid, userId, conversationId: token, attachment } = extraData;
+		const { rid, userId, attachment } = extraData;
 
 		if (!baseUrl) {
 			throw new Meteor.Error('(WhatsAppGateway)Base API URL is not defined.');
@@ -96,7 +96,7 @@ class Caixa {
 				id_caixa: fromNumber,
 				texto: message,
 				...midia && { midia },
-				...token && { token },
+				// ...token && { token },
 			},
 			npmRequestOptions: {
 				rejectUnauthorized: !allowInvalidSelfSignedCerts,
