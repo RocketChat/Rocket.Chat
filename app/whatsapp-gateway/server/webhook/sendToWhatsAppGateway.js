@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../file-upload';
-import { Uploads } from '../../../models';
+import { Uploads, LivechatVisitors } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import WhatsAppGateway from '../WhatsAppGateway';
-import { LivechatVisitors } from '../../../models';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	if (!WhatsAppGateway.enabled) {
@@ -50,7 +49,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 				type,
 				size,
 				dataURI,
-			}
+			};
 		}
 	}
 	const visitor = LivechatVisitors.getVisitorByToken(room.v.token);
