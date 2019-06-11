@@ -73,6 +73,13 @@ const renderBody = (msg, settings) => {
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
 
+	const result = msg.msg.match(/(^\$kojistart\$)(.+)(\$kojiend\$)$/);
+	if (result) {
+		return `
+		<iframe src=\"${ result[2] }\" frameborder=\"0\" height=\"533.333\"></iframe>
+		`.trim();
+	}
+
 	if (messageType.render) {
 		msg = messageType.render(msg);
 	} else if (messageType.template) {
@@ -90,6 +97,7 @@ const renderBody = (msg, settings) => {
 	if (isSystemMessage) {
 		msg.html = Markdown.parse(msg.html);
 	}
+
 	return msg;
 };
 
