@@ -44,7 +44,7 @@ class Caixa {
 			notificationMessageNotDelivered,
 			fileUploadEnabled,
 			fileUploadMaxFileSize,
-			fileUploadMediaTypeWhiteList
+			fileUploadMediaTypeWhiteList,
 		} = this.config;
 
 		const { rid, userId, conversationId: token, attachment } = extraData;
@@ -60,24 +60,31 @@ class Caixa {
 		let midia;
 		if (attachment) {
 			const user = userId ? Meteor.users.findOne(userId) : null;
-			const language = user ? user.language : 'en';
+			const lng = (user && user.language) || settings.get('Language') || 'en';
 			const { type: mime_type, size, dataURI: base64 } = attachment;
+
+			if (!base64) {
+				return console.error('(WhatsAppGateway) -> The base64 content is not defined.');
+			}
 
 			let reason;
 			if (!fileUploadEnabled) {
-				reason = TAPi18n.__('FileUpload_Disabled', language);
+				reason = TAPi18n.__('FileUpload_Disabled', { lng });
 			} else if (fileUploadMaxFileSize > -1 && size > fileUploadMaxFileSize) {
 				reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
 					size: filesize(fileUploadMaxFileSize),
-				}, language);
-			} else if (!fileUploadIsValidContentType(mime_type)) {
-				reason = TAPi18n.__('File_type_is_not_accepted', language);
+					lng,
+				});
+			} else if (!fileUploadIsValidContentType(mime_type, fileUploadMediaTypeWhiteList)) {
+				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
 			}
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
 				return console.error(`(WhatsAppGateway) -> ${ reason }`);
 			}
+
+			midia = { mime_type, base64 };
 		}
 
 		const options = {
@@ -88,24 +95,19 @@ class Caixa {
 				id_cliente: toNumber,
 				id_caixa: fromNumber,
 				texto: message,
-				midia,
-				...(token && { token }),
+				...midia && { midia },
+				...token && { token },
 			},
 			npmRequestOptions: {
 				rejectUnauthorized: !allowInvalidSelfSignedCerts,
 				strictSSL: !allowInvalidSelfSignedCerts,
 			},
 		};
-		console.log('payload');
-		console.log(options);
-		console.log('attachment');
-		console.log(attachment);
 
 		try {
 			return HTTP.call('POST', `${ baseUrl }mensagens/enviamensagem`, options);
 		} catch (e) {
 			const { response: { data } = {} } = e;
-
 			let errorMessage = notificationMessageNotDelivered || 'Error sending message to WhatsAppGateway';
 			if (data && data.status && data.status === 404 && data.mensagem) {
 				errorMessage = data.mensagem;
