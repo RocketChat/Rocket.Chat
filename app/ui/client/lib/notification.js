@@ -40,6 +40,7 @@ export const KonchatNotification = {
 					tag: notification.payload._id,
 					silent: true,
 					canReply: true,
+					requireInteraction: getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction'),
 				});
 
 				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
