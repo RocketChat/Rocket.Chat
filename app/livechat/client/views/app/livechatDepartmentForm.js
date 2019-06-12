@@ -33,6 +33,26 @@ Template.livechatDepartmentForm.helpers({
 		const department = Template.instance().department.get();
 		return department.showOnOfflineForm === value || (department.showOnOfflineForm === undefined && value === true);
 	},
+	agentAutocompleteSettings() {
+		return {
+			limit: 10,
+			rules: [{
+				collection: 'UserAndRoom',
+				subscription: 'userAutocomplete',
+				field: 'username',
+				template: Template.userSearch,
+				noMatchTemplate: Template.userSearchEmpty,
+				matchAll: true,
+				filter: {
+					exceptions: _.pluck(Template.instance().selectedAgents.get(), 'username')
+				},
+				selector(match) {
+					return { term: match };
+				},
+				sort: 'username',
+			}],
+		};
+	},
 });
 
 Template.livechatDepartmentForm.events({
@@ -92,6 +112,35 @@ Template.livechatDepartmentForm.events({
 		});
 	},
 
+	'click .add-agent'(e, instance) {
+		e.preventDefault();
+		const username = e.currentTarget.parentElement.children[0].value;
+
+		if (username.trim() === '') {
+			return toastr.error(t('Please_fill_a_username'));
+		}
+
+		const agent = AgentUsers.findOne({ username });
+		if (!agent) {
+			return toastr.error(t('The_selected_user_is_not_an_agent'));
+		}
+
+		const agentId = agent._id;
+		
+		const selectedAgents = instance.selectedAgents.get();
+		for (let oldAgent of selectedAgents) {
+			if (oldAgent.agentId == agentId) {
+				return toastr.error(t('This_agent_was_already_selected'));
+			}
+		}
+
+		const newAgent = _.clone(agent);
+		newAgent.agentId = agentId;
+		delete newAgent._id;
+		selectedAgents.push(newAgent);
+		instance.selectedAgents.set(selectedAgents);
+	},	
+
 	'click button.back'(e/* , instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-departments');
@@ -102,15 +151,6 @@ Template.livechatDepartmentForm.events({
 
 		let selectedAgents = instance.selectedAgents.get();
 		selectedAgents = _.reject(selectedAgents, (agent) => agent._id === this._id);
-		instance.selectedAgents.set(selectedAgents);
-	},
-
-	'click .available-agents li'(e, instance) {
-		const selectedAgents = instance.selectedAgents.get();
-		const agent = _.clone(this);
-		agent.agentId = this._id;
-		delete agent._id;
-		selectedAgents.push(agent);
 		instance.selectedAgents.set(selectedAgents);
 	},
 });

@@ -47,13 +47,11 @@
 						<h2>{{_ "Agents"}}</h2>
 
 						<fieldset>
-							<legend>{{_ "Available_agents"}}</legend>
-
-							<ul class="department-agents available-agents">
-								{{#each availableAgents}}
-									<li><i class="icon-plus-circled"></i>{{username}}</li>
-								{{/each}}
-							</ul>
+							<label>{{_ "Add_agent"}}</label>
+							<span>
+								{{> inputAutocomplete settings=agentAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
+								<button name="add" class="button secondary add-agent">{{_ "Add"}}</button>
+							</span>
 						</fieldset>
 
 						<fieldset>
