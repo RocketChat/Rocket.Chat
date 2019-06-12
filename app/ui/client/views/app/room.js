@@ -248,7 +248,7 @@ Template.room.helpers({
 	},
 
 	messagesHistory() {
-		let { rid } = Template.instance();
+		const { rid } = Template.instance();
 		const hideMessagesOfType = [];
 		settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
 			let types;
@@ -288,8 +288,18 @@ Template.room.helpers({
 				ts: 1,
 			},
 		};
-		if(Template.instance().room.t === 'n'){
-			return ChatMessage.find({'u._id': 'Sipgbz8LjBF9geQuN'}, options);
+		if (Template.instance().room.t === 'n') {
+			const followingObject = Meteor.user().following;
+
+			const following = Object.keys(followingObject).map(function(key) {
+				return { 'u._id': key };
+			});
+			const query = {
+				$or: following,
+				_hidden: { $ne: true },
+				...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
+			};
+			return ChatMessage.find(query, options);
 		}
 		return ChatMessage.find(query, options);
 	},
