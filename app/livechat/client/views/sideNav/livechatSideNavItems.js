@@ -1,10 +1,13 @@
-export const sidebarItems = [];
+export const sidebarItems = new ReactiveVar([]);
 export const addSidebarItem = (title, slug) => {
-	sidebarItems.push({
-		title,
-		slug,
-	});
-}
+	sidebarItems.set([
+		...sidebarItems.get(),
+		{
+			title,
+			slug,
+		}
+	]);
+};
 
 addSidebarItem("Current_Chats", "livechat-current-chats");
 addSidebarItem("Analytics", "livechat-analytics");

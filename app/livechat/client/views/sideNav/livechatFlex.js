@@ -18,7 +18,7 @@ Template.livechatFlex.helpers({
 		return Layout.isEmbedded();
 	},
 	sidebarItems() {
-		return sidebarItems;
+		return sidebarItems.get();
 	}
 });
 
