@@ -114,12 +114,14 @@ Template.livechatDepartmentForm.events({
 
 	'click .add-agent'(e, instance) {
 		e.preventDefault();
-		const username = e.currentTarget.parentElement.children[0].value;
+		const input = e.currentTarget.parentElement.children[0];
+		const username = input.value;
 
 		if (username.trim() === '') {
 			return toastr.error(t('Please_fill_a_username'));
 		}
 
+		input.value = '';
 		const agent = AgentUsers.findOne({ username });
 		if (!agent) {
 			return toastr.error(t('The_selected_user_is_not_an_agent'));
@@ -139,6 +141,7 @@ Template.livechatDepartmentForm.events({
 		delete newAgent._id;
 		selectedAgents.push(newAgent);
 		instance.selectedAgents.set(selectedAgents);
+
 	},	
 
 	'click button.back'(e/* , instance*/) {
