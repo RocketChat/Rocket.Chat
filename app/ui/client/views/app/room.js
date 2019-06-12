@@ -248,7 +248,7 @@ Template.room.helpers({
 	},
 
 	messagesHistory() {
-		const { rid } = Template.instance();
+		let { rid } = Template.instance();
 		const hideMessagesOfType = [];
 		settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
 			let types;
@@ -288,7 +288,9 @@ Template.room.helpers({
 				ts: 1,
 			},
 		};
-
+		if(Template.instance().room.t === 'n'){
+			return ChatMessage.find({'u._id': 'Sipgbz8LjBF9geQuN'}, options);
+		}
 		return ChatMessage.find(query, options);
 	},
 
