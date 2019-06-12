@@ -10,19 +10,9 @@
 		</header>
 		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}">
 			<ul class="rooms-list__list">
-				{{> sidebarItem menuItem "Current_Chats" false "livechat-current-chats" }}
-				{{> sidebarItem menuItem "Analytics" false "livechat-analytics" }}
-				{{> sidebarItem menuItem "Real_Time_Monitoring" false "livechat-real-time-monitoring" }}
-				{{> sidebarItem menuItem "Managers" false "livechat-managers" }}
-				{{> sidebarItem menuItem "Agents" false "livechat-agents" }}
-				{{> sidebarItem menuItem "Departments" false "livechat-departments" }}
-				{{> sidebarItem menuItem "Triggers" false "livechat-triggers" }}
-				{{> sidebarItem menuItem "Custom_Fields" false "livechat-customfields" }}
-				{{> sidebarItem menuItem "Installation" false "livechat-installation" }}
-				{{> sidebarItem menuItem "Appearance" false "livechat-appearance" }}
-				{{> sidebarItem menuItem "Webhooks" false "livechat-webhooks" }}
-				{{> sidebarItem menuItem "Facebook Messenger" false "livechat-facebook" }}
-				{{> sidebarItem menuItem "Office_Hours" false "livechat-officeHours" }}
+				{{#each sidebarItems}}
+          {{> sidebarItem menuItem title false slug }}
+        {{/each}}
 			</ul>
 		</div>
 	</aside>

@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 import { SideNav, Layout } from '../../../../ui-utils';
 import { t } from '../../../../utils';
 import './livechatFlex.html';
+import { sidebarItems } from './livechatSideNavItems';
 
 Template.livechatFlex.helpers({
 	menuItem(name, icon, section) {
@@ -16,6 +17,9 @@ Template.livechatFlex.helpers({
 	embeddedVersion() {
 		return Layout.isEmbedded();
 	},
+	sidebarItems() {
+		return sidebarItems;
+	}
 });
 
 Template.livechatFlex.events({
