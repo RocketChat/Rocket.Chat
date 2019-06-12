@@ -102,6 +102,13 @@
 								{{/if}}
 							</div>
 						</div>
+						<div class="input-line double-col" id="unreadAlert">
+							<label class="setting-label">{{_ "Notification_RequireInteraction"}}</label>
+							<div class="setting-field">
+								<label><input type="radio" name="desktopNotificationRequireInteraction" value="true" checked="{{checked 'desktopNotificationRequireInteraction' true}}"/> {{_ "On"}}</label>
+								<label><input type="radio" name="desktopNotificationRequireInteraction" value="false" checked="{{checked 'desktopNotificationRequireInteraction' false}}"/> {{_ "Off"}}</label>
+							</div>
+						</div>
 						<div class="input-line double-col" id="desktopNotifications">
 							<label class="setting-label">{{_ "Notification_Desktop_Default_For"}}</label>
 							<div class="rc-select setting-field">

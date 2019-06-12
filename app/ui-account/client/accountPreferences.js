@@ -87,6 +87,13 @@ Template.accountPreferences.helpers({
 	defaultDesktopNotificationDuration() {
 		return settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration');
 	},
+	desktopNotificationRequireInteraction() {
+		const userPref = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction', 'undefined');
+		return userPref !== 'undefined' ? userPref : undefined;
+	},
+	defaultDesktopNotificationRequireInteraction() {
+		return settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction');
+	},
 	idleTimeLimit() {
 		return getUserPreference(Meteor.userId(), 'idleTimeLimit');
 	},
@@ -165,6 +172,7 @@ Template.accountPreferences.onCreated(function() {
 		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
+		data.desktopNotificationRequireInteraction = $('input[name=desktopNotificationRequireInteraction]:checked').val() === undefined ? settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction') : ($('input[name=desktopNotificationRequireInteraction]:checked').val() === 'true' ? true : false);//($('input[name=desktopNotificationRequireInteraction]:checked').val() !== true ? false : true);
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
