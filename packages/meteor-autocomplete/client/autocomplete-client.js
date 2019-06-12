@@ -390,6 +390,10 @@ export default class AutoComplete {
 		}
 
 		const position = element.position();
+		if (!position) {
+			return;
+		}
+
 		const rule = this.matchedRule();
 		const offset = getCaretCoordinates(this.element, this.element.selectionStart);
 
