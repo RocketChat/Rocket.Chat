@@ -42,7 +42,6 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, rid, e
 		return { 'u._id': key };
 	});
 
-	console.log(following);
 
 	const query = {
 		_hidden: {
@@ -54,7 +53,6 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, rid, e
 
 	let records;
 	if (end != null) {
-
 		// records = Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
 		records = Messages.find(query, options).fetch();
 	} else {

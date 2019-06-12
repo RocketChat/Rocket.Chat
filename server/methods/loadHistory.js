@@ -5,7 +5,7 @@ import { Subscriptions } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { loadMessageHistory } from '../../app/lib';
-import {loadNewsfeedHistory} from "../../app/lib";
+import { loadNewsfeedHistory } from '../../app/lib';
 
 const hideMessagesOfType = [];
 
@@ -43,7 +43,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if(room.t === 'n'){
+		if (room.t === 'n') {
 			return loadNewsfeedHistory({ userId: fromId, rid, end, limit, ls });
 		}
 
