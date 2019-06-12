@@ -28,11 +28,20 @@ const sortUsers = function(field, direction) {
 	}
 };
 
+const sortServiceAccounts = function(field, direction) {
+	switch (field) {
+		default:
+			return {
+				[field]: direction === 'asc' ? 1 : -1,
+			};
+	}
+};
+
 Meteor.methods({
 	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
-		if (!['channels', 'users'].includes(type)) {
+		if (!['channels', 'users', 'serviceAccounts'].includes(type)) {
 			return;
 		}
 
@@ -82,6 +91,40 @@ Meteor.methods({
 			return {
 				total: result.count(), // count ignores the `skip` and `limit` options
 				results: result.fetch(),
+			};
+		}
+
+		if (type === 'serviceAccounts') {
+			const options = {
+				...pagination,
+				sort: sortServiceAccounts(sortBy, sortDirection),
+				fields: {
+					username: 1,
+					name: 1,
+					createdAt: 1,
+					description: 1,
+					subscribers: 1,
+					federation: 1,
+				},
+			};
+
+			const exceptions = [user.username];
+			const forcedSearchFields = workspace === 'all' && ['username', 'name', 'description'];
+
+			let result;
+			if (workspace === 'all') {
+				result = Users.findByActiveServiceAccountsExcept(text, exceptions, forcedSearchFields, options);
+			} else if (workspace === 'external') {
+				result = Users.findByActiveExternalServiceAccountsExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+			} else {
+				result = Users.findByActiveLocalServiceAccountsExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+			}
+			const total = result.count();
+			const results = result.fetch();
+
+			return {
+				total,
+				results,
 			};
 		}
 
