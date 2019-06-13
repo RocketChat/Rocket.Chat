@@ -242,23 +242,6 @@ export class Messages extends Base {
 			query.t =			{ $nin: types };
 		}
 
-		console.log(this.find({rid:roomId}).fetch());
-		return this.find(query, options);
-	}
-
-	findVisibleByFollowingNotContainingTypes(following, types, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-
-			$or: following,
-		};
-
-		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =			{ $nin: types };
-		}
-
 		return this.find(query, options);
 	}
 
@@ -370,24 +353,6 @@ export class Messages extends Base {
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =			{ $nin: types };
 		}
-		console.log(this.find({rid:roomId}).fetch());
-		return this.find(query, options);
-	}
-
-	findVisibleByFollowingBeforeTimestampNotContainingTypes(following, timestamp, types, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			$or: following,
-			ts: {
-				$lt: timestamp,
-			},
-		};
-
-		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =			{ $nin: types };
-		}
 
 		return this.find(query, options);
 	}
@@ -398,25 +363,6 @@ export class Messages extends Base {
 				$ne: true,
 			},
 			rid: roomId,
-			ts: {
-				$gt: afterTimestamp,
-				$lt: beforeTimestamp,
-			},
-		};
-
-		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =			{ $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByFollowingBetweenTimestampsNotContainingTypes(following, afterTimestamp, beforeTimestamp, types, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			$or: following,
 			ts: {
 				$gt: afterTimestamp,
 				$lt: beforeTimestamp,

@@ -34,48 +34,53 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, rid, e
 			editedAt: 0,
 		};
 	}
-	let followingObject = new Object();
-	if('following' in Users.findOneById(userId)) {
-		followingObject = Users.findOneById(userId).following;
-	}
-	let following = [];
 
-	if(Object.keys(followingObject).length === 0 && followingObject.constructor === Object){
-		return {};
-	}
+	const followingObject = Users.findOneById(userId).following;
 
-	else {
-		following = Object.keys(followingObject).map(function (key) {
-			return {'u._id': key};
-		});
-	}
 
+	const following = Object.keys(followingObject).map(function(key) {
+		return { 'u._id': key };
+	});
+
+
+	const query = {
+		_hidden: {
+			$ne: true,
+		},
+
+		$or: following,
+	};
 
 	let records;
 	if (end != null) {
-		records = Messages.findVisibleByFollowingBeforeTimestampNotContainingTypes(following, end, hideMessagesOfType, options).fetch();
-
+		// records = Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
+		records = Messages.find(query, options).fetch();
 	} else {
-		records = Messages.findVisibleByFollowingNotContainingTypes(following, hideMessagesOfType, options).fetch();
+		// records = Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
+		records = Messages.find(query, options).fetch();
 	}
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
 
 	if (ls != null) {
-
 		const firstMessage = messages[messages.length - 1];
 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
 
-			const unreadMessages = Messages.findVisibleByFollowingBetweenTimestampsNotContainingTypes(following, ls, firstMessage.ts, hideMessagesOfType, {
+			// const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hideMessagesOfType, {
+			// 	limit: 1,
+			// 	sort: {
+			// 		ts: 1,
+			// 	},
+			// });
+			const unreadMessages = Messages.find(query, {
 				limit: 1,
 				sort: {
 					ts: 1,
 				},
 			});
-
 			firstUnread = unreadMessages.fetch()[0];
 			unreadNotLoaded = unreadMessages.count();
 		}
