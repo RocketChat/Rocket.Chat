@@ -2214,6 +2214,7 @@
   "Only_authorized_users_can_write_new_messages": "Only authorized users can write new messages",
   "Only_from_users": "Only prune content from these users (leave empty to prune everyone's content)",
   "Only_On_Desktop": "Desktop mode (only sends with enter on desktop)",
+  "Only_works_with_chrome_version_greater_50": "Only works with Chrome browser versions > 50",
   "Only_you_can_see_this_message": "Only you can see this message",
   "Oops!": "Oops",
   "Oops_page_not_found": "Oops, page not found",
