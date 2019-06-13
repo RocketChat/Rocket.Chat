@@ -172,7 +172,6 @@ Template.accountPreferences.onCreated(function() {
 		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
-		data.desktopNotificationRequireInteraction = $('input[name=desktopNotificationRequireInteraction]:checked').val() === undefined ? settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction') : ($('input[name=desktopNotificationRequireInteraction]:checked').val() === 'true' ? true : false);//($('input[name=desktopNotificationRequireInteraction]:checked').val() !== true ? false : true);
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
@@ -188,6 +187,12 @@ Template.accountPreferences.onCreated(function() {
 
 		if (settings.get('UI_DisplayRoles')) {
 			data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
+		}
+
+		if ($('input[name=desktopNotificationRequireInteraction]:checked').val() === undefined) {
+			data.desktopNotificationRequireInteraction = settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction');
+		} else {
+			data.desktopNotificationRequireInteraction = JSON.parse($('input[name=desktopNotificationRequireInteraction]:checked').val());
 		}
 
 		// if highlights changed we need page reload
