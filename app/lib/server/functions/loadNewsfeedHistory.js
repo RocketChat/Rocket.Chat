@@ -21,7 +21,7 @@ settings.get(/Message_HideType_.+/, function(key, value) {
 	});
 });
 
-export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, limit = 20, ls }) {
+export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, rid, end, limit = 20, ls }) {
 	const options = {
 		sort: {
 			ts: -1,
