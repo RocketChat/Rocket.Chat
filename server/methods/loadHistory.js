@@ -4,8 +4,7 @@ import { check } from 'meteor/check';
 import { Subscriptions } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
-import { loadMessageHistory } from '../../app/lib';
-import { loadNewsfeedHistory } from '../../app/lib';
+import { loadMessageHistory, loadNewsfeedHistory } from '../../app/lib';
 
 const hideMessagesOfType = [];
 
@@ -44,7 +43,7 @@ Meteor.methods({
 		}
 
 		if (room.t === 'n') {
-			return loadNewsfeedHistory({ userId: fromId, rid, end, limit, ls });
+			return loadNewsfeedHistory({ userId: fromId, end, limit, ls });
 		}
 
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
