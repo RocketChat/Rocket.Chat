@@ -2166,6 +2166,8 @@
   "Not_Imported_Messages_Title": "The following messages were not imported successfully",
   "Notification_Desktop_Default_For": "Show Desktop Notifications For",
   "Notification_Duration": "Notification Duration",
+  "Notification_RequireInteraction": "Close Desktop Notifications after user interaction",
+  "Notification_RequireInteraction_Description": "Works only with Chrome browser versions > 50. Utilizes the parameter <i>requireInteraction</i> to show the desktop notification to indefinite until the user interacts with it.",
   "Notification_Mobile_Default_For": "Push Mobile Notifications For",
   "Notifications": "Notifications",
   "Notifications_Always_Notify_Mobile": "Always notify mobile",
