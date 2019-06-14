@@ -1,6 +1,7 @@
 import { settings } from '../../../settings';
 import { Users, Messages } from '../../../models';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import {Meteor} from "meteor/meteor";
 
 const hideMessagesOfType = [];
 
@@ -34,30 +35,31 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 			editedAt: 0,
 		};
 	}
+	let followingObject = {};
+	let following = [];
+	if('following' in Users.findOneById(userId)) {
+		followingObject = Users.findOneById(userId).following;
+	}
+	if(Object.keys(followingObject).length === 0 && followingObject.constructor === Object){
+		return;
+	}
 
-	const followingObject = Users.findOneById(userId).following;
 
 
-	const following = Object.keys(followingObject).map(function(key) {
+	following = Object.keys(followingObject).map(function(key) {
 		return { 'u._id': key };
 	});
 
 
-	const query = {
-		_hidden: {
-			$ne: true,
-		},
 
-		$or: following,
-	};
 
 	let records;
 	if (end != null) {
-		// records = Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
-		records = Messages.find(query, options).fetch();
+		records = Messages.findVisibleByFollowingBeforeTimestampNotContainingTypes(following, end, hideMessagesOfType, options).fetch();
+
 	} else {
-		// records = Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
-		records = Messages.find(query, options).fetch();
+		records = Messages.findVisibleByFollowingNotContainingTypes(following, hideMessagesOfType, options).fetch();
+
 	}
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
@@ -69,18 +71,13 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
 
-			// const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hideMessagesOfType, {
-			// 	limit: 1,
-			// 	sort: {
-			// 		ts: 1,
-			// 	},
-			// });
-			const unreadMessages = Messages.find(query, {
+			const unreadMessages = Messages.findVisibleByFollowingBetweenTimestampsNotContainingTypes(following, ls, firstMessage.ts, hideMessagesOfType, {
 				limit: 1,
 				sort: {
 					ts: 1,
 				},
 			});
+
 			firstUnread = unreadMessages.fetch()[0];
 			unreadNotLoaded = unreadMessages.count();
 		}
