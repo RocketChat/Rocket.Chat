@@ -1,5 +1,21 @@
 <template name="livechatDashboard">
-	{{#requiresPermission 'view-livechat-manager'}}
-		<h1>Dashboard</h1>
-	{{/requiresPermission}}
+  {{#requiresPermission 'view-livechat-manager'}}
+    <h1>Dashboard</h1>
+    <table class="table-location">
+      <tr>
+        <th>{{_ "ID"}}</th>
+        <th>{{_ "Country"}}</th>
+        <th>{{_ "City"}}</th>
+        <th>{{_ "IP Address"}}</th>
+      </tr>
+      {{#each userLocation}}
+      <tr data-id="{{_id}}">
+        <td>{{_id}}</td>
+        <td>{{location.country_name}}</td>
+        <td>{{location.city}}</td>
+        <td>{{location.IPv4}}</td>
+      </tr>
+      {{/each}}
+    </table>
+  {{/requiresPermission}}
 </template>

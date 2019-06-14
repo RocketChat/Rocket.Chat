@@ -81,6 +81,7 @@ import './publications/livechatAgents';
 import './publications/livechatAppearance';
 import './publications/livechatDepartments';
 import './publications/livechatIntegration';
+import './publications/livechatLocation';
 import './publications/livechatManagers';
 import './publications/livechatMonitoring';
 import './publications/livechatRooms';

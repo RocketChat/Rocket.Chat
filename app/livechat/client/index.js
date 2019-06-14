@@ -13,6 +13,7 @@ import './views/app/livechatAppearance';
 import './views/app/livechatAutocompleteUser';
 import './views/app/livechatCurrentChats';
 import './views/app/livechatCustomFields';
+import './views/app/livechatDashboard';
 import './views/app/livechatCustomFieldForm';
 import './views/app/livechatDepartmentForm';
 import './views/app/livechatDepartments';

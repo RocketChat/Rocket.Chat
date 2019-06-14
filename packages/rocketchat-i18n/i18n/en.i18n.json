@@ -232,6 +232,7 @@
   "Additional_Feedback": "Additional Feedback",
   "additional_integrations_Bots": "If you are looking for how to integrate your own bot, then look no further than our Hubot adapter. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
   "additional_integrations_Zapier": "Are you looking to integrate other software and applications with Rocket.Chat but you don't have the time to manually do it? Then we suggest using Zapier which we fully support. Read more about it on our documentation. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "Admin_Dashboard": "Admin Dashboard",
   "Admin_disabled_encryption": "Your administrator did not enable E2E encryption.",
   "Admin_Info": "Admin Info",
   "Administration": "Administration",
