@@ -1,7 +1,7 @@
 import { settings } from '../../../settings';
 import { Users, Messages } from '../../../models';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import {Meteor} from "meteor/meteor";
+
 
 const hideMessagesOfType = [];
 
@@ -37,13 +37,12 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 	}
 	let followingObject = {};
 	let following = [];
-	if('following' in Users.findOneById(userId)) {
+	if ('following' in Users.findOneById(userId)) {
 		followingObject = Users.findOneById(userId).following;
 	}
-	if(Object.keys(followingObject).length === 0 && followingObject.constructor === Object){
-		return;
+	if (Object.keys(followingObject).length === 0 && followingObject.constructor === Object) {
+		return {};
 	}
-
 
 
 	following = Object.keys(followingObject).map(function(key) {
@@ -51,15 +50,11 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 	});
 
 
-
-
 	let records;
 	if (end != null) {
 		records = Messages.findVisibleByFollowingBeforeTimestampNotContainingTypes(following, end, hideMessagesOfType, options).fetch();
-
 	} else {
 		records = Messages.findVisibleByFollowingNotContainingTypes(following, hideMessagesOfType, options).fetch();
-
 	}
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;

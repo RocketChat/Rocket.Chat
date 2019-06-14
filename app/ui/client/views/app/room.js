@@ -289,25 +289,24 @@ Template.room.helpers({
 			},
 		};
 		if (Template.instance().room.t === 'n') {
-			let followingObject ={};
+			let followingObject = {};
 			let following = [];
-			if('following' in Meteor.user()) {
+			if ('following' in Meteor.user()) {
 				followingObject = Meteor.user().following;
 			}
-			if(Object.keys(followingObject).length === 0 && followingObject.constructor === Object){
+			if (Object.keys(followingObject).length === 0 && followingObject.constructor === Object) {
 				return;
 			}
-			else {
-				following = Object.keys(followingObject).map(function (key) {
-					return {'u._id': key};
-				});
-				const query = {
-					$or: following,
-					_hidden: {$ne: true},
-					...(ignoreReplies || modes[viewMode] === 'compact') && {tmid: {$exists: 0}},
-				};
-				return ChatMessage.find(query, options);
-			}
+
+			following = Object.keys(followingObject).map(function(key) {
+				return { 'u._id': key };
+			});
+			const query = {
+				$or: following,
+				_hidden: { $ne: true },
+				...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
+			};
+			return ChatMessage.find(query, options);
 		}
 		return ChatMessage.find(query, options);
 	},
