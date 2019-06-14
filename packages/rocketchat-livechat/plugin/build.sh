@@ -6,6 +6,8 @@ export LIVECHAT_ASSETS_DIR="../../../private/livechat"
 export LATEST_LIVECHAT_VERSION="1.0.0"
 
 cd packages/rocketchat-livechat/.app
+mkdir -p packages/tap-i18n
+cp -R ../../tap-i18n ./packages
 meteor npm install --production
 
 meteor build --headless --directory $BUILD_DIR
