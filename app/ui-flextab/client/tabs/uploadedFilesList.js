@@ -1,3 +1,5 @@
+import path from 'path';
+
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -7,7 +9,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { DateFormat } from '../../../lib/client';
 import { canDeleteMessage, getURL, handleError, t } from '../../../utils/client';
 import { popover, modal } from '../../../ui-utils/client';
-import path from 'path';
 
 const roomFiles = new Mongo.Collection('room_files');
 
@@ -33,7 +34,7 @@ Template.uploadedFilesList.helpers({
 
 	url() {
 		const fileNameConversion = path.normalize(this.name).replace(/^(\.\.(\/|\\|$))+/, ' ');
-		return `/file-upload/${ this._id }/${ encodeURI(fileNameConversion) }`;
+		return getURL(`/file-upload/${ this._id }/${ encodeURI(fileNameConversion) }`);
 	},
 
 	fileTypeClass() {
