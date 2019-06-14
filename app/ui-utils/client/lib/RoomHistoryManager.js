@@ -108,14 +108,20 @@ export const RoomHistoryManager = new class {
 		room.isLoading.set(true);
 
 		// ScrollListener.setLoader true
-		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
+		// const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
 		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
+		// get true last message from database instead of from ChatMessage
 
-		if (lastMessage) {
-			({ ts } = lastMessage);
-		} else {
-			ts = undefined;
-		}
+		let lastMessage;
+		Meteor.call('getLastMessage', rid, (err, result) => {
+			lastMessage = result;
+			if (lastMessage) {
+				({ ts } = lastMessage);
+			} else {
+				ts = undefined;
+			}
+		});
+
 
 		let ls = undefined;
 		let typeName = undefined;

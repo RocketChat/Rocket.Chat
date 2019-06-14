@@ -28,6 +28,7 @@ import './methods/deleteUser';
 import './methods/eraseRoom';
 import './methods/followUser';
 import './methods/getAvatarSuggestion';
+import './methods/getLastMessage';
 import './methods/getRoomById';
 import './methods/getRoomIdByNameOrId';
 import './methods/getRoomNameById';
