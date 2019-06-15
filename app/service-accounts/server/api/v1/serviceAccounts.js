@@ -13,11 +13,7 @@ API.v1.addRoute('serviceAccounts.create', { authRequired: true }, {
 			description: String,
 		});
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('addServiceAccount', this.bodyParams, function (err, id) {
-				if (err) {
-					console.log(err);
-				}
-			});
+			Meteor.call('addServiceAccount', this.bodyParams);
 		});
 		return API.v1.success({ user: Users.findOneByUsername(this.bodyParams.username, { fields: API.v1.defaultFieldsToExclude }) });
 	},

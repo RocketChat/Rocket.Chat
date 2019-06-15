@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Users } from '../../../models';
 
-Meteor.publish('fullServiceAccountData', function (filter, limit) {
+Meteor.publish('fullServiceAccountData', function() {
 	if (!this.userId) {
 		return this.ready();
 	}
@@ -30,5 +30,4 @@ Meteor.publish('fullServiceAccountData', function (filter, limit) {
 
 	this.ready();
 	this.onStop(() => handle.stop());
-
 });

@@ -64,14 +64,10 @@ Template.serviceAccountDashboard.events({
 
 Template.serviceAccountDashboard.onCreated(function() {
 	const instance = this;
-	this.limit = new ReactiveVar(50);
 	this.ready = new ReactiveVar(true);
-	this.filter = new ReactiveVar('');
 
 	this.autorun(() => {
-		const filter = instance.filter.get();
-		const limit = instance.limit.get();
-		const subscription = instance.subscribe('fullServiceAccountData', filter, limit);
+		const subscription = instance.subscribe('fullServiceAccountData');
 		instance.ready.set(subscription.ready());
 	});
 	this.users = function() {
@@ -81,8 +77,7 @@ Template.serviceAccountDashboard.onCreated(function() {
 			},
 			active: false,
 		};
-		const limit = instance.limit && instance.limit.get();
-		return FullUser.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
+		return FullUser.find(query, { sort: { username: 1, name: 1 } }).fetch();
 	};
 });
 

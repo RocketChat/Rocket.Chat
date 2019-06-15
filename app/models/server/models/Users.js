@@ -667,7 +667,7 @@ export class Users extends Base {
 
 	findLinkedServiceAccounts(_id, options) {
 		const query = { 'u._id': _id };
-		
+
 		return this.find(query, options);
 	}
 

@@ -1655,8 +1655,7 @@ describe('[Users]', function() {
 	});
 	describe('[Service Accounts]', () => {
 		it('should create a new service account', (done) => {
-
-			const username = `serviceAccount_${apiUsername}`;
+			const username = `serviceAccount_${ apiUsername }`;
 			const description = 'Test Service Account';
 
 			request.post(api('serviceAccounts.create'))
@@ -1664,8 +1663,8 @@ describe('[Users]', function() {
 				.send({
 					name: username,
 					username: username,
-					password,
 					description: description,
+					password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
