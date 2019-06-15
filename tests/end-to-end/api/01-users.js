@@ -1662,8 +1662,8 @@ describe('[Users]', function() {
 				.set(credentials)
 				.send({
 					name: username,
-					username: username,
-					description: description,
+					username,
+					description,
 					password,
 				})
 				.expect('Content-Type', 'application/json')
