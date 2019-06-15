@@ -3,8 +3,9 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 
 import { saveUser, checkUsernameAvailability } from '../../../lib/server/functions';
+import { Users } from '../../../models';
 import { settings } from '../../../settings';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermission, hasRole } from '../../../authorization/server';
 
 Meteor.methods({
 	addServiceAccount(userData) {
@@ -34,6 +35,12 @@ Meteor.methods({
 		}
 
 		const user = Meteor.user();
+		const serviceAccounts = Users.findLinkedServiceAccounts(user._id, {});
+
+		if (serviceAccounts.count() >= 3) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addServiceAccount' });
+		}
+
 		userData.u = {
 			_id: user._id,
 			username: user.username,
@@ -41,6 +48,7 @@ Meteor.methods({
 		userData.joinDefaultChannels = false;
 		userData.roles = ['user'];
 
+		userData.active = hasRole(user._id, 'service-account-approved');
 		return saveUser(Meteor.userId(), userData);
 	},
 });

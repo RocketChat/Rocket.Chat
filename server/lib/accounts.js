@@ -102,6 +102,10 @@ Accounts.onCreateUser(function(options, user = {}) {
 	user.status = 'offline';
 	user.active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
+	if (options.active !== undefined) {
+		user.active = options.active;
+	}
+
 	if (!user.name) {
 		if (options.profile) {
 			if (options.profile.name) {

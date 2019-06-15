@@ -1,16 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import toastr from 'toastr';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
 import { t } from '../../../utils/client';
 import { handleError } from '../../../utils/client/lib/handleError';
 import { SideNav } from '../../../ui-utils';
-import { modal } from '../../../ui-utils/client/lib/modal';
 import { hasAllPermission } from '../../../authorization/client/hasPermission';
 import FullUser from '../../../models/client/models/FullUser';
 import './serviceAccountDashboard.html';
+
+const success = (fn) => function(error, result) {
+	if (error) {
+		return handleError(error);
+	}
+	if (result) {
+		fn.call(this, result);
+	}
+};
 
 Template.serviceAccountDashboard.helpers({
 	isReady() {
@@ -21,10 +30,10 @@ Template.serviceAccountDashboard.helpers({
 		return Template.instance().users();
 	},
 	hasPermission() {
-		return hasAllPermission('view-service-account-request');
+		return hasAllPermission('view-sa-request');
 	},
 	hasUsers() {
-		return Template.instance().users() && Template.instance().users().count() > 0;
+		return Template.instance().users() && Template.instance().users().length > 0;
 	},
 	emailAddress() {
 		return _.map(this.emails, function(e) { return e.address; }).join(', ');
@@ -39,38 +48,17 @@ Template.serviceAccountDashboard.helpers({
 });
 
 Template.serviceAccountDashboard.events({
-	'click .user-info'(e) {
+	'click .accept-service-account'(e) {
 		e.preventDefault();
-		modal.open({
-			title: t('Are_you_sure'),
-			text: t('The_user_s_will_be_allowed_to_create_service_accounts', this.username),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes'),
-			cancelButtonText: t('Cancel'),
-			closeOnConfirm: false,
-			html: false,
-		}, () => {
-			Meteor.call('authorization:removeUserFromRole', 'service-account-applied', this.username, null, function(error) {
-				if (error) {
-					return handleError(error);
-				}
-			});
-			Meteor.call('authorization:addUserToRole', 'service-account-approved', this.username, null, function(error) {
-				if (error) {
-					return handleError(error);
-				}
-
-				modal.open({
-					title: t('Added'),
-					text: t('User_added'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
-			});
-		});
+		Meteor.call('authorization:addUserToRole', 'service-account-approved', this.u.username, null, success(() => {
+			Meteor.call('setUserActiveStatus', this._id, true, success(() => toastr.success(t('User_has_been_activated'))));
+		}));
+	},
+	'click .reject-service-account'(e) {
+		e.preventDefault();
+		Meteor.call('deleteUser', this._id, success(() => {
+			toastr.success(t('User_has_been_deleted'));
+		}));
 	},
 });
 
@@ -83,13 +71,15 @@ Template.serviceAccountDashboard.onCreated(function() {
 	this.autorun(() => {
 		const filter = instance.filter.get();
 		const limit = instance.limit.get();
-		const subscription = instance.subscribe('fullUserData', filter, limit);
+		const subscription = instance.subscribe('fullServiceAccountData', filter, limit);
 		instance.ready.set(subscription.ready());
 	});
 	this.users = function() {
-		const roles = [].concat('service-account-applied');
 		const query = {
-			roles: { $in: roles },
+			u: {
+				$exists: true,
+			},
+			active: false,
 		};
 		const limit = instance.limit && instance.limit.get();
 		return FullUser.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
