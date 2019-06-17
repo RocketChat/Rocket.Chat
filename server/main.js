@@ -28,6 +28,8 @@ import './methods/deleteUser';
 import './methods/eraseRoom';
 import './methods/followUser';
 import './methods/getAvatarSuggestion';
+import './methods/getFollowers';
+import './methods/getFollowing';
 import './methods/getRoomById';
 import './methods/getRoomIdByNameOrId';
 import './methods/getRoomNameById';
