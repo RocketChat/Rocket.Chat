@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../models';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 
-Meteor.publish('userServiceAccounts', function () {
+Meteor.publish('userServiceAccounts', function() {
 	if (!this.userId) {
 		return this.ready();
 	}
