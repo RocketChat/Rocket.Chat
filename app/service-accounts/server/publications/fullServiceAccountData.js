@@ -13,7 +13,7 @@ Meteor.publish('fullServiceAccountData', function() {
 		},
 		active: false,
 	};
-
+	
 	const handle = Users.find(query, {}).observeChanges({
 		added: (id, fields) => {
 			this.added('rocketchat_full_user', id, fields);

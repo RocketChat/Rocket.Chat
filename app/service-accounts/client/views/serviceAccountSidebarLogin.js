@@ -14,6 +14,9 @@ Template.serviceAccountSidebarLogin.helpers({
 	users() {
 		return Template.instance().users();
 	},
+	hasServiceAccounts() {
+		return Template.instance().users() && Template.instance().users().length > 0;
+	},
 	owner() {
 		return Meteor.user().u;
 	},
@@ -34,13 +37,12 @@ Template.serviceAccountSidebarLogin.events({
 			if (error) {
 				return handleError(error);
 			}
-			popover.close();
+			FlowRouter.go('/home');
 			Meteor.loginWithToken(token.token, (err) => {
 				if (err) {
 					console.log(err);
 				}
 				document.location.reload(true);
-				FlowRouter.go('/home');
 				if (Meteor.user().u) {
 					localStorage.setItem('serviceAccountForceLogin', true);
 				}
