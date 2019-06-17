@@ -125,6 +125,7 @@ describe('miscellaneous', function() {
 					'enableAutoAway',
 					// 'highlights',
 					'desktopNotificationDuration',
+					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',
 					'hideRoles',
