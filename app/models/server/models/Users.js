@@ -665,6 +665,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findLinkedServiceAccounts(_id, options) {
+		const query = { 'u._id': _id };
+
+		return this.find(query, options);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -1044,6 +1050,17 @@ export class Users extends Base {
 				statusDefault,
 			},
 		});
+	}
+
+	setOwnerUsernameByUserId(userId, username) {
+		const query = { 'u._id': userId };
+		const update = {
+			$set: {
+				'u.username': username,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 
 	// INSERT
