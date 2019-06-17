@@ -131,6 +131,10 @@ Template.roomList.helpers({
 	showRoomCounter() {
 		return getUserPreference(Meteor.userId(), 'roomCounterSidebar');
 	},
+
+	isNewsfeedEnabled() {
+		return settings.get('Newsfeed_enabled');
+	},
 });
 
 const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
