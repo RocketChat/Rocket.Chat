@@ -67,6 +67,7 @@ Template.serviceAccountSidebarLogin.onCreated(function() {
 	this.users = function() {
 		const query = {
 			'u._id': Meteor.userId(),
+			active: true,
 		};
 		const limit = instance.limit && instance.limit.get();
 		return FullUser.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();

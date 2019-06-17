@@ -11,7 +11,7 @@ Meteor.publish('userServiceAccounts', function () {
 	if (Meteor.user().u) {
 		return this.ready();
 	}
-	const handle = Users.find({ 'u._id': this.userId }, {
+	const handle = Users.find({ 'u._id': this.userId, active: true }, {
 		fields: getDefaultUserFields(),
 	}).observeChanges({
 		added: (_id, record) => this.added('rocketchat_full_user', _id, record),
