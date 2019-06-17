@@ -1,6 +1,6 @@
-import * as Models from '..';
-
 import { BaseRaw } from './BaseRaw';
+
+import * as Models from './index';
 
 export class RolesRaw extends BaseRaw {
 	async isUserInRoles(userId, roles, scope) {
