@@ -1,8 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { handleError } from '../../../utils';
-import { popover } from '../../../ui-utils';
 import FullUser from '../../../models/client/models/FullUser';
 import './serviceAccountSidebarLogin.html';
 
@@ -22,18 +23,18 @@ Template.serviceAccountSidebarLogin.helpers({
 	},
 	showOwnerAccountLink() {
 		return localStorage.getItem('serviceAccountForceLogin') && !!Meteor.user().u;
-	}
+	},
 });
 
 Template.serviceAccountSidebarLogin.events({
 	'click .js-login'(e) {
 		e.preventDefault();
-		let username = this.username;
+		let { username } = this;
 		if (Meteor.user().u) {
 			username = Meteor.user().u.username;
 		}
 		console.log(username);
-		Meteor.call('getLoginToken', username, function (error, token) {
+		Meteor.call('getLoginToken', username, function(error, token) {
 			if (error) {
 				return handleError(error);
 			}
@@ -45,8 +46,7 @@ Template.serviceAccountSidebarLogin.events({
 				document.location.reload(true);
 				if (Meteor.user().u) {
 					localStorage.setItem('serviceAccountForceLogin', true);
-				}
-				else {
+				} else {
 					localStorage.removeItem('serviceAccountForceLogin');
 				}
 			});
@@ -57,12 +57,7 @@ Template.serviceAccountSidebarLogin.events({
 Template.serviceAccountSidebarLogin.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(true);
-	this.token = new ReactiveVar('');
-	this.limit = new ReactiveVar(50);
-	this.filter = new ReactiveVar('');
 	this.autorun(() => {
-		const filter = instance.filter.get();
-		const limit = instance.limit.get();
 		const subscription = instance.subscribe('userServiceAccounts');
 		instance.ready.set(subscription.ready());
 	});

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 
 import { Users } from '../../../models';
 
 Meteor.methods({
 	getLoginToken(username) {
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getLoginToken' });
 		}
@@ -21,7 +21,7 @@ Meteor.methods({
 				throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getLoginToken' });
 			}
 		}
-		
+
 		const stampedToken = Accounts._generateStampedLoginToken();
 		Accounts._insertLoginToken(user._id, stampedToken);
 		return stampedToken;
