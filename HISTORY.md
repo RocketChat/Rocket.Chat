@@ -1,4 +1,25 @@
 
+# 1.1.2
+`2019-06-17  ·  3 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- User status information on User Info panel ([#14763](https://github.com/RocketChat/Rocket.Chat/pull/14763))
+- User Real Name being erased when not modified ([#14711](https://github.com/RocketChat/Rocket.Chat/pull/14711))
+- Anonymous chat read ([#14717](https://github.com/RocketChat/Rocket.Chat/pull/14717))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 1.1.1
 `2019-05-30  ·  2 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
 
