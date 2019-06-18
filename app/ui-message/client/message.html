@@ -33,6 +33,10 @@
 					{{#if isBot}}
 						<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
 					{{/if}}
+					{{#if isNewsfeed}}
+						<span class = "color-secondary-font-color">{{_ "posted_in"}}</span>
+						<span class = "user color-secondary-font-color">&nbsp;{{originalChannelNameForNewsfeed}}</span>
+					{{/if}}
 					<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
 					{{#if showTranslated}}
 						<span class="translated">

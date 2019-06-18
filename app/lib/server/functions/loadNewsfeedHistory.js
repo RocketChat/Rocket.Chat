@@ -1,5 +1,5 @@
 import { settings } from '../../../settings';
-import { Users, Messages } from '../../../models';
+import { Rooms, Users, Messages } from '../../../models';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
 
@@ -78,6 +78,9 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 		}
 	}
 
+	messages.forEach((msg) => {
+		msg.originalRoomNameForNewsfeed = Rooms.findById(msg.rid).fetch()[0].name;
+	});
 	return {
 		messages,
 		firstUnread,
