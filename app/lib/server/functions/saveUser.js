@@ -253,7 +253,9 @@ export const saveUser = function(userId, userData) {
 		setUsername(userData._id, userData.username);
 	}
 
-	setRealName(userData._id, userData.name);
+	if (userData.hasOwnProperty('name')) {
+		setRealName(userData._id, userData.name);
+	}
 
 	if (userData.email) {
 		const shouldSendVerificationEmailToUser = userData.verified !== true;
