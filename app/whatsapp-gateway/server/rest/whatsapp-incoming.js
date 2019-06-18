@@ -33,6 +33,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			texto: text,
 			midia,
 			id_departamento: departmentId,
+			token: conversationId,
 		} = this.bodyParams;
 
 		try {
@@ -99,6 +100,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 				roomInfo: {
 					whatsAppGateway: {
 						sessionId,
+						conversationId,
 						from,
 					},
 				},

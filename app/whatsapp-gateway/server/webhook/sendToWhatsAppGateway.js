@@ -33,6 +33,8 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	let { msg } = message;
+
 	let attachment;
 	if (message.file) {
 		const { _id } = message.file;
@@ -44,12 +46,14 @@ callbacks.add('afterSaveMessage', function(message, room) {
 			const dataURI = rs.toString('base64');
 			// const dataURI = `data:${ type };base64,${ data }`;
 
-			const { type, size } = file;
+			const { type, size, name, description } = file;
 			attachment = {
 				type,
 				size,
 				dataURI,
 			};
+
+			msg = description || name;
 		}
 	}
 	const visitor = LivechatVisitors.getVisitorByToken(room.v.token);
@@ -59,9 +63,9 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	const { rid, u: { _id: userId } = {} } = message;
-	const { from } = room.whatsAppGateway;
-	const extraData = { rid, userId, attachment };
-	WhatsAppService.send(from, visitor.phone[0].phoneNumber, message.msg, extraData);
+	const { from, conversationId: token } = room.whatsAppGateway;
+	const extraData = { rid, userId, attachment, token };
+	WhatsAppService.send(from, visitor.phone[0].phoneNumber, msg, extraData);
 
 	return message;
 }, callbacks.priority.LOW, 'sendToWhatsAppGateway');
