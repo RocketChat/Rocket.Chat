@@ -31841,6 +31841,48 @@
           ]
         }
       ]
+    },
+    "1.1.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14763",
+          "title": "[FIX] User status information on User Info panel",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.2",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14711",
+          "title": "[FIX] User Real Name being erased when not modified",
+          "userLogin": "Hudell",
+          "milestone": "1.1.2",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14717",
+          "title": "[FIX] Anonymous chat read",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.2",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
