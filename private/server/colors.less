@@ -27,6 +27,7 @@
 @transparent-lighter: rgba(255, 255, 255, 0.3);
 @transparent-lightest: rgba(255, 255, 255, 0.6);
 
+<<<<<<< HEAD
 :root {
 	--legacy-default-action-color: @default-action-color;
 	--legacy-default-action-contrast: @default-action-contrast;
@@ -49,6 +50,9 @@
 	--legacy-transparent-lighter: @transparent-lighter;
 	--legacy-transparent-lightest: @transparent-lightest;
 }
+=======
+@tablerow-background-color: rgba(234, 241, 251, 1);
+>>>>>>> c1b595f33973bb6b5408bfd8251cbc1ef4ba7744
 
 /** ----------------------------------------------------------------------------
  * Mixins
@@ -477,6 +481,10 @@ input:-webkit-autofill {
 
 	&:nth-of-type(even) {
 		background-color: @transparent-lightest;
+	}
+
+	&:hover {
+		background: @tablerow-background-color;
 	}
 }
 
