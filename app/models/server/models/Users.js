@@ -519,7 +519,7 @@ export class Users extends Base {
 					username: { $exists: true, $nin: exceptions },
 				},
 				{
-					u: { $exists: false }
+					u: { $exists: false },
 				},
 				...extraQuery,
 			],
@@ -538,7 +538,7 @@ export class Users extends Base {
 				],
 			},
 			{
-				u: { $exists: false }
+				u: { $exists: false },
 			},
 		];
 		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
@@ -549,7 +549,7 @@ export class Users extends Base {
 			{ federation: { $exists: true } },
 			{ 'federation.peer': { $ne: localPeer } },
 			{
-				u: { $exists: false }
+				u: { $exists: false },
 			},
 		];
 		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
@@ -579,7 +579,7 @@ export class Users extends Base {
 					username: { $exists: true, $nin: exceptions },
 				},
 				{
-					u: { $exists: true }
+					u: { $exists: true },
 				},
 				...extraQuery,
 			],
@@ -588,12 +588,12 @@ export class Users extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+	findByActiveExternalServiceAccountsExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
 		const extraQuery = [
 			{ federation: { $exists: true } },
 			{ 'federation.peer': { $ne: localPeer } },
 			{
-				u: { $exists: true }
+				u: { $exists: true },
 			},
 		];
 		return this.findByActiveServiceAccountsExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
@@ -608,7 +608,7 @@ export class Users extends Base {
 				],
 			},
 			{
-				u: { $exists: true }
+				u: { $exists: true },
 			},
 		];
 		return this.findByActiveServiceAccountsExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);

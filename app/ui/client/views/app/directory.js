@@ -45,7 +45,7 @@ function directorySearch(config, cb) {
 					description: result.description,
 					subscribers: result.subscribersCount || 0,
 					domain: result.federation && result.federation.peer,
-				}
+				};
 			}
 			return null;
 		}));
