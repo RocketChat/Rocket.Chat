@@ -135,17 +135,6 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.bot && 'bot';
 	},
-	isNewsfeed() {
-		const { room } = this;
-		if (room.t === 'n') {
-			return true;
-		}
-		return false;
-	},
-	originalChannelNameForNewsfeed() {
-		const { msg } = this;
-		return msg.originalRoomNameForNewsfeed;
-	},
 	roleTags() {
 		const { msg, hideRoles, settings } = this;
 		if (settings.hideRoles || hideRoles) {
