@@ -99,9 +99,12 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 
 Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
-
 	user.status = 'offline';
 	user.active = !settings.get('Accounts_ManuallyApproveNewUsers');
+
+	if (options.active !== undefined) {
+		user.active = options.active;
+	}
 
 	if (!user.name) {
 		if (options.profile) {
@@ -176,6 +179,10 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		user.type = 'user';
 	}
 
+	if (!user.u && options.u) {
+		user.u = options.u;
+	}
+
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = Meteor.users.findOne({
@@ -192,6 +199,20 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		if (user.type !== 'visitor') {
 			Meteor.defer(function() {
 				return callbacks.run('afterCreateUser', user);
+			});
+		}
+		if (settings.get('Accounts_SetDefaultAvatar') === true) {
+			const avatarSuggestions = getAvatarSuggestionForUser(user);
+			Object.keys(avatarSuggestions).some((service) => {
+				const avatarData = avatarSuggestions[service];
+				if (service !== 'gravatar') {
+					Meteor.runAsUser(_id, function() {
+						return Meteor.call('setAvatarFromService', avatarData.blob, '', service);
+					});
+					return true;
+				}
+
+				return false;
 			});
 		}
 	}
@@ -217,21 +238,6 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	}
 
 	addUserRoles(_id, roles);
-
-	if (settings.get('Accounts_SetDefaultAvatar') === true) {
-		const avatarSuggestions = getAvatarSuggestionForUser(user);
-		Object.keys(avatarSuggestions).some((service) => {
-			const avatarData = avatarSuggestions[service];
-			if (service !== 'gravatar') {
-				Meteor.runAsUser(_id, function() {
-					return Meteor.call('setAvatarFromService', avatarData.blob, '', service);
-				});
-				return true;
-			}
-
-			return false;
-		});
-	}
 
 	return _id;
 });

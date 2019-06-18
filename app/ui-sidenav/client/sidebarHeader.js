@@ -7,7 +7,7 @@ import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
 import { t, getUserPreference, handleError } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { hasAtLeastOnePermission } from '../../authorization';
+import { hasAtLeastOnePermission, hasPermission } from '../../authorization';
 
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
@@ -68,6 +68,23 @@ const toolbarButtons = (user) => [{
 	action: () => {
 		menu.close();
 		FlowRouter.go('directory');
+	},
+},
+{
+	name: t('Service_account_login'),
+	icon: 'reload',
+	condition: () => !Meteor.user().u || (Meteor.user().u && localStorage.getItem('serviceAccountForceLogin')),
+	action: (e) => {
+		const options = [];
+		const config = {
+			template: 'serviceAccountSidebarLogin',
+			currentTarget: e.currentTarget,
+			data: {
+				options,
+			},
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+		popover.open(config);
 	},
 },
 {
@@ -172,41 +189,64 @@ const toolbarButtons = (user) => [{
 		};
 
 		const discussionEnabled = settings.get('Discussion_enabled');
-		if (!discussionEnabled) {
-			return createChannel(e);
+		const serviceAccountEnabled = settings.get('Service_account_enabled');
+		const items = [{
+			icon: 'hashtag',
+			name: t('Channel'),
+			action: createChannel,
+		}];
+		if (discussionEnabled) {
+			items.push({
+				icon: 'discussion',
+				name: t('Discussion'),
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Discussion_title'),
+						content: 'CreateDiscussion',
+						data: {
+							onCreate() {
+								modal.close();
+							},
+						},
+						modifier: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			});
 		}
+
+		if (serviceAccountEnabled && hasPermission('create-service-account')) {
+			items.push({
+				icon: 'user',
+				name: t('Service_account'),
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Service_account_title'),
+						content: 'createServiceAccount',
+						data: {
+							onCreate() {
+								modal.close();
+							},
+						},
+						modifier: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			});
+		}
+
 		const config = {
 			columns: [
 				{
 					groups: [
 						{
-							items: [
-								{
-									icon: 'hashtag',
-									name: t('Channel'),
-									action: createChannel,
-								},
-								{
-									icon: 'discussion',
-									name: t('Discussion'),
-									action: (e) => {
-										e.preventDefault();
-										modal.open({
-											title: t('Discussion_title'),
-											content: 'CreateDiscussion',
-											data: {
-												onCreate() {
-													modal.close();
-												},
-											},
-											modifier: 'modal',
-											showConfirmButton: false,
-											showCancelButton: false,
-											confirmOnEnter: false,
-										});
-									},
-								},
-							],
+							items,
 						},
 					],
 				},

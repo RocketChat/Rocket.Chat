@@ -79,6 +79,7 @@ export const _setUsername = function(userId, u) {
 		Subscriptions.setUserUsernameByUserId(user._id, username);
 		Subscriptions.setNameForDirectRoomsWithOldName(previousUsername, username);
 		LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+		Users.setOwnerUsernameByUserId(user._id, username);
 
 		const fileStore = FileUpload.getStore('Avatars');
 		const file = fileStore.model.findOneByName(previousUsername);
