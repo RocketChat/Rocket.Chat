@@ -1,1 +1,1 @@
-import './inject';
+export * from './inject';
