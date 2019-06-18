@@ -6,6 +6,6 @@ AdminBox.addOption({
 	href: 'admin/serviceaccount',
 	i18nLabel: 'Service_account_dashboard',
 	permissionGranted() {
-		return hasAtLeastOnePermission(['view-service-account-request']);
+		return hasAtLeastOnePermission(['view-sa-request']);
 	},
 });
