@@ -174,6 +174,7 @@ export const saveUser = function(userId, userData) {
 		}
 		if (userData.u) {
 			createUser.u = userData.u;
+			createUser.active = userData.active;
 		}
 
 		const _id = Accounts.createUser(createUser);

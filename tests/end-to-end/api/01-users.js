@@ -1653,4 +1653,35 @@ describe('[Users]', function() {
 			});
 		});
 	});
+	describe('[Service Accounts]', () => {
+		it('should create a new service account', (done) => {
+			const username = `serviceAccount_${ apiUsername }`;
+			const description = 'Test Service Account';
+
+			request.post(api('serviceAccounts.create'))
+				.set(credentials)
+				.send({
+					name: username,
+					username,
+					description,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.username', username);
+					expect(res.body).to.have.nested.property('user.u.username');
+					expect(res.body).to.have.nested.property('user.active', false);
+					expect(res.body).to.have.nested.property('user.name', username);
+					expect(res.body).to.have.nested.property('user.description', description);
+					expect(res.body).to.not.have.nested.property('user.e2e');
+					expect(res.body).to.not.have.nested.property('user.customFields');
+
+					targetUser._id = res.body.user._id;
+					targetUser.username = res.body.user.username;
+				})
+				.end(done);
+		});
+	});
 });
