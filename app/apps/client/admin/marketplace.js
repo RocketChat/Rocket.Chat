@@ -30,6 +30,10 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 		({
 			price: app.price,
 			isPurchased: app.isPurchased,
+			isBundle: app.isBundle,
+			isSubscribed: app.isSubscribed,
+			pricingInfo: app.pricingInfo,
+			bundledIn: app.bundledIn,
 			latest: {
 				...app.latest,
 				_installed: installedIds.includes(app.latest.id),
@@ -225,6 +229,22 @@ Template.marketplace.helpers({
 	},
 	formatPrice(price) {
 		return `$${ Number.parseFloat(price).toFixed(2) }`;
+	},
+	isSubscription(pricingInfo) {
+		return pricingInfo && pricingInfo.strategy !== 'once';
+	},
+	subscriptionPriceDisplay(pricingInfo) {
+		if (!pricingInfo || pricingInfo.strategy === 'once') {
+			return '';
+		}
+
+		if (pricingInfo.strategy === 'monthly') {
+			return `$${ Number.parseFloat(pricingInfo.price).toFixed(2) } / month`;
+		}
+
+		const lastTier = pricingInfo.tiers[pricingInfo.tiers.length - 1];
+
+		return `$${ Number.parseFloat(lastTier.price).toFixed(2) }* / user / month`;
 	},
 	formatCategories(categories = []) {
 		return categories.join(', ');

@@ -99,10 +99,14 @@
 											{{else}}
 												<button class="js-purchase apps-installer" data-app="{{appId}}">
 													<span class="rc-app-price">
-														{{#if $eq price 0}}
-															{{_ "Free"}}
+														{{#if isSubscription pricingInfo}}
+															{{ subscriptionPriceDisplay pricingInfo }}
 														{{else}}
-															{{ formatPrice price }}
+															{{#if $eq price 0}}
+																{{_ "Free"}}
+															{{else}}
+																{{ formatPrice price }}
+															{{/if}}
 														{{/if}}
 													</span>
 													{{> icon block="installer rc-icon--default-size" icon="circled-arrow-down"}}
