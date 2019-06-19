@@ -148,6 +148,9 @@ Template.directory.helpers({
 			if (searchType.get() === 'channels') {
 				type = 'c';
 				routeConfig = { name: item.name };
+			} else if (searchType.get() === 'users') {
+				type = 'd';
+				routeConfig = { name: item.username };
 			} else {
 				type = 'd';
 				routeConfig = { name: item.username };

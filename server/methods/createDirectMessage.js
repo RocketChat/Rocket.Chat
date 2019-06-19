@@ -109,6 +109,10 @@ Meteor.methods({
 			upsertSubscription.$set.archived = true;
 		}
 
+		if (to.u !== undefined) {
+			upsertSubscription.$set.sa = true;
+		}
+
 		Subscriptions.upsert({
 			rid,
 			$and: [{ 'u._id': me._id }], // work around to solve problems with upsert and dot
