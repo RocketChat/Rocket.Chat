@@ -141,6 +141,7 @@ describe('miscellaneous', function() {
 					'sidebarGroupByType',
 					'muteFocusedConversations',
 					'sidebarShowDiscussion',
+					'sidebarShowServiceAccounts',
 				];
 
 				expect(res.body).to.have.property('success', true);

@@ -15,4 +15,11 @@ Meteor.startup(() => {
 			public: true,
 		});
 	});
+	settings.add('Accounts_Default_User_Preferences_sidebarShowServiceAccounts', true, {
+		group: 'Accounts',
+		section: 'Accounts_Default_User_Preferences',
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'Group_serviceAccounts',
+	});
 });
