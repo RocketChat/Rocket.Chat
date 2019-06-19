@@ -7,3 +7,5 @@ import './methods/usernameExists';
 import './methods/addServiceAccount';
 
 import './publications/fullServiceAccountData';
+
+import './hooks/serviceAccountBroadcast';
