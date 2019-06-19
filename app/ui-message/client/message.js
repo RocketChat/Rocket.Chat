@@ -434,7 +434,7 @@ const findParentMessage = (() => {
 		const uid = Tracker.nonreactive(() => Meteor.userId());
 		const _tmp = [...waiting];
 		waiting.length = 0;
-		(await call('getMessages', _tmp)).map((msg) => upsertMessage({ msg, uid }));
+		(await call('getMessages', _tmp)).map((msg) => upsertMessage({ msg: { ...msg, _hidden: true }, uid }));
 	}, 500);
 
 	return (tmid) => {
