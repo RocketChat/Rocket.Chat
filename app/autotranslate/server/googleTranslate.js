@@ -4,7 +4,7 @@
 
 import { TAPi18n } from 'meteor/tap:i18n';
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
+import { logger } from './logger';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
@@ -118,7 +118,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
 			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+				logger.google.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -150,7 +150,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 				}
 			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+				logger.google.error('Error translating message', e);
 			}
 
 		});
