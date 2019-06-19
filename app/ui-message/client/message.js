@@ -424,6 +424,13 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	isNewsfeed() {
+		const { room } = this;
+		if (room.t === 'n') {
+			return true;
+		}
+		return false;
+	},
 });
 
 
