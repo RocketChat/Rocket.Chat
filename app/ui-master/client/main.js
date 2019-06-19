@@ -7,8 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { getConfig } from '../../ui-utils/client/config';
-import { t, getUserPreference } from '../../utils';
+import { t, getUserPreference } from '../../utils/client';
 import { chatMessages } from '../../ui';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
@@ -17,8 +16,22 @@ import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../mo
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../tooltip';
+import { callbacks } from '../../callbacks/client';
+
+function executeCustomScript(script) {
+	eval(script);//eslint-disable-line
+}
+
+function customScriptsOnLogout() {
+	const script = settings.get('Custom_Script_On_Logout') || '';
+	if (script.trim()) {
+		executeCustomScript(script);
+	}
+}
 
 settings.collection.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
+
+callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -134,8 +147,6 @@ Template.main.onCreated(function() {
 	tooltip.init();
 });
 
-
-const skipActiveUsersToBeReady = [getConfig('experimental'), getConfig('skipActiveUsersToBeReady')].includes('true');
 Template.main.helpers({
 	removeSidenav() {
 		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
@@ -160,12 +171,7 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const subscriptions = ['userData'];
-		if (!skipActiveUsersToBeReady) {
-			subscriptions.push('activeUsers');
-		}
-		const routerReady = FlowRouter.subsReady.apply(FlowRouter, subscriptions);
-
+		const routerReady = FlowRouter.subsReady('userData');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
 
@@ -179,7 +185,7 @@ Template.main.helpers({
 	hasUsername() {
 		const uid = Meteor.userId();
 		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
-		return (user && user.username) || settings.get('Accounts_AllowAnonymousRead');
+		return (user && user.username) || (!uid && settings.get('Accounts_AllowAnonymousRead'));
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
@@ -189,7 +195,7 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (user.services.totp !== undefined && user.services.totp.enabled) {
+		if (!user || (user.services.totp !== undefined && user.services.totp.enabled)) {
 			return false;
 		}
 
@@ -199,13 +205,13 @@ Template.main.helpers({
 	CustomScriptLoggedOut() {
 		const script = settings.get('Custom_Script_Logged_Out') || '';
 		if (script.trim()) {
-			eval(script);//eslint-disable-line
+			executeCustomScript(script);
 		}
 	},
 	CustomScriptLoggedIn() {
 		const script = settings.get('Custom_Script_Logged_In') || '';
 		if (script.trim()) {
-			eval(script);//eslint-disable-line
+			executeCustomScript(script);
 		}
 	},
 	embeddedVersion() {

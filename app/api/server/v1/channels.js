@@ -5,6 +5,8 @@ import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '..
 import { hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
+import { settings } from '../../../settings';
+
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
@@ -762,7 +764,7 @@ API.v1.addRoute('channels.setDefault', { authRequired: true }, {
 
 API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.description || !this.bodyParams.description.trim()) {
+		if (!this.bodyParams.hasOwnProperty('description')) {
 			return API.v1.failure('The bodyParam "description" is required');
 		}
 
@@ -781,6 +783,7 @@ API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 		});
 	},
 });
+
 
 API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 	post() {
@@ -802,7 +805,7 @@ API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 
 API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.purpose || !this.bodyParams.purpose.trim()) {
+		if (!this.bodyParams.hasOwnProperty('purpose')) {
 			return API.v1.failure('The bodyParam "purpose" is required');
 		}
 
@@ -846,7 +849,7 @@ API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
 
 API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
+		if (!this.bodyParams.hasOwnProperty('topic')) {
 			return API.v1.failure('The bodyParam "topic" is required');
 		}
 
@@ -868,7 +871,7 @@ API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 
 API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+		if (!this.bodyParams.hasOwnProperty('announcement')) {
 			return API.v1.failure('The bodyParam "announcement" is required');
 		}
 
@@ -1004,5 +1007,41 @@ API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
 		});
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
+	get() {
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false,
+		});
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		if (!settings.get('Accounts_AllowAnonymousRead')) {
+			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
+				method: 'channels.anonymousread',
+			});
+		}
+
+		const cursor = Messages.find(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages: normalizeMessagesForUser(messages, this.userId),
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 });

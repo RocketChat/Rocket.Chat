@@ -251,7 +251,9 @@ export const saveUser = function(userId, userData) {
 		setUsername(userData._id, userData.username);
 	}
 
-	setRealName(userData._id, userData.name);
+	if (userData.hasOwnProperty('name')) {
+		setRealName(userData._id, userData.name);
+	}
 
 	if (typeof userData.statusText === 'string') {
 		setStatusMessage(userData._id, userData.statusText);

@@ -754,7 +754,6 @@ rc-old select,
 	visibility: visible;
 
 	width: auto;
-	height: auto;
 
 	transition: opacity 0.2s ease-out;
 
@@ -4659,8 +4658,6 @@ rc-old select,
 }
 
 .rc-old .dropzone {
-	height: 100%;
-
 	& .dropzone-overlay {
 
 		position: absolute;

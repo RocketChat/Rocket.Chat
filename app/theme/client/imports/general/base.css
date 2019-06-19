@@ -89,7 +89,7 @@ button {
 
 	flex: 1 1 auto;
 
-	height: 1%;
+	height: 100%;
 
 	max-height: 100%;
 
@@ -255,6 +255,10 @@ button {
 .loading-animation .bounce2 {
 	-webkit-animation-delay: -0.16s;
 	animation-delay: -0.16s;
+}
+
+.file-picker-loading .loading-animation > .bounce {
+	background-color: #444444;
 }
 
 @keyframes loading-bouncedelay {

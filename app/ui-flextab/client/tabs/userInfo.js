@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -8,12 +7,13 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 
-import { getActions } from './userActions';
 import { DateFormat } from '../../../lib';
 import { popover } from '../../../ui-utils';
 import { t, templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
+import FullUser from '../../../models/client/models/FullUser';
+import { getActions } from './userActions';
 
 import './userInfo.html';
 
@@ -84,7 +84,7 @@ Template.userInfo.helpers({
 	userStatus() {
 		const user = Template.instance().user.get();
 		const userStatus = Session.get(`user_${ user.username }_status`);
-		return userStatus;
+		return userStatus || 'offline';
 	},
 
 	userStatusText() {
@@ -303,7 +303,7 @@ Template.userInfo.onCreated(function() {
 		} else if (data && data._id != null) {
 			filter = { _id: data._id };
 		}
-		const user = Meteor.users.findOne(filter);
+		const user = FullUser.findOne(filter);
 
 		return this.user.set(user);
 	});

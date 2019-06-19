@@ -10,6 +10,7 @@ import { Logger } from '../../logger';
 import { settings } from '../../settings';
 import { metrics } from '../../metrics';
 import { hasPermission, hasAllPermission } from '../../authorization';
+import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 
 
 const logger = new Logger('API', {});
@@ -239,8 +240,10 @@ class APIClass extends Restivus {
 					let result;
 					try {
 						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route)
-							&& (!this.userId || !hasPermission(this.userId, 'api-bypass-rate-limit'))
-							&& ((process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') === true) || process.env.NODE_ENV !== 'development');
+							&& settings.get('API_Enable_Rate_Limiter') === true
+							&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
+							&& !(this.userId && hasPermission(this.userId, 'api-bypass-rate-limit'));
+
 						if (shouldVerifyRateLimit) {
 							rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
@@ -382,6 +385,8 @@ class APIClass extends Restivus {
 
 				this.user = Meteor.users.findOne({
 					_id: auth.id,
+				}, {
+					fields: getDefaultUserFields(),
 				});
 
 				this.userId = this.user._id;
