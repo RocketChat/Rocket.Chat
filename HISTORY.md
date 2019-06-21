@@ -1,4 +1,27 @@
 
+# 1.1.3
+`2019-06-21  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Gap of messages when loading history when using threads ([#14837](https://github.com/RocketChat/Rocket.Chat/pull/14837))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: thread loading parent msg if is not loaded ([#14839](https://github.com/RocketChat/Rocket.Chat/pull/14839))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 # 1.1.2
 `2019-06-17  ·  3 🐛  ·  4 👩‍💻👨‍💻`
 
