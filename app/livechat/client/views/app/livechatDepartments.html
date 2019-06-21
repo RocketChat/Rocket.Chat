@@ -1,21 +1,22 @@
 <template name="livechatDepartments">
 	{{#requiresPermission 'view-livechat-manager'}}
-		<div class="list">
-			<table>
+		<div class="rc-table-content">
+			{{#table fixed='true'}}
 				<thead>
 					<tr>
-						<th width="20%">{{_ "Name"}}</th>
-						<th width="30%">{{_ "Description"}}</th>
-						<th width="10%">{{_ "Num_Agents"}}</th>
-						<th width="20%">{{_ "Enabled"}}</th>
-						<th width="20%">{{_ "Show_on_registration_page"}}</th>
-						<th>{{_ "Delete"}}</th>
+						<th><div class="table-fake-th">{{_ "Name"}}</div></th>
+						<th width="30%"><div class="table-fake-th">{{_ "Description"}}</div></th>
+						<th><div class="table-fake-th">{{_ "Num_Agents"}}</div></th>
+						<th><div class="table-fake-th">{{_ "Enabled"}}</div></th>
+						<th width="20%"><div class="table-fake-th">{{_ "Show_on_registration_page"}}</div></th>
+						<th width='40px'><div class="table-fake-th">&nbsp;</div></th>
 					</tr>
 				</thead>
 				<tbody>
 					{{#each departments}}
 						<tr class="department-info row-link" data-id="{{_id}}">
-							<td>{{name}}</td>
+							<td><div class="rc-table-wrapper">
+								<div class="rc-table-info"><span class="rc-table-title">{{name}}</span></div></div></td>
 							<td>{{description}}</td>
 							<td>{{numAgents}}</td>
 							<td>{{#if enabled}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
@@ -24,9 +25,10 @@
 						</tr>
 					{{/each}}
 				</tbody>
-			</table>
+			{{/table}}
 		</div>
-
-		<a href="{{pathFor 'livechat-department-new'}}" class="button primary">{{_ "New_Department"}}</a>
+		<div class="rc-button__group">
+			<a href="{{pathFor 'livechat-department-new'}}" class="rc-button rc-button--primary">{{_ "New_Department"}}</a>
+		</div>
 	{{/requiresPermission}}
 </template>
