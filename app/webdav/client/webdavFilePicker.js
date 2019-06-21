@@ -4,6 +4,7 @@ import _ from 'underscore';
 import toastr from 'toastr';
 import { Session } from 'meteor/session';
 import { Handlebars } from 'meteor/ui';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal, call } from '../../ui-utils';
 import { t } from '../../utils';
@@ -18,10 +19,13 @@ Template.webdavFilePicker.rendered = async function() {
 		return toastr.error(t(response.message));
 	}
 	Session.set('webdavNodes', response.data);
+	this.isLoading.set(false);
 };
+
 Template.webdavFilePicker.destroyed = function() {
 	Session.set('webdavNodes', []);
 };
+
 Template.webdavFilePicker.helpers({
 	iconType() {
 		// add icon for different types
@@ -52,6 +56,9 @@ Template.webdavFilePicker.helpers({
 		}
 		return { icon, type, extension };
 	},
+	isLoading() {
+		return Template.instance().isLoading.get();
+	},
 	webdavNodes() {
 		return Session.get('webdavNodes');
 	},
@@ -59,9 +66,12 @@ Template.webdavFilePicker.helpers({
 		return Session.get('webdavCurrentFolder');
 	},
 });
+
 Template.webdavFilePicker.events({
 	async 'click #webdav-go-back'() {
-		const { accountId } = Template.instance().data;
+		const instance = Template.instance();
+		const { accountId } = instance.data;
+		instance.isLoading.set(true);
 		let currentFolder = Session.get('webdavCurrentFolder');
 
 		// determine parent directory to go back
@@ -75,16 +85,20 @@ Template.webdavFilePicker.events({
 		Session.set('webdavCurrentFolder', parentFolder);
 		Session.set('webdavNodes', []);
 		const response = await call('getWebdavFileList', accountId, parentFolder);
+		instance.isLoading.set(false);
 		if (!response.success) {
 			return toastr.error(t(response.message));
 		}
 		Session.set('webdavNodes', response.data);
 	},
 	async 'click .webdav_directory'() {
-		const { accountId } = Template.instance().data;
+		const instance = Template.instance();
+		const { accountId } = instance.data;
+		instance.isLoading.set(true);
 		Session.set('webdavCurrentFolder', this.filename);
 		Session.set('webdavNodes', []);
 		const response = await call('getWebdavFileList', accountId, this.filename);
+		instance.isLoading.set(false);
 		if (!response.success) {
 			modal.close();
 			return toastr.error(t(response.message));
@@ -93,10 +107,12 @@ Template.webdavFilePicker.events({
 	},
 	async 'click .webdav_file'() {
 		const roomId = Session.get('openedRoom');
-		const { accountId } = Template.instance().data;
+		const instance = Template.instance();
+		const { accountId } = instance.data;
+		instance.isLoading.set(true);
 		const file = this;
 		const response = await call('getFileFromWebdav', accountId, file);
-
+		instance.isLoading.set(false);
 		if (!response.success) {
 			modal.close();
 			return toastr.error(t('Failed_to_get_webdav_file'));
@@ -106,15 +122,14 @@ Template.webdavFilePicker.events({
 		blob.lastModified = file.lastmod;
 		blob.name = file.basename;
 		const text = `
-<div class='upload-preview-title'>
-	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(blob.name) }' placeholder='${ t('Upload_file_name') }'>
-	</div>
-	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
-	</div>
-</div>`;
-
+			<div class='upload-preview-title'>
+				<div class="rc-input__wrapper">
+					<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(blob.name) }' placeholder='${ t('Upload_file_name') }'>
+				</div>
+				<div class="rc-input__wrapper">
+					<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+				</div>
+			</div>`;
 		return modal.open({
 			title: t('Upload_file_question'),
 			text,
@@ -199,4 +214,8 @@ Template.webdavFilePicker.events({
 			});
 		});
 	},
+});
+
+Template.webdavFilePicker.onCreated(function() {
+	this.isLoading = new ReactiveVar(true);
 });

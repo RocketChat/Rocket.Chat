@@ -1,38 +1,72 @@
 <template name="livechatManagers">
 	{{#requiresPermission 'view-livechat-manager'}}
 		<h2>{{_ "Livechat_managers"}}</h2>
-		<form id="form-manager" class="inline">
-			<label>{{_ "Add_manager"}}</label>
-			{{> inputAutocomplete settings=managerAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
-			<button name="add" class="button primary add">{{_ "Add"}}</button>
+		<form id="form-manager" class="form-inline">
+			<div class="form-group">
+				{{> livechatAutocompleteUser
+					onClickTag=onClickTagManagers
+					list=selectedManagers
+					deleteLastItem=deleteLastManager
+					onSelect=onSelectManagers
+					collection='UserAndRoom'
+					subscription='userAutocomplete'
+					field='username'
+					sort='username'
+					label="Search_by_username"
+					placeholder="Search_by_username"
+					name="username"
+					exceptions=exceptionsManagers
+					icon="at"
+					noMatchTemplate="userSearchEmpty"
+					templateItem="popupList_item_default"
+					modifier=managerModifier
+				}}
+			</div>
+			<div class="form-group">
+				<button name="add" class="rc-button rc-button--primary add" disabled='{{isloading}}'>{{_ "Add"}}</button>
+			</div>
 		</form>
-		<div class="list">
-			<table>
+		<div class="rc-table-content">
+			{{#table fixed='true'}}
 				<thead>
 					<tr>
-						<th>&nbsp;</th>
-						<th width="34%">{{_ "Name"}}</th>
-						<th width="33%">{{_ "Username"}}</th>
-						<th width="33%">{{_ "Email"}}</th>
-						<th>&nbsp;</th>
+						<th><div class="table-fake-th">{{_ "Name"}}</div></th>
+						<th width="33%"><div class="table-fake-th">{{_ "Username"}}</div></th>
+						<th width="33%"><div class="table-fake-th">{{_ "Email"}}</div></th>
+						<td width="40px">&nbsp;</td>
 					</tr>
 				</thead>
 				<tbody>
 					{{#each managers}}
-						<tr class="user-info" data-id="{{_id}}">
+						<tr class="rc-table-tr user-info row-link" data-id="{{_id}}">
 							<td>
-								<div class="user-image status-{{status}}">
-									{{> avatar username=username}}
+								<div class="rc-table-wrapper">
+									<div class="rc-table-avatar user-image status-{{status}}">{{> avatar username=username}}</div>
+									<div class="rc-table-info">
+										<span class="rc-table-title">
+											{{name}}
+										</span>
+									</div>
+								</div>
+								<div class="rc-table-wrapper">
+									<div class="rc-table-info">
+										<span class="rc-table-title">
+											{{fname}}
+										</span>
+									</div>
 								</div>
 							</td>
-							<td>{{name}}</td>
 							<td>{{username}}</td>
 							<td>{{emailAddress}}</td>
-							<td><a href="#remove" class="remove-manager"><i class="icon-trash"></i></a></td>
+							<td>
+								<a href="#remove" class="remove-manager">
+									<i class="icon-trash"></i>
+								</a>
+							</td>
 						</tr>
 					{{/each}}
 				</tbody>
-			</table>
+			{{/table}}
 		</div>
 	{{/requiresPermission}}
 </template>

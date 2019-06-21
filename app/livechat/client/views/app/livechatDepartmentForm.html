@@ -57,41 +57,45 @@
 						<fieldset>
 							<legend>{{_ "Selected_agents"}}</legend>
 
-							<div class="list">
-								<table>
+							<div class="rc-table-content">
+								{{#table fixed='true'}}
 									<thead>
 										<tr>
-											<th width="25%">{{_ "Username"}}</th>
-											<th>{{_ "Count"}}</th>
-											<th>{{_ "Order"}}</th>
-											<th>&nbsp;</th>
+											<th width="25%"><div class="table-fake-th">{{_ "Username"}}</div></th>
+											<th><div class="table-fake-th">{{_ "Count"}}</div></th>
+											<th><div class="table-fake-th">{{_ "Order"}}</div></th>
+											<th width="40px">&nbsp;</th>
 										</tr>
 									</thead>
 									<tbody>
-										{{#if selectedAgents}}
-											{{#each selectedAgents}}
-												<tr class="agent-info">
-													<td>{{username}}</td>
-													<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
-													<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
-													<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
-												</tr>
-											{{/each}}
+										{{#each selectedAgents}}
+											<tr class="agent-info">
+												<td>
+													<div class="rc-table-wrapper">
+														<div class="rc-table-info">
+															<span class="rc-table-title">{{username}}</span>
+														</div>
+													</div>
+												</td>
+												<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
+												<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
+												<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
+											</tr>
 										{{else}}
 											<tr>
 												<td colspan="4">{{_ "There_are_no_agents_added_to_this_department_yet"}}</td>
 											</tr>
-										{{/if}}
+										{{/each}}
 									</tbody>
-								</table>
+								{{/table}}
 							</div>
 
 						</fieldset>
 
 					</fieldset>
-					<div class="submit">
-						<button class="button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
-						<button class="button primary save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+					<div class="rc-button__group">
+						<button class="rc-button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
+						<button class="rc-button rc-button--primary save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
 					</div>
 				{{else}}
 					{{> loading}}
