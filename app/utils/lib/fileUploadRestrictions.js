@@ -1,8 +1,14 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { settings } from '../../settings';
+let settings;
+if (Meteor.isClient) {
+	settings = require('../../settings/client').settings;
+} else {
+	settings = require('../../settings/server').settings;
+}
 
-export const fileUploadMediaWhiteList = function(customWhiteList) {
+const fileUploadMediaWhiteList = function(customWhiteList) {
 	const mediaTypeWhiteList = customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
