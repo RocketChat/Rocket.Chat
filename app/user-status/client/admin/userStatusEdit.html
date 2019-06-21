@@ -13,7 +13,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Name"}}</div>
 						<div class="rc-input__wrapper">
-							<input id="name" name="name" type="text" class="rc-input__element" placeholder="{{_ " Name "}}" autocomplete="off">
+							<input name="name" type="text" value="{{userStatus.name}}" class="rc-input__element" placeholder="{{_ " Name "}}" autocomplete="off">
 						</div>
 					</label>
 				</div>
@@ -22,7 +22,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "StatusType"}}</div>
 						<div class="rc-select">
-							<select class="rc-select__element" name="statusType" id="statusType">
+							<select class="rc-select__element" name="statusType">
 								<option value="">{{_ "None"}}</option>
 								{{#each options}}
 									<option value="{{value}}" {{selected}}>{{name}}</option>
