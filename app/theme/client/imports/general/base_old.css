@@ -3742,58 +3742,58 @@ rc-old select,
 		}
 	}
 
-	& .edit-form {
-		padding: 20px 20px 0;
+	& .room-info-content > div {
+		margin: 0 0 20px;
+	}
+}
 
-		white-space: normal;
+.rc-old .edit-form {
+	padding: 20px 20px 0;
 
-		& h3 {
-			margin-bottom: 8px;
+	white-space: normal;
 
-			font-size: 24px;
-			line-height: 22px;
+	& h3 {
+		margin-bottom: 8px;
+
+		font-size: 24px;
+		line-height: 22px;
+	}
+
+	& p {
+		font-size: 12px;
+		font-weight: 300;
+		line-height: 18px;
+	}
+
+	& > .input-line {
+		margin-top: 20px;
+
+		& #password {
+			width: 70%;
 		}
 
-		& p {
-			font-size: 12px;
-			font-weight: 300;
-			line-height: 18px;
-		}
-
-		& > .input-line {
-			margin-top: 20px;
-
-			& #password {
-				width: 70%;
-			}
-
-			& #roleSelect {
-				width: 70%;
-			}
-		}
-
-		& nav {
-			padding: 0;
-
-			&.buttons {
-				margin-top: 2em;
-			}
-		}
-
-		& .form-divisor {
-			height: 9px;
-			margin: 2em 0;
-
-			text-align: center;
-
-			& > span {
-				padding: 0 1em;
-			}
+		& #roleSelect {
+			width: 70%;
 		}
 	}
 
-	& .room-info-content > div {
-		margin: 0 0 20px;
+	& nav {
+		padding: 0;
+
+		&.buttons {
+			margin-top: 2em;
+		}
+	}
+
+	& .form-divisor {
+		height: 9px;
+		margin: 2em 0;
+
+		text-align: center;
+
+		& > span {
+			padding: 0 1em;
+		}
 	}
 }
 

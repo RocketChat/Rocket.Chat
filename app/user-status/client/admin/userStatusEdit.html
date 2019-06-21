@@ -2,29 +2,39 @@
 	{{#unless hasPermission 'manage-user-status'}}
 		<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 	{{else}}
-		<div class="about clearfix">
+		<div class="about">
 			<form class="edit-form" autocomplete="off">
 				{{#if userStatus}}
 					<h3>{{userStatus.name}}</h3>
 				{{else}}
 					<h3>{{_ "Custom_User_Status_Add"}}</h3>
 				{{/if}}
-				<div class="input-line">
-					<label for="name">{{_ "Name"}}</label>
-					<input type="text" id="name" autocomplete="off" value="{{userStatus.name}}" class="content-background-color">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Name"}}</div>
+						<div class="rc-input__wrapper">
+							<input id="name" name="name" type="text" class="rc-input__element" placeholder="{{_ " Name "}}" autocomplete="off">
+						</div>
+					</label>
 				</div>
-				<div class="input-line">
-					<label for="statusType">{{_ "StatusType"}}</label>
-					<select id="statusType" name="statusType" class="content-background-color">
-						<option value="">{{_ "None"}}</option>
-						{{#each options}}
-						<option value="{{value}}" {{selected}}>{{name}}</option>
-						{{/each}}
-					</select>
+
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "StatusType"}}</div>
+						<div class="rc-select">
+							<select class="rc-select__element" name="statusType" id="statusType">
+								<option value="">{{_ "None"}}</option>
+								{{#each options}}
+									<option value="{{value}}" {{selected}}>{{name}}</option>
+								{{/each}}
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						</div>
+					</label>
 				</div>
-				<nav>
-					<button class='button button-block cancel' type="button"><span>{{_ "Cancel"}}</span></button>
-					<button class='button button-block primary save'><span>{{_ "Save"}}</span></button>
+				<nav class="rc-button__group rc-button__group--stretch">
+					<button class='rc-button rc-button--secondary cancel' type="button"><span>{{_ "Cancel"}}</span></button>
+					<button class='rc-button rc-button--primary save'><span>{{_ "Save"}}</span></button>
 				</nav>
 			</form>
 		</div>
