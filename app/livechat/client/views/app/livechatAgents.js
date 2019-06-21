@@ -206,4 +206,3 @@ Template.livechatAgents.events({
 	},
 	*/
 });
-
