@@ -3084,6 +3084,7 @@
   "UserData_ProcessingFrequency": "Processing Frequency (Minutes)",
   "UserDataDownload": "User Data Download",
   "UserDataDownload_CompletedRequestExisted_Text": "Your data file was already generated. Check your email account for the download link.",
+  "UserDataDownload_CompletedRequestExistedWithLink_Text": "Your data file was already generated. Click <a href=\"__download_link__\" target=\"_blank\">here</a> to download it.",
   "UserDataDownload_EmailBody": "Your data file is now ready to download. Click <a href=\"__download_link__\">here</a> to download it.",
   "UserDataDownload_EmailSubject": "Your Data File is Ready to Download",
   "UserDataDownload_Requested": "Download File Requested",

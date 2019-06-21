@@ -3,7 +3,7 @@ import path from 'path';
 
 import { Meteor } from 'meteor/meteor';
 
-import { ExportOperations } from '../../app/models';
+import { ExportOperations, UserDataFiles } from '../../app/models';
 import { settings } from '../../app/settings';
 
 let tempFolder = '/tmp/userData';
@@ -25,9 +25,21 @@ Meteor.methods({
 			yesterday.setUTCDate(yesterday.getUTCDate() - 1);
 
 			if (lastOperation.createdAt > yesterday) {
+				if (lastOperation.status === 'completed') {
+					const lastFile = UserDataFiles.findLastFileByUser(userId);
+					if (lastFile) {
+						return {
+							requested: false,
+							exportOperation: lastOperation,
+							url: lastFile.url,
+						};
+					}
+				}
+
 				return {
 					requested: false,
 					exportOperation: lastOperation,
+					url: null,
 				};
 			}
 		}
@@ -67,6 +79,7 @@ Meteor.methods({
 		return {
 			requested: true,
 			exportOperation,
+			url: null,
 		};
 	},
 });
