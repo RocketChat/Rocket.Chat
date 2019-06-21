@@ -15,6 +15,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
+		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
@@ -680,6 +681,16 @@ export class Users extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	updateStatusText(_id, statusText) {
+		const update = {
+			$set: {
+				statusText,
+			},
+		};
+
+		return this.update(_id, update);
 	}
 
 	updateLastLoginById(_id) {

@@ -1,0 +1,45 @@
+.edit-status-type.rc-popover {
+	&__item {
+		&--online {
+			color: var(--status-online);
+		}
+
+		&--away {
+			color: var(--status-away);
+		}
+
+		&--busy {
+			color: var(--status-busy);
+		}
+
+		&--offline {
+			color: var(--status-invisible);
+		}
+	}
+}
+
+.edit-status-type-icon {
+	&--online {
+		& .rc-icon {
+			color: var(--status-online);
+		}
+	}
+
+	&--away {
+		& .rc-icon {
+			color: var(--status-away);
+		}
+	}
+
+	&--busy {
+		& .rc-icon {
+			color: var(--status-busy);
+		}
+	}
+
+	&--offline {
+		& .rc-icon {
+			color: var(--status-invisible);
+		}
+	}
+}

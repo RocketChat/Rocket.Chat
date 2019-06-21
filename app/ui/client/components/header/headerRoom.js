@@ -4,6 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import s from 'underscore.string';
 
 import { t, roomTypes, handleError } from '../../../../utils';
 import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
@@ -22,6 +23,10 @@ const isDiscussion = ({ _id }) => {
 	return !!(room && room.prid);
 };
 
+const getUserStatus = (id) => {
+	const roomData = Session.get(`roomData${ id }`);
+	return roomTypes.getUserStatus(roomData.t, id) || 'offline';
+};
 
 Template.headerRoom.helpers({
 	back() {
@@ -106,8 +111,18 @@ Template.headerRoom.helpers({
 	},
 
 	userStatus() {
+		return getUserStatus(this._id);
+	},
+
+	userStatusText() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		return roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
+		const statusText = roomTypes.getUserStatusText(roomData.t, this._id);
+
+		if (s.trim(statusText)) {
+			return statusText;
+		}
+
+		return t(getUserStatus(this._id));
 	},
 
 	showToggleFavorite() {
