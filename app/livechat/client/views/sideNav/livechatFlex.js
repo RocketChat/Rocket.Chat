@@ -19,7 +19,7 @@ Template.livechatFlex.helpers({
 	},
 	sidebarItems() {
 		return sidebarItems.get();
-	}
+	},
 });
 
 Template.livechatFlex.events({

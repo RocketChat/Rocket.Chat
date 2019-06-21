@@ -44,7 +44,7 @@ Template.livechatDepartmentForm.helpers({
 				noMatchTemplate: Template.userSearchEmpty,
 				matchAll: true,
 				filter: {
-					exceptions: _.pluck(Template.instance().selectedAgents.get(), 'username')
+					exceptions: _.pluck(Template.instance().selectedAgents.get(), 'username'),
 				},
 				selector(match) {
 					return { term: match };
@@ -128,10 +128,10 @@ Template.livechatDepartmentForm.events({
 		}
 
 		const agentId = agent._id;
-		
+
 		const selectedAgents = instance.selectedAgents.get();
-		for (let oldAgent of selectedAgents) {
-			if (oldAgent.agentId == agentId) {
+		for (const oldAgent of selectedAgents) {
+			if (oldAgent.agentId === agentId) {
 				return toastr.error(t('This_agent_was_already_selected'));
 			}
 		}
@@ -141,8 +141,7 @@ Template.livechatDepartmentForm.events({
 		delete newAgent._id;
 		selectedAgents.push(newAgent);
 		instance.selectedAgents.set(selectedAgents);
-
-	},	
+	},
 
 	'click button.back'(e/* , instance*/) {
 		e.preventDefault();
