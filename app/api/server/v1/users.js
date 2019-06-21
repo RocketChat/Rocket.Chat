@@ -652,6 +652,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 				name: 1,
 				status: 1,
 				utcOffset: 1,
+				statusText: 1,
 			},
 		};
 
