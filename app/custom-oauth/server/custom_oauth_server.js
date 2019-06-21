@@ -173,6 +173,13 @@ export class CustomOAuth {
 				data = JSON.parse(response.content);
 			}
 
+			// replace all dots in keys with underscores
+			const keys_with_dot = Object.keys(data).filter((key) => key.includes('.'));
+			for (let i = 0; i < keys_with_dot.length; i++) {
+				data[keys_with_dot[i].replace('.', '_')] = data[keys_with_dot[i]];
+				delete data[keys_with_dot[i]];
+			}
+
 			logger.debug('Identity response', JSON.stringify(data, null, 2));
 
 			return this.normalizeIdentity(data);
