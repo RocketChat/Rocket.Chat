@@ -3,47 +3,82 @@
 		<fieldset>
 			<form class="form-inline" method="post">
 				<div class="form-group">
-					<label for="name">{{_ "Name"}}</label>
-					<input type="text" class="rc-input__element" name="name">
-				</div>
-
-				<div class="form-group">
-					<label for="agent">{{_ "Served_By"}}</label>
-					{{> inputAutocomplete settings=agentAutocompleteSettings id="agent" class="rc-input__element" autocomplete="off"}}
+					<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
 				</div>
 				<div class="form-group">
-					<label for="status">{{_ "Status"}}</label>
-					<select name="status">
-						<option value=""></option>
-						<option value="opened">{{_ "Opened"}}</option>
-						<option value="closed">{{_ "Closed"}}</option>
-					</select>
+					{{> livechatAutocompleteUser
+						onClickTag=onClickTagAgent
+						list=selectedAgents
+						onSelect=onSelectAgents
+						collection='UserAndRoom'
+						subscription='userAutocomplete'
+						field='username'
+						sort='username'
+						label="Served_By"
+						placeholder="Served_By"
+						name="agent"
+						icon="at"
+						noMatchTemplate="userSearchEmpty"
+						templateItem="popupList_item_default"
+						modifier=agentModifier
+					}}
+				</div>
+				<div class="form-group">
+					<div class="rc-select">
+						<select class="rc-select__element" name="status">
+							<option class="rc-select__option" value="">{{_ "All"}}</option>
+							<option class="rc-select__option" value="opened">{{_ "Opened"}}</option>
+							<option class="rc-select__option" value="closed">{{_ "Closed"}}</option>
+						</select>
+						{{> icon block="rc-select__arrow" icon="arrow-down" }}
+					</div>
 				</div>
 				<div class="form-group input-daterange">
-					<span class="input-group-addon">{{_ "Date_From"}}</span>
-					<input type="text" class="form-control rc-input__element" id="from" name="from" >
-						<span class="input-group-addon">{{_ "Date_to"}}</span>
-					<input type="text" class="form-control rc-input__element" id="to" name="to">
+					<input autocomplete="off" type="text" placeholder="{{_ "Date_From"}}" class="rc-input__element" id="from" name="from" >
+					<input autocomplete="off" type="text" placeholder="{{_ "Date_to"}}" class="rc-input__element" id="to" name="to">
 				</div>
-				<button class="button">{{_ "Filter"}}</button>
+				<div class="form-group">
+					<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+				</div>
 			</form>
 		</fieldset>
-		<div class="list">
-			<table>
+		<div class="rc-table-content">
+			{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 				<thead>
 					<tr>
-						<th width="25%">{{_ "Name"}}</th>
-						<th width="25%">{{_ "Served_By"}}</th>
-						<th width="15%">{{_ "Started_At"}}</th>
-						<th width="15%">{{_ "Last_Message_At"}}</th>
-						<th width="20%">{{_ "Status"}}</th>
-						<th>&nbsp;</th>
+						<th width="25%">
+							<div class="table-fake-th">{{_ "Name"}}</div>
+						</th>
+						<th width="25%">
+							<div class="table-fake-th">{{_ "Served_By"}}</div>
+						</th>
+						<th width="15%">
+							<div class="table-fake-th">{{_ "Started_At"}}</div>
+						</th>
+
+						<th width="15%">
+							<div class="table-fake-th">{{_ "Last_Message_At"}}</div>
+						</th>
+						<th width="15%">
+							<div class="table-fake-th">{{_ "Status"}}</div>
+						</th>
+
+						<th width="5%"><div class="table-fake-th">&nbsp;</div></th>
 					</tr>
 				</thead>
 				<tbody>
 					{{#each livechatRoom}}
-						<tr class="row-link">
-							<td>{{fname}}</td>
+						<tr class="rc-table-tr manage row-link" data-name="{{latest.name}}">
+
+							<td>
+								<div class="rc-table-wrapper">
+									<div class="rc-table-info">
+										<span class="rc-table-title">
+											{{fname}}
+										</span>
+									</div>
+								</div>
+							</td>
 							<td>{{servedBy}}</td>
 							<td>{{startedAt}}</td>
 							<td>{{lastMessage}}</td>
@@ -59,11 +94,18 @@
 							{{/requiresPermission}}
 						</tr>
 					{{/each}}
+					{{#unless isReady}}
+						<tr class="table-no-click">
+							<td colspan="5" class="table-loading-td">{{> loading}}</td>
+						</tr>
+					{{/unless}}
 				</tbody>
-			</table>
+			{{/table}}
 		</div>
-		<div class="text-center">
-			<button class="button load-more">{{_ "Load_more"}}</button>
-		</div>
+		{{#if hasMore}}
+			<div class="rc-button__group">
+				<button class="rc-button rc-button--primary js-load-more">{{_ "Load_more"}}</button>
+			</div>
+		{{/if}}
 	{{/requiresPermission}}
 </template>
