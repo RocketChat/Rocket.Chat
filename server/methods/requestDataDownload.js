@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
 
 import { ExportOperations, UserDataFiles } from '../../app/models';
@@ -45,22 +46,22 @@ Meteor.methods({
 		}
 
 		if (!fs.existsSync(tempFolder)) {
-			fs.mkdirSync(tempFolder);
+			mkdirp.sync(tempFolder);
 		}
 
 		const subFolderName = fullExport ? 'full' : 'partial';
 		const baseFolder = path.join(tempFolder, userId);
 		if (!fs.existsSync(baseFolder)) {
-			fs.mkdirSync(baseFolder);
+			mkdirp.sync(baseFolder);
 		}
 
 		const folderName = path.join(baseFolder, subFolderName);
 		if (!fs.existsSync(folderName)) {
-			fs.mkdirSync(folderName);
+			mkdirp.sync(folderName);
 		}
 		const assetsFolder = path.join(folderName, 'assets');
 		if (!fs.existsSync(assetsFolder)) {
-			fs.mkdirSync(assetsFolder);
+			mkdirp.sync(assetsFolder);
 		}
 
 		const exportOperation = {
