@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { Rooms, LivechatDepartment } from '../../../models';
 
 Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (!this.userId) {
@@ -19,6 +19,7 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		status: Match.Maybe(String), // either 'opened' or 'closed'
 		from: Match.Maybe(Date),
 		to: Match.Maybe(Date),
+		department: Match.Maybe(String), // room department
 	});
 
 	const query = {};
@@ -49,14 +50,23 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		}
 		query.ts.$lte = filter.to;
 	}
+	if (filter.department) {
+		query.departmentId = filter.department;
+	}
 
 	const self = this;
 
 	const handle = Rooms.findLivechat(query, offset, limit).observeChanges({
 		added(id, fields) {
+			if (fields.departmentId) {
+				fields = Object.assign(fields, { lookupDepartment: LivechatDepartment.findOneById(fields.departmentId) });
+			}
 			self.added('livechatRoom', id, fields);
 		},
 		changed(id, fields) {
+			if (fields.departmentId) {
+				fields = Object.assign(fields, { lookupDepartment: LivechatDepartment.findOneById(fields.departmentId) });
+			}
 			self.changed('livechatRoom', id, fields);
 		},
 		removed(id) {

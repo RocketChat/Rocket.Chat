@@ -26,14 +26,32 @@
 					<button name="add" class="rc-button rc-button--primary add" disabled='{{isloading}}'>{{_ "Add"}}</button>
 				</div>
 			</form>
+
 			<div class="rc-table-content">
-				{{#table fixed='true'}}
+				<form class="search-form" role="form">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{#if isReady}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+								{{else}}
+									{{> loading }}
+								{{/if}}
+							</div>
+							<input id="agents-filter" type="text" class="rc-input__element"
+									placeholder="{{_ "Search"}}" autofocus dir="auto">
+							</div>
+				</form>
+				<div class="results">
+					{{{_ "Showing_results" agents.length}}}
+				</div>
+
+				{{#table fixed='true' onScroll=onTableScroll}}
 					<thead>
 						<tr>
 							<th><div class="table-fake-th">{{_ "Name"}}</div></th>
 							<th width="33%"><div class="table-fake-th">{{_ "Username"}}</div></th>
 							<th width="33%"><div class="table-fake-th">{{_ "Email"}}</div></th>
-							<td width="40px">&nbsp;</td>
+							<th width='40px'><div class="table-fake-th">&nbsp;</div></th>
 						</tr>
 					</thead>
 					<tbody>

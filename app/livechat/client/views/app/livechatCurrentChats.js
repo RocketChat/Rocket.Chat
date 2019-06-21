@@ -7,6 +7,7 @@ import { Template } from 'meteor/templating';
 
 import { modal, call } from '../../../../ui-utils';
 import { t } from '../../../../utils/client';
+import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import './livechatCurrentChats.html';
 
 const LivechatRoom = new Mongo.Collection('livechatRoom');
@@ -50,6 +51,9 @@ Template.livechatCurrentChats.helpers({
 	},
 	onClickTagAgent() {
 		return Template.instance().onClickTagAgent;
+	},
+	departments() {
+		return LivechatDepartment.find({}, { sort: { name: 1 } });
 	},
 });
 
@@ -143,6 +147,8 @@ Template.livechatCurrentChats.onCreated(function() {
 	this.autorun(() => {
 		this.ready.set(this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get()).ready());
 	});
+
+	this.subscribe('livechat:departments');
 });
 
 Template.livechatCurrentChats.onRendered(function() {

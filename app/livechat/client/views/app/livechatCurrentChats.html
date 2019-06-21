@@ -33,6 +33,17 @@
 						{{> icon block="rc-select__arrow" icon="arrow-down" }}
 					</div>
 				</div>
+				<div class="form-group">
+					<div class="rc-select">
+						<select class="rc-select__element" name="department">
+							<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
+							{{#each departments}}
+								<option class="rc-select__option" value="{{_id}}">{{name}}</option>
+							{{/each}}
+						</select>
+						{{> icon block="rc-select__arrow" icon="arrow-down" }}
+					</div>
+				</div>
 				<div class="form-group input-daterange">
 					<input autocomplete="off" type="text" placeholder="{{_ "Date_From"}}" class="rc-input__element" id="from" name="from" >
 					<input autocomplete="off" type="text" placeholder="{{_ "Date_to"}}" class="rc-input__element" id="to" name="to">
@@ -49,7 +60,10 @@
 						<th width="25%">
 							<div class="table-fake-th">{{_ "Name"}}</div>
 						</th>
-						<th width="25%">
+						<th width="15%">
+							<div class="table-fake-th">{{_ "Department"}}</div>
+						</th>
+						<th width="15%">
 							<div class="table-fake-th">{{_ "Served_By"}}</div>
 						</th>
 						<th width="15%">
@@ -59,7 +73,7 @@
 						<th width="15%">
 							<div class="table-fake-th">{{_ "Last_Message_At"}}</div>
 						</th>
-						<th width="15%">
+						<th width="10%">
 							<div class="table-fake-th">{{_ "Status"}}</div>
 						</th>
 
@@ -79,6 +93,7 @@
 									</div>
 								</div>
 							</td>
+							<td>{{lookupDepartment.name}}</td>
 							<td>{{servedBy}}</td>
 							<td>{{startedAt}}</td>
 							<td>{{lastMessage}}</td>
