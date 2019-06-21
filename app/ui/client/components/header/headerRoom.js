@@ -102,7 +102,7 @@ Template.headerRoom.helpers({
 	},
 	encryptionState() {
 		const room = ChatRoom.findOne(this._id);
-		return (room && room.encrypted) && 'encrypted';
+		return settings.get('E2E_Enable') && room && room.encrypted && 'encrypted';
 	},
 
 	userStatus() {
