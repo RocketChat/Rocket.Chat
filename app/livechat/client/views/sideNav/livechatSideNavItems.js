@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+
 export const sidebarItems = new ReactiveVar([]);
 export const addSidebarItem = (title, slug) => {
 	sidebarItems.set([
@@ -5,7 +7,7 @@ export const addSidebarItem = (title, slug) => {
 		{
 			title,
 			slug,
-		}
+		},
 	]);
 };
 
