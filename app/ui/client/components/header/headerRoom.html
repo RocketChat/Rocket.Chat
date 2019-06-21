@@ -42,7 +42,7 @@
 					{{#if isDirect}}
 					<span class="rc-header__status">
 						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
-						<div class="rc-header__visual-status">{{_ userStatus}}</div>
+						<div class="rc-header__visual-status">{{userStatusText}}</div>
 					</span>
 					{{else}}
 					{{#if roomTopic}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}

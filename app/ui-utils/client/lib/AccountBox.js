@@ -11,8 +11,8 @@ import { SideNav } from './SideNav';
 export const AccountBox = (function() {
 	let status = 0;
 	const items = new ReactiveVar([]);
-	function setStatus(status) {
-		return Meteor.call('UserPresence:setDefaultStatus', status);
+	function setStatus(status, statusText) {
+		return Meteor.call('setUserStatus', status, statusText);
 	}
 	function open() {
 		if (SideNav.flexStatus()) {

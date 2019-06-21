@@ -21,6 +21,7 @@ import { UserRoles } from './models/UserRoles';
 import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
 import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
+import CustomUserStatus from './models/CustomUserStatus';
 import EmojiCustom from './models/EmojiCustom';
 
 const Users = _.extend({}, users, Meteor.users);
@@ -51,6 +52,7 @@ export {
 	ChatSubscription,
 	Rooms,
 	CustomSounds,
+	CustomUserStatus,
 	EmojiCustom,
 	WebdavAccounts,
 };
