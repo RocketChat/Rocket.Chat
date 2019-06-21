@@ -20,7 +20,7 @@ export class IMAPIntercepter {
 			keepalive: true,
 		});
 
-		this.delete = settings.get('Direct_Reply_Delete') ? settings.get('Direct_Reply_Delete') : true;
+		this.delete = settings.get('Direct_Reply_Delete');
 
 		// On successfully connected.
 		this.imap.on('ready', Meteor.bindEnvironment(() => {

@@ -228,13 +228,7 @@ class E2E {
 			this.decryptSubscription(doc);
 		});
 
-		Messages.after.update((userId, doc) => {
-			this.decryptMessage(doc);
-		});
-
-		Messages.after.insert((userId, doc) => {
-			this.decryptMessage(doc);
-		});
+		promises.add('onClientMessageReceived', (msg) => this.decryptMessage(msg), promises.priority.HIGH);
 	}
 
 	async changePassword(newPassword) {
@@ -408,30 +402,30 @@ class E2E {
 
 	async decryptMessage(message) {
 		if (!this.isEnabled()) {
-			return;
+			return message;
 		}
 
 		if (message.t !== 'e2e' || message.e2e === 'done') {
-			return;
+			return message;
 		}
 
 		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
-			return;
+			return message;
 		}
 
 		const data = await e2eRoom.decrypt(message.msg);
+
 		if (!data) {
-			return;
+			return message;
 		}
 
-		Messages.direct.update({ _id: message._id }, {
-			$set: {
-				msg: data.text,
-				e2e: 'done',
-			},
-		});
+		return {
+			...message,
+			msg: data.text,
+			e2e: 'done',
+		};
 	}
 
 	async decryptPendingMessages() {
@@ -439,8 +433,8 @@ class E2E {
 			return;
 		}
 
-		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async (item) => {
-			await this.decryptMessage(item);
+		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
+			Messages.direct.update({ _id }, await this.decryptMessage(msg));
 		});
 	}
 
@@ -506,6 +500,7 @@ Meteor.startup(function() {
 				e2e.enabled.set(true);
 			} else {
 				e2e.enabled.set(false);
+				e2e.closeAlert();
 			}
 		}
 	});

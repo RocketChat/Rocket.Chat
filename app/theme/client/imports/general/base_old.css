@@ -145,7 +145,17 @@
 }
 
 .rc-old .text-center {
+	display: flex;
+
 	text-align: center;
+	justify-content: center;
+}
+
+.rc-old .text-left {
+	display: flex;
+
+	text-align: left;
+	justify-content: start;
 }
 
 .connection-status > .alert {
@@ -754,7 +764,6 @@ rc-old select,
 	visibility: visible;
 
 	width: auto;
-	height: auto;
 
 	transition: opacity 0.2s ease-out;
 
@@ -4659,8 +4668,6 @@ rc-old select,
 }
 
 .rc-old .dropzone {
-	height: 100%;
-
 	& .dropzone-overlay {
 
 		position: absolute;
@@ -4944,13 +4951,6 @@ rc-old select,
 	}
 }
 
-.rc-old .load-more {
-	position: relative;
-
-	height: 10px;
-	padding: 1rem 0;
-}
-
 .rc-old .flex-tab {
 	&__content {
 		display: flex;
@@ -5184,6 +5184,8 @@ rc-old select,
 
 	& .form-group {
 		display: inline-block;
+
+		vertical-align: middle;
 	}
 }
 
