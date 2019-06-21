@@ -31802,6 +31802,350 @@
           ]
         }
       ]
+    },
+    "1.2.0-rc.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13933",
+          "title": "[NEW] Custom User Status",
+          "userLogin": "Hudell",
+          "milestone": "1.2.0",
+          "contributors": [
+            "Hudell",
+            "web-flow",
+            "engelgabriel",
+            "wreiske"
+          ]
+        },
+        {
+          "pr": "14645",
+          "title": "[FIX] Error when using Download My Data or Export My Data",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14175",
+          "title": "[IMPROVE] Adds link to download generated user data file",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14810",
+          "title": "[FIX] Removes E2E action button, icon and banner when E2E is disabled.",
+          "userLogin": "marceloschmidt",
+          "milestone": "1.2.0",
+          "contributors": [
+            "marceloschmidt"
+          ]
+        },
+        {
+          "pr": "13900",
+          "title": "[IMPROVE] Layout of livechat manager pages to new style",
+          "userLogin": "ggazzo",
+          "milestone": "1.2.0",
+          "contributors": [
+            "renatobecker",
+            "engelgabriel",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14839",
+          "title": "Regression: thread loading parent msg if is not loaded",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14837",
+          "title": "[FIX] Gap of messages when loading history when using threads",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14838",
+          "title": "[NEW] changed mongo version for snap from 3.2.7 to 3.4.20",
+          "userLogin": "LuluGO",
+          "contributors": [
+            "LuluGO"
+          ]
+        },
+        {
+          "pr": "14759",
+          "title": "[NEW] Add loading animation to webdav file picker",
+          "userLogin": "ubarsaiyan",
+          "contributors": [
+            "ubarsaiyan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14717",
+          "title": "[FIX] Anonymous chat read",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.1.2",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14699",
+          "title": "[NEW] Add tmid property to outgoing integration",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14805",
+          "title": "Fix not fully extracted pieces",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14710",
+          "title": "[FIX] Assume microphone is available",
+          "userLogin": "tassoevan",
+          "milestone": "1.2.0",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14714",
+          "title": "[NEW] Endpoint to anonymously read channel's messages",
+          "userLogin": "PrajvalRaval",
+          "milestone": "1.2.0",
+          "contributors": [
+            "PrajvalRaval",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14665",
+          "title": "[FIX] Move the set Avatar call on user creation to make sure the user has username",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14763",
+          "title": "[FIX] User status information on User Info panel",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.1.2",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14804",
+          "title": "Regression: Fix file upload",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14777",
+          "title": "Extract permissions functions",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14779",
+          "title": "[NEW] Add Livechat inquiries endpoints",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14754",
+          "title": "Add custom fileupload whitelist property",
+          "userLogin": "renatobecker",
+          "milestone": "1.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "14724",
+          "title": "[FIX] users typing forever",
+          "userLogin": "ggazzo",
+          "milestone": "1.2.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14709",
+          "title": "[FIX] Increasing time to rate limit in shield.svg endpoint and add a setting to disable API rate limiter",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14711",
+          "title": "[FIX] User Real Name being erased when not modified",
+          "userLogin": "Hudell",
+          "milestone": "1.1.2",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14690",
+          "title": "[NEW] Configuration to limit amount of livechat inquiries displayed",
+          "userLogin": "renatobecker",
+          "milestone": "1.2.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14569",
+          "title": "[FIX] Wrong filter field when filtering current Livechats",
+          "userLogin": "renatobecker",
+          "milestone": "1.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "14589",
+          "title": "[IMPROVE] Add an optional rocketchat-protocol DNS entry for Federation",
+          "userLogin": "alansikora",
+          "milestone": "1.2.0",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "14471",
+          "title": "[FIX] Import Chart.js error",
+          "userLogin": "sonbn0",
+          "contributors": [
+            "sonbn0",
+            "web-flow",
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14533",
+          "title": "[FIX] Name is undefined in some emails",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14624",
+          "title": "[IMPROVE] Use configurable colors on sidebar items",
+          "userLogin": "tassoevan",
+          "milestone": "1.2.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14686",
+          "title": "[FIX] SAML login error.",
+          "userLogin": "Hudell",
+          "milestone": "1.1.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14674",
+          "title": "Removing unnecesary federation configs",
+          "userLogin": "alansikora",
+          "milestone": "1.1.1",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "14656",
+          "title": "Merge master into develop & Set version to 1.2.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "mohamedar97",
+            "ggazzo",
+            "thaiphv",
+            "knrt10",
+            "lolimay",
+            "AnBo83",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14668",
+          "title": "[FIX] Load messages after disconnect and message box scroll missing",
+          "userLogin": "ggazzo",
+          "milestone": "1.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14493",
+          "title": "[FIX] Direct reply delete config and description",
+          "userLogin": "ruKurz",
+          "contributors": [
+            "ruKurz",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
