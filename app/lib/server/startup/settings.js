@@ -2660,6 +2660,17 @@ settings.addGroup('Setup_Wizard', function() {
 			secret: true,
 		});
 
+		this.add('Cloud_Workspace_PublicKey', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+			secret: true,
+		});
+
 		this.add('Cloud_Workspace_License', '', {
 			type: 'string',
 			hidden: true,

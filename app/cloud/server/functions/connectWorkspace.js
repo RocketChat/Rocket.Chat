@@ -51,6 +51,7 @@ export function connectWorkspace(token) {
 	Settings.updateValueById('Cloud_Workspace_Client_Id', data.client_id);
 	Settings.updateValueById('Cloud_Workspace_Client_Secret', data.client_secret);
 	Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', data.client_secret_expires_at);
+	Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
 
 	// Now that we have the client id and secret, let's get the access token
