@@ -28,6 +28,11 @@ const getUserStatus = (id) => {
 	return roomTypes.getUserStatus(roomData.t, id) || 'offline';
 };
 
+const getUserStatusText = (id) => {
+	const roomData = Session.get(`roomData${ id }`);
+	return roomTypes.getUserStatusText(roomData.t, id) || 'offline';
+};
+
 Template.headerRoom.helpers({
 	back() {
 		return Template.instance().data.back;
@@ -115,14 +120,7 @@ Template.headerRoom.helpers({
 	},
 
 	userStatusText() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		const statusText = roomTypes.getUserStatusText(roomData.t, this._id);
-
-		if (s.trim(statusText)) {
-			return statusText;
-		}
-
-		return t(getUserStatus(this._id));
+		return getUserStatusText(this._id);
 	},
 
 	showToggleFavorite() {

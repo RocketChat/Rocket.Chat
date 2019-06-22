@@ -14,6 +14,7 @@ UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => 
 	const {
 		_id,
 		username,
+		statusText,
 	} = user;
 
 	// since this callback can be called by only one instance in the cluster
@@ -22,5 +23,6 @@ UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => 
 		_id,
 		username,
 		STATUS_MAP[status],
+		statusText,
 	]);
 });

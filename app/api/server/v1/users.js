@@ -18,7 +18,7 @@ import {
 } from '../../../lib';
 import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
-import { setStatusMessage } from '../../../lib/server';
+import { setStatusText } from '../../../lib/server';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -370,7 +370,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 
 		Meteor.runAsUser(user._id, () => {
 			if (this.bodyParams.message) {
-				setStatusMessage(user._id, this.bodyParams.message);
+				setStatusText(user._id, this.bodyParams.message);
 			}
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];

@@ -295,7 +295,7 @@ Template.sidebarHeader.helpers({
 			};
 		}
 		return id && Meteor.users.findOne(id, { fields: {
-			username: 1, status: 1,
+			username: 1, status: 1, statusText: 1,
 		} });
 	},
 	toolbarButtons() {
@@ -317,9 +317,10 @@ Template.sidebarHeader.events({
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
 
+			const statusText = user.statusText || t(user.status);
+
 			const userStatusList = Object.keys(userStatus.list).map((key) => {
 				const status = userStatus.list[key];
-				const customName = status.localizeName ? null : status.name;
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
 
@@ -327,11 +328,9 @@ Template.sidebarHeader.events({
 					icon: 'circle',
 					name,
 					modifier,
-					action: () => setStatus(status.statusType, customName),
+					action: () => setStatus(status.statusType, statusText),
 				};
 			});
-
-			const statusText = user.statusText || t(user.status);
 
 			userStatusList.push({
 				icon: 'edit',
