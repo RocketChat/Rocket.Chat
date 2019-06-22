@@ -8,35 +8,33 @@ import { Notifications } from '../../notifications';
 
 function Status(command, params, item) {
 	if (command === 'status') {
-		if ((Meteor.isClient && hasPermission('edit-other-user-info')) || (Meteor.isServer && hasPermission(Meteor.userId(), 'edit-other-user-info'))) {
-			const user = Meteor.users.findOne(Meteor.userId());
+		const user = Meteor.users.findOne(Meteor.userId());
 
-			Meteor.call('setUserStatus', null, params, (err) => {
-				if (err) {
-					if (Meteor.isClient) {
-						return handleError(err);
-					}
+		Meteor.call('setUserStatus', null, params, (err) => {
+			if (err) {
+				if (Meteor.isClient) {
+					return handleError(err);
+				}
 
-					if (err.error === 'error-not-allowed') {
-						Notifications.notifyUser(Meteor.userId(), 'message', {
-							_id: Random.id(),
-							rid: item.rid,
-							ts: new Date(),
-							msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
-						});
-					}
-
-					throw err;
-				} else {
+				if (err.error === 'error-not-allowed') {
 					Notifications.notifyUser(Meteor.userId(), 'message', {
 						_id: Random.id(),
 						rid: item.rid,
 						ts: new Date(),
-						msg: TAPi18n.__('StatusMessage_Changed_Successfully', null, user.language),
+						msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
 					});
 				}
-			});
-		}
+
+				throw err;
+			} else {
+				Notifications.notifyUser(Meteor.userId(), 'message', {
+					_id: Random.id(),
+					rid: item.rid,
+					ts: new Date(),
+					msg: TAPi18n.__('StatusMessage_Changed_Successfully', null, user.language),
+				});
+			}
+		});
 	}
 }
 
