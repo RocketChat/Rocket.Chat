@@ -29,7 +29,7 @@ const getUserStatus = (id) => {
 
 const getUserStatusText = (id) => {
 	const roomData = Session.get(`roomData${ id }`);
-	return roomTypes.getUserStatusText(roomData.t, id) || 'offline';
+	return roomTypes.getUserStatusText(roomData.t, id);
 };
 
 Template.headerRoom.helpers({

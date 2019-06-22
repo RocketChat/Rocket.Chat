@@ -93,7 +93,7 @@ Template.userInfo.helpers({
 
 		const user = Template.instance().user.get();
 		const userStatus = Session.get(`user_${ user.username }_status`);
-		return userStatus || TAPi18n.__('offline');
+		return userStatus;
 	},
 
 	email() {

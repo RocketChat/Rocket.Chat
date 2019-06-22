@@ -316,13 +316,18 @@ Template.sidebarHeader.events({
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
-
-			const statusText = user.statusText || t(user.status);
-
+			const STATUS_MAP = [
+				'offline',
+				'online',
+				'away',
+				'busy',
+			];
 			const userStatusList = Object.keys(userStatus.list).map((key) => {
 				const status = userStatus.list[key];
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
+				const defaultStatus = STATUS_MAP.includes(status.id);
+				const statusText = defaultStatus ? '' : user.statusText || name || t(user.status);
 
 				return {
 					icon: 'circle',
@@ -331,6 +336,8 @@ Template.sidebarHeader.events({
 					action: () => setStatus(status.statusType, statusText),
 				};
 			});
+
+			const statusText = user.statusText || t(user.status);
 
 			userStatusList.push({
 				icon: 'edit',
