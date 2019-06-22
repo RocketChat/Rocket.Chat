@@ -10,6 +10,7 @@ import './views/app/analytics/livechatAnalyticsCustomDaterange';
 import './views/app/analytics/livechatAnalyticsDaterange';
 import './views/app/analytics/livechatRealTimeMonitoring';
 import './views/app/livechatAppearance';
+import './views/app/livechatAutocompleteUser';
 import './views/app/livechatCurrentChats';
 import './views/app/livechatCustomFields';
 import './views/app/livechatCustomFieldForm';

@@ -46,6 +46,7 @@ Meteor.startup(function() {
 		{ _id: 'leave-p',                       roles: ['admin', 'user', 'bot', 'anonymous'] },
 		{ _id: 'manage-assets',                 roles: ['admin'] },
 		{ _id: 'manage-emoji',                  roles: ['admin'] },
+		{ _id: 'manage-user-status',            roles: ['admin'] },
 		{ _id: 'manage-integrations',           roles: ['admin'] },
 		{ _id: 'manage-own-integrations',       roles: ['admin'] },
 		{ _id: 'manage-oauth-apps',             roles: ['admin'] },
