@@ -3,7 +3,6 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { Random } from 'meteor/random';
 
 import { handleError, slashCommands } from '../../utils';
-import { hasPermission } from '../../authorization';
 import { Notifications } from '../../notifications';
 
 function Status(command, params, item) {
