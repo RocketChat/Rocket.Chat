@@ -2,11 +2,9 @@ import { modal } from './modal';
 import { t } from '../../../utils';
 
 export function authorize(appName) {
-	const warnText = 'Obtain your Rocket.Chat username, userId and avatar.';
-
 	modal.open({
 		title: t('S_apply', appName),
-		text: warnText ? t(warnText, name) : '',
+		text: t('Obtain_username_userId_and_avatar'),
 		type: 'warning',
 		showCancelButton: true,
 		confirmButtonColor: '#DD6B55',
