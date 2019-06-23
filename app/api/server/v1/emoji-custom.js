@@ -122,7 +122,7 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 						if (!fields._id) {
 							return callback(new Meteor.Error('The required "_id" query param is missing.'));
 						}
-						const emojiToUpdate = EmojiCustom.findOneByID(fields._id);
+						const emojiToUpdate = EmojiCustom.findOneById(fields._id);
 						if (!emojiToUpdate) {
 							return callback(new Meteor.Error('Emoji not found.'));
 						}

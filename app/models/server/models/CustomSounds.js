@@ -8,7 +8,7 @@ class CustomSounds extends Base {
 	}
 
 	// find one
-	findOneByID(_id, options) {
+	findOneById(_id, options) {
 		return this.findOne(_id, options);
 	}
 
@@ -21,7 +21,7 @@ class CustomSounds extends Base {
 		return this.find(query, options);
 	}
 
-	findByNameExceptID(name, except, options) {
+	findByNameExceptId(name, except, options) {
 		const query = {
 			_id: { $nin: [except] },
 			name,
@@ -48,7 +48,7 @@ class CustomSounds extends Base {
 
 
 	// REMOVE
-	removeByID(_id) {
+	removeById(_id) {
 		return this.remove(_id);
 	}
 }

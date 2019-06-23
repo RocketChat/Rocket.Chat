@@ -1,19 +1,18 @@
 <template name="selectDropdown">
-	<div class="rc-input">
+	<div class="rc-input rc-input--small">
 		<label class="rc-input__label">
-			<div class="rc-input__title">Invite people to channel</div>
+			<div class="rc-input__title">{{title}}</div>
 			<div class="rc-input__wrapper">
-				<div class="rc-input__icon">
-					{{> icon block="rc-input__icon-svg" icon="at"}}
-				</div>
-				{{ selectedUsers }}
-				<input type="text" class="rc-input__element" placeholder="Type user name" name="users">
+				<select type="text" class="rc-input__element" placeholder="{{placeholder}}" name="{{name}}">
+					{{#each option in options}}
+						{{#if option.selected}}
+						<option value={{option.value}} selected>{{option.title}}</option>
+						{{else}}
+						<option value={{option.value}}>{{option.title}}</option>
+						{{/if}}
+					{{/each}}
+				</select>
 			</div>
 		</label>
-		{{#if open}}
-		<div class="fadeInDown">
-			{{ > popupList .}}
-		</div>
-		{{/if}}
 	</div>
 </template>

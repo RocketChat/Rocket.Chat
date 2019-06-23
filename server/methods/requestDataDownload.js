@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
+import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
 
-import { ExportOperations } from '../../app/models';
+import { ExportOperations, UserDataFiles } from '../../app/models';
 import { settings } from '../../app/settings';
 
 let tempFolder = '/tmp/userData';
@@ -25,30 +26,42 @@ Meteor.methods({
 			yesterday.setUTCDate(yesterday.getUTCDate() - 1);
 
 			if (lastOperation.createdAt > yesterday) {
+				if (lastOperation.status === 'completed') {
+					const lastFile = UserDataFiles.findLastFileByUser(userId);
+					if (lastFile) {
+						return {
+							requested: false,
+							exportOperation: lastOperation,
+							url: lastFile.url,
+						};
+					}
+				}
+
 				return {
 					requested: false,
 					exportOperation: lastOperation,
+					url: null,
 				};
 			}
 		}
 
 		if (!fs.existsSync(tempFolder)) {
-			fs.mkdirSync(tempFolder);
+			mkdirp.sync(tempFolder);
 		}
 
 		const subFolderName = fullExport ? 'full' : 'partial';
 		const baseFolder = path.join(tempFolder, userId);
 		if (!fs.existsSync(baseFolder)) {
-			fs.mkdirSync(baseFolder);
+			mkdirp.sync(baseFolder);
 		}
 
 		const folderName = path.join(baseFolder, subFolderName);
 		if (!fs.existsSync(folderName)) {
-			fs.mkdirSync(folderName);
+			mkdirp.sync(folderName);
 		}
 		const assetsFolder = path.join(folderName, 'assets');
 		if (!fs.existsSync(assetsFolder)) {
-			fs.mkdirSync(assetsFolder);
+			mkdirp.sync(assetsFolder);
 		}
 
 		const exportOperation = {
@@ -67,6 +80,7 @@ Meteor.methods({
 		return {
 			requested: true,
 			exportOperation,
+			url: null,
 		};
 	},
 });
