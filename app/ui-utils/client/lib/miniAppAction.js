@@ -5,7 +5,7 @@ export function authorize(appName) {
 	const warnText = 'Obtain your Rocket.Chat username, userId and avatar.';
 
 	modal.open({
-		title: `${ appName } ${ t('Apply') }`,
+		title: t('S_apply', appName),
 		text: warnText ? t(warnText, name) : '',
 		type: 'warning',
 		showCancelButton: true,

@@ -2503,6 +2503,7 @@
   "run-migration_description": "运行迁移的权限",
   "Running_Instances": "正在运行的实例",
   "Runtime_Environment": "运行环境",
+  "S_apply": "%s 申请",
   "S_new_messages_since_s": "%s 新消息，自从 %s",
   "Same_As_Token_Sent_Via": "与“通过发送的令牌”相同",
   "Same_Style_For_Mentions": "同样的风格提及",

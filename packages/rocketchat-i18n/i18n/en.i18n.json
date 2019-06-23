@@ -2530,6 +2530,7 @@
   "run-migration_description": "Permission to run the migrations",
   "Running_Instances": "Running Instances",
   "Runtime_Environment": "Runtime Environment",
+  "S_apply": "%s Apply",
   "S_new_messages_since_s": "%s new messages since %s",
   "Same_As_Token_Sent_Via": "Same as \"Token Sent Via\"",
   "Same_Style_For_Mentions": "Same style for mentions",
