@@ -9,7 +9,21 @@ export class LivechatSessions extends Base {
 		super('livechat_sessions');
 	}
 
-	getUserLocationByToken(token) {
+	findOneVisitorByTokenAndUpdateCount(token) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$inc: {
+				count: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findOneVisitorLocationByToken(token) {
 		const query = {
 			token,
 		};
@@ -17,13 +31,14 @@ export class LivechatSessions extends Base {
 		return this.findOne(query);
 	}
 
-	saveLocationForUser(locationData) {
-		const { token, location } = locationData;
+	saveVisitorLocation(data = {}) {
+		const { token, location } = data;
 
 		return this.insert({
 			token,
 			location,
 			ts: new Date(),
+			count: 1,
 		});
 	}
 }

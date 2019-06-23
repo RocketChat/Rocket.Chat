@@ -6,14 +6,18 @@
         <th>{{_ "ID"}}</th>
         <th>{{_ "Country"}}</th>
         <th>{{_ "City"}}</th>
-        <th>{{_ "IP Address"}}</th>
+        <th>{{_ "Latitude"}}</th>
+        <th>{{_ "Longitude"}}</th>
+        <th>{{_ "Visits"}}</th>
       </tr>
       {{#each userLocation}}
       <tr data-id="{{_id}}">
         <td>{{_id}}</td>
-        <td>{{location.country_name}}</td>
+        <td>{{location.countryName}}</td>
         <td>{{location.city}}</td>
-        <td>{{location.IPv4}}</td>
+        <td>{{location.latitude}}</td>
+        <td>{{location.longitude}}</td>
+        <td>{{count}}</td>
       </tr>
       {{/each}}
     </table>
