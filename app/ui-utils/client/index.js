@@ -6,6 +6,7 @@ export { menu } from './lib/menu';
 export { call } from './lib/callMethod';
 export { erase, hide, leave } from './lib/ChannelActions';
 export { MessageAction } from './lib/MessageAction';
+export { miniAppAtion } from './lib/miniAppAction';
 export { messageBox } from './lib/messageBox';
 export { popover } from './lib/popover';
 export { readMessage } from './lib/readMessages';
