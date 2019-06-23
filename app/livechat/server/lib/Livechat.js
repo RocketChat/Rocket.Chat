@@ -929,12 +929,12 @@ export const Livechat = {
 		});
 	},
 
-	checkUserLocation(token) {
-		return LivechatSessions.getUserLocationByToken(token);
+	getVisitorLocation(token) {
+		return LivechatSessions.findOneVisitorLocationByToken(token);
 	},
 
-	addUserLocationData(locationData) {
-		return LivechatSessions.saveLocationForUser(locationData);
+	updateVisitorLocation(data = {}) {
+		return LivechatSessions.saveVisitorLocation(data);
 	},
 };
 

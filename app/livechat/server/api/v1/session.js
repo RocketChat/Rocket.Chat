@@ -1,4 +1,4 @@
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../api';
 import { Livechat } from '../../lib/Livechat';
@@ -9,7 +9,7 @@ API.v1.addRoute('livechat/userLocation/:token', {
 			token: String,
 		});
 
-		return Livechat.checkUserLocation(this.urlParams.token);
+		return Livechat.getVisitorLocation(this.urlParams.token);
 	},
 });
 
@@ -17,9 +17,15 @@ API.v1.addRoute('livechat/addLocationData', {
 	post() {
 		check(this.bodyParams, {
 			token: String,
-			location: Object,
+			location: Match.ObjectIncluding({
+				city: String,
+				countryCode: String,
+				countryName: String,
+				latitude: Number,
+				longitude: Number,
+			}),
 		});
 
-		return Livechat.addUserLocationData(this.bodyParams);
+		return Livechat.updateVisitorLocation(this.bodyParams);
 	},
 });
