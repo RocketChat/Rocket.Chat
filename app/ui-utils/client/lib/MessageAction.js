@@ -231,8 +231,8 @@ Meteor.startup(async function() {
 		classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads'],
 		action(event) {
-			const { msg: message } = messageArgs(this);
-			$(event.currentTarget).attr('data-clipboard-text', message);
+			const { msg: { msg } } = messageArgs(this);
+			$(event.currentTarget).attr('data-clipboard-text', msg);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
