@@ -9,6 +9,7 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
+import { getConfig } from '../../../ui-utils/client/config';
 
 class CachedCollectionManagerClass {
 	constructor() {
@@ -99,7 +100,7 @@ class CachedCollectionManagerClass {
 
 export const CachedCollectionManager = new CachedCollectionManagerClass();
 
-const debug = false;
+const debug = (name) => [getConfig(`debugCachedCollection-${ name }`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true');
 
 const nullLog = function() {};
 
