@@ -12,7 +12,7 @@ export class LivechatDepartmentAgents extends Base {
 	}
 
 	findByDepartmentId(departmentId) {
-		return this.find({ departmentId });
+		return this.findWithPermissions({ departmentId });
 	}
 
 	saveAgent(agent) {
@@ -29,7 +29,7 @@ export class LivechatDepartmentAgents extends Base {
 	}
 
 	removeByDepartmentIdAndAgentId(departmentId, agentId) {
-		this.remove({ departmentId, agentId });
+		this.removeWithPermissions({ departmentId, agentId });
 	}
 
 	getNextAgentForDepartment(departmentId) {
@@ -92,7 +92,7 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		return this.find(query);
+		return this.findWithPermissions(query);
 	}
 
 	findUsersInQueue(usersList) {
@@ -113,7 +113,7 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findWithPermissions(query, options);
 	}
 
 	replaceUsernameOfAgentByUserId(userId, username) {
@@ -125,7 +125,7 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.updateWithPermissions(query, update, { multi: true });
 	}
 }
 export default new LivechatDepartmentAgents();
