@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { settings } from '../../../settings';
-import { RateLimiter, setStatusMessage } from '../../../lib';
+import { RateLimiter, setStatusText } from '../../../lib';
 
 Meteor.methods({
 	setUserStatus(statusType, statusText) {
@@ -20,7 +20,7 @@ Meteor.methods({
 			}
 
 			const userId = Meteor.userId();
-			setStatusMessage(userId, statusText);
+			setStatusText(userId, statusText);
 		}
 	},
 });
