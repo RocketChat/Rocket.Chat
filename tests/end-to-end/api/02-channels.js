@@ -8,7 +8,7 @@ import {
 } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
-import { updatePermission } from '../../data/permissions.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 
@@ -1242,6 +1242,42 @@ describe('[Channels]', function() {
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
 				.end(done);
+		});
+	});
+	describe('/channels.anonymousread', () => {
+		after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+		it('should return an error when the setting "Accounts_AllowAnonymousRead" is disabled', (done) => {
+			updateSetting('Accounts_AllowAnonymousRead', false).then(() => {
+				request.get(api('channels.anonymousread'))
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body).to.have.a.property('error');
+						expect(res.body).to.have.a.property('errorType');
+						expect(res.body.errorType).to.be.equal('error-not-allowed');
+						expect(res.body.error).to.be.equal('Enable \"Allow Anonymous Read\" [error-not-allowed]');
+					})
+					.end(done);
+			});
+		});
+		it('should return the messages list when the setting "Accounts_AllowAnonymousRead" is enabled', (done) => {
+			updateSetting('Accounts_AllowAnonymousRead', true).then(() => {
+				request.get(api('channels.anonymousread'))
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('messages').that.is.an('array');
+					})
+					.end(done);
+			});
 		});
 	});
 });
