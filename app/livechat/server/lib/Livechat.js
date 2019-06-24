@@ -310,7 +310,7 @@ export const Livechat = {
 			};
 		}
 
-		Rooms.closeByRoomId(room._id, closeData);
+		Rooms.closeLivechatByRoomId(room._id, closeData);
 		LivechatInquiry.closeByRoomId(room._id, closeData);
 
 		const message = {
@@ -320,7 +320,7 @@ export const Livechat = {
 		};
 
 		// Retreive the closed room
-		room = Rooms.findOneByIdOrName(room._id);
+		room = Rooms.findOneLivechatByIdOrName(room._id);
 
 		sendMessage(user, message, room);
 
@@ -404,19 +404,19 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return Rooms.setLivechatNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
 	closeOpenChats(userId, comment) {
 		const user = Users.findOneById(userId);
-		Rooms.findOpenByAgent(userId).forEach((room) => {
+		Rooms.findOpenLivechatByAgent(userId).forEach((room) => {
 			this.closeRoom({ user, room, comment });
 		});
 	},
 
 	forwardOpenChats(userId) {
-		Rooms.findOpenByAgent(userId).forEach((room) => {
+		Rooms.findOpenLivechatByAgent(userId).forEach((room) => {
 			const guest = LivechatVisitors.findOneById(room.v._id);
 			this.transfer(room, guest, { departmentId: guest.department });
 		});
@@ -469,10 +469,10 @@ export const Livechat = {
 		const { servedBy } = room;
 
 		if (agent && servedBy && agent.agentId !== servedBy._id) {
-			Rooms.changeAgentByRoomId(room._id, agent);
+			Rooms.changeLivechatAgentByRoomId(room._id, agent);
 
 			if (transferData.departmentId) {
-				Rooms.changeDepartmentIdByRoomId(room._id, transferData.departmentId);
+				Rooms.changeLivechatDepartmentIdByRoomId(room._id, transferData.departmentId);
 			}
 
 			const subscriptionData = {
@@ -546,14 +546,14 @@ export const Livechat = {
 				agentIds.push(agent.agentId);
 			});
 
-			Rooms.changeDepartmentIdByRoomId(room._id, departmentId);
+			Rooms.changeLivechatDepartmentIdByRoomId(room._id, departmentId);
 		}
 
 		// delete agent and room subscription
 		Subscriptions.removeByRoomId(rid);
 
 		// remove agent from room
-		Rooms.removeAgentByRoomId(rid);
+		Rooms.removeLivechatAgentByRoomId(rid);
 
 		// find inquiry corresponding to room
 		const inquiry = LivechatInquiry.findOne({ rid });
@@ -743,13 +743,13 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		Rooms.findByVisitorToken(token).forEach((room) => {
+		Rooms.findLivechatByVisitorToken(token).forEach((room) => {
 			Messages.removeFilesByRoomId(room._id);
 			Messages.removeByRoomId(room._id);
 		});
 
 		Subscriptions.removeByVisitorToken(token);
-		Rooms.removeByVisitorToken(token);
+		Rooms.removeLivevchatByVisitorToken(token);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -867,7 +867,7 @@ export const Livechat = {
 
 	notifyGuestStatusChanged(token, status) {
 		LivechatInquiry.updateVisitorStatus(token, status);
-		Rooms.updateVisitorStatus(token, status);
+		Rooms.updateLivechatVisitorStatus(token, status);
 	},
 
 	sendOfflineMessage(data = {}) {
@@ -921,7 +921,7 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
-		Rooms.findOpenByAgent(userId).forEach((room) => {
+		Rooms.findOpenLivechatByAgent(userId).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',
 				status,

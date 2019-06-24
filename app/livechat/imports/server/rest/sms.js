@@ -26,7 +26,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		};
 
 		if (visitor) {
-			const rooms = Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			const rooms = Rooms.findOpenLivechatByVisitorToken(visitor.token).fetch();
 
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;

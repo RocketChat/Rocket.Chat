@@ -40,7 +40,7 @@ API.v1.addRoute('livechat/visitor', {
 
 			let visitor = LivechatVisitors.getVisitorByToken(token);
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const cursor = Rooms.findOpenByVisitorToken(token);
+			const cursor = Rooms.findOpenLivechatByVisitorToken(token);
 			cursor.forEach((room) => {
 				Livechat.saveRoomInfo(room, visitor);
 			});
@@ -114,7 +114,7 @@ API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const rooms = Rooms.findOpenByVisitorToken(this.urlParams.token, {
+		const rooms = Rooms.findOpenLivechatByVisitorToken(this.urlParams.token, {
 			fields: {
 				name: 1,
 				t: 1,

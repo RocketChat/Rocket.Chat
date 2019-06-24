@@ -62,7 +62,7 @@ function sendToCRM(type, room, includeMessages = true) {
 	const response = Livechat.sendRequest(postData);
 
 	if (response && response.data && response.data.data) {
-		Rooms.saveCRMDataByRoomId(room._id, response.data.data);
+		Rooms.saveLivechatCRMDataByRoomId(room._id, response.data.data);
 	}
 
 	return room;

@@ -60,7 +60,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 			}	// ignore, its continuing response
 		}
 
-		Rooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
+		Rooms.saveLivechatAnalyticsDataByRoomId(room, message, analyticsData);
 	});
 
 	return message;

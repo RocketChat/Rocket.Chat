@@ -26,7 +26,7 @@ Meteor.methods({
 		});
 
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const cursor = Rooms.findOpenByVisitorToken(token);
+		const cursor = Rooms.findOpenLivechatByVisitorToken(token);
 		cursor.forEach((room) => {
 			Livechat.saveRoomInfo(room, visitor);
 		});

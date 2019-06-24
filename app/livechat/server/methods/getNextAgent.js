@@ -8,7 +8,7 @@ Meteor.methods({
 	'livechat:getNextAgent'({ token, department }) {
 		check(token, String);
 
-		const room = Rooms.findOpenByVisitorToken(token).fetch();
+		const room = Rooms.findOpenLivechatByVisitorToken(token).fetch();
 
 		if (room && room.length > 0) {
 			return;

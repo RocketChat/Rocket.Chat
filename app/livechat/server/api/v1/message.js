@@ -262,7 +262,7 @@ API.v1.addRoute('livechat/messages', { authRequired: true }, {
 		let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
 		let rid;
 		if (visitor) {
-			const rooms = Rooms.findOpenByVisitorToken(visitorToken).fetch();
+			const rooms = Rooms.findOpenLivechatByVisitorToken(visitorToken).fetch();
 			if (rooms && rooms.length > 0) {
 				rid = rooms[0]._id;
 			} else {

@@ -20,7 +20,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	Meteor.defer(() => {
-		Rooms.setResponseByRoomId(room._id, {
+		Rooms.setLivechatResponseByRoomId(room._id, {
 			user: {
 				_id: message.u._id,
 				username: message.u.username,

@@ -31,6 +31,6 @@ Meteor.methods({
 
 		Messages.removeByRoomId(rid);
 		Subscriptions.removeByRoomId(rid);
-		return Rooms.removeById(rid);
+		return Rooms.removeLivechatById(rid);
 	},
 });

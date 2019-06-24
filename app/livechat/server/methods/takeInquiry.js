@@ -62,7 +62,7 @@ Meteor.methods({
 		// update room
 		const room = Rooms.findOneById(inquiry.rid);
 
-		Rooms.changeAgentByRoomId(inquiry.rid, agent);
+		Rooms.changeLivechatAgentByRoomId(inquiry.rid, agent);
 
 		room.servedBy = {
 			_id: agent.agentId,

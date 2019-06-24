@@ -23,7 +23,7 @@ Meteor.publish('livechat:monitoring', function(date) {
 
 	const self = this;
 
-	const handle = Rooms.getAnalyticsMetricsBetweenDate('l', date).observeChanges({
+	const handle = Rooms.getLivechatAnalyticsMetricsBetweenDate('l', date).observeChanges({
 		added(id, fields) {
 			self.added('livechatMonitoring', id, fields);
 		},

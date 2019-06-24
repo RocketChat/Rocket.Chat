@@ -36,6 +36,19 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneLivechatByIdOrName(_idOrName, options) {
+		const query = {
+			t: 'l',
+			$or: [{
+				_id: _idOrName,
+			}, {
+				name: _idOrName,
+			}],
+		};
+
+		return this.findOneWithPermissions(query, options);
+	}
+
 	updateSurveyFeedbackById(_id, surveyFeedback) {
 		const query = {
 			_id,
@@ -47,7 +60,7 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateWithPermissions(query, update);
 	}
 
 	updateLivechatDataByToken(token, key, value, overwrite = true) {
@@ -69,7 +82,7 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateWithPermissions(query, update);
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -77,7 +90,7 @@ export class Rooms extends Base {
 			t: 'l',
 		});
 
-		return this.find(query, { sort: { ts: - 1 }, offset, limit });
+		return this.findWithPermissions(query, { sort: { ts: - 1 }, offset, limit });
 	}
 
 	findLivechatById(_id, fields) {
@@ -92,7 +105,7 @@ export class Rooms extends Base {
 			_id,
 		};
 
-		return this.find(query, options);
+		return this.findWithPermissions(query, options);
 	}
 
 	findOneLivechatById(_id, fields) {
@@ -107,10 +120,10 @@ export class Rooms extends Base {
 			_id,
 		};
 
-		return this.findOne(query, options);
+		return this.findOneWithPermissions(query, options);
 	}
 
-	findLivechatByIdAndVisitorToken(_id, visitorToken, fields) {
+	findOneLivechatByIdAndVisitorToken(_id, visitorToken, fields) {
 		const options = {};
 
 		if (fields) {
@@ -123,10 +136,10 @@ export class Rooms extends Base {
 			'v.token': visitorToken,
 		};
 
-		return this.findOne(query, options);
+		return this.findOneWithPermissions(query, options);
 	}
 
-	findLivechatByVisitorToken(visitorToken, fields) {
+	findOneLivechatByVisitorToken(visitorToken, fields) {
 		const options = {};
 
 		if (fields) {
@@ -138,7 +151,7 @@ export class Rooms extends Base {
 			'v.token': visitorToken,
 		};
 
-		return this.findOne(query, options);
+		return this.findOneWithPermissions(query, options);
 	}
 
 	updateLivechatRoomCount = function() {
@@ -160,17 +173,19 @@ export class Rooms extends Base {
 		return livechatCount.value.value;
 	}
 
-	findOpenByVisitorToken(visitorToken, options) {
+	findOpenLivechatByVisitorToken(visitorToken, options) {
 		const query = {
+			t: 'l',
 			open: true,
 			'v.token': visitorToken,
 		};
 
-		return this.find(query, options);
+		return this.findWithPermissions(query, options);
 	}
 
-	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+	findOpenLivechatByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
 		const query = {
+			t: 'l',
 			open: true,
 			'v.token': visitorToken,
 			departmentId,
@@ -179,35 +194,39 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByVisitorToken(visitorToken) {
+	findLivechatByVisitorToken(visitorToken) {
 		const query = {
+			t: 'l',
 			'v.token': visitorToken,
 		};
 
-		return this.find(query);
+		return this.findWithPermissions(query);
 	}
 
-	findByVisitorId(visitorId) {
+	findLivechatByVisitorId(visitorId) {
 		const query = {
+			t: 'l',
 			'v._id': visitorId,
 		};
 
-		return this.find(query);
+		return this.findWithPermissions(query);
 	}
 
-	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
+	findOneOpenLivechatByRoomIdAndVisitorToken(roomId, visitorToken, options) {
 		const query = {
+			t: 'l',
 			_id: roomId,
 			open: true,
 			'v.token': visitorToken,
 		};
 
-		return this.findOne(query, options);
+		return this.findOneWithPermissions(query, options);
 	}
 
-	setResponseByRoomId(roomId, response) {
-		return this.update({
+	setLivechatResponseByRoomId(roomId, response) {
+		return this.updateWithPermissions({
 			_id: roomId,
+			t: 'l',
 		}, {
 			$set: {
 				responseBy: {
@@ -221,7 +240,7 @@ export class Rooms extends Base {
 		});
 	}
 
-	saveAnalyticsDataByRoomId(room, message, analyticsData) {
+	saveLivechatAnalyticsDataByRoomId(room, message, analyticsData) {
 		const update = {
 			$set: {},
 		};
@@ -254,12 +273,13 @@ export class Rooms extends Base {
 			update.$set['metrics.servedBy.lr'] = message.ts;
 		}
 
-		return this.update({
+		return this.updateWithPermissions({
 			_id: room._id,
+			t: 'l',
 		}, update);
 	}
 
-	getTotalConversationsBetweenDate(t, date) {
+	getTotalLivechatConversationsBetweenDate(t, date) {
 		const query = {
 			t,
 			ts: {
@@ -268,10 +288,10 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.find(query).count();
+		return this.findWithPermissions(query).count();
 	}
 
-	getAnalyticsMetricsBetweenDate(t, date) {
+	getLivechatAnalyticsMetricsBetweenDate(t, date) {
 		const query = {
 			t,
 			ts: {
@@ -280,12 +300,13 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
+		return this.findWithPermissions(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
-	closeByRoomId(roomId, closeInfo) {
-		return this.update({
+	closeLivechatByRoomId(roomId, closeInfo) {
+		return this.updateWithPermissions({
 			_id: roomId,
+			t: 'l',
 		}, {
 			$set: {
 				closer: closeInfo.closer,
@@ -300,18 +321,20 @@ export class Rooms extends Base {
 		});
 	}
 
-	findOpenByAgent(userId) {
+	findOpenLivechatByAgent(userId) {
 		const query = {
+			t: 'l',
 			open: true,
 			'servedBy._id': userId,
 		};
 
-		return this.find(query);
+		return this.findWithPermissions(query);
 	}
 
-	changeAgentByRoomId(roomId, newAgent) {
+	changeLivechatAgentByRoomId(roomId, newAgent) {
 		const query = {
 			_id: roomId,
+			t: 'l',
 		};
 		const update = {
 			$set: {
@@ -327,12 +350,13 @@ export class Rooms extends Base {
 			update.$set.servedBy.ts = newAgent.ts;
 		}
 
-		this.update(query, update);
+		this.updateWithPermissions(query, update);
 	}
 
-	changeDepartmentIdByRoomId(roomId, departmentId) {
+	changeLivechatDepartmentIdByRoomId(roomId, departmentId) {
 		const query = {
 			_id: roomId,
+			t: 'l',
 		};
 		const update = {
 			$set: {
@@ -340,12 +364,13 @@ export class Rooms extends Base {
 			},
 		};
 
-		this.update(query, update);
+		this.updateWithPermissions(query, update);
 	}
 
-	saveCRMDataByRoomId(roomId, crmData) {
+	saveLivechatCRMDataByRoomId(roomId, crmData) {
 		const query = {
 			_id: roomId,
+			t: 'l',
 		};
 		const update = {
 			$set: {
@@ -353,13 +378,14 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateWithPermissions(query, update);
 	}
 
-	updateVisitorStatus(token, status) {
+	updateLivechatVisitorStatus(token, status) {
 		const query = {
 			'v.token': token,
 			open: true,
+			t: 'l',
 		};
 
 		const update = {
@@ -368,12 +394,13 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateWithPermissions(query, update);
 	}
 
-	removeAgentByRoomId(roomId) {
+	removeLivechatAgentByRoomId(roomId) {
 		const query = {
 			_id: roomId,
+			t: 'l',
 		};
 		const update = {
 			$unset: {
@@ -381,15 +408,16 @@ export class Rooms extends Base {
 			},
 		};
 
-		this.update(query, update);
+		this.updateWithPermissions(query, update);
 	}
 
-	removeByVisitorToken(token) {
+	removeLivevchatByVisitorToken(token) {
 		const query = {
+			t: 'l',
 			'v.token': token,
 		};
 
-		this.remove(query);
+		this.removeWithPermissions(query);
 	}
 
 	setJitsiTimeout(_id, time) {
@@ -934,6 +962,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setLivechatNameById(_id, name, fname) {
+		const query = {
+			_id,
+			t: 'l',
+		};
+
+		const update = {
+			$set: {
+				name,
+				fname,
+			},
+		};
+
+		return this.updateWithPermissions(query, update);
+	}
+
 	setFnameById(_id, fname) {
 		const query = { _id };
 
@@ -1372,6 +1416,15 @@ export class Rooms extends Base {
 		const query = { _id };
 
 		return this.remove(query);
+	}
+
+	removeLivechatById(_id) {
+		const query = {
+			_id,
+			t: 'l',
+		};
+
+		return this.removeWithPermissions(query);
 	}
 
 	removeDirectRoomContainingUsername(username) {

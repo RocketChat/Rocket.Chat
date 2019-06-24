@@ -41,10 +41,10 @@ export function findRoom(token, rid) {
 	};
 
 	if (!rid) {
-		return Rooms.findLivechatByVisitorToken(token, fields);
+		return Rooms.findOneLivechatByVisitorToken(token, fields);
 	}
 
-	return Rooms.findLivechatByIdAndVisitorToken(rid, token, fields);
+	return Rooms.findOneLivechatByIdAndVisitorToken(rid, token, fields);
 }
 
 export function findOpenRoom(token, departmentId) {
@@ -57,7 +57,7 @@ export function findOpenRoom(token, departmentId) {
 	};
 
 	let room;
-	const rooms = departmentId ? Rooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(token, options).fetch();
+	const rooms = departmentId ? Rooms.findOpenLivechatByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : Rooms.findOpenLivechatByVisitorToken(token, options).fetch();
 	if (rooms && rooms.length > 0) {
 		room = rooms[0];
 	}

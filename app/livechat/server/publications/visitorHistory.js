@@ -22,7 +22,7 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 	const self = this;
 
 	if (room && room.v && room.v._id) {
-		const handle = Rooms.findByVisitorId(room.v._id).observeChanges({
+		const handle = Rooms.findLivechatByVisitorId(room.v._id).observeChanges({
 			added(id, fields) {
 				self.added('visitor_history', id, fields);
 			},

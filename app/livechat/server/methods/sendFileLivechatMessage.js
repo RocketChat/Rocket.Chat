@@ -13,7 +13,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const room = Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
+		const room = Rooms.findOneOpenLivechatByRoomIdAndVisitorToken(roomId, visitorToken);
 
 		if (!room) {
 			return false;

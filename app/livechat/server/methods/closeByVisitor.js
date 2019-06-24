@@ -13,7 +13,7 @@ Meteor.methods({
 
 		return Livechat.closeRoom({
 			visitor,
-			room: Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, token),
+			room: Rooms.findOneOpenLivechatByRoomIdAndVisitorToken(roomId, token),
 			comment: TAPi18n.__('Closed_by_visitor', { lng: language }),
 		});
 	},

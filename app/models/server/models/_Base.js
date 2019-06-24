@@ -289,6 +289,22 @@ export class Base {
 		return result;
 	}
 
+	findWithPermissions(...args) {
+		return this.find(...args);
+	}
+
+	findOneWithPermissions(...args) {
+		return this.findOne(...args);
+	}
+
+	updateWithPermissions(...args) {
+		return this.update(...args);
+	}
+
+	removeWithPermissions(...args) {
+		return this.remove(...args);
+	}
+
 	// dinamicTrashFindAfter(method, deletedAt, ...args) {
 	// 	const scope = {
 	// 		find: (query={}) => {
