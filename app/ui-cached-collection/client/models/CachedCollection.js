@@ -9,6 +9,7 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
+import { getConfig } from '../../../ui-utils/client/config';
 
 class CachedCollectionManagerClass {
 	constructor() {
@@ -99,7 +100,7 @@ class CachedCollectionManagerClass {
 
 export const CachedCollectionManager = new CachedCollectionManagerClass();
 
-const debug = false;
+const debug = (name) => [getConfig(`debugCachedCollection-${ name }`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true');
 
 const nullLog = function() {};
 
@@ -134,13 +135,12 @@ export class CachedCollection {
 		this.useSync = useSync;
 		this.useCache = useCache;
 		this.listenChangesForLoggedUsersOnly = listenChangesForLoggedUsersOnly;
-		this.debug = debug;
 		this.version = version;
 		this.userRelated = userRelated;
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
 		this.onSyncData = onSyncData;
-		this.log = debug ? log : nullLog;
+		this.log = debug(name) ? log : nullLog;
 		CachedCollectionManager.register(this);
 
 		if (userRelated === true) {
@@ -178,43 +178,49 @@ export class CachedCollection {
 	}
 
 	loadFromCache(callback = () => {}) {
-		if (this.useCache === false) {
-			return callback(false);
-		}
-
-		localforage.getItem(this.name, (error, data) => {
-			if (data && (data.version < this.version || data.token !== this.getToken() || this.getToken() === undefined)) {
-				this.clearCache();
-				callback(false);
-				return;
+		return new Promise((resolve) => {
+			this.log('loadFromCache');
+			if (this.useCache === false) {
+				resolve(false);
+				return callback(false);
 			}
 
-			const now = new Date();
-			if (data && now - data.updatedAt >= 1000 * this.maxCacheTime) {
-				this.clearCache();
-				callback(false);
-				return;
-			}
+			localforage.getItem(this.name, (error, data) => {
+				if (data && (data.version < this.version || data.token !== this.getToken() || this.getToken() === undefined)) {
+					this.clearCache();
+					resolve(false);
+					callback(false);
+					return;
+				}
 
-			if (data && data.records && data.records.length > 0) {
-				this.log(`${ data.records.length } records loaded from cache`);
-				data.records.forEach((record) => {
-					callbacks.run(`cachedCollection-loadFromCache-${ this.name }`, record);
-					record.__cache__ = true;
-					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
+				const now = new Date();
+				if (data && now - data.updatedAt >= 1000 * this.maxCacheTime) {
+					this.clearCache();
+					resolve(false);
+					callback(false);
+					return;
+				}
 
-					if (record._updatedAt) {
-						const _updatedAt = new Date(record._updatedAt);
-						if (_updatedAt > this.updatedAt) {
-							this.updatedAt = _updatedAt;
+				if (data && data.records && data.records.length > 0) {
+					this.log(`${ data.records.length } records loaded from cache`);
+					data.records.forEach((record) => {
+						callbacks.run(`cachedCollection-loadFromCache-${ this.name }`, record);
+						record.__cache__ = true;
+						this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
+
+						if (record._updatedAt) {
+							const _updatedAt = new Date(record._updatedAt);
+							if (_updatedAt > this.updatedAt) {
+								this.updatedAt = _updatedAt;
+							}
 						}
-					}
-				});
-
-				callback(true);
-			} else {
+					});
+					resolve(true);
+					return callback(true);
+				}
+				resolve(false);
 				callback(false);
-			}
+			});
 		});
 	}
 
@@ -375,42 +381,41 @@ export class CachedCollection {
 
 	trySync() {
 		// Wait for an empty queue to load data again and sync
-		const interval = Meteor.setInterval(() => {
+		const interval = setInterval(() => {
 			if (this.sync()) {
-				Meteor.clearInterval(interval);
+				clearInterval(interval);
 			}
 		}, 200);
 	}
 
-	init() {
+	async init() {
+		this.log('init');
 		if (this.initiated === true) {
 			return;
 		}
 
 		this.initiated = true;
-		this.loadFromCache((cacheLoaded) => {
-			this.ready.set(cacheLoaded);
+		const cacheLoaded = await this.loadFromCache();
+		this.ready.set(cacheLoaded);
+		if (cacheLoaded === false) {
+			// If there is no cache load data immediately
+			this.loadFromServerAndPopulate();
+		} else if (this.useSync === true) {
+			this.trySync();
+		}
 
-			if (cacheLoaded === false) {
-				// If there is no cache load data immediately
-				this.loadFromServerAndPopulate();
-			} else if (this.useSync === true) {
+		if (this.useSync === true) {
+			CachedCollectionManager.onReconnect(() => {
 				this.trySync();
-			}
+			});
+		}
 
-			if (this.useSync === true) {
-				CachedCollectionManager.onReconnect(() => {
-					this.trySync();
-				});
-			}
-
-			if (this.listenChangesForLoggedUsersOnly) {
-				CachedCollectionManager.onLogin(() => {
-					this.setupListener();
-				});
-			} else {
+		if (this.listenChangesForLoggedUsersOnly) {
+			CachedCollectionManager.onLogin(() => {
 				this.setupListener();
-			}
-		});
+			});
+		} else {
+			this.setupListener();
+		}
 	}
 }
