@@ -25,6 +25,7 @@ const saveUser = (user, force = false) => {
 				// name: user.name,
 				// utcOffset: user.utcOffset,
 				status: user.status,
+				statusText: user.statusText,
 			},
 		});
 	}
