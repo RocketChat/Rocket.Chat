@@ -44,7 +44,7 @@ AccountBox.addRoute({
 	name: 'livechat-managers',
 	path: '/managers',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_Managers',
+	i18nPageTitle: 'Livechat_managers',
 	pageTemplate: 'livechatManagers',
 }, livechatManagerRoutes);
 
@@ -52,7 +52,7 @@ AccountBox.addRoute({
 	name: 'livechat-agents',
 	path: '/agents',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_Agents',
+	i18nPageTitle: 'Livechat_agents',
 	pageTemplate: 'livechatAgents',
 }, livechatManagerRoutes);
 
