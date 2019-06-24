@@ -8,11 +8,12 @@ import moment from 'moment';
 
 import { DateFormat } from '../../../lib';
 import { popover } from '../../../ui-utils';
-import { templateVarHandler } from '../../../utils';
+import { t, templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import FullUser from '../../../models/client/models/FullUser';
 import { getActions } from './userActions';
+
 import './userInfo.html';
 
 const shownActionsCount = 2;
@@ -83,6 +84,15 @@ Template.userInfo.helpers({
 		const user = Template.instance().user.get();
 		const userStatus = Session.get(`user_${ user.username }_status`);
 		return userStatus || 'offline';
+	},
+
+	userStatusText() {
+		if (s.trim(this.statusText)) {
+			return this.statusText;
+		}
+
+		const user = Template.instance().user.get();
+		return t(Session.get(`user_${ user.username }_status`));
 	},
 
 	email() {
