@@ -327,7 +327,7 @@ Template.sidebarHeader.events({
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
 				const defaultStatus = STATUS_MAP.includes(status.id);
-				const statusText = defaultStatus ? '' : user.statusText || name || t(user.status);
+				const statusText = defaultStatus ? null : name;
 
 				return {
 					icon: 'circle',
