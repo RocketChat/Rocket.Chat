@@ -119,7 +119,12 @@ Template.headerRoom.helpers({
 	},
 
 	userStatusText() {
-		return getUserStatusText(this._id);
+		const statusText = getUserStatusText(this._id);
+		if (statusText) {
+			return statusText;
+		}
+
+		return t(getUserStatus(this._id));
 	},
 
 	showToggleFavorite() {
