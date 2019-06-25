@@ -32,4 +32,4 @@ export const renderMessageBody = mem((message) => {
 
 	return (Array.isArray(tokens) ? tokens.reverse() : [])
 		.reduce((html, { token, text }) => html.replace(token, () => text), html);
-}, 5000, ({ _id, _updatedAt }) => (_id && _updatedAt && _id + _updatedAt));
+}, 500, ({ _id, _updatedAt }) => (_id && _updatedAt && _id + _updatedAt));
