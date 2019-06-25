@@ -3,7 +3,7 @@ import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
-import { Logger } from '../../logger';
+import { logger } from './logger';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -281,7 +281,7 @@ export class AutoTranslate {
 		};
 	 */
 	_getProviderMetadata() {
-		Logger.warn('must be implemented by subclass!', '_getProviderMetadata');
+		logger.warn('must be implemented by subclass!', '_getProviderMetadata');
 	}
 
 
@@ -293,7 +293,7 @@ export class AutoTranslate {
 	 * @returns [{ language, name }]
 	 */
 	getSupportedLanguages(target) {
-		Logger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
+		logger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
 	}
 
 	/**
@@ -306,7 +306,7 @@ export class AutoTranslate {
 	 * @return {object}
 	 */
 	_translateMessage(message, targetLanguages) {
-		Logger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
+		logger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
 	}
 
 	/**
@@ -318,7 +318,7 @@ export class AutoTranslate {
 	 * @returns {object} translated messages for each target language
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		Logger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
+		logger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
 	}
 }
 
