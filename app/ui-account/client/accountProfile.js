@@ -126,10 +126,10 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
+		if (!avatar && user.name === realname && user.username === username && (!!user.u || getUserEmailAddress(user) === email === email) && (!password || password !== confirmationPassword)) {
 			return ret;
 		}
-		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
+		if ((!validateEmail(email) && !user.u) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
 			return ret;
 		}
 	},
