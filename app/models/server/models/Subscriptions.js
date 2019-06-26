@@ -1207,14 +1207,14 @@ export class Subscriptions extends Base {
 	}
 
 	replaceServiceAccountBroadcastRoomName(previousUsername, username) {
-		const query = { name: `broadcast_${previousUsername}` };
-		
+		const query = { name: `broadcast_${ previousUsername }` };
+
 		const update = {
 			$set: {
-				name: `broadcast_${username}`,
+				name: `broadcast_${ username }`,
 			},
 		};
-		
+
 		return this.update(query, update);
 	}
 
