@@ -390,7 +390,7 @@ export class LivechatRooms extends Base {
 			},
 		};
 
-		return this.updateWithPermissions(query, update);
+		return this.update(query, update);
 	}
 
 	updateVisitorStatus(token, status) {

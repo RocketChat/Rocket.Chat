@@ -19,13 +19,13 @@ export class LivechatDepartment extends Base {
 	findOneById(_id, options) {
 		const query = { _id };
 
-		return this.findOneWithPermissions(query, options);
+		return this.findOne(query, options);
 	}
 
 	findByDepartmentId(_id, options) {
 		const query = { _id };
 
-		return this.findWithPermissions(query, options);
+		return this.find(query, options);
 	}
 
 	createOrUpdateDepartment(_id, { enabled, name, description, showOnRegistration, email, showOnOfflineForm }, agents) {
@@ -42,7 +42,7 @@ export class LivechatDepartment extends Base {
 		};
 
 		if (_id) {
-			this.updateWithPermissions({ _id }, { $set: record });
+			this.update({ _id }, { $set: record });
 		} else {
 			_id = this.insert(record);
 		}
@@ -72,7 +72,7 @@ export class LivechatDepartment extends Base {
 	removeById(_id) {
 		const query = { _id };
 
-		return this.removeWithPermissions(query);
+		return this.remove(query);
 	}
 
 	findEnabledWithAgents() {
@@ -80,7 +80,7 @@ export class LivechatDepartment extends Base {
 			numAgents: { $gt: 0 },
 			enabled: true,
 		};
-		return this.findWithPermissions(query);
+		return this.find(query);
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -92,7 +92,7 @@ export class LivechatDepartment extends Base {
 			}],
 		};
 
-		return this.findOneWithPermissions(query, options);
+		return this.findOne(query, options);
 	}
 }
 export default new LivechatDepartment();
