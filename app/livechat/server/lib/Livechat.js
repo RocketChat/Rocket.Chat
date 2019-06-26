@@ -14,7 +14,7 @@ import { QueueMethods } from './QueueMethods';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Users, LivechatRooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
+import { Users, Rooms, LivechatRooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
@@ -495,7 +495,7 @@ export const Livechat = {
 			Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
 			Subscriptions.insert(subscriptionData);
-			LivechatRooms.incUsersCountById(room._id);
+			Rooms.incUsersCountById(room._id);
 
 			Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
 			Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });

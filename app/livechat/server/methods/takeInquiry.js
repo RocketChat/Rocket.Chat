@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Users, LivechatRooms, Subscriptions, Messages, LivechatVisitors } from '../../../models';
+import { Users, Rooms, LivechatRooms, Subscriptions, Messages, LivechatVisitors } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from '../lib/Livechat';
 
@@ -57,7 +57,7 @@ Meteor.methods({
 		};
 
 		Subscriptions.insert(subscriptionData);
-		LivechatRooms.incUsersCountById(inquiry.rid);
+		Rooms.incUsersCountById(inquiry.rid);
 
 		// update room
 		const room = LivechatRooms.findOneById(inquiry.rid);
