@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models';
+import { Users, LivechatRooms, Subscriptions, Messages, LivechatVisitors } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from '../lib/Livechat';
 
@@ -57,12 +57,12 @@ Meteor.methods({
 		};
 
 		Subscriptions.insert(subscriptionData);
-		Rooms.incUsersCountById(inquiry.rid);
+		LivechatRooms.incUsersCountById(inquiry.rid);
 
 		// update room
-		const room = Rooms.findOneById(inquiry.rid);
+		const room = LivechatRooms.findOneById(inquiry.rid);
 
-		Rooms.changeLivechatAgentByRoomId(inquiry.rid, agent);
+		LivechatRooms.changeAgentByRoomId(inquiry.rid, agent);
 
 		room.servedBy = {
 			_id: agent.agentId,

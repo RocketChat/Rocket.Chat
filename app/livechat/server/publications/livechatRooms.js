@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms, LivechatDepartment } from '../../../models';
+import { LivechatDepartment, LivechatRooms } from '../../../models';
 
 Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (!this.userId) {
@@ -56,7 +56,7 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 
 	const self = this;
 
-	const handle = Rooms.findLivechat(query, offset, limit).observeChanges({
+	const handle = LivechatRooms.findLivechat(query, offset, limit).observeChanges({
 		added(id, fields) {
 			if (fields.departmentId) {
 				fields = Object.assign(fields, { lookupDepartment: LivechatDepartment.findOneById(fields.departmentId) });

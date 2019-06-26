@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { LivechatRooms } from '../../../models';
 
 Meteor.publish('livechat:monitoring', function(date) {
 	if (!this.userId) {
@@ -23,7 +23,7 @@ Meteor.publish('livechat:monitoring', function(date) {
 
 	const self = this;
 
-	const handle = Rooms.getLivechatAnalyticsMetricsBetweenDate('l', date).observeChanges({
+	const handle = LivechatRooms.getAnalyticsMetricsBetweenDate('l', date).observeChanges({
 		added(id, fields) {
 			self.added('livechatMonitoring', id, fields);
 		},

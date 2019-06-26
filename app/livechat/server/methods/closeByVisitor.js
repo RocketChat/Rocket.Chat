@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 
 import { settings } from '../../../settings';
-import { Rooms, LivechatVisitors } from '../../../models';
+import { LivechatRooms, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -13,7 +13,7 @@ Meteor.methods({
 
 		return Livechat.closeRoom({
 			visitor,
-			room: Rooms.findOneOpenLivechatByRoomIdAndVisitorToken(roomId, token),
+			room: LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token),
 			comment: TAPi18n.__('Closed_by_visitor', { lng: language }),
 		});
 	},

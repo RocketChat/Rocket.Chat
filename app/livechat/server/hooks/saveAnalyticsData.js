@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks';
-import { Rooms } from '../../../models';
+import { LivechatRooms } from '../../../models';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -60,7 +60,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 			}	// ignore, its continuing response
 		}
 
-		Rooms.saveLivechatAnalyticsDataByRoomId(room, message, analyticsData);
+		LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
 	});
 
 	return message;

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { Rooms, LivechatVisitors } from '../../../../models';
+import { LivechatRooms, LivechatVisitors } from '../../../../models';
 import { API } from '../../../../api';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
@@ -26,7 +26,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		};
 
 		if (visitor) {
-			const rooms = Rooms.findOpenLivechatByVisitorToken(visitor.token).fetch();
+			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;

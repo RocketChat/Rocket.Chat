@@ -14,7 +14,7 @@ import { QueueMethods } from './QueueMethods';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
+import { Users, LivechatRooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
@@ -92,7 +92,7 @@ export const Livechat = {
 		});
 	},
 	getRoom(guest, message, roomInfo, agent) {
-		let room = Rooms.findOneById(message.rid);
+		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
 
 		if (room && !room.open) {
@@ -310,7 +310,7 @@ export const Livechat = {
 			};
 		}
 
-		Rooms.closeLivechatByRoomId(room._id, closeData);
+		LivechatRooms.closeByRoomId(room._id, closeData);
 		LivechatInquiry.closeByRoomId(room._id, closeData);
 
 		const message = {
@@ -320,7 +320,7 @@ export const Livechat = {
 		};
 
 		// Retreive the closed room
-		room = Rooms.findOneLivechatByIdOrName(room._id);
+		room = LivechatRooms.findOneByIdOrName(room._id);
 
 		sendMessage(user, message, room);
 
@@ -348,7 +348,7 @@ export const Livechat = {
 		}
 
 		if (customField.scope === 'room') {
-			return Rooms.updateLivechatDataByToken(token, key, value, overwrite);
+			return LivechatRooms.updateDataByToken(token, key, value, overwrite);
 		}
 		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 	},
@@ -395,7 +395,7 @@ export const Livechat = {
 	},
 
 	saveRoomInfo(roomData, guestData) {
-		if ((roomData.topic != null || roomData.tags != null) && !Rooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
+		if ((roomData.topic != null || roomData.tags != null) && !LivechatRooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
 			return false;
 		}
 
@@ -404,19 +404,19 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setLivechatNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return LivechatRooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
 	closeOpenChats(userId, comment) {
 		const user = Users.findOneById(userId);
-		Rooms.findOpenLivechatByAgent(userId).forEach((room) => {
+		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			this.closeRoom({ user, room, comment });
 		});
 	},
 
 	forwardOpenChats(userId) {
-		Rooms.findOpenLivechatByAgent(userId).forEach((room) => {
+		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = LivechatVisitors.findOneById(room.v._id);
 			this.transfer(room, guest, { departmentId: guest.department });
 		});
@@ -469,10 +469,10 @@ export const Livechat = {
 		const { servedBy } = room;
 
 		if (agent && servedBy && agent.agentId !== servedBy._id) {
-			Rooms.changeLivechatAgentByRoomId(room._id, agent);
+			LivechatRooms.changeAgentByRoomId(room._id, agent);
 
 			if (transferData.departmentId) {
-				Rooms.changeLivechatDepartmentIdByRoomId(room._id, transferData.departmentId);
+				LivechatRooms.changeDepartmentIdByRoomId(room._id, transferData.departmentId);
 			}
 
 			const subscriptionData = {
@@ -495,7 +495,7 @@ export const Livechat = {
 			Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
 			Subscriptions.insert(subscriptionData);
-			Rooms.incUsersCountById(room._id);
+			LivechatRooms.incUsersCountById(room._id);
 
 			Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
 			Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });
@@ -520,7 +520,7 @@ export const Livechat = {
 	},
 
 	returnRoomAsInquiry(rid, departmentId) {
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:returnRoomAsInquiry' });
 		}
@@ -546,14 +546,14 @@ export const Livechat = {
 				agentIds.push(agent.agentId);
 			});
 
-			Rooms.changeLivechatDepartmentIdByRoomId(room._id, departmentId);
+			LivechatRooms.changeDepartmentIdByRoomId(room._id, departmentId);
 		}
 
 		// delete agent and room subscription
 		Subscriptions.removeByRoomId(rid);
 
 		// remove agent from room
-		Rooms.removeLivechatAgentByRoomId(rid);
+		LivechatRooms.removeAgentByRoomId(rid);
 
 		// find inquiry corresponding to room
 		const inquiry = LivechatInquiry.findOne({ rid });
@@ -743,13 +743,13 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		Rooms.findLivechatByVisitorToken(token).forEach((room) => {
+		LivechatRooms.findByVisitorToken(token).forEach((room) => {
 			Messages.removeFilesByRoomId(room._id);
 			Messages.removeByRoomId(room._id);
 		});
 
 		Subscriptions.removeByVisitorToken(token);
-		Rooms.removeLivevchatByVisitorToken(token);
+		LivechatRooms.removeByVisitorToken(token);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -811,7 +811,7 @@ export const Livechat = {
 		check(rid, String);
 		check(email, String);
 
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
@@ -867,7 +867,7 @@ export const Livechat = {
 
 	notifyGuestStatusChanged(token, status) {
 		LivechatInquiry.updateVisitorStatus(token, status);
-		Rooms.updateLivechatVisitorStatus(token, status);
+		LivechatRooms.updateVisitorStatus(token, status);
 	},
 
 	sendOfflineMessage(data = {}) {
@@ -921,7 +921,7 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
-		Rooms.findOpenLivechatByAgent(userId).forEach((room) => {
+		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',
 				status,
@@ -933,7 +933,7 @@ export const Livechat = {
 Livechat.stream = new Meteor.Streamer('livechat-room');
 
 Livechat.stream.allowRead((roomId, extraData) => {
-	const room = Rooms.findOneById(roomId);
+	const room = LivechatRooms.findOneById(roomId);
 
 	if (!room) {
 		console.warn(`Invalid eventName: "${ roomId }"`);

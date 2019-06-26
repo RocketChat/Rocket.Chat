@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
+import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { settings as rcSettings } from '../../../../settings';
 
@@ -41,10 +41,10 @@ export function findRoom(token, rid) {
 	};
 
 	if (!rid) {
-		return Rooms.findOneLivechatByVisitorToken(token, fields);
+		return LivechatRooms.findOneByVisitorToken(token, fields);
 	}
 
-	return Rooms.findOneLivechatByIdAndVisitorToken(rid, token, fields);
+	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
 export function findOpenRoom(token, departmentId) {
@@ -57,7 +57,7 @@ export function findOpenRoom(token, departmentId) {
 	};
 
 	let room;
-	const rooms = departmentId ? Rooms.findOpenLivechatByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : Rooms.findOpenLivechatByVisitorToken(token, options).fetch();
+	const rooms = departmentId ? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : LivechatRooms.findOpenByVisitorToken(token, options).fetch();
 	if (rooms && rooms.length > 0) {
 		room = rooms[0];
 	}

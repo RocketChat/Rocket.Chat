@@ -1,6 +1,6 @@
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Messages, Rooms } from '../../../models';
+import { Messages, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 const msgNavType = 'livechat_navigation_history';
@@ -62,7 +62,7 @@ function sendToCRM(type, room, includeMessages = true) {
 	const response = Livechat.sendRequest(postData);
 
 	if (response && response.data && response.data.data) {
-		Rooms.saveLivechatCRMDataByRoomId(room._id, response.data.data);
+		LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
 	}
 
 	return room;

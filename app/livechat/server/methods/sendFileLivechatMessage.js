@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 
-import { Rooms, LivechatVisitors } from '../../../models';
+import { LivechatRooms, LivechatVisitors } from '../../../models';
 import { FileUpload } from '../../../file-upload';
 
 Meteor.methods({
@@ -13,7 +13,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const room = Rooms.findOneOpenLivechatByRoomIdAndVisitorToken(roomId, visitorToken);
+		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
 
 		if (!room) {
 			return false;

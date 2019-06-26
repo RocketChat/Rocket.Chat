@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms, Messages, Subscriptions } from '../../../models';
+import { LivechatRooms, Messages, Subscriptions } from '../../../models';
 
 Meteor.methods({
 	'livechat:removeRoom'(rid) {
@@ -31,6 +31,6 @@ Meteor.methods({
 
 		Messages.removeByRoomId(rid);
 		Subscriptions.removeByRoomId(rid);
-		return Rooms.removeLivechatById(rid);
+		return LivechatRooms.removeById(rid);
 	},
 });

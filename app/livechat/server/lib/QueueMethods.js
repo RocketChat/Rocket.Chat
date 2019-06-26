@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 
 import { Livechat } from './Livechat';
-import { Rooms, Subscriptions, Users } from '../../../models';
+import { LivechatRooms, Subscriptions, Users } from '../../../models';
 import { settings } from '../../../settings';
 import { sendNotification } from '../../../lib';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
@@ -22,7 +22,7 @@ export const QueueMethods = {
 			}
 		}
 
-		Rooms.updateLivechatRoomCount();
+		LivechatRooms.updateRoomCount();
 
 		const room = _.extend({
 			_id: message.rid,
@@ -77,7 +77,7 @@ export const QueueMethods = {
 			room.departmentId = guest.department;
 		}
 
-		Rooms.insert(room);
+		LivechatRooms.insert(room);
 
 		Subscriptions.insert(subscriptionData);
 
@@ -110,7 +110,7 @@ export const QueueMethods = {
 			throw new Meteor.Error('no-agent-available', 'Sorry, no available agents.');
 		}
 
-		Rooms.updateLivechatRoomCount();
+		LivechatRooms.updateRoomCount();
 
 		const agentIds = [];
 
@@ -164,7 +164,7 @@ export const QueueMethods = {
 		}
 
 		LivechatInquiry.insert(inquiry);
-		Rooms.insert(room);
+		LivechatRooms.insert(room);
 
 		// Alert only the online agents of the queued request
 		onlineAgents.forEach((agent) => {
