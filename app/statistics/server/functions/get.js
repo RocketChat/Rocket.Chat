@@ -154,16 +154,22 @@ statistics.get = function _getStatistics() {
 		statistics.apps = {
 			totalInstalled: installedApps.length,
 			totalActive: activeApps.length,
-			installedAppsList: installedApps.map((app) => ({ id: app.getID(), name: app.getName(), status: app.getStatus() })),
+			installedAppsList: installedApps.map((app) => ({
+				id: app.getID(),
+				name: app.getName(),
+				status: app.getStatus(),
+			})),
 		};
 	}
 
+	const integrationsCursor = Integrations.find();
+
 	statistics.integrations = {
-		totalIntegrations: Integrations.find().count(),
-		totalActiveIntegrations: Integrations.find({ enabled: true }).count(),
-		totalIncoming: Integrations.findByType('webhook-incoming').count(),
-		totalOutgoing: Integrations.findByType('webhook-outgoing').count(),
-		integrationList: Integrations.find().fetch().map((integration) => ({
+		totalIntegrations: integrationsCursor.count(),
+		totalActiveIntegrations: integrationsCursor.fetch().filter((integration) => integration.enabled === true).length,
+		totalIncoming: integrationsCursor.fetch().filter((integration) => integration.type === 'webhook-incoming').length,
+		totalOutgoing: integrationsCursor.fetch().filter((integration) => integration.type === 'webhook-outgoing').length,
+		integrationList: integrationsCursor.fetch().map((integration) => ({
 			_id: integration._id,
 			type: integration.type,
 			enabled: integration.enabled,
