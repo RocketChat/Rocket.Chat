@@ -24,7 +24,7 @@ const isDiscussion = ({ _id }) => {
 
 const getUserStatus = (id) => {
 	const roomData = Session.get(`roomData${ id }`);
-	return roomTypes.getUserStatus(roomData.t, id) || 'offline';
+	return roomTypes.getUserStatus(roomData.t, id);
 };
 
 const getUserStatusText = (id) => {
@@ -115,7 +115,7 @@ Template.headerRoom.helpers({
 	},
 
 	userStatus() {
-		return getUserStatus(this._id);
+		return getUserStatus(this._id) || 'offline';
 	},
 
 	userStatusText() {
@@ -124,7 +124,17 @@ Template.headerRoom.helpers({
 			return statusText;
 		}
 
-		return t(getUserStatus(this._id));
+		const presence = getUserStatus(this._id);
+		if (presence) {
+			return t(presence);
+		}
+
+		const oldStatusText = Template.instance().userOldStatusText.get();
+		if (oldStatusText) {
+			return oldStatusText;
+		}
+
+		return t('offline');
 	},
 
 	showToggleFavorite() {
@@ -189,6 +199,7 @@ Template.headerRoom.onCreated(function() {
 	this.currentChannel = (this.data && this.data._id && Rooms.findOne(this.data._id)) || undefined;
 
 	this.hasTokenpass = new ReactiveVar(false);
+	this.userOldStatusText = new ReactiveVar(null);
 
 	if (settings.get('API_Tokenpass_URL') !== '') {
 		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
@@ -196,5 +207,22 @@ Template.headerRoom.onCreated(function() {
 				this.hasTokenpass.set(!!(result && result.tokens && result.tokens.length > 0));
 			}
 		});
+	}
+
+	if (this.data && this.data._id) {
+		const id = this.data._id;
+
+		if (Rooms.findOne(id).t === 'd') {
+			const userId = id.replace(Meteor.userId(), '');
+
+			const found = Meteor.users.findOne(userId, { fields: { _id: 1 } });
+			if (!found) {
+				Meteor.call('getUserStatusText', userId, (error, result) => {
+					if (!error) {
+						this.userOldStatusText.set(result);
+					}
+				});
+			}
+		}
 	}
 });
