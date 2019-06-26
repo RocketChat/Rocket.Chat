@@ -9,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeRoom' });
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

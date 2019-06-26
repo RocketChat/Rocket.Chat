@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission, hasRole } from '../../../authorization';
-import { Rooms, Subscriptions, LivechatVisitors } from '../../../models';
+import { LivechatRooms, Subscriptions, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -17,7 +17,7 @@ Meteor.methods({
 			departmentId: Match.Optional(String),
 		});
 
-		const room = Rooms.findOneById(transferData.roomId);
+		const room = LivechatRooms.findOneById(transferData.roomId);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:transfer' });
 		}

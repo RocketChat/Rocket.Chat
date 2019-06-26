@@ -58,16 +58,12 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 
 	const handle = LivechatRooms.findLivechat(query, offset, limit).observeChanges({
 		added(id, fields) {
-			if (fields.departmentId) {
-				fields = Object.assign(fields, { lookupDepartment: LivechatDepartment.findOneById(fields.departmentId) });
-			}
+			fields = Object.assign(fields, { lookupDepartment: fields.departmentId ? LivechatDepartment.findOneById(fields.departmentId) : {} });
 			self.added('livechatRoom', id, fields);
 		},
 		changed(id, fields) {
-			if (fields.departmentId) {
-				fields = Object.assign(fields, { lookupDepartment: LivechatDepartment.findOneById(fields.departmentId) });
-			}
-			self.changed('livechatRoom', id, fields);
+			fields = Object.assign(fields, { lookupDepartment: fields.departmentId ? LivechatDepartment.findOneById(fields.departmentId) : {} });
+			self.added('livechatRoom', id, fields);
 		},
 		removed(id) {
 			self.removed('livechatRoom', id);
