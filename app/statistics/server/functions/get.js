@@ -13,11 +13,13 @@ import {
 	Uploads,
 	Messages,
 	LivechatVisitors,
+	Integrations,
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
+import { Apps } from '../../../apps/server';
 
 const wizardFields = [
 	'Organization_Type',
@@ -145,6 +147,29 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
+
+	if (Apps.isEnabled()) {
+		const installedApps = Apps.getManager().get();
+		const activeApps = Apps.getManager().get({ enabled: true });
+		statistics.apps = {
+			totalInstalled: installedApps.length,
+			totalActive: activeApps.length,
+			installedAppsList: installedApps.map((app) => ({ id: app.getID(), name: app.getName(), status: app.getStatus() })),
+		};
+	}
+
+	statistics.integrations = {
+		totalIntegrations: Integrations.find().count(),
+		totalActiveIntegrations: Integrations.find({ enabled: true }).count(),
+		totalIncoming: Integrations.findByType('webhook-incoming').count(),
+		totalOutgoing: Integrations.findByType('webhook-outgoing').count(),
+		integrationList: Integrations.find().fetch().map((integration) => ({
+			_id: integration._id,
+			type: integration.type,
+			enabled: integration.enabled,
+			name: integration.name,
+		})),
+	};
 
 	return statistics;
 };
