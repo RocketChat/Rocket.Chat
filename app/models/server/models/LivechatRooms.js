@@ -456,7 +456,6 @@ export class LivechatRooms extends Base {
 
 		return this.remove(query);
 	}
-
 }
 
 export default new LivechatRooms(Rooms.model, true);
