@@ -43,7 +43,7 @@ function directorySearch(config, cb) {
 					username: result.username,
 					createdAt: timeAgo(result.createdAt, t),
 					description: result.description,
-					subscribers: result.subscribersCount || 0,
+					subscribers: result.subscribers || 0,
 					domain: result.federation && result.federation.peer,
 				};
 			}

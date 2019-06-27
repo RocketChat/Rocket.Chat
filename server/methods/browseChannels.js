@@ -106,7 +106,6 @@ Meteor.methods({
 					name: 1,
 					createdAt: 1,
 					description: 1,
-					subscribers: 1,
 					federation: 1,
 				},
 			};
@@ -124,7 +123,9 @@ Meteor.methods({
 			}
 			const total = result.count();
 			const results = result.fetch();
-
+			results.forEach((account) => {
+				account.subscribers = Rooms.findDirectRoomContainingUsername(account.username).count();
+			});
 			return {
 				total,
 				results,
