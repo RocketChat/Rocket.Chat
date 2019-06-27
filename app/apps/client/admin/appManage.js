@@ -29,6 +29,34 @@ function getApps(instance) {
 			return Promise.resolve({ app: undefined });
 		})
 		.then((remote) => {
+			// remote.app.bundledIn = [{
+			// 	bundleId: 'bb47ca7b-cfc5-4ec5-b7cf-289648da46ac',
+			// 	bundleName: 'Atlassian Cloud Apps',
+			// }, {
+			// 	bundleId: 'bb47ca7b-cfc5-4ec5-b7cf-289648da46ac',
+			// 	bundleName: 'Atlassian Cloud Apps',
+			// }];
+
+			if (!remote.app.bundledIn || remote.app.bundledIn.length === 0) {
+				return remote;
+			}
+
+			const requests = remote.app.bundledIn.map((bundledIn) => {
+				const request = APIClient.get(`apps/bundles/${ bundledIn.bundleId }/apps`);
+
+				return request
+					.catch((e) => {
+						console.log(e);
+						return remote;
+					}).then((data) => {
+						bundledIn.apps = data && data.apps.splice(0, 4);
+						return remote;
+					});
+			});
+
+			return Promise.all(requests).then(() => remote);
+		})
+		.then((remote) => {
 			appInfo.remote = remote.app;
 			return APIClient.get(`apps/${ id }`);
 		})
@@ -61,6 +89,7 @@ function getApps(instance) {
 					appInfo.local.isPurchased = appInfo.remote.isPurchased;
 					appInfo.local.price = appInfo.remote.price;
 					appInfo.local.displayPrice = appInfo.remote.displayPrice;
+					appInfo.local.bundledIn = appInfo.remote.bundledIn;
 
 					if (semver.gt(appInfo.remote.version, appInfo.local.version) && (appInfo.remote.isPurchased || appInfo.remote.price <= 0)) {
 						appInfo.local.newVersion = appInfo.remote.version;
@@ -319,6 +348,9 @@ Template.appManage.helpers({
 	},
 	renderMethods(methods) {
 		return methods.join('|').toUpperCase();
+	},
+	bundleAppNames(apps) {
+		return apps.map((app) => app.latest.name).join(', ');
 	},
 });
 
