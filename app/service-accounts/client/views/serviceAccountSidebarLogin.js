@@ -40,7 +40,7 @@ Template.serviceAccountSidebarLogin.events({
 			FlowRouter.go('/home');
 			Meteor.loginWithToken(token.token, (err) => {
 				if (err) {
-					console.log(err);
+					return handleError(err);
 				}
 				document.location.reload(true);
 				if (Meteor.user().u) {
