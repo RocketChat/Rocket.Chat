@@ -224,7 +224,7 @@ class AutoTranslate {
 				});
 			}
 		}
-		return message;
+		return Messages.findOneById(message._id);
 	}
 
 	getSupportedLanguages(target) {
