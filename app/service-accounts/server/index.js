@@ -6,4 +6,6 @@ import './api/rest';
 import './methods/usernameExists';
 import './methods/addServiceAccount';
 
+import './hooks/serviceAccountCallback';
+
 import './publications/fullServiceAccountData';
