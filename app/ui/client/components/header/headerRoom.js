@@ -195,6 +195,34 @@ Template.headerRoom.events({
 	},
 });
 
+const loadUserStatusText = () => {
+	const instance = Template.instance();
+
+	if (!instance || !instance.data || !instance.data._id) {
+		return;
+	}
+
+	const id = instance.data._id;
+
+	if (Rooms.findOne(id).t !== 'd') {
+		return;
+	}
+
+	const userId = id.replace(Meteor.userId(), '');
+
+	// If the user is already on the local collection, the method call is not necessary
+	const found = Meteor.users.findOne(userId, { fields: { _id: 1 } });
+	if (found) {
+		return;
+	}
+
+	Meteor.call('getUserStatusText', userId, (error, result) => {
+		if (!error) {
+			instance.userOldStatusText.set(result);
+		}
+	});
+};
+
 Template.headerRoom.onCreated(function() {
 	this.currentChannel = (this.data && this.data._id && Rooms.findOne(this.data._id)) || undefined;
 
@@ -209,20 +237,5 @@ Template.headerRoom.onCreated(function() {
 		});
 	}
 
-	if (this.data && this.data._id) {
-		const id = this.data._id;
-
-		if (Rooms.findOne(id).t === 'd') {
-			const userId = id.replace(Meteor.userId(), '');
-
-			const found = Meteor.users.findOne(userId, { fields: { _id: 1 } });
-			if (!found) {
-				Meteor.call('getUserStatusText', userId, (error, result) => {
-					if (!error) {
-						this.userOldStatusText.set(result);
-					}
-				});
-			}
-		}
-	}
+	loadUserStatusText();
 });

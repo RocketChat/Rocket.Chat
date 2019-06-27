@@ -10,7 +10,7 @@ Meteor.methods({
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });
 		}
-		
+
 		if (statusType) {
 			Meteor.call('UserPresence:setDefaultStatus', statusType);
 		}
