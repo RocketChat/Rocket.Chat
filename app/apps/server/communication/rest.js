@@ -7,6 +7,10 @@ import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 
+const getDefaultHeaders = () => ({
+	'X-Apps-Engine-Version': Info.marketplaceApiVersion,
+});
+
 export class AppsRestApi {
 	constructor(orch, manager) {
 		this._orch = orch;
@@ -57,13 +61,13 @@ export class AppsRestApi {
 
 				// Gets the Apps from the marketplace
 				if (this.queryParams.marketplace) {
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
+					const result = HTTP.get(`${ baseUrl }/v1/apps`, {
 						headers,
 					});
 
@@ -75,7 +79,7 @@ export class AppsRestApi {
 				}
 
 				if (this.queryParams.categories) {
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
@@ -131,7 +135,7 @@ export class AppsRestApi {
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
 					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
@@ -216,7 +220,7 @@ export class AppsRestApi {
 				if (this.queryParams.marketplace && this.queryParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
@@ -236,7 +240,7 @@ export class AppsRestApi {
 				if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
@@ -283,7 +287,7 @@ export class AppsRestApi {
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
