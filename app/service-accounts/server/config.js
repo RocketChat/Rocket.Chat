@@ -14,5 +14,9 @@ Meteor.startup(() => {
 			type: 'int',
 			public: true,
 		});
+		this.add('Service_Accounts_SearchFields', 'username, name, description', {
+			type: 'string',
+			public: true,
+		});
 	});
 });

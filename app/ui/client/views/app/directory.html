@@ -18,7 +18,7 @@
 						class="rc-input__element js-search"
 						name="message-search"
 						id="message-search"
-						placeholder="{{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}}"
+						placeholder="{{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}}{{#if $eq searchType 'serviceAccounts'}}{{_ "Search_ServiceAccounts"}}{{/if}}"
 						autocomplete="off">
 				</div>
 				{{#if $eq searchType 'users'}}
@@ -143,6 +143,65 @@
 								<td>{{domain}}</td>
 								{{/if}}
 								<td>{{createdAt}}</td>
+							</tr>
+						{{else}}
+							{{# with searchText}}
+								<tr class="table-no-click">
+									<td colspan="{{sumColumnCount 3 (canViewOtherUserInfo) ($eq searchWorkspace 'external')}}">
+										{{_ "No_results_found_for"}} {{.}}
+									</td>
+								</tr>
+							{{/with}}
+						{{/each}}
+						{{#if isLoading}}
+							<tr class="table-no-click">
+								<td class="table-loading-td"
+									colspan="{{sumColumnCount 3 (canViewOtherUserInfo) ($eq searchWorkspace 'external')}}">
+									{{> loading}}
+								</td>
+							</tr>
+						{{/if}}
+					</tbody>
+				{{/table}}
+			{{/if}}
+			{{#if $eq searchType 'serviceAccounts'}}
+				{{#table onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+					<thead>
+						<tr>
+							<th class="directory__user-name js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
+								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name') }}</div>
+							</th>
+							<th class="directory__username js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
+								<div class="table-fake-th"><span>{{_ "Username"}}</span> {{> icon icon=(sortIcon 'username') }}</div>
+							</th>
+							<th class="directory__user-count js-sort {{#if searchSortBy 'subscribers'}}is-sorting{{/if}}" data-sort="subscribers">
+								<div class="table-fake-th"><span>{{_ "Subscribers"}}</span> {{> icon icon=(sortIcon 'subscribers') }}</div>
+							</th>
+							<th class="table-column-date js-sort {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
+								<div class="table-fake-th"><span>{{_ "Created_at"}}</span> {{> icon icon=(sortIcon 'createdAt') }}</div>
+							</th>
+							<th>
+								<div class="table-fake-th"><span>{{_ "Description"}}</span></div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each searchResults}}
+							<tr data-name="{{name}}">
+								<td>
+									<div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=username}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{name}}
+											</span>
+										</div>
+									</div>
+								</td>
+								<td>{{username}}</td>
+								<td>{{subscribers}}</td>
+								<td>{{createdAt}}</td>
+								<td>{{description}}</td>
 							</tr>
 						{{else}}
 							{{# with searchText}}
