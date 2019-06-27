@@ -1072,6 +1072,18 @@ export class Rooms extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	replaceServiceAccountBroadcastRoomName(previousUsername, username) {
+		const query = { name: `broadcast_${ previousUsername }` };
+
+		const update = {
+			$set: {
+				name: `broadcast_${ username }`,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setJoinCodeById(_id, joinCode) {
 		let update;
 		const query = { _id };
