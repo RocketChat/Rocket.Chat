@@ -10,7 +10,7 @@ import { settings } from '../../../settings';
 import PasswordPolicy from '../lib/PasswordPolicyClass';
 import { validateEmailDomain } from '../lib';
 
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusMessage } from '.';
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusText } from '.';
 
 const passwordPolicy = new PasswordPolicy();
 
@@ -256,7 +256,7 @@ export const saveUser = function(userId, userData) {
 	}
 
 	if (typeof userData.statusText === 'string') {
-		setStatusMessage(userData._id, userData.statusText);
+		setStatusText(userData._id, userData.statusText);
 	}
 
 	if (userData.email) {
