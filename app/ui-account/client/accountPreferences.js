@@ -244,10 +244,15 @@ Template.accountPreferences.onCreated(function() {
 
 				if (results.exportOperation) {
 					if (results.exportOperation.status === 'completed') {
+						const text = results.url
+							? TAPi18n.__('UserDataDownload_CompletedRequestExistedWithLink_Text', { download_link: results.url })
+							: t('UserDataDownload_CompletedRequestExisted_Text');
+
 						modal.open({
 							title: t('UserDataDownload_Requested'),
-							text: t('UserDataDownload_CompletedRequestExisted_Text'),
+							text,
 							type: 'success',
+							html: true,
 						});
 
 						return true;
