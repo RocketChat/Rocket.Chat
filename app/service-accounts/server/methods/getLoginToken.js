@@ -9,21 +9,17 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getLoginToken' });
 		}
 
+		let stampedToken = {};
 		const user = Users.findOneByUsername(username, {});
-		if (user.u) {
-			if (user.u._id !== Meteor.userId()) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getLoginToken' });
-			}
-		}
+		const isOwnerAccount = user.u && user.u._id === Meteor.userId(); // check if the requested account is owned by the user
+		const isServiceAccount = Meteor.user().u && user._id === Meteor.user().u._id; // check if the service account is requesting owner account login token
 
-		if (Meteor.user().u) {
-			if (user._id !== Meteor.user().u._id) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getLoginToken' });
-			}
+		if (isOwnerAccount || isServiceAccount) {
+			stampedToken = Accounts._generateStampedLoginToken();
+			Accounts._insertLoginToken(user._id, stampedToken);
+		} else {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getLoginToken' });
 		}
-
-		const stampedToken = Accounts._generateStampedLoginToken();
-		Accounts._insertLoginToken(user._id, stampedToken);
 		return stampedToken;
 	},
 });
