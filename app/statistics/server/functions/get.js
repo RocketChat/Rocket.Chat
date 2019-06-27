@@ -162,14 +162,14 @@ statistics.get = function _getStatistics() {
 		};
 	}
 
-	const integrationsCursor = Integrations.find();
+	const integrations = Integrations.find().fetch();
 
 	statistics.integrations = {
-		totalIntegrations: integrationsCursor.count(),
-		totalActiveIntegrations: integrationsCursor.fetch().filter((integration) => integration.enabled === true).length,
-		totalIncoming: integrationsCursor.fetch().filter((integration) => integration.type === 'webhook-incoming').length,
-		totalOutgoing: integrationsCursor.fetch().filter((integration) => integration.type === 'webhook-outgoing').length,
-		integrationList: integrationsCursor.fetch().map((integration) => ({
+		totalIntegrations: integrations.length,
+		totalActiveIntegrations: integrations.filter((integration) => integration.enabled === true).length,
+		totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
+		totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
+		integrationList: integrations.map((integration) => ({
 			_id: integration._id,
 			type: integration.type,
 			enabled: integration.enabled,
