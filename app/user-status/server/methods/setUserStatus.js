@@ -6,6 +6,11 @@ import { RateLimiter, setStatusText } from '../../../lib';
 
 Meteor.methods({
 	setUserStatus(statusType, statusText) {
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });
+		}
+		
 		if (statusType) {
 			Meteor.call('UserPresence:setDefaultStatus', statusType);
 		}
@@ -19,7 +24,6 @@ Meteor.methods({
 				});
 			}
 
-			const userId = Meteor.userId();
 			setStatusText(userId, statusText);
 		}
 	},
