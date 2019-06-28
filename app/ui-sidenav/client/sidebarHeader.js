@@ -7,10 +7,11 @@ import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
 import { t, getUserPreference, handleError } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { hasAtLeastOnePermission, hasPermission } from '../../authorization';
+import { hasAtLeastOnePermission } from '../../authorization';
+import { userStatus } from '../../user-status';
 
-const setStatus = (status) => {
-	AccountBox.setStatus(status);
+const setStatus = (status, statusText) => {
+	AccountBox.setStatus(status, statusText);
 	callbacks.run('userStatusManuallySet', status);
 	popover.close();
 };
@@ -68,6 +69,23 @@ const toolbarButtons = (user) => [{
 	action: () => {
 		menu.close();
 		FlowRouter.go('directory');
+	},
+},
+{
+	name: t('Service_account_login'),
+	icon: 'reload',
+	condition: () => !Meteor.user().u || (Meteor.user().u && localStorage.getItem('serviceAccountForceLogin')),
+	action: (e) => {
+		const options = [];
+		const config = {
+			template: 'serviceAccountSidebarLogin',
+			currentTarget: e.currentTarget,
+			data: {
+				options,
+			},
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+		popover.open(config);
 	},
 },
 {
@@ -201,7 +219,7 @@ const toolbarButtons = (user) => [{
 			});
 		}
 
-		if (serviceAccountEnabled && hasPermission('create-service-account')) {
+		if (serviceAccountEnabled && hasAtLeastOnePermission(['create-service-account'])) {
 			items.push({
 				icon: 'user',
 				name: t('Service_account'),
@@ -338,39 +356,61 @@ Template.sidebarHeader.events({
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
+
+			const userStatusList = Object.keys(userStatus.list).map((key) => {
+				const status = userStatus.list[key];
+				const customName = status.localizeName ? null : status.name;
+				const name = status.localizeName ? t(status.name) : status.name;
+				const modifier = status.statusType || user.status;
+
+				return {
+					icon: 'circle',
+					name,
+					modifier,
+					action: () => setStatus(status.statusType, customName),
+				};
+			});
+
+			const statusText = user.statusText || t(user.status);
+
+			userStatusList.push({
+				icon: 'edit',
+				name: t('Edit_Status'),
+				type: 'open',
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Edit_Status'),
+						content: 'editStatus',
+						data: {
+							onSave() {
+								modal.close();
+							},
+						},
+						modalClass: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			});
+
 			const config = {
 				popoverClass: 'sidebar-header',
 				columns: [
 					{
 						groups: [
 							{
+								title: user.name,
+								items: [{
+									icon: 'circle',
+									name: statusText,
+									modifier: user.status,
+								}],
+							},
+							{
 								title: t('User'),
-								items: [
-									{
-										icon: 'circle',
-										name: t('online'),
-										modifier: 'online',
-										action: () => setStatus('online'),
-									},
-									{
-										icon: 'circle',
-										name: t('away'),
-										modifier: 'away',
-										action: () => setStatus('away'),
-									},
-									{
-										icon: 'circle',
-										name: t('busy'),
-										modifier: 'busy',
-										action: () => setStatus('busy'),
-									},
-									{
-										icon: 'circle',
-										name: t('invisible'),
-										modifier: 'offline',
-										action: () => setStatus('offline'),
-									},
-								],
+								items: userStatusList,
 							},
 							{
 								items: [

@@ -36,9 +36,10 @@ Meteor.methods({
 
 		const user = Meteor.user();
 		const serviceAccounts = Users.findLinkedServiceAccounts(user._id, {});
+		const limit = settings.get('Service_account_limit');
 
-		if (serviceAccounts.count() >= 3) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addServiceAccount' });
+		if (serviceAccounts.count() >= limit) {
+			throw new Meteor.Error('error-not-allowed', 'Max service account limit reached', { method: 'addServiceAccount' });
 		}
 
 		userData.u = {

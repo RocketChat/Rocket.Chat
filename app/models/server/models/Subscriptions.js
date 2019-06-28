@@ -1206,6 +1206,18 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	replaceServiceAccountBroadcastRoomName(previousUsername, username) {
+		const query = { name: `broadcast_${ previousUsername }` };
+
+		const update = {
+			$set: {
+				name: `broadcast_${ username }`,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	// INSERT
 	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {
