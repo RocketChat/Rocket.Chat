@@ -29,14 +29,6 @@ function getApps(instance) {
 			return Promise.resolve({ app: undefined });
 		})
 		.then((remote) => {
-			// remote.app.bundledIn = [{
-			// 	bundleId: 'bb47ca7b-cfc5-4ec5-b7cf-289648da46ac',
-			// 	bundleName: 'Atlassian Cloud Apps',
-			// }, {
-			// 	bundleId: 'bb47ca7b-cfc5-4ec5-b7cf-289648da46ac',
-			// 	bundleName: 'Atlassian Cloud Apps',
-			// }];
-
 			if (!remote.app.bundledIn || remote.app.bundledIn.length === 0) {
 				return remote;
 			}
