@@ -5,6 +5,7 @@ import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { TabBar } from '../../ui-utils/client';
 
 import './views/koji-demo.html';
+import './lib/miniAppMessage';
 
 TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
