@@ -11,7 +11,7 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import filesize from 'filesize';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
 import Avatars from '../../../models/server/models/Avatars';
