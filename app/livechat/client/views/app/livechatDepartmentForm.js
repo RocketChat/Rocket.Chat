@@ -164,7 +164,7 @@ Template.livechatDepartmentForm.onCreated(function() {
 	this.subscribe('livechat:agents');
 
 	this.autorun(() => {
-		const sub = this.subscribe('livechat:departments', FlowRouter.getParam('_id'));
+		const sub = this.subscribe('livechat:departments', { _id: FlowRouter.getParam('_id') });
 		if (sub.ready()) {
 			const department = LivechatDepartment.findOne({ _id: FlowRouter.getParam('_id') });
 			if (department) {

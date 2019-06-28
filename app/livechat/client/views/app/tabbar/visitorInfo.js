@@ -266,7 +266,7 @@ Template.visitorInfo.onCreated(function() {
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid: currentData.rid });
-		this.subscribe('livechat:departments', this.departmentId.get());
+		this.subscribe('livechat:departments', { _id: this.departmentId.get() });
 	}
 
 	this.autorun(() => {
