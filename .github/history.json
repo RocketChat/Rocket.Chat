@@ -32394,6 +32394,38 @@
           ]
         }
       ]
+    },
+    "1.2.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14886",
+          "title": "[NEW] Show App bundles and its apps",
+          "userLogin": "rodrigok",
+          "milestone": "1.2.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14887",
+          "title": "[FIX] LinkedIn OAuth login",
+          "userLogin": "engelgabriel",
+          "milestone": "1.2.0",
+          "contributors": [
+            "Hudell"
+          ]
+        }
+      ]
     }
   }
 }
