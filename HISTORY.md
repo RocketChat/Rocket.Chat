@@ -1,6 +1,23 @@
 
 # 1.2.0 (Under Release Candidate Process)
 
+## 1.2.0-rc.2
+`2019-06-27  ·  1 🎉  ·  1 🐛  ·  3 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Show App bundles and its apps ([#14886](https://github.com/RocketChat/Rocket.Chat/pull/14886))
+
+### 🐛 Bug fixes
+
+- LinkedIn OAuth login ([#14887](https://github.com/RocketChat/Rocket.Chat/pull/14887))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 1.2.0-rc.1
 `2019-06-27  ·  1 🐛  ·  3 🔍  ·  4 👩‍💻👨‍💻`
 
