@@ -189,6 +189,28 @@ export class AppsRestApi {
 			},
 		});
 
+		this.api.addRoute('bundles/:id/apps', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+			get() {
+				const baseUrl = orchestrator.getMarketplaceUrl();
+
+				const headers = {};
+				const token = getWorkspaceAccessToken();
+				if (token) {
+					headers.Authorization = `Bearer ${ token }`;
+				}
+
+				const result = HTTP.get(`${ baseUrl }/v1/bundles/${ this.urlParams.id }/apps`, {
+					headers,
+				});
+
+				if (result.statusCode !== 200 || result.data.length === 0) {
+					return API.v1.failure();
+				}
+
+				return API.v1.success({ apps: result.data });
+			},
+		});
+
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				if (this.queryParams.marketplace && this.queryParams.version) {

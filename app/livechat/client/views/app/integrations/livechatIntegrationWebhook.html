@@ -9,15 +9,24 @@
 
 			<form id="integration-form">
 				<div class="input-line">
-					<label for="webhookUrl">{{_ "Webhook_URL"}}</label>
-					<div>
-						<input type="url" name="webhookUrl" id="webhookUrl" value="{{webhookUrl}}" placeholder="https://yourdomain.com/webhook/entrypoint">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Webhook_URL"}}</div>
+							<div class="rc-input__wrapper">
+								<input type="url" name="webhookUrl" id="webhookUrl" value="{{webhookUrl}}" placeholder="https://yourdomain.com/webhook/entrypoint" class="rc-input__element">
+							</div>
+						</label>
 					</div>
 				</div>
 				<div class="input-line">
-					<label for="secretToken">{{_ "Secret_token"}}</label>
-					<div>
-						<input type="text" name="secretToken" id="secretToken" value="{{secretToken}}">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Secret_token"}}</div>
+							<div class="rc-input__wrapper">
+								<input type="text" name="secretToken" id="secretToken" value="{{secretToken}}"
+								 class="rc-input__element">
+							</div>
+						</label>
 					</div>
 				</div>
 				<div class="input-line">
@@ -44,10 +53,10 @@
 						{{_ "Send_request_on_agent_message"}}
 					</label>
 				</div>
-				<div class="submit">
-					<button class="button danger reset-settings" type="button"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
-					<button class="button secondary test" type="button" disabled="{{disableTest}}">{{_ "Send_Test"}}</button>
-					<button class="button primary save"><i class="icon-floppy"></i>{{_ "Save"}}</button>
+				<div class="rc-button__group submit">
+					<button class="rc-button rc-button--danger reset-settings" type="button"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
+					<button class="rc-button rc-button--secondary test" type="button" disabled="{{disableTest}}">{{_ "Send_Test"}}</button>
+					<button class="rc-button rc-button--primary save"><i class="icon-floppy"></i>{{_ "Save"}}</button>
 				</div>
 			</form>
 		</div>
