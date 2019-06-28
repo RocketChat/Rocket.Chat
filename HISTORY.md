@@ -1,4 +1,20 @@
 
+# 1.2.1
+`2019-06-28  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Not showing local app on App Details ([#14894](https://github.com/RocketChat/Rocket.Chat/pull/14894))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+
 # 1.2.0
 `2019-06-27  ·  8 🎉  ·  4 🚀  ·  12 🐛  ·  8 🔍  ·  21 👩‍💻👨‍💻`
 
