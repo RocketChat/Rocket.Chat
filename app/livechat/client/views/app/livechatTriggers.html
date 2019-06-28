@@ -1,28 +1,33 @@
 <template name="livechatTriggers">
 	{{#requiresPermission 'view-livechat-manager'}}
-		<div class="list">
-			<table>
+		<div class="rc-table-content">
+			{{#table fixed='true'}}
 				<thead>
 					<tr>
-						<th width="30%">{{_ "Name"}}</th>
-						<th width="50%">{{_ "Description"}}</th>
-						<th width="20%">{{_ "Enabled"}}</th>
-						<th>{{_ "Delete"}}</th>
+						<th><div class="table-fake-th">{{_ "Name"}}</div></th>
+						<th width="50%"><div class="table-fake-th">{{_ "Description"}}</div></th>
+						<th width="20%"><div class="table-fake-th">{{_ "Enabled"}}</div></th>
+						<th width="40px">&nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>
 					{{#each triggers}}
 						<tr class="trigger-info row-link" data-id="{{_id}}">
-							<td>{{name}}</td>
+							<td><div class="rc-table-wrapper">
+								<div class="rc-table-info">
+									<span class="rc-table-title">{{name}}</span></div></div></td>
 							<td>{{description}}</td>
 							<td>{{#if enabled}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
 							<td><a href="#remove" class="remove-trigger"><i class="icon-trash"></i></a></td>
 						</tr>
 					{{/each}}
 				</tbody>
-			</table>
+			{{/table}}
 		</div>
 
-		<a href="{{pathFor 'livechat-trigger-new'}}" class="button primary">{{_ "New_Trigger"}}</a>
+		<div class="rc-button__group">
+			<a href="{{pathFor 'livechat-trigger-new'}}" class="rc-button rc-button--primary">{{_ "New_Trigger"}}</a>
+		</div>
+
 	{{/requiresPermission}}
 </template>
