@@ -32504,6 +32504,27 @@
           ]
         }
       ]
+    },
+    "1.2.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14894",
+          "title": "[FIX] Not showing local app on App Details",
+          "userLogin": "d-gubert",
+          "milestone": "1.2.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }

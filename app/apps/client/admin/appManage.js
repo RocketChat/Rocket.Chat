@@ -29,7 +29,7 @@ function getApps(instance) {
 			return Promise.resolve({ app: undefined });
 		})
 		.then((remote) => {
-			if (!remote.app.bundledIn || remote.app.bundledIn.length === 0) {
+			if (!remote.app || !remote.app.bundledIn || remote.app.bundledIn.length === 0) {
 				return remote;
 			}
 
