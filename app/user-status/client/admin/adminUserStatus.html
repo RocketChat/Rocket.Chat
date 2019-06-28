@@ -1,0 +1,72 @@
+<template name="adminUserStatus">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			{{> header sectionName="Custom_User_Status"}}
+			<div class="content">
+				{{#unless hasPermission 'manage-user-status'}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+				{{else}}
+				<form class="search-form" role="form">
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{#if isReady}} {{> icon block="rc-input__icon-svg" icon="magnifier" }} {{else}} {{> loading }} {{/if}}
+						</div>
+						<input id="user-status-filter" type="text" class="rc-input__element" placeholder="{{_ " Search "}}" autofocus dir="auto">
+					</div>
+				</form>
+				<div class="results">
+					{{{_ "Showing_results" customUserStatus.length}}}
+				</div>
+					{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+					<thead>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color" width="1%">
+								<div class="table-fake-th">&nbsp;</div>
+							</th>
+							<th class="content-background-color border-component-color" width="49%">
+								<div class="table-fake-th">{{_ "Name"}}</div>
+							</th>
+							<th class="content-background-color border-component-color" width="50%">
+								<div class="table-fake-th">{{_ "Presence"}}</div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each customUserStatus}}
+						<tr class="user-status-info row-link admin-table-row">
+							<td class="border-component-color">
+								<div class="rc-table-wrapper userStatusAdminPreview">
+									<div class="rc-table-info">
+										<span class="rc-table-title">
+											{{> userStatusPreview name=name}}
+										</span>
+									</div>
+								</div>
+							</td>
+							<td class="border-component-color">
+								<div class="rc-table-wrapper">
+									<div class="rc-table-info">
+										<span class="rc-table-title">{{name}}</span></div>
+								</div>
+							</td>
+							<td class="border-component-color">
+								<div class="rc-table-wrapper">
+									<div class="rc-table-info">
+										<span class="rc-table-title">{{localizedStatusType}}</span></div>
+								</div>
+							</td>
+						</tr>
+						{{/each}}
+					</tbody>
+					{{/table}}
+					{{#if hasMore}}
+					<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+					{{/if}}
+				{{/unless}}
+			</div>
+		</section>
+		{{#with flexData}}
+		{{> flexTabBar}}
+		{{/with}}
+	</div>
+</template>

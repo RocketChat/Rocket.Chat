@@ -257,6 +257,10 @@ button {
 	animation-delay: -0.16s;
 }
 
+.file-picker-loading .loading-animation > .bounce {
+	background-color: #444444;
+}
+
 @keyframes loading-bouncedelay {
 	0%,
 	80%,

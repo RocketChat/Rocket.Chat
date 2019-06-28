@@ -2,12 +2,13 @@ import { Template } from 'meteor/templating';
 
 import { MsgTyping } from '../../../ui';
 import { t } from '../../../utils';
+import { getConfig } from '../../../ui-utils/client/config';
 import './messageBoxTyping.html';
 
+const maxUsernames = parseInt(getConfig('max-usernames-typing')) || 4;
 
 Template.messageBoxTyping.helpers({
 	data() {
-		const maxUsernames = 4;
 		const users = MsgTyping.get(this.rid);
 		if (users.length === 0) {
 			return;
