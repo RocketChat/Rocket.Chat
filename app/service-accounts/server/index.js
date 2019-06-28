@@ -10,9 +10,6 @@ import './methods/getLoginToken';
 import './hooks/serviceAccountCallback';
 
 import './publications/fullServiceAccountData';
-<<<<<<< HEAD
+import './publications/userServiceAccounts';
 
 import '../lib/serviceAccountRoomType';
-=======
-import './publications/userServiceAccounts';
->>>>>>> 117d725d6cc18dfcfdd2d314fdfe68dfa1e3cd6f

@@ -24,6 +24,6 @@ Meteor.startup(() => {
 		section: 'Accounts_Default_User_Preferences',
 		type: 'boolean',
 		public: true,
-		i18nLabel: 'Group_serviceAccounts',
+		i18nLabel: 'Group_subscriptions',
 	});
 });

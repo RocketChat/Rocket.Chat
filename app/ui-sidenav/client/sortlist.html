@@ -31,6 +31,15 @@
 					<span class="rc-popover__item-text">{{_ "Group_discussions"}}</span>
 				</label>
 			</li>
+			<li class="rc-popover__item {{bold 'sidebarShowServiceAccounts'}}">
+				<label class="rc-popover__label">
+					<input type="checkbox" name="sidebarShowServiceAccounts" class="hidden" checked="{{checked 'sidebarShowServiceAccounts'}}" />
+					<span class="rc-popover__icon">
+						{{> icon block="rc-popover__icon-element" icon='user' }}
+					</span>
+					<span class="rc-popover__item-text">{{_ "Group_subscriptions"}}</span>
+				</label>
+			</li>
 			<li class="rc-popover__item {{bold 'sidebarGroupByType'}}">
 				<label class="rc-popover__label">
 					<input type="checkbox" name="sidebarGroupByType" class="hidden" checked="{{checked 'sidebarGroupByType'}}"/>

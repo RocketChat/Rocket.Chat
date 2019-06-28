@@ -1491,6 +1491,7 @@
   "Group_favorites": "Group favorites",
   "Group_mentions_disabled_x_members": "Group mentions `@all` and `@here` have been disabled for rooms with more than __total__ members.",
   "Group_mentions_only": "Group mentions only",
+  "Group_subscriptions": "Group subscriptions",
   "Guest_Pool": "Guest Pool",
   "Hash": "Hash",
   "Header": "Header",
