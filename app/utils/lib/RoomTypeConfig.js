@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { settings } from '../../settings';
-
 let Users;
+let settings;
 if (Meteor.isServer) {
+	({ settings } = require('../../settings/server'));
 	Users = require('../../models/server/models/Users').default;
+} else {
+	({ settings } = require('../../settings/client'));
 }
 
 export const RoomSettingsEnum = {
