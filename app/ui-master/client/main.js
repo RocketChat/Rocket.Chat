@@ -86,14 +86,15 @@ Template.body.onRendered(function() {
 			return;
 		}
 
-		popover.close();
-
 		if (/input|textarea|select/i.test(target.tagName)) {
 			return;
 		}
 		if (target.id === 'pswp') {
 			return;
 		}
+
+		popover.close();
+
 		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
 		if (!inputMessage) {
 			return;

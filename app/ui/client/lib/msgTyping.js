@@ -38,8 +38,10 @@ export const MsgTyping = new class {
 
 	cancel(rid) {
 		if (rooms[rid]) {
-			delete rooms[rid];
 			Notifications.unRoom(rid, 'typing', rooms[rid]);
+			Object.values(usersTyping.get(rid) || {}).forEach(clearTimeout);
+			usersTyping.set(rid);
+			delete rooms[rid];
 		}
 	}
 
@@ -56,8 +58,9 @@ export const MsgTyping = new class {
 			if (typing === true) {
 				clearTimeout(users[username]);
 				users[username] = setTimeout(function() {
-					delete users[username];
-					usersTyping.set(rid, users);
+					const u = usersTyping.get(rid);
+					delete u[username];
+					usersTyping.set(rid, u);
 				}, timeout);
 			} else {
 				delete users[username];
