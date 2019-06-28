@@ -1,51 +1,11 @@
 
-# 1.2.0 (Under Release Candidate Process)
+# 1.2.0
+`2019-06-27  ·  8 🎉  ·  4 🚀  ·  12 🐛  ·  8 🔍  ·  21 👩‍💻👨‍💻`
 
-## 1.2.0-rc.2
-`2019-06-27  ·  1 🎉  ·  1 🐛  ·  3 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-- Show App bundles and its apps ([#14886](https://github.com/RocketChat/Rocket.Chat/pull/14886))
-
-### 🐛 Bug fixes
-
-- LinkedIn OAuth login ([#14887](https://github.com/RocketChat/Rocket.Chat/pull/14887))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@Hudell](https://github.com/Hudell)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 1.2.0-rc.1
-`2019-06-27  ·  1 🐛  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Custom status fixes ([#14853](https://github.com/RocketChat/Rocket.Chat/pull/14853) by [@wreiske](https://github.com/wreiske))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Fix desktop notifications not being sent ([#14860](https://github.com/RocketChat/Rocket.Chat/pull/14860))
-- Regression: Allow debugging of cached collections by name ([#14862](https://github.com/RocketChat/Rocket.Chat/pull/14862))
-- Allow debugging of cached collections by name ([#14859](https://github.com/RocketChat/Rocket.Chat/pull/14859))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@wreiske](https://github.com/wreiske)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@Hudell](https://github.com/Hudell)
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 1.2.0-rc.0
-`2019-06-21  ·  7 🎉  ·  4 🚀  ·  10 🐛  ·  5 🔍  ·  21 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
 
 ### 🎉 New features
 
@@ -56,6 +16,7 @@
 - Endpoint to anonymously read channel's messages ([#14714](https://github.com/RocketChat/Rocket.Chat/pull/14714))
 - Add Livechat inquiries endpoints ([#14779](https://github.com/RocketChat/Rocket.Chat/pull/14779))
 - Configuration to limit amount of livechat inquiries displayed ([#14690](https://github.com/RocketChat/Rocket.Chat/pull/14690))
+- Show App bundles and its apps ([#14886](https://github.com/RocketChat/Rocket.Chat/pull/14886))
 
 ### 🚀 Improvements
 
@@ -76,6 +37,8 @@
 - Import Chart.js error ([#14471](https://github.com/RocketChat/Rocket.Chat/pull/14471) by [@sonbn0](https://github.com/sonbn0))
 - Name is undefined in some emails ([#14533](https://github.com/RocketChat/Rocket.Chat/pull/14533))
 - Direct reply delete config and description ([#14493](https://github.com/RocketChat/Rocket.Chat/pull/14493) by [@ruKurz](https://github.com/ruKurz))
+- Custom status fixes ([#14853](https://github.com/RocketChat/Rocket.Chat/pull/14853) by [@wreiske](https://github.com/wreiske))
+- LinkedIn OAuth login ([#14887](https://github.com/RocketChat/Rocket.Chat/pull/14887))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -85,6 +48,9 @@
 - Extract permissions functions ([#14777](https://github.com/RocketChat/Rocket.Chat/pull/14777))
 - Add custom fileupload whitelist property ([#14754](https://github.com/RocketChat/Rocket.Chat/pull/14754))
 - Merge master into develop & Set version to 1.2.0-develop ([#14656](https://github.com/RocketChat/Rocket.Chat/pull/14656) by [@AnBo83](https://github.com/AnBo83) & [@knrt10](https://github.com/knrt10) & [@lolimay](https://github.com/lolimay) & [@mohamedar97](https://github.com/mohamedar97) & [@thaiphv](https://github.com/thaiphv))
+- Regression: Fix desktop notifications not being sent ([#14860](https://github.com/RocketChat/Rocket.Chat/pull/14860))
+- Regression: Allow debugging of cached collections by name ([#14862](https://github.com/RocketChat/Rocket.Chat/pull/14862))
+- Allow debugging of cached collections by name ([#14859](https://github.com/RocketChat/Rocket.Chat/pull/14859))
 
 </details>
 
