@@ -1,7 +1,7 @@
 import { modal } from './modal';
 import { t } from '../../../utils';
 
-export async function authorize(appName) {
+export async function authorizeMiniApp(appName) {
 	const result = new Promise((resolve) => {
 		modal.open({
 			title: t('S_apply', appName),

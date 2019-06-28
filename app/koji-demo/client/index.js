@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { authorize } from '../../ui-utils/client/lib/miniAppAction';
+import { authorizeMiniApp } from '../../ui-utils/client/lib/miniAppAction';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { TabBar } from '../../ui-utils/client';
 
@@ -46,7 +46,7 @@ Meteor.startup(function() {
 			const { payload: { appName } } = data.rcEmbeddedSdk;
 			// ack the successful connect back to the iframe
 			if (action === 'getUserInfo') {
-				const authorized = await authorize(appName);
+				const authorized = await authorizeMiniApp(appName);
 				console.log(authorized);
 				if (!authorized) {
 					source.postMessage({
