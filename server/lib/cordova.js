@@ -212,7 +212,7 @@ function configurePush() {
 						}],
 					};
 
-					return Push.appCollection.find(query).forEach((app) => {
+					Push.appCollection.find(query).forEach((app) => {
 						if (settings.get('Push_debug')) {
 							console.log('Push: send to token', app.token);
 						}
