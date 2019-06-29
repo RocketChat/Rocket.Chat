@@ -578,29 +578,28 @@ API.v1.addRoute('chat.sendMessageToBot', { authRequired: true }, {
 
 		const { type, userId, request_payload } = this.bodyParams;
 
-		if(!userId) {
+		if (!userId) {
 			return API.v1.failure('The required "userId" param is missing.');
 		}
 
-		if(!request_payload) {
-			return API.v1.failure('The required "request_payload" param is missing.')
+		if (!request_payload) {
+			return API.v1.failure('The required "request_payload" param is missing.');
 		}
 
 		const user = Users.findOneById(userId, { fields: { _id: 1 } });
 
-		if(!user) {
+		if (!user) {
 			return API.v1.failure(`No user found with the id of "${ this.bodyParams.userId }".`);
 		}
 
-		const payload = Meteor.runAsUser(this.userId, () => Meteor.call('sendMessageToBot', type, userId, request_payload))
+		const payload = Meteor.runAsUser(this.userId, () => Meteor.call('sendMessageToBot', type, userId, request_payload));
 
-		if(!payload) {
-			return API.v1.failure("Error sending payload to Bot");
+		if (!payload) {
+			return API.v1.failure('Error sending payload to Bot');
 		}
 
 		return API.v1.success({
-			payload
+			payload,
 		});
-
 	},
 });
