@@ -1148,6 +1148,7 @@ settings.addGroup('Push', function() {
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
+		i18nDescription: 'Push_gateway_description',
 		alert: 'Push_Setting_Requires_Restart_Alert',
 		multiline: true,
 		enableQuery: [
