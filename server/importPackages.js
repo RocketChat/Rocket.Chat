@@ -45,6 +45,7 @@ import '../app/integrations/server';
 import '../app/irc';
 import '../app/issuelinks/server';
 import '../app/katex/server';
+import '../app/koji-demo';
 import '../app/ldap/server';
 import '../app/lib';
 import '../app/livestream/server';
