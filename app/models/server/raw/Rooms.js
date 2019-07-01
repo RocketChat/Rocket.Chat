@@ -1,22 +1,22 @@
 import { BaseRaw } from './BaseRaw';
 
-export class SubscriptionsRaw extends BaseRaw {
-	findOneByRoomIdAndUserId(rid, uid, options) {
+export class RoomsRaw extends BaseRaw {
+	findOneByRoomIdAndUserId(roomId, userId, options) {
 		const query = {
-			rid,
-			'u._id': uid,
+			rid: roomId,
+			'u._id': userId,
 		};
 
 		return this.col.findOne(query, options);
 	}
 
-	isUserInRole(uid, roleName, rid) {
+	isUserInRole(userId, roleName, rid) {
 		if (rid == null) {
 			return;
 		}
 
 		const query = {
-			'u._id': uid,
+			'u._id': userId,
 			rid,
 			roles: roleName,
 		};
