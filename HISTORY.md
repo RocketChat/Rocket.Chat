@@ -1,4 +1,165 @@
 
+# 1.2.0
+`2019-06-27  ·  8 🎉  ·  4 🚀  ·  12 🐛  ·  8 🔍  ·  21 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🎉 New features
+
+- Custom User Status ([#13933](https://github.com/RocketChat/Rocket.Chat/pull/13933) by [@wreiske](https://github.com/wreiske))
+- changed mongo version for snap from 3.2.7 to 3.4.20 ([#14838](https://github.com/RocketChat/Rocket.Chat/pull/14838))
+- Add loading animation to webdav file picker ([#14759](https://github.com/RocketChat/Rocket.Chat/pull/14759) by [@ubarsaiyan](https://github.com/ubarsaiyan))
+- Add tmid property to outgoing integration ([#14699](https://github.com/RocketChat/Rocket.Chat/pull/14699))
+- Endpoint to anonymously read channel's messages ([#14714](https://github.com/RocketChat/Rocket.Chat/pull/14714))
+- Add Livechat inquiries endpoints ([#14779](https://github.com/RocketChat/Rocket.Chat/pull/14779))
+- Configuration to limit amount of livechat inquiries displayed ([#14690](https://github.com/RocketChat/Rocket.Chat/pull/14690))
+- Show App bundles and its apps ([#14886](https://github.com/RocketChat/Rocket.Chat/pull/14886))
+
+### 🚀 Improvements
+
+- Adds link to download generated user data file ([#14175](https://github.com/RocketChat/Rocket.Chat/pull/14175))
+- Layout of livechat manager pages to new style ([#13900](https://github.com/RocketChat/Rocket.Chat/pull/13900))
+- Add an optional rocketchat-protocol DNS entry for Federation ([#14589](https://github.com/RocketChat/Rocket.Chat/pull/14589))
+- Use configurable colors on sidebar items ([#14624](https://github.com/RocketChat/Rocket.Chat/pull/14624))
+
+### 🐛 Bug fixes
+
+- Error when using Download My Data or Export My Data ([#14645](https://github.com/RocketChat/Rocket.Chat/pull/14645))
+- Removes E2E action button, icon and banner when E2E is disabled. ([#14810](https://github.com/RocketChat/Rocket.Chat/pull/14810))
+- Assume microphone is available ([#14710](https://github.com/RocketChat/Rocket.Chat/pull/14710))
+- Move the set Avatar call on user creation to make sure the user has username ([#14665](https://github.com/RocketChat/Rocket.Chat/pull/14665))
+- users typing forever ([#14724](https://github.com/RocketChat/Rocket.Chat/pull/14724))
+- Increasing time to rate limit in shield.svg endpoint and add a setting to disable API rate limiter ([#14709](https://github.com/RocketChat/Rocket.Chat/pull/14709))
+- Wrong filter field when filtering current Livechats ([#14569](https://github.com/RocketChat/Rocket.Chat/pull/14569))
+- Import Chart.js error ([#14471](https://github.com/RocketChat/Rocket.Chat/pull/14471) by [@sonbn0](https://github.com/sonbn0))
+- Name is undefined in some emails ([#14533](https://github.com/RocketChat/Rocket.Chat/pull/14533))
+- Direct reply delete config and description ([#14493](https://github.com/RocketChat/Rocket.Chat/pull/14493) by [@ruKurz](https://github.com/ruKurz))
+- Custom status fixes ([#14853](https://github.com/RocketChat/Rocket.Chat/pull/14853) by [@wreiske](https://github.com/wreiske))
+- LinkedIn OAuth login ([#14887](https://github.com/RocketChat/Rocket.Chat/pull/14887))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix not fully extracted pieces ([#14805](https://github.com/RocketChat/Rocket.Chat/pull/14805))
+- Regression: Fix file upload ([#14804](https://github.com/RocketChat/Rocket.Chat/pull/14804))
+- Extract permissions functions ([#14777](https://github.com/RocketChat/Rocket.Chat/pull/14777))
+- Add custom fileupload whitelist property ([#14754](https://github.com/RocketChat/Rocket.Chat/pull/14754))
+- Merge master into develop & Set version to 1.2.0-develop ([#14656](https://github.com/RocketChat/Rocket.Chat/pull/14656) by [@AnBo83](https://github.com/AnBo83) & [@knrt10](https://github.com/knrt10) & [@lolimay](https://github.com/lolimay) & [@mohamedar97](https://github.com/mohamedar97) & [@thaiphv](https://github.com/thaiphv))
+- Regression: Fix desktop notifications not being sent ([#14860](https://github.com/RocketChat/Rocket.Chat/pull/14860))
+- Regression: Allow debugging of cached collections by name ([#14862](https://github.com/RocketChat/Rocket.Chat/pull/14862))
+- Allow debugging of cached collections by name ([#14859](https://github.com/RocketChat/Rocket.Chat/pull/14859))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@AnBo83](https://github.com/AnBo83)
+- [@knrt10](https://github.com/knrt10)
+- [@lolimay](https://github.com/lolimay)
+- [@mohamedar97](https://github.com/mohamedar97)
+- [@ruKurz](https://github.com/ruKurz)
+- [@sonbn0](https://github.com/sonbn0)
+- [@thaiphv](https://github.com/thaiphv)
+- [@ubarsaiyan](https://github.com/ubarsaiyan)
+- [@wreiske](https://github.com/wreiske)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@LuluGO](https://github.com/LuluGO)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@PrajvalRaval](https://github.com/PrajvalRaval)
+- [@alansikora](https://github.com/alansikora)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@ggazzo](https://github.com/ggazzo)
+- [@marceloschmidt](https://github.com/marceloschmidt)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
+# 1.1.3
+`2019-06-21  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Gap of messages when loading history when using threads ([#14837](https://github.com/RocketChat/Rocket.Chat/pull/14837))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 1.1.3 ([#14850](https://github.com/RocketChat/Rocket.Chat/pull/14850))
+- Regression: thread loading parent msg if is not loaded ([#14839](https://github.com/RocketChat/Rocket.Chat/pull/14839))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 1.1.2
+`2019-06-17  ·  3 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- User status information on User Info panel ([#14763](https://github.com/RocketChat/Rocket.Chat/pull/14763))
+- User Real Name being erased when not modified ([#14711](https://github.com/RocketChat/Rocket.Chat/pull/14711))
+- Anonymous chat read ([#14717](https://github.com/RocketChat/Rocket.Chat/pull/14717))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 1.1.2 ([#14823](https://github.com/RocketChat/Rocket.Chat/pull/14823))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 1.1.1
+`2019-05-30  ·  2 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- SAML login error. ([#14686](https://github.com/RocketChat/Rocket.Chat/pull/14686))
+- Load messages after disconnect and message box scroll missing ([#14668](https://github.com/RocketChat/Rocket.Chat/pull/14668))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Removing unnecesary federation configs ([#14674](https://github.com/RocketChat/Rocket.Chat/pull/14674))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@alansikora](https://github.com/alansikora)
+- [@ggazzo](https://github.com/ggazzo)
+
 # 1.1.0
 `2019-05-27  ·  5 🎉  ·  10 🚀  ·  52 🐛  ·  35 🔍  ·  27 👩‍💻👨‍💻`
 
