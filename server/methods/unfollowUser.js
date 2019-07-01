@@ -1,33 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../app/models';
+import { UserRelations, Users } from '../../app/models';
 import { settings } from '../../app/settings';
 
 
 Meteor.methods({
 	unfollowUser(username) {
-		if (settings.get('Newsfeed_enabled')) {
-			// Update followers keys
-			let userObject = Users.findOneByUsername(username);
-			if ('followers' in userObject) {
-				const followersObject = userObject.followers;
-				const { _id } = Users.findOneByUsername(Meteor.user().username);
-				delete followersObject[_id];
-				Users.update(userObject._id, { $set: { followers: followersObject } });
-			}
-
-			// Update following keys
-			userObject = Users.findOneByUsername(Meteor.user().username);
-			if ('following' in userObject) {
-				const followingObject = userObject.following;
-				const { _id } = Users.findOneByUsername(username);
-				delete followingObject[_id];
-				Users.update(userObject._id, { $set: { following: followingObject } });
-			}
-
-			return true;
+		if (!settings.get('Newsfeed_enabled')) {
+			return false;
 		}
 
+		const { _id: followingId } = Users.findOneByUsername(username, { fields: { _id: 1 } });
+
+		if (UserRelations.find({ following: followingId, follower: Meteor.userId() }, { limit: 1 }).fetch()[0]) {
+			UserRelations.remove({ following: followingId, follower: Meteor.userId() });
+			return true;
+		}
 		return false;
 	},
 });
