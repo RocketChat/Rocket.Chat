@@ -1,7 +1,7 @@
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
-	findOneByRoomIdAndUserId(roomId, userId, options) {
+	findOneByRoomIdAndUserId(rid, uid, options) {
 		const query = {
 			rid: roomId,
 			'u._id': userId,
