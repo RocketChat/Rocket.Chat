@@ -5,6 +5,7 @@ import _ from 'underscore';
 import { Livechat } from './Livechat';
 import { LivechatRooms, Subscriptions, Users } from '../../../models';
 import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
 import { sendNotification } from '../../../lib';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
@@ -84,6 +85,10 @@ export const QueueMethods = {
 		Livechat.stream.emit(room._id, {
 			type: 'agentData',
 			data: Users.getAgentInfo(agent.agentId),
+		});
+
+		Meteor.defer(() => {
+			callbacks.run('livechat.newRoom', room);
 		});
 
 		return room;
@@ -196,6 +201,11 @@ export const QueueMethods = {
 				mentionIds: [],
 			});
 		});
+
+		Meteor.defer(() => {
+			callbacks.run('livechat.newRoom', room);
+		});
+
 		return room;
 	},
 	'External'(guest, message, roomInfo, agent) {
