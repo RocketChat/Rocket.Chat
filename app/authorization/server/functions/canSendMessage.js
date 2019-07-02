@@ -14,7 +14,7 @@ export const canSendMessageAsync = async (rid, { uid, username }, extraData) => 
 		throw new Error('error-not-allowed');
 	}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, { subscription: subscriptionProjection });
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, subscriptionOptions);
 	if (subscription.blocked || subscription.blocker) {
 		throw new Error('room_is_blocked');
 	}
