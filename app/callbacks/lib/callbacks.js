@@ -6,7 +6,7 @@ let timed = false;
 
 if (Meteor.isClient) {
 	const { getConfig } = require('../../ui-utils/client/config');
-	timed = [getConfig('debug'), getConfig('timed-callbacks')].includes('true');
+	timed = [getConfig('debug'), getConfig('timed-callbacks')].includes('true');
 }
 /*
 * Callback hooks provide an easy way to add extra steps to common operations.
