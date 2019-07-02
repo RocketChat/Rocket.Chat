@@ -106,9 +106,35 @@
 										{{ summary }}
 									</div>
 								{{/if}}
+
 								{{#if description}}
 									<div class="rc-apps-details__description">
 										<p>{{ description }}</p>
+									</div>
+								{{/if}}
+
+								{{#if bundledIn}}
+									<div class="rc-apps-details__row">
+										<h2> {{_ "Bundles"}} </h2>
+									</div>
+									<div class="rc-apps-details__bundles">
+										{{#each bundledIn}}
+											<div class="rc-apps-details__bundle">
+												<div class="rc-apps-details__bundle_icons">
+													{{#each apps}}
+														{{#if latest.iconFileData}}
+															<div class="rc-apps-details__bundle_icon" style="background-image:url(data:image/png;base64,{{latest.iconFileData}})"></div>
+														{{else}}
+															<div class="rc-apps-details__bundle_icon" style="background-image:url({{latest.iconFileContent}})"></div>
+														{{/if}}
+													{{/each}}
+												</div>
+												<div class="rc-apps-details__bundle_body">
+													<div class="rc-apps-details__bundle_body_title">{{ bundleName }}</div>
+													{{bundleAppNames apps}}
+												</div>
+											</div>
+										{{/each}}
 									</div>
 								{{/if}}
 

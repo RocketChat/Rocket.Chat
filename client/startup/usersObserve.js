@@ -12,11 +12,14 @@ Meteor.startup(function() {
 		},
 		changed(user) {
 			Session.set(`user_${ user.username }_status`, user.status);
-			Session.set(`user_${ user.username }_status_text`, user.statusText);
+			if (user.statusText !== undefined) {
+				Session.set(`user_${ user.username }_status_text`, user.statusText);
+			}
 			RoomManager.updateUserStatus(user, user.status, user.utcOffset);
 		},
 		removed(user) {
 			Session.set(`user_${ user.username }_status`, null);
+			Session.set(`user_${ user.username }_status_text`, null);
 			RoomManager.updateUserStatus(user, 'offline', null);
 		},
 	});
