@@ -2,9 +2,11 @@ import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server/raw';
 
-const subscriptionProjection = {
-	blocked: 1,
-	blocker: 1,
+const subscriptionOptions = {
+	projection: {
+		blocked: 1,
+		blocker: 1,
+	},
 };
 
 export const canSendMessageAsync = async (rid, { uid, username }, extraData) => {
@@ -14,7 +16,7 @@ export const canSendMessageAsync = async (rid, { uid, username }, extraData) => 
 		throw new Error('error-not-allowed');
 	}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, { subscription: subscriptionProjection });
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, subscriptionOptions);
 	if (subscription.blocked || subscription.blocker) {
 		throw new Error('room_is_blocked');
 	}
@@ -33,4 +35,4 @@ export const canSendMessageAsync = async (rid, { uid, username }, extraData) => 
 	return room;
 };
 
-export const canSendMessage = (...args) => Promise.await(canSendMessageAsync(...args));
+export const canSendMessage = (rid, { uid, username }, extraData) => Promise.await(canSendMessageAsync(rid, { uid, username }, extraData));
