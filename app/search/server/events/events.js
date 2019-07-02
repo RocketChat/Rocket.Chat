@@ -28,7 +28,7 @@ callbacks.add('afterSaveMessage', function(m) {
 
 callbacks.add('afterDeleteMessage', function(m) {
 	eventService.promoteEvent('message.delete', m._id);
-}, callbacks.priority.MEDIUM, 'search-events');
+}, callbacks.priority.MEDIUM, 'search-events-delete');
 
 /**
  * Listen to user and room changes via cursor
