@@ -141,7 +141,7 @@ callbacks.run = function(hook, item, constant) {
 */
 
 callbacks.runAsync = Meteor.isServer ? function(hook, item, constant) {
-	const callbackItems = combinedCallbacks[hook];
+	const callbackItems = callbacks[hook];
 	if (callbackItems && callbackItems.length) {
 		callbackItems.forEach((callback) => Meteor.defer(function() { callback(item, constant); }));
 	}
