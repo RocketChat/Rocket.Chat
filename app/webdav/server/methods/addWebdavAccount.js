@@ -34,7 +34,7 @@ Meteor.methods({
 		try {
 			await client.stat('/');
 		} catch (error) {
-			return { success: false, message: 'could-not-access-webdav', error };
+			return { success: false, message: 'could-not-access-webdav' };
 		}
 
 		const accountData = {
@@ -48,7 +48,7 @@ Meteor.methods({
 			WebdavAccounts.insert(accountData);
 			return { success: true, message: 'webdav-account-saved' };
 		} catch (error) {
-			return { success: false, message: error.code === 11000 ? 'duplicated-account' : 'unknown-write-error', error };
+			return { success: false, message: error.code === 11000 ? 'duplicated-account' : 'unknown-write-error' };
 		}
 	},
 });
