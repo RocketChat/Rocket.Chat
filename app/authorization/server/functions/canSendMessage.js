@@ -33,4 +33,4 @@ export const canSendMessageAsync = async (rid, { uid, username }, extraData) => 
 	return room;
 };
 
-export const canSendMessage = (...args) => Promise.await(canSendMessageAsync(...args));
+export const canSendMessage = (rid, { uid, username }, extraData) => Promise.await(canSendMessageAsync(rid, { uid, username }, extraData));
