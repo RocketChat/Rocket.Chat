@@ -27,9 +27,8 @@ export class WebdavStore extends UploadFS.Store {
 			}
 			return options.uploadFolderPath + file._id;
 		};
-
 		client.stat(options.uploadFolderPath).catch(function(err) {
-			if (err.status === '404') {
+			if (err.response.status === 404) {
 				client.createDirectory(options.uploadFolderPath);
 			}
 		});
