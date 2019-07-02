@@ -2,9 +2,11 @@ import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server/raw';
 
-const subscriptionProjection = {
-	blocked: 1,
-	blocker: 1,
+const subscriptionOptions = {
+	projection: {
+		blocked: 1,
+		blocker: 1,
+	},
 };
 
 export const canSendMessageAsync = async (rid, { uid, username }, extraData) => {
