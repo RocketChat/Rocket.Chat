@@ -35,11 +35,9 @@ const wrapRun = (hook, fn) => (...args) => {
 	return ret;
 };
 
-const handleResult = (fn) => {
-	return (result, constant) => {
-		const callbackResult = callbacks.runItem({ callback: fn, result, constant });
-		return typeof callbackResult === 'undefined' ? result : callbackResult;
-	};
+const handleResult = (fn) => (result, constant) => {
+	const callbackResult = callbacks.runItem({ callback: fn, result, constant });
+	return typeof callbackResult === 'undefined' ? result : callbackResult;
 };
 
 
