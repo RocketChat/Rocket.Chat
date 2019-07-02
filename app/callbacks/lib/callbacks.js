@@ -36,10 +36,12 @@ const getHooks = (hookName) => callbacks[hookName] || [];
 * @param {Function} callback - The callback function
 */
 
-callbacks.add = function(hook, callback, priority, id = Random.id()) {
-	if (!_.isNumber(priority)) {
-		priority = callbacks.priority.MEDIUM;
-	}
+callbacks.add = function(
+	hook,
+	callback,
+	priority = callbacks.priority.MEDIUM,
+	id = Random.id()
+) {
 	callback.priority = priority;
 	callback.id = id;
 	callbacks[hook] = getHooks(hook);
@@ -53,9 +55,7 @@ callbacks.add = function(hook, callback, priority, id = Random.id()) {
 		return;
 	}
 	callbacks[hook].push(callback);
-	callbacks[hook] = _.sortBy(callbacks[hook], function(callback) {
-		return callback.priority || callbacks.priority.MEDIUM;
-	});
+	callbacks[hook] = _.sortBy(callbacks[hook], (callback) => callback.priority || callbacks.priority.MEDIUM);
 };
 
 

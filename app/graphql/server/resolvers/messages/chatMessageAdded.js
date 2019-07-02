@@ -44,7 +44,7 @@ const resolver = {
 
 callbacks.add('afterSaveMessage', (message) => {
 	publishMessage(message);
-}, null, 'chatMessageAddedSubscription');
+}, callbacks.priority.MEDIUM, 'joinDiscussionOnMessage', 'chatMessageAddedSubscription');
 
 export {
 	schema,
