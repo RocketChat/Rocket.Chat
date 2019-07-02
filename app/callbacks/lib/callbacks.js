@@ -40,7 +40,6 @@ const handleResult = (fn) => {
 		const callbackResult = callbacks.runItem({ callback: fn, result, constant });
 		return typeof callbackResult === 'undefined' ? result : callbackResult;
 	};
-	return ret;
 };
 
 
