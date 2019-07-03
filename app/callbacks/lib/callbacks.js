@@ -41,16 +41,16 @@ const handleResult = (fn) => (result, constant) => {
 };
 
 
-const empty = (e) => e;
-const combine = (f, x) => (e, ...constants) => x(f(e, ...constants), ...constants);
-const createCallback = (hook, callbacks) => callbacks.map(handleResult).reduce(combine, empty);
+const identity = (e) => e;
+const pipe = (f, g) => (e, ...constants) => g(f(e, ...constants), ...constants);
+const createCallback = (hook, callbacks) => callbacks.map(handleResult).reduce(pipe, identity);
 
 const createCallbackTimed = (hook, callbacks) =>
 	wrapRun(hook,
 		callbacks
 			.map(wrapCallback)
 			.map(handleResult)
-			.reduce(combine, empty)
+			.reduce(pipe, identity)
 	);
 
 const create = (hook, cbs) =>
