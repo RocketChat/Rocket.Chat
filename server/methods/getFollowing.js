@@ -1,18 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../app/models';
+import { UserRelations, Users } from '../../app/models';
 import { settings } from '../../app/settings';
 
 
 Meteor.methods({
 	getFollowing(username) {
-		if (settings.get('Newsfeed_enabled')) {
-			const userObject = Users.findOneByUsername(username);
-			if ('following' in userObject) {
-				return userObject.following;
-			}
+		if (!settings.get('Newsfeed_enabled')) {
+			return false;
 		}
-
-		return false;
+		const { _id } = Users.findOneByUsername(username, { fields: { _id: 1 } });
+		return UserRelations.find({ follower: _id }, { fields: { following: 1, _id: false } }).fetch();
 	},
+});
+
+
+Meteor.call('getFollowing', 'fliptrail', (err, res) => {
+	console.log(res);
 });
