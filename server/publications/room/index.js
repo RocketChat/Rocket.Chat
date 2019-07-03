@@ -5,6 +5,7 @@ import { roomTypes } from '../../../app/utils';
 import { hasPermission } from '../../../app/authorization';
 import { Rooms } from '../../../app/models';
 import { settings } from '../../../app/settings';
+import './emitter';
 
 export const fields = {
 	_id: 1,
