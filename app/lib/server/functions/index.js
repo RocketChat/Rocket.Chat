@@ -23,6 +23,8 @@ export { saveUser } from './saveUser';
 export { sendMessage } from './sendMessage';
 export { setEmail } from './setEmail';
 export { setRealName, _setRealName } from './setRealName';
+export { setStatusText, _setStatusText } from './setStatusText';
+export { getStatusText } from './getStatusText';
 export { setUserAvatar } from './setUserAvatar';
 export { _setUsername, setUsername } from './setUsername';
 export { unarchiveRoom } from './unarchiveRoom';

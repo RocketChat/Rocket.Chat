@@ -4,6 +4,7 @@ export const getDefaultUserFields = () => ({
 	emails: 1,
 	status: 1,
 	statusDefault: 1,
+	statusText: 1,
 	statusConnection: 1,
 	avatarOrigin: 1,
 	utcOffset: 1,
@@ -25,4 +26,5 @@ export const getDefaultUserFields = () => ({
 	'services.totp.enabled': 1,
 	statusLivechat: 1,
 	banners: 1,
+	u: 1,
 });

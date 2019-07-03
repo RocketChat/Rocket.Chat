@@ -5,7 +5,9 @@ import './api/rest';
 // methods
 import './methods/usernameExists';
 import './methods/addServiceAccount';
+import './methods/getLoginToken';
+
+import './hooks/serviceAccountCallback';
+import './hooks/serviceAccountBroadcast';
 
 import './publications/fullServiceAccountData';
-
-import './hooks/serviceAccountBroadcast';

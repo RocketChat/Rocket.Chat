@@ -10,7 +10,7 @@ import { settings } from '../../../settings';
 import PasswordPolicy from '../lib/PasswordPolicyClass';
 import { validateEmailDomain } from '../lib';
 
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername } from '.';
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusText } from '.';
 
 const passwordPolicy = new PasswordPolicy();
 
@@ -128,6 +128,13 @@ function validateUserEditing(userId, userData) {
 
 	if (userData.username && !settings.get('Accounts_AllowUsernameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
+	if (userData.statusText && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit user status is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
@@ -256,6 +263,10 @@ export const saveUser = function(userId, userData) {
 
 	if (userData.hasOwnProperty('name')) {
 		setRealName(userData._id, userData.name);
+	}
+
+	if (typeof userData.statusText === 'string') {
+		setStatusText(userData._id, userData.statusText);
 	}
 
 	if (userData.email) {
