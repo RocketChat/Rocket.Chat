@@ -1,18 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../app/models';
+import { Users, UserRelations } from '../../app/models';
 import { settings } from '../../app/settings';
 
 
 Meteor.methods({
 	getFollowers(username) {
-		if (settings.get('Newsfeed_enabled')) {
-			const userObject = Users.findOneByUsername(username);
-			if ('followers' in userObject) {
-				return userObject.followers;
-			}
+		if (!settings.get('Newsfeed_enabled')) {
+			return false;
 		}
-
-		return false;
+		const { _id } = Users.findOneByUsername(username, { fields: { _id: 1 } });
+		return UserRelations.find({ following: _id }, { fields: { _id: 1 } }).fetch();
 	},
 });
