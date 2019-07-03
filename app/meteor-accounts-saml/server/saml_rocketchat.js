@@ -200,6 +200,7 @@ const configureSamlService = function(samlConfigs) {
 		cert: samlConfigs.secret.cert,
 		privateCert,
 		privateKey,
+		customAuthnContext: samlConfigs.customAuthnContext,
 	};
 };
 
