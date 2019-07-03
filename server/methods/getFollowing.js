@@ -13,8 +13,3 @@ Meteor.methods({
 		return UserRelations.find({ follower: _id }, { fields: { following: 1, _id: false } }).fetch();
 	},
 });
-
-
-Meteor.call('getFollowing', 'fliptrail', (err, res) => {
-	console.log(res);
-});
