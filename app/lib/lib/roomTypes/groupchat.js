@@ -1,9 +1,11 @@
 /* globals openRoom */
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
 
+import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { ChatRoom } from '../../../models';
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../../utils';
+import { settings } from '../../../settings';
+import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../../utils';
+
 
 export class GroupChatRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -38,7 +40,7 @@ export class GroupChatRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+		if (settings.get('UI_Allow_room_names_with_special_chars')) {
 			return roomData.fname || roomData.name;
 		}
 
@@ -47,9 +49,9 @@ export class GroupChatRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
-		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
-		return !roomsListExhibitionMode || (['unread', 'category'].includes(roomsListExhibitionMode) && !mergeChannels && RocketChat.authz.hasAllPermission('view-g-room'));
+		const roomsListExhibitionMode = getUserPreference(user, 'roomsListExhibitionMode');
+		const mergeChannels = getUserPreference(user, 'mergeChannels');
+		return !roomsListExhibitionMode || (['unread', 'category'].includes(roomsListExhibitionMode) && !mergeChannels && hasAllPermission('view-g-room'));
 	}
 
 	isGroupChat() {
@@ -57,7 +59,7 @@ export class GroupChatRoomType extends RoomTypeConfig {
 	}
 
 	canAddUser(room) {
-		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-g-room', 'add-user-to-joined-room'], room._id);
+		return hasAtLeastOnePermission(['add-user-to-any-g-room', 'add-user-to-joined-room'], room._id);
 	}
 
 	allowRoomSettingChange(room, setting) {
