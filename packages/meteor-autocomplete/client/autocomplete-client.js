@@ -182,41 +182,51 @@ export default class AutoComplete {
 		if (!this.$element) {
 			return; // Don't try to do this while loading
 		}
-		const startpos = this.element.selectionStart;
-		const val = this.getText().substring(0, startpos);
 
-		/*
-      Matching on multiple expressions.
-      We always go from a matched state to an unmatched one
-      before going to a different matched one.
-     */
-		let i = 0;
-		let breakLoop = false;
-		while (i < this.expressions.length) {
-			const matches = val.match(this.expressions[i]);
-
-			// matching -> not matching
-			if (!matches && this.matched === i) {
-				this.setMatchedRule(-1);
-				breakLoop = true;
-			}
-
-			// not matching -> matching
-			if (matches && this.matched === -1) {
-				this.setMatchedRule(i);
-				breakLoop = true;
-			}
-
-			// Did filter change?
-			if (matches && this.filter !== matches[2]) {
-				this.setFilter(matches[2]);
-				breakLoop = true;
-			}
-			if (breakLoop) {
-				break;
-			}
-			i++;
+		if (this._timeoutHandler) {
+			clearTimeout(this._timeoutHandler);
 		}
+
+		this._timeoutHandler = setTimeout(() => {
+			this._timeoutHandler = 0;
+
+
+			const startpos = this.element.selectionStart;
+			const val = this.getText().substring(0, startpos);
+
+			/*
+				Matching on multiple expressions.
+				We always go from a matched state to an unmatched one
+				before going to a different matched one.
+			 */
+			let i = 0;
+			let breakLoop = false;
+			while (i < this.expressions.length) {
+				const matches = val.match(this.expressions[i]);
+
+				// matching -> not matching
+				if (!matches && this.matched === i) {
+					this.setMatchedRule(-1);
+					breakLoop = true;
+				}
+
+				// not matching -> matching
+				if (matches && this.matched === -1) {
+					this.setMatchedRule(i);
+					breakLoop = true;
+				}
+
+				// Did filter change?
+				if (matches && this.filter !== matches[2]) {
+					this.setFilter(matches[2]);
+					breakLoop = true;
+				}
+				if (breakLoop) {
+					break;
+				}
+				i++;
+			}
+		}, 300);
 	}
 
 	onKeyDown(e) {
@@ -376,8 +386,8 @@ export default class AutoComplete {
 
 
 	/*
-    Rendering functions
-   */
+		Rendering functions
+	 */
 
 	positionContainer() {
 		// First render; Pick the first item and set css whenever list gets shown
