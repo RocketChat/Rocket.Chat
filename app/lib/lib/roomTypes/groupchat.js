@@ -1,8 +1,8 @@
 /* globals openRoom */
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from 'meteor/rocketchat:utils';
+import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../../utils';
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { ChatRoom } from '../../../models';
 
 export class GroupChatRoute extends RoomTypeRouteConfig {
 	constructor() {
