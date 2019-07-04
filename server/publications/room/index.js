@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { roomTypes } from '../../app/utils';
-import { hasPermission } from '../../app/authorization';
-import { Rooms, Subscriptions } from '../../app/models';
-import { settings } from '../../app/settings';
-import { Notifications } from '../../app/notifications';
+import { roomTypes } from '../../../app/utils';
+import { hasPermission } from '../../../app/authorization';
+import { Rooms } from '../../../app/models';
+import { settings } from '../../../app/settings';
+import './emitter';
 
-const fields = {
+export const fields = {
 	_id: 1,
 	name: 1,
 	fname: 1,
@@ -107,32 +107,4 @@ Meteor.methods({
 
 		return roomMap(room);
 	},
-});
-
-const getSubscriptions = (id) => {
-	const fields = { 'u._id': 1 };
-	return Subscriptions.trashFind({ rid: id }, { fields });
-};
-
-Rooms.on('change', ({ clientAction, id, data }) => {
-	switch (clientAction) {
-		case 'updated':
-		case 'inserted':
-			// Override data cuz we do not publish all fields
-			data = Rooms.findOneById(id, { fields });
-			break;
-
-		case 'removed':
-			data = { _id: id };
-			break;
-	}
-
-	if (data) {
-		if (clientAction === 'removed') {
-			getSubscriptions(clientAction, id).forEach(({ u }) => {
-				Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
-			});
-		}
-		Notifications.streamUser.__emit(id, clientAction, data);
-	}
 });
