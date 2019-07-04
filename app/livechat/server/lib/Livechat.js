@@ -940,7 +940,7 @@ export const Livechat = {
 		});
 	},
 
-	allowAgentChangeServiceStatus(/* userId, */ statusLivechat) {
+	allowAgentChangeServiceStatus(statusLivechat) {
 		if (!settings.get('Livechat_enable_office_hours')) {
 			return true;
 		}

@@ -277,6 +277,7 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		public: true,
 		i18nLabel: 'Allow_Online_Agents_Outside_Office_Hours',
+		enableQuery: { _id: 'Livechat_enable_office_hours', value: true },
 	});
 
 	settings.add('Livechat_continuous_sound_notification_new_livechat_room', false, {
