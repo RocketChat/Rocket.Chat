@@ -6,8 +6,9 @@ import { CustomOAuth } from '../../custom-oauth';
 
 const config = {
 	serverURL: 'https://gitlab.com',
-	identityPath: '/api/v3/user',
+	identityPath: '/api/v4/user',
 	scope: 'read_user',
+	mergeUsers: true,
 	addAutopublishFields: {
 		forLoggedInUser: ['services.gitlab'],
 		forOtherUsers: ['services.gitlab.username'],
