@@ -149,7 +149,7 @@ Template.sidebarItem.onCreated(function() {
 		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${sender}: ${renderedMessage}`;
+			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
 		}
 	});
 });
@@ -163,7 +163,7 @@ Template.sidebarItem.events({
 		e.preventDefault();
 
 		const canLeave = () => {
-			const roomData = Session.get(`roomData${this.rid}`);
+			const roomData = Session.get(`roomData${ this.rid }`);
 
 			if (!roomData) { return false; }
 
