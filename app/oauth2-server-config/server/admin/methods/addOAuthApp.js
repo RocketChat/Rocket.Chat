@@ -4,7 +4,6 @@ import _ from 'underscore';
 
 import { hasPermission } from '../../../../authorization';
 import { Users, OAuthApps } from '../../../../models';
-
 import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({
