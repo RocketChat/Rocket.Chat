@@ -409,7 +409,7 @@ Template.appManage.events({
 	'click .js-purchase': (e, t) => {
 		const rl = t.app.get();
 
-		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.id }`)
+		APIClient.get(`apps?buildExternalUrl=true&appId=${ rl.id }&purchaseType=${ rl.purchaseType }`)
 			.then((data) => {
 				data.successCallback = async () => {
 					installAppFromEvent(e, t);

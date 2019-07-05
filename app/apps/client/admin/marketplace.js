@@ -315,7 +315,7 @@ Template.marketplace.events({
 		// play animation
 		const elm = e.currentTarget.parentElement;
 
-		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.latest.id }`)
+		APIClient.get(`apps?buildExternalUrl=true&appId=${ rl.latest.id }`)
 			.then((data) => {
 				modal.open({
 					allowOutsideClick: false,

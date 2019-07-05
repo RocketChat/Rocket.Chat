@@ -11,6 +11,8 @@ const getDefaultHeaders = () => ({
 	'X-Apps-Engine-Version': Info.marketplaceApiVersion,
 });
 
+const purchaseTypes = new Set(['buy', 'subscription']);
+
 export class AppsRestApi {
 	constructor(orch, manager) {
 		this._orch = orch;
@@ -96,15 +98,21 @@ export class AppsRestApi {
 					return API.v1.success(result.data);
 				}
 
-				if (this.queryParams.buildBuyUrl && this.queryParams.appId) {
+				if (this.queryParams.buildExternalUrl && this.queryParams.appId) {
 					const workspaceId = settings.get('Cloud_Workspace_Id');
+
+					if (!this.queryParams.purchaseType || purchaseTypes.has(this.queryParams.purchaseType)) {
+						return API.v1.failure({ error: 'Invalid purchase type' });
+					}
 
 					const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 					if (!token) {
 						return API.v1.failure({ error: 'Unauthorized' });
 					}
 
-					return API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }&token=${ token }` });
+					return API.v1.success({
+						url: `${ baseUrl }/apps/${ this.queryParams.appId }/${ this.queryParams.purchaseType }?workspaceId=${ workspaceId }&token=${ token }`,
+					});
 				}
 
 				const apps = manager.get().map((prl) => {
