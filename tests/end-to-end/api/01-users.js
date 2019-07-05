@@ -320,6 +320,7 @@ describe('[Users]', function() {
 							'username',
 							'name',
 							'status',
+							'statusChangedTs',
 							'utcOffset',
 						);
 					})
@@ -355,6 +356,7 @@ describe('[Users]', function() {
 							'username',
 							'name',
 							'status',
+							'statusChangedTs',
 							'utcOffset',
 						);
 					})
