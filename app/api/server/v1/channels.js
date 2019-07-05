@@ -24,7 +24,7 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 		room = Rooms.findOneByName(params.roomName, { fields });
 	}
 
-	if (!room || room.t !== 'c') {
+	if (!room || (room.t !== 'c' && room.t !== 'l')) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 
@@ -544,7 +544,7 @@ API.v1.addRoute('channels.members', { authRequired: true }, {
 		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
 
 		const users = Users.find({ _id: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
+			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 			sort: { username: sort.username != null ? sort.username : 1 },
 		}).fetch();
 
