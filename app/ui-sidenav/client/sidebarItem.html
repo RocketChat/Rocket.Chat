@@ -41,6 +41,7 @@
 								{{#if mySelf}}
 									<span class="sidebar-item__me">({{_ "You"}})</span>
 								{{/if}}
+								{{#if isUser}}  <span class="sidebar-item__status-changed-ts-text">{{statusChangedTsText}}</span>  {{/if}}
 							</div>
 							{{#if streaming}} {{>icon icon="video" block="sidebar-item__video pulse"}} {{/if}}
 						</div>

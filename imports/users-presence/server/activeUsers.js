@@ -10,11 +10,12 @@ const STATUS_MAP = {
 	busy: 3,
 };
 
-UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => {
+UserPresenceEvents.on('setUserStatus', (user, status, /* , statusConnection*/) => {
 	const {
 		_id,
 		username,
 		statusText,
+		statusChangedTs,
 	} = user;
 
 	// since this callback can be called by only one instance in the cluster
@@ -24,5 +25,6 @@ UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => 
 		username,
 		STATUS_MAP[status],
 		statusText,
+		statusChangedTs,
 	]);
 });

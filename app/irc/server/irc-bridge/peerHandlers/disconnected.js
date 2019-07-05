@@ -10,6 +10,7 @@ export default function handleQUIT(args) {
 	Meteor.users.update({ _id: user._id }, {
 		$set: {
 			status: 'offline',
+			statusChangedTs: new Date(),
 		},
 	});
 

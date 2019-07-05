@@ -45,7 +45,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username', 'status', 'statusChangedTs'] : []].includes(sortBy)) {
 			return;
 		}
 
@@ -111,6 +111,8 @@ Meteor.methods({
 				createdAt: 1,
 				emails: 1,
 				federation: 1,
+				status: 1,
+				statusChangedTs: 1,
 			},
 		};
 

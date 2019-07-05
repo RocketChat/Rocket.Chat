@@ -29,6 +29,8 @@
 		width: 80px;
 	}
 
+	& &__status,
+	& &__statusChangedTs,
 	& &__user-name,
 	& &__username,
 	& &__email,
@@ -69,8 +71,8 @@
 
 	@media (width <= 980px) {
 		.rc-table-content {
-			& th:not(:first-child),
-			& td:not(:first-child) {
+			& th:nth-of-type(n+4),
+			& td:nth-of-type(n+4) {
 				display: none;
 			}
 		}

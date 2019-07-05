@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
+import moment from 'moment';
 
 import { timeAgo } from './helpers';
 import { hasAllPermission } from '../../../../authorization/client';
@@ -27,6 +28,10 @@ function directorySearch(config, cb) {
 			}
 
 			if (config.type === 'users') {
+				moment.relativeTimeThreshold('h', 24);
+				moment.relativeTimeThreshold('m', 59);
+				moment.relativeTimeThreshold('s', 59);
+				moment.relativeTimeThreshold('d', 30);
 				return {
 					name: result.name,
 					username: result.username,
@@ -34,6 +39,9 @@ function directorySearch(config, cb) {
 					email: (result.emails && result.emails[0] && result.emails[0].address) || result.username,
 					createdAt: timeAgo(result.createdAt, t),
 					domain: result.federation && result.federation.peer,
+					status: result.status,
+					statusChangedTs: result.statusChangedTs,
+					statusChangedTsText: result.statusChangedTs ? moment.duration(new Date() - result.statusChangedTs).humanize() : '',
 				};
 			}
 			return null;

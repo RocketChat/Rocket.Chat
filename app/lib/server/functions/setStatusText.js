@@ -40,6 +40,7 @@ export const _setStatusText = function(userId, statusText) {
 		user.username,
 		STATUS_MAP[user.status],
 		statusText,
+		user.statusChangedTs,
 	]);
 
 	return true;

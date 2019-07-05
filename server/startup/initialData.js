@@ -53,6 +53,7 @@ Meteor.startup(function() {
 					username: 'admin',
 					status: 'offline',
 					statusDefault: 'online',
+					statusChangedTs: new Date(),
 					utcOffset: 0,
 					active: true,
 				};

@@ -101,6 +101,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
+	user.statusChangedTs = new Date();
 	user.active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
 	if (!user.name) {

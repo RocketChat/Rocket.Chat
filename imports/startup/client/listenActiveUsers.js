@@ -18,6 +18,8 @@ const saveUser = (user, force = false) => {
 	if (user._id === Meteor.userId()) {
 		return;
 	}
+	user.statusChangedTs = user.statusChangedTs || new Date();
+
 	if (force) {
 		return Meteor.users.upsert({ _id: user._id }, {
 			$set: {
@@ -26,6 +28,7 @@ const saveUser = (user, force = false) => {
 				// utcOffset: user.utcOffset,
 				status: user.status,
 				statusText: user.statusText,
+				statusChangedTs: user.statusChangedTs,
 			},
 		});
 	}
@@ -86,13 +89,13 @@ Tracker.autorun(() => {
 });
 
 Meteor.startup(function() {
-	Notifications.onLogged('user-status', ([_id, username, status, statusText]) => {
+	Notifications.onLogged('user-status', ([_id, username, status, statusText, statusChangedTs]) => {
 		// only set after first request completed
 		if (lastStatusChange) {
 			lastStatusChange = new Date();
 		}
 
-		saveUser({ _id, username, status: STATUS_MAP[status], statusText }, true);
+		saveUser({ _id, username, status: STATUS_MAP[status], statusText, statusChangedTs }, true);
 	});
 
 	Notifications.onLogged('Users:NameChanged', ({ _id, username }) => {

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import moment from 'moment';
 
 import { t, getUserPreference, roomTypes } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
@@ -16,6 +17,14 @@ Template.sidebarItem.helpers({
 	},
 	isRoom() {
 		return this.rid || this._id;
+	},
+	isUser() {
+		return this.t === 'd';
+	},
+	statusChangedTsText() {
+		if (this.t === 'd') {
+			return Template.instance().statusChangedTsText.get();
+		}
 	},
 	isExtendedViewMode() {
 		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
@@ -69,14 +78,53 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
+function setStatusChangedTs(instance, userName, ts) {
+	const calculateStatus = () => {
+		const status = Session.get(`user_${ userName }_status`);
+		let statusChangedTs = Session.get(`user_${ userName }_status_changed_ts`) || ts;
+		if (statusChangedTs && status !== 'online') {
+			statusChangedTs = new Date(statusChangedTs);
+			if (statusChangedTs && !isNaN(statusChangedTs)) {
+				return moment.duration(new Date() - statusChangedTs).humanize();
+			}
+		}
+		return '';
+	};
+
+	if (instance.statusChangedTsInterval) {
+		clearInterval(instance.statusChangedTsInterval);
+	}
+
+	instance.statusChangedTsText.set(calculateStatus());
+
+	this.invalidateInterval = setInterval(() => {
+		requestAnimationFrame(() =>	instance.statusChangedTsText.set(calculateStatus()));
+	}, 5000);
+}
+
 Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
-
 	this.lastMessageTs = new ReactiveVar();
 	this.timeAgoInterval;
 
+	this.statusChangedTsText = new ReactiveVar();
+	this.statusChangedTsInterval;
+
+	moment.relativeTimeThreshold('h', 24);
+	moment.relativeTimeThreshold('m', 59);
+	moment.relativeTimeThreshold('s', 59);
+	moment.relativeTimeThreshold('d', 30);
+
+	if (this.data.t === 'd') {
+		this.statusChanged = Users.findOne({ username: this.data.username }, { fields: { userId: 1, username: 1, statusChangedTs: 1 } });
+	}
+
 	this.autorun(() => {
 		const currentData = Template.currentData();
+
+		if (this.data.t === 'd') {
+			setStatusChangedTs(this, currentData.username, this.statusChanged && this.statusChanged.statusChangedTs ? this.statusChanged.statusChangedTs : '');
+		}
 
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
 			return clearInterval(this.timeAgoInterval);
@@ -101,7 +149,7 @@ Template.sidebarItem.onCreated(function() {
 		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
+			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${sender}: ${renderedMessage}`;
 		}
 	});
 });
@@ -115,7 +163,7 @@ Template.sidebarItem.events({
 		e.preventDefault();
 
 		const canLeave = () => {
-			const roomData = Session.get(`roomData${ this.rid }`);
+			const roomData = Session.get(`roomData${this.rid}`);
 
 			if (!roomData) { return false; }
 

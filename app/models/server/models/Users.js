@@ -433,6 +433,16 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findUsersExist(options) {
+		const query = {
+			username: {
+				$exists: 1,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findNotIdUpdatedFrom(uid, from, options) {
 		const query = {
 			_id: { $ne: uid },

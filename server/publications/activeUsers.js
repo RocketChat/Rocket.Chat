@@ -14,6 +14,7 @@ Meteor.publish('activeUsers', function() {
 			status: 1,
 			utcOffset: 1,
 			statusText: 1,
+			statusChangedTs: 1,
 		},
 	});
 });

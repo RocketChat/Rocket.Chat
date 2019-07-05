@@ -653,6 +653,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 				status: 1,
 				utcOffset: 1,
 				statusText: 1,
+				statusChangedTs: 1,
 			},
 		};
 
@@ -669,7 +670,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 		}
 
 		return API.v1.success({
-			users: Users.findUsersNotOffline(options).fetch(),
+			users: Users.findUsersExist(options).fetch(),
 			full: true,
 		});
 	},

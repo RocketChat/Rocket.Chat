@@ -255,6 +255,10 @@
 		align-items: center;
 	}
 
+	&__status-changed-ts-text {
+		float: right;
+	}
+
 	&__me {
 		text-transform: lowercase;
 	}
