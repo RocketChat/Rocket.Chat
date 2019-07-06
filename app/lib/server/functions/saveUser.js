@@ -184,6 +184,8 @@ export const saveUser = function(userId, userData) {
 			$set: {
 				roles: userData.roles || ['user'],
 				settings: userData.settings || {},
+				utcOffset: 0,
+				statusChangedTs: new Date(),
 			},
 		};
 

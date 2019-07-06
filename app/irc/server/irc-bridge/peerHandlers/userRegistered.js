@@ -16,6 +16,7 @@ export default async function handleUserRegistered(args) {
 			name: args.nick,
 			username: `${ args.username }-irc`,
 			status: 'online',
+			statusChangedTs: new Date(),
 			utcOffset: 0,
 			active: true,
 			type: 'user',
