@@ -78,10 +78,10 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
-function setStatusChangedTs(instance, userName, ts) {
+function setStatusChangedTs(instance, userName) {
 	const calculateStatus = () => {
 		const status = Session.get(`user_${ userName }_status`);
-		let statusChangedTs = Session.get(`user_${ userName }_status_changed_ts`) || ts;
+		let statusChangedTs = Session.get(`user_${ userName }_status_changed_ts`);
 		if (statusChangedTs && status !== 'online') {
 			statusChangedTs = new Date(statusChangedTs);
 			if (statusChangedTs && !isNaN(statusChangedTs)) {
@@ -110,20 +110,11 @@ Template.sidebarItem.onCreated(function() {
 	this.statusChangedTsText = new ReactiveVar();
 	this.statusChangedTsInterval;
 
-	moment.relativeTimeThreshold('h', 24);
-	moment.relativeTimeThreshold('m', 59);
-	moment.relativeTimeThreshold('s', 59);
-	moment.relativeTimeThreshold('d', 30);
-
-	if (this.data.t === 'd') {
-		this.statusChanged = Users.findOne({ username: this.data.username }, { fields: { userId: 1, username: 1, statusChangedTs: 1 } });
-	}
-
 	this.autorun(() => {
 		const currentData = Template.currentData();
 
 		if (this.data.t === 'd') {
-			setStatusChangedTs(this, currentData.username, this.statusChanged && this.statusChanged.statusChangedTs ? this.statusChanged.statusChangedTs : '');
+			setStatusChangedTs(this, currentData.username);
 		}
 
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
