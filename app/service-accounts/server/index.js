@@ -11,3 +11,4 @@ import './hooks/serviceAccountCallback';
 import './hooks/serviceAccountBroadcast';
 
 import './publications/fullServiceAccountData';
+import './publications/userServiceAccounts';
