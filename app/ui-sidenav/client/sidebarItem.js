@@ -85,6 +85,10 @@ function setStatusChangedTs(instance, userName) {
 		if (statusChangedTs && status !== 'online') {
 			statusChangedTs = new Date(statusChangedTs);
 			if (statusChangedTs && !isNaN(statusChangedTs)) {
+				moment.relativeTimeThreshold('h', 24);
+				moment.relativeTimeThreshold('m', 59);
+				moment.relativeTimeThreshold('s', 59);
+				moment.relativeTimeThreshold('d', 30);
 				return moment.duration(new Date() - statusChangedTs).humanize();
 			}
 		}
