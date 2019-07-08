@@ -51,6 +51,7 @@ describe('[Administration]', () => {
 			});
 
 			it('the first title should be Runtime Environment', () => {
+				admin.infoRuntimeTableTitle.waitForVisible(5000);
 				admin.infoRuntimeTableTitle.moveToObject();
 				try {
 					admin.infoRuntimeTableTitle.getText().should.equal('Runtime Environment');
