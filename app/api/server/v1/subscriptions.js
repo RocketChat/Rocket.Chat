@@ -47,6 +47,23 @@ API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('subscriptions.channelnames', { authRequired: true }, {
+	get() {
+		
+		let result;
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('subscriptions/get'); });
+		let subscribedChannels = result.map(item => item.name);
+
+		if (Array.isArray(subscribedChannels)) {
+			result = {
+				channelnames: subscribedChannels
+			};
+		}
+
+		return API.v1.success(result);
+	},
+});
+
 /**
 	This API is suppose to mark any room as read.
 
