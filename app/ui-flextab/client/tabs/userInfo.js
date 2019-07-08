@@ -82,7 +82,7 @@ Template.userInfo.helpers({
 	userStatus() {
 		const user = Template.instance().user.get();
 		const userStatus = Session.get(`user_${ user.username }_status`);
-		return userStatus;
+		return userStatus || 'offline';
 	},
 
 	email() {
