@@ -61,6 +61,18 @@ describe('[Subscriptions]', function() {
 				.end(done);
 		});
 	});
+	
+	it('/subscriptions.channelnames', (done) => {
+		request.get(api('subscriptions.channelnames'))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('channelnames');
+			})
+			.end(done);
+	});
 
 	describe('[/subscriptions.read]', () => {
 		it('should mark public channels as read', (done) => {
