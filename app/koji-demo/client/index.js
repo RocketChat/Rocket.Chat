@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
+import { authorizeMiniApp } from '../../ui-utils/client/lib/miniAppAction';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { TabBar } from '../../ui-utils/client';
 
 import './views/koji-demo.html';
-import './lib/miniAppMessage';
 
 TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
@@ -21,7 +21,7 @@ Meteor.startup(function() {
 	//
 	// There are a lot of decisions required to make this viable -- mostly relating to
 	// permissions/authorization. We wouldn't want anyone to be able to paste a link that
-	// could suddenly take control of the channel / suck out chann.el metadata. For the Koji
+	// could suddenly take control of the channel / suck out channel metadata. For the Koji
 	// games in particular, it would be nice if an authorized iframe could get:
 	// 		- a list of usernames/uids in the channel
 	// 		- the uid of the current user
@@ -29,7 +29,7 @@ Meteor.startup(function() {
 	//
 	// Also note that I'm not familiar enough with RC's high-level structure to know the best place
 	// for this listener, this was just the easiest place to get it working for the point of demo :)
-	window.addEventListener('message', ({ data, source }) => {
+	window.addEventListener('message', async ({ data, source }) => {
 		if (!data.hasOwnProperty('rcEmbeddedSdk')) {
 			return;
 		}
@@ -43,19 +43,31 @@ Meteor.startup(function() {
 			const { name: roomName } = Session.get(`roomData${ Session.get('openedRoom') }`);
 
 			const { action } = data.rcEmbeddedSdk;
+			const { payload: { appName } } = data.rcEmbeddedSdk;
 			// ack the successful connect back to the iframe
 			if (action === 'getUserInfo') {
-				source.postMessage({
-					rcEmbeddedSdk: {
-						version: '0.0.1',
-						action: 'connected',
-						connected: {
-							username,
-							avatarUrl,
-							roomName,
+				const authorized = await authorizeMiniApp(appName);
+				console.log(authorized);
+				if (!authorized) {
+					source.postMessage({
+						rcEmbeddedSdk: {
+							action: 'getUserInfo',
+							success: false,
 						},
-					},
-				}, '*');
+					}, '*');
+				} else {
+					source.postMessage({
+						rcEmbeddedSdk: {
+							action: 'getUserInfo',
+							payload: {
+								username,
+								avatarUrl,
+								roomName,
+							},
+							success: true,
+						},
+					}, '*');
+				}
 			}
 		} catch (err) {
 			console.error(err);
