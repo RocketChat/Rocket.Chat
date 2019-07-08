@@ -61,7 +61,7 @@ describe('[Subscriptions]', function() {
 				.end(done);
 		});
 	});
-	
+
 	it('/subscriptions.channelnames', (done) => {
 		request.get(api('subscriptions.channelnames'))
 			.set(credentials)
