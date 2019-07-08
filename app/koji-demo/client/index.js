@@ -21,7 +21,7 @@ Meteor.startup(function() {
 	//
 	// There are a lot of decisions required to make this viable -- mostly relating to
 	// permissions/authorization. We wouldn't want anyone to be able to paste a link that
-	// could suddenly take control of the channel / suck out channel metadata. For the Koji
+	// could suddenly take control of the channel / suck out chann.el metadata. For the Koji
 	// games in particular, it would be nice if an authorized iframe could get:
 	// 		- a list of usernames/uids in the channel
 	// 		- the uid of the current user
