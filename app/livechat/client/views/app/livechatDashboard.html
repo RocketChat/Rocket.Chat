@@ -1,25 +1,103 @@
 <template name="livechatDashboard">
   {{#requiresPermission 'view-livechat-manager'}}
     <h1>Dashboard</h1>
-    <table class="table-location">
-      <tr>
-        <th>{{_ "ID"}}</th>
-        <th>{{_ "Country"}}</th>
-        <th>{{_ "City"}}</th>
-        <th>{{_ "Latitude"}}</th>
-        <th>{{_ "Longitude"}}</th>
-        <th>{{_ "Visits"}}</th>
-      </tr>
-      {{#each userLocation}}
-      <tr data-id="{{_id}}">
-        <td>{{_id}}</td>
-        <td>{{location.countryName}}</td>
-        <td>{{location.city}}</td>
-        <td>{{location.latitude}}</td>
-        <td>{{location.longitude}}</td>
-        <td>{{count}}</td>
-      </tr>
-      {{/each}}
-    </table>
+    <fieldset>
+      <form class="form-inline" method="post">
+        <div class="form-group">
+          <div class="rc-select">
+            <select class="rc-select__element" name="state">
+              <option class="rc-select__option" value="">{{_ "All"}}</option>
+              <option class="rc-select__option" value="active">{{_ "Active"}}</option>
+              <option class="rc-select__option" value="registered">{{_ "Registered"}}</option>
+              <option class="rc-select__option" value="idle">{{_ "Idle"}}</option>
+            </select>
+            {{> icon block="rc-select__arrow" icon="arrow-down" }}
+          </div>
+        </div>
+        <div class="form-group">
+          <button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+        </div>
+      </form>
+    </fieldset>
+    <div class="rc-table-content">
+      {{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+        <thead>
+          <tr>
+            <th width="20%">
+              <div class="table-fake-th">{{_ "Visitor Info"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Country"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "City"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Visits"}}</div>
+            </th>
+            <th width="20%">
+              <div class="table-fake-th">{{_ "Current Page"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "State"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Agent Info"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Time on Site"}}</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <h1>{{_ "Visitors"}}</h1>
+          {{#if visitors}}
+            {{#each visitors}}
+            <tr class="rc-table-tr manage row-link" data-id="{{_id}}">
+              <td>
+                <div class="rc-table-wrapper">
+                  <div class="rc-table-info">
+                    <span class="rc-table-title">
+                                            {{#if visitorInfo}}
+                                              {{visitorInfo.name}}
+                                            {{else}}
+                                              {{_ "Not Registered"}}
+                                            {{/if}}
+                                          </span>
+                  </div>
+                </div>
+              </td>
+              <td>{{location.countryName}}</td>
+              <td>{{location.city}}</td>
+              <td>{{count}}</td>
+              <td>
+                {{#if pageInfo}}
+                  <a href="{{pageInfo.navigation.page.location.href}}" target="_blank" title="{{accessDateTime}}">{{pageInfo.navigation.page.title}}</a>
+                {{else}}
+                  {{_ "No info"}}
+                {{/if}}
+              </td>
+              <td>{{state}}</td>
+              <td class="rc-button__group">
+                {{#if servedBy}}
+                  {{servedBy.username}}
+                {{else}}
+                  {{#if visitorInfo}}
+                    <button class="rc-button rc-button--primary js-load-more">{{_ "Chat"}}</button>
+                  {{else}}
+                    {{_ "No Info"}}
+                  {{/if}}
+                {{/if}}
+              </td>
+              <td>{{timeSince}}</td>
+            </tr>
+            {{/each}}
+          {{else}}
+            {{_ "No Visitors Currently"}}
+          {{/if}}
+          <hr>
+        </tbody>
+      {{/table}}
+    </div>
   {{/requiresPermission}}
 </template>

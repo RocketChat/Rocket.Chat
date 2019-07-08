@@ -9,6 +9,36 @@ export class LivechatSessions extends Base {
 		super('livechat_sessions');
 	}
 
+	findOneVisitorAndUpdateSession(visitorInfo) {
+		const query = {
+			token: visitorInfo.token,
+		};
+
+		delete visitorInfo.token;
+		const update = {
+			$set: {
+				visitorInfo,
+				state: 'registered',
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findOneVisitorByTokenAndUpdateState(token) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$set: {
+				state: 'active',
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	findOneVisitorByTokenAndUpdateCount(token) {
 		const query = {
 			token,
@@ -39,6 +69,7 @@ export class LivechatSessions extends Base {
 			location,
 			ts: new Date(),
 			count: 1,
+			state: 'idle',
 		});
 	}
 }

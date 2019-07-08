@@ -55,6 +55,7 @@ import './methods/setDepartmentForVisitor';
 import './methods/startVideoCall';
 import './methods/startFileUploadRoom';
 import './methods/transfer';
+import './methods/visitorInfo';
 import './methods/webhookTest';
 import './methods/setUpConnection';
 import './methods/takeInquiry';
