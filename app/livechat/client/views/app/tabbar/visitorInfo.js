@@ -13,10 +13,20 @@ import { modal } from '../../../../../ui-utils';
 import { ChatRoom, Rooms, Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
-import { hasRole } from '../../../../../authorization';
+import { hasPermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import './visitorInfo.html';
+
+const isSubscribedToRoom = () => {
+	const data = Template.currentData();
+	if (!data || !data.rid) {
+		return false;
+	}
+
+	const subscription = Subscriptions.findOne({ rid: data.rid });
+	return subscription !== undefined;
+};
 
 Template.visitorInfo.helpers({
 	user() {
@@ -151,18 +161,41 @@ Template.visitorInfo.helpers({
 		}
 	},
 
+	isSubscribedToRoom() {
+		return isSubscribedToRoom();
+	},
+
 	canSeeButtons() {
-		if (hasRole(Meteor.userId(), 'livechat-manager')) {
+		if (hasPermission(Meteor.userId(), 'close-others-livechat-room') || hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
 			return true;
 		}
 
-		const data = Template.currentData();
-		if (data && data.rid) {
-			const subscription = Subscriptions.findOne({ rid: data.rid });
-			return subscription !== undefined;
-		}
-		return false;
+		return isSubscribedToRoom();
 	},
+
+	canEditRoom() {
+		if (hasPermission(Meteor.userId(), 'save-others-livechat-room-info')) {
+			return true;
+		}
+
+		return isSubscribedToRoom();
+	},
+
+	canCloseRoom() {
+		if (hasPermission(Meteor.userId(), 'close-others-livechat-room')) {
+			return true;
+		}
+
+		return isSubscribedToRoom();
+	},
+
+	canForwardGuest() {
+		if (hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
+			return true;
+		}
+
+		return isSubscribedToRoom();
+	}
 });
 
 Template.visitorInfo.events({

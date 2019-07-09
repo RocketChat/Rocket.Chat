@@ -23,5 +23,7 @@ Meteor.startup(() => {
 		Permissions.createOrUpdate('save-others-livechat-room-info', ['livechat-manager']);
 		Permissions.createOrUpdate('remove-closed-livechat-rooms', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('view-livechat-analytics', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-queue', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('transfer-livechat-guest', ['livechat-manager', 'admin']);
 	}
 });
