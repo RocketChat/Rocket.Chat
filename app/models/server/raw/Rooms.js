@@ -1,6 +1,6 @@
 import { BaseRaw } from './BaseRaw';
 
-export class SubscriptionsRaw extends BaseRaw {
+export class RoomsRaw extends BaseRaw {
 	findOneByRoomIdAndUserId(rid, uid, options) {
 		const query = {
 			rid,
