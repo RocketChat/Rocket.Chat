@@ -928,6 +928,22 @@ export const Livechat = {
 			});
 		});
 	},
+
+	allowAgentChangeServiceStatus(statusLivechat) {
+		if (!settings.get('Livechat_enable_office_hours')) {
+			return true;
+		}
+
+		if (settings.get('Livechat_allow_online_agents_outside_office_hours')) {
+			return true;
+		}
+
+		if (statusLivechat !== 'available') {
+			return true;
+		}
+
+		return LivechatOfficeHour.isNowWithinHours();
+	},
 };
 
 Livechat.stream = new Meteor.Streamer('livechat-room');

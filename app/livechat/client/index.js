@@ -3,7 +3,6 @@ import '../lib/LivechatExternalMessage';
 import './roomType';
 import './route';
 import './ui';
-import './methods/changeLivechatStatus';
 import './startup/notifyUnreadRooms';
 import './views/app/analytics/livechatAnalytics';
 import './views/app/analytics/livechatAnalyticsCustomDaterange';

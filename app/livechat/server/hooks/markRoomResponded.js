@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks';
 import { LivechatRooms } from '../../../models';
@@ -19,13 +18,11 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	Meteor.defer(() => {
-		LivechatRooms.setResponseByRoomId(room._id, {
-			user: {
-				_id: message.u._id,
-				username: message.u.username,
-			},
-		});
+	LivechatRooms.setResponseByRoomId(room._id, {
+		user: {
+			_id: message.u._id,
+			username: message.u.username,
+		},
 	});
 
 	return message;
