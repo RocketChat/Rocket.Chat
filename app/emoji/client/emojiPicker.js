@@ -13,7 +13,7 @@ const getEmojiElement = (emoji, image) => image && `<li class="emoji-${ emoji } 
 
 const createEmojiList = (category, actualTone) => {
 	const html = Object.values(emoji.packages).map((emojiPackage) => {
-		if (!emojiPackage.emojisByCategory[category]) {
+		if (!emojiPackage.emojisByCategory || !emojiPackage.emojisByCategory[category]) {
 			return;
 		}
 

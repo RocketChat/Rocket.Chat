@@ -10,7 +10,7 @@ import { AutoTranslate } from '../../../autotranslate/client';
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
 	return {
-		u: Users.findOne({ _id: uid }, { fields: { name: 1, username: 1 } }),
+		u: Users.findOne({ _id: uid }, { fields: { name: 1, username: 1 } }) || {},
 		room: Rooms.findOne({ _id: rid }, {
 			reactive: false,
 			fields: {
