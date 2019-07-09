@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 
 import { SideNav, Layout } from '../../../../ui-utils';
 import { t } from '../../../../utils';
+import { hasAtLeastOnePermission } from '../../../../authorization';
 import './livechatFlex.html';
 import { sidebarItems } from './livechatSideNavItems';
 
@@ -18,6 +19,21 @@ Template.livechatFlex.helpers({
 		return Layout.isEmbedded();
 	},
 	sidebarItems() {
+		const items = sidebarItems.get();
+		const newItems = [];
+		for (let item of items) {
+			if (item.permission) {
+				if (!hasAtLeastOnePermission(item.permission)) {
+					continue;
+				}
+			}
+
+			newItems.push({
+				title: item.title,
+				slug: item.slug
+			});
+		}
+
 		return sidebarItems.get();
 	},
 });
