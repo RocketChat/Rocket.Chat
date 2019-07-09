@@ -31,7 +31,10 @@ Template.adminEmoji.helpers({
 	hasMore() {
 		if (Template.instance().limit != null) {
 			if (typeof Template.instance().customemoji === 'function') {
-				return Template.instance().limit.get() === Template.instance().customemoji().length;
+				return (
+					Template.instance().limit.get()
+					=== Template.instance().customemoji().length
+				);
 			}
 		}
 		return false;
@@ -40,6 +43,18 @@ Template.adminEmoji.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+		};
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if ((currentTarget.offsetHeight + currentTarget.scrollTop) < (currentTarget.scrollHeight - 100)) {
+				return;
+			}
+			if (Template.instance().limit.get() > Template.instance().customemoji().length) {
+				return false;
+			}
+			instance.limit.set(instance.limit.get() + 50);
 		};
 	},
 	onTableItemClick() {
