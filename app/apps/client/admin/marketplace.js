@@ -32,8 +32,9 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 			isPurchased: app.isPurchased,
 			isBundle: app.isBundle,
 			isSubscribed: app.isSubscribed,
-			pricingInfo: app.pricingInfo,
 			bundledIn: app.bundledIn,
+			purchaseType: app.purchaseType,
+			pricingPlans: app.pricingPlans,
 			latest: {
 				...app.latest,
 				_installed: installedIds.includes(app.latest.id),
@@ -230,19 +231,21 @@ Template.marketplace.helpers({
 	formatPrice(price) {
 		return `$${ Number.parseFloat(price).toFixed(2) }`;
 	},
-	isSubscription(pricingInfo) {
-		return pricingInfo && pricingInfo.strategy !== 'once';
+	isSubscription(purchaseType) {
+		return purchaseType && purchaseType === 'subscription';
 	},
-	subscriptionPriceDisplay(pricingInfo) {
-		if (!pricingInfo || pricingInfo.strategy === 'once') {
+	subscriptionPriceDisplay(pricingPlans) {
+		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
 			return '';
 		}
 
-		if (pricingInfo.strategy === 'monthly') {
-			return `$${ Number.parseFloat(pricingInfo.price).toFixed(2) } / month`;
+		const plan = pricingPlans[0];
+
+		if (plan.strategy === 'monthly') {
+			return `$${ Number.parseFloat(plan.price).toFixed(2) } / month`;
 		}
 
-		const lastTier = pricingInfo.tiers[pricingInfo.tiers.length - 1];
+		const lastTier = plan.tiers[plan.tiers.length - 1];
 
 		return `$${ Number.parseFloat(lastTier.price).toFixed(2) }* / user / month`;
 	},
@@ -315,7 +318,7 @@ Template.marketplace.events({
 		// play animation
 		const elm = e.currentTarget.parentElement;
 
-		APIClient.get(`apps?buildExternalUrl=true&appId=${ rl.latest.id }`)
+		APIClient.get(`apps?buildExternalUrl=true&appId=${ rl.latest.id }&purchaseType=${ rl.purchaseType }`)
 			.then((data) => {
 				modal.open({
 					allowOutsideClick: false,
