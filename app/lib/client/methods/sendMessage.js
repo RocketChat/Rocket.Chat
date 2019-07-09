@@ -12,6 +12,10 @@ Meteor.methods({
 		if (!Meteor.userId() || s.trim(message.msg) === '') {
 			return false;
 		}
+		const messageAlreadyExists = message._id && ChatMessage.findOne({ _id: message._id });
+		if (messageAlreadyExists) {
+			return;
+		}
 		const user = Meteor.user();
 		message.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
 		message.u = {
