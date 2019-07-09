@@ -31,10 +31,7 @@ Template.adminEmoji.helpers({
 	hasMore() {
 		if (Template.instance().limit != null) {
 			if (typeof Template.instance().customemoji === 'function') {
-				return (
-					Template.instance().limit.get()
-					=== Template.instance().customemoji().length
-				);
+				return Template.instance().limit.get() === Template.instance().customemoji().length;
 			}
 		}
 		return false;
