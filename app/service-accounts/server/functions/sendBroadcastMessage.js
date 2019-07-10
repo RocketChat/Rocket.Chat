@@ -17,8 +17,8 @@ const _sendBroadcastMessage = function(message) {
 	for (const targetRoom of rooms) {
 		sendMessage(Meteor.user(), { msg: message.msg }, targetRoom);
 	}
-}
+};
 
 export const sendBroadcastMessage = RateLimiter.limitFunction(_sendBroadcastMessage, 1, 8640000, {
-	0() { return !Meteor.userId() }
+	0() { return !Meteor.userId(); },
 });
