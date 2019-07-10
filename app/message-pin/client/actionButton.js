@@ -7,7 +7,6 @@ import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { settings } from '../../settings';
-import { Subscriptions } from '../../models';
 import { hasAtLeastOnePermission } from '../../authorization';
 
 Meteor.startup(function() {
@@ -25,12 +24,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition(message) {
-			if	(!settings.get('Message_AllowPinning') || message.pinned || !Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
+		condition({ msg, subscription }) {
+			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
 				return false;
 			}
 
-			return hasAtLeastOnePermission('pin-message', message.rid);
+			return hasAtLeastOnePermission('pin-message', msg.rid);
 		},
 		order: 7,
 		group: 'menu',
@@ -50,12 +49,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition(message) {
-			if	(!settings.get('Message_AllowPinning') || !message.pinned || !Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
+		condition({ msg, subscription }) {
+			if (!subscription || !settings.get('Message_AllowPinning') || !msg.pinned) {
 				return false;
 			}
 
-			return hasAtLeastOnePermission('pin-message', message.rid);
+			return hasAtLeastOnePermission('pin-message', msg.rid);
 		},
 		order: 8,
 		group: 'menu',
@@ -73,11 +72,8 @@ Meteor.startup(function() {
 			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		condition(message) {
-			if (!Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
-				return false;
-			}
-			return true;
+		condition({ subscription }) {
+			return !!subscription;
 		},
 		order: 100,
 		group: 'menu',
@@ -94,11 +90,8 @@ Meteor.startup(function() {
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition(message) {
-			if (!Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
-				return false;
-			}
-			return true;
+		condition({ subscription }) {
+			return !!subscription;
 		},
 		order: 101,
 		group: 'menu',

@@ -15,6 +15,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
+		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
@@ -432,6 +433,18 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findNotIdUpdatedFrom(uid, from, options) {
+		const query = {
+			_id: { $ne: uid },
+			username: {
+				$exists: 1,
+			},
+			_updatedAt: { $gte: from },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomId(rid, options) {
 		const data = Subscriptions.findByRoomId(rid).fetch().map((item) => item.u._id);
 		const query = {
@@ -668,6 +681,16 @@ export class Users extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	updateStatusText(_id, statusText) {
+		const update = {
+			$set: {
+				statusText,
+			},
+		};
+
+		return this.update(_id, update);
 	}
 
 	updateLastLoginById(_id) {
@@ -1021,6 +1044,17 @@ export class Users extends Base {
 		};
 
 		return this.update({ _id }, update);
+	}
+
+	updateDefaultStatus(_id, statusDefault) {
+		return this.update({
+			_id,
+			statusDefault: { $ne: statusDefault },
+		}, {
+			$set: {
+				statusDefault,
+			},
+		});
 	}
 
 	// INSERT

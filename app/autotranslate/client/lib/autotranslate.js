@@ -9,6 +9,18 @@ import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 
+let userLanguage = 'en';
+let username = '';
+
+Meteor.startup(() => Tracker.autorun(() => {
+	const user = Meteor.user();
+	if (!user) {
+		return;
+	}
+	userLanguage = user.language || 'en';
+	username = user.username;
+}));
+
 export const AutoTranslate = {
 	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
 	messageIdsToWait: {},
@@ -19,7 +31,7 @@ export const AutoTranslate = {
 		if (rid) {
 			subscription = this.findSubscriptionByRid(rid);
 		}
-		const language = (subscription && subscription.autoTranslateLanguage) || Meteor.user().language || window.defaultUserLanguage();
+		const language = (subscription && subscription.autoTranslateLanguage) || userLanguage || window.defaultUserLanguage();
 		if (language.indexOf('-') !== -1) {
 			if (!_.findWhere(this.supportedLanguages, { language })) {
 				return language.substr(0, 2);
@@ -30,7 +42,7 @@ export const AutoTranslate = {
 
 	translateAttachments(attachments, language) {
 		for (const attachment of attachments) {
-			if (attachment.author_name !== Meteor.user().username) {
+			if (attachment.author_name !== username) {
 				if (attachment.text && attachment.translations && attachment.translations[language]) {
 					attachment.text = attachment.translations[language];
 				}

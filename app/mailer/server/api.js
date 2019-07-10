@@ -93,14 +93,14 @@ export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-
 
 export const checkAddressFormat = (from) => rfcMailPatternWithName.test(from);
 
-export const sendNoWrap = ({ to, from, subject, html, headers }) => {
+export const sendNoWrap = ({ to, from, replyTo, subject, html, headers }) => {
 	if (!checkAddressFormat(to)) {
 		return;
 	}
-	Meteor.defer(() => Email.send({ to, from, subject, html, headers }));
+	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, headers }));
 };
 
-export const send = ({ to, from, subject, html, data, headers }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data), headers });
+export const send = ({ to, from, replyTo, subject, html, data, headers }) => sendNoWrap({ to, from, replyTo, subject: replace(subject, data), html: wrap(html, data), headers });
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {

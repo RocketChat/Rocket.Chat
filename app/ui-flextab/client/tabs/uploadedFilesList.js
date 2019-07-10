@@ -141,7 +141,7 @@ Template.uploadedFilesList.events({
 									name: t('Download'),
 									action: () => {
 										const a = document.createElement('a');
-										a.href = this.file.url;
+										a.href = getURL(this.file.url);
 										a.download = this.file.name;
 										document.body.appendChild(a);
 										a.click();

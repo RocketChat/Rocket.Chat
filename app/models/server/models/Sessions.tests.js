@@ -232,7 +232,7 @@ const DATA = {
 	sessions_dates,
 }; // require('./fixtures/testData.json')
 
-describe.only('Sessions Aggregates', () => {
+describe('Sessions Aggregates', () => {
 	let db;
 
 	if (!process.env.MONGO_URL) {

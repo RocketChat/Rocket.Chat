@@ -2,7 +2,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
-import { ChatRoom, ChatSubscription, RoomRoles } from '../../../models';
+import { hasAtLeastOnePermission } from '../../../authorization';
+import { ChatRoom, ChatSubscription } from '../../../models';
 
 export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	checkCondition(roomType) {
@@ -50,6 +51,10 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return room && room.t;
 	}
 
+	getUserStatusText(roomType, rid) {
+		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatusText === 'function' && this.roomTypes[roomType].getUserStatusText(rid);
+	}
+
 	findRoom(roomType, identifier, user) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier, user);
 	}
@@ -65,6 +70,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		};
 		if (user) {
 			fields.muted = 1;
+			fields.unmuted = 1;
 		}
 		const room = ChatRoom.findOne({
 			_id: rid,
@@ -80,16 +86,26 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		if (!user) {
 			return room && room.ro;
 		}
-		const userOwner = RoomRoles.findOne({
-			rid,
-			'u._id': user._id,
-			roles: 'owner',
-		}, {
-			fields: {
-				_id: 1,
-			},
-		});
-		return room && (room.ro === true && Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !userOwner);
+
+		if (room) {
+			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+				return true;
+			}
+
+			if (room.ro === true) {
+				if (Array.isArray(room.unmuted) && room.unmuted.indexOf(user.username) !== -1) {
+					return false;
+				}
+
+				if (hasAtLeastOnePermission('post-readonly', room._id)) {
+					return false;
+				}
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	archived(rid) {

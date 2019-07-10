@@ -5,6 +5,7 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
+import mem from 'mem';
 
 import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
 
@@ -17,20 +18,15 @@ import { roomTypes, handleError } from '../../../utils';
 
 window.currentTracker = undefined;
 
-let loadingDom;
-function getDomOfLoading() {
-	if (loadingDom) {
-		return loadingDom;
-	}
-
-	loadingDom = document.createElement('div');
+const getDomOfLoading = mem(function getDomOfLoading() {
+	const loadingDom = document.createElement('div');
 	const contentAsFunc = (content) => () => content;
 
 	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
 	Blaze.render(template, loadingDom);
 
 	return loadingDom;
-}
+});
 
 function replaceCenterDomBy(dom) {
 	const mainNode = document.querySelector('.main-content');
@@ -101,8 +97,7 @@ export const openRoom = function(type, name) {
 		fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
 		Session.set('editRoomTitle', false);
-		RoomManager.updateMentionsMarksOfRoom(type + name);
-		Meteor.setTimeout(() => readMessage.readNow(), 2000);
+		setTimeout(() => readMessage.readNow(), 2000);
 		// KonchatNotification.removeRoomNotification(params._id)
 		// update user's room subscription
 		const sub = ChatSubscription.findOne({ rid: room._id });

@@ -14,7 +14,18 @@ import { QueueMethods } from './QueueMethods';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
+import {
+	Users,
+	Rooms,
+	Messages,
+	Subscriptions,
+	Settings,
+	LivechatDepartmentAgents,
+	LivechatDepartment,
+	LivechatCustomField,
+	LivechatVisitors,
+	LivechatOfficeHour,
+} from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
@@ -583,12 +594,11 @@ export const Livechat = {
 
 	sendRequest(postData, callback, trying = 1) {
 		try {
-			const options = {
-				headers: {
-					'X-RocketChat-Livechat-Token': settings.get('Livechat_secret_token'),
-				},
-				data: postData,
-			};
+			const options = { data: postData };
+			const secretToken = settings.get('Livechat_secret_token');
+			if (secretToken !== '' && secretToken !== undefined) {
+				Object.assign(options, { headers: { 'X-RocketChat-Livechat-Token': secretToken } });
+			}
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
 			Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
@@ -726,8 +736,7 @@ export const Livechat = {
 
 	removeGuest(_id) {
 		check(_id, String);
-
-		const guest = LivechatVisitors.findById(_id);
+		const guest = LivechatVisitors.findOneById(_id);
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
 		}
@@ -737,12 +746,13 @@ export const Livechat = {
 	},
 
 	cleanGuestHistory(_id) {
-		const guest = LivechatVisitors.findById(_id);
+		const guest = LivechatVisitors.findOneById(_id);
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
 		}
 
 		const { token } = guest;
+		check(token, String);
 
 		Rooms.findByVisitorToken(token).forEach((room) => {
 			Messages.removeFilesByRoomId(room._id);
@@ -928,6 +938,22 @@ export const Livechat = {
 				status,
 			});
 		});
+	},
+
+	allowAgentChangeServiceStatus(statusLivechat) {
+		if (!settings.get('Livechat_enable_office_hours')) {
+			return true;
+		}
+
+		if (settings.get('Livechat_allow_online_agents_outside_office_hours')) {
+			return true;
+		}
+
+		if (statusLivechat !== 'available') {
+			return true;
+		}
+
+		return LivechatOfficeHour.isNowWithinHours();
 	},
 };
 

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { Users, Roles } from '../../app/models';
 
@@ -14,12 +13,17 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneById(userId);
+		if (user && user.emails && Array.isArray(user.emails)) {
+			const verifiedEmail = user.emails.find((email) => email.verified);
+			const rolesToChangeTo = { anonymous: ['user'] };
+			const rolesThatNeedChanges = user.roles.filter((role) => rolesToChangeTo[role]);
 
-		const verifiedEmail = _.find(user.emails, (email) => email.verified);
-
-		if (verifiedEmail) {
-			Roles.addUserRoles(user._id, 'user');
-			Roles.removeUserRoles(user._id, 'anonymous');
+			if (rolesThatNeedChanges.length && verifiedEmail) {
+				rolesThatNeedChanges.forEach((role) => {
+					Roles.addUserRoles(user._id, rolesToChangeTo[role]);
+					Roles.removeUserRoles(user._id, role);
+				});
+			}
 		}
 	},
 });

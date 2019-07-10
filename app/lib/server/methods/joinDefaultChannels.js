@@ -10,8 +10,6 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinDefaultChannels' });
 		}
-
-		this.unblock();
 		return addUserToDefaultChannels(Meteor.user(), silenced);
 	},
 });

@@ -10,12 +10,10 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { modal } from './modal';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { settings } from '../../../settings/client';
-
+import { modal } from './modal';
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err, data) {
@@ -157,11 +155,11 @@ Meteor.startup(async function() {
 				reply: msg._id,
 			});
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription, room }) {
+			if (subscription == null) {
 				return false;
 			}
-			if (roomTypes.getRoomType(message.rid) === 'd') {
+			if (room.t === 'd') {
 				return false;
 			}
 			return true;
@@ -190,8 +188,8 @@ Meteor.startup(async function() {
 				.data('reply', messages)
 				.trigger('dataChange');
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 
@@ -213,8 +211,8 @@ Meteor.startup(async function() {
 			$(event.currentTarget).attr('data-clipboard-text', permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 
@@ -231,16 +229,12 @@ Meteor.startup(async function() {
 		classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads'],
 		action(event) {
-			const { msg: message } = messageArgs(this);
-			$(event.currentTarget).attr('data-clipboard-text', message);
+			const { msg: { msg } } = messageArgs(this);
+			$(event.currentTarget).attr('data-clipboard-text', msg);
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
-				return false;
-			}
-
-			return true;
+		condition({ subscription }) {
+			return !!subscription;
 		},
 		order: 5,
 		group: 'menu',
@@ -255,19 +249,17 @@ Meteor.startup(async function() {
 			const { msg } = messageArgs(this);
 			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
 		},
-		condition(message) {
-			if (Subscriptions.findOne({
-				rid: message.rid,
-			}) == null) {
+		condition({ msg: message, subscription, settings }) {
+			if (subscription == null) {
 				return false;
 			}
 			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
-			const isEditAllowed = settings.get('Message_AllowEditing');
+			const isEditAllowed = settings.Message_AllowEditing;
 			const editOwn = message.u && message.u._id === Meteor.userId();
 			if (!(hasPermission || (isEditAllowed && editOwn))) {
 				return;
 			}
-			const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
+			const blockEditInMinutes = settings.Message_AllowEditing_BlockEditInMinutes;
 			if (blockEditInMinutes) {
 				let msgTs;
 				if (message.ts != null) {
@@ -295,8 +287,8 @@ Meteor.startup(async function() {
 			const { msg: message } = messageArgs(this);
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ msg: message, subscription }) {
+			if (!subscription) {
 				return false;
 			}
 
@@ -350,8 +342,8 @@ Meteor.startup(async function() {
 				});
 			});
 		},
-		condition(message) {
-			return Boolean(Subscriptions.findOne({ rid: message.rid }));
+		condition({ subscription }) {
+			return Boolean(subscription);
 		},
 		order: 17,
 		group: 'menu',

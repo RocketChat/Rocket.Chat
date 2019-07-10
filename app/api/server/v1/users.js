@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
-import { Users, Subscriptions } from '../../../models';
+import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -16,7 +16,9 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
+import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
+import { setStatusText } from '../../../lib/server';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -149,18 +151,18 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
 		const { username } = this.getUserFromParams();
 		const { fields } = this.parseJsonQuery();
-		let user = {};
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getFullUserData', { username, limit: 1 });
+
+		const result = getFullUserData({
+			userId: this.userId,
+			filter: username,
+			limit: 1,
 		});
-
-		if (!result || result.length !== 1) {
-			return API.v1.failure(`Failed to get the user data for the userId of "${ username }".`);
+		if (!result || result.count() !== 1) {
+			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
-
-		user = result[0];
-		if (fields.userRooms === 1 && hasPermission(this.userId, 'view-other-user-channels')) {
+		const [user] = result.fetch();
+		const myself = user._id === this.userId;
+		if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {
 					rid: 1,
@@ -324,6 +326,73 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('users.getStatus', { authRequired: true }, {
+	get() {
+		if (this.isUserFromParams()) {
+			const user = Users.findOneById(this.userId);
+			return API.v1.success({
+				message: user.statusText,
+				connectionStatus: user.statusConnection,
+				status: user.status,
+			});
+		}
+
+		const user = this.getUserFromParams();
+
+		return API.v1.success({
+			message: user.statusText,
+			status: user.status,
+		});
+	},
+});
+
+API.v1.addRoute('users.setStatus', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, Match.ObjectIncluding({
+			status: Match.Maybe(String),
+			message: Match.Maybe(String),
+		}));
+
+		if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
+			throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
+				method: 'users.setStatus',
+			});
+		}
+
+		let user;
+		if (this.isUserFromParams()) {
+			user = Meteor.users.findOne(this.userId);
+		} else if (hasPermission(this.userId, 'edit-other-user-info')) {
+			user = this.getUserFromParams();
+		} else {
+			return API.v1.unauthorized();
+		}
+
+		Meteor.runAsUser(user._id, () => {
+			if (this.bodyParams.message) {
+				setStatusText(user._id, this.bodyParams.message);
+			}
+			if (this.bodyParams.status) {
+				const validStatus = ['online', 'away', 'offline', 'busy'];
+				if (validStatus.includes(this.bodyParams.status)) {
+					Meteor.users.update(this.userId, {
+						$set: {
+							status: this.bodyParams.status,
+							statusDefault: this.bodyParams.status,
+						},
+					});
+				} else {
+					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+						method: 'users.setStatus',
+					});
+				}
+			}
+		});
+
+		return API.v1.success();
+	},
+});
+
 API.v1.addRoute('users.update', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
@@ -333,6 +402,7 @@ API.v1.addRoute('users.update', { authRequired: true }, {
 				name: Match.Maybe(String),
 				password: Match.Maybe(String),
 				username: Match.Maybe(String),
+				statusText: Match.Maybe(String),
 				active: Match.Maybe(Boolean),
 				roles: Match.Maybe(Array),
 				joinDefaultChannels: Match.Maybe(Boolean),
@@ -368,6 +438,7 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 				email: Match.Maybe(String),
 				name: Match.Maybe(String),
 				username: Match.Maybe(String),
+				statusText: Match.Maybe(String),
 				currentPassword: Match.Maybe(String),
 				newPassword: Match.Maybe(String),
 			}),
@@ -378,6 +449,7 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			email: this.bodyParams.data.email,
 			realname: this.bodyParams.data.name,
 			username: this.bodyParams.data.username,
+			statusText: this.bodyParams.data.statusText,
 			newPassword: this.bodyParams.data.newPassword,
 			typedPassword: this.bodyParams.data.currentPassword,
 		};
@@ -449,6 +521,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarViewMode: Match.Optional(String),
 				sidebarHideAvatar: Match.Optional(Boolean),
 				sidebarGroupByType: Match.Optional(Boolean),
+				sidebarShowDiscussion: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});
@@ -566,5 +639,38 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 		}));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.presence', { authRequired: true }, {
+	get() {
+		const { from } = this.queryParams;
+
+		const options = {
+			fields: {
+				username: 1,
+				name: 1,
+				status: 1,
+				utcOffset: 1,
+				statusText: 1,
+			},
+		};
+
+		if (from) {
+			const ts = new Date(from);
+			const diff = (Date.now() - ts) / 1000 / 60;
+
+			if (diff < 10) {
+				return API.v1.success({
+					users: Users.findNotIdUpdatedFrom(this.userId, ts, options).fetch(),
+					full: false,
+				});
+			}
+		}
+
+		return API.v1.success({
+			users: Users.findUsersNotOffline(options).fetch(),
+			full: true,
+		});
 	},
 });
