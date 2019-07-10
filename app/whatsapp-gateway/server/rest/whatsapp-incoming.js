@@ -112,7 +112,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			const message = Livechat.sendMessage(sendMessage);
 
 			if (triggerRoomOpeningMessage) {
-				WhatsAppService.send(from, id_cliente, roomOpeningMessage);
+				WhatsAppService.send(from, id_cliente, roomOpeningMessage, { token: conversationId });
 			}
 
 			const { _id, msg } = message;
@@ -120,7 +120,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 		} catch (e) {
 			const { error, reason, message } = e;
 			if (error && error === offlineServiceError && offlineServiceMessage) {
-				WhatsAppService.send(from, id_cliente, offlineServiceMessage);
+				WhatsAppService.send(from, id_cliente, offlineServiceMessage, { token: conversationId });
 			}
 
 			return { success: false, error, reason, message };

@@ -96,5 +96,6 @@ callbacks.add('livechat.closeRoom', (room) => {
 		return room;
 	}
 
-	WhatsAppService.send(room.whatsAppGateway.from, visitor.phone[0].phoneNumber, conversationFinishedMessage);
+	const { conversationId: token } = room.whatsAppGateway;
+	WhatsAppService.send(room.whatsAppGateway.from, visitor.phone[0].phoneNumber, conversationFinishedMessage, { token });
 }, callbacks.priority.MEDIUM, 'send-whatsapp-gateway-close-room');
