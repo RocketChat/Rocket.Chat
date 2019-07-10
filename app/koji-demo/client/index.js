@@ -17,26 +17,12 @@ TabBar.addButton({
 });
 
 Meteor.startup(function() {
-	// Below is an example of what a bridge between RC and an oembed iFrame might look like
-	//
-	// There are a lot of decisions required to make this viable -- mostly relating to
-	// permissions/authorization. We wouldn't want anyone to be able to paste a link that
-	// could suddenly take control of the channel / suck out channel metadata. For the Koji
-	// games in particular, it would be nice if an authorized iframe could get:
-	// 		- a list of usernames/uids in the channel
-	// 		- the uid of the current user
-	// 		- a callback for storing data inside the channel, similar to the browser's localStorage
-	//
-	// Also note that I'm not familiar enough with RC's high-level structure to know the best place
-	// for this listener, this was just the easiest place to get it working for the point of demo :)
 	window.addEventListener('message', async ({ data, source }) => {
 		if (!data.hasOwnProperty('rcEmbeddedSdk')) {
 			return;
 		}
 
 		try {
-			// Some general metadata to demonstrate sending information
-			// back on a `connect` message
 			const baseUrl = window.location.origin;
 			const { username } = Meteor.user();
 			const avatarUrl = `${ baseUrl }${ getUserAvatarURL(username) }`;
@@ -44,7 +30,7 @@ Meteor.startup(function() {
 
 			const { action } = data.rcEmbeddedSdk;
 			const { payload: { appName } } = data.rcEmbeddedSdk;
-			// ack the successful connect back to the iframe
+
 			if (action === 'getUserInfo') {
 				const authorized = await authorizeMiniApp(appName);
 				console.log(authorized);
