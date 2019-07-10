@@ -195,5 +195,4 @@ Template.livechatManagers.onCreated(function() {
 		const limit = instance.limit && instance.limit.get();
 		return ManagerUsers.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
-
 });

@@ -21,7 +21,7 @@ Template.livechatFlex.helpers({
 	sidebarItems() {
 		const items = sidebarItems.get();
 		const newItems = [];
-		for (let item of items) {
+		for (const item of items) {
 			if (item.permission) {
 				if (!hasAtLeastOnePermission(item.permission)) {
 					continue;
@@ -30,7 +30,7 @@ Template.livechatFlex.helpers({
 
 			newItems.push({
 				title: item.title,
-				slug: item.slug
+				slug: item.slug,
 			});
 		}
 
