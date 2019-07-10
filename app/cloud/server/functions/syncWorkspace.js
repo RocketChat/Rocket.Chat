@@ -5,6 +5,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { statistics } from '../../../statistics';
+import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 
 export function syncWorkspace(reconnectCheck = false) {
@@ -29,6 +30,7 @@ export function syncWorkspace(reconnectCheck = false) {
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
+	let result;
 	try {
 		const headers = {};
 		const token = getWorkspaceAccessToken(true);
@@ -39,7 +41,7 @@ export function syncWorkspace(reconnectCheck = false) {
 			return false;
 		}
 
-		HTTP.post(`${ workspaceUrl }/client`, {
+		result = HTTP.post(`${ workspaceUrl }/client`, {
 			data: info,
 			headers,
 		});
@@ -53,6 +55,12 @@ export function syncWorkspace(reconnectCheck = false) {
 		}
 
 		return false;
+	}
+
+	const { data } = result;
+
+	if (data.publicKey) {
+		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	}
 
 	return true;
