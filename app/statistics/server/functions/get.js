@@ -26,6 +26,7 @@ const wizardFields = [
 	'Country',
 	'Language',
 	'Server_Type',
+	'Register_Server',
 ];
 
 statistics.get = function _getStatistics() {
