@@ -3,7 +3,8 @@ import stream from 'stream';
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
-import { createClient } from 'webdav';
+
+import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 /**
  * WebDAV store
  * @param options
@@ -12,14 +13,8 @@ import { createClient } from 'webdav';
 export class WebdavStore extends UploadFS.Store {
 	constructor(options) {
 		super(options);
-
-		const client = createClient(
-			options.connection.credentials.server,
-			{
-				username: options.connection.credentials.username,
-				password: options.connection.credentials.password,
-			}
-		);
+		const { server, username, password } = options.connection.credentials;
+		const client = new WebdavClientAdapter(server, username, password);
 
 		options.getPath = function(file) {
 			if (options.uploadFolderPath[options.uploadFolderPath.length - 1] !== '/') {
@@ -27,9 +22,12 @@ export class WebdavStore extends UploadFS.Store {
 			}
 			return options.uploadFolderPath + file._id;
 		};
-		client.stat(options.uploadFolderPath).catch(function(err) {
-			if (err.response.status === 404) {
+
+		client.stat(options.uploadFolderPath).catch((err) => {
+			if (err.message.toLowerCase() === 'not found') {
 				client.createDirectory(options.uploadFolderPath);
+			} else if (err.message.toLowerCase() === 'unauthorized') {
+				console.warn('File upload is unauthorized to connect on Webdav, please verify your credentials');
 			}
 		});
 
@@ -72,13 +70,9 @@ export class WebdavStore extends UploadFS.Store {
 		 */
 		this.delete = function(fileId, callback) {
 			const file = this.getCollection().findOne({ _id: fileId });
-			client.deleteFile(this.getPath(file), (err, data) => {
-				if (err) {
-					console.error(err);
-				}
-
-				callback && callback(err, data);
-			});
+			client.deleteFile(this.getPath(file)).then((data) => {
+				callback && callback(null, data);
+			}).catch(console.error);
 		};
 
 		/**
