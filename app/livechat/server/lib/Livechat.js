@@ -14,7 +14,19 @@ import { QueueMethods } from './QueueMethods';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Users, Rooms, LivechatRooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
+import {
+	Users,
+	Rooms,
+	LivechatRooms,
+	Messages,
+	Subscriptions,
+	Settings,
+	LivechatDepartmentAgents,
+	LivechatDepartment,
+	LivechatCustomField,
+	LivechatVisitors,
+	LivechatOfficeHour,
+} from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
