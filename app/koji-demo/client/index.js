@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import { authorizeMiniApp } from '../../ui-utils/client/lib/miniAppAction';
+import { invitingOthers } from './lib/methods/createInvitingOthersAction';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { TabBar } from '../../ui-utils/client';
 
@@ -54,6 +55,11 @@ Meteor.startup(function() {
 						},
 					}, '*');
 				}
+			}
+
+			// Inviting Others
+			if (action === 'invitingOthers') {
+				await invitingOthers(appName);
 			}
 		} catch (err) {
 			console.error(err);
