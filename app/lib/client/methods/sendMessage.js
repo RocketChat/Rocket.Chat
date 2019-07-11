@@ -7,7 +7,7 @@ import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises/client';
-import { t } from '../../../utils';
+import { t } from '../../../utils/client';
 
 Meteor.methods({
 	sendMessage(message) {
