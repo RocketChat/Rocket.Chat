@@ -2,11 +2,12 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+
+import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+import { SystemLogger } from '../../logger/server';
 
 /**
  * DeepL translation service provider class representation.
@@ -63,7 +64,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 			if (this.supportedLanguages[target]) {
 				return this.supportedLanguages[target];
 			}
-			return this.supportedLanguages[target] = [
+			this.supportedLanguages[target] = [
 				{
 					language: 'en',
 					name: TAPi18n.__('Language_English', { lng: target }),
@@ -101,6 +102,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 					name: TAPi18n.__('Language_Russian', { lng: target }),
 				},
 			];
+
+			return this.supportedLanguages[target];
 		}
 	}
 
@@ -127,7 +130,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,
-					}, query,
+					},
+					query,
 				});
 
 				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
@@ -165,7 +169,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,
-					}, query,
+					},
+					query,
 				});
 				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
 					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
