@@ -65,6 +65,7 @@
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run stylelint && meteor npm run jslint",
 		"jslint": "eslint .",
+		"jslint-fix": "eslint . --fix",
 		"stylelint": "stylelint \"app/**/*.css\"",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
