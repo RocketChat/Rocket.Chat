@@ -76,6 +76,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params,
 				});
 			} catch (e) {
+				// Fallback: Get the English names of the target languages
 				if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
 					params.target = 'en';
 					target = 'en';
@@ -85,16 +86,16 @@ class GoogleAutoTranslate extends AutoTranslate {
 						});
 					}
 				}
-			} finally {
-				if (this.supportedLanguages[target]) {
-					supportedLanguages = this.supportedLanguages[target];
-				} else {
-					this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-					supportedLanguages = this.supportedLanguages[target || 'en'];
-				}
 			}
+
+			if (this.supportedLanguages[target]) {
+				supportedLanguages = this.supportedLanguages[target];
+			} else {
+				this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
+				supportedLanguages = this.supportedLanguages[target || 'en'];
+			}
+			return supportedLanguages;
 		}
-		return supportedLanguages;
 	}
 
 	/**
