@@ -44,7 +44,6 @@ import './views/app/secretURL';
 import './views/app/videoCall/videoButtons';
 import './views/app/videoCall/videoCall';
 import './views/app/photoswipe';
-import './components/icon.html';
 import './components/icon';
 import './components/table.html';
 import './components/table';
