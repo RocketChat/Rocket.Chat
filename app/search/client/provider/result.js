@@ -64,6 +64,11 @@ Template.DefaultSearchResultTemplate.onCreated(function() {
 	this.data.parentPayload.searchAll = this.globalSearchEnabled;
 
 	this.hasMore = new ReactiveVar(true);
+
+	this.autorun(() => {
+		const result = this.data.result.get();
+		self.hasMore.set(!(result && result.message.docs.length < (self.data.payload.limit || self.pageSize)));
+	});
 });
 
 Template.DefaultSearchResultTemplate.events({
