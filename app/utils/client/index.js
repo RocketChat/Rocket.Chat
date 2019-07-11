@@ -1,5 +1,4 @@
 export { t, isRtl } from '../lib/tapi18n';
-export { isChrome, isFirefox } from './lib/browsers';
 export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
 export { isEmail } from '../lib/isEmail';
