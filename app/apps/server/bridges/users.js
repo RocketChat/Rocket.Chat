@@ -1,4 +1,5 @@
 import { Users } from '../../../models/server';
+import { Federation } from '../../../federation/server';
 
 export class AppUserBridge {
 	constructor(orch) {
@@ -18,6 +19,12 @@ export class AppUserBridge {
 	}
 
 	async getActiveUserCount() {
-		return Users.find({ active: true }).count();
+		return Users.find({
+			active: true,
+			$or: [
+				{ 'federation.peer': Federation.localIdentifier },
+				{ federation: { $exists: false } },
+			],
+		}).count();
 	}
 }
