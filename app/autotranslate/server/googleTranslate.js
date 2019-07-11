@@ -22,7 +22,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'google-translate';
-		// this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
+		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
 	}
 
 	/**

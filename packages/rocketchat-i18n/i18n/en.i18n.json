@@ -416,7 +416,6 @@
   "AutoTranslate_Enabled_Description": "Enabling auto-translation will allow people with the <code class=\"inline\">auto-translate</code> permission to have all messages automatically translated into their selected language. Fees may apply.",
   "AutoTranslate_Google": "Google",
   "AutoTranslate_ServiceProvider": "Service Provider",
-  "AutoTranslate_ServiceProviderURL":"Service Provider url",
   "Available": "Available",
   "Available_agents": "Available agents",
   "Avatar": "Avatar",

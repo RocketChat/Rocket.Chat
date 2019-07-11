@@ -25,7 +25,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
-		// this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
+		this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
 	}
 
 	/**

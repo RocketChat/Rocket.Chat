@@ -49,10 +49,6 @@ export class AutoTranslate {
 		settings.get('AutoTranslate_APIKey', (key, value) => {
 			this.apiKey = value;
 		});
-		// Get Service provider URL.
-		settings.get('AutoTranslate_ServiceProviderURL', (key, value) => {
-			this.apiEndPointUrl = value;
-		});
 		// Get Auto Translate Active flag
 		settings.get('AutoTranslate_Enabled', (key, value) => {
 			this.autoTranslateEnabled = value;
