@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
 import { API } from '../../../../api';
-import { findGuest, findRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/page.visited', {
