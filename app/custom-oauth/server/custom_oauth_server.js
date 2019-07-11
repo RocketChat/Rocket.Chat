@@ -219,7 +219,6 @@ export class CustomOAuth {
 		});
 	}
 
-	// eslint-disable-next-line complexity
 	normalizeIdentity(identity) {
 		if (identity) {
 			// Set 'id' to '_id' for any sources that provide it

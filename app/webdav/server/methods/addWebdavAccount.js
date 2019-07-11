@@ -70,9 +70,7 @@ Meteor.methods({
 
 		const client = createClient(
 			data.serverURL,
-			{
-				token: data.token,
-			});
+			{ token: data.token });
 
 		try {
 			await client.stat('/');
