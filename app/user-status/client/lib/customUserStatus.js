@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 import { userStatus } from './userStatus';
 
@@ -33,22 +34,28 @@ export const updateCustomUserStatus = function(customUserStatusData) {
 	userStatus.list[newUserStatus.id] = newUserStatus;
 };
 
-Meteor.startup(() =>
-	Meteor.call('listCustomUserStatus', (error, result) => {
-		if (!result) {
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		if (!Meteor.userId()) {
 			return;
 		}
 
-		for (const customStatus of result) {
-			const newUserStatus = {
-				name: customStatus.name,
-				id: customStatus._id,
-				statusType: customStatus.statusType,
-				localizeName: false,
-			};
+		Meteor.call('listCustomUserStatus', (error, result) => {
+			if (!result) {
+				return;
+			}
 
-			userStatus.packages.customUserStatus.list.push(newUserStatus);
-			userStatus.list[newUserStatus.id] = newUserStatus;
-		}
-	})
-);
+			for (const customStatus of result) {
+				const newUserStatus = {
+					name: customStatus.name,
+					id: customStatus._id,
+					statusType: customStatus.statusType,
+					localizeName: false,
+				};
+
+				userStatus.packages.customUserStatus.list.push(newUserStatus);
+				userStatus.list[newUserStatus.id] = newUserStatus;
+			}
+		});
+	});
+});

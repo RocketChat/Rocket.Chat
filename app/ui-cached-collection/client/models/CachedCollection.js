@@ -135,13 +135,12 @@ export class CachedCollection {
 		this.useSync = useSync;
 		this.useCache = useCache;
 		this.listenChangesForLoggedUsersOnly = listenChangesForLoggedUsersOnly;
-		this.debug = debug;
 		this.version = version;
 		this.userRelated = userRelated;
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
 		this.onSyncData = onSyncData;
-		this.log = debug ? log : nullLog;
+		this.log = debug(name) ? log : nullLog;
 		CachedCollectionManager.register(this);
 
 		if (userRelated === true) {

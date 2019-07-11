@@ -4,7 +4,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import s from 'underscore.string';
 
 import { t, roomTypes, handleError } from '../../../../utils';
 import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
@@ -25,7 +24,12 @@ const isDiscussion = ({ _id }) => {
 
 const getUserStatus = (id) => {
 	const roomData = Session.get(`roomData${ id }`);
-	return roomTypes.getUserStatus(roomData.t, id) || 'offline';
+	return roomTypes.getUserStatus(roomData.t, id);
+};
+
+const getUserStatusText = (id) => {
+	const roomData = Session.get(`roomData${ id }`);
+	return roomTypes.getUserStatusText(roomData.t, id);
 };
 
 Template.headerRoom.helpers({
@@ -111,18 +115,26 @@ Template.headerRoom.helpers({
 	},
 
 	userStatus() {
-		return getUserStatus(this._id);
+		return getUserStatus(this._id) || 'offline';
 	},
 
 	userStatusText() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		const statusText = roomTypes.getUserStatusText(roomData.t, this._id);
-
-		if (s.trim(statusText)) {
+		const statusText = getUserStatusText(this._id);
+		if (statusText) {
 			return statusText;
 		}
 
-		return t(getUserStatus(this._id));
+		const presence = getUserStatus(this._id);
+		if (presence) {
+			return t(presence);
+		}
+
+		const oldStatusText = Template.instance().userOldStatusText.get();
+		if (oldStatusText) {
+			return oldStatusText;
+		}
+
+		return t('offline');
 	},
 
 	showToggleFavorite() {
@@ -183,10 +195,39 @@ Template.headerRoom.events({
 	},
 });
 
+const loadUserStatusText = () => {
+	const instance = Template.instance();
+
+	if (!instance || !instance.data || !instance.data._id) {
+		return;
+	}
+
+	const id = instance.data._id;
+
+	if (Rooms.findOne(id).t !== 'd') {
+		return;
+	}
+
+	const userId = id.replace(Meteor.userId(), '');
+
+	// If the user is already on the local collection, the method call is not necessary
+	const found = Meteor.users.findOne(userId, { fields: { _id: 1 } });
+	if (found) {
+		return;
+	}
+
+	Meteor.call('getUserStatusText', userId, (error, result) => {
+		if (!error) {
+			instance.userOldStatusText.set(result);
+		}
+	});
+};
+
 Template.headerRoom.onCreated(function() {
 	this.currentChannel = (this.data && this.data._id && Rooms.findOne(this.data._id)) || undefined;
 
 	this.hasTokenpass = new ReactiveVar(false);
+	this.userOldStatusText = new ReactiveVar(null);
 
 	if (settings.get('API_Tokenpass_URL') !== '') {
 		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
@@ -195,4 +236,6 @@ Template.headerRoom.onCreated(function() {
 			}
 		});
 	}
+
+	loadUserStatusText();
 });
