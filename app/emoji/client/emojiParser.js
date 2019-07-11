@@ -11,8 +11,8 @@ import { emoji } from '../lib/rocketchat';
  * @param {Object} message - The message object
  */
 
-const combine = (f, x) => (e) => x(f(e));
-const parser = Object.entries(emoji.packages).map(([, emojiPackage]) => emojiPackage.render.bind(emojiPackage)).reduce(combine);
+const pipe = (f, x) => (e) => x(f(e));
+const parser = Object.entries(emoji.packages).map(([, emojiPackage]) => emojiPackage.render.bind(emojiPackage)).reduce(pipe);
 
 Tracker.autorun(() => {
 	if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
