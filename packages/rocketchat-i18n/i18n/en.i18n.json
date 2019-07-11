@@ -3002,6 +3002,8 @@
   "Uptime": "Uptime",
   "URL": "URL",
   "URL_room_prefix": "URL Room Prefix",
+  "Usage_Statistics_Enabled": "Detailed usage statistics",
+  "Usage_Statistics_Enabled_description": "Caution: Enabling this may increase load of the database significally",
   "Use_account_preference": "Use account preference",
   "Use_Emojis": "Use Emojis",
   "Use_Global_Settings": "Use Global Settings",

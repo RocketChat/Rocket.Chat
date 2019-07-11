@@ -3028,6 +3028,8 @@
   "Uptime": "Laufzeit",
   "URL": "URL",
   "URL_room_prefix": "URL-Präfix für Räume",
+  "Usage_Statistics_Enabled": "Detaillierte Nutzungsanalyse",
+  "Usage_Statistics_Enabled_description": "Achtung: Eine Aktivierung dieser Einstellung kann die Lastfür den Datenbankserver signifikant erhöhen",
   "Use_account_preference": "Kontoeinstellungen verwenden",
   "Use_Emojis": "Emojis verwenden",
   "Use_Global_Settings": "Globale Einstellungen verwenden",

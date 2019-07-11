@@ -147,7 +147,9 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
-	statistics.usages = getUsages();
+	if (settings.get('Usage_Statistics_Enabled')) {
+		statistics.usages = getUsages();
+	}
 
 	return statistics;
 };
