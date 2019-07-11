@@ -2014,6 +2014,7 @@
   "Message_AllowSnippeting": "Allow Message Snippeting",
   "Message_AllowStarring": "Allow Message Starring",
   "Message_AllowUnrecognizedSlashCommand": "Allow Unrecognized Slash Commands",
+  "Message_Already_Sent": "This message has already been sent and is being processed by the server",
   "Message_AlwaysSearchRegExp": "Always Search Using RegExp",
   "Message_AlwaysSearchRegExp_Description": "We recommend to set `True` if your language is not supported on <a target=\"_blank\" href=\"https://docs.mongodb.org/manual/reference/text-search-languages/#text-search-languages\">MongoDB text search</a>.",
   "Message_Attachments": "Message Attachments",

@@ -198,6 +198,10 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			}, message);
 			message._id = _id;
 		} else {
+			const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
+			if (messageAlreadyExists) {
+				return;
+			}
 			message._id = Messages.insert(message);
 		}
 
