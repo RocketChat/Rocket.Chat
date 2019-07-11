@@ -35,15 +35,17 @@ Tracker.autorun(() => {
 			const walker = document.createTreeWalker(
 				checkEmojiOnly,
 				NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-				(node) => {
-					if (node.nodeType === Node.ELEMENT_NODE && (
-						node.classList.contains('emojione')
-						|| node.classList.contains('emoji')
-					)) {
-						return NodeFilter.FILTER_REJECT;
-					} // else
-					return NodeFilter.FILTER_ACCEPT;
-				}
+				{
+					acceptNode: (node) => {
+						if (node.nodeType === Node.ELEMENT_NODE && (
+							node.classList.contains('emojione')
+							|| node.classList.contains('emoji')
+						)) {
+							return NodeFilter.FILTER_REJECT;
+						}
+						return NodeFilter.FILTER_ACCEPT;
+					},
+				},
 			);
 
 			let hasText = false;
