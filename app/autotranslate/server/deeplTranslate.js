@@ -156,7 +156,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAtachment(attachment, targetLanguages) {
+	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
 		const query = `text=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
