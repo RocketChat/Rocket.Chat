@@ -47,7 +47,6 @@ import './views/app/photoswipe';
 import './components/icon';
 import './components/table.html';
 import './components/table';
-import './components/tabs.html';
 import './components/tabs';
 import './components/popupList.html';
 import './components/popupList';
