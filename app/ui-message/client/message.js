@@ -204,6 +204,10 @@ Template.message.helpers({
 			return 'own';
 		}
 	},
+	t() {
+		const { msg } = this;
+		return msg.t;
+	},
 	timestamp() {
 		const { msg } = this;
 		return +msg.ts;
