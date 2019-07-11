@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
@@ -41,5 +42,6 @@ Meteor.startup(function() {
 			{
 				_id: 'AutoTranslate_Enabled', value: true,
 			}],
+		secret: true,
 	});
 });

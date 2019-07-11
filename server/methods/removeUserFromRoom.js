@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
 import { callbacks } from '../../app/callbacks';
@@ -33,7 +34,7 @@ Meteor.methods({
 			});
 		}
 
-		const removedUser = Users.findOneByUsername(data.username);
+		const removedUser = Users.findOneByUsernameIgnoringCase(data.username);
 
 		const fromUser = Users.findOneById(fromId);
 

@@ -1,7 +1,8 @@
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../settings';
 import s from 'underscore.string';
+
 import { MessageTypes } from './MessageTypes';
+import { settings } from '../../settings';
 
 export const Message = {
 	parse(msg, language) {
@@ -9,10 +10,10 @@ export const Message = {
 		if (messageType) {
 			if (messageType.render) {
 				return messageType.render(msg);
-			} else if (messageType.template) {
+			} if (messageType.template) {
 				// Render message
 				return;
-			} else if (messageType.message) {
+			} if (messageType.message) {
 				if (!language && typeof localStorage !== 'undefined') {
 					language = localStorage.getItem('userLanguage');
 				}

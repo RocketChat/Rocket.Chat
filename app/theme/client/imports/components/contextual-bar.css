@@ -140,6 +140,7 @@
 @media (width <= 1100px) {
 	.contextual-bar {
 		position: absolute;
+		z-index: 10;
 		right: 0;
 	}
 

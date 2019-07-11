@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { hasPermission } from '../../../../authorization';
 import { OAuthApps, Users } from '../../../../models';
-import _ from 'underscore';
 
 Meteor.methods({
 	updateOAuthApp(applicationId, application) {
@@ -26,7 +27,7 @@ Meteor.methods({
 				name: application.name,
 				active: application.active,
 				redirectUri: application.redirectUri,
-				_updatedAt: new Date,
+				_updatedAt: new Date(),
 				_updatedBy: Users.findOne(this.userId, {
 					fields: {
 						username: 1,

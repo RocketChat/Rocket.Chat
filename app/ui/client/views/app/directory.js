@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { hasAllPermission } from '../../../../authorization/client';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
+
 import { timeAgo } from './helpers';
+import { hasAllPermission } from '../../../../authorization/client';
 import { t, roomTypes } from '../../../../utils';
 import { settings } from '../../../../settings';
 import { hasAtLeastOnePermission } from '../../../../authorization';
@@ -146,8 +147,8 @@ Template.directory.helpers({
 		}
 		return function(currentTarget) {
 			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
 			) {
 				return instance.page.set(instance.page.get() + 1);
 			}

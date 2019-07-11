@@ -4,19 +4,18 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+import semver from 'semver';
 
 import { isEmail, APIClient } from '../../../utils';
 import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
 import { modal } from '../../../ui-utils';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
-
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
-import semver from 'semver';
 import { SideNav } from '../../../ui-utils/client';
 
 function getApps(instance) {
@@ -28,6 +27,26 @@ function getApps(instance) {
 			console.log(e);
 			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 			return Promise.resolve({ app: undefined });
+		})
+		.then((remote) => {
+			if (!remote.app || !remote.app.bundledIn || remote.app.bundledIn.length === 0) {
+				return remote;
+			}
+
+			const requests = remote.app.bundledIn.map((bundledIn) => {
+				const request = APIClient.get(`apps/bundles/${ bundledIn.bundleId }/apps`);
+
+				return request
+					.catch((e) => {
+						console.log(e);
+						return remote;
+					}).then((data) => {
+						bundledIn.apps = data && data.apps.splice(0, 4);
+						return remote;
+					});
+			});
+
+			return Promise.all(requests).then(() => remote);
 		})
 		.then((remote) => {
 			appInfo.remote = remote.app;
@@ -62,6 +81,7 @@ function getApps(instance) {
 					appInfo.local.isPurchased = appInfo.remote.isPurchased;
 					appInfo.local.price = appInfo.remote.price;
 					appInfo.local.displayPrice = appInfo.remote.displayPrice;
+					appInfo.local.bundledIn = appInfo.remote.bundledIn;
 
 					if (semver.gt(appInfo.remote.version, appInfo.local.version) && (appInfo.remote.isPurchased || appInfo.remote.price <= 0)) {
 						appInfo.local.newVersion = appInfo.remote.version;
@@ -194,7 +214,7 @@ Template.apps.onDestroyed(function() {
 Template.appManage.helpers({
 	isEmail,
 	_(key, ...args) {
-		const options = (args.pop()).hash;
+		const options = args.pop().hash;
 		if (!_.isEmpty(args)) {
 			options.sprintf = args;
 		}
@@ -300,7 +320,7 @@ Template.appManage.helpers({
 	parseDescription(i18nDescription) {
 		const item = Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
 
-		item.tokens.forEach((t) => item.html = item.html.replace(t.token, t.text));
+		item.tokens.forEach((t) => { item.html = item.html.replace(t.token, t.text); });
 
 		return item.html;
 	},
@@ -320,6 +340,9 @@ Template.appManage.helpers({
 	},
 	renderMethods(methods) {
 		return methods.join('|').toUpperCase();
+	},
+	bundleAppNames(apps) {
+		return apps.map((app) => app.latest.name).join(', ');
 	},
 });
 
@@ -434,25 +457,24 @@ Template.appManage.events({
 			});
 
 			if (toSave.length === 0) {
-				throw 'Nothing to save..';
+				throw new Error('Nothing to save..');
 			}
 			const result = await APIClient.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
 			console.log('Updating results:', result);
 			result.updated.forEach((setting) => {
-				settings[setting.id].value = settings[setting.id].oldValue = setting.value;
+				settings[setting.id].value = setting.value;
+				settings[setting.id].oldValue = setting.value;
 			});
 			Object.keys(settings).forEach((k) => {
 				const setting = settings[k];
 				setting.hasChanged = false;
 			});
 			t.settings.set(settings);
-
 		} catch (e) {
 			console.log(e);
 		} finally {
 			t.loading.set(false);
 		}
-
 	},
 
 	'change input[type="checkbox"]': (e, t) => {
@@ -470,7 +492,7 @@ Template.appManage.events({
 		}
 	},
 
-	'change .rc-select__element' : (e, t) => {
+	'change .rc-select__element': (e, t) => {
 		const labelFor = $(e.currentTarget).attr('name');
 		const value = $(e.currentTarget).val();
 

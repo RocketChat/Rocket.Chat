@@ -3,10 +3,11 @@
  */
 
 import { TAPi18n } from 'meteor/tap:i18n';
-import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+
+import { AutoTranslate,	TranslationProviderRegistry } from './autotranslate';
+import { SystemLogger } from '../../logger/server';
 
 /**
  * Represents google translate class
@@ -57,35 +58,43 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @returns {object} code : value pair
 	 */
 	getSupportedLanguages(target) {
+		let supportedLanguages = {};
 		if (this.autoTranslateEnabled && this.apiKey) {
 			if (this.supportedLanguages[target]) {
 				return this.supportedLanguages[target];
 			}
 			let result;
-			const params = { key: this.apiKey };
+			const params = {
+				key: this.apiKey,
+			};
 			if (target) {
 				params.target = target;
 			}
 
 			try {
-				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
+				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
+					params,
+				});
 			} catch (e) {
 				if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
 					params.target = 'en';
 					target = 'en';
 					if (!this.supportedLanguages[target]) {
-						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
+						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
+							params,
+						});
 					}
 				}
 			} finally {
 				if (this.supportedLanguages[target]) {
-					return this.supportedLanguages[target];
+					supportedLanguages = this.supportedLanguages[target];
 				} else {
 					this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-					return this.supportedLanguages[target || 'en'];
+					supportedLanguages = this.supportedLanguages[target || 'en'];
 				}
 			}
 		}
+		return supportedLanguages;
 	}
 
 	/**
@@ -111,7 +120,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params: {
 						key: this.apiKey,
 						target: language,
-					}, query,
+					},
+					query,
 				});
 				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 					const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
@@ -129,9 +139,9 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @private
 	 * @param {object} attachment
 	 * @param {object} targetLanguages
-	 * @returns {object} translated messages for each target language
+	 * @returns {object} translated attachment descriptions for each target language
 	 */
-	_translateAtachment(attachment, targetLanguages) {
+	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
 		const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
@@ -144,7 +154,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params: {
 						key: this.apiKey,
 						target: language,
-					}, query,
+					},
+					query,
 				});
 				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
@@ -152,7 +163,6 @@ class GoogleAutoTranslate extends AutoTranslate {
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);
 			}
-
 		});
 		return translations;
 	}
@@ -160,4 +170,3 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 // Register Google translation provider.
 TranslationProviderRegistry.registerProvider(new GoogleAutoTranslate());
-

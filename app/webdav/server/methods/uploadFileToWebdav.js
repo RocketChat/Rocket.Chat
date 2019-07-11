@@ -1,9 +1,11 @@
+import stream from 'stream';
+
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../settings';
-import { WebdavAccounts } from '../../../models';
 import Future from 'fibers/future';
 import { createClient } from 'webdav';
-import stream from 'stream';
+
+import { settings } from '../../../settings';
+import { WebdavAccounts } from '../../../models';
 
 Meteor.methods({
 	async uploadFileToWebdav(accountId, fileData, name) {

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+
 import * as Mailer from '../../app/mailer';
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings';
@@ -34,7 +35,7 @@ Meteor.methods({
 		};
 
 		Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
-			return Mailer.replace(html, { Verification_Url:url, name: user.name });
+			return Mailer.replace(html, { Verification_Url: url, name: user.name });
 		};
 
 		try {
@@ -45,6 +46,5 @@ Meteor.methods({
 				message: error.message,
 			});
 		}
-
 	},
 });

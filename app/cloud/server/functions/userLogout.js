@@ -1,7 +1,8 @@
 import { HTTP } from 'meteor/http';
-import { Users } from '../../../models';
+
 import { userLoggedOut } from './userLoggedOut';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { Users } from '../../../models';
 import { settings } from '../../../settings';
 
 export function userLogout(userId) {

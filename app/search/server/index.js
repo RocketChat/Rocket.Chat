@@ -5,7 +5,6 @@ import './events/events.js';
 import './provider/defaultProvider.js';
 
 
-
 export {
 	searchProviderService,
 	SearchProvider,

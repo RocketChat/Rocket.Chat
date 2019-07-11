@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
 
@@ -19,7 +20,7 @@ function Leave(command, params, item) {
 		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__(error, null, Meteor.user().language),
 		});
 	}

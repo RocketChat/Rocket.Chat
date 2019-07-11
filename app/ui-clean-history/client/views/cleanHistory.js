@@ -4,11 +4,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import moment from 'moment';
+
 import { ChatRoom } from '../../../models';
 import { t, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import { modal, call } from '../../../ui-utils';
-import moment from 'moment';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -40,7 +41,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 const getTimeZoneOffset = function() {
 	const offset = new Date().getTimezoneOffset();
 	const absOffset = Math.abs(offset);
-	return `${ offset < 0 ? '+' : '-' }${ (`00${ Math.floor(absOffset / 60) }`).slice(-2) }:${ (`00${ (absOffset % 60) }`).slice(-2) }`;
+	return `${ offset < 0 ? '+' : '-' }${ `00${ Math.floor(absOffset / 60) }`.slice(-2) }:${ `00${ (absOffset % 60) }`.slice(-2) }`;
 };
 
 
@@ -149,7 +150,7 @@ Template.cleanHistory.onCreated(function() {
 
 	this.ac = new AutoComplete(
 		{
-			selector:{
+			selector: {
 				item: '.rc-popup-list__item',
 				container: '.rc-popup-list__list',
 			},
@@ -278,7 +279,6 @@ Template.cleanHistory.events({
 		instance.ignoreDiscussion.set(e.target.checked);
 	},
 	'click .js-prune'(e, instance) {
-
 		modal.open({
 			title: t('Are_you_sure'),
 			text: t('Prune_Modal'),
@@ -318,7 +318,7 @@ Template.cleanHistory.events({
 			let count = 0;
 			let result;
 			do {
-				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreDiscussion, metaCleanHistoryFilesOnly, users);
+				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreDiscussion, metaCleanHistoryFilesOnly, users); // eslint-disable-line no-await-in-loop
 				count += result;
 			} while (result === limit);
 

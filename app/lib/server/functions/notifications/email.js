@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
+
 import * as Mailer from '../../../../mailer';
 import { settings } from '../../../../settings';
 import { roomTypes } from '../../../../utils';
@@ -82,7 +83,7 @@ function getEmailContent({ message, user, room }) {
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
-	const username = settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
+	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
 	if (room.t === 'd') {
@@ -137,7 +138,6 @@ export function shouldNotifyEmail({
 	hasReplyToThread,
 	roomType,
 }) {
-
 	// use connected (don't need to send him an email)
 	if (statusConnection === 'online') {
 		return false;

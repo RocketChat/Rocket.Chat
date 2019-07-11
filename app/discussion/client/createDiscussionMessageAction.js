@@ -1,19 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { Subscriptions } from '../../models/client';
 import { settings } from '../../settings/client';
 import { hasPermission } from '../../authorization/client';
 import { MessageAction, modal } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { t } from '../../utils/client';
-
-const condition = (rid, uid) => {
-	if (!Subscriptions.findOne({ rid })) {
-		return false;
-	}
-	return uid !== Meteor.userId() ? hasPermission('start-discussion-other-user') : hasPermission('start-discussion');
-};
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
@@ -33,19 +25,25 @@ Meteor.startup(function() {
 					title: t('Discussion_title'),
 					modifier: 'modal',
 					content: 'CreateDiscussion',
-					data: { rid: message.rid, message, onCreate() {
-						modal.close();
-					} },
+					data: { rid: message.rid,
+						message,
+						onCreate() {
+							modal.close();
+						} },
 					confirmOnEnter: false,
 					showConfirmButton: false,
 					showCancelButton: false,
 				});
 			},
-			condition({ rid, u: { _id: uid }, drid, dcount }) {
+			condition({ msg: { u: { _id: uid }, drid, dcount }, subscription, u }) {
 				if (drid || !isNaN(dcount)) {
 					return false;
 				}
-				return condition(rid, uid);
+				if (!subscription) {
+					return false;
+				}
+
+				return uid !== u._id ? hasPermission('start-discussion-other-user') : hasPermission('start-discussion');
 			},
 			order: 0,
 			group: 'menu',

@@ -5,9 +5,8 @@ export const isSet = function(fn) {
 		value = fn();
 	} catch (e) {
 		value = undefined;
-	} finally {
-		return value !== undefined;
 	}
+	return value !== undefined;
 };
 
 export const isSetNotNull = function(fn) {
@@ -16,7 +15,6 @@ export const isSetNotNull = function(fn) {
 		value = fn();
 	} catch (e) {
 		value = null;
-	} finally {
-		return value !== null && value !== undefined;
 	}
+	return value !== null && value !== undefined;
 };

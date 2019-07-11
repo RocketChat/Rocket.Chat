@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { settings as rcSettings } from '../../../settings';
 
@@ -35,7 +36,5 @@ Meteor.methods({
 		settings.forEach((setting) => {
 			rcSettings.updateById(setting._id, setting.value);
 		});
-
-		return;
 	},
 });

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Base } from './_Base';
 
 const normalizePeers = (basePeers, options) => {

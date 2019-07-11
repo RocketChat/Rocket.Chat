@@ -26,15 +26,23 @@
 
 	display: none;
 
-	width: 100%;
-	max-width: 365px;
+	width: 365px;
+	max-width: 100%;
+
+	height: 300px;
+
+	margin-right: 22px;
+
+	padding-bottom: 0;
 
 	white-space: initial;
 
 	opacity: 1;
 
+	background-color: rgba(255, 255, 255, 0.98);
+
 	&.show {
-		display: block;
+		display: flex;
 	}
 
 	& .filter-list {
@@ -64,15 +72,18 @@
 	}
 
 	& .emojis {
+		position: relative;
+
 		overflow-y: auto;
 
-		height: 160px;
+		flex: 1;
+
 		padding: 3px 0 0 2px;
 
 		& .emoji-list {
-			display: none;
+			margin: 0.5em 0;
 
-			& li {
+			& li.emoji-picker-item {
 				display: inline-block;
 
 				margin: 2px;
@@ -99,6 +110,18 @@
 	& .rc-input__icon {
 		left: 0.5rem;
 	}
+}
+
+.emoji-footer {
+	padding: 0.4rem;
+
+	text-align: center;
+
+	color: var(--rc-color-primary-light);
+
+	font-size: 12px;
+
+	font-weight: 500;
 }
 
 .emoji-top {

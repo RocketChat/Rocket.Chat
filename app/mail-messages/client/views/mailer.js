@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { settings } from '../../../settings';
 import { handleError } from '../../../utils';
-import toastr from 'toastr';
 import { SideNav } from '../../../ui-utils/client';
 
 Template.mailer.helpers({

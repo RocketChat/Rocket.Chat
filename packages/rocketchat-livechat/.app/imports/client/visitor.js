@@ -76,7 +76,6 @@ export default {
 		this.token.set(token);
 
 		Meteor.call('livechat:loginByToken', token, (err, result) => {
-
 			if (!result) {
 				return;
 			}

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { RoomTypeConfig, roomTypes, getUserPreference } from '../../utils';
 
 export class DiscussionRoomType extends RoomTypeConfig {

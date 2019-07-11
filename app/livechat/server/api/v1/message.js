@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
+
 import { Messages, Rooms, LivechatVisitors } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api';
@@ -95,7 +96,6 @@ API.v1.addRoute('livechat/message/:_id', {
 			}
 
 			return API.v1.success({ message });
-
 		} catch (e) {
 			return API.v1.failure(e.error);
 		}

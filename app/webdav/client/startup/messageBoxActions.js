@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { t } from '../../../utils';
 import { settings } from '../../../settings';
 import { messageBox, modal } from '../../../ui-utils';

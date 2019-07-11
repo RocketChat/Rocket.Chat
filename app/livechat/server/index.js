@@ -62,7 +62,6 @@ import './methods/sendTranscript';
 import './methods/getFirstRoomMessage';
 import '../lib/LivechatExternalMessage';
 import '../lib/LivechatInquiry';
-export { Livechat } from './lib/Livechat';
 import './lib/Analytics';
 import './lib/QueueMethods';
 import './lib/OfficeClock';
@@ -88,3 +87,5 @@ import './publications/livechatInquiries';
 import './publications/livechatOfficeHours';
 import './api';
 import './api/rest';
+
+export { Livechat } from './lib/Livechat';

@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Roles } from '../../../models';
-import { settings } from '../../../settings';
-import { Notifications } from '../../../notifications';
-import { hasPermission } from '../functions/hasPermission';
 import _ from 'underscore';
+
+import { Users, Roles } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Notifications } from '../../../notifications/server';
+import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	'authorization:addUserToRole'(roleName, username, scope) {
@@ -27,7 +28,7 @@ Meteor.methods({
 			});
 		}
 
-		const user = Users.findOneByUsername(username, {
+		const user = Users.findOneByUsernameIgnoringCase(username, {
 			fields: {
 				_id: 1,
 			},

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { settings } from '../../settings';
 import { CustomOAuth } from '../../custom-oauth';
 
@@ -11,7 +12,7 @@ const config = {
 		forLoggedInUser: ['services.gitlab'],
 		forOtherUsers: ['services.gitlab.username'],
 	},
-	accessTokenParam: 'private_token',
+	accessTokenParam: 'access_token',
 };
 
 const Gitlab = new CustomOAuth('gitlab', config);

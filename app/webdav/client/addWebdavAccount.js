@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { modal } from '../../ui-utils';
-import { t } from '../../utils';
 import _ from 'underscore';
 import toastr from 'toastr';
+
+import { modal } from '../../ui-utils';
+import { t } from '../../utils';
 
 Template.addWebdavAccount.helpers({
 	btnAddNewServer() {

@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from '../../../custom-oauth';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
+import { CustomOAuth } from '../../../custom-oauth';
 
 Meteor.startup(function() {
 	return ServiceConfiguration.configurations.find({
@@ -63,7 +64,7 @@ Template.loginServices.helpers({
 
 const longinMethods = {
 	'meteor-developer': 'MeteorDeveloperAccount',
-	linkedin: 'LinkedIn',
+	linkedin: 'Linkedin',
 };
 
 Template.loginServices.events({

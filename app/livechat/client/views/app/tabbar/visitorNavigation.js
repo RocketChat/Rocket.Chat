@@ -1,8 +1,9 @@
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
+import moment from 'moment';
+
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
-import moment from 'moment';
 import './visitorNavigation.html';
 
 const visitorNavigationHistory = new Mongo.Collection('visitor_navigation_history');

@@ -1,5 +1,6 @@
 // Every minute check if office closed
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings';
 import { Users, LivechatOfficeHour } from '../../../models';
 

@@ -13,7 +13,7 @@ import '../app/dolphin/client/login-button.css';
 import '../app/drupal/client/login-button.css';
 import '../app/e2e/client/stylesheets/e2e.less';
 import '../app/emoji-custom/assets/stylesheets/emojiCustomAdmin.css';
-import '../app/emoji-emojione/client/sprites.css';
+import '../app/emoji-emojione/client/emojione-sprites.css';
 import '../app/github-enterprise/client/github-enterprise-login-button.css';
 import '../app/gitlab/client/gitlab-login-button.css';
 import '../app/integrations/client/stylesheets/integrations.css';
