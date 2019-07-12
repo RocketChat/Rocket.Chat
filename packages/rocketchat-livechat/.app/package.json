@@ -24,7 +24,7 @@
     "autolinker": "^1.8.1",
     "bcrypt": "^3.0.2",
     "core-js": "^2.5.7",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.0",
     "meteor-node-stubs": "^0.4.1",
     "mime-db": "^1.37.0",
     "mime-type": "^3.0.7",
