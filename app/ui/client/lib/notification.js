@@ -15,6 +15,14 @@ import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { getAvatarAsPng } from '../../../ui-utils';
 import { promises } from '../../../promises/client';
 
+const MAX_NOTIFICATIONS = 3;
+const FIREFOX_TIMEOUT_MIN = 18000;
+const FIREFOX_TIMEOUT_MAX = 21000;
+const FIREFOX_NOTIFICATION_THROTTLING = 1000;
+
+let cachedNotifications = [];
+let creationThrottling = 0;
+
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
 
@@ -34,43 +42,7 @@ export const KonchatNotification = {
 		if (window.Notification && Notification.permission === 'granted') {
 			const message = { rid: notification.payload != null ? notification.payload.rid : undefined, msg: notification.text, notification: true };
 			return promises.run('onClientMessageReceived', message).then(function(message) {
-				const n = new Notification(notification.title, {
-					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
-					body: s.stripTags(message.msg),
-					tag: notification.payload._id,
-					silent: true,
-					canReply: true,
-				});
-
-				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
-				if (notificationDuration > 0) {
-					setTimeout(() => n.close(), notificationDuration * 1000);
-				}
-
-				if (notification.payload && notification.payload.rid) {
-					if (n.addEventListener) {
-						n.addEventListener('reply', ({ response }) =>
-							Meteor.call('sendMessage', {
-								_id: Random.id(),
-								rid: notification.payload.rid,
-								msg: response,
-							})
-						);
-					}
-
-					n.onclick = function() {
-						this.close();
-						window.focus();
-						switch (notification.payload.type) {
-							case 'd':
-								return FlowRouter.go('direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams);
-							case 'c':
-								return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
-							case 'p':
-								return FlowRouter.go('group', { name: notification.payload.name }, FlowRouter.current().queryParams);
-						}
-					};
-				}
+				createNotification(notification, message);
 			});
 		}
 	},
@@ -180,3 +152,96 @@ Meteor.startup(() => {
 		}
 	});
 });
+
+function createNotification(notification, message) {
+	const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
+	const infiniteDuration = notificationDuration == 0;
+
+	const n = new Notification(notification.title, {
+		icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
+		body: s.stripTags(message.msg),
+		tag: notification.payload._id,
+		silent: true,
+		canReply: true,
+		requireInteraction: infiniteDuration
+	});
+	n.timestamp = Date.now();
+
+	if (notificationDuration > 0) {
+		setTimeout(() => {
+			n.close();
+			const closedIndex = cachedNotifications.findIndex(cachedNotification => cachedNotification.message === message);
+			cachedNotifications.splice(closedIndex, 1);
+		}, notificationDuration * 1000);
+	} else {
+		n.onclose = function() {
+			// When closing, guess whether it closed by click or timeout
+			const closedAfter = Date.now() - n.timestamp;
+			if (closedAfter > FIREFOX_TIMEOUT_MIN && closedAfter < FIREFOX_TIMEOUT_MAX) {
+				refreshAllNotifications();
+			} else {
+				const closedIndex = cachedNotifications.findIndex(cachedNotification => cachedNotification.message === message);
+				cachedNotifications.splice(closedIndex, 1);
+			}
+		};
+	}
+
+	if (notification.payload && notification.payload.rid) {
+		if (n.addEventListener) {
+			n.addEventListener('reply', ({ response }) =>
+				Meteor.call('sendMessage', {
+					_id: Random.id(),
+					rid: notification.payload.rid,
+					msg: response,
+				})
+			);
+		}
+
+		n.onclick = function() {
+			// Close all notifications
+			cachedNotifications.forEach(stopNotification);
+			cachedNotifications = [];
+
+			// Open matching page
+			window.focus();
+			switch (notification.payload.type) {
+				case 'd':
+					return FlowRouter.go('direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams);
+				case 'c':
+					return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
+				case 'p':
+					return FlowRouter.go('group', { name: notification.payload.name }, FlowRouter.current().queryParams);
+			}
+		};
+	}
+
+	cachedNotifications.push({ notification, n, message });
+	const deleted = cachedNotifications.splice(0, cachedNotifications.length - MAX_NOTIFICATIONS);
+	deleted.forEach(stopNotification);
+}
+
+function stopNotification(cachedNotification) {
+	if (cachedNotification.n) {
+		cachedNotification.n.onclose = undefined;
+		cachedNotification.n.close();
+	}
+}
+
+function refreshAllNotifications() {
+	const oldCache = cachedNotifications;
+	cachedNotifications = []; // XXX We must copy/replace the array first because scheduling can edit the array at any time
+	oldCache.forEach(cachedNotification => {
+		stopNotification(cachedNotification);
+		scheduleCreateNotification(cachedNotification.notification, cachedNotification.message);
+	});
+}
+
+function scheduleCreateNotification(notification, message) {
+	if (creationThrottling > Date.now()) {
+		setTimeout(() => { createNotification(notification, message) }, creationThrottling - Date.now());
+	} else {
+		createNotification(notification, message);
+		creationThrottling = Date.now();
+	}
+	creationThrottling += FIREFOX_NOTIFICATION_THROTTLING;
+}
