@@ -2,12 +2,13 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
+
 import { TAPi18n } from 'meteor/tap:i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
+import { logger } from './logger';
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
 
 /**
  * DeepL translation service provider class representation.
@@ -142,7 +143,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
 			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+				logger.deepl.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -177,7 +178,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					}
 				}
 			} catch (e) {
-				SystemLogger.error('Error translating message attachment', e);
+				logger.deepl.error('Error translating message attachment', e);
 			}
 		});
 		return translations;
