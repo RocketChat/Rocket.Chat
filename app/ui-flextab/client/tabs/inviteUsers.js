@@ -138,9 +138,7 @@ Template.inviteUsers.onCreated(function() {
 	this.ac = new AutoComplete({
 		selector: {
 			item: '.rc-popup-list__item',
-			container: '.rc-popup-list__list',
 		},
-		position: 'fixed',
 		limit: 10,
 		inputDelay: 300,
 		rules: [{
