@@ -1,9 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+
 import { API } from '../../../../api';
 import { Users } from '../../../../models';
 import { FederatedUser } from '../../federatedResources';
 import { Federation } from '../..';
 
-API.v1.addRoute('federation.users', { authRequired: false }, {
+const routeMethods = {
 	get() {
 		if (!Federation.peerServer.enabled) {
 			return API.v1.failure('Not found');
@@ -45,4 +47,8 @@ API.v1.addRoute('federation.users', { authRequired: false }, {
 
 		return API.v1.success({ federatedUsers });
 	},
+};
+
+Meteor.startup(() => {
+	API.v1.addRoute('federation.users', { authRequired: false }, routeMethods);
 });
