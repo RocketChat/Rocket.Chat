@@ -4,7 +4,7 @@ import { API } from '../../../../api';
 import { FederationKeys } from '../../../../models';
 import { Federation } from '../..';
 
-API.v1.addRoute('federation.events', { authRequired: false }, {
+const routeMethods = {
 	post() {
 		if (!Federation.peerServer.enabled) {
 			return API.v1.failure('Not found');
@@ -112,4 +112,8 @@ API.v1.addRoute('federation.events', { authRequired: false }, {
 			return API.v1.failure(`Error handling event:${ e.t } - ${ err.toString() }`, err.error || 'unknown-error');
 		}
 	},
+};
+
+Meteor.startup(() => {
+	API.v1.addRoute('federation.events', { authRequired: false }, routeMethods);
 });
