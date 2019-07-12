@@ -13,9 +13,9 @@ import './methods/dashboard';
 import { addUser } from './methods/addUser';
 import { searchUsers } from './methods/searchUsers';
 import { ping } from './methods/ping';
-import { getWorkspaceAccessToken } from '../../cloud/server';
 import { FederationKeys } from '../../models';
 import { settings } from '../../settings';
+import { getConfig } from './config';
 
 const peerClient = new PeerClient();
 const peerDNS = new PeerDNS();
@@ -73,39 +73,7 @@ const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 
 	if (!_enabled) { return; }
 
-	// If it is enabled, check if the settings are there
-	const _uniqueId = settings.get('FEDERATION_Unique_Id');
-	const _domain = settings.get('FEDERATION_Domain');
-	const _discoveryMethod = settings.get('FEDERATION_Discovery_Method');
-	const _hubUrl = settings.get('FEDERATION_Hub_URL');
-	const _peerUrl = settings.get('Site_Url');
-
-	if (!_domain || !_discoveryMethod || !_hubUrl || !_peerUrl) {
-		SettingsUpdater.updateStatus('Could not enable, settings are not fully set');
-
-		logger.setup.error('Could not enable Federation, settings are not fully set');
-
-		return;
-	}
-
-	logger.setup.info('Updating settings...');
-
-	// Normalize the config values
-	const config = {
-		hub: {
-			active: _discoveryMethod === 'hub',
-			url: _hubUrl.replace(/\/+$/, ''),
-		},
-		peer: {
-			uniqueId: _uniqueId,
-			domain: _domain.replace('@', '').trim(),
-			url: _peerUrl.replace(/\/+$/, ''),
-			public_key: FederationKeys.getPublicKeyString(),
-		},
-		cloud: {
-			token: getWorkspaceAccessToken(),
-		},
-	};
+	const config = getConfig();
 
 	// If the settings are correctly set, let's update the configuration
 
