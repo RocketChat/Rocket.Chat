@@ -1,11 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-
 import { API } from '../../../../api';
 import { Users } from '../../../../models';
 import { FederatedUser } from '../../federatedResources';
 import { Federation } from '../..';
 
-const routeMethods = {
+API.v1.addRoute('federation.users', { authRequired: false }, {
 	get() {
 		if (!Federation.peerServer.enabled) {
 			return API.v1.failure('Not found');
@@ -47,8 +45,4 @@ const routeMethods = {
 
 		return API.v1.success({ federatedUsers });
 	},
-};
-
-Meteor.startup(() => {
-	API.v1.addRoute('federation.users', { authRequired: false }, routeMethods);
 });

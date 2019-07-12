@@ -5,7 +5,7 @@ import { Uploads } from '../../../../models';
 import { FileUpload } from '../../../../file-upload';
 import { Federation } from '../..';
 
-const routeMethods = {
+API.v1.addRoute('federation.uploads', { authRequired: false }, {
 	get() {
 		if (!Federation.peerServer.enabled) {
 			return API.v1.failure('Not found');
@@ -25,8 +25,4 @@ const routeMethods = {
 
 		return API.v1.success({ upload, buffer });
 	},
-};
-
-Meteor.startup(() => {
-	API.v1.addRoute('federation.uploads', { authRequired: false }, routeMethods);
 });
