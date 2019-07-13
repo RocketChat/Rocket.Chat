@@ -72,6 +72,7 @@ import './publications/room';
 import './publications/roomFiles';
 import './publications/roomFilesWithSearchText';
 import './publications/roomSubscriptionsByRole';
+import './publications/settings';
 import './publications/spotlight';
 import './publications/subscription';
 import './publications/userAutocomplete';
