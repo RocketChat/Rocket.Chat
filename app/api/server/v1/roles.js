@@ -74,7 +74,7 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			limit: count || 50,
 			sort: { username: 1 },
 			skip: offset,
-			fields: API.v1.limitedUserFieldsToExclude,
+			fields: { ...API.v1.limitedUserFieldsToExclude, ...API.v1.defaultFieldsToExclude },
 		}).fetch();
 		return API.v1.success({ users });
 	},
