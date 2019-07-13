@@ -11,6 +11,20 @@ import { Roles } from '../../../models';
 import { hasAllPermission } from '../hasPermission';
 import { modal } from '../../../ui-utils/client/lib/modal';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
+import { APIClient } from '../../../utils/client';
+
+const loadUsers = async (instance) => {
+	const limit = instance.limit.get();
+	const params = {
+		role: FlowRouter.getParam('name'),
+		count: limit,
+	};
+	if (instance.searchRoom.get()) {
+		params.roomId = instance.searchRoom.get();
+	}
+	const { users } = await APIClient.v1.get('roles.getUsersInRole', params);
+	instance.usersInRole.set(users);
+};
 
 Template.permissionsRole.helpers({
 	role() {
@@ -46,12 +60,12 @@ Template.permissionsRole.helpers({
 	},
 
 	hasUsers() {
-		return Template.instance().usersInRole.get() && Template.instance().usersInRole.get().count() > 0;
+		return Template.instance().usersInRole.get() && Template.instance().usersInRole.get().length > 0;
 	},
 
 	hasMore() {
 		const instance = Template.instance();
-		return instance.limit && instance.limit.get() <= instance.usersInRole.get().count();
+		return instance.limit && instance.usersInRole.get() && instance.limit.get() <= instance.usersInRole.get().length;
 	},
 
 	isLoading() {
@@ -100,7 +114,7 @@ Template.permissionsRole.helpers({
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
 					filter: {
-						exceptions: instance.usersInRole.get() && instance.usersInRole.get().fetch(),
+						exceptions: instance.usersInRole.get(),
 					},
 					selector(match) {
 						return {
@@ -128,11 +142,12 @@ Template.permissionsRole.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('authorization:removeUserFromRole', FlowRouter.getParam('name'), this.username, instance.searchRoom.get(), function(error/* , result*/) {
+			Meteor.call('authorization:removeUserFromRole', FlowRouter.getParam('name'), this.username, instance.searchRoom.get(), async function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
 
+				await loadUsers(instance);
 				modal.open({
 					title: t('Removed'),
 					text: t('User_removed'),
@@ -184,12 +199,12 @@ Template.permissionsRole.events({
 		const oldBtnValue = e.currentTarget.elements.add.value;
 		e.currentTarget.elements.add.value = t('Saving');
 
-		Meteor.call('authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements.username.value, instance.searchRoom.get(), (error/* , result*/) => {
+		Meteor.call('authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements.username.value, instance.searchRoom.get(), async (error/* , result*/) => {
 			e.currentTarget.elements.add.value = oldBtnValue;
 			if (error) {
 				return handleError(error);
 			}
-			instance.subscribe('usersInRole', FlowRouter.getParam('name'), instance.searchRoom.get());
+			await loadUsers(instance);
 			toastr.success(t('User_added'));
 			e.currentTarget.reset();
 		});
@@ -214,41 +229,27 @@ Template.permissionsRole.events({
 		});
 	},
 
-	'click .load-more'(e, t) {
+	async 'click .load-more'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);
+		await loadUsers(t);
 	},
 
-	'autocompleteselect input[name=room]'(event, template, doc) {
+	async 'autocompleteselect input[name=room]'(event, template, doc) {
 		template.searchRoom.set(doc._id);
+		await loadUsers(template);
 	},
 });
 
-Template.permissionsRole.onCreated(function() {
+Template.permissionsRole.onCreated(async function() {
 	this.searchRoom = new ReactiveVar();
 	this.searchUsername = new ReactiveVar();
 	this.usersInRole = new ReactiveVar();
 	this.limit = new ReactiveVar(50);
 	this.ready = new ReactiveVar(true);
 	this.subscribe('roles', FlowRouter.getParam('name'));
-
-	this.autorun(() => {
-		if (this.searchRoom.get()) {
-			this.subscribe('roomSubscriptionsByRole', this.searchRoom.get(), FlowRouter.getParam('name'));
-		}
-
-		const limit = this.limit.get();
-
-		const subscription = this.subscribe('usersInRole', FlowRouter.getParam('name'), this.searchRoom.get(), limit);
-		this.ready.set(subscription.ready());
-
-		this.usersInRole.set(Roles.findUsersInRole(FlowRouter.getParam('name'), this.searchRoom.get(), {
-			sort: {
-				username: 1,
-			},
-		}));
-	});
+	await loadUsers(this);
 });
 
 Template.permissionsRole.onRendered(() => {
