@@ -195,7 +195,7 @@ Template.visitorInfo.helpers({
 		}
 
 		return isSubscribedToRoom();
-	}
+	},
 });
 
 Template.visitorInfo.events({

@@ -15,6 +15,6 @@ Meteor.publish('livechat:departments', function(filter = {}, limit = 50) {
 	if (filter && filter._id) {
 		return LivechatDepartment.findByDepartmentId(filter._id);
 	}
-	
+
 	return LivechatDepartment.find({}, { limit });
 });
