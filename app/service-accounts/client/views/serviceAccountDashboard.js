@@ -50,9 +50,7 @@ Template.serviceAccountDashboard.helpers({
 Template.serviceAccountDashboard.events({
 	'click .accept-service-account'(e) {
 		e.preventDefault();
-		Meteor.call('authorization:addUserToRole', 'service-account-approved', this.u.username, null, success(() => {
-			Meteor.call('setUserActiveStatus', this._id, true, success(() => toastr.success(t('User_has_been_activated'))));
-		}));
+		Meteor.call('setUserActiveStatus', this._id, true, success(() => toastr.success(t('User_has_been_activated'))));
 	},
 	'click .reject-service-account'(e) {
 		e.preventDefault();

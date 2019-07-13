@@ -5,7 +5,7 @@ import _ from 'underscore';
 import { saveUser, checkUsernameAvailability } from '../../../lib/server/functions';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
-import { hasPermission, hasRole } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	addServiceAccount(userData) {
@@ -49,7 +49,7 @@ Meteor.methods({
 		userData.joinDefaultChannels = false;
 		userData.roles = ['user'];
 
-		userData.active = hasRole(user._id, 'service-account-approved');
+		userData.active = !settings.get('Service_accounts_approval_required');
 		return saveUser(Meteor.userId(), userData);
 	},
 });
