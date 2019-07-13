@@ -26,7 +26,24 @@
 			</div>
 		</form>
 		<div class="rc-table-content">
-			{{#table fixed='true'}}
+			<form class="search-form" role="form">
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{#if isReady}}
+							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+						{{else}}
+							{{> loading }}
+						{{/if}}
+					</div>
+					<input id="managers-filter" type="text" class="rc-input__element"
+							placeholder="{{_ "Search"}}" autofocus dir="auto">
+				</div>
+			</form>
+			<div class="results">
+				{{{_ "Showing_results" managers.length}}}
+			</div>
+
+			{{#table fixed='true' onScroll=onTableScroll}}
 				<thead>
 					<tr>
 						<th><div class="table-fake-th">{{_ "Name"}}</div></th>

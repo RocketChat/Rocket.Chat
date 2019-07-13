@@ -79,6 +79,8 @@ Template.livechatAgents.helpers({
 	},
 });
 
+const DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS = 300;
+
 Template.livechatAgents.events({
 	'click .remove-agent'(e /* , instance*/) {
 		e.preventDefault();
@@ -133,6 +135,31 @@ Template.livechatAgents.events({
 			state.set('loading', false);
 		}
 	},
+	'keydown #agents-filter'(e) {
+		if (e.which === 13) {
+			e.stopPropagation();
+			e.preventDefault();
+		}
+	},
+	'keyup #agents-filter': _.debounce((e, t) => {
+		e.stopPropagation();
+		e.preventDefault();
+		t.filter.set(e.currentTarget.value);
+	}, DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS),
+	/*
+	'click .agent-info'(e, instance) {
+		e.preventDefault();
+		instance.tabBarData.set(FullUser.findOne(this._id));
+		instance.tabBar.open('admin-user-info');
+	},
+	'click .info-tabs button'(e) {
+		e.preventDefault();
+		$('.info-tabs button').removeClass('active');
+		$(e.currentTarget).addClass('active');
+		$('.user-info-content').hide();
+		$($(e.currentTarget).attr('href')).show();
+	},
+	*/
 });
 
 Template.livechatAgents.onCreated(function() {
@@ -175,34 +202,4 @@ Template.livechatAgents.onCreated(function() {
 		const limit = instance.limit && instance.limit.get();
 		return AgentUsers.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
-});
-
-const DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS = 300;
-
-Template.livechatAgents.events({
-	'keydown #agents-filter'(e) {
-		if (e.which === 13) {
-			e.stopPropagation();
-			e.preventDefault();
-		}
-	},
-	'keyup #agents-filter': _.debounce((e, t) => {
-		e.stopPropagation();
-		e.preventDefault();
-		t.filter.set(e.currentTarget.value);
-	}, DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS),
-	/*
-	'click .agent-info'(e, instance) {
-		e.preventDefault();
-		instance.tabBarData.set(FullUser.findOne(this._id));
-		instance.tabBar.open('admin-user-info');
-	},
-	'click .info-tabs button'(e) {
-		e.preventDefault();
-		$('.info-tabs button').removeClass('active');
-		$(e.currentTarget).addClass('active');
-		$('.user-info-content').hide();
-		$($(e.currentTarget).attr('href')).show();
-	},
-	*/
 });

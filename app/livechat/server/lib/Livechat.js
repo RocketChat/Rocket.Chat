@@ -14,7 +14,19 @@ import { QueueMethods } from './QueueMethods';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Users, Rooms, LivechatRooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
+import {
+	Users,
+	Rooms,
+	LivechatRooms,
+	Messages,
+	Subscriptions,
+	Settings,
+	LivechatDepartmentAgents,
+	LivechatDepartment,
+	LivechatCustomField,
+	LivechatVisitors,
+	LivechatOfficeHour,
+} from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
@@ -927,6 +939,22 @@ export const Livechat = {
 				status,
 			});
 		});
+	},
+
+	allowAgentChangeServiceStatus(statusLivechat) {
+		if (!settings.get('Livechat_enable_office_hours')) {
+			return true;
+		}
+
+		if (settings.get('Livechat_allow_online_agents_outside_office_hours')) {
+			return true;
+		}
+
+		if (statusLivechat !== 'available') {
+			return true;
+		}
+
+		return LivechatOfficeHour.isNowWithinHours();
 	},
 };
 

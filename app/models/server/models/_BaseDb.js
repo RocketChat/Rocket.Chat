@@ -14,8 +14,6 @@ try {
 	console.log(e);
 }
 
-const isOplogEnabled = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
-
 export class BaseDb extends EventEmitter {
 	constructor(model, baseModel) {
 		super();
@@ -34,24 +32,30 @@ export class BaseDb extends EventEmitter {
 
 		this.wrapModel();
 
-		let alreadyListeningToOplog = false;
 		// When someone start listening for changes we start oplog if available
-		this.on('newListener', (event/* , listener*/) => {
-			if (event === 'change' && alreadyListeningToOplog === false) {
-				alreadyListeningToOplog = true;
-				if (isOplogEnabled) {
-					const query = {
-						collection: this.collectionName,
-					};
-
-					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
-					// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
-					if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-						MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
-					}
-				}
+		const handleListener = (event /* , listener*/) => {
+			if (event !== 'change') {
+				return;
 			}
-		});
+
+			this.removeListener('newListener', handleListener);
+
+			const query = {
+				collection: this.collectionName,
+			};
+
+			MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(
+				query,
+				this.processOplogRecord.bind(this)
+			);
+			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
+			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
+				MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(
+					Number.MAX_SAFE_INTEGER
+				);
+			}
+		};
+		this.on('newListener', handleListener);
 
 		this.tryEnsureIndex({ _updatedAt: 1 });
 	}

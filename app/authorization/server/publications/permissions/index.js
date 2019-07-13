@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import Permissions from '../../../models/server/models/Permissions';
-import { Notifications } from '../../../notifications';
+import Permissions from '../../../../models/server/models/Permissions';
+import './emitter';
 
 Meteor.methods({
 	'permissions/get'(updatedAt) {
@@ -19,19 +19,4 @@ Meteor.methods({
 
 		return records;
 	},
-});
-
-Permissions.on('change', ({ clientAction, id, data }) => {
-	switch (clientAction) {
-		case 'updated':
-		case 'inserted':
-			data = data || Permissions.findOneById(id);
-			break;
-
-		case 'removed':
-			data = { _id: id };
-			break;
-	}
-
-	Notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
 });
