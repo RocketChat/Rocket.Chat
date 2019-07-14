@@ -1,5 +1,5 @@
 import { settings } from '../../../settings';
-import { Users, Messages } from '../../../models';
+import {Users, Messages, UserRelations} from '../../../models';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
 
@@ -35,18 +35,30 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 			editedAt: 0,
 		};
 	}
-	let followingObject = {};
-	let following = [];
-	if ('following' in Users.findOneById(userId)) {
-		followingObject = Users.findOneById(userId).following;
-	}
-	if (Object.keys(followingObject).length === 0 && followingObject.constructor === Object) {
+	// let followingObject = {};
+	// let following = [];
+	// if ('following' in Users.findOneById(userId)) {
+	// 	followingObject = Users.findOneById(userId).following;
+	// }
+	// if (Object.keys(followingObject).length === 0 && followingObject.constructor === Object) {
+	// 	return {};
+	// }
+	//
+	//
+	// following = Object.keys(followingObject).map(function(key) {
+	// 	return { 'u._id': key };
+	// });
+
+	const following2 = UserRelations.find({ follower: userId }, { fields: { following: 1, _id: false } }).fetch();
+
+
+	if(following2.length === 0){
 		return {};
 	}
-
-
-	following = Object.keys(followingObject).map(function(key) {
-		return { 'u._id': key };
+	const following = [];
+	following2.forEach((fObject)=>{
+		delete Object.assign(fObject, {'u._id': fObject.following }).following;
+		following.push(fObject);
 	});
 
 
@@ -77,6 +89,8 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 			unreadNotLoaded = unreadMessages.count();
 		}
 	}
+
+	console.log(messages);
 
 	return {
 		messages,
