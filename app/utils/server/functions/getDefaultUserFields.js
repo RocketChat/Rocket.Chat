@@ -25,6 +25,4 @@ export const getDefaultUserFields = () => ({
 	'services.totp.enabled': 1,
 	statusLivechat: 1,
 	banners: 1,
-	followers: 1,
-	following: 1,
 });
