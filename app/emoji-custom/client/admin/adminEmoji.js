@@ -1,10 +1,11 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 import { Tracker } from 'meteor/tracker';
-import { EmojiCustom } from '../../../models';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import s from 'underscore.string';
+
+import { EmojiCustom } from '../../../models';
+import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 
 Template.adminEmoji.helpers({
 	searchText() {
@@ -39,6 +40,18 @@ Template.adminEmoji.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+		};
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if ((currentTarget.offsetHeight + currentTarget.scrollTop) < (currentTarget.scrollHeight - 100)) {
+				return;
+			}
+			if (Template.instance().limit.get() > Template.instance().customemoji().length) {
+				return false;
+			}
+			instance.limit.set(instance.limit.get() + 50);
 		};
 	},
 	onTableItemClick() {
@@ -79,13 +92,13 @@ Template.adminEmoji.onCreated(function() {
 	});
 
 	this.autorun(function() {
-		const limit = (instance.limit != null) ? instance.limit.get() : 0;
+		const limit = instance.limit != null ? instance.limit.get() : 0;
 		const subscription = instance.subscribe('fullEmojiData', '', limit);
 		instance.ready.set(subscription.ready());
 	});
 
 	this.customemoji = function() {
-		const filter = (instance.filter != null) ? s.trim(instance.filter.get()) : '';
+		const filter = instance.filter != null ? s.trim(instance.filter.get()) : '';
 
 		let query = {};
 
@@ -94,7 +107,7 @@ Template.adminEmoji.onCreated(function() {
 			query = { $or: [{ name: filterReg }, { aliases: filterReg }] };
 		}
 
-		const limit = (instance.limit != null) ? instance.limit.get() : 0;
+		const limit = instance.limit != null ? instance.limit.get() : 0;
 
 		return EmojiCustom.find(query, { limit, sort: { name: 1 } }).fetch();
 	};

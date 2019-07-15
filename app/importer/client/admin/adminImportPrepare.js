@@ -1,14 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+
 import { Importers } from '..';
+
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { hasRole } from '../../../authorization';
 import { settings } from '../../../settings';
 import { t, handleError, APIClient } from '../../../utils';
-import toastr from 'toastr';
 import { SideNav } from '../../../ui-utils/client';
 
 Template.adminImportPrepare.helpers({
@@ -250,7 +253,7 @@ Template.adminImportPrepare.onCreated(function() {
 	this.message_count = new ReactiveVar(0);
 
 	function loadSelection(progress) {
-		if ((progress != null ? progress.step : undefined)) {
+		if (progress != null ? progress.step : undefined) {
 			switch (progress.step) {
 				// When the import is running, take the user to the progress page
 				case 'importer_importing_started':
@@ -304,15 +307,13 @@ Template.adminImportPrepare.onCreated(function() {
 					instance.preparing.set(false);
 					return loadSelection(data);
 				});
-			} else {
-				// Otherwise, we might need to do something based upon the current step
-				// of the import
-				return loadSelection(progress);
 			}
+			// Otherwise, we might need to do something based upon the current step
+			// of the import
+			return loadSelection(progress);
 		});
-	} else {
-		return FlowRouter.go('/admin/import');
 	}
+	return FlowRouter.go('/admin/import');
 });
 
 Template.adminImportPrepare.onRendered(() => {

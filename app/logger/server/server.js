@@ -1,12 +1,14 @@
+import { EventEmitter } from 'events';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
-import { EventEmitter } from 'events';
-import { settings } from '../../settings';
-import { hasPermission } from '../../authorization';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { settings } from '../../settings';
+import { hasPermission } from '../../authorization';
 
 let Logger;
 
@@ -20,22 +22,26 @@ const LoggerManager = new class extends EventEmitter {
 		this.showFileAndLine = false;
 		this.logLevel = 0;
 	}
+
 	register(logger) {
-		if (!logger instanceof Logger) {
+		if (!(logger instanceof Logger)) {
 			return;
 		}
 		this.loggers[logger.name] = logger;
 		this.emit('register', logger);
 	}
+
 	addToQueue(logger, args) {
 		this.queue.push({
 			logger, args,
 		});
 	}
+
 	dispatchQueue() {
 		_.each(this.queue, (item) => item.logger._log.apply(item.logger, item.args));
 		this.clearQueue();
 	}
+
 	clearQueue() {
 		this.queue = [];
 	}
@@ -46,9 +52,9 @@ const LoggerManager = new class extends EventEmitter {
 
 	enable(dispatchQueue = false) {
 		this.enabled = true;
-		return (dispatchQueue === true) ? this.dispatchQueue() : this.clearQueue();
+		return dispatchQueue === true ? this.dispatchQueue() : this.clearQueue();
 	}
-};
+}();
 
 const defaultTypes = {
 	debug: {
@@ -160,6 +166,7 @@ class _Logger {
 
 		LoggerManager.register(this);
 	}
+
 	getPrefix(options) {
 		let prefix = `${ this.name } ➔ ${ options.method }`;
 		if (options.section) {
@@ -191,6 +198,7 @@ class _Logger {
 		}
 		return prefix;
 	}
+
 	_getCallerDetails() {
 		const getStack = () => {
 			// We do NOT use Error.prepareStackTrace here (a V8 extension that gets us a
@@ -207,7 +215,7 @@ class _Logger {
 		// looking for the first line outside the logging package (or an
 		// eval if we find that first)
 		let line = lines[0];
-		for (let index = 0, len = lines.length; index < len, index++; line = lines[index]) {
+		for (let index = 0, len = lines.length; index < len; index++, line = lines[index]) {
 			if (line.match(/^\s*at eval \(eval/)) {
 				return { file: 'eval' };
 			}
@@ -236,6 +244,7 @@ class _Logger {
 		}
 		return details;
 	}
+
 	makeABox(message, title) {
 		if (!_.isArray(message)) {
 			message = message.split('\n');
@@ -293,7 +302,6 @@ class _Logger {
 			box.forEach((line) => {
 				console.log(subPrefix, color ? line[color] : line);
 			});
-
 		} else {
 			options.arguments.unshift(prefix);
 			console.log.apply(console, options.arguments);
@@ -337,7 +345,7 @@ const StdOut = new class extends EventEmitter {
 		this.queue = [];
 		process.stdout.write = (...args) => {
 			write.apply(process.stdout, args);
-			const date = new Date;
+			const date = new Date();
 			const string = processString(args[0], date);
 			const item = {
 				id: Random.id(),
@@ -355,7 +363,7 @@ const StdOut = new class extends EventEmitter {
 			this.emit('write', string, item);
 		};
 	}
-};
+}();
 
 
 Meteor.publish('stdout', function() {

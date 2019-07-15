@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { Base } from './_Base';
 import { Match } from 'meteor/check';
+import _ from 'underscore';
+
+import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import _ from 'underscore';
 
 export class Subscriptions extends Base {
 	constructor(...args) {
@@ -350,7 +351,6 @@ export class Subscriptions extends Base {
 	}
 
 	findNotificationPreferencesByRoom(query/* { roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
-
 		return this._db.find(query, {
 			fields: {
 
@@ -445,7 +445,7 @@ export class Subscriptions extends Base {
 		const subscriptions = this.find(query).fetch();
 
 		const users = _.compact(_.map(subscriptions, function(subscription) {
-			if ('undefined' !== typeof subscription.u && 'undefined' !== typeof subscription.u._id) {
+			if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
 				return subscription.u._id;
 			}
 		}));
@@ -483,8 +483,7 @@ export class Subscriptions extends Base {
 
 	// FIND
 	findByUserId(userId, options) {
-		const query =
-			{ 'u._id': userId };
+		const query =			{ 'u._id': userId };
 
 		return this.find(query, options);
 	}
@@ -550,8 +549,7 @@ export class Subscriptions extends Base {
 	}
 
 	findByRoomId(roomId, options) {
-		const query =
-			{ rid: roomId };
+		const query =			{ rid: roomId };
 
 		return this.find(query, options);
 	}
@@ -658,8 +656,7 @@ export class Subscriptions extends Base {
 
 	// UPDATE
 	archiveByRoomId(roomId) {
-		const query =
-			{ rid: roomId };
+		const query =			{ rid: roomId };
 
 		const update = {
 			$set: {
@@ -673,8 +670,7 @@ export class Subscriptions extends Base {
 	}
 
 	unarchiveByRoomId(roomId) {
-		const query =
-			{ rid: roomId };
+		const query =			{ rid: roomId };
 
 		const update = {
 			$set: {
@@ -731,7 +727,7 @@ export class Subscriptions extends Base {
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
-				ls: new Date,
+				ls: new Date(),
 			},
 		};
 
@@ -785,8 +781,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateNameAndAlertByRoomId(roomId, name, fname) {
-		const query =
-			{ rid: roomId };
+		const query =			{ rid: roomId };
 
 		const update = {
 			$set: {
@@ -800,8 +795,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateDisplayNameByRoomId(roomId, fname) {
-		const query =
-			{ rid: roomId };
+		const query =			{ rid: roomId };
 
 		const update = {
 			$set: {
@@ -814,8 +808,7 @@ export class Subscriptions extends Base {
 	}
 
 	setUserUsernameByUserId(userId, username) {
-		const query =
-			{ 'u._id': userId };
+		const query =			{ 'u._id': userId };
 
 		const update = {
 			$set: {
@@ -909,7 +902,7 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	ignoreUser({ _id, ignoredUser : ignored, ignore = true }) {
+	ignoreUser({ _id, ignoredUser: ignored, ignore = true }) {
 		const query = {
 			_id,
 		};
@@ -1023,8 +1016,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateTypeByRoomId(roomId, type) {
-		const query =
-			{ rid: roomId };
+		const query =			{ rid: roomId };
 
 		const update = {
 			$set: {
@@ -1036,8 +1028,7 @@ export class Subscriptions extends Base {
 	}
 
 	addRoleById(_id, role) {
-		const query =
-			{ _id };
+		const query =			{ _id };
 
 		const update = {
 			$addToSet: {
@@ -1049,8 +1040,7 @@ export class Subscriptions extends Base {
 	}
 
 	removeRoleById(_id, role) {
-		const query =
-			{ _id };
+		const query =			{ _id };
 
 		const update = {
 			$pull: {

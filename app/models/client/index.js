@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Base } from './models/_Base';
 import Avatars from './models/Avatars';
 import Uploads from './models/Uploads';
@@ -19,14 +21,13 @@ import { UserRoles } from './models/UserRoles';
 import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
 import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
+import CustomUserStatus from './models/CustomUserStatus';
 import EmojiCustom from './models/EmojiCustom';
-import _ from 'underscore';
 
 const Users = _.extend({}, users, Meteor.users);
 const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
 const Messages = _.extend({}, ChatMessage);
 const Rooms = _.extend({}, ChatRoom);
-
 
 export {
 	Base,
@@ -51,6 +52,7 @@ export {
 	ChatSubscription,
 	Rooms,
 	CustomSounds,
+	CustomUserStatus,
 	EmojiCustom,
 	WebdavAccounts,
 };

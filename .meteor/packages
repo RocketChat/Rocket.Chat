@@ -71,7 +71,6 @@ raix:handlebar-helpers
 rocketchat:push
 raix:ui-dropped-event
 todda00:friendly-slugs
-yasinuslu:blaze-meta
 
 tap:i18n
 underscore@1.0.10
@@ -84,7 +83,6 @@ accounts-base
 accounts-oauth
 autoupdate
 babel-compiler
-emojione:emojione@2.2.6
 google-oauth
 htmljs
 less

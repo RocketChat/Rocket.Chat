@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { Messages } from '../../app/models';
 import { settings } from '../../app/settings';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';

@@ -17,4 +17,3 @@ Migrations.add({
 		Settings.remove({ _id: 'GoogleSiteVerification_id' });
 	},
 });
-

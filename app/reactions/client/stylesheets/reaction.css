@@ -47,7 +47,6 @@
 			&.add-reaction {
 				visibility: hidden;
 
-				margin-left: 10px;
 				padding: 0 2px;
 
 				transition: opacity 0.2s ease;

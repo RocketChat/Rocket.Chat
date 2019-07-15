@@ -55,8 +55,7 @@ export class Settings extends Base {
 		};
 
 		if (ids.length > 0) {
-			filter._id =
-				{ $in: ids };
+			filter._id =				{ $in: ids };
 		}
 
 		return this.find(filter, { fields: { _id: 1, value: 1 } });
@@ -172,7 +171,7 @@ export class Settings extends Base {
 		const record = {
 			_id,
 			value,
-			_createdAt: new Date,
+			_createdAt: new Date(),
 		};
 
 		return this.insert(record);

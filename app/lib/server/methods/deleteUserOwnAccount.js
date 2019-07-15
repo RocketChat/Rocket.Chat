@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import s from 'underscore.string';
+
 import { settings } from '../../../settings';
 import { Users } from '../../../models';
 import { deleteUser } from '../functions';
-import s from 'underscore.string';
 
 Meteor.methods({
 	deleteUserOwnAccount(password) {
-
 		check(password, String);
 
 		if (!Meteor.userId()) {

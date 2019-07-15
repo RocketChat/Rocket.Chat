@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import _ from 'underscore';
+import moment from 'moment';
+
 import { hasPermission } from '../../../authorization';
 import { Users, Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { Message } from '../../../ui-utils';
-import _ from 'underscore';
-import moment from 'moment';
 import * as Mailer from '../../../mailer';
 
 Meteor.methods({

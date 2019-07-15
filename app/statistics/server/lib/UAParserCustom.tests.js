@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
+
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 
 const UAMobile = 'RC Mobile; iOS 12.2; v3.4.0 (250)';
@@ -8,9 +9,7 @@ const UADesktop = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/5
 const UAChrome = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36';
 
 describe('UAParserCustom', () => {
-
 	describe('UAParserMobile', () => {
-
 		it('should identify mobile UA', () => {
 			expect(UAParserMobile.isMobileApp(UAMobile)).to.be.true;
 		});
@@ -39,11 +38,9 @@ describe('UAParserCustom', () => {
 				},
 			});
 		});
-
 	});
 
 	describe('UAParserDesktop', () => {
-
 		it('should not identify mobile UA', () => {
 			expect(UAParserDesktop.isDesktopApp(UAMobile)).to.be.false;
 		});
@@ -71,7 +68,5 @@ describe('UAParserCustom', () => {
 				},
 			});
 		});
-
 	});
-
 });

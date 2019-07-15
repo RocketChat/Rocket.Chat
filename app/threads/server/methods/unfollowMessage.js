@@ -4,7 +4,6 @@ import { check } from 'meteor/check';
 import { Messages } from '../../../models/server';
 import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
-
 import { unfollow } from '../functions';
 
 Meteor.methods({

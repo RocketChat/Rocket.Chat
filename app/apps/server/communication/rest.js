@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { API } from '../../../api/server';
 import Busboy from 'busboy';
 
+import { API } from '../../../api/server';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
@@ -189,6 +189,28 @@ export class AppsRestApi {
 			},
 		});
 
+		this.api.addRoute('bundles/:id/apps', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+			get() {
+				const baseUrl = orchestrator.getMarketplaceUrl();
+
+				const headers = {};
+				const token = getWorkspaceAccessToken();
+				if (token) {
+					headers.Authorization = `Bearer ${ token }`;
+				}
+
+				const result = HTTP.get(`${ baseUrl }/v1/bundles/${ this.urlParams.id }/apps`, {
+					headers,
+				});
+
+				if (result.statusCode !== 200 || result.data.length === 0) {
+					return API.v1.failure();
+				}
+
+				return API.v1.success({ apps: result.data });
+			},
+		});
+
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				if (this.queryParams.marketplace && this.queryParams.version) {
@@ -238,9 +260,8 @@ export class AppsRestApi {
 					info.status = prl.getStatus();
 
 					return API.v1.success({ app: info });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
 				// TODO: Verify permissions
@@ -320,9 +341,8 @@ export class AppsRestApi {
 					info.status = prl.getStatus();
 
 					return API.v1.success({ app: info });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -334,9 +354,8 @@ export class AppsRestApi {
 					const info = prl.getInfo();
 
 					return API.v1.success({ iconFileContent: info.iconFileContent });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -348,9 +367,8 @@ export class AppsRestApi {
 					const languages = prl.getStorageItem().languageContent || {};
 
 					return API.v1.success({ languages });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -364,7 +382,7 @@ export class AppsRestApi {
 
 					const ourQuery = Object.assign({}, query, { appId: prl.getID() });
 					const options = {
-						sort: sort ? sort : { _updatedAt: -1 },
+						sort: sort || { _updatedAt: -1 },
 						skip: offset,
 						limit: count,
 						fields,
@@ -373,9 +391,8 @@ export class AppsRestApi {
 					const logs = Promise.await(orchestrator.getLogStorage().find(ourQuery, options));
 
 					return API.v1.success({ logs });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -393,9 +410,8 @@ export class AppsRestApi {
 					});
 
 					return API.v1.success({ settings });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
 				if (!this.bodyParams || !this.bodyParams.settings) {
@@ -432,11 +448,10 @@ export class AppsRestApi {
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
 						return API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
-					} else if (e.message.includes('No App found')) {
+					} if (e.message.includes('No App found')) {
 						return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
-					} else {
-						return API.v1.failure(e.message);
 					}
+					return API.v1.failure(e.message);
 				}
 			},
 			post() {
@@ -451,11 +466,10 @@ export class AppsRestApi {
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
 						return API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
-					} else if (e.message.includes('No App found')) {
+					} if (e.message.includes('No App found')) {
 						return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
-					} else {
-						return API.v1.failure(e.message);
 					}
+					return API.v1.failure(e.message);
 				}
 			},
 		});
@@ -468,9 +482,8 @@ export class AppsRestApi {
 					return API.v1.success({
 						apis: manager.apiManager.listApis(this.urlParams.id),
 					});
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -480,9 +493,8 @@ export class AppsRestApi {
 
 				if (prl) {
 					return API.v1.success({ status: prl.getStatus() });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
 				if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
@@ -495,9 +507,8 @@ export class AppsRestApi {
 					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
 
 					return API.v1.success({ status: result.getStatus() });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 	}

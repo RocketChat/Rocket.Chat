@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { settings } from '../../../settings';
 import { getUserPreference } from '../../../utils';
 import { Subscriptions, Users } from '../../../models';
@@ -23,13 +24,12 @@ const play = (audio) => {
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-
 		if (!settings.get('Livechat_continuous_sound_notification_new_livechat_room')) {
 			stop(audio);
 			return;
 		}
 
-		const subs = Subscriptions.find({ t: 'l', ls : { $exists: 0 }, open: true }).count();
+		const subs = Subscriptions.find({ t: 'l', ls: { $exists: 0 }, open: true }).count();
 		if (subs === 0) {
 			stop(audio);
 			return;
@@ -45,6 +45,5 @@ Meteor.startup(function() {
 
 		[audio] = $(`#${ newRoomNotification }`);
 		play(audio);
-
 	});
 });

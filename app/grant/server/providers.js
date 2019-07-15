@@ -18,7 +18,7 @@ class Providers extends Storage {
 	}
 }
 
-const providers = new Providers;
+const providers = new Providers();
 
 export default providers;
 

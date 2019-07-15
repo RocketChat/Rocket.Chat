@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
+
 import visitor from '../../imports/client/visitor';
 
 const firedTriggers = JSON.parse(localStorage.getItem('rocketChatFiredTriggers')) || [];

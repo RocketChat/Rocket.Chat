@@ -86,6 +86,65 @@
 
 			margin-right: 8px;
 		}
+
+		&__bundles {
+			display: flex;
+
+			padding-bottom: 20px;
+
+			border-bottom: 1.5px solid #efefef;
+		}
+
+		&__bundle {
+			display: flex;
+
+			width: 50%;
+		}
+
+		&__bundle_icons {
+			display: flex;
+			overflow: hidden;
+
+			min-width: 99px;
+			max-width: 99px;
+			height: 99px;
+
+			padding: 2px;
+
+			border-radius: 2px;
+
+			background-color: #e6e8eb;
+			flex-wrap: wrap;
+		}
+
+		&__bundle_icon {
+			min-width: 40px;
+			max-width: 40px;
+			height: 40px;
+
+			margin-top: 5px;
+			margin-left: 5px;
+
+			border-radius: 2px;
+
+			background-color: #f7f7f7;
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: contain;
+		}
+
+		&__bundle_body {
+			padding: 5px 10px;
+
+			color: #9da1a7;
+
+			&_title {
+				color: #151924;
+
+				font-size: 1.1em;
+				font-weight: 500;
+			}
+		}
 	}
 
 	.rc-apps-container {

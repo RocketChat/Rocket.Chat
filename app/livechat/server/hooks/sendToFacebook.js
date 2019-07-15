@@ -34,5 +34,4 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	});
 
 	return message;
-
 }, callbacks.priority.LOW, 'sendMessageToFacebook');

@@ -1,23 +1,22 @@
-import { VRecDialog } from './VRecDialog';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+
+import { VRecDialog } from './VRecDialog';
 import { VideoRecorder, fileUpload } from '../../ui';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
 		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recording.get()) {
 			return 'icon-stop';
-		} else {
-			return 'icon-circle';
 		}
+		return 'icon-circle';
 	},
 
 	okDisabled() {
 		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recordingAvailable.get()) {
 			return '';
-		} else {
-			return 'disabled';
 		}
+		return 'disabled';
 	},
 
 	recordDisabled() {

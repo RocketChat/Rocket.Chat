@@ -1,11 +1,11 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
-import { Settings } from '../../../models';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-
-import { statistics } from '../../../statistics';
 import { syncWorkspace } from './syncWorkspace';
+import { settings } from '../../../settings';
+import { Settings } from '../../../models';
+import { statistics } from '../../../statistics';
+
 
 export function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();

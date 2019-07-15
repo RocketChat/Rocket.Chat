@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../../settings';
-import { hasRole } from '../../../authorization';
 import toastr from 'toastr';
 
-Template.ChatpalAdmin.onCreated(function() {
+import { settings } from '../../../settings';
+import { hasRole } from '../../../authorization';
 
+Template.ChatpalAdmin.onCreated(function() {
 	const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	this.validateEmail = (email) => re.test(email.toLowerCase());
@@ -16,7 +16,7 @@ Template.ChatpalAdmin.onCreated(function() {
 
 	const lang = settings.get('Language');
 
-	this.lang = (lang === 'de' || lang === 'en') ? lang : 'en';
+	this.lang = lang === 'de' || lang === 'en' ? lang : 'en';
 
 	this.tac = new ReactiveVar();
 
@@ -45,7 +45,6 @@ Template.ChatpalAdmin.events({
 
 				t.apiKey.set(key);
 			});
-
 		} catch (e) {
 			console.log(e);
 			toastr.error(TAPi18n.__('Chatpal_ERROR_username_already_exists'));// TODO error messages

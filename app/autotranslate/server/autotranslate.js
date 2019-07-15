@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 class AutoTranslate {
 	constructor() {
@@ -146,7 +147,7 @@ class AutoTranslate {
 	deTokenize(message) {
 		if (message.tokens && message.tokens.length > 0) {
 			for (const { token, text, noHtml } of message.tokens) {
-				message.msg = message.msg.replace(token, () => (noHtml ? noHtml : text));
+				message.msg = message.msg.replace(token, () => noHtml || text);
 			}
 		}
 		return message.msg;
@@ -238,6 +239,10 @@ class AutoTranslate {
 				params.target = target;
 			}
 
+			if (this.supportedLanguages[target]) {
+				return this.supportedLanguages[target];
+			}
+
 			try {
 				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
 			} catch (e) {
@@ -248,14 +253,9 @@ class AutoTranslate {
 						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
 					}
 				}
-			} finally {
-				if (this.supportedLanguages[target]) {
-					return this.supportedLanguages[target];
-				} else {
-					this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-					return this.supportedLanguages[target || 'en'];
-				}
 			}
+			this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
+			return this.supportedLanguages[target || 'en'];
 		}
 	}
 }

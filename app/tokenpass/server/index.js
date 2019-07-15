@@ -3,8 +3,9 @@ import './startup';
 import './functions/getProtectedTokenpassBalances';
 import './functions/getPublicTokenpassBalances';
 import './functions/saveRoomTokensMinimumBalance';
-export { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
 import './methods/findTokenChannels';
 import './methods/getChannelTokenpass';
 import './cronRemoveUsers';
+
+export { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
 export { Tokenpass } from './Tokenpass';

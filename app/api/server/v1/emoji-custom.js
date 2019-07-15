@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import Busboy from 'busboy';
+
 import { EmojiCustom } from '../../../models';
 import { API } from '../api';
-import Busboy from 'busboy';
 
 // DEPRECATED
 // Will be removed after v1.12.0
@@ -121,7 +122,7 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 						if (!fields._id) {
 							return callback(new Meteor.Error('The required "_id" query param is missing.'));
 						}
-						const emojiToUpdate = EmojiCustom.findOneByID(fields._id);
+						const emojiToUpdate = EmojiCustom.findOneById(fields._id);
 						if (!emojiToUpdate) {
 							return callback(new Meteor.Error('Emoji not found.'));
 						}
@@ -140,7 +141,6 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 				}));
 				this.request.pipe(busboy);
 			})();
-
 		});
 	},
 });

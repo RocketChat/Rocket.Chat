@@ -1,11 +1,12 @@
 import { createJSAccountsGraphQL } from '@accounts/graphql-api';
-import { AccountsServer } from '../../../../accounts';
 import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
+
 
 // queries
 import * as oauthProviders from './oauthProviders';
 // types
 import * as OauthProviderType from './OauthProvider-type';
+import { AccountsServer } from '../../../../accounts';
 
 const accountsGraphQL = createJSAccountsGraphQL(AccountsServer);
 

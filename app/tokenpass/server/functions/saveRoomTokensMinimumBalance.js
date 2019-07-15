@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Rooms } from '../../../models';
 import s from 'underscore.string';
+
+import { Rooms } from '../../../models';
 
 export const saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalance) {
 	if (!Match.test(rid, String)) {

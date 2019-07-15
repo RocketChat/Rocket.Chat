@@ -2,6 +2,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+
 import { fileUploadHandler } from '../../../file-upload';
 import { settings } from '../../../settings';
 import { AudioRecorder } from '../../../ui';
@@ -88,7 +89,7 @@ const recordingRoomId = new ReactiveVar(null);
 Template.messageBoxAudioMessage.onCreated(function() {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
-	this.isMicrophoneDenied = new ReactiveVar(true);
+	this.isMicrophoneDenied = new ReactiveVar(false);
 
 	if (navigator.permissions) {
 		navigator.permissions.query({ name: 'microphone' })
@@ -98,19 +99,17 @@ Template.messageBoxAudioMessage.onCreated(function() {
 					this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
 				};
 			});
-	} else {
-		this.isMicrophoneDenied.set(false);
 	}
 });
 
 Template.messageBoxAudioMessage.helpers({
 	isAllowed() {
-		return AudioRecorder.isSupported() &&
-			!Template.instance().isMicrophoneDenied.get() &&
-			settings.get('FileUpload_Enabled') &&
-			settings.get('Message_AudioRecorderEnabled') &&
-			(!settings.get('FileUpload_MediaTypeWhiteList') ||
-			settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
+		return AudioRecorder.isSupported()
+			&& !Template.instance().isMicrophoneDenied.get()
+			&& settings.get('FileUpload_Enabled')
+			&& settings.get('Message_AudioRecorderEnabled')
+			&& (!settings.get('FileUpload_MediaTypeWhiteList')
+				|| settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
 
 	stateClass() {
@@ -140,9 +139,9 @@ Template.messageBoxAudioMessage.events({
 		try {
 			await startRecording();
 
-			const startTime = new Date;
+			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {
-				const now = new Date;
+				const now = new Date();
 				const distance = (now.getTime() - startTime.getTime()) / 1000;
 				const minutes = Math.floor(distance / 60);
 				const seconds = Math.floor(distance % 60);
@@ -151,7 +150,6 @@ Template.messageBoxAudioMessage.events({
 			recordingRoomId.set(this.rid);
 		} catch (error) {
 			instance.state.set(null);
-			instance.isMicrophoneDenied.set(true);
 		}
 	},
 

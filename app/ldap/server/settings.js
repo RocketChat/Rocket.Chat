@@ -30,7 +30,7 @@ settings.addGroup('LDAP', function() {
 	this.add('LDAP_Port', '389', { type: 'string', enableQuery });
 	this.add('LDAP_Reconnect', false, { type: 'boolean', enableQuery });
 	this.add('LDAP_Encryption', 'plain', { type: 'select', values: [{ key: 'plain', i18nLabel: 'No_Encryption' }, { key: 'tls', i18nLabel: 'StartTLS' }, { key: 'ssl', i18nLabel: 'SSL/LDAPS' }], enableQuery });
-	this.add('LDAP_CA_Cert', '', { type: 'string', multiline: true, enableQuery: enableTLSQuery });
+	this.add('LDAP_CA_Cert', '', { type: 'string', multiline: true, enableQuery: enableTLSQuery, secret: true });
 	this.add('LDAP_Reject_Unauthorized', true, { type: 'boolean', enableQuery: enableTLSQuery });
 	this.add('LDAP_BaseDN', '', { type: 'string', enableQuery });
 	this.add('LDAP_Internal_Log_Level', 'disabled', {
@@ -49,8 +49,8 @@ settings.addGroup('LDAP', function() {
 
 	this.section('Authentication', function() {
 		this.add('LDAP_Authentication', false, { type: 'boolean', enableQuery });
-		this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication });
-		this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication });
+		this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication, secret: true });
+		this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication, secret: true });
 	});
 
 	this.section('Timeouts', function() {

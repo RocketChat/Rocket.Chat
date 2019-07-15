@@ -1,18 +1,20 @@
+import vm from 'vm';
+
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
-import * as Models from '../../../models';
 import { Restivus } from 'meteor/nimble:restivus';
-import { API } from '../../../api';
 import { Livechat } from 'meteor/rocketchat:livechat';
-import { processWebhookMessage } from '../../../lib';
-import { logger } from '../logger';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';
 import s from 'underscore.string';
-import vm from 'vm';
 import moment from 'moment';
+
+import { logger } from '../logger';
+import { processWebhookMessage } from '../../../lib';
+import { API } from '../../../api';
+import * as Models from '../../../models';
 
 const Api = new Restivus({
 	enableCors: true,
@@ -80,7 +82,8 @@ function buildSandbox(store = {}) {
 		Livechat,
 		Store: {
 			set(key, val) {
-				return store[key] = val;
+				store[key] = val;
+				return val;
 			},
 			get(key) {
 				return store[key];
@@ -98,7 +101,7 @@ function buildSandbox(store = {}) {
 			}
 		},
 	};
-	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = Models[k]);
+	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => { sandbox[k] = Models[k]; });
 	return { store, sandbox	};
 }
 
@@ -264,7 +267,7 @@ function executeIntegrationRest() {
 			if (!result) {
 				logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':] No data');
 				return API.v1.success();
-			} else if (result && result.error) {
+			} if (result && result.error) {
 				return API.v1.failure(result.error);
 			}
 
@@ -327,7 +330,7 @@ function integrationSampleRest() {
 				token: Random.id(24),
 				channel_id: Random.id(),
 				channel_name: 'general',
-				timestamp: new Date,
+				timestamp: new Date(),
 				user_id: Random.id(),
 				user_name: 'rocket.cat',
 				text: 'Sample text 1',
@@ -336,7 +339,7 @@ function integrationSampleRest() {
 				token: Random.id(24),
 				channel_id: Random.id(),
 				channel_name: 'general',
-				timestamp: new Date,
+				timestamp: new Date(),
 				user_id: Random.id(),
 				user_name: 'rocket.cat',
 				text: 'Sample text 2',
@@ -345,7 +348,7 @@ function integrationSampleRest() {
 				token: Random.id(24),
 				channel_id: Random.id(),
 				channel_name: 'general',
-				timestamp: new Date,
+				timestamp: new Date(),
 				user_id: Random.id(),
 				user_name: 'rocket.cat',
 				text: 'Sample text 3',

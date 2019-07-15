@@ -1,8 +1,9 @@
 import { HTTP } from 'meteor/http';
+
+import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
 export function getWorkspaceLicense() {
 	const token = getWorkspaceAccessToken();

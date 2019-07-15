@@ -5,29 +5,28 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
+import mem from 'mem';
+
 import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
+
+import _ from 'underscore';
+
 import { ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes, handleError } from '../../../utils';
-import _ from 'underscore';
 
 window.currentTracker = undefined;
 
-let loadingDom;
-function getDomOfLoading() {
-	if (loadingDom) {
-		return loadingDom;
-	}
-
-	loadingDom = document.createElement('div');
+const getDomOfLoading = mem(function getDomOfLoading() {
+	const loadingDom = document.createElement('div');
 	const contentAsFunc = (content) => () => content;
 
 	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
 	Blaze.render(template, loadingDom);
 
 	return loadingDom;
-}
+});
 
 function replaceCenterDomBy(dom) {
 	const mainNode = document.querySelector('.main-content');
@@ -65,22 +64,19 @@ export const openRoom = function(type, name) {
 					if (!error) {
 						RoomManager.close(type + name);
 						return openRoom('d', name);
-					} else {
-						Session.set('roomNotFound', { type, name, error });
-						BlazeLayout.render('main', { center: 'roomNotFound' });
-						return;
 					}
+					Session.set('roomNotFound', { type, name, error });
+					BlazeLayout.render('main', { center: 'roomNotFound' });
 				});
 			} else {
 				Meteor.call('getRoomByTypeAndName', type, name, function(error, record) {
 					if (error) {
 						Session.set('roomNotFound', { type, name, error });
 						return BlazeLayout.render('main', { center: 'roomNotFound' });
-					} else {
-						Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
-						RoomManager.close(type + name);
-						return openRoom(type, name);
 					}
+					Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
+					RoomManager.close(type + name);
+					return openRoom(type, name);
 				});
 			}
 			return;
@@ -101,8 +97,7 @@ export const openRoom = function(type, name) {
 		fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
 		Session.set('editRoomTitle', false);
-		RoomManager.updateMentionsMarksOfRoom(type + name);
-		Meteor.setTimeout(() => readMessage.readNow(), 2000);
+		setTimeout(() => readMessage.readNow(), 2000);
 		// KonchatNotification.removeRoomNotification(params._id)
 		// update user's room subscription
 		const sub = ChatSubscription.findOne({ rid: room._id });

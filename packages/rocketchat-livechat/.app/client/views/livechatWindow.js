@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import visitor from '../../imports/client/visitor';
 
 function showDepartments() {
@@ -30,7 +31,7 @@ Template.livechatWindow.helpers({
 		if (Session.get('triggered') || visitor.getId()) {
 			return false;
 		}
-		return (Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments()));
+		return Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments());
 	},
 	showSwitchDepartmentForm() {
 		return Livechat.showSwitchDepartmentForm;
@@ -78,7 +79,8 @@ Template.livechatWindow.events({
 			parentCall('stopDragWindow');
 			window.removeEventListener('mousemove', this.onDrag);
 			window.removeEventListener('mousedown', this.onDragStop);
-			this.onDrag = this.onDragStop = null;
+			this.onDrag = null;
+			this.onDragStop = null;
 		};
 
 		window.addEventListener('mousemove', this.onDrag);

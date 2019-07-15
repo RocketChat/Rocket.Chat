@@ -43,12 +43,9 @@ export function getMongoInfo() {
 
 		mongoVersion = version;
 		mongoStorageEngine = storageEngine.name;
-
 	} catch (e) {
 		return fallbackMongoInfo();
 	}
 
 	return { oplogEnabled, mongoVersion, mongoStorageEngine };
 }
-
-

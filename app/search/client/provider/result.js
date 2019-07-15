@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import _ from 'underscore';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
-
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
-import _ from 'underscore';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -40,9 +40,22 @@ Meteor.startup(function() {
 	});
 });
 
-Template.DefaultSearchResultTemplate.onCreated(function() {
-	const self = this;
+Template.DefaultSearchResultTemplate.onRendered(function() {
+	const list = this.firstNode.parentNode.querySelector('.rocket-default-search-results');
+	this.autorun(() => {
+		const result = this.data.result.get();
+		if (result && this.hasMore.get()) {
+			Tracker.afterFlush(() => {
+				if (list.scrollHeight <= list.offsetHeight) {
+					this.data.payload.limit = (this.data.payload.limit || this.pageSize) + this.pageSize;
+					this.data.search();
+				}
+			});
+		}
+	});
+});
 
+Template.DefaultSearchResultTemplate.onCreated(function() {
 	// paging
 	this.pageSize = this.data.settings.PageSize;
 
@@ -54,7 +67,7 @@ Template.DefaultSearchResultTemplate.onCreated(function() {
 
 	this.autorun(() => {
 		const result = this.data.result.get();
-		self.hasMore.set(!(result && result.message.docs.length < (self.data.payload.limit || self.pageSize)));
+		this.hasMore.set(!(result && result.message.docs.length < (this.data.payload.limit || this.pageSize)));
 	});
 });
 
@@ -64,7 +77,6 @@ Template.DefaultSearchResultTemplate.events({
 		t.data.payload.limit = t.pageSize;
 		t.data.result.set(undefined);
 		t.data.search();
-
 	},
 	'scroll .rocket-default-search-results': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight) && t.hasMore.get()) {
@@ -88,7 +100,7 @@ Template.DefaultSearchResultTemplate.helpers({
 		return Template.instance().hasMore.get();
 	},
 	message(msg) {
-		return { customClass: 'search', actionContext: 'search', ...msg };
+		return { customClass: 'search', actionContext: 'search', ...msg, groupable: false };
 	},
 	messageContext,
 });

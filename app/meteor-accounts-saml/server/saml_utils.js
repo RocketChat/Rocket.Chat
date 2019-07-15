@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import zlib from 'zlib';
-import xmlCrypto from 'xml-crypto';
 import crypto from 'crypto';
-import xmldom from 'xmldom';
 import querystring from 'querystring';
+
+import { Meteor } from 'meteor/meteor';
+import xmlCrypto from 'xml-crypto';
+import xmldom from 'xmldom';
 import xmlbuilder from 'xmlbuilder';
 import array2string from 'arraybuffer-to-string';
 import xmlenc from 'xml-encryption';
@@ -56,7 +57,7 @@ SAML.prototype.generateUniqueID = function() {
 	const chars = 'abcdef0123456789';
 	let uniqueID = 'id-';
 	for (let i = 0; i < 20; i++) {
-		uniqueID += chars.substr(Math.floor((Math.random() * 15)), 1);
+		uniqueID += chars.substr(Math.floor(Math.random() * 15), 1);
 	}
 	return uniqueID;
 };
@@ -87,19 +88,18 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 		id = this.options.id;
 	}
 
-	let request =
-		`<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
-			this.options.entryPoint }">` +
-		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>\n`;
+	let request =		`<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
+		this.options.entryPoint }">`
+		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>\n`;
 
 	if (this.options.identifierFormat) {
 		request += `<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="${ this.options.identifierFormat }" AllowCreate="true"></samlp:NameIDPolicy>\n`;
 	}
 
-	request +=
-		'<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="exact">' +
-		'<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n' +
-		'</samlp:AuthnRequest>';
+	request
+		+= '<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="exact">'
+		+ '<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n'
+		+ '</samlp:AuthnRequest>';
 
 	return request;
 };
@@ -109,15 +109,15 @@ SAML.prototype.generateLogoutResponse = function() {
 	const instant = this.generateInstant();
 
 
-	const response = `${ '<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  ' +
-		'ID="' }${ id }" ` +
-		'Version="2.0" ' +
-		`IssueInstant="${ instant }" ` +
-		`Destination="${ this.options.idpSLORedirectURL }" ` +
-		'>' +
-		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>` +
-		'<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>' +
-		'</samlp:LogoutResponse>';
+	const response = `${ '<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  '
+		+ 'ID="' }${ id }" `
+		+ 'Version="2.0" '
+		+ `IssueInstant="${ instant }" `
+		+ `Destination="${ this.options.idpSLORedirectURL }" `
+		+ '>'
+		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>`
+		+ '<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>'
+		+ '</samlp:LogoutResponse>';
 
 	debugLog('------- SAML Logout response -----------');
 	debugLog(response);
@@ -126,7 +126,6 @@ SAML.prototype.generateLogoutResponse = function() {
 		response,
 		id,
 	};
-
 };
 
 SAML.prototype.generateLogoutRequest = function(options) {
@@ -138,20 +137,20 @@ SAML.prototype.generateLogoutRequest = function(options) {
 	const id = `_${ this.generateUniqueID() }`;
 	const instant = this.generateInstant();
 
-	const request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  ' +
-		'ID="' }${ id }" ` +
-		'Version="2.0" ' +
-		`IssueInstant="${ instant }" ` +
-		`Destination="${ this.options.idpSLORedirectURL }" ` +
-		'>' +
-		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>` +
-		'<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ' +
-		'NameQualifier="http://id.init8.net:8080/openam" ' +
-		`SPNameQualifier="${ this.options.issuer }" ` +
-		`Format="${ this.options.identifierFormat }">${
-			options.nameID }</saml:NameID>` +
-		`<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">${ options.sessionIndex }</samlp:SessionIndex>` +
-		'</samlp:LogoutRequest>';
+	const request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  '
+		+ 'ID="' }${ id }" `
+		+ 'Version="2.0" '
+		+ `IssueInstant="${ instant }" `
+		+ `Destination="${ this.options.idpSLORedirectURL }" `
+		+ '>'
+		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>`
+		+ '<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" '
+		+ 'NameQualifier="http://id.init8.net:8080/openam" '
+		+ `SPNameQualifier="${ this.options.issuer }" `
+		+ `Format="${ this.options.identifierFormat }">${
+			options.nameID }</saml:NameID>`
+		+ `<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">${ options.sessionIndex }</samlp:SessionIndex>`
+		+ '</samlp:LogoutRequest>';
 
 	debugLog('------- SAML Logout request -----------');
 	debugLog(request);
@@ -246,10 +245,8 @@ SAML.prototype.requestToUrl = function(request, operation, callback) {
 		if (operation === 'logout') {
 			// in case of logout we want to be redirected back to the Meteor app.
 			return callback(null, target);
-
-		} else {
-			callback(null, target);
 		}
+		callback(null, target);
 	});
 };
 
@@ -290,7 +287,6 @@ SAML.prototype.validateStatus = function(doc) {
 	const statusNodes = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusCode');
 
 	if (statusNodes.length) {
-
 		const statusNode = statusNodes[0];
 		const statusMessage = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage')[0];
 
@@ -360,7 +356,6 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 			const nameID = nameIdNode.childNodes[0].nodeValue;
 
 			return callback(null, { idpSession, nameID });
-
 		} catch (e) {
 			debugLog(`Caught error: ${ e }`);
 
@@ -424,7 +419,7 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 				value = values[0].textContent;
 			} else {
 				value = [];
-				for (let j = 0;j < values.length;j++) {
+				for (let j = 0; j < values.length; j++) {
 					value.push(values[j].textContent);
 				}
 			}
@@ -553,7 +548,6 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 	if (authnStatement) {
 		if (authnStatement.hasAttribute('SessionIndex')) {
-
 			profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
 			debugLog(`Session Index: ${ profile.sessionIndex }`);
 		} else {
@@ -590,7 +584,6 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 let decryptionCert;
 SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
-
 	if (!decryptionCert) {
 		decryptionCert = this.options.privateCert;
 	}
