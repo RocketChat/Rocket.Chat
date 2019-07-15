@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { Rooms, Subscriptions/* , Users */ } from '../../../models';
+import { Rooms, Subscriptions } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 export const createLivechatRoom = (rid, name, guest, extraData) => {

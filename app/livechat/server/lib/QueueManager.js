@@ -3,7 +3,6 @@ import { Match, check } from 'meteor/check';
 
 import { Rooms } from '../../../models';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
-// import { settings } from '../../../settings';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { callbacks } from '../../../callbacks';
 import { RoutingManager } from './RoutingManager';
