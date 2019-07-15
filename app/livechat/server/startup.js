@@ -7,6 +7,7 @@ import { hasPermission, addRoomAccessValidator } from '../../authorization';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { LivechatInquiry } from '../lib/LivechatInquiry';
+import { RoutingManager } from './lib/RoutingManager';
 
 Meteor.startup(() => {
 	roomTypes.setRoomFind('l', (_id) => Rooms.findOneLivechatById(_id));
@@ -23,7 +24,9 @@ Meteor.startup(() => {
 	});
 
 	addRoomAccessValidator(function(room, user) {
-		if (settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
+		const { previewRoom } = RoutingManager.getConfig();
+		console.log('previewRoom = ', previewRoom);
+		if (!previewRoom) {
 			return;
 		}
 

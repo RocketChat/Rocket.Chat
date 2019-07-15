@@ -4,11 +4,9 @@ import _ from 'underscore';
 
 import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
-import { settings as rcSettings } from '../../../../settings';
 
 export function online() {
-	const onlineAgents = Livechat.getOnlineAgents();
-	return (onlineAgents && onlineAgents.count() > 0) || rcSettings.get('Livechat_guest_pool_with_no_agents');
+	return Livechat.online();
 }
 
 export function findTriggers() {
@@ -65,7 +63,7 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
-export function getRoom({ guest, rid, roomInfo, agent }) {
+export async function getRoom({ guest, rid, roomInfo, agent }, callback) {
 	const token = guest && guest.token;
 
 	const message = {
@@ -76,7 +74,8 @@ export function getRoom({ guest, rid, roomInfo, agent }) {
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo, agent);
+	const room = await Livechat.getRoom(guest, message, roomInfo, agent);
+	callback(null, room);
 }
 
 export function findAgent(agentId) {
