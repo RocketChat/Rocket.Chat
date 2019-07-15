@@ -3,7 +3,7 @@ import s from 'underscore.string';
 
 import { settings } from '../../../settings';
 
-let usernameBlackList = ['all', 'here'];
+let usernameBlackList = [];
 
 const toRegExp = (username) => new RegExp(`^${ s.escapeRegExp(username).trim() }$`, 'i');
 
