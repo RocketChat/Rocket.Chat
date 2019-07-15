@@ -2162,7 +2162,7 @@
   "Not_Imported_Messages_Title": "Der Import folgender Nachrichten schlug fehl",
   "Notification_Desktop_Default_For": "Desktop-Benachrichtigungen anzeigen für",
   "Notification_Duration": "Benachrichtigungsdauer",
-  "Notification_RequireInteraction": "Benachrichtigung erst nach Benutzerinteraktion ausblenden",
+  "Notification_RequireInteraction": "Benutzerinteraktion notwendig um Benachrichtigung auszublenden",
   "Notification_RequireInteraction_Description": "Verwendung nur mit Chrome Browser Version > 50 möglich. Verwendet den Parameter <i>requireInteraction</i> um die Anzeigedauer der Desktop-Benachrichtigung bis zur Benutzerinteraktion zu verlängern.",
   "Notification_Mobile_Default_For": "Mobile Benachrichtigungen anzeigen für",
   "Notifications": "Benachrichtigungen",
