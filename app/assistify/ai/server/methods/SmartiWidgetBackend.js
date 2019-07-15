@@ -181,6 +181,8 @@ Meteor.methods({
 	 * This method is triggered by the client in order to retrieve the most recent widget
 	 */
 	getSmartiUiScript() {
+		this.unblock(); // allow client to process subsequent method calls from the same client
+
 		if (!script) { // buffering
 			script = loadSmarti();
 			delayedReload();
