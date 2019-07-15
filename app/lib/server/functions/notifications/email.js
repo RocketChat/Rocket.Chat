@@ -83,7 +83,7 @@ function getEmailContent({ message, user, room }) {
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
-	const username = settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
+	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
 	if (room.t === 'd') {

@@ -116,17 +116,20 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
 
 		const eduPersonPrincipalName = loginResult.profile.eppn;
-		const fullName = loginResult.profile.cn || loginResult.profile.username || loginResult.profile.displayName;
+		const fullName = loginResult.profile.cn || loginResult.profile.displayName || loginResult.profile.username;
 
 		let eppnMatch = false;
+		let user = null;
 
 		// Check eppn
-		let user = Meteor.users.findOne({
-			eppn: eduPersonPrincipalName,
-		});
+		if (eduPersonPrincipalName) {
+			user = Meteor.users.findOne({
+				eppn: eduPersonPrincipalName,
+			});
 
-		if (user) {
-			eppnMatch = true;
+			if (user) {
+				eppnMatch = true;
+			}
 		}
 
 		// If eppn is not exist
