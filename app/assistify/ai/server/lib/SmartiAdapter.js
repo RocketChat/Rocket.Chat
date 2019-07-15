@@ -53,9 +53,8 @@ export class SmartiAdapter {
 	 * @param {String} rid
 	 */
 	static afterCreateChannel(rid) {
-		const room = Rooms.findOneById(rid);
-		SystemLogger.debug('Room created: ', room);
-		SmartiAdapter._createAndPostConversation(room);
+		SystemLogger.debug('Room created: ', rid);
+		SmartiAdapter._createAndPostConversation(rid);
 	}
 
 	/**
@@ -82,7 +81,7 @@ export class SmartiAdapter {
 					return; // we'll not sync direct messages to Smarti for the time being
 				}
 
-				conversationId = SmartiAdapter._createAndPostConversation(room).id;
+				conversationId = SmartiAdapter._createAndPostConversation(message.rid).id;
 			}
 
 			const requestBodyMessage = {
@@ -359,7 +358,7 @@ export class SmartiAdapter {
 			// trigger the syncronisation for the whole batch
 			roomsBatch.forEach((room) => {
 				SystemLogger.debug('Smarti syncing', room.name);
-				resyncFailed = resyncFailed || !SmartiAdapter._tryResync(room, ignoreSyncFlag); // we're in a loop. We should not process the next item if an earlier one failed
+				resyncFailed = resyncFailed || !SmartiAdapter._tryResync(room._id, ignoreSyncFlag); // we're in a loop. We should not process the next item if an earlier one failed
 			});
 
 			if (roomsBatch.length === 0) {
@@ -402,19 +401,19 @@ export class SmartiAdapter {
 	 * @param {String} rid - the id of the room to sync
 	 * @param {boolean} ignoreSyncFlag @see resync(ignoreSyncFlag)
 	 */
-	static _tryResync(room, ignoreSyncFlag) {
+	static _tryResync(roomId, ignoreSyncFlag) {
 		try {
-			SystemLogger.debug('Sync messages for room: ', room._id);
+			SystemLogger.debug('Sync messages for room: ', roomId);
 
 			const limit = parseInt(settings.get('Assistify_AI_Resync_Message_Limit')) || 1000;
 			const messageFindOptions = { sort: { ts: 1 }, limit };
 
 			// only resync rooms containing outdated messages, if a delta sync is requested
 			if (!ignoreSyncFlag || ignoreSyncFlag !== true) {
-				const unsync = Messages.find({ lastSync: { $exists: false }, rid: room._id, t: { $exists: false } }, messageFindOptions).count();
+				const unsync = Messages.find({ lastSync: { $exists: false }, rid: roomId, t: { $exists: false } }, messageFindOptions).count();
 				if (unsync === 0) {
 					SystemLogger.debug('Room is already in sync');
-					SmartiAdapter._markRoomAsSynced(room._id); // this method was asked to resync, but there's nothing to be done => update the sync-metadata
+					SmartiAdapter._markRoomAsSynced(roomId); // this method was asked to resync, but there's nothing to be done => update the sync-metadata
 					return true;
 				}
 
@@ -422,25 +421,25 @@ export class SmartiAdapter {
 			}
 
 			// delete convervation from Smarti, if already exists
-			const conversationId = SmartiAdapter.getConversationId(room._id);
+			const conversationId = SmartiAdapter.getConversationId(roomId);
 			if (conversationId) {
 				SystemLogger.debug(`Conversation found ${ conversationId } - delete and create new conversation`);
 				SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }`);
 			}
 
 			// get the messages of the room and create a conversation from it
-			const messages = Messages.find({ rid: room._id, t: { $exists: false } }, messageFindOptions).fetch();
-			const newSmartiConversation = SmartiAdapter._createAndPostConversation(room, messages);
+			const messages = Messages.find({ rid: roomId, t: { $exists: false } }, messageFindOptions).fetch();
+			const newSmartiConversation = SmartiAdapter._createAndPostConversation(roomId, messages);
 
 			// get the analysis result (synchronously), update the cache and notify rooms
 			// const analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ newSmartiConversation.id }/analysis`);
-			// SmartiAdapter.analysisCompleted(room._id, newSmartiConversation.id, analysisResult);
+			// SmartiAdapter.analysisCompleted(roomId, newSmartiConversation.id, analysisResult);
 			SystemLogger.debug(`Smarti analysis completed for conversation ${ newSmartiConversation.id }`);
 
 			for (let i = 0; i < messages.length; i++) {
 				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(messages[i]._id));
 			}
-			SmartiAdapter._markRoomAsSynced(room._id);
+			SmartiAdapter._markRoomAsSynced(roomId);
 
 			// finally it's done
 			return true;
@@ -458,7 +457,9 @@ export class SmartiAdapter {
 	 *
 	 * @throws {Meteor.Error} - if the conversation could not be created in Smarti
 	 */
-	static _createAndPostConversation(room, messages) {
+	static _createAndPostConversation(roomId, messages) {
+		const room = Rooms.findOneById(roomId);
+
 		// create the conversation "header/metadata"
 		const supportArea = SmartiAdapter._getSupportArea(room);
 		let userId = '';
