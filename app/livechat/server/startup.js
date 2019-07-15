@@ -25,7 +25,6 @@ Meteor.startup(() => {
 
 	addRoomAccessValidator(function(room, user) {
 		const { previewRoom } = RoutingManager.getConfig();
-		console.log('previewRoom = ', previewRoom);
 		if (!previewRoom) {
 			return;
 		}
