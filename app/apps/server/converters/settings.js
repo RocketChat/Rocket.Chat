@@ -8,7 +8,8 @@ export class AppSettingsConverter {
 	}
 
 	convertById(settingId) {
-		const setting = Settings.findOneNotHiddenById(settingId);
+		// const setting = Settings.findOneNotHiddenById(settingId);
+		const setting = Settings.findById(settingId).fetch()[0];
 
 		return this.convertToApp(setting);
 	}

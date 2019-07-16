@@ -111,7 +111,9 @@ export class AppsRestApi {
 					}
 
 					return API.v1.success({
-						url: `${ baseUrl }/apps/${ this.queryParams.appId }/${ this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : 'subscribe' }?workspaceId=${ workspaceId }&token=${ token }`,
+						url: `${ baseUrl }/apps/${ this.queryParams.appId }/${
+							this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : 'subscribe'
+						}?workspaceId=${ workspaceId }&token=${ token }`,
 					});
 				}
 
@@ -127,6 +129,7 @@ export class AppsRestApi {
 			},
 			post() {
 				let buff;
+				let marketplaceInfo;
 
 				if (this.bodyParams.url) {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
@@ -144,22 +147,48 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
-						headers,
-						npmRequestOptions: { encoding: null },
+					const downloadPromise = new Promise((resolve, reject) => {
+						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
+
+						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
+							headers,
+							npmRequestOptions: { encoding: null },
+						}, (error, result) => {
+							if (error) { reject(error); }
+
+							resolve(result);
+						});
 					});
 
-					if (result.statusCode !== 200) {
-						return API.v1.failure();
-					}
+					const marketplacePromise = new Promise((resolve, reject) => {
+						const token = getWorkspaceAccessToken();
 
-					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
-						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
-					}
+						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }?appVersion=${ this.bodyParams.version }`, {
+							headers: {
+								Authorization: `Bearer ${ token }`,
+								...headers,
+							},
+						}, (error, result) => {
+							if (error) { reject(error); }
 
-					buff = result.content;
+							resolve(result);
+						});
+					});
+
+
+					try {
+						const [downloadResult, marketplaceResult] = Promise.await(Promise.all([downloadPromise, marketplacePromise]));
+
+						if (!downloadResult.headers['content-type'] || downloadResult.headers['content-type'] !== 'application/zip') {
+							throw new Error('Invalid url. It doesn\'t exist or is not "application/zip".');
+						}
+
+						buff = downloadResult.content;
+						marketplaceInfo = marketplaceResult.data[0];
+					} catch (err) {
+						return API.v1.failure(err.message);
+					}
 				} else {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
@@ -172,20 +201,28 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff.toString('base64'), false));
+				const aff = Promise.await(manager.add(buff.toString('base64'), false, marketplaceInfo));
 				const info = aff.getAppInfo();
 
 				// If there are compiler errors, there won't be an App to get the status of
-				if (aff.getApp()) {
-					info.status = aff.getApp().getStatus();
-				} else {
-					info.status = 'compiler_error';
+				if (aff.hasStorageError()) {
+					return API.v1.failure({ status: 'storage_error', messages: aff.getStorageError() });
 				}
+
+				if (aff.getLicenseValidationResult().hasErrors) {
+					return API.v1.failure({ status: 'license_error', messages: aff.getLicenseValidationResult().getErrors() });
+				}
+
+				if (aff.getCompilerErrors().length) {
+					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
+				}
+
+				info.status = aff.getApp().getStatus();
 
 				return API.v1.success({
 					app: info,
 					implemented: aff.getImplementedInferfaces(),
-					compilerErrors: aff.getCompilerErrors(),
+					warnings: aff.getLicenseValidationResult().getWarnings(),
 				});
 			},
 		});
