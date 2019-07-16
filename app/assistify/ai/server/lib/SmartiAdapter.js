@@ -190,6 +190,7 @@ export class SmartiAdapter {
 		}
 	}
 
+
 	/**
 	 * Returns the cached conversationId from the analyzed conversations cache (model AssistifySmarti).
 	 * If the conversation is not cached it will be retrieved from Smarti's legacy/rocket.chat service.
@@ -198,7 +199,13 @@ export class SmartiAdapter {
 	 * @param {*} roomId - the room for which the Smarti conversationId shall be retrieved
 	 */
 	static getConversationId(roomId) {
-		let conversationId = null;
+		const cachedMapping = assistifySmarti.findOneByRoomId(roomId);
+		let conversationId = cachedMapping ? cachedMapping.conversationId : '';
+
+		if (conversationId) {
+			return conversationId;
+		}
+
 		// uncached conversation
 		SystemLogger.debug('Trying Smarti legacy service to retrieve conversation...');
 		const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ roomId }`, null, null, (error) => {
@@ -425,6 +432,9 @@ export class SmartiAdapter {
 			if (conversationId) {
 				SystemLogger.debug(`Conversation found ${ conversationId } - delete and create new conversation`);
 				SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }`);
+
+				// delete the cached mapping as well - else, we'll point to the wrong conversation lteron
+				assistifySmarti.removeByRoomId(roomId);
 			}
 
 			// get the messages of the room and create a conversation from it
