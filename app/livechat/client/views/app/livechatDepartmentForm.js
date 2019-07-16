@@ -6,6 +6,7 @@ import _ from 'underscore';
 import toastr from 'toastr';
 
 import { t, handleError } from '../../../../utils';
+import { hasPermission } from '../../../../authorization';
 import { AgentUsers } from '../../collections/AgentUsers';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';
@@ -60,40 +61,44 @@ Template.livechatDepartmentForm.events({
 		e.preventDefault();
 		const $btn = instance.$('button.save');
 
+		let departmentData;
+
 		const _id = $(e.currentTarget).data('id');
-		const enabled = instance.$('input[name=enabled]:checked').val();
-		const name = instance.$('input[name=name]').val();
-		const description = instance.$('textarea[name=description]').val();
-		const showOnRegistration = instance.$('input[name=showOnRegistration]:checked').val();
-		const email = instance.$('input[name=email]').val();
-		const showOnOfflineForm = instance.$('input[name=showOnOfflineForm]:checked').val();
 
-		if (enabled !== '1' && enabled !== '0') {
-			return toastr.error(t('Please_select_enabled_yes_or_no'));
-		}
+		if (hasPermission('manage-livechat-departments')) {
+			const enabled = instance.$('input[name=enabled]:checked').val();
+			const name = instance.$('input[name=name]').val();
+			const description = instance.$('textarea[name=description]').val();
+			const showOnRegistration = instance.$('input[name=showOnRegistration]:checked').val();
+			const email = instance.$('input[name=email]').val();
+			const showOnOfflineForm = instance.$('input[name=showOnOfflineForm]:checked').val();
 
-		if (name.trim() === '') {
-			return toastr.error(t('Please_fill_a_name'));
-		}
+			if (enabled !== '1' && enabled !== '0') {
+				return toastr.error(t('Please_select_enabled_yes_or_no'));
+			}
 
-		if (email.trim() === '' && showOnOfflineForm === '1') {
-			return toastr.error(t('Please_fill_an_email'));
+			if (name.trim() === '') {
+				return toastr.error(t('Please_fill_a_name'));
+			}
+
+			if (email.trim() === '' && showOnOfflineForm === '1') {
+				return toastr.error(t('Please_fill_an_email'));
+			}
+
+			departmentData = {
+				enabled: enabled === '1',
+				name: name.trim(),
+				description: description.trim(),
+				showOnRegistration: showOnRegistration === '1',
+				showOnOfflineForm: showOnOfflineForm === '1',
+				email: email.trim(),
+			};
 		}
 
 		const oldBtnValue = $btn.html();
 		$btn.html(t('Saving'));
 
-		const departmentData = {
-			enabled: enabled === '1',
-			name: name.trim(),
-			description: description.trim(),
-			showOnRegistration: showOnRegistration === '1',
-			showOnOfflineForm: showOnOfflineForm === '1',
-			email: email.trim(),
-		};
-
 		const departmentAgents = [];
-
 		instance.selectedAgents.get().forEach((agent) => {
 			agent.count = instance.$(`.count-${ agent.agentId }`).val();
 			agent.order = instance.$(`.order-${ agent.agentId }`).val();
@@ -101,7 +106,7 @@ Template.livechatDepartmentForm.events({
 			departmentAgents.push(agent);
 		});
 
-		Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, function(error/* , result*/) {
+		const callback = (error) => {
 			$btn.html(oldBtnValue);
 			if (error) {
 				return handleError(error);
@@ -109,7 +114,15 @@ Template.livechatDepartmentForm.events({
 
 			toastr.success(t('Saved'));
 			FlowRouter.go('livechat-departments');
-		});
+		};
+
+		if (hasPermission('manage-livechat-departments')) {
+			Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, callback);
+		} else if (hasPermission('add-livechat-department-agents')) {
+			Meteor.call('livechat:saveDepartmentAgents', _id, departmentAgents, callback);
+		} else {
+			throw new Error(t('error-not-authorized'));
+		}
 	},
 
 	'click .add-agent'(e, instance) {

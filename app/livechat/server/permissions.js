@@ -25,5 +25,10 @@ Meteor.startup(() => {
 		Permissions.createOrUpdate('view-livechat-analytics', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('view-livechat-queue', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('transfer-livechat-guest', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('manage-livechat-managers', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('manage-livechat-agents', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('manage-livechat-departments', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-departments', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('add-livechat-department-agents', ['livechat-manager', 'admin']);
 	}
 });

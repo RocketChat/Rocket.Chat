@@ -764,6 +764,23 @@ export const Livechat = {
 		LivechatRooms.removeByVisitorToken(token);
 	},
 
+	saveDepartmentAgents(_id, departmentAgents) {
+		check(_id, String);
+		check(departmentAgents, [
+			Match.ObjectIncluding({
+				agentId: String,
+				username: String,
+			}),
+		]);
+
+		const department = LivechatDepartment.findOneById(_id);
+		if (!department) {
+			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
+		}
+
+		return LivechatDepartment.createOrUpdateDepartment(_id, department, departmentAgents);
+	},
+
 	saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
 

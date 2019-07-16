@@ -1,9 +1,10 @@
 <template name="livechatDepartmentForm">
-	{{#requiresPermission 'view-livechat-manager'}}
+	{{#requiresPermission 'view-livechat-departments'}}
 		<form id="department-form" data-id="{{department._id}}">
 			<div class="rocket-form">
 				{{#if Template.subscriptionsReady}}
 					<fieldset>
+						{{#requiresPermission 'manage-livechat-departments'}}
 						<div class="input-line">
 							<label>{{_ "Enabled"}}</label>
 							<div>
@@ -43,7 +44,14 @@
 								<label><input type="radio" name="showOnOfflineForm" value="0" checked="{{showOnOfflineForm false}}" /> {{_ "No"}}</label>
 							</div>
 						</div>
-						<hr />
+							{{#requiresPermission 'add-livechat-department-agents'}}
+								<hr />
+							{{else}}
+							{{/requiresPermission}}
+						{{else}}
+						{{/requiresPermission}}
+
+						{{#requiresPermission 'add-livechat-department-agents'}}
 						<h2>{{_ "Agents"}}</h2>
 
 						<fieldset>
@@ -91,7 +99,8 @@
 							</div>
 
 						</fieldset>
-
+						{{else}}
+						{{/requiresPermission}}
 					</fieldset>
 					<div class="rc-button__group">
 						<button class="rc-button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>

@@ -1,5 +1,5 @@
 <template name="livechatDepartments">
-	{{#requiresPermission 'view-livechat-manager'}}
+	{{#requiresPermission 'view-livechat-departments'}}
 		<div class="rc-table-content">
 			<form class="search-form" role="form">
 				<div class="rc-input__wrapper">
@@ -38,14 +38,22 @@
 							<td>{{numAgents}}</td>
 							<td>{{#if enabled}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
 							<td>{{#if showOnRegistration}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
-							<td><a href="#remove" class="remove-department"><i class="icon-trash"></i></a></td>
+							<td>
+								{{#requiresPermission 'manage-livechat-departments'}}
+									<a href="#remove" class="remove-department"><i class="icon-trash"></i></a>
+								{{else}}
+								{{/requiresPermission}}
+							</td>
 						</tr>
 					{{/each}}
 				</tbody>
 			{{/table}}
 		</div>
-		<div class="rc-button__group">
-			<a href="{{pathFor 'livechat-department-new'}}" class="rc-button rc-button--primary">{{_ "New_Department"}}</a>
-		</div>
+		{{#requiresPermission 'manage-livechat-departments'}}
+			<div class="rc-button__group">
+				<a href="{{pathFor 'livechat-department-new'}}" class="rc-button rc-button--primary">{{_ "New_Department"}}</a>
+			</div>
+		{{else}}
+		{{/requiresPermission}}
 	{{/requiresPermission}}
 </template>

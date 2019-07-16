@@ -15,9 +15,9 @@ export const addSidebarItem = (title, slug, permission) => {
 addSidebarItem('Current_Chats', 'livechat-current-chats');
 addSidebarItem('Analytics', 'livechat-analytics');
 addSidebarItem('Real_Time_Monitoring', 'livechat-real-time-monitoring');
-addSidebarItem('Managers', 'livechat-managers', 'view-livechat-manager');
-addSidebarItem('Agents', 'livechat-agents', 'view-livechat-agents');
-addSidebarItem('Departments', 'livechat-departments');
+addSidebarItem('Managers', 'livechat-managers', 'manage-livechat-managers');
+addSidebarItem('Agents', 'livechat-agents', 'manage-livechat-agents');
+addSidebarItem('Departments', 'livechat-departments', 'view-livechat-departments');
 addSidebarItem('Triggers', 'livechat-triggers');
 addSidebarItem('Custom_Fields', 'livechat-customfields');
 addSidebarItem('Installation', 'livechat-installation');
