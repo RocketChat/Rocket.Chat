@@ -30,6 +30,10 @@ if (Meteor.isServer) {
 			return this.findOne({ rid });
 		}
 
+		getNextInquiryQueued() {
+			return this.findOne({ status: 'open' }, { sort: { ts: -1 } });
+		}
+
 		/*
 		* mark the inquiry as taken
 		*/
