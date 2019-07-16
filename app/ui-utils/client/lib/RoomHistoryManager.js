@@ -160,11 +160,13 @@ export const RoomHistoryManager = new class {
 			}
 
 			if (wrapper) {
-				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
-					return this.getMore(rid);
-				}
-				const heightDiff = wrapper.scrollHeight - previousHeight;
-				wrapper.scrollTop += heightDiff;
+				Tracker.afterFlush(() => {
+					if (wrapper.scrollHeight <= wrapper.offsetHeight) {
+						return this.getMore(rid);
+					}
+					const heightDiff = wrapper.scrollHeight - previousHeight;
+					wrapper.scrollTop += heightDiff;
+				});
 			}
 
 			room.isLoading.set(false);
