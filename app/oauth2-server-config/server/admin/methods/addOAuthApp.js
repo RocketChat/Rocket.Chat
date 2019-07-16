@@ -23,7 +23,7 @@ Meteor.methods({
 
 		application.redirectUri = parseUriList(application.redirectUri);
 
-		if (Array.isArray(application.redirectUri) && application.redirectUri.length === 0) {
+		if (application.redirectUri.length === 0) {
 			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', { method: 'addOAuthApp' });
 		}
 

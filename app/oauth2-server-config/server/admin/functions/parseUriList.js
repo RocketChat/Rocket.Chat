@@ -13,9 +13,5 @@ export const parseUriList = (userUri) => {
 		uriList.push(uri);
 	});
 
-	if (uriList.length === 1) {
-		return uriList.pop();
-	}
-
 	return uriList;
 };
