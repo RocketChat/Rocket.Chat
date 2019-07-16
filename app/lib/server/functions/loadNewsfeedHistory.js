@@ -1,5 +1,5 @@
 import { settings } from '../../../settings';
-import {Users, Messages, UserRelations} from '../../../models';
+import { Messages, UserRelations } from '../../../models';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
 
@@ -35,38 +35,25 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 			editedAt: 0,
 		};
 	}
-	// let followingObject = {};
-	// let following = [];
-	// if ('following' in Users.findOneById(userId)) {
-	// 	followingObject = Users.findOneById(userId).following;
-	// }
-	// if (Object.keys(followingObject).length === 0 && followingObject.constructor === Object) {
-	// 	return {};
-	// }
-	//
-	//
-	// following = Object.keys(followingObject).map(function(key) {
-	// 	return { 'u._id': key };
-	// });
 
 	const following2 = UserRelations.find({ follower: userId }, { fields: { following: 1, _id: false } }).fetch();
 
 
-	if(following2.length === 0){
+	if (following2.length === 0) {
 		return {};
 	}
 	const following = [];
-	following2.forEach((fObject)=>{
-		delete Object.assign(fObject, {'u._id': fObject.following }).following;
+	following2.forEach((fObject) => {
+		delete Object.assign(fObject, { 'u._id': fObject.following }).following;
 		following.push(fObject);
 	});
 
 
 	let records;
 	if (end != null) {
-		records = Messages.findVisibleByFollowingBeforeTimestampNotContainingTypes(following, end, hideMessagesOfType, options).fetch();
+		records = Messages.findVisibleByFollowingBeforeTimestampNotContainingTypes(userId, following, end, hideMessagesOfType, options).fetch();
 	} else {
-		records = Messages.findVisibleByFollowingNotContainingTypes(following, hideMessagesOfType, options).fetch();
+		records = Messages.findVisibleByFollowingNotContainingTypes(userId, following, hideMessagesOfType, options).fetch();
 	}
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
@@ -78,7 +65,7 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
 
-			const unreadMessages = Messages.findVisibleByFollowingBetweenTimestampsNotContainingTypes(following, ls, firstMessage.ts, hideMessagesOfType, {
+			const unreadMessages = Messages.findVisibleByFollowingBetweenTimestampsNotContainingTypes(userId, following, ls, firstMessage.ts, hideMessagesOfType, {
 				limit: 1,
 				sort: {
 					ts: 1,
@@ -89,8 +76,6 @@ export const loadNewsfeedHistory = function loadNewsfeedHistory({ userId, end, l
 			unreadNotLoaded = unreadMessages.count();
 		}
 	}
-
-	console.log(messages);
 
 	return {
 		messages,

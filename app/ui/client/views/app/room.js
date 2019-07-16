@@ -1096,14 +1096,14 @@ Template.room.onCreated(function() {
 	});
 	this.followingUsers = new ReactiveVar();
 
-	if (this.room.t === 'n'){
+	if (this.room.t === 'n') {
 		Meteor.call('getFollowing', Meteor.user().name, (err, res) => {
-			if(res.length === 0){
+			if (res.length === 0) {
 				return [];
 			}
 			const following = [];
-			res.forEach((fObject)=>{
-				delete Object.assign(fObject, {'u._id': fObject.following }).following;
+			res.forEach((fObject) => {
+				delete Object.assign(fObject, { 'u._id': fObject.following }).following;
 				following.push(fObject);
 			});
 			this.followingUsers.set(following);
