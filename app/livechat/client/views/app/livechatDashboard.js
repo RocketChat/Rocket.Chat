@@ -15,6 +15,12 @@ Template.livechatDashboard.helpers({
 	visitors() {
 		return Template.instance().users.get();
 	},
+	checkRegister(state) {
+		return state === 'registered';
+	},
+	totalVisitors() {
+		return Template.instance().users.get().length;
+	},
 });
 
 Template.livechatDashboard.events({
@@ -50,8 +56,15 @@ Template.livechatDashboard.onCreated(function() {
 			if (users && users.length > 0) {
 				users.map((val) => {
 					const currentTime = new moment();
-					const duration = moment.duration(currentTime.diff(val._updatedAt));
-					val.timeSince = `${ duration.get('hours') }:${ duration.get('minutes') }:${ duration.get('seconds') }`;
+					const duration = moment.duration(currentTime.diff(val.createdAt));
+					const hours = duration.get('hours');
+					const days = duration.get('days');
+					if (hours >= 23) {
+						val.timeSince = `${ days }days`;
+					} else {
+						val.timeSince = `${ hours }h:${ duration.get('minutes') }m:${ duration.get('seconds') }s`;
+					}
+
 					const room = LivechatRoom.findOne({ t: 'l', 'v.token': val.token });
 					if (room && room.servedBy) {
 						val.servedBy = room.servedBy;

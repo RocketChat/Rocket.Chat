@@ -26,6 +26,7 @@ import {
 	LivechatCustomField,
 	LivechatVisitors,
 	LivechatOfficeHour,
+	LivechatSessions,
 } from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
@@ -856,6 +857,26 @@ export const Livechat = {
 		}
 
 		return LivechatOfficeHour.isNowWithinHours();
+	},
+
+	updateVisitorSession(visitor = {}) {
+		return LivechatSessions.findOneVisitorAndUpdateSession(visitor);
+	},
+
+	updateVisitorState(token, state) {
+		return LivechatSessions.findOneVisitorByTokenAndUpdateState(token, state);
+	},
+
+	updateVisitorCount(token) {
+		return LivechatSessions.findOneVisitorByTokenAndUpdateCount(token);
+	},
+
+	getVisitorLocation(token) {
+		return LivechatSessions.findOneVisitorLocationByToken(token);
+	},
+
+	updateVisitorLocation(data = {}) {
+		return LivechatSessions.saveVisitorLocation(data);
 	},
 };
 

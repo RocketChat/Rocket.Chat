@@ -25,14 +25,14 @@ export class LivechatSessions extends Base {
 		return this.update(query, update);
 	}
 
-	findOneVisitorByTokenAndUpdateState(token) {
+	findOneVisitorByTokenAndUpdateState(token, state) {
 		const query = {
 			token,
 		};
 
 		const update = {
 			$set: {
-				state: 'active',
+				state,
 			},
 		};
 
@@ -67,7 +67,7 @@ export class LivechatSessions extends Base {
 		return this.insert({
 			token,
 			location,
-			ts: new Date(),
+			createdAt: new Date(),
 			count: 1,
 			state: 'idle',
 		});

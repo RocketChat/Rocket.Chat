@@ -14,10 +14,14 @@ Meteor.publish('livechat:location', function(filter = {}) {
 	}
 
 	check(filter, {
+		name: Match.Maybe(String), // Visitor name
 		state: Match.Maybe(String), // 'active', 'registered', or 'idle'
 	});
 
 	let query = {};
+	if (filter.name) {
+		query['visitorInfo.name'] = new RegExp(filter.name, 'i');
+	}
 	if (filter.state) {
 		if (filter.state === 'active') {
 			query.state = 'active';

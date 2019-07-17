@@ -3,13 +3,13 @@ import { check, Match } from 'meteor/check';
 import { API } from '../../../../api';
 import { Livechat } from '../../lib/Livechat';
 
-API.v1.addRoute('livechat/changeUserState/:token', {
+API.v1.addRoute('livechat/changeUserState/:token/:state', {
 	post() {
 		check(this.urlParams, {
 			token: String,
+			state: String,
 		});
-
-		return Livechat.updateVisitorState(this.urlParams.token);
+		return Livechat.updateVisitorState(this.urlParams.token, this.urlParams.state);
 	},
 });
 
