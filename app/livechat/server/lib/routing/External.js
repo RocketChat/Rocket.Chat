@@ -17,7 +17,6 @@ class ExternalQueue {
 	}
 
 	getNextAgent(department) {
-		console.log('ExternalQueue.getNextAgent');
 		for (let i = 0; i < 10; i++) {
 			try {
 				const queryString = department ? `?departmentId=${ department }` : '';
