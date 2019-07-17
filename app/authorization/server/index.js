@@ -22,6 +22,7 @@ import './methods/removeUserFromRole';
 import './methods/saveRole';
 import './publications/permissions';
 import './publications/roles';
+import './publications/usersInRole';
 import './startup';
 
 export {
