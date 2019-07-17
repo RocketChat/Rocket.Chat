@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+
 import { callbacks } from '../../callbacks';
+
 import { Template } from 'meteor/templating';
+
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
@@ -115,6 +118,7 @@ Template.roomList.helpers({
 
 		return !['unread', 'f'].includes(group.identifier) || (rooms.length || (rooms.count && rooms.count()));
 	},
+
 	roomType(room) {
 		if (room.header || room.identifier) {
 			return `type-${ room.header || room.identifier }`;
