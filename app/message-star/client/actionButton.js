@@ -63,7 +63,7 @@ Meteor.startup(function() {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred'],
+		context: ['starred', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
@@ -87,7 +87,7 @@ Meteor.startup(function() {
 		icon: 'permalink',
 		label: 'Get_link',
 		classes: 'clipboard',
-		context: ['starred'],
+		context: ['starred', 'threads'],
 		async action(event) {
 			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
