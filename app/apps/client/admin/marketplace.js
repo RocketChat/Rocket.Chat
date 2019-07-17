@@ -136,16 +136,16 @@ Template.marketplace.onCreated(function() {
 		apps.splice(index, 1);
 		instance.apps.set(apps);
 	};
+});
 
-	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+Template.marketplace.onCreated(function() {
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.onAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.onAppAdded);
 });
 
 Template.marketplace.onDestroyed(function() {
-	const instance = this;
-
-	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.onAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.onAppAdded);
 });
 
 Template.marketplace.helpers({
@@ -248,9 +248,6 @@ Template.marketplace.helpers({
 		const lastTier = plan.tiers[plan.tiers.length - 1];
 
 		return `$${ Number.parseFloat(lastTier.price).toFixed(2) }* / user / month`;
-	},
-	formatCategories(categories = []) {
-		return categories.join(', ');
 	},
 });
 

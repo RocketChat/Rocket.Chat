@@ -1,5 +1,5 @@
 <template name="marketplace">
-	<section class="rc-apps-marketplace">
+	<section class="rc-apps-section">
 		{{#header sectionName="Marketplace" hideHelp=true fixedHeight=true fullpage=true}}
 			{{#unless cloudLoggedIn}}
 			<button class="rc-button rc-button--small rc-button--primary rc-button--outline" data-button="login">
@@ -8,7 +8,7 @@
 			{{/unless}}
 		{{/header}}
 		<div class="rc-table-content">
-			<form class="js-search-form" role="form">
+			<form class="rc-form-filters js-search-form" role="form">
 				<div class="rc-input">
 					<div class="rc-input__icon">
 						{{#if isLoading}}
@@ -35,9 +35,13 @@
 								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</div>
 							</th>
 							<th class="rc-table-td">
-								<div class="table-fake-th">{{_ "Details"}} </div>
+								<div class="table-fake-th">{{_ "Details"}}</div>
 							</th>
 							<th class="rc-table-td--small rc-apps-marketplace-price">
+								<div class="table-fake-th">{{_ "Price"}}</div>
+							</th>
+							<th class="rc-table-td--small">
+								<div class="table-fake-th">{{_ "Status"}}</div>
 							</th>
 						</tr>
 					</thead>
@@ -76,8 +80,10 @@
 													{{latest.description}}
 												</span>
 											{{/if}}
-											<span class="rc-table-subtitle">
-												{{formatCategories latest.categories}}
+											<span class="rc-table-subtitle rc-apps-categories">
+												{{#each category in latest.categories}}
+												<span class="rc-apps-category">{{category}}</span>
+												{{/each}}
 											</span>
 										</div>
 									</div>
@@ -119,11 +125,12 @@
 										</div>
 									{{/if}}
 								</td>
+								<td>wtf</td>
 							</tr>
 						{{/each}}
 						{{#if isLoading}}
 							<tr>
-								<td colspan="3" style="position: relative;">{{> loading}}</td>
+								<td colspan="4" style="position: relative">{{> loading}}</td>
 							</tr>
 						{{/if}}
 					</tbody>
