@@ -60,7 +60,14 @@ API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 	get() {
 		const { roomId, role } = this.queryParams;
-		const { offset, count } = this.getPaginationItems();
+		const { offset, count = 50 } = this.getPaginationItems();
+
+		const fields = {
+			name: 1,
+			username: 1,
+			emails: 1,
+		};
+
 		if (!role) {
 			throw new Meteor.Error('error-param-not-provided', 'Query param "role" is required');
 		}
@@ -71,10 +78,10 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 		const users = getUsersInRole(role, roomId, {
-			limit: count || 50,
+			limit: count,
 			sort: { username: 1 },
 			skip: offset,
-			fields: { ...API.v1.limitedUserFieldsToExclude, ...API.v1.defaultFieldsToExclude },
+			fields,
 		}).fetch();
 		return API.v1.success({ users });
 	},
