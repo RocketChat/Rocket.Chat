@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { EmailReplyParser as reply } from 'emailreplyparser';
 import moment from 'moment';
 import base64 from 'base-64';
@@ -11,7 +12,6 @@ import { hasPermission } from '../../../authorization';
 import { sendMessage as _sendMessage } from '../functions';
 
 export const processDirectEmail = function(email) {
-
 	function _getMessage(email, userName, roomId) {
 		const message = {
 			ts: new Date(email.headers.date),
@@ -35,7 +35,7 @@ export const processDirectEmail = function(email) {
 
 		// the message might be base64 encoded, try to decode
 		try {
-			var bytes = base64.decode(message.msg);
+			const bytes = base64.decode(message.msg);
 			message.msg = utf8.decode(bytes);
 		} catch (e) {
 			// decoding the message has faild, take the original message
@@ -60,11 +60,8 @@ export const processDirectEmail = function(email) {
 	}
 
 	function _canWriteToRoom(roomId, user) {
-
-		room = Meteor.call('canAccessRoom', roomId, user._id);
-		if (!room) {
-			return false;
-		}
+		const room = Meteor.call('canAccessRoom', roomId, user._id);
+		if (!room) { return false; }
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 		if (subscription && (subscription.blocked || subscription.blocker)) {
@@ -91,14 +88,13 @@ export const processDirectEmail = function(email) {
 
 	/**
 	 * Creates a new message and sends it to the referenced room
-	 * 
-	 * @param {*} email 
+	 *
+	 * @param {*} email
 	 */
 	function createMessage(email) {
-
 		// get user
 		const user = _getUserByEmailaddress(email.headers.from);
-		if (!user) return false;
+		if (!user) { return false; }
 
 		// check room
 		let room = Rooms.findOneByNameAndType(email.headers.room, 'c');
@@ -116,11 +112,11 @@ export const processDirectEmail = function(email) {
 			});
 		}
 		room = _canWriteToRoom(room._id, user);
-		if (!room) return false;
+		if (!room) { return false; }
 
 		// create message
 		const message = _getMessage(email, user.name, room._id);
-		if (!message) return false;
+		if (!message) { return false; }
 
 		// send message
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
@@ -129,28 +125,27 @@ export const processDirectEmail = function(email) {
 
 	/**
 	 * Creates a new message and replies to the referenced message
-	 * @param {*} email 
+	 * @param {*} email
 	 */
 	function sendMessage(email) {
-
 		// get user
 		const user = _getUserByEmailaddress(email.headers.from);
-		if (!user) return false;
+		if (!user) { return false; }
 
 		// get prev messsage
 		const prevMessage = Messages.findOneById(email.headers.mid, {
 			rid: 1,
 			u: 1,
 		});
-		if (!prevMessage) return false;
+		if (!prevMessage) { return false; }
 
 		// check room
 		const room = _canWriteToRoom(prevMessage.rid, user);
-		if (!room) return false;
+		if (!room) { return false; }
 
 		// create message
 		const message = _getMessage(email, user.name, room._id);
-		if (!message) return false;
+		if (!message) { return false; }
 
 		// add reply info
 		const roomInfo = Rooms.findOneById(message.rid, {

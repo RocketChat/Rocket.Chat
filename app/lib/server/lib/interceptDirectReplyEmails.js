@@ -224,10 +224,6 @@ export class POP3Intercepter {
 	}
 
 	initialProcess(mail) {
-		let subject = undefined;
-		if (mail.headers.has('subject')) {
-			subject = mail.headers.get('subject');
-		}
 		const email = {
 			headers: {
 				from: mail.from.text,
