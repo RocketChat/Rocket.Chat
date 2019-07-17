@@ -115,7 +115,6 @@ export class IMAPIntercepter {
 							} else {
 								// parse headers
 								email.headers = IMAP.parseHeader(headerBuffer);
-
 								email.headers.to = email.headers.to[0];
 								email.headers.date = email.headers.date[0];
 								email.headers.from = email.headers.from[0];
@@ -126,9 +125,8 @@ export class IMAPIntercepter {
 
 					// On fetched each message, pass it further
 					msg.once('end', Meteor.bindEnvironment(() => {
-						processDirectEmail(email);
-						// delete message from inbox
-						if (this.delete) {
+						// process & delete message from inbox
+						if (processDirectEmail(email) && this.delete) {
 							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
 								if (err) { console.log(`Mark deleted error: ${ err }`); }
 							});
@@ -226,11 +224,16 @@ export class POP3Intercepter {
 	}
 
 	initialProcess(mail) {
+		let subject = undefined;
+		if (mail.headers.has('subject')) {
+			subject = mail.headers.get('subject');
+		}
 		const email = {
 			headers: {
 				from: mail.from.text,
 				to: mail.to.text,
 				date: mail.date,
+				subject: mail.subject.text,
 				'message-id': mail.messageId,
 			},
 			body: mail.text,
