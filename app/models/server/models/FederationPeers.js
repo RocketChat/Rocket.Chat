@@ -5,7 +5,7 @@ class FederationPeersModel extends Base {
 	constructor() {
 		super('federation_peers');
 
-		this.tryEnsureIndex({ active: 1, peer: 1 });
+		this.tryEnsureIndex({ active: 1, isRemote: 1 });
 	}
 
 	async refreshPeers(localIdentifier) {
