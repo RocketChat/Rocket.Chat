@@ -6,6 +6,7 @@ import toastr from 'toastr';
 
 import { modal } from '../../../ui-utils';
 import { t } from '../../../utils';
+import { handleError } from '../../../utils';
 import { Button } from '../../../ui';
 import { callbacks } from '../../../callbacks';
 
@@ -42,32 +43,30 @@ Template.resetPassword.events({
 		if (Meteor.userId() && !FlowRouter.getParam('token')) {
 			Meteor.call('setUserPassword', instance.find('[name=newPassword]').value, function(error) {
 				if (error) {
+					Button.reset(button);
 					console.log(error);
-					modal.open({
-						title: t('Error_changing_password'),
-						type: 'error',
-					});
+					handleError(error);
 				}
 			});
 		} else {
-			Accounts.resetPassword(FlowRouter.getParam('token'), instance.find('[name=newPassword]').value, function(error) {
-				Button.reset(button);
+			const newPassword = instance.find('[name=newPassword]').value;
+			Meteor.call('validatePassword', newPassword, function(error) {
 				if (error) {
+					Button.reset(button);
 					console.log(error);
-					if (error.error === 'totp-required') {
-						toastr.success(t('Password_changed_successfully'));
-						callbacks.run('userPasswordReset');
-						FlowRouter.go('login');
-					} else {
-						modal.open({
-							title: t('Error_changing_password'),
-							type: 'error',
-						});
-					}
+					handleError(error);
 				} else {
-					FlowRouter.go('home');
-					toastr.success(t('Password_changed_successfully'));
-					callbacks.run('userPasswordReset');
+					Accounts.resetPassword(FlowRouter.getParam('token'), newPassword, (error) => {
+						if (error.error === 'totp-required') {
+							toastr.success(t('Password_changed_successfully'));
+							callbacks.run('userPasswordReset');
+							FlowRouter.go('login');
+						} else {
+							FlowRouter.go('home');
+							toastr.success(t('Password_changed_successfully'));
+							callbacks.run('userPasswordReset');
+						}
+					});
 				}
 			});
 		}
