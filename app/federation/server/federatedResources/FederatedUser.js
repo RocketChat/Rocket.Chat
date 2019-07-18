@@ -66,7 +66,8 @@ export class FederatedUser extends FederatedResource {
 		if (federation.peer === localPeerIdentifier || user.username === 'rocket.cat') {
 			localUser.username = user.username.split('@')[0];
 			localUser.name = user.name.split('@')[0];
-		} else if (federation.peer !== localPeerIdentifier) {
+		}
+		if (federation.peer !== localPeerIdentifier) {
 			localUser.isRemote = true;
 		}
 

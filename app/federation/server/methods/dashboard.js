@@ -3,16 +3,13 @@ import moment from 'moment';
 
 // We do not import the whole Federation object here because statistics cron
 // job use this file, and some of the features are not available on the cron
-import { FederationEvents, FederationPeers, Users } from '../../../models';
-import { getConfig } from '../config';
+import { FederationEvents, FederationPeers, Users } from '../../../models/server';
 
 export function getStatistics() {
-	const localIdentifier = getConfig().peer.domain;
-
 	const numberOfEvents = FederationEvents.find({ t: { $ne: 'png' } }).count();
 	const numberOfFederatedUsers = Users.find({ isRemote: true }).count();
-	const numberOfActivePeers = FederationPeers.find({ active: true, peer: { $ne: localIdentifier } }).count();
-	const numberOfInactivePeers = FederationPeers.find({ active: false, peer: { $ne: localIdentifier } }).count();
+	const numberOfActivePeers = FederationPeers.findActiveRemote().count();
+	const numberOfInactivePeers = FederationPeers.findNotActiveRemote().count();
 
 	return { numberOfEvents, numberOfFederatedUsers, numberOfActivePeers, numberOfInactivePeers };
 }
@@ -42,13 +39,11 @@ export function federationGetOverviewData() {
 }
 
 export function federationGetPeerStatuses() {
-	const localIdentifier = getConfig().peer.domain;
-
 	if (!Meteor.userId()) {
 		throw new Meteor.Error('not-authorized');
 	}
 
-	const peers = FederationPeers.find({ peer: { $ne: localIdentifier } }).fetch();
+	const peers = FederationPeers.findRemote().fetch();
 
 	const peerStatuses = [];
 
