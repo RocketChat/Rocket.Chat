@@ -4,7 +4,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
-import { modal } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { handleError } from '../../../utils';
 import { Button } from '../../../ui';
