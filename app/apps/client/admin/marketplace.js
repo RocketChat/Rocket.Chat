@@ -95,7 +95,6 @@ const triggerButtonLoadingState = (button) => {
 };
 
 Template.marketplace.onCreated(function() {
-	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
 	this.installedApps = new ReactiveVar([]);
@@ -108,26 +107,23 @@ Template.marketplace.onCreated(function() {
 	this.isLoading = new ReactiveVar(true);
 	this.cloudLoggedIn = new ReactiveVar(false);
 
-	getInstalledApps(instance);
-	getApps(instance);
+	getInstalledApps(this);
+	getApps(this);
+	getCloudLoggedIn(this);
 
-	instance.onAppAdded = function _appOnAppAdded() {
-		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
-
-		// fetch(`${ HOST }/v1/apps/${ appId }`).then((result) => {
-		// 	const installedApps = instance.installedApps.get();
-
-		// 	installedApps.push({
-		// 		latest: result.app,
-		// 	});
-		// 	instance.installedApps.set(installedApps);
-		// });
+	this.onAppAdded = async (appId) => {
+		const installedApps = this.installedApps.get().filter((installedApp) => installedApp.appId !== appId);
+		try {
+			const { app } = await APIClient.get(`apps/${ appId }`);
+			installedApps.push({ latest: app });
+			this.installedApps.set(installedApps);
+		} catch (e) {
+			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+		}
 	};
 
-	getCloudLoggedIn(instance);
-
-	instance.onAppRemoved = function _appOnAppRemoved(appId) {
-		const apps = instance.apps.get();
+	this.onAppRemoved = (appId) => {
+		const apps = this.apps.get();
 
 		let index = -1;
 		apps.find((item, i) => {
@@ -139,18 +135,16 @@ Template.marketplace.onCreated(function() {
 		});
 
 		apps.splice(index, 1);
-		instance.apps.set(apps);
+		this.apps.set(apps);
 	};
-});
 
-Template.marketplace.onCreated(function() {
 	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.onAppAdded);
-	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.onAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.onAppRemoved);
 });
 
 Template.marketplace.onDestroyed(function() {
 	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.onAppAdded);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.onAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.onAppRemoved);
 });
 
 Template.marketplace.helpers({
