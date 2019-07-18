@@ -8,7 +8,7 @@ import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 
 const getDefaultHeaders = () => ({
-	'X-Apps-Engine-Version': Info.marketplaceApiVersion,
+	'X-Apps-Engine-Version': '1.4.2', // TODO: Info.marketplaceApiVersion,
 });
 
 const purchaseTypes = new Set(['buy', 'subscription']);
@@ -204,17 +204,16 @@ export class AppsRestApi {
 				const aff = Promise.await(manager.add(buff.toString('base64'), false, marketplaceInfo));
 				const info = aff.getAppInfo();
 
-				// If there are compiler errors, there won't be an App to get the status of
 				if (aff.hasStorageError()) {
-					return API.v1.failure({ status: 'storage_error', messages: aff.getStorageError() });
-				}
-
-				if (aff.getLicenseValidationResult().hasErrors) {
-					return API.v1.failure({ status: 'license_error', messages: aff.getLicenseValidationResult().getErrors() });
+					return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
 				}
 
 				if (aff.getCompilerErrors().length) {
 					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
+				}
+
+				if (aff.getLicenseValidationResult().hasErrors) {
+					return API.v1.failure({ status: 'license_error', messages: aff.getLicenseValidationResult().getErrors() });
 				}
 
 				info.status = aff.getApp().getStatus();
@@ -313,8 +312,6 @@ export class AppsRestApi {
 				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
-				// TODO: Verify permissions
-
 				let buff;
 
 				if (this.bodyParams.url) {
@@ -552,12 +549,13 @@ export class AppsRestApi {
 
 				const prl = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
-
-					return API.v1.success({ status: result.getStatus() });
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+
+				const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
+
+				return API.v1.success({ status: result.getStatus() });
 			},
 		});
 	}
