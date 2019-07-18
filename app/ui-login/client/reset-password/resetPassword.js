@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
+import { modal } from '../../../ui-utils';
 import { t, handleError } from '../../../utils';
 import { Button } from '../../../ui';
 import { callbacks } from '../../../callbacks';
@@ -62,7 +63,10 @@ Template.resetPassword.events({
 								callbacks.run('userPasswordReset');
 								FlowRouter.go('login');
 							} else {
-								handleError(error);
+								modal.open({
+									title: t('Error_changing_password'),
+									type: 'error',
+								});
 							}
 						} else {
 							FlowRouter.go('home');
