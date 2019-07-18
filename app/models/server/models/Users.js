@@ -667,6 +667,10 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findRemote() {
+		return this.find({ isRemote: true });
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);

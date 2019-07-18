@@ -6,8 +6,8 @@ import moment from 'moment';
 import { FederationEvents, FederationPeers, Users } from '../../../models/server';
 
 export function getStatistics() {
-	const numberOfEvents = FederationEvents.find({ t: { $ne: 'png' } }).count();
-	const numberOfFederatedUsers = Users.find({ isRemote: true }).count();
+	const numberOfEvents = FederationEvents.findByType('png').count();
+	const numberOfFederatedUsers = Users.findRemote().count();
 	const numberOfActivePeers = FederationPeers.findActiveRemote().count();
 	const numberOfInactivePeers = FederationPeers.findNotActiveRemote().count();
 
