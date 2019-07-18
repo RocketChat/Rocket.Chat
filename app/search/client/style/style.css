@@ -23,6 +23,7 @@
 
 .rocket-search-result {
 	display: flex;
+	overflow: hidden;
 	flex-direction: column;
 	flex: 1;
 }

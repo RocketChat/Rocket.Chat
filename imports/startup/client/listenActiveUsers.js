@@ -86,13 +86,13 @@ Tracker.autorun(() => {
 });
 
 Meteor.startup(function() {
-	Notifications.onLogged('user-status', ([_id, username, status]) => {
+	Notifications.onLogged('user-status', ([_id, username, status, statusText]) => {
 		// only set after first request completed
 		if (lastStatusChange) {
 			lastStatusChange = new Date();
 		}
 
-		saveUser({ _id, username, status: STATUS_MAP[status] }, true);
+		saveUser({ _id, username, status: STATUS_MAP[status], statusText }, true);
 	});
 
 	Notifications.onLogged('Users:NameChanged', ({ _id, username }) => {
