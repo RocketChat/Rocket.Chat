@@ -37,10 +37,10 @@
 							<th class="rc-table-td">
 								<div class="table-fake-th">{{_ "Details"}}</div>
 							</th>
-							<th class="rc-table-td--small rc-apps-marketplace-price">
+							<th class="rc-table-td--medium">
 								<div class="table-fake-th">{{_ "Price"}}</div>
 							</th>
-							<th class="rc-table-td--small">
+							<th class="rc-table-td--small rc-apps-marketplace-price">
 								<div class="table-fake-th">{{_ "Status"}}</div>
 							</th>
 						</tr>
@@ -88,6 +88,18 @@
 										</div>
 									</div>
 								</td>
+								<td>
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<div class="rc-table-title">
+												{{purchaseTypeDisplay .}}
+											</div>
+											<div class="rc-table-subtitle">
+												{{priceDisplay .}}
+											</div>
+										</div>
+									</div>
+								</td>
 								<td class="rc-apps-marketplace-price">
 									{{#if $eq latest._installed true}}
 										<button class="apps-installer" data-app="{{appId}}">
@@ -125,7 +137,6 @@
 										</div>
 									{{/if}}
 								</td>
-								<td>wtf</td>
 							</tr>
 						{{/each}}
 						{{#if isLoading}}

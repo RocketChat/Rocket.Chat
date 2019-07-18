@@ -12,9 +12,7 @@ export let Apps;
 
 class AppServerOrchestrator {
 	constructor() {
-		if (Permissions) {
-			Permissions.createOrUpdate('manage-apps', ['admin']);
-		}
+		Permissions.createOrUpdate('manage-apps', ['admin']);
 
 		this._marketplaceUrl = 'https://marketplace-beta.rocket.chat';
 		// this._marketplaceUrl = 'http://localhost:7488';

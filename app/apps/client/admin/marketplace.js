@@ -4,6 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import semver from 'semver';
 
 import { settings } from '../../../settings';
 import { t, APIClient } from '../../../utils';
@@ -23,36 +24,13 @@ const sortByColumn = (array, column, inverted) =>
 		return 1;
 	});
 
-const tagAlreadyInstalledApps = (installedApps, apps) => {
-	const installedIds = installedApps.map((app) => app.latest.id);
-
-	const tagged = apps.map((app) =>
-		({
-			price: app.price,
-			isPurchased: app.isPurchased,
-			isBundle: app.isBundle,
-			isSubscribed: app.isSubscribed,
-			bundledIn: app.bundledIn,
-			purchaseType: app.purchaseType,
-			pricingPlans: app.pricingPlans,
-			latest: {
-				...app.latest,
-				_installed: installedIds.includes(app.latest.id),
-			},
-		})
-	);
-
-	return tagged;
-};
-
 const getApps = async (instance) => {
 	instance.isLoading.set(true);
 
 	try {
 		const data = await APIClient.get('apps?marketplace=true');
-		const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
 
-		instance.apps.set(tagged);
+		instance.apps.set(data);
 	} catch (e) {
 		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 	}
@@ -82,12 +60,22 @@ const getCloudLoggedIn = async (instance) => {
 	});
 };
 
+const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
+
+const formatPrincingPlan = (pricingPlan, period) => {
+	if (pricingPlan.isPerSeat && pricingPlan.tiers && pricingPlan.tiers.length) {
+		const lowestTier = pricingPlan.tiers.sort(({ price: a }, { price: b }) => a - b)[0];
+		return `${ formatPrice(lowestTier.price) } / ${ t('user') } / ${ t(period) }`;
+	}
+
+	return `${ formatPrice(pricingPlan.price) } / ${ t(period) }`;
+};
+
 Template.marketplace.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
 	this.installedApps = new ReactiveVar([]);
-	this.categories = new ReactiveVar([]);
 	this.searchText = new ReactiveVar('');
 	this.searchSortBy = new ReactiveVar('name');
 	this.sortDirection = new ReactiveVar('asc');
@@ -99,12 +87,6 @@ Template.marketplace.onCreated(function() {
 
 	getInstalledApps(instance);
 	getApps(instance);
-
-	try {
-		APIClient.get('apps?categories=true').then((data) => instance.categories.set(data));
-	} catch (e) {
-		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-	}
 
 	instance.onAppAdded = function _appOnAppAdded() {
 		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
@@ -162,9 +144,6 @@ Template.marketplace.helpers({
 		const sortColumn = instance.searchSortBy.get();
 		const inverted = instance.sortDirection.get() === 'desc';
 		return sortByColumn(instance.apps.get().filter((app) => app.latest.name.toLowerCase().includes(searchText)), sortColumn, inverted);
-	},
-	categories() {
-		return Template.instance().categories.get();
 	},
 	appsDevelopmentMode() {
 		return settings.get('Apps_Framework_Development_Mode') === true;
@@ -225,12 +204,46 @@ Template.marketplace.helpers({
 			sortDirection.set('asc');
 		};
 	},
+	purchaseTypeDisplay(app) {
+		if (app.purchaseType === 'subscription') {
+			return t('Subscription');
+		}
+
+		if (app.price > 0) {
+			return t('Paid');
+		}
+
+		return t('Free');
+	},
+	priceDisplay(app) {
+		if (app.purchaseType === 'subscription') {
+			if (!app.pricingPlans || !Array.isArray(app.pricingPlans) || app.pricingPlans.length === 0) {
+				return '-';
+			}
+
+			const monthlyPricingPlan = app.pricingPlans.find(({ enabled, strategy }) => enabled && strategy === 'monthly');
+			if (monthlyPricingPlan) {
+				return formatPrincingPlan(monthlyPricingPlan, 'month');
+			}
+
+			const yearlyPricingPlan = app.pricingPlans.find(({ enabled, strategy }) => enabled && strategy === 'yearly');
+			if (yearlyPricingPlan) {
+				return formatPrincingPlan(yearlyPricingPlan, 'year');
+			}
+
+			return '-';
+		}
+
+		if (app.price > 0) {
+			return formatPrice(app.price);
+		}
+
+		return '-';
+	},
 	renderDownloadButton(latest) {
 		return latest._installed === false;
 	},
-	formatPrice(price) {
-		return `$${ Number.parseFloat(price).toFixed(2) }`;
-	},
+	formatPrice,
 	isSubscription(purchaseType) {
 		return purchaseType && purchaseType === 'subscription';
 	},
