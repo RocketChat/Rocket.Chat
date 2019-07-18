@@ -22,13 +22,13 @@
 					</div>
 					<div class="form-group">
 						<div class="rc-input__title">{{_ "Scope"}}</div>
-						<label class="rc-select">
-							<select name="scope" class="rc-select__element" disabled="{{protected}}">
+						<div class="rc-select">
+							<select name="scope" class="required rc-select__element" disabled="{{protected}}">
 								<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
 								<option value="Subscriptions" selected="{{$eq scope 'Subscriptions'}}">{{_ "Rooms"}}</option>
 							</select>
 							{{> icon block="rc-select__arrow" icon="arrow-down" }}
-						</label>
+						</div>
 					</div>
 					<div>
 						<label for="mandatory2fa">{{_ "Users must use Two Factor Authentication"}} :</label>
@@ -48,15 +48,19 @@
 				<h2 class="border-tertiary-background-color">{{_ "Users_in_role"}}</h2>
 				{{#if $eq role.scope 'Subscriptions'}}
 					<form id="form-search-room" class="inline">
-						<label>{{_ "Choose_a_room"}}</label>
-						{{> inputAutocomplete settings=autocompleteChannelSettings name="room" class="search autocomplete rc-input__element" placeholder=(_ "Enter_a_room_name") autocomplete="off"}}
+						<label class="rc-input">
+							<div class="rc-input__title">{{_ "Choose_a_room"}}</div>
+							{{> inputAutocomplete settings=autocompleteChannelSettings name="room" class="search autocomplete rc-input__element" placeholder=(_ "Enter_a_room_name") autocomplete="off"}}
+						</label>
 					</form>
 				{{/if}}
 				{{#if $or ($eq role.scope 'Users') searchRoom}}
 					<form id="form-users" class="inline">
-						<label>{{_ "Add_user"}}</label>
-						{{> inputAutocomplete settings=autocompleteUsernameSettings name="username" class="search autocomplete rc-input__element" placeholder=(_ "Enter_a_username") autocomplete="off"}}
-						<button name="add" class="button primary add">{{_ "Add"}}</button>
+						<label class="rc-input">
+							<div class="rc-input__title">{{_ "Add_user"}}</div>
+							{{> inputAutocomplete settings=autocompleteUsernameSettings name="username" class="search autocomplete rc-input__element" placeholder=(_ "Enter_a_username") autocomplete="off"}}
+						</label>
+						<button name="add" class="rc-button rc-button--primary add">{{_ "Add"}}</button>
 					</form>
 					<div class="rc-table-content">
 						{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
@@ -80,9 +84,7 @@
 											<div class="rc-table-wrapper">
 												<div class="rc-table-avatar">{{> avatar username=username}}</div>
 												<div class="rc-table-info">
-													<span class="rc-table-title">
-														{{>icon icon="hashtag" block="rc-table-icon"}} {{name}}
-													</span>
+													<span class="rc-table-title">{{name}}</span>
 												</div>
 											</div>
 										</td>
@@ -94,7 +96,7 @@
 							</tbody>
 						{{/table}}
 						{{#if hasMore}}
-							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+							<button class="rc-button rc-button--secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
 						{{/if}}
 					</div>
 				{{/if}}
