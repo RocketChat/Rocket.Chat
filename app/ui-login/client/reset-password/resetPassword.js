@@ -48,17 +48,22 @@ Template.resetPassword.events({
 			});
 		} else {
 			const newPassword = instance.find('[name=newPassword]').value;
-			Meteor.call('validatePassword', newPassword, function(error) {
-				if (error) {
+			Meteor.call('validatePassword', newPassword, function(validateError) {
+				if (validateError) {
 					Button.reset(button);
-					console.log(error);
-					handleError(error);
+					console.log(validateError);
+					handleError(validateError);
 				} else {
 					Accounts.resetPassword(FlowRouter.getParam('token'), newPassword, (error) => {
-						if (error.error === 'totp-required') {
-							toastr.success(t('Password_changed_successfully'));
-							callbacks.run('userPasswordReset');
-							FlowRouter.go('login');
+						if (error) {
+							console.log(error);
+							if (error.error === 'totp-required') {
+								toastr.success(t('Password_changed_successfully'));
+								callbacks.run('userPasswordReset');
+								FlowRouter.go('login');
+							} else {
+								handleError(error);
+							}
 						} else {
 							FlowRouter.go('home');
 							toastr.success(t('Password_changed_successfully'));
