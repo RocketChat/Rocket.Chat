@@ -53,6 +53,7 @@ import './methods/removeUserFromRoom';
 import './methods/reportMessage';
 import './methods/requestDataDownload';
 import './methods/resetAvatar';
+import './methods/validatePassword';
 import './methods/roomNameExists';
 import './methods/saveUserPreferences';
 import './methods/saveUserProfile';
