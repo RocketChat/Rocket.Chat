@@ -13,6 +13,9 @@ import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import { SideNav } from '../../../ui-utils/client';
 
+import './marketplace.html';
+import './marketplace.css';
+
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const enabled = ({ status }) => ENABLED_STATUS.includes(status);
 
@@ -62,13 +65,33 @@ const getCloudLoggedIn = async (instance) => {
 
 const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
 
-const formatPrincingPlan = (pricingPlan, period) => {
-	if (pricingPlan.isPerSeat && pricingPlan.tiers && pricingPlan.tiers.length) {
-		const lowestTier = pricingPlan.tiers.sort(({ price: a }, { price: b }) => a - b)[0];
-		return `${ formatPrice(lowestTier.price) } / ${ t('user') } / ${ t(period) }`;
-	}
+const formatPrincingPlan = (pricingPlan) => {
+	const perUser = pricingPlan.isPerSeat && pricingPlan.tiers && pricingPlan.tiers.length;
 
-	return `${ formatPrice(pricingPlan.price) } / ${ t(period) }`;
+	const pricingPlanTranslationString = [
+		'Apps_Marketplace_pricingPlan',
+		pricingPlan.strategy,
+		perUser && 'perUser',
+	].filter(Boolean).join('_');
+
+	return t(pricingPlanTranslationString, {
+		price: formatPrice(pricingPlan.price),
+	});
+};
+
+const triggerButtonLoadingState = (button) => {
+	const icon = button.querySelector('.rc-icon use');
+	const iconHref = icon.getAttribute('href');
+
+	button.classList.add('js-loading');
+	button.disabled = true;
+	icon.setAttribute('href', '#icon-loading');
+
+	return () => {
+		button.classList.remove('js-loading');
+		button.disabled = false;
+		icon.setAttribute('href', iconHref);
+	};
 };
 
 Template.marketplace.onCreated(function() {
@@ -221,17 +244,7 @@ Template.marketplace.helpers({
 				return '-';
 			}
 
-			const monthlyPricingPlan = app.pricingPlans.find(({ enabled, strategy }) => enabled && strategy === 'monthly');
-			if (monthlyPricingPlan) {
-				return formatPrincingPlan(monthlyPricingPlan, 'month');
-			}
-
-			const yearlyPricingPlan = app.pricingPlans.find(({ enabled, strategy }) => enabled && strategy === 'yearly');
-			if (yearlyPricingPlan) {
-				return formatPrincingPlan(yearlyPricingPlan, 'year');
-			}
-
-			return '-';
+			return formatPrincingPlan(app.pricingPlans[0]);
 		}
 
 		if (app.price > 0) {
@@ -240,27 +253,24 @@ Template.marketplace.helpers({
 
 		return '-';
 	},
-	renderDownloadButton(latest) {
-		return latest._installed === false;
+	isInstalled(app) {
+		const { installedApps } = Template.instance();
+		const installedApp = installedApps.get().find(({ latest: { id } }) => id === app.latest.id);
+		return !!installedApp;
 	},
-	formatPrice,
-	isSubscription(purchaseType) {
-		return purchaseType && purchaseType === 'subscription';
+	isOnTrialPeriod(app) {
+		return app.subscriptionInfo.status === 'trialing';
 	},
-	subscriptionPriceDisplay(pricingPlans) {
-		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
-			return '';
-		}
-
-		const plan = pricingPlans[0];
-
-		if (plan.strategy === 'monthly') {
-			return `$${ Number.parseFloat(plan.price).toFixed(2) } / month`;
-		}
-
-		const lastTier = plan.tiers[plan.tiers.length - 1];
-
-		return `$${ Number.parseFloat(lastTier.price).toFixed(2) }* / user / month`;
+	canUpdate(app) {
+		const { installedApps } = Template.instance();
+		const installedApp = installedApps.get().find(({ latest: { id } }) => id === app.latest.id);
+		return !!installedApp && semver.lt(installedApp.latest.version, app.latest.version);
+	},
+	canTry(app) {
+		return app.purchaseType === 'subscription' && !app.subscriptionInfo.status;
+	},
+	canBuy(app) {
+		return app.price > 0;
 	},
 });
 
@@ -278,33 +288,29 @@ Template.marketplace.events({
 	'click [data-button="login"]'() {
 		FlowRouter.go('/admin/cloud');
 	},
-	'click .js-install'(e, template) {
+	async 'click .js-install'(e, template) {
 		e.stopPropagation();
-		const elm = e.currentTarget.parentElement;
+		const { currentTarget: button } = e;
+		const stopLoading = triggerButtonLoadingState(button);
 
-		elm.classList.add('loading');
-
-		APIClient.post('apps/', {
-			appId: this.latest.id,
-			marketplace: true,
-			version: this.latest.version,
-		})
-			.then(async () => {
-				await Promise.all([
-					getInstalledApps(template),
-					getApps(template),
-				]);
-				elm.classList.remove('loading');
-			})
-			.catch((e) => {
-				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-				elm.classList.remove('loading');
+		try {
+			await APIClient.post('apps/', {
+				appId: this.latest.id,
+				marketplace: true,
+				version: this.latest.version,
 			});
+			await Promise.all([
+				getInstalledApps(template),
+				getApps(template),
+			]);
+		} catch (e) {
+			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+		} finally {
+			stopLoading();
+		}
 	},
-	'click .js-purchase'(e, template) {
+	async 'click .js-purchase'(e, template) {
 		e.stopPropagation();
-
-		const rl = this;
 
 		if (!template.cloudLoggedIn.get()) {
 			modal.open({
@@ -317,7 +323,7 @@ Template.marketplace.events({
 				cancelButtonText: t('Cancel'),
 				closeOnConfirm: true,
 				html: false,
-			}, function(confirmed) {
+			}, (confirmed) => {
 				if (confirmed) {
 					FlowRouter.go('/admin/cloud');
 				}
@@ -325,43 +331,50 @@ Template.marketplace.events({
 			return;
 		}
 
-		// play animation
-		const elm = e.currentTarget.parentElement;
+		const { latest, purchaseType } = this;
 
-		APIClient.get(`apps?buildExternalUrl=true&appId=${ rl.latest.id }&purchaseType=${ rl.purchaseType }`)
-			.then((data) => {
-				modal.open({
-					allowOutsideClick: false,
-					data,
-					template: 'iframeModal',
-				}, () => {
-					elm.classList.add('loading');
-					APIClient.post('apps/', {
-						appId: this.latest.id,
-						marketplace: true,
-						version: this.latest.version,
-					})
-						.then(async () => {
-							await Promise.all([
-								getInstalledApps(template),
-								getApps(template),
-							]);
-							elm.classList.remove('loading');
-						})
-						.catch((e) => {
-							toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-							elm.classList.remove('loading');
-						});
+		const { currentTarget: button } = e;
+		const stopLoading = triggerButtonLoadingState(button);
+
+		let data = null;
+		try {
+			data = await APIClient.get(`apps?buildExternalUrl=true&appId=${ latest.id }&purchaseType=${ purchaseType || 'buy' }`);
+		} catch (e) {
+			const errMsg = (e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message;
+			toastr.error(errMsg);
+
+			if (errMsg === 'Unauthorized') {
+				getCloudLoggedIn(template);
+			}
+
+			stopLoading();
+
+			return;
+		}
+
+		modal.open({
+			allowOutsideClick: false,
+			data,
+			template: 'iframeModal',
+		}, async () => {
+			button.classList.add('js-loading');
+
+			try {
+				await APIClient.post('apps/', {
+					appId: this.latest.id,
+					marketplace: true,
+					version: this.latest.version,
 				});
-			})
-			.catch((e) => {
-				const errMsg = (e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message;
-				toastr.error(errMsg);
-
-				if (errMsg === 'Unauthorized') {
-					getCloudLoggedIn(template);
-				}
-			});
+				await Promise.all([
+					getInstalledApps(template),
+					getApps(template),
+				]);
+			} catch (e) {
+				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+			} finally {
+				stopLoading();
+			}
+		}, stopLoading);
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
