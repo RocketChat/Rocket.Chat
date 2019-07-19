@@ -35,7 +35,7 @@ Meteor.startup(() => {
 		}
 
 		const inquiry = LivechatInquiry.findOne({ agents: user._id, rid: room._id }, { fields: { status: 1 } });
-		return inquiry && inquiry.status === 'open';
+		return inquiry && inquiry.status === 'queued';
 	});
 
 	callbacks.add('beforeLeaveRoom', function(user, room) {

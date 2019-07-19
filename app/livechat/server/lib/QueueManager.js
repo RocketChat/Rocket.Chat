@@ -46,7 +46,7 @@ export const QueueManager = {
 			return room;
 		}
 
-		LivechatInquiry.openInquiry(inquiry._id);
+		LivechatInquiry.queueInquiry(inquiry._id);
 		room = await RoutingManager.delegateRoom(room, agent);
 		return room;
 	},

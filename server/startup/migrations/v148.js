@@ -32,6 +32,15 @@ Migrations.add({
 			}
 		});
 
-		// TODO: change the current open status to queued...
+		// Change the status of the current open inquiries from "open" to "queued"
+		LivechatInquiry.update(
+			{ status: 'open' },
+			{
+				$set: {
+					status: 'queued',
+				},
+			},
+			{ multi: true }
+		);
 	},
 });

@@ -51,7 +51,7 @@ Template.livechatReadOnly.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const inquiry = LivechatInquiry.findOne({ agents: Meteor.userId(), status: 'open', rid: this.rid });
+		const inquiry = LivechatInquiry.findOne({ agents: Meteor.userId(), status: 'queued', rid: this.rid });
 		this.inquiry.set(inquiry);
 
 		if (inquiry) {

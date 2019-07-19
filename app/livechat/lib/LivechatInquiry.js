@@ -31,7 +31,7 @@ if (Meteor.isServer) {
 		}
 
 		getNextInquiryQueued() {
-			return this.findOne({ status: 'open' }, { sort: { ts: -1 } });
+			return this.findOne({ status: 'queued' }, { sort: { ts: -1 } });
 		}
 
 		/*
@@ -108,7 +108,7 @@ if (Meteor.isServer) {
 		updateVisitorStatus(token, status) {
 			const query = {
 				'v.token': token,
-				status: 'open',
+				status: 'queued',
 			};
 
 			const update = {
@@ -123,7 +123,7 @@ if (Meteor.isServer) {
 		async getCurrentSortedQueue(_id) {
 			const collectionObj = this.model.rawCollection();
 			const aggregate = [
-				{ $match: { status: 'open' } },
+				{ $match: { status: 'queued' } },
 				{ $sort: { ts: 1 } },
 				{ $group: { _id: 1, inquiry: { $push: { _id: '$_id', rid: '$rid', name: '$name', ts: '$ts', status: '$status' } } } },
 				{ $unwind: { path: '$inquiry', includeArrayIndex: 'position' } },
