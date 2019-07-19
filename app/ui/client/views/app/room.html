@@ -87,7 +87,7 @@
 								<div class="leader-name">{{name}}</div>
 								<div class="leader-status userStatus">
 									<span class="color-ball status-bg-{{status}}"></span>
-									<span class="status-text leader-status-text">{{_ statusDisplay}}</span>
+									<span class="status-text leader-status-text">{{statusDisplay}}</span>
 								</div>
 								<a class="chat-now" href="{{chatNowLink}}">{{_ "Chat_Now"}}</a>
 							</div>
@@ -144,13 +144,6 @@
 									</li>
 								{{/if}}
 							</ul>
-							{{#if hasMoreNext}}
-							<li class="load-more">
-								{{#if isLoading}}
-								{{> loading}}
-								{{/if}}
-							</li>
-							{{/if}}
 						</div>
 					</div>
 					<footer class="footer border-component-color">

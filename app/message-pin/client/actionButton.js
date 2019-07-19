@@ -64,7 +64,7 @@ Meteor.startup(function() {
 		id: 'jump-to-pin-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['pinned'],
+		context: ['pinned', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
