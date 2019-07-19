@@ -50,7 +50,7 @@ API.v1.addRoute('livechat/whatsapp-incoming/:service', {
 			let guest = LivechatVisitors.findOneVisitorByPhone(id_cliente);
 
 			if (guest) {
-				const rooms = department ? Rooms.findOpenByVisitorTokenAndDepartmentId(guest.token, department).fetch() : Rooms.findOpenByVisitorToken(guest.token).fetch();
+				const rooms = Rooms.findOpenByVisitorToken(guest.token).fetch();
 				room = rooms && rooms.length > 0 && rooms[0];
 				token = guest.token;
 				// Update Guest department..
