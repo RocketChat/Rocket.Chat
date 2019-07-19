@@ -32,6 +32,7 @@ import './views/app/tabbar/externalSearch';
 import './views/app/tabbar/visitorEdit';
 import './views/app/tabbar/visitorForward';
 import './views/app/tabbar/visitorInfo';
+import './views/app/tabbar/visitorSession';
 import './views/app/tabbar/visitorHistory';
 import './views/app/tabbar/visitorNavigation';
 import './views/app/triggers/livechatTriggerAction';

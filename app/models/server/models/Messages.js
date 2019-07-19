@@ -474,6 +474,17 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findByTokenAndType(token, type, options) {
+		const query = {
+			token,
+			t: type,
+		};
+
+		if (options == null) { options = {}; }
+
+		return this.find(query, options);
+	}
+
 	findByRoomId(roomId, options) {
 		const query = {
 			rid: roomId,
@@ -752,6 +763,31 @@ export class Messages extends Base {
 		const record = {
 			t: type,
 			rid: roomId,
+			ts: new Date(),
+			token: extraData.navigation.token,
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username,
+			},
+			groupable: false,
+		};
+
+		if (settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+
+		_.extend(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
+		return record;
+	}
+
+	createNavigationHistoryWithTokenMessageAndUser(message, user, extraData) {
+		const type = 'livechat_navigation_history';
+		const record = {
+			t: type,
+			token: extraData.navigation.token,
 			ts: new Date(),
 			msg: message,
 			u: {

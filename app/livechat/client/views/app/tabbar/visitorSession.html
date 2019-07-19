@@ -1,0 +1,39 @@
+<template name="visitorSession">
+  <div class="user-view">
+    <div class="about clearfix">
+      {{#with user}}
+        <div class="info">
+          <h3 class="text-center" title="Session Info">Session info</h3>
+          <hr>
+          {{#if visitorInfo}}
+            <h1 title="{{visitorInfo.name}}">{{visitorInfo.name}}</h1>
+          {{else}}
+            <h1 title="Not registered">{{_ "Not registered"}}</h1>
+          {{/if}}
+          <ul>
+            <li><i class="icon-eye"></i><span>{{state}}</span></li>
+            {{#if visitorInfo}} <li><i class="icon-mail"></i> {{visitorInfo.email}}&nbsp;<i class="icon-ok success-color"></i></li> {{/if}}
+            {{#if deviceInfo}}<li><i class="{{osIcon}}"></i><span>{{deviceInfo.os}} {{deviceInfo.osVersion}}</span></li>{{/if}}
+            {{#if deviceInfo}}<li><i class="{{browserIcon}}"></i><span>{{deviceInfo.browserName}} {{deviceInfo.browserVersion}}</span></li>{{/if}}
+            <li><i class="icon-mobile"></i><span>{{count}}</span></li>
+            <li><i class="icon-clock"></i><span>{{timeSince}}</span></li>
+          </ul>
+          <div class="content">
+            <div class="list-view">
+              <h4>{{_ "Navigation_History"}}</h4>
+              <div class="visitor-navigation">
+                <div class="visitor-scroll">
+                  <ul>
+                    {{#each pageInfo}}
+                    <li><a href="{{navigation.page.location.href}}" target="_blank" title="{{accessDateTime}}">{{pageTitle}}</a></li>
+                    {{/each}}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/with}}
+    </div>
+  </div>
+</template>

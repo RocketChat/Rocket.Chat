@@ -44,6 +44,12 @@ API.v1.addRoute('livechat/addLocationData', {
 				latitude: Number,
 				longitude: Number,
 			}),
+			deviceInfo: Match.ObjectIncluding({
+				os: String,
+				osVersion: Number,
+				browserName: String,
+				browserVersion: Number,
+			}),
 		});
 
 		return Livechat.updateVisitorLocation(this.bodyParams);

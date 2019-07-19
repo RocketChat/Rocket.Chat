@@ -1,111 +1,114 @@
 <template name="livechatDashboard">
   {{#requiresPermission 'view-livechat-manager'}}
-  <h1>Dashboard</h1>
-  <fieldset>
-    <form class="form-inline" method="post">
-      <div class="form-group">
-        <input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
-      </div>
-      <div class="form-group">
-        <div class="rc-select">
-          <select class="rc-select__element" name="state">
-            <option class="rc-select__option" value="">{{_ "All"}}</option>
-            <option class="rc-select__option" value="active">{{_ "Active"}}</option>
-            <option class="rc-select__option" value="registered">{{_ "Registered"}}</option>
-            <option class="rc-select__option" value="idle">{{_ "Idle"}}</option>
-            <option class="rc-select__option" value="offline">{{_ "Offline"}}</option>
-          </select>
-          {{> icon block="rc-select__arrow" icon="arrow-down" }}
-        </div>
-      </div>
-      <div class="form-group">
-        <button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
-      </div>
-      <div>
-        <h1 align="right">Total Visitors : {{totalVisitors}}</h1>
-      </div>
-    </form>
-  </fieldset>
-  <div class="rc-table-content">
-    {{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
-    <thead>
-      <tr>
-        <th width="20%">
-          <div class="table-fake-th">{{_ "Visitor Info"}}</div>
-        </th>
-        <th width="20%">
-          <div class="table-fake-th">{{_ "Location"}}</div>
-        </th>
-        <th width="5%">
-          <div class="table-fake-th">{{_ "Visits"}}</div>
-        </th>
-        <th width="20%">
-          <div class="table-fake-th">{{_ "Current Page"}}</div>
-        </th>
-        <th width="10%">
-          <div class="table-fake-th">{{_ "State"}}</div>
-        </th>
-        <th width="15%">
-          <div class="table-fake-th">{{_ "Time on Site"}}</div>
-        </th>
-        <th width="10%">
-          <div class="table-fake-th">{{_ "Agent Info"}}</div>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#if visitors}}
-      {{#each visitors}}
-      <tr class="rc-table-tr manage row-link" data-id="{{_id}}">
-        <td>
-          <div class="rc-table-wrapper">
-            {{#if visitorInfo}}
-              <div class="rc-table-avatar user-image">{{> avatar username=visitorInfo.name}}</div>
-              <div class="rc-table-info">
-                <span class="rc-table-title">
-                  {{visitorInfo.name}}
-                </span>
-              </div>
-            {{else}}
-            <div class="rc-table-info">
-              {{_ "Not Registered"}}
-            </div>
-            {{/if}}
+  <div class="main-content-flex">
+    <section class="flex-tab-main-content">
+      <h1>Dashboard</h1>
+      <fieldset>
+        <form class="form-inline" method="post">
+          <div class="form-group">
+            <input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
           </div>
-        </td>
-        <td>{{location.city}}, {{location.countryName}}</td>
-        <td>{{count}}</td>
-        <td>
-          {{#if pageInfo}}
-          <a href="{{pageInfo.navigation.page.location.href}}" target="_blank" title="{{accessDateTime}}">{{pageInfo.navigation.page.title}}</a>
-          {{else}}
-          {{_ "No info"}}
-          {{/if}}
-        </td>
-        <td>{{state}}</td>
-        <td>{{timeSince}}</td>
-        <td class="rc-button__group">
-          {{#if servedBy}}
-            {{servedBy.username}}
-          {{else}}
-            {{#if visitorInfo}}
-              {{#if checkRegister state}}
-                <button class="rc-button rc-button--primary js-load-more">{{_ "Chat"}}</button>
+          <div class="form-group">
+            <div class="rc-select">
+              <select class="rc-select__element" name="state">
+                <option class="rc-select__option" value="">{{_ "All"}}</option>
+                <option class="rc-select__option" value="active">{{_ "Active"}}</option>
+                <option class="rc-select__option" value="registered">{{_ "Registered"}}</option>
+                <option class="rc-select__option" value="idle">{{_ "Idle"}}</option>
+                <option class="rc-select__option" value="offline">{{_ "Offline"}}</option>
+              </select>
+              {{> icon block="rc-select__arrow" icon="arrow-down" }}
+            </div>
+          </div>
+          <div class="form-group">
+            <button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+          </div>
+          <div>
+            <h1 align="right">Total Visitors : {{totalVisitors}}</h1>
+          </div>
+        </form>
+      </fieldset>
+      <div class="rc-table-content">
+        {{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+        <thead>
+          <tr>
+            <th width="20%">
+              <div class="table-fake-th">{{_ "Visitor Info"}}</div>
+            </th>
+            <th width="20%">
+              <div class="table-fake-th">{{_ "Location"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Visits"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Device"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "State"}}</div>
+            </th>
+            <th width="15%">
+              <div class="table-fake-th">{{_ "Time on Site"}}</div>
+            </th>
+            <th width="15%">
+              <div class="table-fake-th">{{_ "Agent Info"}}</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#if visitors}}
+          {{#each visitors}}
+          <tr class="rc-table-tr manage row-link" data-id="{{_id}}">
+            <td>
+              <div class="rc-table-wrapper">
+                {{#if visitorInfo}}
+                <div class="rc-table-avatar user-image">{{> avatar username=visitorInfo.name}}</div>
+                <div class="rc-table-info">
+                  <span class="rc-table-title">
+                          {{visitorInfo.name}}
+                        </span>
+                </div>
+                {{else}}
+                <div class="rc-table-info">
+                  {{_ "Not Registered"}}
+                </div>
+                {{/if}}
+              </div>
+            </td>
+            <td>{{location.city}}, {{location.countryName}}</td>
+            <td>{{count}}</td>
+            <td>
+              <i class="{{osIcon}}"></i><i class="{{browserIcon}}"></i>
+            </td>
+            <td>{{state}}</td>
+            <td>{{timeSince}}</td>
+            <td class="rc-button__group">
+              {{#if servedBy}}
+              {{servedBy.username}}
               {{else}}
-                {{_ "No Info"}}
-              {{/if}}
-            {{else}}
+              {{#if visitorInfo}}
+              {{#if checkRegister state}}
+              <button class="rc-button rc-button--primary js-load-more">{{_ "Chat"}}</button>
+              {{else}}
               {{_ "No Info"}}
-            {{/if}}
+              {{/if}}
+              {{else}}
+              {{_ "No Info"}}
+              {{/if}}
+              {{/if}}
+            </td>
+          </tr>
+          {{/each}}
+          {{else}}
+          {{_ "No Visitors Currently"}}
           {{/if}}
-        </td>
-      </tr>
-      {{/each}}
-      {{else}}
-      {{_ "No Visitors Currently"}}
-      {{/if}}
-    </tbody>
-    {{/table}}
+        </tbody>
+        {{/table}}
+      </div>
+    </section>
+    {{#with flexData}}
+      {{> contextualBar}}
+    {{/with}}
   </div>
   {{/requiresPermission}}
 </template>

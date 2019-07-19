@@ -424,6 +424,7 @@ export const Livechat = {
 				// keep history of unregistered visitors for 1 month
 				const keepHistoryMiliseconds = 2592000000;
 				extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
+				return Messages.createNavigationHistoryWithTokenMessageAndUser(`${ pageTitle } - ${ pageUrl }`, user, extraData);
 			}
 
 			if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {

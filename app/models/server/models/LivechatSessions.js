@@ -62,11 +62,12 @@ export class LivechatSessions extends Base {
 	}
 
 	saveVisitorLocation(data = {}) {
-		const { token, location } = data;
+		const { token, location, deviceInfo } = data;
 
 		return this.insert({
 			token,
 			location,
+			deviceInfo,
 			createdAt: new Date(),
 			count: 1,
 			state: 'idle',
