@@ -2,7 +2,6 @@
   {{#requiresPermission 'view-livechat-manager'}}
   <div class="main-content-flex">
     <section class="flex-tab-main-content">
-      <h1>Dashboard</h1>
       <fieldset>
         <form class="form-inline" method="post">
           <div class="form-group">
@@ -12,7 +11,7 @@
             <div class="rc-select">
               <select class="rc-select__element" name="state">
                 <option class="rc-select__option" value="">{{_ "All"}}</option>
-                <option class="rc-select__option" value="active">{{_ "Active"}}</option>
+                <option class="rc-select__option" value="chatting">{{_ "Chatting"}}</option>
                 <option class="rc-select__option" value="registered">{{_ "Registered"}}</option>
                 <option class="rc-select__option" value="idle">{{_ "Idle"}}</option>
                 <option class="rc-select__option" value="offline">{{_ "Offline"}}</option>
@@ -24,7 +23,7 @@
             <button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
           </div>
           <div>
-            <h1 align="right">Total Visitors : {{totalVisitors}}</h1>
+            <p align="right">{{_ "Total_visitors"}} : {{totalVisitors}}</p>
           </div>
         </form>
       </fieldset>

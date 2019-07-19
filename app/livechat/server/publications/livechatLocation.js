@@ -23,8 +23,8 @@ Meteor.publish('livechat:location', function(filter = {}) {
 		query['visitorInfo.name'] = new RegExp(filter.name, 'i');
 	}
 	if (filter.state) {
-		if (filter.state === 'active') {
-			query.state = 'active';
+		if (filter.state === 'chatting') {
+			query.state = 'chatting';
 		} else if (filter.state === 'registered') {
 			query.state = 'registered';
 		} else if (filter.state === 'idle') {

@@ -7,6 +7,7 @@ import moment from 'moment';
 import { LivechatRoom } from '../../collections/LivechatRoom';
 import { visitorNavigationHistory } from '../../collections/LivechatVisitorNavigation';
 import { RocketChatTabBar } from '../../../../ui-utils';
+import { t } from '../../../../utils';
 
 import './livechatDashboard.html';
 
@@ -35,6 +36,7 @@ Template.livechatDashboard.events({
 	'click .row-link'(e, instance) {
 		instance.tabBarData.set(this);
 		instance.tabBar.setTemplate('visitorSession');
+		instance.tabBar.setData({ label: t('Session_Info'), icon: 'info-circled' });
 		instance.tabBar.open();
 	},
 	'submit form'(event, instance) {
