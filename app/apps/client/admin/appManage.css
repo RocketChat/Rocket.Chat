@@ -1,0 +1,99 @@
+#rocket-chat .content .rc-apps-details {
+	&__content {
+		justify-content: flex-start;
+	}
+
+	&__app-name {
+		margin: 0;
+		flex: 0 0 1.75rem;
+		color: rgb(84, 88, 94);
+		font-size: 1.375rem;
+		font-family: inherit;
+		font-weight: normal;
+		letter-spacing: 0;
+		line-height: 1.75rem;
+		text-transform: none;
+	}
+
+	&__app-info {
+		flex: 0 0 1.25rem;
+		display: flex;
+		flex-wrap: nowrap;
+
+		> span::after {
+			content: '';
+			display: inline-block;
+			margin: 0 8px;
+			width: 1px;
+			height: 12px;
+			background: rgb(203, 206, 209);
+		}
+
+		> span:last-child::after {
+			content: none;
+			display: none;
+		}
+	}
+
+	&__app-author {
+		color: rgb(158, 162, 168);
+		font-size: 14px;
+		font-family: inherit;
+		font-weight: 500;
+		letter-spacing: -0.2px;
+		line-height: 20px;
+	}
+
+	&__app-version {
+		color: rgb(158, 162, 168);
+		font-size: 14px;
+		font-family: inherit;
+		font-weight: normal;
+		letter-spacing: -0.2px;
+		line-height: 20px;
+	}
+
+	&__app-status {
+		margin-top: 8px;
+		display: flex;
+		flex: 1;
+	}
+
+	&__app-install-status {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		height: 40px;
+		color: rgb(158, 162, 168);
+		font-size: 14px;
+		font-family: inherit;
+		font-weight: 500;
+		letter-spacing: 0px;
+
+		& > .rc-icon {
+			color: var(--rc-color-button-primary);
+		}
+	}
+
+	&__app-price {
+		color: rgb(157, 161, 168);
+		font-size: 14px;
+		font-family: inherit;
+		font-weight: normal;
+		letter-spacing: -0.2px;
+		line-height: 20px;
+
+		&::before {
+			content: '';
+			display: inline-block;
+			margin: 0 16px;
+			width: 1px;
+			height: 12px;
+			background: rgb(203, 206, 209);
+		}
+	}
+
+	&__app-menu-trigger {
+		padding: 0;
+	}
+}

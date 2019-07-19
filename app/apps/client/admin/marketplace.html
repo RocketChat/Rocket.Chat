@@ -103,15 +103,15 @@
 								<td>
 									<div class="rc-table-wrapper">
 										{{#if isInstalled .}}
-											{{#if isOnTrialPeriod .}}
+											{{#if canUpdate .}}
+												<button class="rc-apps-marketplace__app-button js-install">
+													{{> icon icon="reload" block="rc-icon--default-size"}}
+													{{_ "Update"}}
+												</button>
+											{{else if isOnTrialPeriod .}}
 												<span class="rc-apps-marketplace__app-status">
 												{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
 												{{_ "Trial period"}}
-												</span>
-											{{else if canUpdate .}}
-												<span class="rc-apps-marketplace__app-status">
-													{{> icon icon="reload" block="rc-icon--default-size"}}
-													{{_ "Update"}}
 												</span>
 											{{else}}
 												<span class="rc-apps-marketplace__app-status">
@@ -126,17 +126,17 @@
 										{{else}}
 											{{#if canTrial .}}
 												<button class="rc-apps-marketplace__app-button js-purchase" data-app="{{appId}}">
-													{{> icon icon="download" block="rc-icon--default-size"}}
+													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Start a trial"}}
 												</button>
 											{{else if canBuy .}}
 												<button class="rc-apps-marketplace__app-button js-purchase" data-app="{{appId}}">
-													{{> icon icon="download" block="rc-icon--default-size"}}
+													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Buy"}}
 												</button>
 											{{else}}
 												<button class="rc-apps-marketplace__app-button js-install" data-app="{{appId}}">
-													{{> icon icon="download" block="rc-icon--default-size"}}
+													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Install"}}
 												</button>
 											{{/if}}

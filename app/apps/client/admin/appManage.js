@@ -9,7 +9,7 @@ import s from 'underscore.string';
 import toastr from 'toastr';
 import semver from 'semver';
 
-import { isEmail, APIClient } from '../../../utils';
+import { isEmail, t, APIClient } from '../../../utils';
 import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
 import { modal } from '../../../ui-utils';
@@ -17,6 +17,10 @@ import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
 import { SideNav } from '../../../ui-utils/client';
+
+import './appManage.html';
+import './appManage.css';
+
 
 function getApps(instance) {
 	const id = instance.id.get();
@@ -82,6 +86,8 @@ function getApps(instance) {
 					appInfo.local.price = appInfo.remote.price;
 					appInfo.local.displayPrice = appInfo.remote.displayPrice;
 					appInfo.local.bundledIn = appInfo.remote.bundledIn;
+					appInfo.local.purchaseType = appInfo.remote.purchaseType;
+					appInfo.local.subscriptionInfo = appInfo.remote.subscriptionInfo;
 
 					if (semver.gt(appInfo.remote.version, appInfo.local.version) && (appInfo.remote.isPurchased || appInfo.remote.price <= 0)) {
 						appInfo.local.newVersion = appInfo.remote.version;
@@ -151,6 +157,22 @@ function installAppFromEvent(e, t) {
 	$(e.currentTarget).find('.rc-icon').addClass('play');
 }
 
+const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
+
+const formatPricingPlan = (pricingPlan) => {
+	const perUser = pricingPlan.isPerSeat && pricingPlan.tiers && pricingPlan.tiers.length;
+
+	const pricingPlanTranslationString = [
+		'Apps_Marketplace_pricingPlan',
+		pricingPlan.strategy,
+		perUser && 'perUser',
+	].filter(Boolean).join('_');
+
+	return t(pricingPlanTranslationString, {
+		price: formatPrice(pricingPlan.price),
+	});
+};
+
 Template.appManage.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
@@ -172,18 +194,7 @@ Template.appManage.onCreated(function() {
 		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey, options, lang_tag) : TAPi18n.__(key, options, lang_tag);
 	};
 
-	function _morphSettings(settings) {
-		Object.keys(settings).forEach((k) => {
-			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
-			settings[k].value = settings[k].value !== undefined && settings[k].value !== null ? settings[k].value : settings[k].packageValue;
-			settings[k].oldValue = settings[k].value;
-			settings[k].hasChanged = false;
-		});
-
-		instance.settings.set(settings);
-	}
-
-	instance.onStatusChanged = function _onStatusChanged({ appId, status }) {
+	this.onStatusChanged = ({ appId, status }) => {
 		if (appId !== id) {
 			return;
 		}
@@ -193,25 +204,63 @@ Template.appManage.onCreated(function() {
 		instance.app.set(app);
 	};
 
-	instance.onSettingUpdated = function _onSettingUpdated({ appId }) {
+	this.onSettingUpdated = async ({ appId }) => {
 		if (appId !== id) {
 			return;
 		}
 
-		APIClient.get(`apps/${ id }/settings`).then((result) => {
-			_morphSettings(result.settings);
+		const { settings } = await APIClient.get(`apps/${ id }/settings`);
+		Object.keys(settings).forEach((k) => {
+			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
+			settings[k].value = settings[k].value !== undefined && settings[k].value !== null ? settings[k].value : settings[k].packageValue;
+			settings[k].oldValue = settings[k].value;
+			settings[k].hasChanged = false;
 		});
+
+		instance.settings.set(settings);
 	};
 });
 
 Template.apps.onDestroyed(function() {
-	const instance = this;
-
-	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.onStatusChanged);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, this.onSettingUpdated);
 });
 
 Template.appManage.helpers({
+	isInstalled() {
+		const app = Template.instance().app.get();
+		return app.installed;
+	},
+	canUpdate() {
+		const app = Template.instance().app.get();
+		return app.installed && app.newVersion;
+	},
+	isFromMarketplace() {
+		const app = Template.instance().app.get();
+		return app.subscriptionInfo;
+	},
+	canTrial() {
+		const app = Template.instance().app.get();
+		return app.purchaseType === 'subscription' && app.subscriptionInfo && !app.subscriptionInfo.status;
+	},
+	canBuy() {
+		const app = Template.instance().app.get();
+		return app.price > 0;
+	},
+	priceDisplay() {
+		const app = Template.instance().app.get();
+		if (app.purchaseType === 'subscription') {
+			if (!app.pricingPlans || !Array.isArray(app.pricingPlans) || app.pricingPlans.length === 0) {
+				return;
+			}
+
+			return formatPricingPlan(app.pricingPlans[0]);
+		}
+
+		if (app.price > 0) {
+			return formatPrice(app.price);
+		}
+	},
 	isEmail,
 	_(key, ...args) {
 		const options = args.pop().hash;
@@ -294,11 +343,6 @@ Template.appManage.helpers({
 		const info = Template.instance().app.get();
 
 		return info.status === 'auto_enabled' || info.status === 'manually_enabled';
-	},
-	isInstalled() {
-		const instance = Template.instance();
-
-		return instance.app.get().installed === true;
 	},
 	hasPurchased() {
 		const instance = Template.instance();

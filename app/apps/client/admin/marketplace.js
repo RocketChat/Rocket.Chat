@@ -39,6 +39,7 @@ const getCloudLoggedIn = async (instance) => {
 };
 
 const handleAPIError = (e, instance) => {
+	console.error(e);
 	const errMsg = (e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message;
 	toastr.error(errMsg);
 
@@ -145,9 +146,9 @@ const promptSubscription = async (app, instance) => {
 	}, async () => {
 		try {
 			await APIClient.post('apps/', {
-				appId: app.latest.id,
+				appId: latest.id,
 				marketplace: true,
-				version: app.latest.version,
+				version: latest.version,
 			});
 			await Promise.all([
 				getInstalledApps(instance),
