@@ -32,7 +32,32 @@ Tracker.autorun(() => {
 
 			const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
 
-			const emojiOnly = emojis.length && !Array.from(checkEmojiOnly.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).map((el) => el.nodeValue).join('').trim();
+			const walker = document.createTreeWalker(
+				checkEmojiOnly,
+				NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+				{
+					acceptNode: (node) => {
+						if (node.nodeType === Node.ELEMENT_NODE && (
+							node.classList.contains('emojione')
+							|| node.classList.contains('emoji')
+						)) {
+							return NodeFilter.FILTER_REJECT;
+						}
+						return NodeFilter.FILTER_ACCEPT;
+					},
+				},
+			);
+
+			let hasText = false;
+
+			while (walker.nextNode()) {
+				if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
+					hasText = true;
+					break;
+				}
+			}
+
+			const emojiOnly = emojis.length && !hasText;
 
 			if (emojiOnly) {
 				for (let i = 0, len = emojis.length; i < len; i++) {
