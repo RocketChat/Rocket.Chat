@@ -19,20 +19,23 @@ const config = {
 
 const Nextcloud = new CustomOAuth('nextcloud', config);
 
-if (Meteor.isServer) {
-	Meteor.startup(function() {
-		settings.get('Accounts_OAuth_Nextcloud_URL', function(key, value) {
-			config.serverURL = value.trim().replace(/\/*$/, '');
+Meteor.startup(function() {
+	if (Meteor.isServer) {
+		settings.get('Accounts_OAuth_Nextcloud_URL', function(key, nextclodURL) {
+			if (!nextclodURL.trim()) {
+				return;
+			}
+			config.serverURL = nextclodURL.trim().replace(/\/*$/, '');
 			Nextcloud.configure(config);
 		});
-	});
-} else {
-	Meteor.startup(function() {
+	} else {
 		Tracker.autorun(function() {
-			if (settings.get('Accounts_OAuth_Nextcloud_URL')) {
-				config.serverURL = settings.get('Accounts_OAuth_Nextcloud_URL').trim().replace(/\/*$/, '');
-				Nextcloud.configure(config);
+			const nextclodURL = settings.get('Accounts_OAuth_Nextcloud_URL');
+			if (!nextclodURL.trim()) {
+				return;
 			}
+			config.serverURL = nextclodURL.trim().replace(/\/*$/, '');
+			Nextcloud.configure(config);
 		});
-	});
-}
+	}
+});

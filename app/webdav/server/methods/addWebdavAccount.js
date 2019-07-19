@@ -31,12 +31,6 @@ Meteor.methods({
 			}
 		);
 
-		try {
-			await client.stat('/');
-		} catch (error) {
-			return { success: false, message: 'could-not-access-webdav', error };
-		}
-
 		const accountData = {
 			user_id: userId,
 			server_url: formData.serverURL,
@@ -46,11 +40,19 @@ Meteor.methods({
 		};
 
 		try {
+			await client.stat('/');
 			WebdavAccounts.insert(accountData);
-			return { success: true, message: 'webdav-account-saved' };
 		} catch (error) {
-			return { success: false, message: error.code === 11000 ? 'duplicated-account' : 'unknown-write-error', error };
+			if (error.code === 11000) {
+				throw new Meteor.Error('duplicated-account', {
+					method: 'addWebdavAccount',
+				});
+			}
+			throw new Meteor.Error('could-not-access-webdav', {
+				method: 'addWebdavAccount',
+			});
 		}
+		return true;
 	},
 
 	async addWebdavAccountByToken(data) {
@@ -68,15 +70,7 @@ Meteor.methods({
 			serverURL: String,
 		}));
 
-		const client = createClient(
-			data.serverURL,
-			{ token: data.token });
-
-		try {
-			await client.stat('/');
-		} catch (error) {
-			return { success: false, message: 'could-not-access-webdav', error };
-		}
+		const client = createClient(data.serverURL, { token: data.token });
 
 		const accountData = {
 			user_id: userId,
@@ -86,15 +80,24 @@ Meteor.methods({
 		};
 
 		try {
+			await client.stat('/');
 			WebdavAccounts.upsert({
 				user_id: userId,
 				name: data.name,
 			}, {
 				$set: accountData,
 			});
-			return { success: true, message: 'webdav-account-saved' };
 		} catch (error) {
-			return { success: false, message: 'unknown-write-error', error };
+			if (error.code === 11000) {
+				throw new Meteor.Error('duplicated-account', {
+					method: 'addWebdavAccount',
+				});
+			}
+			throw new Meteor.Error('could-not-access-webdav', {
+				method: 'addWebdavAccount',
+			});
 		}
+
+		return true;
 	},
 });
