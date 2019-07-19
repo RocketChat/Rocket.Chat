@@ -78,6 +78,7 @@ export const Livechat = {
 			return onlineAgents && onlineAgents.count() > 0;
 		});
 	},
+
 	async getRoom(guest, message, roomInfo, agent) {
 		let room = Rooms.findOneById(message.rid);
 		let newRoom = false;
@@ -434,7 +435,7 @@ export const Livechat = {
 	},
 
 	transfer(room, guest, transferData) {
-		return RoutingManager.transfer(room, guest, transferData);
+		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
 	returnRoomAsInquiry(rid, departmentId) {
@@ -482,9 +483,9 @@ export const Livechat = {
 		let openInq;
 		// mark inquiry as open
 		if (agentIds.length === 0) {
-			openInq = LivechatInquiry.openInquiry(inquiry._id);
+			openInq = LivechatInquiry.queueInquiry(inquiry._id);
 		} else {
-			openInq = LivechatInquiry.openInquiryWithAgents(inquiry._id, agentIds);
+			openInq = LivechatInquiry.queueInquiryWithAgents(inquiry._id, agentIds);
 		}
 
 		if (openInq) {
@@ -588,7 +589,7 @@ export const Livechat = {
 
 		if (addUserRoles(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, true);
-			Users.setLivechatStatus(user._id, 'available');
+			this.setUserStatusLivechat(user._id, 'available');
 			return user;
 		}
 
@@ -622,7 +623,7 @@ export const Livechat = {
 
 		if (removeUserFromRoles(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, false);
-			Users.setLivechatStatus(user._id, 'not-available');
+			this.setUserStatusLivechat(user._id, 'not-available');
 			return true;
 		}
 
@@ -650,6 +651,12 @@ export const Livechat = {
 
 		this.cleanGuestHistory(_id);
 		return LivechatVisitors.removeById(_id);
+	},
+
+	setUserStatusLivechat(userId, status) {
+		const user = Users.setLivechatStatus(userId, status);
+		Meteor.defer(() => { callbacks.run('livechat.setUserStatusLivechat', { userId, status }); });
+		return user;
 	},
 
 	cleanGuestHistory(_id) {

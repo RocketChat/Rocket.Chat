@@ -1,4 +1,5 @@
 import { Match, check } from 'meteor/check';
+import { MongoInternals } from 'meteor/mongo';
 
 import { Rooms, Subscriptions } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
@@ -38,7 +39,7 @@ export const createLivechatRoom = (rid, name, guest, extraData) => {
 	return Rooms.insert(room);
 };
 
-export const createLivechatInquiry = (rid, name, guest, message) => {
+export const createLivechatInquiry = (rid, name, guest, message, initialStatus) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -60,7 +61,7 @@ export const createLivechatInquiry = (rid, name, guest, message) => {
 		ts: new Date(),
 		department,
 		message: msg,
-		status: 'ready',
+		status: initialStatus || 'ready',
 		v: {
 			_id,
 			username,
@@ -113,4 +114,31 @@ export const createLivechatSubscription = (rid, name, guest, agent) => {
 	};
 
 	return Subscriptions.insert(subscriptionData);
+};
+
+export const createLivechatQueueView = () => {
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	mongo.db.createCollection('view_livechat_queue_status', { // name of the view to create
+		viewOn: 'rocketchat_room', // name of source collection from which to create the view
+		pipeline: [
+			{
+				$match: {
+					open: true,
+					servedBy: { $exists: true },
+				},
+			},
+			{
+				$group: {
+					_id: '$servedBy._id',
+					chats: { $sum: 1 },
+				},
+			},
+			{
+				$sort: {
+					chats: 1,
+				},
+			},
+		],
+	});
 };

@@ -41,13 +41,13 @@ export const QueueManager = {
 
 		Rooms.updateLivechatRoomCount();
 
-		inquiry = callbacks.run('livechat.beforeQueue', inquiry);
+		inquiry = await callbacks.run('livechat.beforeQueue', inquiry);
 		if (inquiry.status !== 'ready') {
 			return room;
 		}
 
 		LivechatInquiry.openInquiry(inquiry._id);
-		room = RoutingManager.delegate(inquiry, agent);
+		room = await RoutingManager.delegateRoom(room, agent);
 		return room;
 	},
 

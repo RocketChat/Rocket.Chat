@@ -46,15 +46,8 @@ class ExternalQueue {
 		throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 	}
 
-	delegateInquiry(inquiry, agent) {
-		const { department, rid } = inquiry;
-
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
-			agent = this.getNextAgent(department);
-		}
-
-		RoutingManager.assignAgent(inquiry, agent);
-		return Rooms.findOneById(rid);
+	delegateRoom(agent) {
+		return agent;
 	}
 }
 

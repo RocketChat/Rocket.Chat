@@ -8,6 +8,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { LivechatInquiry } from '../lib/LivechatInquiry';
 import { RoutingManager } from './lib/RoutingManager';
+import { createLivechatQueueView } from './lib/Helper';
 
 Meteor.startup(() => {
 	roomTypes.setRoomFind('l', (_id) => Rooms.findOneLivechatById(_id));
@@ -45,4 +46,6 @@ Meteor.startup(() => {
 			lng: user.language || settings.get('Language') || 'en',
 		}));
 	}, callbacks.priority.LOW, 'cant-leave-room');
+
+	createLivechatQueueView();
 });

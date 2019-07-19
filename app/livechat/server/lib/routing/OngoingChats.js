@@ -1,12 +1,12 @@
 import { RoutingManager } from '../RoutingManager';
-import { LivechatDepartmentAgents, Rooms, Users } from '../../../../models';
+import { Rooms, Users } from '../../../../models';
 
-/* Least Amount Queuing method:
+/* Ongoing Chats Queuing method:
 	*
 	* default method where the agent with the least number
 	* of open chats is paired with the incoming livechat
 */
-class LeastAmount {
+class OngoingChats {
 	constructor() {
 		this.config = {
 			previewRoom: false,
@@ -17,12 +17,9 @@ class LeastAmount {
 		};
 	}
 
-	getNextAgent(department) {
-		if (department) {
-			return LivechatDepartmentAgents.getNextAgentForDepartment(department);
-		}
-
-		return Users.getNextAgent();
+	async getNextAgent(department) {
+		const agent = await Users.getNextLeastBusyAgent(department);
+		return agent;
 	}
 
 	delegateRoom(agent) {
@@ -30,4 +27,4 @@ class LeastAmount {
 	}
 }
 
-RoutingManager.registerMethod('Least_Amount', LeastAmount);
+RoutingManager.registerMethod('Ongoing_Chats', OngoingChats);

@@ -54,7 +54,7 @@ Template.livechat.helpers({
 		// get all inquiries of the department
 		const inqs = LivechatInquiry.find({
 			agents: Meteor.userId(),
-			status: 'open',
+			status: 'queued',
 		}, {
 			sort: {
 				ts: 1,

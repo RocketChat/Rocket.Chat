@@ -32,19 +32,21 @@ class GuestPool {
 
 	}
 
-	delegateInquiry(inquiry) {
-		const { department } = inquiry;
-		const allAgents = Livechat.getAgents(department);
+	delegateRoom(agent, room) {
+		const { departmentId, _id: rid, v } = room;
+		const allAgents = Livechat.getAgents(departmentId);
 		if (allAgents.count() === 0) {
 			throw new Meteor.Error('no-agent-available', 'Sorry, no available agents.');
 		}
 
-		const agentIds = allAgents.map((agent) => (department ? agent.agentId : agent._id));
-		LivechatInquiry.openInquiryWithAgents(inquiry._id, agentIds);
+		const agentIds = allAgents.map((agent) => (departmentId ? agent.agentId : agent._id));
+
+		const inquiry = LivechatInquiry.findOneByRoomId(rid);
+		LivechatInquiry.queueInquiryWithAgents(inquiry._id, agentIds);
 
 		// Alert only the online agents of the queued request
-		const onlineAgents = Livechat.getOnlineAgents(department);
-		const { rid, v, message } = inquiry;
+		const onlineAgents = Livechat.getOnlineAgents(departmentId);
+		const { message } = inquiry;
 
 		onlineAgents.forEach((agent) => {
 			const { _id, active, emails, language, status, statusConnection, username } = agent;
@@ -77,7 +79,7 @@ class GuestPool {
 			});
 		});
 
-		return Rooms.findOneById(rid);
+		return agent;
 	}
 }
 

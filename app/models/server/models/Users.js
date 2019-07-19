@@ -171,6 +171,45 @@ export class Users extends Base {
 		return null;
 	}
 
+	async getNextLeastBusyAgent(department) {
+		const collectionObj = this.model.rawCollection();
+		const aggregate = [
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
+			{ $lookup: { from: 'view_livechat_queue_status', localField: '_id', foreignField: '_id', as: 'LivechatQueueStatus' } }, // the `view_livechat_queue_status` it's a view created when the server starts
+			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
+			{ $project: { agentId: '$_id', username: 1, country: 1, lastRoutingTime: 1, departments: 1, queueInfo: { $arrayElemAt: ['$LivechatQueueStatus', 0] } } },
+			{ $sort: { 'queueInfo.chats': 1, lastRoutingTime: 1, username: 1 } },
+		];
+
+		if (department) {
+			aggregate.push({ $unwind: '$departments' });
+			aggregate.push({ $match: { 'departments.departmentId': department } });
+		}
+
+		aggregate.push({ $limit: 1 });
+
+		const [agent] = await collectionObj.aggregate(aggregate).toArray();
+		if (agent) {
+			this.setLastRoutingTime(agent.agentId);
+		}
+
+		return agent;
+	}
+
+	setLastRoutingTime(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				lastRoutingTime: new Date(),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setLivechatStatus(userId, status) {
 		const query = {
 			_id: userId,

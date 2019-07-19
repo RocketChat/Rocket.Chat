@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings';
 import { createLivechatSubscription } from './Helper';
 import { Livechat } from './Livechat';
+import { callbacks } from '../../../callbacks';
 import { Rooms, Messages, Subscriptions, Users } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
@@ -30,23 +31,38 @@ export const RoutingManager = {
 		return this.getMethod().config || {};
 	},
 
-	delegate(inquiry, agent) {
+	async delegateRoom(room, agent) {
 		// return Room Object
-		return this.getMethod().delegateInquiry(inquiry, agent);
+		if (!agent) {
+			agent = this.getMethod().delegateRoom(agent, room);
+		}
+
+		const { departmentId, _id } = room;
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
+			agent = await this.getMethod().getNextAgent(departmentId);
+		}
+
+		if (!agent) {
+			return room;
+		}
+
+		this.assignAgent(agent, room);
+		return Rooms.findOneById(_id);
 	},
 
-	assignAgent(inquiry, agent) {
+	assignAgent(agent, room) {
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
 		}));
 
-		const { _id, rid, name, v } = inquiry;
-		if (!createLivechatSubscription(rid, name, v, agent)) {
+		const { _id: rid, fname, v } = room;
+		if (!createLivechatSubscription(rid, fname, v, agent)) {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
-		LivechatInquiry.takeInquiry(_id);
+		const inquiry = LivechatInquiry.findOneByRoomId(rid);
+		LivechatInquiry.takeInquiry(inquiry._id);
 		Rooms.changeAgentByRoomId(rid, agent);
 		Rooms.incUsersCountById(rid);
 
@@ -59,7 +75,27 @@ export const RoutingManager = {
 		});
 	},
 
-	transfer(room, guest, transferData) {
+	takeInquiry(inquiry, agent) {
+		check(agent, Match.ObjectIncluding({
+			agentId: String,
+			username: String,
+		}));
+		/*
+		if (!inquiry || inquiry.status !== 'queued') {
+			return inquiry;
+		}*/
+
+		agent = callbacks.run('livechat.checkAgentBeforeAssignment', agent);
+		if (!agent) {
+			return inquiry;
+		}
+
+		const room = Rooms.findOneById(inquiry.rid);
+		this.assignAgent(agent, room);
+		return LivechatInquiry.findOneByRoomId(inquiry.rid);
+	},
+
+	transferRoom(room, guest, transferData) {
 		const { userId, departmentId } = transferData;
 		const { _id: rid, servedBy } = room;
 		let agent;
@@ -89,6 +125,10 @@ export const RoutingManager = {
 			Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
 
 			const inquiry = LivechatInquiry.findOneByRoomId(rid);
+			if (!inquiry) {
+				throw new Meteor.Error('error-transfer-inquiry');
+			}
+
 			this.assignAgent(inquiry, agent);
 
 			Messages.createUserJoinWithRoomIdAndUser(rid, { _id: agent.agentId, username: agent.username });
