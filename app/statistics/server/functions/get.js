@@ -159,6 +159,7 @@ statistics.get = function _getStatistics() {
 		totalIncomingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-incoming').length,
 		totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
 		totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
+		totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 	};
 
 	return statistics;
