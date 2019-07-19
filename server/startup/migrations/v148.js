@@ -1,46 +1,30 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings, Rooms } from '../../../app/models';
-import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
-import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
+import { Migrations } from '../../../app/migrations/server';
+import { Users, Settings, FederationPeers } from '../../../app/models/server';
 
 Migrations.add({
 	version: 148,
 	up() {
-		const oldSetting = Settings.findOne({ _id: 'Livechat_guest_pool_with_no_agents' });
-		const { _id } = oldSetting;
+		const { value: localDomain } = Settings.findOne({ _id: 'FEDERATION_Domain' });
 
-		delete oldSetting._id;
-		delete oldSetting.enableQuery;
-		delete oldSetting.ts;
-		delete oldSetting._updatedAt;
+		Users.update({
+			federation: { $exists: true }, 'federation.peer': { $ne: localDomain },
+		}, {
+			$set: { isRemote: true },
+		}, { multi: true });
 
-		Settings.remove({ _id });
+		FederationPeers.update({
+			peer: { $ne: localDomain },
+		}, {
+			$set: { isRemote: true },
+		}, { multi: true });
 
-		const newSetting = Object.assign(oldSetting, { _id: 'Livechat_accept_chats_with_no_agents' });
-		Settings.insert(newSetting);
-
-		// Create Livechat inquiries for each open Livechat room
-		Rooms.findLivechat({ open: true }).forEach((room) => {
-			const inquiry = LivechatInquiry.findOneByRoomId(room._id);
-			if (!inquiry) {
-				try {
-					const { _id, fname, v } = room;
-					createLivechatInquiry(_id, fname, v, { msg: '' }, 'taken');
-				} catch (error) {
-					console.error(error);
-				}
-			}
-		});
-
-		// Change the status of the current open inquiries from "open" to "queued"
-		LivechatInquiry.update(
-			{ status: 'open' },
-			{
-				$set: {
-					status: 'queued',
-				},
-			},
-			{ multi: true }
-		);
+		FederationPeers.update({
+			peer: localDomain,
+		}, {
+			$set: { isRemote: false },
+		}, { multi: true });
+	},
+	down() {
+		// Down migration does not apply in this case
 	},
 });

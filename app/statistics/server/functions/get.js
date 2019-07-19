@@ -18,18 +18,15 @@ import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/methods/dashboard';
 
 const wizardFields = [
 	'Organization_Type',
-	'Organization_Name',
 	'Industry',
 	'Size',
 	'Country',
-	'Website',
-	'Site_Name',
 	'Language',
 	'Server_Type',
-	'Allow_Marketing_Emails',
 	'Register_Server',
 ];
 
@@ -45,14 +42,6 @@ statistics.get = function _getStatistics() {
 			statistics.wizard[wizardField] = record.value;
 		}
 	});
-
-	const firstUser = Users.getOldest({ name: 1, emails: 1 });
-	statistics.wizard.contactName = firstUser && firstUser.name;
-	statistics.wizard.contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
-
-	if (settings.get('Organization_Email')) {
-		statistics.wizard.contactEmail = settings.get('Organization_Email');
-	}
 
 	// Version
 	statistics.uniqueId = settings.get('uniqueID');
@@ -99,6 +88,13 @@ statistics.get = function _getStatistics() {
 	statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
 	statistics.totalDirectMessages = _.reduce(Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
 	statistics.totalLivechatMessages = _.reduce(Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
+
+	// Federation statistics
+	const federationOverviewData = federationGetStatistics();
+
+	statistics.federatedServers = federationOverviewData.numberOfActivePeers + federationOverviewData.numberOfInactivePeers;
+	statistics.federatedServersActive = federationOverviewData.numberOfActivePeers;
+	statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
 
 	statistics.lastLogin = Users.getLastLogin();
 	statistics.lastMessageSentAt = Messages.getLastTimestamp();
