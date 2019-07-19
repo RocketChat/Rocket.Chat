@@ -6,7 +6,11 @@ import { APIClient } from '../../../utils';
 	const data = await APIClient.get('apps');
 	const activatedGames = data.apps.filter((app) =>
 		app.status === 'manually_enabled'
+		&& app.category
+		&& app.category === 'game'
 	);
+
+	console.log(activatedGames)
 
 	if (activatedGames.length > 0) {
 		TabBar.addButton({
