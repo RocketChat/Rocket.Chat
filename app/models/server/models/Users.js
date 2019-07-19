@@ -463,6 +463,10 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findActive() {
+		return this.find({ active: true });
+	}
+
 	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
@@ -669,6 +673,10 @@ export class Users extends Base {
 
 	findRemote() {
 		return this.find({ isRemote: true });
+	}
+
+	findActiveRemote() {
+		return this.find({ active: true, isRemote: true });
 	}
 
 	// UPDATE
