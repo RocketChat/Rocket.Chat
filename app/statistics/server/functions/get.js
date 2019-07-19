@@ -24,15 +24,11 @@ import { getStatistics as federationGetStatistics } from '../../../federation/se
 
 const wizardFields = [
 	'Organization_Type',
-	'Organization_Name',
 	'Industry',
 	'Size',
 	'Country',
-	'Website',
-	'Site_Name',
 	'Language',
 	'Server_Type',
-	'Allow_Marketing_Emails',
 	'Register_Server',
 ];
 
@@ -48,14 +44,6 @@ statistics.get = function _getStatistics() {
 			statistics.wizard[wizardField] = record.value;
 		}
 	});
-
-	const firstUser = Users.getOldest({ name: 1, emails: 1 });
-	statistics.wizard.contactName = firstUser && firstUser.name;
-	statistics.wizard.contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
-
-	if (settings.get('Organization_Email')) {
-		statistics.wizard.contactEmail = settings.get('Organization_Email');
-	}
 
 	// Version
 	statistics.uniqueId = settings.get('uniqueID');
