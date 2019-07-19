@@ -13,6 +13,7 @@ import './admin/appManage';
 import './admin/appWhatIsIt.html';
 import './admin/appWhatIsIt';
 
+import './gameCenter/tabBarButton';
 import './gameCenter/gameCenter.html';
 import './gameCenter/gameCenter';
 
