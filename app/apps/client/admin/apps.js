@@ -9,17 +9,10 @@ import { t, APIClient } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import { SideNav } from '../../../ui-utils/client';
+import { sortByColumn } from '../utils';
 
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const enabled = ({ status }) => ENABLED_STATUS.includes(status);
-
-const sortByColumn = (array, column, inverted) =>
-	array.sort((a, b) => {
-		if (a.latest[column] < b.latest[column] && !inverted) {
-			return -1;
-		}
-		return 1;
-	});
 
 const getInstalledApps = async (instance) => {
 	try {
