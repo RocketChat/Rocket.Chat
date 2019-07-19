@@ -11,7 +11,7 @@ import { t, APIClient } from '../../../utils';
 import { modal } from '../../../ui-utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
-import { SideNav } from '../../../ui-utils/client';
+import { SideNav, popover } from '../../../ui-utils/client';
 
 import './marketplace.html';
 import './marketplace.css';
@@ -83,15 +83,37 @@ const triggerButtonLoadingState = (button) => {
 	const icon = button.querySelector('.rc-icon use');
 	const iconHref = icon.getAttribute('href');
 
-	button.classList.add('js-loading');
+	button.classList.add('loading');
 	button.disabled = true;
 	icon.setAttribute('href', '#icon-loading');
 
 	return () => {
-		button.classList.remove('js-loading');
+		button.classList.remove('loading');
 		button.disabled = false;
 		icon.setAttribute('href', iconHref);
 	};
+};
+
+const setAppStatus = async (installedApp, status, instance) => {
+	try {
+		const result = await APIClient.post(`apps/${ installedApp.latest.id }/status`, { status });
+		installedApp.latest.status = result.status;
+		instance.installedApps.set(instance.installedApps.get());
+	} catch (e) {
+		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+	}
+};
+
+const uninstallApp = async (installedApp, instance) => {
+	try {
+		await APIClient.delete(`apps/${ installedApp.latest.id }`);
+		instance.installedApps.set(
+			instance.installedApps.get().filter((app) => app.latest.id !== installedApp.latest.id)
+		);
+	} catch (e) {
+		console.error(e);
+		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+	}
 };
 
 Template.marketplace.onCreated(function() {
@@ -260,7 +282,7 @@ Template.marketplace.helpers({
 		const installedApp = installedApps.get().find(({ latest: { id } }) => id === app.latest.id);
 		return !!installedApp && semver.lt(installedApp.latest.version, app.latest.version);
 	},
-	canTry(app) {
+	canTrial(app) {
 		return app.purchaseType === 'subscription' && !app.subscriptionInfo.status;
 	},
 	canBuy(app) {
@@ -269,29 +291,29 @@ Template.marketplace.helpers({
 });
 
 Template.marketplace.events({
-	'click .manage'() {
-		const rl = this;
-
-		if (rl && rl.latest && rl.latest.id) {
-			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
-		}
-	},
 	'click [data-button="install"]'() {
 		FlowRouter.go('/admin/app/install');
 	},
 	'click [data-button="login"]'() {
 		FlowRouter.go('/admin/cloud');
 	},
+	'click .js-open'(e) {
+		e.stopPropagation();
+		const { latest: { id, version } } = this;
+		FlowRouter.go(`/admin/apps/${ id }?version=${ version }`);
+	},
 	async 'click .js-install'(e, template) {
 		e.stopPropagation();
 		const { currentTarget: button } = e;
 		const stopLoading = triggerButtonLoadingState(button);
 
+		const { latest } = this;
+
 		try {
 			await APIClient.post('apps/', {
-				appId: this.latest.id,
+				appId: latest.id,
 				marketplace: true,
-				version: this.latest.version,
+				version: latest.version,
 			});
 			await Promise.all([
 				getInstalledApps(template),
@@ -351,8 +373,6 @@ Template.marketplace.events({
 			data,
 			template: 'iframeModal',
 		}, async () => {
-			button.classList.add('js-loading');
-
 			try {
 				await APIClient.post('apps/', {
 					appId: this.latest.id,
@@ -369,6 +389,90 @@ Template.marketplace.events({
 				stopLoading();
 			}
 		}, stopLoading);
+	},
+	'click .js-menu'(e, instance) {
+		e.stopPropagation();
+		const { currentTarget } = e;
+
+		const installedApp = instance.installedApps.get().find(({ latest: { id } }) => id === this.latest.id);
+		const isActive = installedApp && ['auto_enabled', 'manually_enabled'].includes(installedApp.latest.status);
+
+		// TODO
+		popover.open({
+			currentTarget,
+			instance,
+			columns: [{
+				groups: [
+					...this.purchaseType === 'subscription' ? [{
+						items: [
+							{
+								icon: 'subscription',
+								name: t('Subscription'),
+								action: () => {
+									// TODO
+								},
+							},
+						],
+					}] : [],
+					{
+						items: [
+							isActive
+								? {
+									icon: 'ban',
+									name: t('Deactivate'),
+									modifier: 'alert',
+									action: () => {
+										modal.open({
+											text: t('Apps_Marketplace_Deactivate_App_Prompt'),
+											type: 'warning',
+											showCancelButton: true,
+											confirmButtonColor: '#DD6B55',
+											confirmButtonText: t('Yes'),
+											cancelButtonText: t('No'),
+											closeOnConfirm: true,
+											html: false,
+										}, (confirmed) => {
+											if (!confirmed) {
+												return;
+											}
+											setAppStatus(installedApp, 'manually_disabled', instance);
+										});
+									},
+								}
+								: {
+									icon: 'check',
+									name: t('Activate'),
+									action: () => {
+										setAppStatus(installedApp, 'manually_enabled', instance);
+									},
+								},
+							{
+								icon: 'trash',
+								name: t('Uninstall'),
+								modifier: 'alert',
+								action: () => {
+									modal.open({
+										text: t('Apps_Marketplace_Uninstall_App_Prompt'),
+										type: 'warning',
+										showCancelButton: true,
+										confirmButtonColor: '#DD6B55',
+										confirmButtonText: t('Yes'),
+										cancelButtonText: t('No'),
+										closeOnConfirm: true,
+										html: false,
+									}, (confirmed) => {
+										if (!confirmed) {
+											return;
+										}
+										uninstallApp(installedApp, instance);
+									});
+								},
+							},
+						],
+					},
+				],
+			}],
+		});
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);

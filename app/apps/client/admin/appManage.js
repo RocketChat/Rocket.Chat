@@ -346,13 +346,13 @@ Template.appManage.helpers({
 	},
 });
 
-async function setActivate(actiavate, e, t) {
+async function setActivate(activate, e, t) {
 	t.processingEnabled.set(true);
 
 	const el = $(e.currentTarget);
 	el.prop('disabled', true);
 
-	const status = actiavate ? 'manually_enabled' : 'manually_disabled';
+	const status = activate ? 'manually_enabled' : 'manually_disabled';
 
 	try {
 		const result = await APIClient.post(`apps/${ t.id.get() }/status`, { status });

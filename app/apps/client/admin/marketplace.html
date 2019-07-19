@@ -47,7 +47,7 @@
 					</thead>
 					<tbody>
 						{{#each apps}}
-							<tr class="rc-table-tr manage" data-name="{{latest.name}}">
+							<tr class="rc-table-tr js-open" data-name="{{latest.name}}">
 								<td>
 									<div class="rc-table-wrapper">
 										{{#if latest.iconFileData}}
@@ -119,20 +119,24 @@
 													{{_ "Installed"}}
 												</span>
 											{{/if}}
+
+											<button class="rc-apps-marketplace__app-menu-trigger js-menu" data-app="{{appId}}">
+												{{> icon icon="menu" block="rc-icon--default-size"}}
+											</button>
 										{{else}}
-											{{#if canTry .}}
+											{{#if canTrial .}}
 												<button class="rc-apps-marketplace__app-button js-purchase" data-app="{{appId}}">
-													{{> icon block="installer rc-icon--default-size" icon="download"}}
+													{{> icon icon="download" block="rc-icon--default-size"}}
 													{{_ "Start a trial"}}
 												</button>
 											{{else if canBuy .}}
 												<button class="rc-apps-marketplace__app-button js-purchase" data-app="{{appId}}">
-													{{> icon block="installer rc-icon--default-size" icon="download"}}
+													{{> icon icon="download" block="rc-icon--default-size"}}
 													{{_ "Buy"}}
 												</button>
 											{{else}}
 												<button class="rc-apps-marketplace__app-button js-install" data-app="{{appId}}">
-													{{> icon block="installer rc-icon--default-size" icon="download"}}
+													{{> icon icon="download" block="rc-icon--default-size"}}
 													{{_ "Install"}}
 												</button>
 											{{/if}}
@@ -142,7 +146,7 @@
 							</tr>
 						{{/each}}
 						{{#if isLoading}}
-							<tr>
+							<tr class="table-no-click table-no-pointer">
 								<td colspan="4" style="position: relative">{{> loading}}</td>
 							</tr>
 						{{/if}}

@@ -1,7 +1,9 @@
 .rc-apps-marketplace {
 	&__app-status,
-	&__app-button {
+	&__app-button,
+	&__app-menu-trigger {
 		display: flex;
+		flex: 1;
 
 		padding: 0;
 
@@ -11,10 +13,9 @@
 		appearance: none;
 	}
 
+	&__app-menu-trigger,
 	&__app-button {
 		position: relative;
-
-		color: var(--rc-color-button-primary);
 
 		&:active {
 			transform: translateY(2px);
@@ -36,8 +37,12 @@
 			content: "";
 			cursor: pointer;
 		}
+	}
 
-		&.js-loading {
+	&__app-button {
+		color: var(--rc-color-button-primary);
+
+		&.loading {
 			opacity: 0.6;
 
 			& > .rc-icon {
@@ -46,7 +51,18 @@
 		}
 	}
 
-	.rc-table-content .rc-table .rc-table-td--small:last-child {
-		width: 150px;
+	&__app-menu-trigger {
+		visibility: hidden;
+		flex: 0 0 auto;
+	}
+
+	.rc-table-content .rc-table {
+		.rc-table-tr:hover .rc-apps-marketplace__app-menu-trigger {
+			visibility: visible;
+		}
+
+		.rc-table-td--small:last-child {
+			width: 150px;
+		}
 	}
 }
