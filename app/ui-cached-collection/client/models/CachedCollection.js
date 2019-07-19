@@ -5,9 +5,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import localforage from 'localforage';
+import _ from 'underscore';
+
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
-import _ from 'underscore';
 
 class CachedCollectionManagerClass {
 	constructor() {
@@ -96,7 +97,7 @@ class CachedCollectionManagerClass {
 	}
 }
 
-export const CachedCollectionManager = new CachedCollectionManagerClass;
+export const CachedCollectionManager = new CachedCollectionManagerClass();
 
 const debug = false;
 
@@ -232,8 +233,8 @@ export class CachedCollection {
 			});
 			this.recomputeCollectionQueries();
 
-			if (this.updatedAt < new Date) {
-				this.updatedAt = new Date;
+			if (this.updatedAt < new Date()) {
+				this.updatedAt = new Date();
 			}
 
 			callback(data);
@@ -320,7 +321,7 @@ export class CachedCollection {
 		}
 
 		localforage.setItem(this.name, {
-			updatedAt: new Date,
+			updatedAt: new Date(),
 			version: this.version,
 			token: this.getToken(),
 			records: data,

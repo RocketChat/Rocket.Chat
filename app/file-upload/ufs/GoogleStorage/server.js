@@ -9,7 +9,6 @@ import { Storage } from '@google-cloud/storage';
  * @constructor
  */
 export class GoogleStorageStore extends UploadFS.Store {
-
 	constructor(options) {
 		super(options);
 

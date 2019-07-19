@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import Busboy from 'busboy';
+
 import { EmojiCustom } from '../../../models';
 import { API } from '../api';
-import Busboy from 'busboy';
 
 // DEPRECATED
 // Will be removed after v1.12.0
@@ -140,7 +141,6 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 				}));
 				this.request.pipe(busboy);
 			})();
-
 		});
 	},
 });

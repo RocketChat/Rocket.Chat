@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
 import { Users } from '../../../models';
@@ -11,7 +12,7 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 
 	if (service === 'initials') {
 		return Users.setAvatarOrigin(user._id, service);
-	} else if (service === 'url') {
+	} if (service === 'url') {
 		let result = null;
 
 		try {

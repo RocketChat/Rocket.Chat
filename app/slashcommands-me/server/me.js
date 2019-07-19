@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from '../../utils';
 import s from 'underscore.string';
+
+import { slashCommands } from '../../utils';
 
 /*
  * Me is a named function that will replace /me commands

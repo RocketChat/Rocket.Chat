@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import toastr from 'toastr';
+
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import toastr from 'toastr';
 import './visitorEdit.html';
 
 Template.visitorEdit.helpers({

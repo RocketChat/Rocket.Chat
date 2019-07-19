@@ -12,7 +12,6 @@ const question2 = 'Dortmund soll auch gefunden werden!';
 const tag = 'Frankfurt';
 
 describe('[Smarti Widget]', () => {
-
 	before(() => {
 		browser.pause(5000); // wait some time to make sure that all settings on both sides are actually persisted
 
@@ -20,16 +19,13 @@ describe('[Smarti Widget]', () => {
 	});
 
 	describe('[Request]', () => {
-
 		describe('First request', () => {
-
 			it('create is successful', () => {
 				sideNav.createChannel(room1, false, false);
 				mainContent.sendMessage(question);
 			});
 		});
 		describe('Second request', () => {
-
 			it('create is successful', () => {
 				sideNav.createChannel(room2, false, false);
 				mainContent.sendMessage(question2);

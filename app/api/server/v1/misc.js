@@ -1,13 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
+import s from 'underscore.string';
+
 import { hasRole } from '../../../authorization';
 import { Info } from '../../../utils';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { API } from '../api';
+import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 
-import s from 'underscore.string';
 
 // DEPRECATED
 // Will be removed after v1.12.0
@@ -41,7 +43,7 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId)));
+		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields: getDefaultUserFields() })));
 	},
 });
 

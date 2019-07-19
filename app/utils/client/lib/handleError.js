@@ -14,7 +14,7 @@ export const handleError = function(error, useToastr = true) {
 
 	if (useToastr) {
 		const details = Object.entries(error.details || {})
-			.reduce((obj, [key, value]) => ({ ...obj, [key] : s.escapeHTML(value) }), {});
+			.reduce((obj, [key, value]) => ({ ...obj, [key]: s.escapeHTML(value) }), {});
 		const message = TAPi18n.__(error.error, details);
 		const title = details.errorTitle && TAPi18n.__(details.errorTitle);
 

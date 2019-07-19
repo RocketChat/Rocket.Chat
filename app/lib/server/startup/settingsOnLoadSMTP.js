@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../settings';
 import _ from 'underscore';
+
+import { settings } from '../../../settings';
 
 const buildMailURL = _.debounce(function() {
 	console.log('Updating process.env.MAIL_URL');

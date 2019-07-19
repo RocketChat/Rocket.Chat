@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { Subscriptions, Users, Roles } from '../../../models';
-import _ from 'underscore';
 
 Meteor.methods({
 	getRoomRoles(rid) {
@@ -32,12 +33,11 @@ Meteor.methods({
 
 		if (!UI_Use_Real_Name) {
 			return subscriptions;
-		} else {
-			return subscriptions.map((subscription) => {
-				const user = Users.findOneById(subscription.u._id);
-				subscription.u.name = user && user.name;
-				return subscription;
-			});
 		}
+		return subscriptions.map((subscription) => {
+			const user = Users.findOneById(subscription.u._id);
+			subscription.u.name = user && user.name;
+			return subscription;
+		});
 	},
 });

@@ -1,6 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 
-export const VideoRecorder = new (class VideoRecorder {
+export const VideoRecorder = new class VideoRecorder {
 	constructor() {
 		this.started = false;
 		this.cameraStarted = new ReactiveVar(false);
@@ -21,14 +21,14 @@ export const VideoRecorder = new (class VideoRecorder {
 			cb && cb.call(this, false);
 		};
 
-		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia ||
-			navigator.msGetUserMedia;
+		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+			|| navigator.msGetUserMedia;
 
 		if (navigator.mediaDevices) {
 			navigator.mediaDevices.getUserMedia({ audio: true, video: true })
 				.then(handleSuccess, handleError);
 			return;
-		} else if (oldGetUserMedia) {
+		} if (oldGetUserMedia) {
 			oldGetUserMedia.call(navigator, { audio: true, video: true }, handleSuccess, handleError);
 			return;
 		}
@@ -117,4 +117,4 @@ export const VideoRecorder = new (class VideoRecorder {
 		this.recording.set(false);
 		delete this.mediaRecorder;
 	}
-});
+}();

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+
 import { TabBar } from '../../../ui-utils/client';
 import { Subscriptions } from '../../../models/client';
 

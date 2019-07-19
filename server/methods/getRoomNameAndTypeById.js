@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { Rooms } from '../../app/models/server/models/Rooms';
 import { Subscriptions } from '../../app/models/server/models/Subscriptions';
 import { hasPermission } from '../../app/authorization/server';
@@ -14,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = Rooms.findOne({ $or: [{ name: nameOrId }, { _id:nameOrId }] });
+		const room = Rooms.findOne({ $or: [{ name: nameOrId }, { _id: nameOrId }] });
 
 		if (room == null) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {

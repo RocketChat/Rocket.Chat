@@ -5,11 +5,10 @@ Template.adminUserChannels.helpers({
 	type() {
 		if (this.t === 'd') {
 			return 'at';
-		} else if (this.t === 'p') {
+		} if (this.t === 'p') {
 			return 'lock';
-		} else {
-			return 'hash';
 		}
+		return 'hash';
 	},
 	route() {
 		switch (this.t) {

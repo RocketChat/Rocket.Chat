@@ -1,4 +1,5 @@
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 /*
@@ -7,12 +8,10 @@ import { callbacks } from '../../callbacks';
  */
 
 function MapView(message) {
-
 	// get MapView settings
 	const mv_googlekey = settings.get('MapView_GMapsAPIKey');
 
 	if (message.location) {
-
 		// GeoJSON is reversed - ie. [lng, lat]
 		const [longitude, latitude] = message.location.coordinates;
 

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
 import { Subscriptions } from '../../models';
@@ -13,7 +14,6 @@ import { Subscriptions } from '../../models';
 
 
 function Invite(command, params, item) {
-
 	if (command !== 'invite' || !Match.test(params, String)) {
 		return;
 	}
@@ -33,7 +33,7 @@ function Invite(command, params, item) {
 		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('User_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [usernames.join(' @')],
@@ -49,7 +49,7 @@ function Invite(command, params, item) {
 		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Username_is_already_in_here', {
 				postProcess: 'sprintf',
 				sprintf: [user.username],
@@ -59,7 +59,6 @@ function Invite(command, params, item) {
 	});
 
 	users.forEach(function(user) {
-
 		try {
 			return Meteor.call('addUserToRoom', {
 				rid: item.rid,
@@ -70,14 +69,14 @@ function Invite(command, params, item) {
 				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
-					ts: new Date,
+					ts: new Date(),
 					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language),
 				});
 			} else {
 				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
-					ts: new Date,
+					ts: new Date(),
 					msg: TAPi18n.__(error, null, currentUser.language),
 				});
 			}

@@ -1,17 +1,18 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { settings } from '../../lib/settings';
 import Settings from '../../../models/server/models/Settings';
-import _ from 'underscore';
 
 const blockedSettings = {};
 
 if (process.env.SETTINGS_BLOCKED) {
-	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings[settingId] = 1);
+	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => { blockedSettings[settingId] = 1; });
 }
 
 const hiddenSettings = {};
 if (process.env.SETTINGS_HIDDEN) {
-	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings[settingId] = 1);
+	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => { hiddenSettings[settingId] = 1; });
 }
 
 settings._sorter = {};
@@ -38,6 +39,7 @@ settings.add = function(_id, value, options = {}) {
 	options.valueSource = 'packageValue';
 	options.hidden = options.hidden || false;
 	options.blocked = options.blocked || false;
+	options.secret = options.secret || false;
 	if (options.sorter == null) {
 		options.sorter = settings._sorter[options.group]++;
 	}
@@ -98,7 +100,7 @@ settings.add = function(_id, value, options = {}) {
 	const updateOperations = {
 		$set: options,
 		$setOnInsert: {
-			createdAt: new Date,
+			createdAt: new Date(),
 		},
 	};
 	if (options.editor != null) {
@@ -130,7 +132,7 @@ settings.add = function(_id, value, options = {}) {
 			delete updateOperations.$setOnInsert.editor;
 		}
 	} else {
-		updateOperations.$set.ts = new Date;
+		updateOperations.$set.ts = new Date();
 	}
 	return Settings.upsert({
 		_id,
@@ -157,7 +159,7 @@ settings.addGroup = function(_id, options = {}, cb) {
 	if (options.i18nDescription == null) {
 		options.i18nDescription = `${ _id }_Description`;
 	}
-	options.ts = new Date;
+	options.ts = new Date();
 	options.blocked = false;
 	options.hidden = false;
 	if (blockedSettings[_id] != null) {
@@ -172,7 +174,7 @@ settings.addGroup = function(_id, options = {}, cb) {
 		$set: options,
 		$setOnInsert: {
 			type: 'group',
-			createdAt: new Date,
+			createdAt: new Date(),
 		},
 	});
 	if (cb != null) {

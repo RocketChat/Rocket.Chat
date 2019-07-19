@@ -1,7 +1,6 @@
-import { Rooms } from '../../../../models';
-
-import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
+import { Rooms } from '../../../../models';
+import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/directChannel.graphqls';
 
 const resolver = {

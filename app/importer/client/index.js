@@ -1,6 +1,6 @@
+import { ImporterWebsocketReceiver } from './ImporterWebsocketReceiver';
 import { Importers } from '../lib/Importers';
 import { ImporterInfo } from '../lib/ImporterInfo';
-import { ImporterWebsocketReceiver } from './ImporterWebsocketReceiver';
 import { ProgressStep } from '../lib/ImporterProgressStep';
 import './admin/adminImport.html';
 import './admin/adminImport';

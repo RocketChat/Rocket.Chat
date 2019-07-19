@@ -1,4 +1,5 @@
 import _ from 'underscore';
+
 import { Migrations } from '../../../app/migrations';
 
 if (Migrations.getVersion() !== 0) {

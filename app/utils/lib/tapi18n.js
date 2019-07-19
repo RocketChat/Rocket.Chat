@@ -4,12 +4,11 @@ import { TAPi18n } from 'meteor/tap:i18n';
 export const t = function(key, ...replaces) {
 	if (_.isObject(replaces[0])) {
 		return TAPi18n.__(key, ...replaces);
-	} else {
-		return TAPi18n.__(key, {
-			postProcess: 'sprintf',
-			sprintf: replaces,
-		});
 	}
+	return TAPi18n.__(key, {
+		postProcess: 'sprintf',
+		sprintf: replaces,
+	});
 };
 
 export const isRtl = (lang) => {

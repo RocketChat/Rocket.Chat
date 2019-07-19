@@ -3,13 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { isRtl, handleError } from '../../../utils/client';
-import { ChatSubscription } from '../../../models/client';
 import _ from 'underscore';
+
 import { hide, leave } from './ChannelActions';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
 import { RoomManager } from './RoomManager';
+import { ChatSubscription } from '../../../models/client';
+import { isRtl, handleError } from '../../../utils/client';
+
 export const popover = {
 	renderedPopover: null,
 	open({ currentTarget, ...config }) {
@@ -54,7 +56,6 @@ Template.popover.onRendered(function() {
 	const { activeElement } = this.data;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
-
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';

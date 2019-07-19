@@ -1,7 +1,6 @@
 import { settings } from '../../../settings';
 
 settings.addGroup('UserDataDownload', function() {
-
 	this.add('UserData_EnableDownload', true, {
 		type: 'boolean',
 		public: true,
@@ -31,6 +30,4 @@ settings.addGroup('UserDataDownload', function() {
 		public: true,
 		i18nLabel: 'UserData_MessageLimitPerRequest',
 	});
-
-
 });

@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { Rooms, Subscriptions } from '../../models';
 import { slashCommands } from '../../utils';
 import { settings } from '../../settings';
@@ -13,7 +14,6 @@ import { Notifications } from '../../notifications';
 
 function inviteAll(type) {
 	return function inviteAll(command, params, item) {
-
 		if (!/invite\-all-(to|from)/.test(command) || !Match.test(params, String)) {
 			return;
 		}

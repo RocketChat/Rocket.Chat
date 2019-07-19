@@ -5,9 +5,9 @@ import program from 'commander';
 import wait from 'wait.for';
 import { MongoClient } from 'mongodb';
 
-program.usage('[options]').option('-v, --verbose', 'Verbose', (function(v, total) {
+program.usage('[options]').option('-v, --verbose', 'Verbose', function(v, total) {
 	return total + 1;
-}), 0).option('-M, --mongo-db [mongo db]', 'Mongo DB', 'localhost:27017').option('-N, --db-name [db name]', 'DB Name', 'meteor').on('--help', function() {
+}, 0).option('-M, --mongo-db [mongo db]', 'Mongo DB', 'localhost:27017').option('-N, --db-name [db name]', 'DB Name', 'meteor').on('--help', function() {
 	console.log('  Example:');
 	console.log('');
 	console.log('    $ node unsubscribe.js');

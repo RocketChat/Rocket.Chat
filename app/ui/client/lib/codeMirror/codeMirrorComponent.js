@@ -1,10 +1,10 @@
-const CodeMirrors = {};
-
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import 'codemirror/lib/codemirror.css';
 import CodeMirror from 'codemirror/lib/codemirror.js';
+
+const CodeMirrors = {};
 
 Template.CodeMirror.rendered = function() {
 	const options = this.data.options || { lineNumbers: true };

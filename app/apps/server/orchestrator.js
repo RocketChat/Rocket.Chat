@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
-import { settings } from '../../settings';
+import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppRealStorage, AppRealLogsStorage } from './storage';
-import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { settings } from '../../settings';
+import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
 
 export let Apps;
 

@@ -1,5 +1,6 @@
-import { SmartiAdapter } from './lib/SmartiAdapter';
 import { check, Match } from 'meteor/check';
+
+import { SmartiAdapter } from './lib/SmartiAdapter';
 import { SystemLogger } from '../../../logger/server';
 import { API } from '../../../api/server';
 import { settings } from '../../../settings/server';
@@ -29,9 +30,8 @@ API.v1.addRoute('smarti.result/:_token', { authRequired: false }, {
 		if (this.urlParams._token && this.urlParams._token === rcWebhookToken) {
 			SmartiAdapter.analysisCompleted(null, this.bodyParams.data.conversation, this.bodyParams.data);
 			return API.v1.success();
-		} else {
-			return API.v1.unauthorized({ msg: 'token not valid' });
 		}
+		return API.v1.unauthorized({ msg: 'token not valid' });
 	},
 });
 /**

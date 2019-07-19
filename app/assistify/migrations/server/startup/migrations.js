@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Users, Messages, Rooms, Subscriptions } from '../../../../models/server';
 import { getUserAvatarURL } from '../../../../utils/lib/getUserAvatarURL';
 import { roomTypes } from '../../../../utils/server';
@@ -10,7 +11,6 @@ on startup which migrate data - ignoring the actual version
  */
 
 Meteor.startup(() => {
-
 	const _guessNameFromUsername = function(username = '', email = '') {
 		return (username || email.replace(/@.*/, ''))
 			.replace(/\W/g, ' ')
@@ -25,7 +25,6 @@ Meteor.startup(() => {
 			Users.update({ _id: user._id }, { $set: { name: _guessNameFromUsername(user.username, user.emails[0].address) } });
 		}
 	});
-
 });
 
 
@@ -41,7 +40,7 @@ Meteor.startup(() => {
 Meteor.startup(() => {
 	console.log('Migrating from threads to Discussions');
 
-	const isThread = { parentRoomId: { $exists:true } };
+	const isThread = { parentRoomId: { $exists: true } };
 	const convertToDiscussion = {
 		$rename: { parentRoomId: 'prid' },
 		$set: { t: 'p' },
@@ -87,7 +86,6 @@ Meteor.startup(() => {
 
 				if (msg.attachments && msg.attachments.length) {
 					if (msg.urls && msg.urls[0].url) {
-
 						const fixMessageLink = (url) => (url.startsWith('http')
 							? `${ roomTypes.getRouteLink(room.t, { name: room.name }) }?msg=${ url.substr(url.indexOf('msg=') + 4, url.length) }`
 							: url);
@@ -95,7 +93,7 @@ Meteor.startup(() => {
 						Object.assign(update.$set, {
 							'attachments.0.author_name': msg.u.name,
 							'attachments.0.author_icon': getUserAvatarURL(msg.u.name),
-							'attachments.0.message_link' : msg.urls && fixMessageLink(msg.urls[0].url),
+							'attachments.0.message_link': msg.urls && fixMessageLink(msg.urls[0].url),
 							'attachments.0.ts': msg.ts,
 						});
 					} else {
@@ -114,10 +112,10 @@ Meteor.startup(() => {
 // re-try to drop index which should have been dropped in migration v122
 Meteor.startup(() => {
 	Subscriptions.tryDropIndex({
-		'u._id' : 1,
-		name : 1,
-		t : 1,
-		code : 1,
+		'u._id': 1,
+		name: 1,
+		t: 1,
+		code: 1,
 	});
 	console.log('Fixing ChatSubscription u._id_1_name_1_t_1_code_1');
 });
