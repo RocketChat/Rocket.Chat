@@ -31,9 +31,8 @@ const loadUsers = async (instance) => {
 
 	instance.state.set('loading', true);
 	const { users } = await APIClient.v1.get('roles.getUsersInRole', params);
-	console.log(users);
 
-	instance.usersInRole.set(users);
+	instance.usersInRole.set(instance.usersInRole.curValue.concat(users));
 	instance.state.set({
 		loading: false,
 		hasMore: users.length === PAGE_SIZE,
@@ -83,9 +82,7 @@ Template.permissionsRole.helpers({
 
 	isLoading() {
 		const instance = Template.instance();
-		if (!instance.ready || !instance.ready.get()) {
-			return 'btn-loading';
-		}
+		return (!instance.subscription.ready() || instance.state.get('loading')) && 'btn-loading';
 	},
 
 	searchRoom() {
@@ -209,6 +206,7 @@ Template.permissionsRole.events({
 
 		try {
 			await call('authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements.username.value, instance.searchRoom.get());
+			instance.usersInRole.set([]);
 			instance.state.set({
 				offset: 0,
 				cache: Date.now(),
@@ -259,15 +257,18 @@ Template.permissionsRole.onCreated(async function() {
 	this.searchUsername = new ReactiveVar();
 	this.usersInRole = new ReactiveVar([]);
 
-	this.ready = new ReactiveVar(true);
-	this.subscribe('roles', FlowRouter.getParam('name'));
+	this.subscription = this.subscribe('roles', FlowRouter.getParam('name'));
 });
 
 Template.permissionsRole.onRendered(function() {
 	this.autorun(() => {
-		this.state.get('cache');
-		this.state.get('offset');
 		this.searchRoom.get();
+		this.usersInRole.set([]);
+		this.state.set({ offset: 0 });
+	});
+
+	this.autorun(() => {
+		this.state.get('cache');
 		loadUsers(this);
 	});
 
