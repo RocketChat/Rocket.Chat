@@ -13,13 +13,12 @@ if (Permissions) {
 	Permissions.createOrUpdate('manage-cloud', ['admin']);
 }
 
-
 const licenseCronName = 'Cloud Workspace Sync';
 
 Meteor.startup(function() {
 	// run token/license sync if registered
 	syncWorkspace();
-	
+
 	SyncedCron.remove(licenseCronName);
 	SyncedCron.add({
 		name: licenseCronName,
