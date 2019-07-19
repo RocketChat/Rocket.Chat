@@ -4,6 +4,8 @@ import { hasPermission } from '../../app/authorization';
 import { Subscriptions } from '../../app/models';
 
 Meteor.publish('roomSubscriptionsByRole', function(rid, role) {
+	console.warn('The publication "roomSubscriptionsByRole" is deprecated and will be removed after version v2.0.0');
+
 	if (!this.userId) {
 		return this.ready();
 	}
