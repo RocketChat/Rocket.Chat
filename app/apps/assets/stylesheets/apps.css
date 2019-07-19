@@ -333,6 +333,16 @@
 	}
 }
 
+.rc-games {
+	.rc-table-tr {
+		td:nth-child(even) {
+			.rc-table-title {
+				width: 200px;
+			}
+		}
+	}
+}
+
 @keyframes play90 {
 	0% {
 		right: -798px;
