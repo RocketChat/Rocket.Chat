@@ -144,33 +144,21 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
-	if (Apps.isEnabled()) {
-		const installedApps = Apps.getManager().get();
-		const activeApps = Apps.getManager().get({ enabled: true });
-		statistics.apps = {
-			totalInstalled: installedApps.length,
-			totalActive: activeApps.length,
-			installedAppsList: installedApps.map((app) => ({
-				id: app.getID(),
-				name: app.getName(),
-				status: app.getStatus(),
-			})),
-		};
-	}
+	statistics.apps = {
+		enabled: Apps.isEnabled(),
+		engineVersion: Info.marketplaceApiVersion,
+		totalInstalled: Apps.getManager().get().length,
+		totalActive: Apps.getManager().get({ enabled: true }).length,
+	};
 
 	const integrations = Integrations.find().fetch();
 
 	statistics.integrations = {
 		totalIntegrations: integrations.length,
-		totalActiveIntegrations: integrations.filter((integration) => integration.enabled === true).length,
 		totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
+		totalIncomingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-incoming').length,
 		totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
-		integrationList: integrations.map((integration) => ({
-			_id: integration._id,
-			type: integration.type,
-			enabled: integration.enabled,
-			name: integration.name,
-		})),
+		totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
 	};
 
 	return statistics;
