@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 
 import { settings } from '../../../../settings';
 import { RoutingManager } from '../RoutingManager';
-import { Rooms, Users } from '../../../../models';
+import { Users } from '../../../../models';
 
 class ExternalQueue {
 	constructor() {

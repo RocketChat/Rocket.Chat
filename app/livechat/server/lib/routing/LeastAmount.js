@@ -1,5 +1,5 @@
 import { RoutingManager } from '../RoutingManager';
-import { LivechatDepartmentAgents, Rooms, Users } from '../../../../models';
+import { LivechatDepartmentAgents, Users } from '../../../../models';
 
 /* Least Amount Queuing method:
 	*

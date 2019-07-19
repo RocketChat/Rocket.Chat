@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission } from '../../../authorization';
 import { Users } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
-import { Livechat } from '../lib/Livechat';
 import { RoutingManager } from '../lib/RoutingManager';
 
 Meteor.methods({

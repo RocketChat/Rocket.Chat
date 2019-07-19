@@ -1,5 +1,5 @@
 import { RoutingManager } from '../RoutingManager';
-import { Rooms, Users } from '../../../../models';
+import { Users } from '../../../../models';
 
 /* Ongoing Chats Queuing method:
 	*
