@@ -10,8 +10,6 @@ import { APIClient } from '../../../utils';
 		&& app.category === 'game'
 	);
 
-	console.log(activatedGames)
-
 	if (activatedGames.length > 0) {
 		TabBar.addButton({
 			groups: ['channel', 'group', 'direct'],
