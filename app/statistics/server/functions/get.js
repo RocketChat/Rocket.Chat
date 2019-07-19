@@ -20,6 +20,7 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
 import { Apps } from '../../../apps/server';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/methods/dashboard';
 
 const wizardFields = [
 	'Organization_Type',
@@ -101,6 +102,13 @@ statistics.get = function _getStatistics() {
 	statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
 	statistics.totalDirectMessages = _.reduce(Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
 	statistics.totalLivechatMessages = _.reduce(Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
+
+	// Federation statistics
+	const federationOverviewData = federationGetStatistics();
+
+	statistics.federatedServers = federationOverviewData.numberOfActivePeers + federationOverviewData.numberOfInactivePeers;
+	statistics.federatedServersActive = federationOverviewData.numberOfActivePeers;
+	statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
 
 	statistics.lastLogin = Users.getLastLogin();
 	statistics.lastMessageSentAt = Messages.getLastTimestamp();
