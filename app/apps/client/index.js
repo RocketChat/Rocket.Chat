@@ -13,6 +13,7 @@ import './admin/appManage';
 import './admin/appWhatIsIt.html';
 import './admin/appWhatIsIt';
 
-import './gameCenter';
+import './gameCenter/gameCenter.html';
+import './gameCenter/gameCenter';
 
 export { Apps } from './orchestrator';
