@@ -13,11 +13,13 @@ import {
 	Uploads,
 	Messages,
 	LivechatVisitors,
+	Integrations,
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
+import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/methods/dashboard';
 
 const wizardFields = [
@@ -141,6 +143,24 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
+
+	statistics.apps = {
+		enabled: Apps.isEnabled(),
+		engineVersion: Info.marketplaceApiVersion,
+		totalInstalled: Apps.getManager().get().length,
+		totalActive: Apps.getManager().get({ enabled: true }).length,
+	};
+
+	const integrations = Integrations.find().fetch();
+
+	statistics.integrations = {
+		totalIntegrations: integrations.length,
+		totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
+		totalIncomingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-incoming').length,
+		totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
+		totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
+		totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
+	};
 
 	return statistics;
 };
