@@ -354,6 +354,8 @@
   "Apps_Framework_Development_Mode": "Enable development mode",
   "Apps_Framework_Development_Mode_Description": "Development mode allows the installation of Apps that are not from the Rocket.Chat's Marketplace.",
   "Apps_Framework_enabled": "Enable the App Framework",
+  "Apps_Marketplace_Deactivate_App_Prompt": "Do you really want to deactivate this app?",
+  "Apps_Marketplace_Uninstall_App_Prompt": "Do you really want to uninstall this app?",
   "Apps_Marketplace_Login_Required_Title": "Marketplace Login Required",
   "Apps_Marketplace_Login_Required_Description": "Purchasing apps from the Rocket.Chat Marketplace requires registering your workspace and logging in.",
   "Apps_Marketplace_pricingPlan_monthly": "__price__ / month",
