@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import _ from 'underscore';
 
 import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils';
-import { ChatRoom, Subscriptions } from '../../../models';
+import { ChatRoom, Subscriptions, RoomRoles, UserRoles } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
@@ -36,8 +37,13 @@ Template.membersList.helpers({
 		const roomMuted = (room != null ? room.muted : undefined) || [];
 		const roomUnmuted = (room != null ? room.unmuted : undefined) || [];
 		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
+		const hierarchy = ['admin', 'owner', 'leader', 'moderator', 'Rocket.Chat team'];
 		let totalOnline = 0;
 		let users = roomUsers;
+
+		let userRoles = [];
+		let roomRoles = [];
+		let roles = [];
 
 		const filter = Template.instance().filter.get();
 		let reg = null;
@@ -52,6 +58,7 @@ Template.membersList.helpers({
 
 		users = users.map(function(user) {
 			let utcOffset;
+			let rank;
 			if (onlineUsers[user.username] != null) {
 				totalOnline++;
 				({ utcOffset } = onlineUsers[user.username]);
@@ -67,6 +74,24 @@ Template.membersList.helpers({
 				}
 			}
 
+			userRoles = UserRoles.findOne(user._id) || {};
+			roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
+			roles = _.union(userRoles.roles || [], roomRoles.roles || []);
+			roles = _.sortBy(roles, function(role) {
+				return hierarchy.indexOf(role) === -1 ? 50 : hierarchy.indexOf(role);
+			});
+
+			if (roles.length !== 0) {
+				rank = hierarchy.indexOf(roles[0]);
+				if (rank === -1) {
+					// user has some role assigned which is not a part of hierarchy
+					rank = 100;
+				}
+			} else {
+				// sending the ones without an assigned role at the end of list
+				rank = 1000;
+			}
+
 			const muted = (room.ro && !roomUnmuted.includes(user.username)) || roomMuted.includes(user.username);
 
 			return {
@@ -74,8 +99,16 @@ Template.membersList.helpers({
 				status: onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline',
 				muted,
 				utcOffset,
+				roles,
+				rank,
 			};
 		});
+
+		if (Template.instance().sortingMode.get() === 'showUserRoles') {
+			users = _.sortBy(users, function(user) {
+				return user.rank;
+			});
+		}
 
 		const usersTotal = users.length;
 		const { total, loading, usersLimit, loadingMore } = Template.instance();
@@ -92,6 +125,10 @@ Template.membersList.helpers({
 			hasMore,
 			rid: this.rid,
 		};
+	},
+
+	showUserRoles() {
+		return Template.instance().sortingMode.get() === 'showUserRoles';
 	},
 
 	canAddUser() {
@@ -182,7 +219,8 @@ Template.membersList.events({
 		instance.filter.set(e.target.value.trim());
 	},
 	'change .js-type'(e, instance) {
-		instance.showAllUsers.set(e.currentTarget.value === 'all');
+		instance.showAllUsers.set(e.currentTarget.value !== 'online');
+		instance.sortingMode.set(e.currentTarget.value);
 		instance.usersLimit.set(100);
 	},
 	'click .js-more'(e, instance) {
@@ -284,6 +322,7 @@ Template.membersList.onCreated(function() {
 	this.total = new ReactiveVar();
 	this.loading = new ReactiveVar(true);
 	this.loadingMore = new ReactiveVar(false);
+	this.sortingMode = new ReactiveVar('online');
 
 	this.tabBar = this.data.tabBar;
 
@@ -330,10 +369,10 @@ Template.membersList.onCreated(function() {
 
 Template.membersList.onRendered(function() {
 	this.autorun(() => {
-		const showAllUsers = this.showAllUsers.get();
+		// const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');
 		if (statusTypeSelect) {
-			statusTypeSelect.value = showAllUsers ? 'all' : 'online';
+			statusTypeSelect.value = this.sortingMode.get();
 		}
 	});
 });
