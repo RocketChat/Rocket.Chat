@@ -4,71 +4,89 @@
 	}
 
 	&__app-name {
-		margin: 0;
 		flex: 0 0 1.75rem;
-		color: rgb(84, 88, 94);
-		font-size: 1.375rem;
-		font-family: inherit;
-		font-weight: normal;
+
+		margin: 0;
+
 		letter-spacing: 0;
-		line-height: 1.75rem;
 		text-transform: none;
+
+		color: rgb(84, 88, 94);
+
+		font-family: inherit;
+		font-size: 1.375rem;
+		font-weight: normal;
+		line-height: 1.75rem;
 	}
 
 	&__app-info {
-		flex: 0 0 1.25rem;
 		display: flex;
+		flex: 0 0 1.25rem;
 		flex-wrap: nowrap;
 
 		> span::after {
-			content: '';
 			display: inline-block;
-			margin: 0 8px;
+
 			width: 1px;
 			height: 12px;
+			margin: 0 8px;
+
+			content: '';
+
 			background: rgb(203, 206, 209);
 		}
 
 		> span:last-child::after {
-			content: none;
 			display: none;
+
+			content: none;
 		}
 	}
 
 	&__app-author {
-		color: rgb(158, 162, 168);
-		font-size: 14px;
-		font-family: inherit;
-		font-weight: 500;
 		letter-spacing: -0.2px;
+
+		color: rgb(158, 162, 168);
+
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: 500;
 		line-height: 20px;
 	}
 
 	&__app-version {
-		color: rgb(158, 162, 168);
-		font-size: 14px;
-		font-family: inherit;
-		font-weight: normal;
 		letter-spacing: -0.2px;
+
+		color: rgb(158, 162, 168);
+
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: normal;
 		line-height: 20px;
 	}
 
 	&__app-status {
-		margin-top: 8px;
 		display: flex;
 		flex: 1;
+
+		margin-top: 8px;
+		align-items: center;
 	}
 
 	&__app-install-status {
 		display: flex;
-		flex-wrap: nowrap;
-		align-items: center;
+
 		height: 40px;
+
+		letter-spacing: 0;
+
 		color: rgb(158, 162, 168);
-		font-size: 14px;
+
 		font-family: inherit;
+		font-size: 14px;
 		font-weight: 500;
-		letter-spacing: 0px;
+		align-items: center;
+		flex-wrap: nowrap;
 
 		& > .rc-icon {
 			color: var(--rc-color-button-primary);
@@ -76,24 +94,54 @@
 	}
 
 	&__app-price {
-		color: rgb(157, 161, 168);
-		font-size: 14px;
-		font-family: inherit;
-		font-weight: normal;
 		letter-spacing: -0.2px;
+
+		color: rgb(157, 161, 168);
+
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: normal;
 		line-height: 20px;
 
 		&::before {
-			content: '';
 			display: inline-block;
-			margin: 0 16px;
+
 			width: 1px;
 			height: 12px;
+			margin: 0 16px;
+
+			content: '';
+
 			background: rgb(203, 206, 209);
+		}
+	}
+
+	&__app-button-wrapper {
+		flex: 1;
+	}
+
+	& .rc-button.loading {
+		padding: 0 1.5rem;
+
+		opacity: 0.6;
+
+		&::before {
+			display: none;
+		}
+
+		& > .rc-icon {
+			animation: spin 1s linear infinite;
 		}
 	}
 
 	&__app-menu-trigger {
 		padding: 0;
+
+		&::before {
+			display: inline-block;
+			flex: 1;
+
+			content: '';
+		}
 	}
 }

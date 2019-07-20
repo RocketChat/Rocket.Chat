@@ -128,9 +128,7 @@ const triggerButtonLoadingState = (button) => {
 	};
 };
 
-const promptSubscription = async (app, instance) => {
-	const { latest, purchaseType = 'buy' } = app;
-
+const promptSubscription = async ({ latest, purchaseType = 'buy' }, instance) => {
 	let data = null;
 	try {
 		data = await APIClient.get(`apps?buildExternalUrl=true&appId=${ latest.id }&purchaseType=${ purchaseType }`);
@@ -444,7 +442,6 @@ Template.marketplace.events({
 		}
 
 		const { latest, purchaseType = 'buy' } = this;
-
 		const { currentTarget: button } = e;
 		const stopLoading = triggerButtonLoadingState(button);
 
@@ -464,9 +461,9 @@ Template.marketplace.events({
 		}, async () => {
 			try {
 				await APIClient.post('apps/', {
-					appId: this.latest.id,
+					appId: latest.id,
 					marketplace: true,
-					version: this.latest.version,
+					version: latest.version,
 				});
 				await Promise.all([
 					getInstalledApps(instance),
@@ -496,9 +493,7 @@ Template.marketplace.events({
 							{
 								icon: 'card',
 								name: t('Subscription'),
-								action: async () => {
-									promptSubscription(this, instance);
-								},
+								action: () => promptSubscription(this, instance),
 							},
 						],
 					}] : [],

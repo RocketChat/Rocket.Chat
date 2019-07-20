@@ -16,10 +16,10 @@
 			{{/header}}
 			<div class="content">
 				{{#requiresPermission 'manage-apps'}}
-					{{#if hasError}}
+					{{#if error}}
 						<div class="apps-error error-color">
 							<i class="icon-attention"></i>
-							<p>{{theError}}</p>
+							<p>{{error}}</p>
 						</div>
 					{{else if isReady}}
 						<div class="rc-apps-details">
@@ -40,22 +40,24 @@
 
 									<div class="rc-apps-details__app-status">
 										{{#if isInstalled}}
-											{{#if canUpdate}}
-												<button class="rc-button rc-button--primary js-install">
-													{{> icon icon="reload" block="rc-icon--default-size"}}
-													{{_ "Update"}}
-												</button>
-											{{else if isFromMarketplace}}
-												<span class="rc-apps-details__app-install-status">
-													{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
-													{{_ "Up to date"}}
-												</span>
-											{{else}}
-												<span class="rc-apps-details__app-install-status">
-													{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
-													{{_ "Installed"}}
-												</span>
-											{{/if}}
+											<span class="rc-apps-details__app-button-wrapper">
+												{{#if canUpdate}}
+													<button class="rc-button rc-button--primary js-install">
+														{{> icon icon="reload" block="rc-icon--default-size"}}
+														{{_ "Update_to_version" version=newVersion }}
+													</button>
+												{{else if isFromMarketplace}}
+													<span class="rc-apps-details__app-install-status">
+														{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
+														{{_ "Up to date"}}
+													</span>
+												{{else}}
+													<span class="rc-apps-details__app-install-status">
+														{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
+														{{_ "Installed"}}
+													</span>
+												{{/if}}
+											</span>
 
 											<button class="rc-button rc-button--nude rc-apps-details__app-menu-trigger js-menu" data-app="{{appId}}">
 												{{> icon icon="menu" block="rc-icon--default-size"}}
@@ -82,31 +84,6 @@
 												<span class="rc-apps-details__app-price">
 													{{priceDisplay}}
 												</span>
-											{{/if}}
-										{{/if}}
-									</div>
-
-									<div class="rc-apps-details__row">
-										{{#if isInstalled}}
-											{{#if newVersion}}
-												<button class="rc-button rc-button--primary js-install">{{> icon icon="circled-arrow-down"}} {{_ "Update_to_version" version=newVersion }}</button>
-											{{/if}}
-											<button class="rc-button rc-button--nude js-uninstall">{{> icon icon="trash"}} {{_ "Delete" }}</button>
-											{{#if isEnabled}}
-												<button class="rc-button rc-button--nude js-deactivate">{{> icon icon="ban"}} {{_ "Deactivate" }}</button>
-											{{else}}
-												<button class="rc-button rc-button--nude js-activate">{{> icon icon="check"}} {{_ "Activate" }}</button>
-											{{/if}}
-											<button class="rc-button rc-button--nude js-view-logs">{{> icon icon="list-alt"}} {{_ "View_Logs" }}</button>
-										{{else}}
-											{{#if hasPurchased}}
-												<button class="rc-button rc-button--primary js-install">{{> icon icon="download"}} {{_ "Purchased"}}</button>
-											{{else}}
-												{{#if $eq price 0}}
-													<button class="rc-button rc-button--primary js-purchase">{{> icon icon="circled-arrow-down"}} {{_ "Free"}}</button>
-												{{else}}
-													<button class="rc-button rc-button--primary js-purchase">{{> icon icon="circled-arrow-down"}} {{displayPrice}}</button>
-												{{/if}}
 											{{/if}}
 										{{/if}}
 									</div>
@@ -438,30 +415,6 @@
 														</div>
 														{{/if}}
 													</div>
-													<!-- <div class="horizontal">
-														{{#if $eq editor 'color'}}
-														<div class="flex-grow-1">
-															<input class="input-monitor colorpicker-input" type="text" name="{{id}}" value="{{value}}" autocomplete="off"/>
-															<span class="colorpicker-swatch border-component-color" style="background-color: {{value}}"></span>
-														</div>
-														{{/if}}
-														{{#if $eq editor 'expression'}}
-														<div class="flex-grow-1">
-															<input class="input-monitor" type="" name="{{id}}" value="{{value}}"/>
-														</div>
-														{{/if}}
-														<div class="color-editor">
-															<div class="select-arrow">
-																<i class="icon-down-open secondary-font-color"></i>
-															</div>
-															<select name="color-editor">
-																{{#each allowedTypes}}
-																<option value="{{.}}" selected="{{$eq ../editor .}}">{{_ .}}</option>
-																{{/each}}
-															</select>
-														</div>
-													</div>
-													<div class="settings-description">Variable name: {{getColorVariable id}}</div> -->
 												{{ else if $eq type 'language'}}
 
 													<div class="rc-input">

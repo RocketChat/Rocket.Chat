@@ -10,19 +10,18 @@ import toastr from 'toastr';
 import semver from 'semver';
 
 import { isEmail, t, APIClient } from '../../../utils';
-import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
 import { modal } from '../../../ui-utils';
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
-import { SideNav } from '../../../ui-utils/client';
+import { SideNav, popover } from '../../../ui-utils/client';
 
 import './appManage.html';
 import './appManage.css';
 
 
-function getApps(instance) {
+const getApp = (instance) => {
 	const id = instance.id.get();
 
 	const appInfo = { remote: undefined, local: undefined };
@@ -30,7 +29,7 @@ function getApps(instance) {
 		.catch((e) => {
 			console.log(e);
 			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-			return Promise.resolve({ app: undefined });
+			return { app: undefined };
 		})
 		.then((remote) => {
 			if (!remote.app || !remote.app.bundledIn || remote.app.bundledIn.length === 0) {
@@ -63,11 +62,10 @@ function getApps(instance) {
 		.then((apis) => instance.apis.set(apis))
 		.catch((e) => {
 			if (appInfo.remote || appInfo.local) {
-				return Promise.resolve(true);
+				return true;
 			}
 
-			instance.hasError.set(true);
-			instance.theError.set(e.message);
+			instance.error.set(e.message);
 		}).then((goOn) => {
 			if (typeof goOn !== 'undefined' && !goOn) {
 				return;
@@ -113,7 +111,7 @@ function getApps(instance) {
 				}
 			}
 
-			return Promise.resolve(false);
+			return false;
 		}).then((updateInfo) => {
 			if (!updateInfo) {
 				return;
@@ -127,35 +125,7 @@ function getApps(instance) {
 				instance.app.set(appInfo.local);
 			}
 		});
-}
-
-function installAppFromEvent(e, t) {
-	const el = $(e.currentTarget);
-	el.prop('disabled', true);
-	el.addClass('loading');
-
-	const app = t.app.get();
-
-	const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
-
-	APIClient.post(api, {
-		appId: app.id,
-		marketplace: true,
-		version: app.version,
-	}).then(() => getApps(t)).then(() => {
-		el.prop('disabled', false);
-		el.removeClass('loading');
-	}).catch((e) => {
-		el.prop('disabled', false);
-		el.removeClass('loading');
-		t.hasError.set(true);
-		t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-	});
-
-	// play animation
-	// TODO this icon and animation are not working
-	$(e.currentTarget).find('.rc-icon').addClass('play');
-}
+};
 
 const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
 
@@ -173,13 +143,128 @@ const formatPricingPlan = (pricingPlan) => {
 	});
 };
 
+const handleAPIError = (e) => {
+	console.error(e);
+	toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+};
+
+const triggerButtonLoadingState = (button) => {
+	const icon = button.querySelector('.rc-icon use');
+	const iconHref = icon.getAttribute('href');
+
+	button.classList.add('loading');
+	button.disabled = true;
+	icon.setAttribute('href', '#icon-loading');
+
+	return () => {
+		button.classList.remove('loading');
+		button.disabled = false;
+		icon.setAttribute('href', iconHref);
+	};
+};
+
+const promptSubscription = async (app, instance) => {
+	const { latest, purchaseType = 'buy' } = app;
+
+	let data = null;
+	try {
+		data = await APIClient.get(`apps?buildExternalUrl=true&appId=${ latest.id }&purchaseType=${ purchaseType }`);
+	} catch (e) {
+		handleAPIError(e, instance);
+		return;
+	}
+
+	modal.open({
+		allowOutsideClick: false,
+		data,
+		template: 'iframeModal',
+	}, async () => {
+		try {
+			await APIClient.post('apps/', {
+				appId: latest.id,
+				marketplace: true,
+				version: latest.version,
+			});
+			await getApp(instance);
+		} catch (e) {
+			handleAPIError(e, instance);
+		}
+	});
+};
+
+const viewLogs = ({ id }) => {
+	FlowRouter.go(`/admin/apps/${ id }/logs`, {}, { version: FlowRouter.getQueryParam('version') });
+};
+
+const setAppStatus = async (app, status, instance) => {
+	try {
+		const result = await APIClient.post(`apps/${ app.id }/status`, { status });
+		app.status = result.status;
+		instance.app.set(app);
+	} catch (e) {
+		handleAPIError(e, instance);
+	}
+};
+
+const activateApp = (app, instance) => {
+	setAppStatus(app, 'manually_enabled', instance);
+};
+
+const promptAppDeactivation = (app, instance) => {
+	modal.open({
+		text: t('Apps_Marketplace_Deactivate_App_Prompt'),
+		type: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#DD6B55',
+		confirmButtonText: t('Yes'),
+		cancelButtonText: t('No'),
+		closeOnConfirm: true,
+		html: false,
+	}, (confirmed) => {
+		if (!confirmed) {
+			return;
+		}
+		setAppStatus(app, 'manually_disabled', instance);
+	});
+};
+
+const uninstallApp = async ({ id }, instance) => {
+	try {
+		await APIClient.delete(`apps/${ id }`);
+	} catch (e) {
+		handleAPIError(e, instance);
+	}
+
+	try {
+		await getApp(instance);
+	} catch (e) {
+		handleAPIError(e, instance);
+	}
+};
+
+const promptAppUninstall = (app, instance) => {
+	modal.open({
+		text: t('Apps_Marketplace_Uninstall_App_Prompt'),
+		type: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#DD6B55',
+		confirmButtonText: t('Yes'),
+		cancelButtonText: t('No'),
+		closeOnConfirm: true,
+		html: false,
+	}, (confirmed) => {
+		if (!confirmed) {
+			return;
+		}
+		uninstallApp(app, instance);
+	});
+};
+
 Template.appManage.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
 	this.ready = new ReactiveVar(false);
-	this.hasError = new ReactiveVar(false);
-	this.theError = new ReactiveVar('');
-	this.processingEnabled = new ReactiveVar(false);
+	this.error = new ReactiveVar('');
 	this.app = new ReactiveVar({});
 	this.appsList = new ReactiveVar([]);
 	this.settings = new ReactiveVar({});
@@ -187,7 +272,7 @@ Template.appManage.onCreated(function() {
 	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
-	getApps(instance);
+	getApp(instance);
 
 	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, id);
@@ -219,11 +304,40 @@ Template.appManage.onCreated(function() {
 
 		instance.settings.set(settings);
 	};
+
+	this.onAppAdded = async (appId) => {
+		if (appId !== this.id.get()) {
+			return;
+		}
+
+		try {
+			await getApp(instance);
+		} catch (e) {
+			handleAPIError(e, this);
+		}
+	};
+
+	this.onAppRemoved = async (appId) => {
+		if (appId !== this.id.get()) {
+			return;
+		}
+
+		try {
+			await getApp(instance);
+		} catch (e) {
+			handleAPIError(e, this);
+		}
+	};
+
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.onAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.onAppRemoved);
 });
 
 Template.apps.onDestroyed(function() {
 	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.onStatusChanged);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, this.onSettingUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.onAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.onAppRemoved);
 });
 
 Template.appManage.helpers({
@@ -260,6 +374,8 @@ Template.appManage.helpers({
 		if (app.price > 0) {
 			return formatPrice(app.price);
 		}
+
+		return 'Free';
 	},
 	isEmail,
 	_(key, ...args) {
@@ -286,21 +402,9 @@ Template.appManage.helpers({
 		});
 		return result;
 	},
-	appLanguage(key) {
-		const setting = settings.get('Language');
-		return setting && setting.split('-').shift().toLowerCase() === key;
-	},
 	selectedOption(_id, val) {
 		const settings = Template.instance().settings.get();
 		return settings[_id].value === val;
-	},
-	getColorVariable(color) {
-		return color.replace(/theme-color-/, '@');
-	},
-	dirty() {
-		const t = Template.instance();
-		const settings = t.settings.get();
-		return Object.keys(settings).some((k) => settings[k].hasChanged);
 	},
 	disabled() {
 		const t = Template.instance();
@@ -314,40 +418,12 @@ Template.appManage.helpers({
 
 		return false;
 	},
-	hasError() {
-		if (Template.instance().hasError) {
-			return Template.instance().hasError.get();
-		}
-
-		return false;
-	},
-	theError() {
-		if (Template.instance().theError) {
-			return Template.instance().theError.get();
+	error() {
+		if (Template.instance().error) {
+			return Template.instance().error.get();
 		}
 
 		return '';
-	},
-	isProcessingEnabled() {
-		if (Template.instance().processingEnabled) {
-			return Template.instance().processingEnabled.get();
-		}
-
-		return false;
-	},
-	isEnabled() {
-		if (!Template.instance().app) {
-			return false;
-		}
-
-		const info = Template.instance().app.get();
-
-		return info.status === 'auto_enabled' || info.status === 'manually_enabled';
-	},
-	hasPurchased() {
-		const instance = Template.instance();
-
-		return instance.app.get().isPurchased === true;
 	},
 	app() {
 		return Template.instance().app.get();
@@ -390,94 +466,7 @@ Template.appManage.helpers({
 	},
 });
 
-async function setActivate(activate, e, t) {
-	t.processingEnabled.set(true);
-
-	const el = $(e.currentTarget);
-	el.prop('disabled', true);
-
-	const status = activate ? 'manually_enabled' : 'manually_disabled';
-
-	try {
-		const result = await APIClient.post(`apps/${ t.id.get() }/status`, { status });
-		const info = t.app.get();
-		info.status = result.status;
-		t.app.set(info);
-	} catch (e) {
-		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-	}
-	t.processingEnabled.set(false);
-	el.prop('disabled', false);
-}
-
 Template.appManage.events({
-	'click .expand': (e) => {
-		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
-		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__('Collapse'));
-		$('.CodeMirror').each((index, codeMirror) => codeMirror.CodeMirror.refresh());
-	},
-
-	'click .collapse': (e) => {
-		$(e.currentTarget).closest('.section').addClass('section-collapsed');
-		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
-	},
-
-	'click .js-cancel'() {
-		FlowRouter.go('/admin/apps');
-	},
-
-	'click .js-activate'(e, t) {
-		setActivate(true, e, t);
-	},
-
-	'click .js-deactivate'(e, t) {
-		setActivate(false, e, t);
-	},
-
-	'click .js-uninstall': async (e, t) => {
-		t.ready.set(false);
-		try {
-			await APIClient.delete(`apps/${ t.id.get() }`);
-			FlowRouter.go('/admin/apps');
-		} catch (err) {
-			console.warn('Error:', err);
-		} finally {
-			t.ready.set(true);
-		}
-	},
-
-	'click .js-install': async (e, t) => {
-		installAppFromEvent(e, t);
-	},
-
-	'click .js-purchase': (e, t) => {
-		const rl = t.app.get();
-
-		APIClient.get(`apps?buildExternalUrl=true&appId=${ rl.id }&purchaseType=${ rl.purchaseType }`)
-			.then((data) => {
-				data.successCallback = async () => {
-					installAppFromEvent(e, t);
-				};
-
-				modal.open({
-					allowOutsideClick: false,
-					data,
-					template: 'iframeModal',
-				});
-			})
-			.catch((e) => {
-				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-			});
-	},
-
-	'click .js-update': (e, t) => {
-		FlowRouter.go(`/admin/app/install?isUpdatingId=${ t.id.get() }`);
-	},
-
-	'click .js-view-logs': (e, t) => {
-		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`, {}, { version: FlowRouter.getQueryParam('version') });
-	},
-
 	'click .js-cancel-editing': async (e, t) => {
 		t.onSettingUpdated({ appId: t.id.get() });
 	},
@@ -497,7 +486,6 @@ Template.appManage.events({
 				if (setting.hasChanged) {
 					toSave.push(setting);
 				}
-				// return !!setting.hasChanged;
 			});
 
 			if (toSave.length === 0) {
@@ -519,6 +507,129 @@ Template.appManage.events({
 		} finally {
 			t.loading.set(false);
 		}
+	},
+
+	'click .js-cancel'() {
+		FlowRouter.go('/admin/apps');
+	},
+
+	'click .js-menu'(e, instance) {
+		e.stopPropagation();
+		const { currentTarget } = e;
+
+		const app = instance.app.get();
+		const isActive = app && ['auto_enabled', 'manually_enabled'].includes(app.status);
+
+		popover.open({
+			currentTarget,
+			instance,
+			columns: [{
+				groups: [
+					{
+						items: [
+							...this.purchaseType === 'subscription' ? [{
+								icon: 'card',
+								name: t('Subscription'),
+								action: () => promptSubscription(this, instance),
+							}] : [],
+							{
+								icon: 'list-alt',
+								name: t('View_Logs'),
+								action: () => viewLogs(app, instance),
+							},
+						],
+					},
+					{
+						items: [
+							isActive
+								? {
+									icon: 'ban',
+									name: t('Deactivate'),
+									modifier: 'alert',
+									action: () => promptAppDeactivation(app, instance),
+								}
+								: {
+									icon: 'check',
+									name: t('Activate'),
+									action: () => activateApp(app, instance),
+								},
+							{
+								icon: 'trash',
+								name: t('Uninstall'),
+								modifier: 'alert',
+								action: () => promptAppUninstall(app, instance),
+							},
+						],
+					},
+				],
+			}],
+		});
+	},
+
+	async 'click .js-install'(e, instance) {
+		e.stopPropagation();
+
+		const { currentTarget: button } = e;
+		const stopLoading = triggerButtonLoadingState(button);
+
+		const { id, version } = instance.app.get();
+
+		try {
+			await APIClient.post('apps/', {
+				appId: id,
+				marketplace: true,
+				version,
+			});
+		} catch (e) {
+			handleAPIError(e, instance);
+		}
+
+		try {
+			await getApp(instance);
+		} catch (e) {
+			handleAPIError(e, instance);
+		} finally {
+			stopLoading();
+		}
+	},
+
+	async 'click .js-purchase'(e, instance) {
+		const { id, purchaseType = 'buy', version } = instance.app.get();
+		const { currentTarget: button } = e;
+		const stopLoading = triggerButtonLoadingState(button);
+
+		let data = null;
+		try {
+			data = await APIClient.get(`apps?buildExternalUrl=true&appId=${ id }&purchaseType=${ purchaseType }`);
+		} catch (e) {
+			handleAPIError(e, instance);
+			stopLoading();
+			return;
+		}
+
+		modal.open({
+			allowOutsideClick: false,
+			data,
+			template: 'iframeModal',
+		}, async () => {
+			try {
+				await APIClient.post('apps/', {
+					appId: id,
+					marketplace: true,
+					version,
+				});
+			} catch (e) {
+				handleAPIError(e, instance);
+			}
+
+			try {
+				await getApp(instance);
+			} catch (e) {
+				handleAPIError(e, instance);
+			} finally {
+				stopLoading();
+			}
+		}, stopLoading);
 	},
 
 	'change input[type="checkbox"]': (e, t) => {
