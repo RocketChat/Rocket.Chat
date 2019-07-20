@@ -1,20 +1,28 @@
 import { Migrations } from '../../../app/migrations/server';
-import { settings } from '../../../app/settings/server';
-import { Settings } from '../../../app/models/server';
+import { Users, Settings, FederationPeers } from '../../../app/models/server';
 
 Migrations.add({
 	version: 148,
 	up() {
-		if (settings.get('Accounts_OAuth_Gitlab')) {
-			const setting = Settings.findById('Accounts_OAuth_Gitlab_identity_path');
-			const newValue = '/api/v3/user';
+		const { value: localDomain } = Settings.findOne({ _id: 'FEDERATION_Domain' });
 
-			if (setting) {
-				Settings.updateValueById('Accounts_OAuth_Gitlab_identity_path', newValue);
-			} else {
-				Settings.createWithIdAndValue('Accounts_OAuth_Gitlab_identity_path', newValue);
-			}
-		}
+		Users.update({
+			federation: { $exists: true }, 'federation.peer': { $ne: localDomain },
+		}, {
+			$set: { isRemote: true },
+		}, { multi: true });
+
+		FederationPeers.update({
+			peer: { $ne: localDomain },
+		}, {
+			$set: { isRemote: true },
+		}, { multi: true });
+
+		FederationPeers.update({
+			peer: localDomain,
+		}, {
+			$set: { isRemote: false },
+		}, { multi: true });
 	},
 	down() {
 		// Down migration does not apply in this case

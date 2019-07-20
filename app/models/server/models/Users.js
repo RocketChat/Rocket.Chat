@@ -21,6 +21,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
+		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -664,6 +665,10 @@ export class Users extends Base {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findRemote() {
+		return this.find({ isRemote: true });
 	}
 
 	// UPDATE

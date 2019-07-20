@@ -58,7 +58,7 @@ export class PeerServer {
 		federatedRoom.create();
 
 		// Refresh federation peers
-		FederationPeers.refreshPeers();
+		FederationPeers.refreshPeers(localPeerDomain);
 	}
 
 	handleRoomCreatedEvent(e) {
@@ -81,7 +81,7 @@ export class PeerServer {
 		federatedRoom.create(true);
 
 		// Refresh federation peers
-		FederationPeers.refreshPeers();
+		FederationPeers.refreshPeers(localPeerDomain);
 	}
 
 	handleUserJoinedEvent(e) {
@@ -111,7 +111,7 @@ export class PeerServer {
 		federatedRoom.refreshFederation();
 
 		// Refresh federation peers
-		FederationPeers.refreshPeers();
+		FederationPeers.refreshPeers(localPeerDomain);
 	}
 
 	handleUserAddedEvent(e) {
@@ -150,7 +150,7 @@ export class PeerServer {
 		federatedRoom.refreshFederation();
 
 		// Refresh federation peers
-		FederationPeers.refreshPeers();
+		FederationPeers.refreshPeers(localPeerDomain);
 	}
 
 	handleUserLeftEvent(e) {
@@ -180,7 +180,7 @@ export class PeerServer {
 		federatedRoom.refreshFederation();
 
 		// Refresh federation peers
-		FederationPeers.refreshPeers();
+		FederationPeers.refreshPeers(localPeerDomain);
 	}
 
 	handleUserRemovedEvent(e) {
@@ -214,7 +214,7 @@ export class PeerServer {
 		federatedRoom.refreshFederation();
 
 		// Refresh federation peers
-		FederationPeers.refreshPeers();
+		FederationPeers.refreshPeers(localPeerDomain);
 	}
 
 	handleUserMutedEvent(e) {
