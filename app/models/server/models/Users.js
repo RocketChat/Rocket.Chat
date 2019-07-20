@@ -463,8 +463,8 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findActive() {
-		return this.find({ active: true });
+	findActive(options = {}) {
+		return this.find({ active: true }, options);
 	}
 
 	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
@@ -671,12 +671,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findRemote() {
-		return this.find({ isRemote: true });
+	findRemote(options = {}) {
+		return this.find({ isRemote: true }, options);
 	}
 
-	findActiveRemote() {
-		return this.find({ active: true, isRemote: true });
+	findActiveRemote(options = {}) {
+		return this.find({ active: true, isRemote: true }, options);
 	}
 
 	// UPDATE
