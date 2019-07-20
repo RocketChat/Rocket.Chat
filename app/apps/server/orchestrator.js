@@ -83,10 +83,10 @@ class AppServerOrchestrator {
 		return settings.get('Apps_Framework_Development_Mode');
 	}
 
-	debugLog() {
+	debugLog(...args) {
 		if (this.isDebugging()) {
 			// eslint-disable-next-line
-			console.log(...arguments);
+			console.log(...args);
 		}
 	}
 
@@ -116,6 +116,14 @@ class AppServerOrchestrator {
 		return this._manager.unload()
 			.then(() => console.log('Unloaded the Apps Framework.'))
 			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
+	}
+
+	updateAppsMarketplaceInfo(apps = []) {
+		if (!this.isLoaded()) {
+			return Promise.resolve();
+		}
+
+		return this._manager.updateAppsMarketplaceInfo(apps);
 	}
 }
 
