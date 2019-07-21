@@ -18,6 +18,7 @@ export const fields = {
 	roles: 1,
 	unread: 1,
 	prid: 1,
+	sa: 1,
 	userMentions: 1,
 	groupMentions: 1,
 	archived: 1,

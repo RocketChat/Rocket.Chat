@@ -11,3 +11,5 @@ import './hooks/serviceAccountCallback';
 
 import './publications/fullServiceAccountData';
 import './publications/userServiceAccounts';
+
+import '../lib/serviceAccountRoomType';
