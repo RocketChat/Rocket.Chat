@@ -14,8 +14,7 @@ class AppServerOrchestrator {
 	constructor() {
 		Permissions.createOrUpdate('manage-apps', ['admin']);
 
-		// TODO: Replace with production url
-		this._marketplaceUrl = 'https://marketplace-beta.rocket.chat';
+		this._marketplaceUrl = 'https://marketplace.rocket.chat';
 
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();

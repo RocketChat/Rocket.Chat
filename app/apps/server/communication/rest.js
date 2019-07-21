@@ -8,7 +8,7 @@ import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 
 const getDefaultHeaders = () => ({
-	'X-Apps-Engine-Version': '1.4.2', // TODO: Info.marketplaceApiVersion,
+	'X-Apps-Engine-Version': Info.marketplaceApiVersion,
 });
 
 const purchaseTypes = new Set(['buy', 'subscription']);
