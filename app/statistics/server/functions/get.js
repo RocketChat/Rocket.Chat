@@ -145,10 +145,10 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
 	statistics.apps = {
-		enabled: Apps.isEnabled(),
 		engineVersion: Info.marketplaceApiVersion,
-		totalInstalled: Apps.getManager().get().length,
-		totalActive: Apps.getManager().get({ enabled: true }).length,
+		enabled: Apps && Apps.isEnabled(),
+		totalInstalled: Apps && Apps.getManager().get().length,
+		totalActive: Apps && Apps.getManager().get({ enabled: true }).length,
 	};
 
 	const integrations = Integrations.find().fetch();
