@@ -2099,6 +2099,8 @@
   "Monday": "Monday",
   "Mongo_version": "Mongo Version",
   "Mongo_storageEngine": "Mongo Storage Engine",
+  "MongoDB_Deprecated": "MongoDB Deprecated",
+  "MongoDB_version_s_is_deprecated_please_upgrade_your_installation": "MongoDB version %s is deprecated, please upgrade your installation.",
   "Monitor_history_for_changes_on": "Monitor History for Changes on",
   "More": "More",
   "More_channels": "More channels",
