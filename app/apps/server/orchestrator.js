@@ -12,9 +12,7 @@ export let Apps;
 
 class AppServerOrchestrator {
 	constructor() {
-		if (Permissions) {
-			Permissions.createOrUpdate('manage-apps', ['admin']);
-		}
+		Permissions.createOrUpdate('manage-apps', ['admin']);
 
 		this._marketplaceUrl = 'https://marketplace.rocket.chat';
 
@@ -84,10 +82,10 @@ class AppServerOrchestrator {
 		return settings.get('Apps_Framework_Development_Mode');
 	}
 
-	debugLog() {
+	debugLog(...args) {
 		if (this.isDebugging()) {
 			// eslint-disable-next-line
-			console.log(...arguments);
+			console.log(...args);
 		}
 	}
 
@@ -99,10 +97,10 @@ class AppServerOrchestrator {
 		// Don't try to load it again if it has
 		// already been loaded
 		if (this.isLoaded()) {
-			return;
+			return Promise.resolve();
 		}
 
-		this._manager.load()
+		return this._manager.load()
 			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${ affs.length } Apps!`))
 			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err));
 	}
@@ -111,12 +109,20 @@ class AppServerOrchestrator {
 		// Don't try to unload it if it's already been
 		// unlaoded or wasn't unloaded to start with
 		if (!this.isLoaded()) {
-			return;
+			return Promise.resolve();
 		}
 
-		this._manager.unload()
+		return this._manager.unload()
 			.then(() => console.log('Unloaded the Apps Framework.'))
 			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
+	}
+
+	updateAppsMarketplaceInfo(apps = []) {
+		if (!this.isLoaded()) {
+			return Promise.resolve();
+		}
+
+		return this._manager.updateAppsMarketplaceInfo(apps);
 	}
 }
 
