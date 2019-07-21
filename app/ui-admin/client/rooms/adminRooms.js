@@ -16,6 +16,15 @@ import { ChannelSettings } from '../../../channel-settings';
 export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
+	url() {
+		return roomTypes.getConfig(this.t).getAvatarPath(this);
+	},
+	getIcon() {
+		return roomTypes.getIcon(this);
+	},
+	roomName() {
+		return roomTypes.getRoomName(this.t, this);
+	},
 	searchText() {
 		const instance = Template.instance();
 		return instance.filter && instance.filter.get();
@@ -110,11 +119,12 @@ Template.adminRooms.onCreated(function() {
 			return hasAllPermission('view-room-administration');
 		},
 	});
+	const allowedTypes = ['c', 'd', 'p'];
 	this.autorun(function() {
 		const filter = instance.filter.get();
 		let types = instance.types.get();
 		if (types.length === 0) {
-			types = ['c', 'd', 'p'];
+			types = allowedTypes;
 		}
 		const limit = instance.limit.get();
 		const subscription = instance.subscribe('adminRooms', filter, types, limit);
@@ -130,13 +140,15 @@ Template.adminRooms.onCreated(function() {
 			types = [];
 		}
 		let query = {};
+		const discussion = types.includes('dicussions');
 		filter = s.trim(filter);
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
+			query = { ...discussion && { prid: { $exists: true } }, $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
 		}
-		if (types.length) {
-			query.t = { $in: types };
+
+		if (types.filter((type) => type !== 'dicussions').length) {
+			query.t = { $in: types.filter((type) => type !== 'dicussions') };
 		}
 		const limit = instance.limit && instance.limit.get();
 		return AdminChatRoom.find(query, { limit, sort: { default: -1, name: 1 } });

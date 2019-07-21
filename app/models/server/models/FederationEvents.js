@@ -20,6 +20,10 @@ const normalizePeers = (basePeers, options) => {
 class FederationEventsModel extends Base {
 	constructor() {
 		super('federation_events');
+
+		this.tryEnsureIndex({ t: 1 });
+		this.tryEnsureIndex({ fulfilled: 1 });
+		this.tryEnsureIndex({ ts: 1 });
 	}
 
 	// Sometimes events errored but the error is final
@@ -256,7 +260,11 @@ class FederationEventsModel extends Base {
 
 	// Get all unfulfilled events
 	getUnfulfilled() {
-		return this.find({ fulfilled: false }, { sort: { ts: 1 } }).fetch();
+		return this.find({ fulfilled: false }, { sort: { ts: 1 } });
+	}
+
+	findByType(t) {
+		return this.find({ t });
 	}
 }
 

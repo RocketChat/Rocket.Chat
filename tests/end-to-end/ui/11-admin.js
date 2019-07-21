@@ -32,7 +32,7 @@ describe('[Administration]', () => {
 			before(() => {
 				admin.infoLink.waitForVisible(5000);
 				admin.infoLink.click();
-				admin.infoRocketChatTable.waitForVisible(5000);
+				admin.infoRocketChatTable.waitForVisible(10000);
 			});
 			it('the first title should be Rocket.Chat', () => {
 				admin.infoRocketChatTableTitle.getText().should.equal('Rocket.Chat');
