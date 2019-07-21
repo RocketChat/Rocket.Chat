@@ -42,6 +42,20 @@ export class Base {
 		return !_.isUndefined(this.findOne(query, { fields: { roles: 1 } }));
 	}
 
+	isUserInRoleScope(uid, scope) {
+		const query = this.roleBaseQuery(uid, scope);
+		if (!query) {
+			return false;
+		}
+
+		const options = {
+			fields: { _id: 1 },
+		};
+
+		const found = this.findOne(query, options);
+		return !!found;
+	}
+
 	addRolesByUserId(userId, roles, scope) {
 		roles = [].concat(roles);
 		const query = this.roleBaseQuery(userId, scope);
