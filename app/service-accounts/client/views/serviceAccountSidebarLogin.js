@@ -46,7 +46,6 @@ Template.serviceAccountSidebarLogin.events({
 					if (err) {
 						return handleError(err);
 					}
-					// document.location.reload(true);
 					if (Meteor.user().u) {
 						localStorage.setItem('serviceAccountForceLogin', true);
 					} else {
