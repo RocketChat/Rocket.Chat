@@ -1,3 +1,5 @@
+import { Users } from '../../../models/server';
+
 export class AppUserBridge {
 	constructor(orch) {
 		this.orch = orch;
@@ -13,5 +15,9 @@ export class AppUserBridge {
 		this.orch.debugLog(`The App ${ appId } is getting the username: "${ username }"`);
 
 		return this.orch.getConverters().get('users').convertByUsername(username);
+	}
+
+	async getActiveUserCount() {
+		return Users.findActive().count() - Users.findActiveRemote().count();
 	}
 }

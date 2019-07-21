@@ -1,3 +1,4 @@
+.rc-apps-section,
 .rc-apps-marketplace {
 	display: flex;
 
@@ -300,6 +301,12 @@
 
 		height: 100vh;
 
+		margin-top: 20px;
+
+		& .rc-form-filters {
+			margin: 8px 0;
+		}
+
 		& .js-sort {
 			cursor: pointer;
 
@@ -319,6 +326,50 @@
 				opacity: 0;
 
 				font-size: 1rem;
+			}
+		}
+
+		& tbody .rc-table-tr:not(.table-no-click):not(.table-no-pointer):hover {
+			background-color: #f7f8fa;
+		}
+
+		& .rc-table-info {
+			margin: 0;
+			justify-content: center;
+
+			& .rc-table-title,
+			& .rc-table-subtitle {
+				font-size: 0.875rem;
+				line-height: 1.25rem;
+			}
+
+			& .rc-apps-categories {
+				display: flex;
+
+				height: 1.25rem;
+				margin: 0 -0.25rem;
+				align-items: center;
+				flex-wrap: wrap;
+
+				& .rc-apps-category {
+					overflow: hidden;
+					flex: 0 0 auto;
+
+					box-sizing: border-box;
+					margin: 0.125rem 0.25rem;
+					padding: 0.0625rem 0.25rem;
+
+					text-transform: none;
+					text-overflow: ellipsis;
+
+					color: #9da1a8;
+					border-radius: 9999px;
+					background-color: #eef0f3;
+
+					font-size: 0.625rem;
+					font-weight: 500;
+					line-height: 0.875rem;
+				}
 			}
 		}
 	}

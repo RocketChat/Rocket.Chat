@@ -9,7 +9,10 @@ const baseName = 'rocketchat_';
 const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
 	trash._ensureIndex({ collection: 1 });
-	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
+	trash._ensureIndex(
+		{ _deletedAt: 1 },
+		{ expireAfterSeconds: 60 * 60 * 24 * 30 }
+	);
 } catch (e) {
 	console.log(e);
 }
@@ -43,6 +46,14 @@ export class BaseDb extends EventEmitter {
 			const query = {
 				collection: this.collectionName,
 			};
+
+			if (!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle) {
+				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
+				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
+				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
+				3. Start your instance with OPLOG configuration: export MONGO_OPLOG_URL=mongodb://localhost:27017/local MONGO_URL=mongodb://localhost:27017/meteor node main.js
+				`);
+			}
 
 			MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(
 				query,
@@ -133,7 +144,12 @@ export class BaseDb extends EventEmitter {
 	}
 
 	updateHasPositionalOperator(update) {
-		return Object.keys(update).some((key) => key.includes('.$') || (Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])));
+		return Object.keys(update).some(
+			(key) =>
+				key.includes('.$')
+				|| (Match.test(update[key], Object)
+					&& this.updateHasPositionalOperator(update[key]))
+		);
 	}
 
 	processOplogRecord(action) {

@@ -129,7 +129,7 @@ rocketchat:i18n@0.0.1
 rocketchat:livechat@0.0.1
 rocketchat:mongo-config@0.0.1
 rocketchat:monitoring@2.30.2_3
-rocketchat:oauth2-server@2.0.0
+rocketchat:oauth2-server@2.1.0
 rocketchat:push@3.3.1
 rocketchat:streamer@1.0.2
 rocketchat:version@1.0.0

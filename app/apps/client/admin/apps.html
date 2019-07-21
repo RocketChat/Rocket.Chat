@@ -1,5 +1,5 @@
 <template name="apps">
-	<section class="rc-apps-marketplace">
+	<section class="rc-apps-section">
 		{{#header sectionName="Apps" hideHelp=true fixedHeight=true fullpage=true}}
 			<div class="rc-header__section-button">
 				<button class="rc-button rc-button--small rc-button--primary" data-button="install_app">
@@ -13,7 +13,7 @@
 			</div>
 		{{/header}}
 		<div class="rc-table-content">
-			<form class="js-search-form" role="form">
+			<form class="rc-form-filters js-search-form" role="form">
 				<div class="rc-input">
 					<div class="rc-input__icon">
 						{{#if isLoading}}
@@ -79,8 +79,10 @@
 													{{latest.description}}
 												</span>
 											{{/if}}
-											<span class="rc-table-subtitle">
-												{{formatCategories latest.categories}}
+											<span class="rc-table-subtitle rc-apps-categories">
+												{{#each category in latest.categories}}
+												<span class="rc-apps-category">{{category}}</span>
+												{{/each}}
 											</span>
 										</div>
 									</div>

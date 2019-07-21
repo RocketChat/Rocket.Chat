@@ -335,7 +335,7 @@ Meteor.startup(async function() {
 
 				modal.open({
 					title: TAPi18n.__('Report_sent'),
-					text: TAPi18n.__('Thank_you_exclamation_mark '),
+					text: TAPi18n.__('Thank_you_exclamation_mark'),
 					type: 'success',
 					timer: 1000,
 					showConfirmButton: false,
