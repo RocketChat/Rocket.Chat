@@ -46,33 +46,68 @@
 	}
 
 	.webdav-table-header {
-		margin-bottom: 12px;
+		display: flex;
+		flex-direction: row;
 
-		font-size: 16px;
+		margin-bottom: 8px;
+
+		color: #444444;
+
+		font-size: 0.9rem;
+		font-weight: 500;
+		line-height: 1rem;
+		align-items: center;
 
 		i {
 			color: #5b5b5b;
+
+			font-size: 16px;
 		}
 
 		.webdav-path-breadcrumb {
+			display: flex;
+			overflow-x: auto;
 
-			float: left;
-			overflow: hidden;
+			white-space: nowrap;
+			align-items: center;
+			flex-flow: row nowrap;
+			-ms-overflow-style: none;
+			scrollbar-width: none;
 
-			list-style: none;
+			&::-webkit-scrollbar {
+				display: none;
+			}
 
 			.webdav-breadcrumb-item {
-				display: block;
-				float: left;
-
 				padding: 3px 0;
 
+				&:last-child {
+					padding-right: 30px;
+				}
+
 				.webdav-breadcrumb-folder {
-					padding: 3px;
+					overflow: hidden;
+
+					max-width: 100px;
+					padding: 4px 3px;
 
 					cursor: pointer;
 
-					&:hover {
+					transition: all 0.2s ease-in-out;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+
+					color: inherit;
+
+					font-family: inherit;
+					font-size: inherit;
+					font-weight: inherit;
+					line-height: inherit;
+
+					&:hover,
+					&:focus {
+						max-width: 300px;
+
 						border-radius: 5px;
 						background: #f1f3f4;
 					}
@@ -80,15 +115,76 @@
 			}
 		}
 
-		.listOrGridMode {
-			float: right;
+		.webdav-header-spacer {
+			flex: 1;
+		}
 
+		.webdav-search {
+			position: relative;
+
+			&::before {
+				position: absolute;
+				z-index: 5;
+				top: 0;
+				left: -40px;
+
+				width: 40px;
+				height: 100%;
+
+				content: '';
+				pointer-events: none;
+
+				background: linear-gradient(to right, transparent, white);
+			}
+
+			.webdav-search-input {
+				width: 36px;
+				padding: 4px 6px 4px 32px;
+
+				cursor: pointer;
+				transition: width 0.3s ease-in-out;
+
+				border: none;
+				outline: none;
+
+				font-family: inherit;
+				font-size: 0.85rem;
+				font-weight: 400;
+
+				&:focus {
+					width: 200px;
+					padding-left: 40px;
+
+					cursor: auto;
+				}
+			}
+
+			.webdav-search-icon {
+				position: absolute;
+				z-index: 5;
+				top: 0;
+				left: 6px;
+
+				padding: 4px 3px;
+
+				cursor: pointer;
+
+				&:hover,
+				&:focus {
+					border-radius: 5px;
+					background: #f1f3f4;
+				}
+			}
+		}
+
+		.list-grid-mode {
 			margin-right: 5px;
-			padding: 3px;
+			padding: 4px 3px;
 
 			cursor: pointer;
 
-			&:hover {
+			&:hover,
+			&:focus {
 				border-radius: 5px;
 				background: #f1f3f4;
 			}
@@ -130,7 +226,7 @@
 				font-size: 1rem;
 			}
 
-			& #webdav-go-back .rc-icon {
+			& .webdav-grid-back-icon .rc-icon {
 				cursor: pointer;
 
 				opacity: 1;
@@ -156,7 +252,7 @@
 			font-weight: 500;
 			line-height: 1rem;
 
-			#webdav-go-back {
+			.webdav-grid-back-icon {
 				float: left;
 
 				.rc-icon {
@@ -168,7 +264,7 @@
 				}
 			}
 
-			.select-sort {
+			.webdav-sort {
 				float: right;
 
 				height: auto;
@@ -226,7 +322,8 @@
 				font-weight: 500;
 				line-height: 1rem;
 
-				&:hover {
+				&:hover,
+				&:focus {
 					border-radius: 5px;
 					background: #f1f3f4;
 				}

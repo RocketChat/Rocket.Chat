@@ -11,22 +11,6 @@ import { modal, call } from '../../ui-utils';
 import { t } from '../../utils';
 import { fileUploadHandler } from '../../file-upload';
 
-Template.webdavFilePicker.rendered = async function() {
-	const { accountId } = this.data;
-	Session.set('webdavCurrentFolder', '/');
-	const response = await call('getWebdavFileList', accountId, '/');
-	if (!response.success) {
-		modal.close();
-		return toastr.error(t(response.message));
-	}
-	Session.set('webdavNodes', response.data);
-	this.isLoading.set(false);
-};
-
-Template.webdavFilePicker.destroyed = function() {
-	Session.set('webdavNodes', []);
-};
-
 function sortTable(data, sortBy, sortDirection) {
 	if (sortDirection === 'desc') {
 		if (sortBy === 'name') { data.sort((a, b) => b.basename.localeCompare(a.basename)); }
@@ -40,7 +24,7 @@ function sortTable(data, sortBy, sortDirection) {
 	return data;
 }
 
-async function showWebdavFileList(directory) {
+async function showWebdavFileList(directory = '/') {
 	const instance = Template.instance();
 	const { sortDirection, sortBy } = instance;
 	const { accountId } = instance.data;
@@ -54,6 +38,15 @@ async function showWebdavFileList(directory) {
 		return toastr.error(t(response.message));
 	}
 	const data = sortTable(response.data, sortBy.get(), sortDirection.get());
+	Session.set('webdavNodes', data);
+	Session.set('unfilteredWebdavNodes', data);
+	$('.js-webdav-search-input').val('');
+	instance.searchText.set('');
+}
+
+function searchWebdavFiles(input) {
+	const regex = new RegExp(`\\b${ input }`, 'i');
+	const data = Session.get('unfilteredWebdavNodes').filter((node) => node.basename.match(regex));
 	Session.set('webdavNodes', data);
 }
 
@@ -99,6 +92,13 @@ Template.webdavFilePicker.helpers({
 	getSortBy() {
 		return Template.instance().sortBy.get();
 	},
+	getName(basename) {
+		const maxwidth = Template.instance().isListMode.get() ? 35 : 20;
+		if (basename.length < maxwidth) {
+			return basename;
+		}
+		return `${ basename.slice(0, maxwidth - 10) }\u2026${ basename.slice(-7) }`;
+	},
 	getSize() {
 		if (this.type === 'directory') { return ''; }
 		const bytes = this.size;
@@ -143,24 +143,40 @@ Template.webdavFilePicker.helpers({
 });
 
 Template.webdavFilePicker.events({
-	'click .listOrGridMode'() {
+	'click .js-list-grid-mode'() {
 		const instance = Template.instance();
 		instance.isListMode.set(!instance.isListMode.get());
 	},
-	'click .webdav-sort-direction'() {
+	'click .js-webdav-sort-direction'() {
 		const { sortDirection, sortBy } = Template.instance();
 		sortDirection.set(sortDirection.get() === 'asc' ? 'desc' : 'asc');
 		const data = sortTable(Session.get('webdavNodes'), sortBy.get(), sortDirection.get());
 		Session.set('webdavNodes', data);
 	},
-	'change #webdav-select-sort'() {
+	'change .js-webdav-select-sort'() {
 		const { sortDirection, sortBy } = Template.instance();
-		const newSortBy = $('#webdav-select-sort').val();
+		const newSortBy = $('.js-webdav-select-sort').val();
 		sortBy.set(newSortBy);
 		const data = sortTable(Session.get('webdavNodes'), sortBy.get(), sortDirection.get());
 		Session.set('webdavNodes', data);
 	},
-	async 'click #webdav-go-back'() {
+	'click .js-webdav-search-icon'() {
+		$('.js-webdav-search-input').focus();
+	},
+	'submit .js-search-form'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+	},
+	'input .js-webdav-search-input': _.debounce((e, t) => {
+		t.searchText.set(e.currentTarget.value);
+	}, 200),
+	'blur .js-webdav-search-input'(e, t) {
+		_.delay(() => {
+			e.target.value = '';
+			t.searchText.set('');
+		}, 200);
+	},
+	async 'click .js-webdav-grid-back-icon'() {
 		let currentFolder = Session.get('webdavCurrentFolder');
 		// determine parent directory to go back
 		let parentFolder = '/';
@@ -172,10 +188,10 @@ Template.webdavFilePicker.events({
 		}
 		showWebdavFileList(parentFolder);
 	},
-	async 'click .webdav_directory'() {
+	async 'click .js-webdav_directory'() {
 		showWebdavFileList(this.filename);
 	},
-	async 'click .webdav-breadcrumb-folder'(event) {
+	async 'click .js-webdav-breadcrumb-folder'(event) {
 		const index = $(event.target).data('index');
 		const currentFolder = Session.get('webdavCurrentFolder');
 		const parentFolders = currentFolder.split('/').filter((s) => s);
@@ -187,7 +203,7 @@ Template.webdavFilePicker.events({
 		}
 		showWebdavFileList(targetFolder);
 	},
-	async 'click .webdav_file'() {
+	async 'click .js-webdav_file'() {
 		const roomId = Session.get('openedRoom');
 		const instance = Template.instance();
 		const { accountId } = instance.data;
@@ -298,9 +314,29 @@ Template.webdavFilePicker.events({
 	},
 });
 
+Template.webdavFilePicker.onRendered(async function() {
+	Session.set('webdavCurrentFolder', '/');
+	showWebdavFileList();
+
+	this.autorun(() => {
+		const loading = this.isLoading.get();
+		const input = this.searchText.get();
+		if (loading) {
+			return;
+		}
+		searchWebdavFiles(input);
+	});
+});
+
 Template.webdavFilePicker.onCreated(function() {
 	this.isLoading = new ReactiveVar(true);
 	this.isListMode = new ReactiveVar(true);
 	this.sortBy = new ReactiveVar('name');
 	this.sortDirection = new ReactiveVar('asc');
+	this.searchText = new ReactiveVar('');
+});
+
+Template.webdavFilePicker.onDestroyed(function() {
+	Session.set('webdavNodes', []);
+	Session.set('unfilteredWebdavNodes', []);
 });
