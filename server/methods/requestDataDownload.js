@@ -20,6 +20,8 @@ Meteor.methods({
 		const userId = currentUserData._id;
 
 		const lastOperation = ExportOperations.findLastOperationByUser(userId, fullExport);
+		const requestDay = lastOperation ? lastOperation.createdAt : new Date();
+		const pendingOperationsBeforeMyRequestCount = ExportOperations.findAllPendingBeforeMyRequest(requestDay).count();
 
 		if (lastOperation) {
 			const yesterday = new Date();
@@ -33,6 +35,7 @@ Meteor.methods({
 							requested: false,
 							exportOperation: lastOperation,
 							url: lastFile.url,
+							pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 						};
 					}
 				}
@@ -41,6 +44,7 @@ Meteor.methods({
 					requested: false,
 					exportOperation: lastOperation,
 					url: null,
+					pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 				};
 			}
 		}
@@ -81,6 +85,7 @@ Meteor.methods({
 			requested: true,
 			exportOperation,
 			url: null,
+			pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 		};
 	},
 });

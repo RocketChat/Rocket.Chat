@@ -236,8 +236,9 @@ Template.accountPreferences.onCreated(function() {
 				if (results.requested) {
 					modal.open({
 						title: t('UserDataDownload_Requested'),
-						text: t('UserDataDownload_Requested_Text'),
+						text: t('UserDataDownload_Requested_Text', { pending_operations: results.pendingOperationsBeforeMyRequest }),
 						type: 'success',
+						html: true,
 					});
 
 					return true;
@@ -261,8 +262,9 @@ Template.accountPreferences.onCreated(function() {
 
 					modal.open({
 						title: t('UserDataDownload_Requested'),
-						text: t('UserDataDownload_RequestExisted_Text'),
+						text: t('UserDataDownload_RequestExisted_Text', { pending_operations: results.pendingOperationsBeforeMyRequest }),
 						type: 'success',
+						html: true,
 					});
 					return true;
 				}

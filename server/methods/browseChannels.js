@@ -115,7 +115,7 @@ Meteor.methods({
 
 			let result;
 			if (workspace === 'all') {
-				result = Users.findByActiveServiceAccountsExcept(text, exceptions, forcedSearchFields, options);
+				result = Users.findByActiveServiceAccountsExcept(text, exceptions, options, forcedSearchFields);
 			} else if (workspace === 'external') {
 				result = Users.findByActiveExternalServiceAccountsExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
 			} else {
