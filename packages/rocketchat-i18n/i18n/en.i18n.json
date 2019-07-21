@@ -2671,6 +2671,7 @@
   "Service_account_dashboard": "Service Account Dashboard",
   "Service_account_description": "Service Accounts are an upgrade to existing user accounts. You can connect to a large number of users using service account with exclusive features such as broadcast message to all your subscribers at once",
   "Service_account_limit": "Service Accounts per user",
+  "service-account-limit-reached": "Max service account limit reached",
   "Service_account_login": "Service Account login",
   "Service_Accounts_SearchFields": "Fields to consider for service account search",
   "Service_account_name_placeholder": "Service Account name",
