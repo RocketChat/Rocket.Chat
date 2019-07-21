@@ -69,7 +69,7 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps`, {
+					const result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
 						headers,
 					});
 
