@@ -1,0 +1,147 @@
+#rocket-chat .content .rc-apps-details {
+	&__content {
+		justify-content: flex-start;
+	}
+
+	&__app-name {
+		flex: 0 0 1.75rem;
+
+		margin: 0;
+
+		letter-spacing: 0;
+		text-transform: none;
+
+		color: rgb(84, 88, 94);
+
+		font-family: inherit;
+		font-size: 1.375rem;
+		font-weight: normal;
+		line-height: 1.75rem;
+	}
+
+	&__app-info {
+		display: flex;
+		flex: 0 0 1.25rem;
+		flex-wrap: nowrap;
+
+		> span::after {
+			display: inline-block;
+
+			width: 1px;
+			height: 12px;
+			margin: 0 8px;
+
+			content: '';
+
+			background: rgb(203, 206, 209);
+		}
+
+		> span:last-child::after {
+			display: none;
+
+			content: none;
+		}
+	}
+
+	&__app-author {
+		letter-spacing: -0.2px;
+
+		color: rgb(158, 162, 168);
+
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 20px;
+	}
+
+	&__app-version {
+		letter-spacing: -0.2px;
+
+		color: rgb(158, 162, 168);
+
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: normal;
+		line-height: 20px;
+	}
+
+	&__app-status {
+		display: flex;
+		flex: 1;
+
+		margin-top: 8px;
+		align-items: center;
+	}
+
+	&__app-install-status {
+		display: flex;
+
+		height: 40px;
+
+		letter-spacing: 0;
+
+		color: rgb(158, 162, 168);
+
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: 500;
+		align-items: center;
+		flex-wrap: nowrap;
+
+		& > .rc-icon {
+			color: var(--rc-color-button-primary);
+		}
+	}
+
+	&__app-price {
+		letter-spacing: -0.2px;
+
+		color: rgb(157, 161, 168);
+
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: normal;
+		line-height: 20px;
+
+		&::before {
+			display: inline-block;
+
+			width: 1px;
+			height: 12px;
+			margin: 0 16px;
+
+			content: '';
+
+			background: rgb(203, 206, 209);
+		}
+	}
+
+	&__app-button-wrapper {
+		flex: 1;
+	}
+
+	& .rc-button.loading {
+		padding: 0 1.5rem;
+
+		opacity: 0.6;
+
+		&::before {
+			display: none;
+		}
+
+		& > .rc-icon {
+			animation: spin 1s linear infinite;
+		}
+	}
+
+	&__app-menu-trigger {
+		padding: 0;
+
+		&::before {
+			display: inline-block;
+			flex: 1;
+
+			content: '';
+		}
+	}
+}
