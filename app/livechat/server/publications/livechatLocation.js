@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { LivechatSessions } from '../../../models';
@@ -15,10 +16,30 @@ Meteor.publish('livechat:location', function(filter = {}) {
 
 	check(filter, {
 		name: Match.Maybe(String), // Visitor name
-		state: Match.Maybe(String), // 'active', 'registered', or 'idle'
+		state: Match.Maybe(String), // 'chatting', 'registered', or 'idle', offline
+		from: Match.Maybe(String),
+		to: Match.Maybe(String),
 	});
 
+	let { from, to } = filter;
+
+	if (!(moment(from).isValid() && moment(to).isValid())) {
+		return this.error(new Meteor.Error('error-invalid-date', 'Invalid Date', { publish: 'livechat:location' }));
+	}
 	let query = {};
+	from = moment(from).add(1, 'days');
+	to = moment(to).add(1, 'days');
+	if (moment(from).diff(to) === 0) {
+		query.createdAt = {
+			$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+			$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).add(1, 'days').toDate(),
+		};
+	} else {
+		query.createdAt = {
+			$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+			$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+		};
+	}
 	if (filter.name) {
 		query['visitorInfo.name'] = new RegExp(filter.name, 'i');
 	}
@@ -35,7 +56,6 @@ Meteor.publish('livechat:location', function(filter = {}) {
 	}
 
 	const self = this;
-
 	const handle = LivechatSessions.find(query).observeChanges({
 		added(id, fields) {
 			self.added('livechatLocation', id, fields);

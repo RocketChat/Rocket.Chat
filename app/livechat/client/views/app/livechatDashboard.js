@@ -5,12 +5,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 
 import { LivechatRoom } from '../../collections/LivechatRoom';
+import { setDateRange, updateDateRange } from '../../lib/dateHandler';
 import { visitorNavigationHistory } from '../../collections/LivechatVisitorNavigation';
-import { RocketChatTabBar } from '../../../../ui-utils';
+import { RocketChatTabBar, popover } from '../../../../ui-utils';
 import { t } from '../../../../utils';
 
 import './livechatDashboard.html';
-
 
 const LivechatLocation = new Mongo.Collection('livechatLocation');
 
@@ -30,6 +30,21 @@ Template.livechatDashboard.helpers({
 			data: Template.instance().tabBarData.get(),
 		};
 	},
+	daterange() {
+		return Template.instance().daterange.get();
+	},
+	showLeftNavButton() {
+		if (Template.instance().daterange.get().value === 'custom') {
+			return false;
+		}
+		return true;
+	},
+	showRightNavButton() {
+		if (Template.instance().daterange.get().value === 'custom' || Template.instance().daterange.get().value === 'today' || Template.instance().daterange.get().value === 'this-week' || Template.instance().daterange.get().value === 'this-month') {
+			return false;
+		}
+		return true;
+	},
 });
 
 Template.livechatDashboard.events({
@@ -38,6 +53,30 @@ Template.livechatDashboard.events({
 		instance.tabBar.setTemplate('visitorSession');
 		instance.tabBar.setData({ label: t('Session_Info'), icon: 'info-circled' });
 		instance.tabBar.open();
+	},
+	'click .lc-date-picker-btn'(e) {
+		e.preventDefault();
+		const options = [];
+		const config = {
+			template: 'livechatAnalyticsDaterange',
+			currentTarget: e.currentTarget,
+			data: {
+				options,
+				daterange: Template.instance().daterange,
+			},
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+		popover.open(config);
+	},
+	'click .lc-daterange-prev'(e) {
+		e.preventDefault();
+
+		Template.instance().daterange.set(updateDateRange(Template.instance().daterange.get(), -1));
+	},
+	'click .lc-daterange-next'(e) {
+		e.preventDefault();
+
+		Template.instance().daterange.set(updateDateRange(Template.instance().daterange.get(), 1));
 	},
 	'submit form'(event, instance) {
 		event.preventDefault();
@@ -49,9 +88,25 @@ Template.livechatDashboard.events({
 			}
 		});
 
+		if (Template.instance().daterange.get()) {
+			filter.from = moment(Template.instance().daterange.get().from, 'MMM D YYYY').toISOString();
+			filter.to = moment(Template.instance().daterange.get().to, 'MMM D YYYY').toISOString();
+		}
+
 		instance.filter.set(filter);
 		instance.limit.set(20);
 	},
+});
+
+Template.livechatDashboard.onRendered(function() {
+	this.autorun(() => {
+		if (Template.instance().daterange.get()) {
+			this.filter.set({
+				from: moment(Template.instance().daterange.get().from, 'MMM D YYYY').toISOString(),
+				to: moment(Template.instance().daterange.get().to, 'MMM D YYYY').toISOString(),
+			});
+		}
+	});
 });
 
 Template.livechatDashboard.onCreated(function() {
@@ -63,9 +118,21 @@ Template.livechatDashboard.onCreated(function() {
 	this.tabBarData = new ReactiveVar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 
+	this.daterange = new ReactiveVar({});
+	this.autorun(() => {
+		Template.instance().daterange.set(setDateRange());
+	});
+
 	this.autorun(() => {
 		this.ready.set(this.subscribe('livechat:rooms', {}, 0, this.limit.get()).ready());
 	});
+
+	if (Template.instance().daterange.get()) {
+		this.filter.set({
+			from: moment(Template.instance().daterange.get().from, 'MMM D YYYY').toISOString(),
+			to: moment(Template.instance().daterange.get().to, 'MMM D YYYY').toISOString(),
+		});
+	}
 
 	this.autorun(() => {
 		const sub = this.subscribe('livechat:location', this.filter.get());
@@ -77,9 +144,9 @@ Template.livechatDashboard.onCreated(function() {
 					const currentTime = new moment();
 					const duration = moment.duration(currentTime.diff(val.createdAt));
 					const hours = duration.get('hours');
-					const days = duration.get('days');
-					if (hours >= 23) {
-						val.timeSince = `${ days }days`;
+					const days = duration.get('d');
+					if (days >= 1) {
+						val.timeSince = `${ days }d`;
 					} else {
 						val.timeSince = `${ hours }h:${ duration.get('minutes') }m:${ duration.get('seconds') }s`;
 					}
