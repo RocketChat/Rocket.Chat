@@ -45,7 +45,7 @@ export const _setStatusText = function(userId, statusText) {
 	return true;
 };
 
-export const setStatusText = RateLimiter.limitFunction(_setStatusText, 1, 60000, {
+export const setStatusText = RateLimiter.limitFunction(_setStatusText, 5, 60000, {
 	0() {
 		// Administrators have permission to change others status, so don't limit those
 		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
