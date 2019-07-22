@@ -99,7 +99,13 @@
               <i class="{{osIcon}}"></i><i class="{{browserIcon}}"></i>
             </td>
             <td>{{state}}</td>
-            <td>{{timeSince}}</td>
+            <td>
+              {{#if timeSince}}
+                {{timeSince}}
+              {{else}}
+                {{_ "No Info"}}
+              {{/if}}
+            </td>
             <td class="rc-button__group">
               {{#if servedBy}}
               {{servedBy.username}}

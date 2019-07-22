@@ -140,16 +140,21 @@ Template.livechatDashboard.onCreated(function() {
 			const users = LivechatLocation.find({}).map((data) => data);
 			if (users && users.length > 0) {
 				users.map((val) => {
-					// eslint-disable-next-line new-cap
-					const currentTime = new moment();
-					const duration = moment.duration(currentTime.diff(val.createdAt));
-					const hours = duration.get('hours');
-					const days = duration.get('d');
-					if (days >= 1) {
-						val.timeSince = `${ days }d`;
+					if (val.offlineTime) {
+						val.timeSince = moment(val.offlineTime).format('Do MMM YYYY');
 					} else {
-						val.timeSince = `${ hours }h:${ duration.get('minutes') }m:${ duration.get('seconds') }s`;
+						// eslint-disable-next-line new-cap
+						const currentTime = new moment();
+						const duration = moment.duration(currentTime.diff(val.chatStartTime));
+						const hours = duration.get('hours');
+						const days = duration.get('d');
+						if (days >= 1) {
+							val.timeSince = `${ days }d`;
+						} else {
+							val.timeSince = `${ hours }h:${ duration.get('minutes') }m:${ duration.get('seconds') }s`;
+						}
 					}
+
 					this.subscribe('livechat:visitorPageVisited', { rid: '', token: val.token });
 					const pageInfo = visitorNavigationHistory.find({ token: val.token }, { sort: { ts: -1 } }).map((data) => data);
 					if (pageInfo) {

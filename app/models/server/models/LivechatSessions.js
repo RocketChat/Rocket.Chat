@@ -29,12 +29,46 @@ export class LivechatSessions extends Base {
 		const query = {
 			token,
 		};
-
-		const update = {
-			$set: {
-				state,
-			},
-		};
+		let update;
+		const sessionInfo = this.findOne(query);
+		if (state === 'chatting') {
+			const { chatStart } = sessionInfo;
+			if (!chatStart) {
+				update = {
+					$set: {
+						state,
+						chatStartTime: new Date(),
+						chatStart: true,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			} else {
+				update = {
+					$set: {
+						state,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			}
+		} else if (state === 'offline') {
+			update = {
+				$set: {
+					state,
+					offlineTime: new Date(),
+					chatStart: false,
+				},
+			};
+		} else {
+			update = {
+				$set: {
+					state,
+				},
+			};
+		}
 
 		return this.update(query, update);
 	}
