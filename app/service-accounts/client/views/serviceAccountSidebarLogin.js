@@ -19,10 +19,10 @@ Template.serviceAccountSidebarLogin.helpers({
 		return Template.instance().users() && Template.instance().users().length > 0;
 	},
 	owner() {
-		return Meteor.user().u;
+		return Meteor.user() && Meteor.user().u;
 	},
 	showOwnerAccountLink() {
-		return localStorage.getItem('serviceAccountForceLogin') && !!Meteor.user().u;
+		return localStorage.getItem('serviceAccountForceLogin') && Meteor.user() && !!Meteor.user().u;
 	},
 });
 
@@ -30,7 +30,7 @@ Template.serviceAccountSidebarLogin.events({
 	'click .js-login'(e) {
 		e.preventDefault();
 		let { username } = this;
-		if (Meteor.user().u) {
+		if (Meteor.user() && Meteor.user().u) {
 			username = Meteor.user().u.username;
 		}
 		Meteor.call('getLoginToken', username, function(error, token) {
@@ -46,7 +46,7 @@ Template.serviceAccountSidebarLogin.events({
 					if (err) {
 						return handleError(err);
 					}
-					if (Meteor.user().u) {
+					if (Meteor.user() && Meteor.user().u) {
 						localStorage.setItem('serviceAccountForceLogin', true);
 					} else {
 						localStorage.removeItem('serviceAccountForceLogin');
