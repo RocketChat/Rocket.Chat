@@ -63,10 +63,12 @@ class GoogleAutoTranslate extends AutoTranslate {
 			if (this.supportedLanguages[target]) {
 				return this.supportedLanguages[target];
 			}
+
 			let result;
 			const params = {
 				key: this.apiKey,
 			};
+
 			if (target) {
 				params.target = target;
 			}
@@ -94,6 +96,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 				this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
 				supportedLanguages = this.supportedLanguages[target || 'en'];
 			}
+
 			return supportedLanguages;
 		}
 	}
@@ -110,12 +113,15 @@ class GoogleAutoTranslate extends AutoTranslate {
 		const translations = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
+
 		const query = `q=${ msgs.join('&q=') }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
+
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
+
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
@@ -124,6 +130,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					},
 					query,
 				});
+
 				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 					const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
@@ -146,10 +153,12 @@ class GoogleAutoTranslate extends AutoTranslate {
 		const translations = {};
 		const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
+
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
+
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
@@ -158,6 +167,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					},
 					query,
 				});
+
 				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 				}

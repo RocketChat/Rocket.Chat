@@ -45,14 +45,17 @@ export class AutoTranslate {
 		this.name = '';
 		this.languages = [];
 		this.supportedLanguages = {};
+
 		// Get the service provide API key.
 		settings.get('AutoTranslate_APIKey', (key, value) => {
 			this.apiKey = value;
 		});
+
 		// Get Auto Translate Active flag
 		settings.get('AutoTranslate_Enabled', (key, value) => {
 			this.autoTranslateEnabled = value;
 		});
+
 		/** Register the active service provider on the 'AfterSaveMessage' callback.
 		 *  So the registered provider will be invoked when a message is saved.
 		 *  All the other inactive service provider must be deactivated.
@@ -142,6 +145,7 @@ export class AutoTranslate {
 		let count = message.tokens.length;
 		message.html = message.msg;
 		message = Markdown.parseMessageNotEscaped(message);
+
 		// Some parsers (e. g. Marked) wrap the complete message in a <p> - this is unnecessary and should be ignored with respect to translations
 		const regexWrappedParagraph = new RegExp('^\s*<p>|<\/p>\s*$', 'gm');
 		message.msg = message.msg.replace(regexWrappedParagraph, '');
@@ -223,6 +227,7 @@ export class AutoTranslate {
 					let targetMessage = Object.assign({}, message);
 					targetMessage.html = s.escapeHTML(String(targetMessage.msg));
 					targetMessage = this.tokenize(targetMessage);
+
 					const translations = this._translateMessage(targetMessage, targetLanguages);
 					if (!_.isEmpty(translations)) {
 						Messages.addTranslations(message._id, translations, TranslationProviderRegistry._activeProvider);
