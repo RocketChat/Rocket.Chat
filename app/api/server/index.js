@@ -31,4 +31,4 @@ import './v1/subscriptions';
 import './v1/users';
 import './v1/video-conference';
 
-export { API } from './api';
+export { API, APIClass, defaultRateLimiterOptions } from './api';
