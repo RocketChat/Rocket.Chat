@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { SystemLogger } from '../../../../logger/server';
 import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';
 import { callbacks } from '../../../../callbacks/server';
@@ -9,7 +10,6 @@ import { settings } from '../../../../settings/server';
 callbacks.remove('afterSaveMessage', 'externalWebHook');
 
 function isMessageRelevant(message, room) {
-
 	const user = Users.findOneById(message.u._id);
 	if (user && user.roles.bot) {
 		return; 	// do not trigger a new evaluation if the message was sent from a bot (particularly by assistify itself)
@@ -64,7 +64,6 @@ callbacks.add('afterDeleteMessage', function(message) {
 			}
 		});
 	}
-
 }, callbacks.priority.LOW, 'Assistify_AI_afterDeleteMessage');
 
 callbacks.add('afterRoomErased', function(room) {

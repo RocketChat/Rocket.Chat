@@ -4,7 +4,6 @@ import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 
 class EventService {
-
 	/* eslint no-unused-vars: [2, { "args": "none" }]*/
 	_pushError(name, value, payload) {
 		// TODO implement a (performant) cache

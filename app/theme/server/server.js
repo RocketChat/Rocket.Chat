@@ -1,15 +1,15 @@
+import crypto from 'crypto';
+
 import _ from 'underscore';
 import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefix';
-import crypto from 'crypto';
-
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
-import { Inject } from 'meteor/meteorhacks:inject-initial';
 
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
 import { getURL } from '../../utils/lib/getURL';
+import { injectIntoHead } from '../../ui-master/server';
 
 const logger = new Logger('rocketchat:theme', {
 	methods: {
@@ -119,7 +119,6 @@ export const theme = new class {
 			};
 			return settings.add(`theme-${ type }-${ name }`, value, config);
 		}
-
 	}
 
 	addPublicColor(name, value, section, editor = 'color', property) {
@@ -152,12 +151,14 @@ export const theme = new class {
 	getCss() {
 		return settings.get('css') || '';
 	}
-};
+}();
 
-settings.get('css', (key, value = '') => {
-	currentHash = crypto.createHash('sha1').update(value).digest('hex');
-	currentSize = value.length;
-	Inject.rawHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(`/theme.css?${ currentHash }`) }">`);
+Meteor.startup(() => {
+	settings.get('css', (key, value = '') => {
+		currentHash = crypto.createHash('sha1').update(value).digest('hex');
+		currentSize = value.length;
+		injectIntoHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(`/theme.css?${ currentHash }`) }">`);
+	});
 });
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {

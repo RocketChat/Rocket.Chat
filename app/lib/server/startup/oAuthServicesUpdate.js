@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import _ from 'underscore';
+
 import { CustomOAuth } from '../../../custom-oauth';
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
-import _ from 'underscore';
 
 const logger = new Logger('rocketchat:lib', {
 	methods: {
@@ -46,6 +47,7 @@ function _OAuthServicesUpdate() {
 				data.tokenSentVia = settings.get(`${ service.key }-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${ service.key }-identity_token_sent_via`);
 				data.usernameField = settings.get(`${ service.key }-username_field`);
+				data.nameField = settings.get(`${ service.key }-name_field`);
 				data.avatarField = settings.get(`${ service.key }-avatar_field`);
 				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
@@ -60,6 +62,7 @@ function _OAuthServicesUpdate() {
 					tokenSentVia: data.tokenSentVia,
 					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
+					nameField: data.nameField,
 					avatarField: data.avatarField,
 					rolesClaim: data.rolesClaim,
 					mergeUsers: data.mergeUsers,

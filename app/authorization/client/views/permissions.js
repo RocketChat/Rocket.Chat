@@ -2,18 +2,21 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+
 import { Roles } from '../../../models';
 import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
+
 import { hasAtLeastOnePermission } from '..';
+
 import { t } from '../../../utils/client';
+import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 
 const whereNotSetting = {
 	$where: function() {
 		return this.level !== 'setting';
 	}.toString(),
 };
-import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 
 Template.permissions.helpers({
 	roles() {
@@ -95,9 +98,9 @@ Template.permissionsTable.helpers({
 			}
 			path = `${ path }${ t(permission.settingId) }`;
 			return path;
-		} else {
-			return t(permission._id);
 		}
+
+		return t(permission._id);
 	},
 
 	permissionDescription(permission) {
@@ -117,9 +120,8 @@ Template.permissionsTable.events({
 		if (!instance.permissionByRole[permission] // the permissino has this role not assigned at all (undefined)
 			|| instance.permissionByRole[permission].indexOf(role) === -1) {
 			return Meteor.call('authorization:addPermissionToRole', permission, role);
-		} else {
-			return Meteor.call('authorization:removeRoleFromPermission', permission, role);
 		}
+		return Meteor.call('authorization:removeRoleFromPermission', permission, role);
 	},
 });
 

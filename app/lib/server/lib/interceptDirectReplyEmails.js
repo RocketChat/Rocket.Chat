@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../settings';
 import IMAP from 'imap';
 import POP3Lib from 'poplib';
 import { simpleParser } from 'mailparser';
+
+import { settings } from '../../../settings';
+
 import { processDirectEmail } from '.';
 
 export class IMAPIntercepter {
@@ -63,7 +65,7 @@ export class IMAPIntercepter {
 		return true;
 	}
 
-	stop(callback = new Function) {
+	stop(callback = new Function()) {
 		this.imap.end();
 		this.imap.once('end', callback);
 	}
@@ -259,7 +261,7 @@ export class POP3Helper {
 		return this.running;
 	}
 
-	stop(callback = new Function) {
+	stop(callback = new Function()) {
 		if (this.isActive()) {
 			Meteor.clearInterval(this.running);
 		}

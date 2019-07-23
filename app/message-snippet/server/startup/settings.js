@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings';
 import { Permissions } from '../../../models';
 
@@ -14,4 +15,3 @@ Meteor.startup(function() {
 		},
 	});
 });
-

@@ -1,4 +1,5 @@
 import { Mongo } from 'meteor/mongo';
+
 import * as Models from '..';
 
 const Roles = new Mongo.Collection('rocketchat_roles');

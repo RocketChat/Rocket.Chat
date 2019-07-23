@@ -1,4 +1,5 @@
 import { Users } from '..';
+
 import _ from 'underscore';
 import mem from 'mem';
 
@@ -33,7 +34,7 @@ Object.assign(Subscriptions, {
 		const subscriptions = this.find(query).fetch();
 
 		const users = _.compact(_.map(subscriptions, function(subscription) {
-			if ('undefined' !== typeof subscription.u && 'undefined' !== typeof subscription.u._id) {
+			if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
 				return subscription.u._id;
 			}
 		}));

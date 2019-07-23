@@ -1,35 +1,33 @@
+import EventEmitter from 'wolfy87-eventemitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t } from '../../utils';
+
 import { ChromeScreenShare } from './screenShare';
+import { t } from '../../utils';
 import { Notifications } from '../../notifications';
 import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
 import { ChatSubscription } from '../../models';
 
-class WebRTCTransportClass {
+import { WEB_RTC_EVENTS } from '..';
+
+class WebRTCTransportClass extends EventEmitter {
 	constructor(webrtcInstance) {
+		super();
 		this.debug = false;
 		this.webrtcInstance = webrtcInstance;
-		this.callbacks = {};
-		Notifications.onRoom(this.webrtcInstance.room, 'webrtc', (type, data) => {
-			const { onRemoteStatus } = this.callbacks;
+		Notifications.onRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, (type, data) => {
 			this.log('WebRTCTransportClass - onRoom', type, data);
-			switch (type) {
-				case 'status':
-					if (onRemoteStatus && onRemoteStatus.length) {
-						onRemoteStatus.forEach((fn) => fn(data));
-					}
-			}
+			this.emit(type, data);
 		});
 	}
 
 	log(...args) {
 		if (this.debug === true) {
-			console.log.apply(console, args);
+			console.log(...args);
 		}
 	}
 
@@ -37,35 +35,14 @@ class WebRTCTransportClass {
 		if (data.room !== this.webrtcInstance.room) {
 			return;
 		}
-		this.log('WebRTCTransportClass - onUser', type, data);
-		const { onRemoteCall, onRemoteJoin, onRemoteCandidate, onRemoteDescription } = this.callbacks;
 
-		switch (type) {
-			case 'call':
-				if (onRemoteCall && onRemoteCall.length) {
-					onRemoteCall.forEach((fn) => fn(data));
-				}
-				break;
-			case 'join':
-				if (onRemoteJoin && onRemoteJoin.length) {
-					onRemoteJoin.forEach((fn) => fn(data));
-				}
-				break;
-			case 'candidate':
-				if (onRemoteCandidate && onRemoteCandidate.length) {
-					onRemoteCandidate.forEach((fn) => fn(data));
-				}
-				break;
-			case 'description':
-				if (onRemoteDescription && onRemoteDescription.length) {
-					onRemoteDescription.forEach((fn) => fn(data));
-				}
-		}
+		this.log('WebRTCTransportClass - onUser', type, data);
+		this.emit(type, data);
 	}
 
 	startCall(data) {
 		this.log('WebRTCTransportClass - startCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
-		Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'call', {
+		Notifications.notifyUsersOfRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.CALL, {
 			from: this.webrtcInstance.selfId,
 			room: this.webrtcInstance.room,
 			media: data.media,
@@ -76,14 +53,14 @@ class WebRTCTransportClass {
 	joinCall(data) {
 		this.log('WebRTCTransportClass - joinCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
 		if (data.monitor === true) {
-			Notifications.notifyUser(data.to, 'webrtc', 'join', {
+			Notifications.notifyUser(data.to, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.JOIN, {
 				from: this.webrtcInstance.selfId,
 				room: this.webrtcInstance.room,
 				media: data.media,
 				monitor: data.monitor,
 			});
 		} else {
-			Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'join', {
+			Notifications.notifyUsersOfRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.JOIN, {
 				from: this.webrtcInstance.selfId,
 				room: this.webrtcInstance.room,
 				media: data.media,
@@ -96,63 +73,41 @@ class WebRTCTransportClass {
 		data.from = this.webrtcInstance.selfId;
 		data.room = this.webrtcInstance.room;
 		this.log('WebRTCTransportClass - sendCandidate', data);
-		Notifications.notifyUser(data.to, 'webrtc', 'candidate', data);
+		Notifications.notifyUser(data.to, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.CANDIDATE, data);
 	}
 
 	sendDescription(data) {
 		data.from = this.webrtcInstance.selfId;
 		data.room = this.webrtcInstance.room;
 		this.log('WebRTCTransportClass - sendDescription', data);
-		Notifications.notifyUser(data.to, 'webrtc', 'description', data);
+		Notifications.notifyUser(data.to, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.DESCRIPTION, data);
 	}
 
 	sendStatus(data) {
 		this.log('WebRTCTransportClass - sendStatus', data, this.webrtcInstance.room);
 		data.from = this.webrtcInstance.selfId;
-		Notifications.notifyRoom(this.webrtcInstance.room, 'webrtc', 'status', data);
+		Notifications.notifyRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.STATUS, data);
 	}
 
 	onRemoteCall(fn) {
-		const { callbacks } = this;
-		if (callbacks.onRemoteCall == null) {
-			callbacks.onRemoteCall = [];
-		}
-		callbacks.onRemoteCall.push(fn);
+		return this.on(WEB_RTC_EVENTS.CALL, fn);
 	}
 
 	onRemoteJoin(fn) {
-		const { callbacks } = this;
-		if (callbacks.onRemoteJoin == null) {
-			callbacks.onRemoteJoin = [];
-		}
-		callbacks.onRemoteJoin.push(fn);
+		return this.on(WEB_RTC_EVENTS.JOIN, fn);
 	}
 
 	onRemoteCandidate(fn) {
-		const { callbacks } = this;
-		if (callbacks.onRemoteCandidate == null) {
-			callbacks.onRemoteCandidate = [];
-		}
-		callbacks.onRemoteCandidate.push(fn);
+		return this.on(WEB_RTC_EVENTS.CANDIDATE, fn);
 	}
 
 	onRemoteDescription(fn) {
-		const { callbacks } = this;
-		if (callbacks.onRemoteDescription == null) {
-			callbacks.onRemoteDescription = [];
-		}
-		callbacks.onRemoteDescription.push(fn);
+		return this.on(WEB_RTC_EVENTS.DESCRIPTION, fn);
 	}
 
 	onRemoteStatus(fn) {
-		const { callbacks } = this;
-		if (callbacks.onRemoteStatus == null) {
-			callbacks.onRemoteStatus = [];
-		}
-		callbacks.onRemoteStatus.push(fn);
+		return this.on(WEB_RTC_EVENTS.STATUS, fn);
 	}
-
-
 }
 
 class WebRTCClass {
@@ -195,7 +150,7 @@ class WebRTCClass {
 		this.videoEnabled = new ReactiveVar(true);
 		this.overlayEnabled = new ReactiveVar(false);
 		this.screenShareEnabled = new ReactiveVar(false);
-		this.localUrl = new ReactiveVar;
+		this.localUrl = new ReactiveVar();
 		this.active = false;
 		this.remoteMonitoring = false;
 		this.monitor = false;
@@ -212,8 +167,8 @@ class WebRTCClass {
 		} else if (userAgent.indexOf('safari') !== -1) {
 			this.navigator = 'safari';
 		}
-		const nav = this.navigator;
-		this.screenShareAvailable = nav === 'chrome' || nav === 'firefox' || nav === 'electron';
+
+		this.screenShareAvailable = ['chrome', 'firefox', 'electron'].includes(this.navigator);
 		this.media = {
 			video: false,
 			audio: true,
@@ -224,9 +179,15 @@ class WebRTCClass {
 		this.transport.onRemoteCandidate(this.onRemoteCandidate.bind(this));
 		this.transport.onRemoteDescription(this.onRemoteDescription.bind(this));
 		this.transport.onRemoteStatus(this.onRemoteStatus.bind(this));
+
+
 		Meteor.setInterval(this.checkPeerConnections.bind(this), 1000);
 
 		// Meteor.setInterval(this.broadcastStatus.bind(@), 1000);
+	}
+
+	onUserStream(...args) {
+		return this.transport.onUserStream(...args);
 	}
 
 	log(...args) {
@@ -241,11 +202,13 @@ class WebRTCClass {
 
 	checkPeerConnections() {
 		const { peerConnections } = this;
-		Object.keys(peerConnections).forEach((id) => {
-			const peerConnection = peerConnections[id];
-			if (peerConnection.iceConnectionState !== 'connected' && peerConnection.iceConnectionState !== 'completed' && peerConnection.createdAt + 5000 < Date.now()) {
+		const date = Date.now();
+		Object.entries(peerConnections).some(([id, peerConnection]) => {
+			if (!['connected', 'completed'].includes(peerConnection.iceConnectionState) && peerConnection.createdAt + 5000 < date) {
 				this.stopPeerConnection(id);
+				return true;
 			}
+			return false;
 		});
 	}
 
@@ -254,9 +217,7 @@ class WebRTCClass {
 		const itemsById = {};
 		const { peerConnections } = this;
 
-		Object.keys(peerConnections).forEach((id) => {
-			const peerConnection = peerConnections[id];
-
+		Object.entries(peerConnections).forEach(([id, peerConnection]) => {
 			peerConnection.getRemoteStreams().forEach((remoteStream) => {
 				const item = {
 					id,
@@ -289,7 +250,7 @@ class WebRTCClass {
 		this.remoteItemsById.set(itemsById);
 	}
 
-	resetCallInProgress() {
+	resetCallInProgress = () => {
 		this.callInProgress.set(false);
 	}
 
@@ -299,11 +260,10 @@ class WebRTCClass {
 		}
 		const remoteConnections = [];
 		const { peerConnections } = this;
-		Object.keys(peerConnections).forEach((id) => {
-			const peerConnection = peerConnections[id];
+		Object.keys(peerConnections).entries(([id, { remoteMedia: media }]) => {
 			remoteConnections.push({
 				id,
-				media: peerConnection.remoteMedia,
+				media,
 			});
 		});
 
@@ -327,7 +287,7 @@ class WebRTCClass {
 		// this.log(onRemoteStatus, arguments);
 		this.callInProgress.set(true);
 		Meteor.clearTimeout(this.callInProgressTimeout);
-		this.callInProgressTimeout = Meteor.setTimeout(this.resetCallInProgress.bind(this), 2000);
+		this.callInProgressTimeout = Meteor.setTimeout(this.resetCallInProgress, 2000);
 		if (this.active !== true) {
 			return;
 		}
@@ -406,7 +366,7 @@ class WebRTCClass {
 	_getUserMedia(media, onSuccess, onError) {
 		const onSuccessLocal = (stream) => {
 			if (AudioContext && stream.getAudioTracks().length > 0) {
-				const audioContext = new AudioContext;
+				const audioContext = new AudioContext();
 				const source = audioContext.createMediaStreamSource(stream);
 				const volume = audioContext.createGain();
 				source.connect(volume);
@@ -420,6 +380,10 @@ class WebRTCClass {
 			}
 			onSuccess(stream);
 		};
+		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+			return navigator.mediaDevices.getUserMedia(media).then(onSuccessLocal).catch(onError);
+		}
+
 		navigator.getUserMedia(media, onSuccessLocal, onError);
 	}
 
@@ -539,10 +503,7 @@ class WebRTCClass {
 			this.videoEnabled.set(this.media.video === true);
 			this.audioEnabled.set(this.media.audio === true);
 			const { peerConnections } = this;
-			Object.keys(peerConnections).forEach((id) => {
-				const peerConnection = peerConnections[id];
-				peerConnection.addStream(stream);
-			});
+			Object.entries(peerConnections).forEach(([, peerConnection]) => peerConnection.addStream(stream));
 			callback(null, this.localStream);
 		};
 		const onError = (error) => {
@@ -557,7 +518,7 @@ class WebRTCClass {
   		@param id {String}
    */
 
-	stopPeerConnection(id) {
+	stopPeerConnection = (id) => {
 		const peerConnection = this.peerConnections[id];
 		if (peerConnection == null) {
 			return;
@@ -570,9 +531,7 @@ class WebRTCClass {
 	stopAllPeerConnections() {
 		const { peerConnections } = this;
 
-		Object.keys(peerConnections).forEach((id) => {
-			this.stopPeerConnection(id);
-		});
+		Object.keys(peerConnections).forEach(this.stopPeerConnection);
 
 		window.audioContext && window.audioContext.close();
 	}
@@ -755,16 +714,13 @@ class WebRTCClass {
 		}, (isConfirm) => {
 			if (isConfirm) {
 				FlowRouter.goToRoomById(data.room);
-				Meteor.defer(() => {
-					this.joinCall({
-						to: data.from,
-						monitor: data.monitor,
-						media: data.media,
-					});
+				return this.joinCall({
+					to: data.from,
+					monitor: data.monitor,
+					media: data.media,
 				});
-			} else {
-				this.stop();
 			}
+			this.stop();
 		});
 	}
 
@@ -954,7 +910,6 @@ class WebRTCClass {
 			peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
 		}
 	}
-
 }
 
 const WebRTC = new class {
@@ -962,8 +917,8 @@ const WebRTC = new class {
 		this.instancesByRoomId = {};
 	}
 
-	getInstanceByRoomId(roomId) {
-		const subscription = ChatSubscription.findOne({ rid: roomId });
+	getInstanceByRoomId(rid) {
+		const subscription = ChatSubscription.findOne({ rid });
 		if (!subscription) {
 			return;
 		}
@@ -981,22 +936,22 @@ const WebRTC = new class {
 		if (enabled === false) {
 			return;
 		}
-		if (this.instancesByRoomId[roomId] == null) {
-			this.instancesByRoomId[roomId] = new WebRTCClass(Meteor.userId(), roomId);
+		if (this.instancesByRoomId[rid] == null) {
+			this.instancesByRoomId[rid] = new WebRTCClass(Meteor.userId(), rid);
 		}
-		return this.instancesByRoomId[roomId];
+		return this.instancesByRoomId[rid];
 	}
-};
+}();
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			Notifications.onUser('webrtc', (type, data) => {
+			Notifications.onUser(WEB_RTC_EVENTS.WEB_RTC, (type, data) => {
 				if (data.room == null) {
 					return;
 				}
 				const webrtc = WebRTC.getInstanceByRoomId(data.room);
-				webrtc.transport.onUserStream(type, data);
+				webrtc.onUserStream(type, data);
 			});
 		}
 	});

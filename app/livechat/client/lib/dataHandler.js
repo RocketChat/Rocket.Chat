@@ -18,7 +18,7 @@ const calculateResponseTimings = (dbCursor) => {
 		}
 	});
 
-	const avgArt = (count) ? art / count : 0;
+	const avgArt = count ? art / count : 0;
 
 	return {
 		avg: Math.round(avgArt * 100) / 100,
@@ -44,7 +44,7 @@ const calculateReactionTimings = (dbCursor) => {
 		}
 	});
 
-	const avgArnt = (count) ? arnt / count : 0;
+	const avgArnt = count ? arnt / count : 0;
 
 	return {
 		avg: Math.round(avgArnt * 100) / 100,
@@ -70,7 +70,7 @@ const calculateDurationData = (dbCursor) => {
 		}
 	});
 
-	const avgCD = (count) ? total / count : 0;
+	const avgCD = count ? total / count : 0;
 
 	return {
 		avg: Math.round(avgCD * 100) / 100,
@@ -163,10 +163,10 @@ export const getConversationsOverviewData = (dbCursor) => {
 
 	return [{
 		title: 'Total_conversations',
-		value: (total) ? total : 0,
+		value: total || 0,
 	}, {
 		title: 'Total_messages',
-		value: (totalMessages) ? totalMessages : 0,
+		value: totalMessages || 0,
 	}];
 };
 
@@ -191,9 +191,9 @@ export const getTimingsOverviewData = (dbCursor) => {
 
 	return [{
 		title: 'Avg_response_time',
-		value: (total) ? secondsToHHMMSS((totalReactionTime / total).toFixed(2)) : '-',
+		value: total ? secondsToHHMMSS((totalReactionTime / total).toFixed(2)) : '-',
 	}, {
 		title: 'Avg_reaction_time',
-		value: (total) ? secondsToHHMMSS((totalResponseTime / total).toFixed(2)) : '-',
+		value: total ? secondsToHHMMSS((totalResponseTime / total).toFixed(2)) : '-',
 	}];
 };

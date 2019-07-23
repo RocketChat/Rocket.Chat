@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import _ from 'underscore';
+
+import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -43,7 +44,7 @@ Meteor.methods({
 				departmentId: 1,
 			},
 		};
-		const room = (departmentId) ? Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
+		const room = departmentId ? Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}

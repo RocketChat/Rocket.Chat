@@ -3,12 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import _ from 'underscore';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
-
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
-import _ from 'underscore';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -64,7 +63,6 @@ Template.DefaultSearchResultTemplate.events({
 		t.data.payload.limit = t.pageSize;
 		t.data.result.set(undefined);
 		t.data.search();
-
 	},
 	'scroll .rocket-default-search-results': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight) && t.hasMore.get()) {

@@ -6,7 +6,7 @@ Template.livechatTriggerCondition.helpers({
 		if (this.name === undefined && Template.instance().firstCondition) {
 			Template.instance().firstCondition = false;
 			return '';
-		} else if (this.name !== current) {
+		} if (this.name !== current) {
 			return 'hidden';
 		}
 	},

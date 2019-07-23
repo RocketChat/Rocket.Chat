@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+
 import { SideNav, Layout } from '../../../../ui-utils';
 import { t } from '../../../../utils';
 import './livechatFlex.html';

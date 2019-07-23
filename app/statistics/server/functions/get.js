@@ -1,10 +1,11 @@
-import _ from 'underscore';
 import os from 'os';
-import { getUsages } from './getUsages';
 
+
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
+import { getUsages } from './getUsages';
 import {
 	Sessions,
 	Settings,
@@ -18,7 +19,6 @@ import {
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
-
 import { statistics } from '../statisticsNamespace';
 
 const wizardFields = [
@@ -140,7 +140,6 @@ statistics.get = function _getStatistics() {
 	statistics.oplogEnabled = oplogEnabled;
 	statistics.mongoVersion = mongoVersion;
 	statistics.mongoStorageEngine = mongoStorageEngine;
-
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
 	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
 	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
@@ -148,7 +147,9 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
-	statistics.usages = getUsages();
+	if (settings.get('Usage_Statistics_Enabled')) {
+		statistics.usages = getUsages();
+	}
 
 	return statistics;
 };

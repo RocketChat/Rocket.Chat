@@ -1,13 +1,20 @@
 <template name="permissionsTable">
+
 	<table class="permission-grid secondary-background-color">
+
 		<thead class="content-background-color">
 			<tr>
-				<th class="permission-name border-component-color"></th>
+				<th class=" role-name permission-name border-component-color"></th>
 				{{#each role in allRoles}}
 				<th class="edit-icon role-name border-component-color" title="{{role.description}}">
-					<a href="{{pathFor "admin-permissions-edit" name=role._id}}">
-						<p class="rotator">
-							{{role._id}}
+					<a class="permission-edit" href="{{pathFor "admin-permissions-edit" name=role._id}}">
+						<p class="permission-label">
+							<div class = "rotator">
+								{{role._id}}
+							</div>
+						</p>
+						<p class="permission-icon">
+							<i class="icon-edit"></i>
 						</p>
 					</a>
 				</th>
@@ -17,13 +24,10 @@
 		<tbody>
 			{{#each permission in permissions}}
 			<tr class="admin-table-row">
-				<td class="permission-name border-component-color" title="{{permissionDescription permission}}">
-					{{permissionName permission}}<br><span class="id-styler">[ID: {{permission._id}}]</span></td>
+				<td class="permission-name border-component-color" title="{{permissionDescription permission}}">{{permissionName permission}}<br><span class = "id-styler">[ID: {{permission._id}}]</span></td>
 				{{#each role in allRoles}}
 				<td class="permission-checkbox border-component-color">
-					<input type="checkbox" name="perm[{{role._id}}][{{permission._id}}]" class="role-permission"
-						value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}"
-						data-permission="{{permission._id}}">
+					<input type="checkbox" name="perm[{{role._id}}][{{permission._id}}]" class="role-permission" value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}" data-permission="{{permission._id}}">
 				</td>
 				{{/each}}
 			</tr>
@@ -50,11 +54,11 @@
 			{{# header sectionName="Setting_permissions"}}
 			<div class="rc-header__section-button">
 				<button class="rc-button rc-button--primary js-toggle-setting-permissions"><span>
-						{{#if settingPermissionExpanded }}
+					{{#if settingPermissionExpanded }}
 						{{_ "Collapse"}}
-						{{else}}
+					{{else}}
 						{{_ "Expand"}}
-						{{/if}}
+					{{/if}}
 					</span>
 				</button>
 			</div>

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { Users, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
-import s from 'underscore.string';
 
 export const _setRealName = function(userId, name) {
 	name = s.trim(name);

@@ -1,11 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
-import { settings } from '../../settings';
-import { FederationKeys } from '../../models';
-import { getWorkspaceAccessToken } from '../../cloud/server';
 
 import './federation-settings';
-
 import { logger } from './logger';
 import { PeerClient } from './PeerClient';
 import { PeerDNS } from './PeerDNS';
@@ -13,11 +9,13 @@ import { PeerHTTP } from './PeerHTTP';
 import { PeerPinger } from './PeerPinger';
 import { PeerServer } from './PeerServer';
 import * as SettingsUpdater from './settingsUpdater';
-
 import './methods/dashboard';
 import { addUser } from './methods/addUser';
 import { searchUsers } from './methods/searchUsers';
 import { ping } from './methods/ping';
+import { getWorkspaceAccessToken } from '../../cloud/server';
+import { FederationKeys } from '../../models';
+import { settings } from '../../settings';
 
 const peerClient = new PeerClient();
 const peerDNS = new PeerDNS();

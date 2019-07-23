@@ -1,6 +1,6 @@
 import mem from 'mem';
-
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { ChatSubscription } from '../../app/models';
 import { roomTypes } from '../../app/utils';
 import { call } from '../../app/ui-utils';

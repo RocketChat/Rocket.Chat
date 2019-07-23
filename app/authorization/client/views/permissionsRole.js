@@ -2,13 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
+
 import { handleError } from '../../../utils/client/lib/handleError';
 import { t } from '../../../utils/lib/tapi18n';
-import { Tracker } from 'meteor/tracker';
 import { Roles } from '../../../models';
 import { hasAllPermission } from '../hasPermission';
 import { modal } from '../../../ui-utils/client/lib/modal';
-import toastr from 'toastr';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 
 Template.permissionsRole.helpers({
@@ -225,9 +226,9 @@ Template.permissionsRole.events({
 });
 
 Template.permissionsRole.onCreated(function() {
-	this.searchRoom = new ReactiveVar;
-	this.searchUsername = new ReactiveVar;
-	this.usersInRole = new ReactiveVar;
+	this.searchRoom = new ReactiveVar();
+	this.searchUsername = new ReactiveVar();
+	this.usersInRole = new ReactiveVar();
 	this.limit = new ReactiveVar(50);
 	this.ready = new ReactiveVar(true);
 	this.subscribe('roles', FlowRouter.getParam('name'));

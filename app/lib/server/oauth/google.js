@@ -2,6 +2,7 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { HTTP } from 'meteor/http';
 import { Google } from 'meteor/google-oauth';
+
 import { registerAccessTokenService } from './oauth';
 
 function getIdentity(accessToken) {
@@ -39,7 +40,7 @@ registerAccessTokenService('google', function(options) {
 	const serviceData = {
 		accessToken: options.accessToken,
 		idToken: options.idToken,
-		expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
+		expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
 		scope: options.scopes || getScopes(options.accessToken),
 	};
 

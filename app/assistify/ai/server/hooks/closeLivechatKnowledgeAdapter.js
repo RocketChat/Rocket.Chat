@@ -1,10 +1,10 @@
-import { SystemLogger } from '../../../../logger/server';
-
 /**
  * Notifies the knowledgeProvider about the end of a livechat conversation
  */
+import { SystemLogger } from '../../../../logger/server';
 import { callbacks } from '../../../../callbacks/server';
 import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';
+
 const _callbackOnClose = function(room) {
 	try {
 		const knowledgeAdapter = getKnowledgeAdapter();

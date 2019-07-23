@@ -2,7 +2,6 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
-
 import _ from 'underscore';
 
 import { lazyloadtick } from '../../../lazy-load';
@@ -11,8 +10,7 @@ import { Messages, Subscriptions } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { getConfig } from '../../../ui-utils/client/config';
-
-import { upsert } from '../upsert';
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 
 import './threads.html';
 
@@ -22,8 +20,9 @@ const sort = { tlm: -1 };
 
 Template.threads.events({
 	'click .js-open-thread'(e, instance) {
-		const { msg } = messageArgs(this);
+		const { msg, jump } = messageArgs(this);
 		instance.state.set('mid', msg._id);
+		instance.state.set('jump', jump);
 		e.preventDefault();
 		e.stopPropagation();
 		return false;
@@ -37,6 +36,9 @@ Template.threads.events({
 });
 
 Template.threads.helpers({
+	jump() {
+		return Template.instance().state.get('jump');
+	},
 	subscription() {
 		return Template.currentData().subscription;
 	},
@@ -77,7 +79,6 @@ Template.threads.onCreated(async function() {
 	this.rid = rid;
 
 	this.incLimit = () => {
-
 		const { rid, limit } = Tracker.nonreactive(() => this.state.all());
 
 		const count = this.Threads.find({ rid }).count();
@@ -98,21 +99,21 @@ Template.threads.onCreated(async function() {
 
 
 		this.state.set('loading', rid);
-		const threads = await call('getThreadsList', { rid, limit: LIST_SIZE, skip: limit - LIST_SIZE });
-		upsert(this.Threads, threads);
+		const messages = await call('getThreadsList', { rid, limit: LIST_SIZE, skip: limit - LIST_SIZE });
+		upsertMessageBulk({ msgs: messages }, this.Threads);
 		// threads.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
 		this.state.set('loading', false);
-
 	}, 500);
 
 	Tracker.afterFlush(() => {
 		this.autorun(async () => {
-			const { rid, mid } = Template.currentData();
+			const { rid, mid, jump } = Template.currentData();
 
 			this.state.set({
 				close: !!mid,
 				mid,
 				rid,
+				jump,
 			});
 		});
 	});

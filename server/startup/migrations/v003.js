@@ -128,9 +128,8 @@ Migrations.add({
 				}, {
 					multi: true,
 				});
-			} else {
-				return Rooms.update(room._id, update);
 			}
+			return Rooms.update(room._id, update);
 		});
 
 		console.log('Fixing ChatMessage uid');

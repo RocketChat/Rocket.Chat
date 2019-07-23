@@ -1,8 +1,9 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
+
+import { AccountBox } from './AccountBox';
 import { roomTypes } from '../../../utils/client/lib/roomTypes';
 import { Subscriptions } from '../../../models';
-import { AccountBox } from './AccountBox';
 
 export const SideNav = new class {
 	constructor() {
@@ -40,6 +41,7 @@ export const SideNav = new class {
 			return typeof callback === 'function' && callback();
 		}, 500);
 	}
+
 	closeFlex(callback = null) {
 		const routesNamesForRooms = roomTypes.getTypes().filter((i) => i.route).map((i) => i.route.name);
 		if (!routesNamesForRooms.includes(FlowRouter.current().route.name)) {
@@ -55,9 +57,11 @@ export const SideNav = new class {
 		}
 		this.toggleFlex(-1, callback);
 	}
+
 	flexStatus() {
 		return this.flexNav.opened;
 	}
+
 	setFlex(template, data) {
 		if (data == null) {
 			data = {};
@@ -65,6 +69,7 @@ export const SideNav = new class {
 		Session.set('flex-nav-template', template);
 		return Session.set('flex-nav-data', data);
 	}
+
 	getFlex() {
 		return {
 			template: Session.get('flex-nav-template'),
@@ -75,10 +80,10 @@ export const SideNav = new class {
 	toggleCurrent() {
 		if (this.flexNav && this.flexNav.opened) {
 			return this.closeFlex();
-		} else {
-			return AccountBox.toggle();
 		}
+		return AccountBox.toggle();
 	}
+
 	focusInput() {
 		const sideNavDivs = Array.from(this.sideNav[0].children).filter((el) => el.tagName === 'DIV' && !el.classList.contains('hidden'));
 		let highestZidx = 0;
@@ -95,6 +100,7 @@ export const SideNav = new class {
 			return ref && ref.focus();
 		}, 200);
 	}
+
 	validate() {
 		const invalid = [];
 		this.sideNav.find('input.required').each(function() {
@@ -133,7 +139,7 @@ export const SideNav = new class {
 				this.setFlex(item.config.template, item.config.data);
 				return this.openFlex(item.callback);
 			});
-			return this.openQueue = [];
+			this.openQueue = [];
 		}
 	}
-};
+}();

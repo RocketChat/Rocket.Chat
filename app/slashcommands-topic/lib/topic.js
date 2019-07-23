@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { handleError, slashCommands } from '../../utils';
 import { ChatRoom } from '../../models';
 import { callbacks } from '../../callbacks';
@@ -15,9 +16,8 @@ function Topic(command, params, item) {
 				if (err) {
 					if (Meteor.isClient) {
 						return handleError(err);
-					} else {
-						throw err;
 					}
+					throw err;
 				}
 
 				if (Meteor.isClient) {

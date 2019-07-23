@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../../../settings';
 import './livechatTriggerAction.html';
 
@@ -8,7 +9,7 @@ Template.livechatTriggerAction.helpers({
 		if (this.name === undefined && Template.instance().firstAction) {
 			Template.instance().firstAction = false;
 			return '';
-		} else if (this.name !== current) {
+		} if (this.name !== current) {
 			return 'hidden';
 		}
 	},

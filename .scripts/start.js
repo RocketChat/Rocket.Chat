@@ -5,6 +5,7 @@ const fs = require('fs');
 const extend = require('util')._extend;
 const { spawn } = require('child_process');
 const net = require('net');
+
 const processes = [];
 let exitCode;
 
@@ -113,9 +114,9 @@ function startChimp() {
 		command: '.scripts/separateTesting.sh',
 		options: {
 			env: Object.assign({}, process.env, {
-				NODE_PATH: `${ process.env.NODE_PATH +
-					path.delimiter + srcDir +
-					path.delimiter + srcDir }/node_modules`,
+				NODE_PATH: `${ process.env.NODE_PATH
+					+ path.delimiter + srcDir
+					+ path.delimiter + srcDir }/node_modules`,
 			}),
 		},
 	});

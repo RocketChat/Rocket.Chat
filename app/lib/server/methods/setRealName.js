@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { settings } from '../../../settings';
 import { setRealName } from '../functions';
 import { RateLimiter } from '../lib';
 
 Meteor.methods({
 	setRealName(name) {
-
 		check(name, String);
 
 		if (!Meteor.userId()) {

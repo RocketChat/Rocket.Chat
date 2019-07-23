@@ -4,11 +4,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
+
 import { hasAllPermission } from '../../../../authorization';
 import { modal, SideNav } from '../../../../ui-utils/client';
 import { t, handleError } from '../../../../utils';
 import { ChatOAuthApps } from '../collection';
-import toastr from 'toastr';
 
 Template.oauthApp.onCreated(function() {
 	this.subscribe('oauthApps');
@@ -108,4 +109,3 @@ Template.oauthApp.onRendered(() => {
 		SideNav.openFlex();
 	});
 });
-

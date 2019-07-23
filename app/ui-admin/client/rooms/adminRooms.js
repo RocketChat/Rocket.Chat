@@ -5,12 +5,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { SideNav, RocketChatTabBar, TabBar } from '../../../ui-utils';
 import { t, roomTypes } from '../../../utils';
 import { hasAllPermission } from '../../../authorization';
 import { ChannelSettings } from '../../../channel-settings';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
@@ -51,9 +52,8 @@ Template.adminRooms.helpers({
 	'default'() {
 		if (this.default) {
 			return t('True');
-		} else {
-			return t('False');
 		}
+		return t('False');
 	},
 	flexData() {
 		return {
@@ -64,8 +64,8 @@ Template.adminRooms.helpers({
 		const instance = Template.instance();
 		return function(currentTarget) {
 			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
 			) {
 				return instance.limit.set(instance.limit.get() + 50);
 			}

@@ -17,7 +17,6 @@ describe('[Chat]', function() {
 	before((done) => getCredentials(done));
 
 	describe('/chat.postMessage', () => {
-
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
 			request.post(api('chat.postMessage'))
 				.set(credentials)
@@ -74,7 +73,6 @@ describe('[Chat]', function() {
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
-
 			it('attachment.message_link', (done) =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
@@ -273,7 +271,6 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
 	});
 
 	describe('/chat.getMessage', () => {
@@ -294,7 +291,6 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.sendMessage', () => {
-
 		it('should throw an error when the required param \'rid\' is not sent', (done) => {
 			request.post(api('chat.sendMessage'))
 				.set(credentials)
@@ -316,7 +312,6 @@ describe('[Chat]', function() {
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
-
 			it('attachment.message_link', (done) =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
@@ -553,7 +548,6 @@ describe('[Chat]', function() {
 					.end(done);
 			});
 		});
-
 	});
 
 	describe('/chat.update', () => {

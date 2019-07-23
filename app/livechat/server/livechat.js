@@ -1,6 +1,6 @@
-import _ from 'underscore';
 import url from 'url';
 
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 

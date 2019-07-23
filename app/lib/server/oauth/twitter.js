@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { registerAccessTokenService } from './oauth';
 import Twit from 'twit';
 import _ from 'underscore';
+
+import { registerAccessTokenService } from './oauth';
 
 const whitelistedFields = [
 	'id',
@@ -44,7 +45,7 @@ registerAccessTokenService('twitter', function(options) {
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
+		expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
 	};
 
 	const fields = _.pick(identity, whitelistedFields);

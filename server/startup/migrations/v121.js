@@ -4,7 +4,6 @@ import { Users, Subscriptions } from '../../../app/models';
 Migrations.add({
 	version: 121,
 	up() {
-
 		// set user preferences on subscriptions
 		Users.find({
 			$or: [

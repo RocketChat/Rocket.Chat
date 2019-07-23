@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { hasAllPermission } from '../../../authorization/server';
@@ -18,7 +19,7 @@ Meteor.methods({
 			// Verify the _id passed in is a string.
 			check(_id, String);
 			if (!hasPermission(Meteor.userId(), 'edit-privileged-setting')
-				&& !(hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`]))) {
+				&& !hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])) {
 				settingsNotAllowed.push(_id);
 				return;
 			}

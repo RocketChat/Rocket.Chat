@@ -1,7 +1,8 @@
-import { Users } from '../../../models';
+import _ from 'underscore';
+
 import { getPublicTokenpassBalances } from './getPublicTokenpassBalances';
 import { getProtectedTokenpassBalances } from './getProtectedTokenpassBalances';
-import _ from 'underscore';
+import { Users } from '../../../models';
 
 export const updateUserTokenpassBalances = function(user) {
 	if (user && user.services && user.services.tokenpass) {

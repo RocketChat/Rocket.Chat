@@ -122,7 +122,6 @@ Meteor.methods({
 	* @param {string[]} users - users to be added
 	*/
 	createDiscussion({ prid, pmid, t_name, reply, users }) {
-
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}

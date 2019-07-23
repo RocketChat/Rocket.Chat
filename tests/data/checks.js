@@ -31,8 +31,8 @@ export function checkIfUserIsValid(username, email, password) {
 			console.log('	User dont exist. Creating user...');
 			loginPage.gotToRegister();
 			loginPage.registerNewUser({ username, email, password });
-			browser.waitForExist('form#login-card input#username', 5000);
-			browser.click('button.login');
+			browser.waitForExist('input#username', 5000);
+			browser.click('#login-card button.login');
 			mainContent.mainContent.waitForExist(5000);
 		}
 	} else if (browser.execute(() => Meteor.user().username).value !== username) {
@@ -65,7 +65,7 @@ export function checkIfUserIsAdmin(username, email, password) {
 			loginPage.gotToRegister();
 			loginPage.registerNewUser({ username, email, password });
 			browser.waitForExist('form#login-card input#username', 5000);
-			browser.click('button.login');
+			browser.click('.submit > button');
 			mainContent.mainContent.waitForExist(5000);
 		}
 	} else if (browser.execute(() => Meteor.user().username).value !== username) {

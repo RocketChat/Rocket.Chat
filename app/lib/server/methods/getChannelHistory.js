@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import _ from 'underscore';
+
 import { hasPermission } from '../../../authorization';
 import { Subscriptions, Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import _ from 'underscore';
 
 Meteor.methods({
 	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads }) {

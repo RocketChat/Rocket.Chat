@@ -1,11 +1,17 @@
+import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+
 import { emoji } from '../../lib/rocketchat';
-import _ from 'underscore';
+import { updateRecentEmoji } from '../emojiPicker';
+
+let updatePositions = true;
 
 export const EmojiPicker = {
 	width: 365,
-	height: 290,
+	height: 300,
 	initiated: false,
 	input: null,
 	source: null,
@@ -13,6 +19,8 @@ export const EmojiPicker = {
 	tone: null,
 	opened: false,
 	pickCallback: null,
+	scrollingToCategory: false,
+	currentCategory: new ReactiveVar('recent'),
 	init() {
 		if (this.initiated) {
 			return;
@@ -65,7 +73,7 @@ export const EmojiPicker = {
 		const isLargerThanWindow = this.width + windowBorder > windowWidth;
 
 		if (top + this.height >= windowHeight) {
-			cssProperties.top = windowHeight - this.height - windowBorder;
+			cssProperties.top = windowHeight - this.height - windowBorder - 75;
 		}
 
 		if (left < windowBorder) {
@@ -92,6 +100,13 @@ export const EmojiPicker = {
 		if (emojiInput) {
 			emojiInput.focus();
 		}
+
+		this.calculateCategoryPositions();
+
+		if (this.recent.length === 0 && this.currentCategory.get() === 'recent') {
+			this.showCategory(emoji.packages.emojiCustom.list.length > 0 ? 'rocket' : 'people', false);
+		}
+
 		this.opened = true;
 	},
 	close() {
@@ -113,33 +128,65 @@ export const EmojiPicker = {
 
 		this.recent.unshift(_emoji);
 
+		updatePositions = true;
+
 		window.localStorage.setItem('emoji.recent', this.recent);
 		emoji.packages.base.emojisByCategory.recent = this.recent;
-		this.updateRecent();
+		this.updateRecent('recent');
 	},
-	updateRecent() {
-		const instance = Template.instance();
-		if (instance) {
-			instance.recentNeedsUpdate.set(true);
-		} else {
-			this.refreshDynamicEmojiLists();
+	removeFromRecent(_emoji) {
+		const pos = this.recent.indexOf(_emoji);
+		if (pos === -1) {
+			return;
 		}
+		this.recent.splice(pos, 1);
+		window.localStorage.setItem('emoji.recent', this.recent);
 	},
-	refreshDynamicEmojiLists() {
-		const dynamicEmojiLists = [
-			emoji.packages.base.emojisByCategory.recent,
-			emoji.packages.emojiCustom.emojisByCategory.rocket,
-		];
+	updateRecent(category) {
+		updateRecentEmoji(category);
+	},
+	calculateCategoryPositions() {
+		if (!updatePositions) {
+			return;
+		}
+		updatePositions = false;
 
-		dynamicEmojiLists.forEach((category) => {
-			if (category) {
-				for (let i = 0; i < category.length; i++) {
-					const _emoji = category[i];
-					if (!emoji.list[`:${ _emoji }:`]) {
-						category = _.without(category, _emoji);
-					}
-				}
+		const containerScroll = $('.emoji-picker .emojis').scrollTop();
+
+		this.catPositions = Array.from(document.querySelectorAll('.emoji-list-category')).map((el) => {
+			const { top } = $(el).position();
+			return {
+				el,
+				top: top + containerScroll,
+			};
+		});
+	},
+	getCategoryPositions() {
+		return this.catPositions;
+	},
+	showCategory(category, animate = true) {
+		this.scrollingToCategory = animate;
+
+		$('.emoji-picker .js-emojipicker-search')
+			.val('')
+			.change()
+			.focus();
+
+		this.currentCategory.set(category);
+
+		Tracker.afterFlush(() => {
+			const header = $(`#emoji-list-category-${ category }`);
+			const container = $('.emoji-picker .emojis');
+
+			const scrollTop = header.position().top + container.scrollTop();// - container.position().top;
+
+			if (animate) {
+				return container.animate({
+					scrollTop,
+				}, 300, () => { this.scrollingToCategory = false; });
 			}
+
+			container.scrollTop(scrollTop);
 		});
 	},
 };

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Settings } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
@@ -33,11 +34,11 @@ Meteor.methods({
 			return Settings.findNotHidden({ updatedAfter }).fetch().filter(function(record) {
 				if (hasAtLeastOnePermission(Meteor.userId(), ['view-privileged-setting', 'edit-privileged-setting'])) {
 					return !record.hidden;
-				} else if (hasPermission(Meteor.userId(), 'manage-selected-settings')) {
-					return !record.hidden && hasPermission(Meteor.userId(), `change-setting-${ record._id }`);
-				} else {
-					return false;
 				}
+				if (hasPermission(Meteor.userId(), 'manage-selected-settings')) {
+					return !record.hidden && hasPermission(Meteor.userId(), `change-setting-${ record._id }`);
+				}
+				return false;
 			});
 		}
 

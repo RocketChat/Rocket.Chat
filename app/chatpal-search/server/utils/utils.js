@@ -7,9 +7,8 @@ Meteor.methods({
 			const response = HTTP.call('POST', 'https://beta.chatpal.io/v1/account', { data: { email, tier: 'free' } });
 			if (response.statusCode === 201) {
 				return response.data.key;
-			} else {
-				return false;
 			}
+			return false;
 		} catch (e) {
 			return false;
 		}
@@ -19,9 +18,8 @@ Meteor.methods({
 			const response = HTTP.call('GET', `https://beta.chatpal.io/v1/terms/${ lang }.html`);
 			if (response.statusCode === 200) {
 				return response.content;
-			} else {
-				return undefined;
 			}
+			return undefined;
 		} catch (e) {
 			return false;
 		}
