@@ -264,7 +264,7 @@ export class AppsRestApi {
 				if (this.queryParams.marketplace && this.queryParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = getDefaultHeaders();
+					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
