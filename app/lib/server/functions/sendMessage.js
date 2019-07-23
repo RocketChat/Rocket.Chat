@@ -45,7 +45,7 @@ const validateAttachmentsFields = (attachmentField) => {
 	check(attachmentField, objectMaybeIncluding({
 		short: Boolean,
 		title: String,
-		value: Match.OneOf(String, Match.Integer, Boolean),
+		value: Match.OneOf(String, Number, Boolean),
 	}));
 
 	if (typeof attachmentField.value !== 'undefined') {

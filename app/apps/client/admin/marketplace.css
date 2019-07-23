@@ -1,0 +1,68 @@
+.rc-apps-marketplace {
+	&__app-status,
+	&__app-button,
+	&__app-menu-trigger {
+		display: flex;
+		flex: 1;
+
+		padding: 0;
+
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		align-items: center;
+		appearance: none;
+	}
+
+	&__app-menu-trigger,
+	&__app-button {
+		position: relative;
+
+		&:active {
+			transform: translateY(2px);
+
+			opacity: 0.9;
+		}
+
+		&:active::before {
+			top: -2px;
+		}
+
+		&::before {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+
+			content: "";
+			cursor: pointer;
+		}
+	}
+
+	&__app-button {
+		color: var(--rc-color-button-primary);
+
+		&.loading {
+			opacity: 0.6;
+
+			& > .rc-icon {
+				animation: spin 1s linear infinite;
+			}
+		}
+	}
+
+	&__app-menu-trigger {
+		visibility: hidden;
+		flex: 0 0 auto;
+	}
+
+	.rc-table-content .rc-table {
+		.rc-table-tr:hover .rc-apps-marketplace__app-menu-trigger {
+			visibility: visible;
+		}
+
+		.rc-table-td--small:last-child {
+			width: 150px;
+		}
+	}
+}
