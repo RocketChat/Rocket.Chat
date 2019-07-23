@@ -146,10 +146,12 @@ Template.adminRooms.onCreated(function() {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
 			query = { ...discussion && { prid: { $exists: true } }, $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
 		}
+		types = types.filter((type) => type !== 'dicussions');
 
-		if (types.filter((type) => type !== 'dicussions').length) {
-			query.t = { $in: types.filter((type) => type !== 'dicussions') };
+		if (types.length) {
+			query.t = { $in: types };
 		}
+
 		const limit = instance.limit && instance.limit.get();
 		return AdminChatRoom.find(query, { limit, sort: { default: -1, name: 1 } });
 	};
