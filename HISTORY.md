@@ -1,8 +1,24 @@
 
 # 1.3.0 (Under Release Candidate Process)
 
+## 1.3.0-rc.1
+`2019-07-23  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: fix code style, setup wizard error and profile page header ([#15041](https://github.com/RocketChat/Rocket.Chat/pull/15041))
+- Regression: Framework version being attached to a request that doesn't require it ([#15039](https://github.com/RocketChat/Rocket.Chat/pull/15039))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
+
 ## 1.3.0-rc.0
-`2019-07-21  ·  9 🎉  ·  6 🚀  ·  31 🐛  ·  21 🔍  ·  29 👩‍💻👨‍💻`
+`2019-07-21  ·  9 🎉  ·  6 🚀  ·  30 🐛  ·  21 🔍  ·  29 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -57,7 +73,6 @@
 - Video recorder message echo ([#14671](https://github.com/RocketChat/Rocket.Chat/pull/14671) by [@vova-zush](https://github.com/vova-zush))
 - Opening Livechat messages on mobile apps ([#14785](https://github.com/RocketChat/Rocket.Chat/pull/14785) by [@zolbayars](https://github.com/zolbayars))
 - SAML login by giving displayName priority over userName for fullName ([#14880](https://github.com/RocketChat/Rocket.Chat/pull/14880) by [@pkolmann](https://github.com/pkolmann))
-- Not showing local app on App Details ([#14894](https://github.com/RocketChat/Rocket.Chat/pull/14894))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -120,6 +135,30 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 1.2.1
+`2019-06-28  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Not showing local app on App Details ([#14894](https://github.com/RocketChat/Rocket.Chat/pull/14894))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 1.2.1 ([#14898](https://github.com/RocketChat/Rocket.Chat/pull/14898))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 1.2.0
 `2019-06-27  ·  8 🎉  ·  4 🚀  ·  12 🐛  ·  8 🔍  ·  21 👩‍💻👨‍💻`
