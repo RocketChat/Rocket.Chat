@@ -37,7 +37,6 @@ class AppClientOrchestrator {
 	}
 
 	load(isEnabled) {
-		console.log('Loading:', isEnabled);
 		this._isEnabled = isEnabled;
 
 		// It was already loaded, so let's load it again

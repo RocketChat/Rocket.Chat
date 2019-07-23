@@ -42,6 +42,18 @@ Template.adminEmoji.helpers({
 			data: Template.instance().tabBarData.get(),
 		};
 	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if ((currentTarget.offsetHeight + currentTarget.scrollTop) < (currentTarget.scrollHeight - 100)) {
+				return;
+			}
+			if (Template.instance().limit.get() > Template.instance().customemoji().length) {
+				return false;
+			}
+			instance.limit.set(instance.limit.get() + 50);
+		};
+	},
 	onTableItemClick() {
 		const instance = Template.instance();
 		return function({ _id }) {

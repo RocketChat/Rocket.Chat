@@ -321,7 +321,7 @@ Template.room.helpers({
 				...roles.u,
 				name: settings.get('UI_Use_Real_Name') ? roles.u.name || roles.u.username : roles.u.username,
 				status: leader.status || 'offline',
-				statusDisplay: leader.statusText || leader.status || 'offline',
+				statusDisplay: leader.statusText || t(leader.status || 'offline'),
 			};
 		}
 	},
