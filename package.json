@@ -174,6 +174,7 @@
 		"graphql-subscriptions": "^0.5.8",
 		"graphql-tools": "^3.0.2",
 		"gridfs-stream": "^1.1.1",
+		"hasha": "^5.0.0",
 		"he": "^1.2.0",
 		"highlight.js": "^9.13.1",
 		"iconv-lite": "^0.4.24",
