@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { handleError } from '../../../utils';
 import FullUser from '../../../models/client/models/FullUser';
 import './serviceAccountSidebarLogin.html';
+import { popover } from '../../../ui-utils/client';
 
 Template.serviceAccountSidebarLogin.helpers({
 	isReady() {
@@ -19,10 +19,10 @@ Template.serviceAccountSidebarLogin.helpers({
 		return Template.instance().users() && Template.instance().users().length > 0;
 	},
 	owner() {
-		return Meteor.user().u;
+		return Meteor.user() && Meteor.user().u;
 	},
 	showOwnerAccountLink() {
-		return localStorage.getItem('serviceAccountForceLogin') && !!Meteor.user().u;
+		return localStorage.getItem('serviceAccountForceLogin') && Meteor.user() && !!Meteor.user().u;
 	},
 });
 
@@ -30,24 +30,28 @@ Template.serviceAccountSidebarLogin.events({
 	'click .js-login'(e) {
 		e.preventDefault();
 		let { username } = this;
-		if (Meteor.user().u) {
+		if (Meteor.user() && Meteor.user().u) {
 			username = Meteor.user().u.username;
 		}
 		Meteor.call('getLoginToken', username, function(error, token) {
 			if (error) {
 				return handleError(error);
 			}
-			FlowRouter.go('/home');
-			Meteor.loginWithToken(token.token, (err) => {
+			popover.close();
+			Meteor.logout((err) => {
 				if (err) {
 					return handleError(err);
 				}
-				document.location.reload(true);
-				if (Meteor.user().u) {
-					localStorage.setItem('serviceAccountForceLogin', true);
-				} else {
-					localStorage.removeItem('serviceAccountForceLogin');
-				}
+				Meteor.loginWithToken(token.token, (err) => {
+					if (err) {
+						return handleError(err);
+					}
+					if (Meteor.user() && Meteor.user().u) {
+						localStorage.setItem('serviceAccountForceLogin', true);
+					} else {
+						localStorage.removeItem('serviceAccountForceLogin');
+					}
+				});
 			});
 		});
 	},
