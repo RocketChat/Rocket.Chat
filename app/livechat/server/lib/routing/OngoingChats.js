@@ -14,15 +14,23 @@ class OngoingChats {
 			showQueue: false,
 			returnQueue: false,
 			enableTriggerAction: true,
+			autoAssignAgent: true,
 		};
 	}
 
 	async getNextAgent(department) {
-		const agent = await Users.getNextLeastBusyAgent(department);
+		let agent;
+
+		const nextAgent = await Users.getNextLeastBusyAgent(department);
+		if (nextAgent) {
+			const { agentId, username } = nextAgent;
+			agent = Object.assign({}, { agentId, username });
+		}
+
 		return agent;
 	}
 
-	delegateRoom(agent) {
+	delegateAgent(agent) {
 		return agent;
 	}
 }

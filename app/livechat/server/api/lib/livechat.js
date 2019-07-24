@@ -4,6 +4,7 @@ import _ from 'underscore';
 
 import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
+import { callbacks } from '../../../../callbacks';
 
 export function online() {
 	return Livechat.online();
@@ -75,7 +76,7 @@ export async function getRoom({ guest, rid, roomInfo, agent }, callback) {
 	};
 
 	const room = await Livechat.getRoom(guest, message, roomInfo, agent);
-	callback(null, room);
+	callback && callback(null, room);
 }
 
 export function findAgent(agentId) {
@@ -139,4 +140,9 @@ export function settings() {
 			emojis,
 		},
 	};
+}
+
+export async function getExtraConfigInfo(room, callback) {
+	const extraConfig = await callbacks.run('livechat.onLoadConfigApi', room);
+	callback && callback(null, extraConfig);
 }

@@ -13,6 +13,7 @@ class ExternalQueue {
 			showQueue: false,
 			returnQueue: true,
 			enableTriggerAction: true,
+			autoAssignAgent: true,
 		};
 	}
 
@@ -46,7 +47,7 @@ class ExternalQueue {
 		throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 	}
 
-	delegateRoom(agent) {
+	delegateAgent(agent) {
 		return agent;
 	}
 }

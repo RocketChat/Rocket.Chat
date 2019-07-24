@@ -1221,6 +1221,7 @@
   "error-invalid-user": "Usuário inválido",
   "error-invalid-username": "Nome de usuário Inválido",
   "error-invalid-webhook-response": "O URL do webhook respondeu com um status diferente de 200",
+  "error-max-number-simultaneous-chats-reached": "O número máximo de bate-papos simultâneos por agente foi atingido.",
   "error-message-deleting-blocked": "Exclusão de mensagens está bloqueada",
   "error-message-editing-blocked": "Edição de mensagens está bloqueada",
   "error-message-size-exceeded": "O tamanho da mensagem excede Message_MaxAllowedSize",

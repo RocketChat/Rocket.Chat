@@ -1,8 +1,9 @@
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
 
-import { Rooms, Subscriptions } from '../../../models';
+import { Rooms, Subscriptions, Users } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { Livechat } from './Livechat';
 
 export const createLivechatRoom = (rid, name, guest, extraData) => {
 	check(rid, String);
@@ -140,5 +141,13 @@ export const createLivechatQueueView = () => {
 				},
 			},
 		],
+	});
+};
+
+export const dispatchAgentDelegated = (rid, agentId) => {
+	const agent = Users.getAgentInfo(agentId);
+	Livechat.stream.emit(rid, {
+		type: 'agentData',
+		data: agent,
 	});
 };

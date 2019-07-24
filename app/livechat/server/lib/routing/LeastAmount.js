@@ -14,6 +14,7 @@ class LeastAmount {
 			showQueue: false,
 			returnQueue: false,
 			enableTriggerAction: true,
+			autoAssignAgent: true,
 		};
 	}
 
@@ -25,7 +26,7 @@ class LeastAmount {
 		return Users.getNextAgent();
 	}
 
-	delegateRoom(agent) {
+	delegateAgent(agent) {
 		return agent;
 	}
 }

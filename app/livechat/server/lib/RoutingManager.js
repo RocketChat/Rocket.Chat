@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings';
-import { createLivechatSubscription } from './Helper';
+import { createLivechatSubscription, dispatchAgentDelegated } from './Helper';
 import { Livechat } from './Livechat';
 import { callbacks } from '../../../callbacks';
 import { Rooms, Messages, Subscriptions, Users } from '../../../models';
@@ -31,68 +31,75 @@ export const RoutingManager = {
 		return this.getMethod().config || {};
 	},
 
-	async delegateRoom(room, agent) {
+	async delegateInquiry(inquiry, agent) {
 		// return Room Object
 		if (!agent) {
-			agent = this.getMethod().delegateRoom(agent, room);
+			agent = this.getMethod().delegateAgent(agent, inquiry);
 		}
 
-		const { departmentId, _id } = room;
+		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
-			agent = await this.getMethod().getNextAgent(departmentId);
+			agent = await this.getMethod().getNextAgent(department);
 		}
 
 		if (!agent) {
-			return room;
+			return Rooms.findOneById(rid);
 		}
-
-		this.assignAgent(agent, room);
-		return Rooms.findOneById(_id);
+		const room = this.takeInquiry(inquiry, agent);
+		return room;
 	},
 
-	assignAgent(agent, room) {
+	assignAgent(inquiry, agent) {
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
 		}));
 
-		const { _id: rid, fname, v } = room;
-		if (!createLivechatSubscription(rid, fname, v, agent)) {
+		const { rid, name, v } = inquiry;
+		if (!createLivechatSubscription(rid, name, v, agent)) {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
-		const inquiry = LivechatInquiry.findOneByRoomId(rid);
-		LivechatInquiry.takeInquiry(inquiry._id);
 		Rooms.changeAgentByRoomId(rid, agent);
 		Rooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
-
-		Livechat.stream.emit(rid, {
-			type: 'agentData',
-			data: Users.getAgentInfo(agent.agentId),
-		});
+		dispatchAgentDelegated(rid, agent.agentId);
+		return inquiry;
 	},
 
-	takeInquiry(inquiry, agent) {
+	async takeInquiry(inquiry, agent) {
+		// return Room Object
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
 		}));
-		/*
-		if (!inquiry || inquiry.status !== 'queued') {
-			return inquiry;
-		}*/
 
-		agent = callbacks.run('livechat.checkAgentBeforeAssignment', agent);
-		if (!agent) {
-			return inquiry;
+		check(inquiry, Match.ObjectIncluding({
+			_id: String,
+			rid: String,
+			status: String,
+		}));
+
+		const { _id, rid, status } = inquiry;
+		const room = Rooms.findOneById(rid);
+
+		if (status !== 'queued') {
+			return room;
 		}
 
-		const room = Rooms.findOneById(inquiry.rid);
-		this.assignAgent(agent, room);
-		return LivechatInquiry.findOneByRoomId(inquiry.rid);
+		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
+		if (!agent) {
+			return room;
+		}
+
+		LivechatInquiry.takeInquiry(_id);
+		inquiry = this.assignAgent(inquiry, agent);
+
+		callbacks.run('livechat.afterTakeInquiry', inquiry);
+
+		return Rooms.findOneById(rid);
 	},
 
 	transferRoom(room, guest, transferData) {

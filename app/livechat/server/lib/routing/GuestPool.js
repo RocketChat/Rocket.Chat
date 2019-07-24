@@ -25,6 +25,7 @@ class GuestPool {
 			showQueue: true,
 			returnQueue: true,
 			enableTriggerAction: false,
+			autoAssignAgent: false,
 		};
 	}
 
@@ -32,26 +33,24 @@ class GuestPool {
 
 	}
 
-	delegateRoom(agent, room) {
-		const { departmentId, _id: rid, v } = room;
-		const allAgents = Livechat.getAgents(departmentId);
+	delegateAgent(agent, inquiry) {
+		const { department, rid, v } = inquiry;
+		const allAgents = Livechat.getAgents(department);
 		if (allAgents.count() === 0) {
 			throw new Meteor.Error('no-agent-available', 'Sorry, no available agents.');
 		}
 
-		const agentIds = allAgents.map((agent) => (departmentId ? agent.agentId : agent._id));
-
-		const inquiry = LivechatInquiry.findOneByRoomId(rid);
+		const agentIds = allAgents.map((agent) => (department ? agent.agentId : agent._id));
 		LivechatInquiry.queueInquiryWithAgents(inquiry._id, agentIds);
 
 		// Alert only the online agents of the queued request
-		const onlineAgents = Livechat.getOnlineAgents(departmentId);
+		const onlineAgents = Livechat.getOnlineAgents(department);
 		const { message } = inquiry;
+
+		const room = Rooms.findOneById(rid);
 
 		onlineAgents.forEach((agent) => {
 			const { _id, active, emails, language, status, statusConnection, username } = agent;
-			const room = Rooms.findOneById(rid);
-
 			sendNotification({
 				// fake a subscription in order to make use of the function defined above
 				subscription: {

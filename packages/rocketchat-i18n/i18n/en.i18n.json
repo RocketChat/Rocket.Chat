@@ -1260,6 +1260,7 @@
   "error-invalid-user": "Invalid user",
   "error-invalid-username": "Invalid username",
   "error-invalid-webhook-response": "The webhook URL responded with a status other than 200",
+  "error-max-number-simultaneous-chats-reached": "The maximum number of simultaneous chats per agent has been reached.",
   "error-message-deleting-blocked": "Message deleting is blocked",
   "error-message-editing-blocked": "Message editing is blocked",
   "error-message-size-exceeded": "Message size exceeds Message_MaxAllowedSize",
