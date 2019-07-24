@@ -135,7 +135,7 @@ Template.setupWizard.onCreated(function() {
 		localStorage.setItem('wizard', JSON.stringify(state));
 
 		if (Meteor.userId()) {
-			Meteor.call('getSetupWizardParameters', (error, { settings, allowStandaloneServer }) => {
+			Meteor.call('getSetupWizardParameters', (error, { settings, allowStandaloneServer } = {}) => {
 				if (error) {
 					return handleError(error);
 				}
