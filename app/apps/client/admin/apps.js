@@ -1,8 +1,8 @@
-import toastr from 'toastr';
-import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
 
 import { settings } from '../../../settings';
 import { AppEvents } from '../communication';
@@ -11,11 +11,13 @@ import { SideNav } from '../../../ui-utils/client';
 import { t } from '../../../utils/client';
 import { handleAPIError, triggerAppPopoverMenu } from './helpers';
 
+import './apps.html';
+
 
 Template.apps.onCreated(function() {
 	this.state = new ReactiveDict({
 		apps: [],
-		isLoading: false,
+		isLoading: true,
 		searchText: '',
 		sortedColumn: 'name',
 		isAscendingOrder: true,
@@ -26,7 +28,7 @@ Template.apps.onCreated(function() {
 		wasEndReached: false,
 	});
 
-	const loadApps = async () => {
+	(async () => {
 		try {
 			const apps = await Apps.getApps();
 			this.state.set('apps', apps);
@@ -35,9 +37,7 @@ Template.apps.onCreated(function() {
 		}
 
 		this.state.set('isLoading', false);
-	};
-
-	loadApps();
+	})();
 
 	this.handleAppAdded = async (appId) => {
 		try {
@@ -166,9 +166,13 @@ Template.apps.events({
 	'input .js-search'(event, instance) {
 		instance.state.set('searchText', event.currentTarget.value);
 	},
-	'click .js-manage'(event) {
+	'click .js-manage'(event, instance) {
 		event.stopPropagation();
-		const { id: appId, version } = event.currentTarget.dataset;
+		const { currentTarget } = event;
+		const {
+			id: appId,
+			version,
+		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
 		FlowRouter.go('app-manage', { appId }, { version });
 	},
 	'click .js-menu'(event, instance) {

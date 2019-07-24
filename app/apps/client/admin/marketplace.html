@@ -1,12 +1,13 @@
 <template name="marketplace">
 	<section class="rc-apps-section rc-apps-marketplace">
 		{{#header sectionName="Marketplace" hideHelp=true fixedHeight=true fullpage=true}}
-			{{#unless cloudLoggedIn}}
-			<button class="rc-button rc-button--small rc-button--primary rc-button--outline" data-button="login">
+			{{#unless isLoggedInCloud}}
+			<button class="rc-button rc-button--small rc-button--primary rc-button--outline js-cloud-login" data-button="login">
 				{{> icon icon="cloud-plus" block="rc-icon--default-size"}} {{_ "Login"}}
 			</button>
 			{{/unless}}
 		{{/header}}
+
 		<div class="rc-table-content">
 			<form class="rc-form-filters js-search-form" role="form">
 				<div class="rc-input">
@@ -28,10 +29,10 @@
 			</form>
 
 			{{#requiresPermission 'manage-apps'}}
-				{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+				{{#table fixed='true' onScroll=handleTableScroll onResize=handleTableResize onSort=handleTableSort}}
 					<thead>
 						<tr>
-							<th class="js-sort rc-table-td--medium {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
+							<th class="js-sort rc-table-td--medium {{#if isSortingBy 'name'}}is-sorting{{/if}}" data-sort="name">
 								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</div>
 							</th>
 							<th class="rc-table-td">
@@ -46,21 +47,21 @@
 						</tr>
 					</thead>
 					<tbody>
-						{{#each apps}}
-							<tr class="rc-table-tr js-open" data-name="{{latest.name}}">
+						{{#each app in apps}}
+							<tr class="rc-table-tr js-open" data-id="{{app.id}}">
 								<td>
 									<div class="rc-table-wrapper">
-										{{#if latest.iconFileData}}
-											<div class="rc-table-avatar" style="background-image:url(data:image/png;base64,{{latest.iconFileData}})"></div>
+										{{#if app.iconFileData}}
+											<div class="rc-table-avatar" style="background-image:url(data:image/png;base64,{{app.iconFileData}})"></div>
 										{{else}}
-											<div class="rc-table-avatar" style="background-image:url({{latest.iconFileContent}})"></div>
+											<div class="rc-table-avatar" style="background-image:url({{app.iconFileContent}})"></div>
 										{{/if}}
 										<div class="rc-table-info">
 											<span class="rc-table-title">
-												{{latest.name}}
+												{{app.name}}
 											</span>
-											{{#if latest.author.name}}
-												<span class="rc-table-subtitle">by {{latest.author.name}}</span>
+											{{#if app.author.name}}
+												<span class="rc-table-subtitle">by {{app.author.name}}</span>
 											{{/if}}
 										</div>
 									</div>
@@ -69,19 +70,19 @@
 									<div class="rc-table-wrapper">
 										<div class="rc-table-info">
 											<span class="rc-table-title">
-												{{#if latest.summary}}
-													{{latest.summary}}
+												{{#if app.summary}}
+													{{app.summary}}
 												{{else}}
-													{{latest.description}}
+													{{app.description}}
 												{{/if}}
 											</span>
-											{{#if latest.summary}}
+											{{#if app.summary}}
 												<span class="rc-table-subtitle">
-													{{latest.description}}
+													{{app.description}}
 												</span>
 											{{/if}}
 											<span class="rc-table-subtitle rc-apps-categories">
-												{{#each category in latest.categories}}
+												{{#each category in app.categories}}
 												<span class="rc-apps-category">{{category}}</span>
 												{{/each}}
 											</span>
@@ -92,23 +93,23 @@
 									<div class="rc-table-wrapper">
 										<div class="rc-table-info">
 											<div class="rc-table-title">
-												{{purchaseTypeDisplay .}}
+												{{purchaseTypeDisplay app}}
 											</div>
 											<div class="rc-table-subtitle">
-												{{priceDisplay .}}
+												{{priceDisplay app}}
 											</div>
 										</div>
 									</div>
 								</td>
 								<td>
 									<div class="rc-table-wrapper">
-										{{#if isInstalled .}}
-											{{#if canUpdate .}}
-												<button class="rc-apps-marketplace__app-button js-install">
+										{{#if isInstalled app}}
+											{{#if canUpdate app}}
+												<button class="rc-apps-marketplace__app-button js-install" data-id="{{app.id}}">
 													{{> icon icon="reload" block="rc-icon--default-size"}}
 													{{_ "Update"}}
 												</button>
-											{{else if isOnTrialPeriod .}}
+											{{else if isOnTrialPeriod app}}
 												<span class="rc-apps-marketplace__app-status">
 												{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
 												{{_ "Trial period"}}
@@ -120,22 +121,27 @@
 												</span>
 											{{/if}}
 
-											<button class="rc-apps-marketplace__app-menu-trigger js-menu" data-app="{{appId}}">
+											<button class="rc-apps-section__app-menu-trigger js-menu" data-id="{{app.id}}">
 												{{> icon icon="menu" block="rc-icon--default-size"}}
 											</button>
 										{{else}}
-											{{#if canTrial .}}
-												<button class="rc-apps-marketplace__app-button js-purchase" data-app="{{appId}}">
+											{{#if canDownload app}}
+												<button class="rc-apps-marketplace__app-button js-install" data-id="{{app.id}}">
+													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
+													{{_ "Install"}}
+												</button>
+											{{else if canTrial app}}
+												<button class="rc-apps-marketplace__app-button js-purchase" data-id="{{app.id}}">
 													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Start a trial"}}
 												</button>
-											{{else if canBuy .}}
-												<button class="rc-apps-marketplace__app-button js-purchase" data-app="{{appId}}">
+											{{else if canBuy app}}
+												<button class="rc-apps-marketplace__app-button js-purchase" data-id="{{app.id}}">
 													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Buy"}}
 												</button>
 											{{else}}
-												<button class="rc-apps-marketplace__app-button js-install" data-app="{{appId}}">
+												<button class="rc-apps-marketplace__app-button js-purchase" data-id="{{app.id}}">
 													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Install"}}
 												</button>

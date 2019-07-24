@@ -74,6 +74,15 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
+	getAppsFromMarketplace = async () => {
+		const appsOverviews = await APIClient.get('apps?marketplace=true');
+		return appsOverviews.map(({ latest, price, purchaseType }) => ({
+			...latest,
+			price,
+			purchaseType,
+		}));
+	}
+
 	getApp = async (appId) => {
 		const { app } = await APIClient.get(`apps/${ appId }`);
 		return app;
@@ -108,7 +117,16 @@ class AppClientOrchestrator {
 
 	disableApp = (appId) => this.setAppState(appId, 'manually_disabled')
 
+	installApp = (appId, version) => APIClient.post('apps/', {
+		appId,
+		marketplace: true,
+		version,
+	})
+
 	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`);
+
+	buildExternalUrl = (appId, purchaseType = 'buy') =>
+		APIClient.get(`apps?buildExternalUrl=true&appId=${ appId }&purchaseType=${ purchaseType }`)
 }
 
 export const Apps = new AppClientOrchestrator();
