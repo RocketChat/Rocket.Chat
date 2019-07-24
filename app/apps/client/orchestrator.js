@@ -74,6 +74,11 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
+	getApp = async (appId) => {
+		const { app } = await APIClient.get(`apps/${ appId }`);
+		return app;
+	}
+
 	getAppApis = async (appId) => {
 		const { apis } = await APIClient.get(`apps/${ appId }/apis`);
 		return apis;
@@ -93,6 +98,17 @@ class AppClientOrchestrator {
 		const { apps } = await APIClient.get('apps/languages');
 		return apps;
 	}
+
+	setAppState = async (appId, status) => {
+		const { status: effectiveStatus } = await APIClient.post(`apps/${ appId }/status`, { status });
+		return effectiveStatus;
+	}
+
+	enableApp = (appId) => this.setAppState(appId, 'manually_enabled')
+
+	disableApp = (appId) => this.setAppState(appId, 'manually_disabled')
+
+	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`);
 }
 
 export const Apps = new AppClientOrchestrator();

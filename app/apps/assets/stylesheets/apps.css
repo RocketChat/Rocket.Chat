@@ -382,6 +382,42 @@
 			}
 		}
 	}
+
+	&__app-menu-trigger {
+
+		position: relative;
+
+		display: flex;
+		flex: 0 0 auto;
+
+		padding: 0;
+
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		align-items: center;
+		appearance: none;
+
+		&:active {
+			transform: translateY(2px);
+
+			opacity: 0.9;
+		}
+
+		&:active::before {
+			top: -2px;
+		}
+
+		&::before {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+
+			content: "";
+			cursor: pointer;
+		}
+	}
 }
 
 @keyframes play90 {
