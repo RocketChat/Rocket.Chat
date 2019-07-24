@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { TAPi18next } from 'meteor/tap:i18n';
+import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
 import { Utilities } from '../lib/misc/Utilities';
@@ -10,85 +9,64 @@ import { AdminBox } from '../../ui-utils';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 
-export let Apps;
+const createDeferredValue = () => {
+	let resolve;
+	let reject;
+	const promise = new Promise((_resolve, _reject) => {
+		resolve = _resolve;
+		reject = _reject;
+	});
+
+	return [promise, resolve, reject];
+};
 
 class AppClientOrchestrator {
 	constructor() {
-		this._isLoaded = false;
-		this._isEnabled = false;
-		this._loadingResolve;
-		this._refreshLoading();
+		this.isLoaded = false;
+		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
 	}
 
-	isLoaded() {
-		return this._isLoaded;
-	}
-
-	isEnabled() {
-		return this._isEnabled;
-	}
-
-	getLoadingPromise() {
-		if (this._isLoaded) {
-			return Promise.resolve(this._isEnabled);
-		}
-
-		return this._loadingPromise;
-	}
-
-	load(isEnabled) {
-		this._isEnabled = isEnabled;
-
-		// It was already loaded, so let's load it again
-		if (this._isLoaded) {
-			this._refreshLoading();
-		} else {
+	load = (isEnabled) => {
+		if (!this.isLoaded) {
 			this.ws = new AppWebsocketReceiver(this);
-			this._addAdminMenuOption();
+			this.registerAdminMenuItems();
+			this.isLoaded = true;
 		}
 
-		Meteor.defer(() => {
-			this._loadLanguages().then(() => {
-				this._loadingResolve(this._isEnabled);
-				this._isLoaded = true;
-			});
+		this.setEnabled(isEnabled);
+
+		// Since the deferred value (a promise) is immutable after resolved,
+		// it need to be recreated to resolve a new value
+		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
+
+		Meteor.defer(async () => {
+			await this._loadLanguages();
+			this.setEnabled(isEnabled);
 		});
 	}
 
-	getWsListener() {
-		return this.ws;
-	}
+	getWsListener = () => this.ws
 
-	_refreshLoading() {
-		this._loadingPromise = new Promise((resolve) => {
-			this._loadingResolve = resolve;
-		});
-	}
-
-	_addAdminMenuOption() {
+	// TODO: move this method to somewhere else
+	registerAdminMenuItems = () => {
 		AdminBox.addOption({
 			icon: 'cube',
 			href: 'apps',
 			i18nLabel: 'Apps',
-			permissionGranted() {
-				return hasAtLeastOnePermission(['manage-apps']);
-			},
+			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});
 
 		AdminBox.addOption({
 			icon: 'cube',
 			href: 'marketplace',
 			i18nLabel: 'Marketplace',
-			permissionGranted() {
-				return hasAtLeastOnePermission(['manage-apps']);
-			},
+			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});
 	}
 
-	_loadLanguages() {
-		return APIClient.get('apps/languages').then((info) => {
-			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages, rlInfo.id));
-		});
+	async _loadLanguages() {
+		const apps = await this.getAppsLanguages();
+		apps.forEach(({ id, languages }) => this.parseAndLoadLanguages(languages, id));
 	}
 
 	parseAndLoadLanguages(languages, id) {
@@ -106,84 +84,41 @@ class AppClientOrchestrator {
 		});
 	}
 
-	async getAppApis(appId) {
-		const result = await APIClient.get(`apps/${ appId }/apis`);
-		return result.apis;
+	isEnabled = () => this.deferredIsEnabled
+
+	getApps = async () => {
+		const { apps } = await APIClient.get('apps');
+		return apps;
+	}
+
+	getAppApis = async (appId) => {
+		const { apis } = await APIClient.get(`apps/${ appId }/apis`);
+		return apis;
+	}
+
+	getCategories = async () => {
+		const categories = await APIClient.get('apps?categories=true');
+		return categories;
+	}
+
+	getAppsLanguages = async () => {
+		const { apps } = await APIClient.get('apps/languages');
+		return apps;
 	}
 }
 
-Meteor.startup(function _rlClientOrch() {
-	Apps = new AppClientOrchestrator();
+export const Apps = new AppClientOrchestrator();
 
+Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
 		Meteor.call('apps/is-enabled', (error, isEnabled) => {
+			if (error) {
+				console.error(error);
+				toastr.error(error.message);
+				return;
+			}
+
 			Apps.load(isEnabled);
 		});
 	});
-});
-
-const appsRouteAction = function _theRealAction(whichCenter) {
-	Meteor.defer(() => Apps.getLoadingPromise().then((isEnabled) => {
-		if (isEnabled) {
-			BlazeLayout.render('main', { center: whichCenter, old: true }); // TODO remove old
-		} else {
-			FlowRouter.go('app-what-is-it');
-		}
-	}));
-};
-
-// Bah, this has to be done *before* `Meteor.startup`
-FlowRouter.route('/admin/marketplace', {
-	name: 'marketplace',
-	action() {
-		appsRouteAction('marketplace');
-	},
-});
-
-FlowRouter.route('/admin/marketplace/:itemId', {
-	name: 'app-manage',
-	action() {
-		appsRouteAction('appManage');
-	},
-});
-
-FlowRouter.route('/admin/apps', {
-	name: 'apps',
-	action() {
-		appsRouteAction('apps');
-	},
-});
-
-FlowRouter.route('/admin/app/install', {
-	name: 'app-install',
-	action() {
-		appsRouteAction('appInstall');
-	},
-});
-
-FlowRouter.route('/admin/apps/:appId', {
-	name: 'app-manage',
-	action() {
-		appsRouteAction('appManage');
-	},
-});
-
-FlowRouter.route('/admin/apps/:appId/logs', {
-	name: 'app-logs',
-	action() {
-		appsRouteAction('appLogs');
-	},
-});
-
-FlowRouter.route('/admin/app/what-is-it', {
-	name: 'app-what-is-it',
-	action() {
-		Meteor.defer(() => Apps.getLoadingPromise().then((isEnabled) => {
-			if (isEnabled) {
-				FlowRouter.go('apps');
-			} else {
-				BlazeLayout.render('main', { center: 'appWhatIsIt' });
-			}
-		}));
-	},
 });

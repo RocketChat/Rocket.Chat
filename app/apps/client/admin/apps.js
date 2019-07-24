@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../../settings';
-import { t, APIClient } from '../../../utils';
+import { t } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import { SideNav } from '../../../ui-utils/client';
@@ -23,8 +23,7 @@ const sortByColumn = (array, column, inverted) =>
 
 const getInstalledApps = async (instance) => {
 	try {
-		const data = await APIClient.get('apps');
-		const apps = data.apps.map((app) => ({ latest: app }));
+		const apps = (await Apps.getApps()).map((app) => ({ latest: app }));
 
 		instance.apps.set(apps);
 	} catch (e) {
@@ -51,7 +50,7 @@ Template.apps.onCreated(function() {
 	getInstalledApps(instance);
 
 	try {
-		APIClient.get('apps?categories=true').then((data) => instance.categories.set(data));
+		Apps.getCategories().then((categories) => instance.categories.set(categories));
 	} catch (e) {
 		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 	}

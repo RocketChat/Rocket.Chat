@@ -10,5 +10,6 @@ import './admin/appLogs';
 import './admin/appManage';
 import './admin/appWhatIsIt.html';
 import './admin/appWhatIsIt';
+import './routes';
 
 export { Apps } from './orchestrator';
