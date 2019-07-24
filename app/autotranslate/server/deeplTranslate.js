@@ -55,6 +55,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 
 	/**
 	 * Returns supported languages for translation by the active service provider.
+	 * Deepl doesnot provide a endpoint yet to retreive the supported languages.
+	 * So each supported languages are explicitly maintained.
 	 * @private implements super abstract method.
 	 * @param {string} target
 	 * @returns {object} code : value pair

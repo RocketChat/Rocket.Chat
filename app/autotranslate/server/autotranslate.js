@@ -8,7 +8,15 @@ import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
 import { Logger } from '../../logger';
 
+/**
+ * This class allows translation providers to
+ * register,load and also returns the active provider.
+ */
 export class TranslationProviderRegistry {
+	/**
+	 * Registers the translation provider into the registry.
+	 * @param {*} provider
+	 */
 	static registerProvider(provider) {
 		// get provider information
 		const metadata = provider._getProviderMetadata();
@@ -18,21 +26,27 @@ export class TranslationProviderRegistry {
 		TranslationProviderRegistry._providers[metadata.name] = provider;
 	}
 
+	/**
+	 * Return the active Translation provider
+	 */
 	static getActiveProvider() {
 		return TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
 	}
 
+	/**
+	 * Make the activated provider by setting as the active.
+	 */
 	static loadActiveServiceProvider() {
 		settings.get('AutoTranslate_ServiceProvider', (key, value) => {
 			TranslationProviderRegistry._activeProvider = value;
-			// TODO RocketChat.AutoTranslate = TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
 		});
 	}
 }
 
 /**
  * Generic auto translate base implementation.
- * Can be used as superclass for translation providers
+ * This class provides generic parts of implementation for
+ * tokenization, detokenization, call back register and unregister.
  * @abstract
  * @class
  */
