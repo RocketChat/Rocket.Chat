@@ -26,8 +26,8 @@ export class AppWebsocketReceiver {
 
 		this.listeners = {};
 
-		Object.keys(AppEvents).forEach((v) => {
-			this.listeners[AppEvents[v]] = [];
+		Object.values(AppEvents).forEach((v) => {
+			this.listeners[v] = [];
 		});
 	}
 
@@ -52,10 +52,6 @@ export class AppWebsocketReceiver {
 	}
 
 	onAppAdded(appId) {
-		APIClient.get(`apps/${ appId }/languages`).then((result) => {
-			this.orch.parseAndLoadLanguages(result.languages, appId);
-		});
-
 		this.listeners[AppEvents.APP_ADDED].forEach((listener) => listener(appId));
 	}
 

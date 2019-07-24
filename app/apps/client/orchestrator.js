@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18next } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
-import { Utilities } from '../lib/misc/Utilities';
 import { APIClient } from '../../utils';
 import { AdminBox } from '../../ui-utils';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { handleI18nResources } from './i18n';
 
 const createDeferredValue = () => {
 	let resolve;
@@ -39,7 +38,7 @@ class AppClientOrchestrator {
 		// it need to be recreated to resolve a new value
 		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
 
-		await this.loadLanguagesResourceBundles();
+		await handleI18nResources();
 		this.setEnabled(isEnabled);
 	}
 
@@ -68,26 +67,6 @@ class AppClientOrchestrator {
 		}
 	}
 
-	loadLanguagesResourceBundles = async () => {
-		const apps = await this.getAppsLanguages();
-		apps.forEach(({ id, languages }) => {
-			Object.entries(languages).forEach(([language, translations]) => {
-				try {
-					// Translations keys must be scoped under app id
-					const scopedTranslations = Object.entries(translations)
-						.reduce((translations, [key, value]) => {
-							translations[Utilities.getI18nKeyForApp(key, id)] = value;
-							return translations;
-						}, {});
-
-					TAPi18next.addResourceBundle(language, 'project', scopedTranslations);
-				} catch (error) {
-					this.handleError(error);
-				}
-			});
-		});
-	}
-
 	isEnabled = () => this.deferredIsEnabled
 
 	getApps = async () => {
@@ -103,6 +82,11 @@ class AppClientOrchestrator {
 	getCategories = async () => {
 		const categories = await APIClient.get('apps?categories=true');
 		return categories;
+	}
+
+	getAppLanguages = async (appId) => {
+		const { languages } = await APIClient.get(`apps/${ appId }/languages`);
+		return languages;
 	}
 
 	getAppsLanguages = async () => {
