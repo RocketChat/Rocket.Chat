@@ -26,7 +26,7 @@ class AppClientOrchestrator {
 		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
 	}
 
-	load = (isEnabled) => {
+	load = async (isEnabled) => {
 		if (!this.isLoaded) {
 			this.ws = new AppWebsocketReceiver(this);
 			this.registerAdminMenuItems();
@@ -39,15 +39,12 @@ class AppClientOrchestrator {
 		// it need to be recreated to resolve a new value
 		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
 
-		Meteor.defer(async () => {
-			await this._loadLanguages();
-			this.setEnabled(isEnabled);
-		});
+		await this.loadLanguagesResourceBundles();
+		this.setEnabled(isEnabled);
 	}
 
 	getWsListener = () => this.ws
 
-	// TODO: move this method to somewhere else
 	registerAdminMenuItems = () => {
 		AdminBox.addOption({
 			icon: 'cube',
@@ -64,23 +61,30 @@ class AppClientOrchestrator {
 		});
 	}
 
-	async _loadLanguages() {
-		const apps = await this.getAppsLanguages();
-		apps.forEach(({ id, languages }) => this.parseAndLoadLanguages(languages, id));
+	handleError = (error) => {
+		console.error(error);
+		if (hasAtLeastOnePermission(['manage-apps'])) {
+			toastr.error(error.message);
+		}
 	}
 
-	parseAndLoadLanguages(languages, id) {
-		Object.entries(languages).forEach(([language, translations]) => {
-			try {
-				translations = Object.entries(translations).reduce((newTranslations, [key, value]) => {
-					newTranslations[Utilities.getI18nKeyForApp(key, id)] = value;
-					return newTranslations;
-				}, {});
+	loadLanguagesResourceBundles = async () => {
+		const apps = await this.getAppsLanguages();
+		apps.forEach(({ id, languages }) => {
+			Object.entries(languages).forEach(([language, translations]) => {
+				try {
+					// Translations keys must be scoped under app id
+					const scopedTranslations = Object.entries(translations)
+						.reduce((translations, [key, value]) => {
+							translations[Utilities.getI18nKeyForApp(key, id)] = value;
+							return translations;
+						}, {});
 
-				TAPi18next.addResourceBundle(language, 'project', translations);
-			} catch (e) {
-				// Failed to parse the json
-			}
+					TAPi18next.addResourceBundle(language, 'project', scopedTranslations);
+				} catch (error) {
+					this.handleError(error);
+				}
+			});
 		});
 	}
 
@@ -113,8 +117,7 @@ Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
 		Meteor.call('apps/is-enabled', (error, isEnabled) => {
 			if (error) {
-				console.error(error);
-				toastr.error(error.message);
+				Apps.handleError(error);
 				return;
 			}
 
