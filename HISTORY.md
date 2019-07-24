@@ -1,63 +1,12 @@
-# Assistify 0.9.9
+# Assistify 0.9.10
 
-- Minor fixes
+This Release bumps Rocket.Chat to 1.1.3
 
-# Assistify 0.9.8
+### Fixes
 
-- Various Auto Translation Fixes
-- Various other minor fixes
-
-# Assistify 0.9.7
-
-- Inline message keywords highlighting for smarti access
-- Additional permissions for Livechat users
-- Assistify users will have access to auto-translation feature by default 
-
-# Assistify 0.9.6
-
-- Assistify.Chat is now based on the Rocket.Chat 0.71.1
-
-# Assistify 0.9.5
-
-General bug-fix release.
-
-# Assistify 0.9.4
-
-This is a Live chat bugfix release.
-
-# Assistify 0.9.3
-
-This is a bugfix release.
-
-# Assistify 0.9.2
-
-This is a bugfix release.
-
-Major changes:
-
-- Threading can now be configured to limit the number of users invited
-- A username is now being generated from the SAML Identity - this shall fix some other nasty bugs.
-
-# Assistify 0.9.1
-
-This is a bugfix release:
-
-- You'll not be bothered with "user has left channel" in threads anymore
-- Livechat with guest pool now responds immediately to an agent joining. And the agent's full name is displayed as well.
-
-# Assistify 0.9.0
-
-This release of the Assistify-Chat is way more disruptive than the version number might suggest: In contrast to earlier releases, we did not build upon the previous version, but re-started on plain Rocket.Chat.
-Reason for this quite unusual behavior is that we wanted to return closer to the Rocket.Chat-standard. For almost everything we added on top of Rocket.Chat or what we have modified in it, we created a pull request.
-
-*Nice, but what does that mean for me as a user?*
-
-- You will find Assistify.Chat more convenient to use if you're used to plain Rocket.Chat.
-- You can expect Assistify.Chat to be much more frequently updated and thus be more compatible to the most recent mobile apps.
-- We cut off stuff which we considered not to be of high benefit: requests and topics are gone now - but replaced with a more generic *threading* ([#418](https://github.com/assistify/Rocket.Chat/issues/418)). This will allow you to spin-off a discussion from any message and have all relevant persons joined automagically - without disturbing the complete channel from where you started. Sounds interesting? Observe [our PR towards Rocket.Chat](https://github.com/RocketChat/Rocket.Chat/pull/11803) for more details and follow-up.
-- Finally, we added our AI component Smarti to be available in all public channels and private groups now ([#419](https://github.com/assistify/Rocket.Chat/issues/419)) - and we'll continue developing Smarti to be even smarter. For the time being, if you remember that you have been asked a similar question earlier: Click on the lightbulb in the top-right and check whether Smarti can help you with previous conversations. Same if you know that the current chat is about something you noted down in a wiki. Check whether Smarti could find it for you and reduce your effort to reply - and let us know!
-
-Assistify.Chat is now based on Rocket.Chat 0.68.5!
+- Configurable usage statistics
+- Smarti-Resync
+- Performance when loading the Smarti Widget
 
 # 1.1.3
 `2019-06-21  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
@@ -286,6 +235,67 @@ Assistify.Chat is now based on Rocket.Chat 0.68.5!
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# Assistify 0.9.9
+
+- Minor fixes
+
+# Assistify 0.9.8
+
+- Various Auto Translation Fixes
+- Various other minor fixes
+
+# Assistify 0.9.7
+
+- Inline message keywords highlighting for smarti access
+- Additional permissions for Livechat users
+- Assistify users will have access to auto-translation feature by default 
+
+# Assistify 0.9.6
+
+- Assistify.Chat is now based on the Rocket.Chat 0.71.1
+
+# Assistify 0.9.5
+
+General bug-fix release.
+
+# Assistify 0.9.4
+
+This is a Live chat bugfix release.
+
+# Assistify 0.9.3
+
+This is a bugfix release.
+
+# Assistify 0.9.2
+
+This is a bugfix release.
+
+Major changes:
+
+- Threading can now be configured to limit the number of users invited
+- A username is now being generated from the SAML Identity - this shall fix some other nasty bugs.
+
+# Assistify 0.9.1
+
+This is a bugfix release:
+
+- You'll not be bothered with "user has left channel" in threads anymore
+- Livechat with guest pool now responds immediately to an agent joining. And the agent's full name is displayed as well.
+
+# Assistify 0.9.0
+
+This release of the Assistify-Chat is way more disruptive than the version number might suggest: In contrast to earlier releases, we did not build upon the previous version, but re-started on plain Rocket.Chat.
+Reason for this quite unusual behavior is that we wanted to return closer to the Rocket.Chat-standard. For almost everything we added on top of Rocket.Chat or what we have modified in it, we created a pull request.
+
+*Nice, but what does that mean for me as a user?*
+
+- You will find Assistify.Chat more convenient to use if you're used to plain Rocket.Chat.
+- You can expect Assistify.Chat to be much more frequently updated and thus be more compatible to the most recent mobile apps.
+- We cut off stuff which we considered not to be of high benefit: requests and topics are gone now - but replaced with a more generic *threading* ([#418](https://github.com/assistify/Rocket.Chat/issues/418)). This will allow you to spin-off a discussion from any message and have all relevant persons joined automagically - without disturbing the complete channel from where you started. Sounds interesting? Observe [our PR towards Rocket.Chat](https://github.com/RocketChat/Rocket.Chat/pull/11803) for more details and follow-up.
+- Finally, we added our AI component Smarti to be available in all public channels and private groups now ([#419](https://github.com/assistify/Rocket.Chat/issues/419)) - and we'll continue developing Smarti to be even smarter. For the time being, if you remember that you have been asked a similar question earlier: Click on the lightbulb in the top-right and check whether Smarti can help you with previous conversations. Same if you know that the current chat is about something you noted down in a wiki. Check whether Smarti could find it for you and reduce your effort to reply - and let us know!
+
+Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 # 1.0.3
 `2019-05-09  ·  1 🔍  ·  8 👩‍💻👨‍💻`
