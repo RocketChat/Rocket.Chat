@@ -26,14 +26,32 @@ Meteor.startup(function() {
 		public: true,
 	});
 
-	settings.add('AutoTranslate_APIKey', '', {
+	settings.add('AutoTranslate_GoogleAPIKey', '', {
 		type: 'string',
 		group: 'Message',
-		section: 'AutoTranslate',
+		section: 'AutoTranslate_Google',
 		public: true,
+		i18nLabel: 'AutoTranslate_APIKey',
 		enableQuery: [
 			{
 				_id: 'AutoTranslate_Enabled', value: true,
+			},
+			{
+				_id: 'AutoTranslate_ServiceProvider', value: 'google-translate',
+			}],
+	});
+
+	settings.add('AutoTranslate_DeepLAPIKey', '', {
+		type: 'string',
+		group: 'Message',
+		section: 'AutoTranslate_DeepL',
+		public: true,
+		i18nLabel: 'AutoTranslate_APIKey',
+		enableQuery: [
+			{
+				_id: 'AutoTranslate_Enabled', value: true,
+			}, {
+				_id: 'AutoTranslate_ServiceProvider', value: 'deepl-translate',
 			}],
 	});
 });

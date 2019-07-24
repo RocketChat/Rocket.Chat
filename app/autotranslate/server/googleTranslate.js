@@ -8,6 +8,7 @@ import _ from 'underscore';
 
 import { AutoTranslate,	TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from '../../logger/server';
+import { settings } from '../../settings';
 
 /**
  * Represents google translate class
@@ -23,6 +24,10 @@ class GoogleAutoTranslate extends AutoTranslate {
 		super();
 		this.name = 'google-translate';
 		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
+		// Get the service provide API key.
+		settings.get('AutoTranslate_DeepLAPIKey', (key, value) => {
+			this.apiKey = value;
+		});
 	}
 
 	/**

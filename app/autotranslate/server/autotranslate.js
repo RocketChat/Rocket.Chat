@@ -60,11 +60,6 @@ export class AutoTranslate {
 		this.languages = [];
 		this.supportedLanguages = {};
 
-		// Get the service provide API key.
-		settings.get('AutoTranslate_APIKey', (key, value) => {
-			this.apiKey = value;
-		});
-
 		// Get Auto Translate Active flag
 		settings.get('AutoTranslate_Enabled', (key, value) => {
 			this.autoTranslateEnabled = value;
