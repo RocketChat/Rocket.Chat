@@ -83,6 +83,16 @@ class AppClientOrchestrator {
 		}));
 	}
 
+	getAppsOnBundle = async (bundleId) => {
+		const { apps } = await APIClient.get(`apps/bundles/${ bundleId }/apps`);
+		return apps;
+	}
+
+	getAppsLanguages = async () => {
+		const { apps } = await APIClient.get('apps/languages');
+		return apps;
+	}
+
 	getApp = async (appId) => {
 		const { app } = await APIClient.get(`apps/${ appId }`);
 		return app;
@@ -96,14 +106,19 @@ class AppClientOrchestrator {
 		return app;
 	}
 
+	getAppSettings = async (appId) => {
+		const { settings } = await APIClient.get(`apps/${ appId }/settings`);
+		return settings;
+	}
+
+	setAppSettings = async (appId, settings) => {
+		const { updated } = await APIClient.post(`apps/${ appId }/settings`, undefined, { settings });
+		return updated;
+	}
+
 	getAppApis = async (appId) => {
 		const { apis } = await APIClient.get(`apps/${ appId }/apis`);
 		return apis;
-	}
-
-	getCategories = async () => {
-		const categories = await APIClient.get('apps?categories=true');
-		return categories;
 	}
 
 	getAppLanguages = async (appId) => {
@@ -111,30 +126,34 @@ class AppClientOrchestrator {
 		return languages;
 	}
 
-	getAppsLanguages = async () => {
-		const { apps } = await APIClient.get('apps/languages');
-		return apps;
-	}
-
-	setAppState = async (appId, status) => {
-		const { status: effectiveStatus } = await APIClient.post(`apps/${ appId }/status`, { status });
-		return effectiveStatus;
-	}
-
-	enableApp = (appId) => this.setAppState(appId, 'manually_enabled')
-
-	disableApp = (appId) => this.setAppState(appId, 'manually_disabled')
-
 	installApp = (appId, version) => APIClient.post('apps/', {
 		appId,
 		marketplace: true,
 		version,
 	})
 
-	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`);
+	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`)
+
+	setAppStatus = async (appId, status) => {
+		const { status: effectiveStatus } = await APIClient.post(`apps/${ appId }/status`, { status });
+		return effectiveStatus;
+	}
+
+	enableApp = (appId) => this.setAppStatus(appId, 'manually_enabled')
+
+	disableApp = (appId) => this.setAppStatus(appId, 'manually_disabled')
 
 	buildExternalUrl = (appId, purchaseType = 'buy') =>
-		APIClient.get(`apps?buildExternalUrl=true&appId=${ appId }&purchaseType=${ purchaseType }`)
+		APIClient.get('apps', {
+			buildExternalUrl: 'true',
+			appId,
+			purchaseType,
+		})
+
+	getCategories = async () => {
+		const categories = await APIClient.get('apps', { categories: 'true' });
+		return categories;
+	}
 }
 
 export const Apps = new AppClientOrchestrator();

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -6,7 +7,6 @@ import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import s from 'underscore.string';
-import toastr from 'toastr';
 import semver from 'semver';
 
 import { isEmail, t, APIClient } from '../../../utils';
@@ -16,65 +16,76 @@ import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
 import { SideNav, popover } from '../../../ui-utils/client';
+import {
+	formatPrice,
+	formatPricingPlan,
+	handleAPIError,
+	triggerButtonLoadingState,
+} from './helpers';
 
 import './appManage.html';
 import './appManage.css';
 
 
-const getApp = (instance) => {
-	const id = instance.id.get();
+const fetchAppFromMarketplace = async (appId, version, collectError) => {
+	let app;
+
+	try {
+		app = await Apps.getAppFromMarketplace(appId, version);
+		if (app.bundledIn && app.bundledIn.length) {
+			app.bundledIn = await Promise.all(app.bundledIn.map(async (bundledIn) => {
+				try {
+					const apps = await Apps.getAppsOnBundle(bundledIn.bundleId);
+					bundledIn.apps = apps.slice(0, 4);
+				} catch (error) {
+					collectError(error);
+				}
+
+				return bundledIn;
+			}));
+		}
+	} catch (error) {
+		collectError(error);
+	}
+
+	return app;
+};
+
+const fetchApp = async (appId, version, collectError) => {
+	let app;
+
+	try {
+		app = await Apps.getApp(appId);
+		app.apis = await Apps.getAppApis(appId);
+	} catch (error) {
+		collectError(error);
+	}
+
+	return app;
+};
+
+const getApp = async (instance) => {
+	const { appId, version } = instance;
 
 	const appInfo = { remote: undefined, local: undefined };
-	return APIClient.get(`apps/${ id }?marketplace=true&version=${ FlowRouter.getQueryParam('version') }`)
-		.catch((e) => {
-			console.log(e);
-			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-			return { app: undefined };
-		})
-		.then((remote) => {
-			if (!remote.app || !remote.app.bundledIn || remote.app.bundledIn.length === 0) {
-				return remote;
-			}
 
-			const requests = remote.app.bundledIn.map((bundledIn) => {
-				const request = APIClient.get(`apps/bundles/${ bundledIn.bundleId }/apps`);
+	const errors = [];
+	const collectError = errors.push.bind(errors);
+	[appInfo.remote, appInfo.local] = await Promise.all([ // the promises shouldn't reject
+		fetchAppFromMarketplace(appId, version, collectError),
+		fetchApp(appId, version, collectError),
+	]);
 
-				return request
-					.catch((e) => {
-						console.log(e);
-						return remote;
-					}).then((data) => {
-						bundledIn.apps = data && data.apps.splice(0, 4);
-						return remote;
-					});
-			});
+	if (!appInfo.remote && !appInfo.local) {
+		instance.state.set('errors', errors);
+		instance.error.set(errors[errors.length - 1]);
+		return;
+	}
 
-			return Promise.all(requests).then(() => remote);
-		})
-		.then((remote) => {
-			appInfo.remote = remote.app;
-			return APIClient.get(`apps/${ id }`);
-		})
-		.then((local) => {
-			appInfo.local = local.app;
-			return Apps.getAppApis(id);
-		})
-		.then((apis) => instance.apis.set(apis))
-		.catch((e) => {
-			if (appInfo.remote || appInfo.local) {
-				return true;
-			}
+	instance.apis.set(appInfo.local.apis);
 
-			instance.error.set(e.message);
-		}).then((goOn) => {
-			if (typeof goOn !== 'undefined' && !goOn) {
-				return;
-			}
-
-			if (appInfo.remote) {
-				appInfo.remote.displayPrice = parseFloat(appInfo.remote.price).toFixed(2);
-			}
-
+	return Promise.resolve()
+		.then(() => {
 			if (appInfo.local) {
 				appInfo.local.installed = true;
 
@@ -82,7 +93,6 @@ const getApp = (instance) => {
 					appInfo.local.categories = appInfo.remote.categories;
 					appInfo.local.isPurchased = appInfo.remote.isPurchased;
 					appInfo.local.price = appInfo.remote.price;
-					appInfo.local.displayPrice = appInfo.remote.displayPrice;
 					appInfo.local.bundledIn = appInfo.remote.bundledIn;
 					appInfo.local.purchaseType = appInfo.remote.purchaseType;
 					appInfo.local.subscriptionInfo = appInfo.remote.subscriptionInfo;
@@ -92,12 +102,7 @@ const getApp = (instance) => {
 					}
 				}
 
-				instance.onSettingUpdated({ appId: id });
-
-				Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-				Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
-				Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-				Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+				instance.handleSettingUpdated({ appId });
 			}
 
 			instance.app.set(appInfo.local || appInfo.remote);
@@ -105,9 +110,9 @@ const getApp = (instance) => {
 
 			if (appInfo.remote && appInfo.local) {
 				try {
-					return APIClient.get(`apps/${ id }?marketplace=true&update=true&appVersion=${ FlowRouter.getQueryParam('version') }`);
-				} catch (e) {
-					toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+					return APIClient.get(`apps/${ appId }?marketplace=true&update=true&appVersion=${ instance.version }`);
+				} catch (error) {
+					handleAPIError(error);
 				}
 			}
 
@@ -127,48 +132,10 @@ const getApp = (instance) => {
 		});
 };
 
-const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
-
-const formatPricingPlan = (pricingPlan) => {
-	const perUser = pricingPlan.isPerSeat && pricingPlan.tiers && pricingPlan.tiers.length;
-
-	const pricingPlanTranslationString = [
-		'Apps_Marketplace_pricingPlan',
-		pricingPlan.strategy,
-		perUser && 'perUser',
-	].filter(Boolean).join('_');
-
-	return t(pricingPlanTranslationString, {
-		price: formatPrice(pricingPlan.price),
-	});
-};
-
-const handleAPIError = (e) => {
-	console.error(e);
-	toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-};
-
-const triggerButtonLoadingState = (button) => {
-	const icon = button.querySelector('.rc-icon use');
-	const iconHref = icon.getAttribute('href');
-
-	button.classList.add('loading');
-	button.disabled = true;
-	icon.setAttribute('href', '#icon-loading');
-
-	return () => {
-		button.classList.remove('loading');
-		button.disabled = false;
-		icon.setAttribute('href', iconHref);
-	};
-};
-
 const promptSubscription = async (app, instance) => {
-	const { latest, purchaseType = 'buy' } = app;
-
 	let data = null;
 	try {
-		data = await APIClient.get(`apps?buildExternalUrl=true&appId=${ latest.id }&purchaseType=${ purchaseType }`);
+		data = await Apps.buildExternalUrl(app.id, app.purchaseType);
 	} catch (e) {
 		handleAPIError(e, instance);
 		return;
@@ -180,29 +147,20 @@ const promptSubscription = async (app, instance) => {
 		template: 'iframeModal',
 	}, async () => {
 		try {
-			await APIClient.post('apps/', {
-				appId: latest.id,
-				marketplace: true,
-				version: latest.version,
-			});
+			await Apps.installApp(app.id, app.version);
 			await getApp(instance);
-		} catch (e) {
-			handleAPIError(e, instance);
+		} catch (error) {
+			handleAPIError(error);
 		}
 	});
 };
 
-const viewLogs = ({ id }) => {
-	FlowRouter.go(`/admin/apps/${ id }/logs`, {}, { version: FlowRouter.getQueryParam('version') });
-};
-
 const setAppStatus = async (app, status, instance) => {
 	try {
-		const result = await APIClient.post(`apps/${ app.id }/status`, { status });
-		app.status = result.status;
+		app.status = await Apps.setAppStatus(app.id, status);
 		instance.app.set(app);
-	} catch (e) {
-		handleAPIError(e, instance);
+	} catch (error) {
+		handleAPIError(error);
 	}
 };
 
@@ -230,15 +188,15 @@ const promptAppDeactivation = (app, instance) => {
 
 const uninstallApp = async ({ id }, instance) => {
 	try {
-		await APIClient.delete(`apps/${ id }`);
+		await Apps.uninstallApp(id);
 	} catch (e) {
 		handleAPIError(e, instance);
 	}
 
 	try {
 		await getApp(instance);
-	} catch (e) {
-		handleAPIError(e, instance);
+	} catch (error) {
+		handleAPIError(error, instance);
 	}
 };
 
@@ -261,8 +219,13 @@ const promptAppUninstall = (app, instance) => {
 };
 
 Template.appManage.onCreated(function() {
-	const instance = this;
-	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
+	this.appId = FlowRouter.getParam('appId');
+	this.version = FlowRouter.getQueryParam('version');
+	this.state = new ReactiveDict({
+		id: this.appId,
+		version: this.version,
+	});
+
 	this.ready = new ReactiveVar(false);
 	this.error = new ReactiveVar('');
 	this.app = new ReactiveVar({});
@@ -271,76 +234,88 @@ Template.appManage.onCreated(function() {
 	this.apis = new ReactiveVar([]);
 	this.loading = new ReactiveVar(false);
 
-	const id = this.id.get();
-	getApp(instance);
+	getApp(this);
 
 	this.__ = (key, options, lang_tag) => {
-		const appKey = Utilities.getI18nKeyForApp(key, id);
+		const appKey = Utilities.getI18nKeyForApp(key, this.appId);
 		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey, options, lang_tag) : TAPi18n.__(key, options, lang_tag);
 	};
 
-	this.onStatusChanged = ({ appId, status }) => {
-		if (appId !== id) {
+	this.handleStatusChanged = ({ appId, status }) => {
+		if (appId !== this.appId) {
 			return;
 		}
 
-		const app = instance.app.get();
+		const app = this.app.get();
 		app.status = status;
-		instance.app.set(app);
+		this.app.set(app);
 	};
 
-	this.onSettingUpdated = async ({ appId }) => {
-		if (appId !== id) {
+	this.handleSettingUpdated = async ({ appId }) => {
+		if (appId !== this.appId) {
 			return;
 		}
 
-		const { settings } = await APIClient.get(`apps/${ id }/settings`);
-		Object.keys(settings).forEach((k) => {
-			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
-			settings[k].value = settings[k].value !== undefined && settings[k].value !== null ? settings[k].value : settings[k].packageValue;
-			settings[k].oldValue = settings[k].value;
-			settings[k].hasChanged = false;
-		});
+		const settings = await Apps.getAppSettings(this.appId);
+		for (const setting of Object.values(settings)) {
+			setting.i18nPlaceholder = setting.i18nPlaceholder || ' ';
+			setting.value = setting.value !== undefined && setting.value !== null ? setting.value : setting.packageValue;
+			setting.oldValue = setting.value;
+			setting.hasChanged = false;
+		}
 
-		instance.settings.set(settings);
+		this.settings.set(settings);
 	};
 
-	this.onAppAdded = async (appId) => {
-		if (appId !== this.id.get()) {
+	this.handleAppAdded = async (appId) => {
+		if (appId !== this.appId) {
 			return;
 		}
 
 		try {
-			await getApp(instance);
+			await getApp(this);
 		} catch (e) {
 			handleAPIError(e, this);
 		}
 	};
 
-	this.onAppRemoved = async (appId) => {
-		if (appId !== this.id.get()) {
+	this.handleAppRemoved = async (appId) => {
+		if (appId !== this.appId) {
 			return;
 		}
 
 		try {
-			await getApp(instance);
-		} catch (e) {
-			handleAPIError(e, this);
+			await getApp(this);
+		} catch (error) {
+			handleAPIError(error);
 		}
 	};
 
-	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.onAppAdded);
-	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.onAppRemoved);
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
+	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleStatusChanged);
+	Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, this.handleSettingUpdated);
 });
 
 Template.apps.onDestroyed(function() {
-	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.onStatusChanged);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, this.onSettingUpdated);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.onAppAdded);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.onAppRemoved);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleStatusChanged);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, this.handleSettingUpdated);
+});
+
+Template.appManage.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });
 
 Template.appManage.helpers({
+	isSettingsPristine() {
+		const settings = Template.instance().settings.get();
+		return !Object.values(settings).some(({ hasChanged }) => hasChanged);
+	},
 	isInstalled() {
 		const app = Template.instance().app.get();
 		return app.installed;
@@ -406,11 +381,6 @@ Template.appManage.helpers({
 		const settings = Template.instance().settings.get();
 		return settings[_id].value === val;
 	},
-	disabled() {
-		const t = Template.instance();
-		const settings = t.settings.get();
-		return !Object.keys(settings).some((k) => settings[k].hasChanged);
-	},
 	isReady() {
 		if (Template.instance().ready) {
 			return Template.instance().ready.get();
@@ -467,11 +437,18 @@ Template.appManage.helpers({
 });
 
 Template.appManage.events({
-	'click .js-cancel-editing': async (e, t) => {
-		t.onSettingUpdated({ appId: t.id.get() });
+	'click .js-cancel-editing-settings'(event, instance) {
+		const settings = instance.settings.get();
+
+		for (const setting of Object.values(settings)) {
+			setting.value = setting.oldValue;
+			setting.hasChanged = false;
+		}
+
+		instance.settings.set(settings);
 	},
 
-	'click .js-save': async (e, t) => {
+	'click .js-save-settings': async (e, t) => {
 		if (t.loading.get()) {
 			return;
 		}
@@ -491,14 +468,12 @@ Template.appManage.events({
 			if (toSave.length === 0) {
 				throw new Error('Nothing to save..');
 			}
-			const result = await APIClient.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
-			console.log('Updating results:', result);
-			result.updated.forEach((setting) => {
-				settings[setting.id].value = setting.value;
-				settings[setting.id].oldValue = setting.value;
+			const updated = await Apps.setAppSettings(t.id.get(), toSave);
+			updated.forEach(({ id, value }) => {
+				settings[id].value = value;
+				settings[id].oldValue = value;
 			});
-			Object.keys(settings).forEach((k) => {
-				const setting = settings[k];
+			Object.values(settings).forEach((setting) => {
 				setting.hasChanged = false;
 			});
 			t.settings.set(settings);
@@ -508,11 +483,9 @@ Template.appManage.events({
 			t.loading.set(false);
 		}
 	},
-
-	'click .js-cancel'() {
-		FlowRouter.go('/admin/apps');
+	'click .js-close'() {
+		window.history.back();
 	},
-
 	'click .js-menu'(e, instance) {
 		e.stopPropagation();
 		const { currentTarget } = e;
@@ -535,7 +508,9 @@ Template.appManage.events({
 							{
 								icon: 'list-alt',
 								name: t('View_Logs'),
-								action: () => viewLogs(app, instance),
+								action: () => {
+									FlowRouter.go(`/admin/apps/${ app.id }/logs`, {}, { version: FlowRouter.getQueryParam('version') });
+								},
 							},
 						],
 					},
@@ -566,10 +541,10 @@ Template.appManage.events({
 		});
 	},
 
-	async 'click .js-install'(e, instance) {
-		e.stopPropagation();
+	async 'click .js-install'(event, instance) {
+		event.stopPropagation();
 
-		const { currentTarget: button } = e;
+		const { currentTarget: button } = event;
 		const stopLoading = triggerButtonLoadingState(button);
 
 		const { id, version } = instance.app.get();
@@ -593,9 +568,9 @@ Template.appManage.events({
 		}
 	},
 
-	async 'click .js-purchase'(e, instance) {
+	async 'click .js-purchase'(event, instance) {
 		const { id, purchaseType = 'buy', version } = instance.app.get();
-		const { currentTarget: button } = e;
+		const { currentTarget: button } = event;
 		const stopLoading = triggerButtonLoadingState(button);
 
 		let data = null;
@@ -685,11 +660,4 @@ Template.appManage.events({
 			}
 		}
 	}, 500),
-});
-
-Template.appManage.onRendered(() => {
-	Tracker.afterFlush(() => {
-		SideNav.setFlex('adminFlex');
-		SideNav.openFlex();
-	});
 });
