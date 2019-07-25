@@ -105,17 +105,17 @@
 									<div class="rc-table-wrapper">
 										{{#if isInstalled app}}
 											{{#if canUpdate app}}
-												<button class="rc-apps-marketplace__app-button js-install" data-id="{{app.id}}">
+												<button class="rc-button rc-button--primary rc-button--nude rc-button--stack rc-button--no-padding rc-apps-marketplace__table-button js-install" data-id="{{app.id}}">
 													{{> icon icon="reload" block="rc-icon--default-size"}}
 													{{_ "Update"}}
 												</button>
 											{{else if isOnTrialPeriod app}}
-												<span class="rc-apps-marketplace__app-status">
+												<span class="rc-button rc-button--nude rc-button--stack rc-button--no-padding rc-apps-marketplace__table-button">
 												{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
 												{{_ "Trial period"}}
 												</span>
 											{{else}}
-												<span class="rc-apps-marketplace__app-status">
+												<span class="rc-button rc-button--nude rc-button--stack rc-button--no-padding rc-apps-marketplace__table-button">
 													{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
 													{{_ "Installed"}}
 												</span>
@@ -126,22 +126,22 @@
 											</button>
 										{{else}}
 											{{#if canDownload app}}
-												<button class="rc-apps-marketplace__app-button js-install" data-id="{{app.id}}">
+												<button class="rc-button rc-button--primary rc-button--nude rc-button--stack rc-button--no-padding rc-apps-marketplace__table-button js-install" data-id="{{app.id}}">
 													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Install"}}
 												</button>
 											{{else if canTrial app}}
-												<button class="rc-apps-marketplace__app-button js-purchase" data-id="{{app.id}}">
+												<button class="rc-button rc-button--primary rc-button--nude rc-button--stack rc-button--no-padding rc-apps-marketplace__table-button js-purchase" data-id="{{app.id}}">
 													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Start a trial"}}
 												</button>
 											{{else if canBuy app}}
-												<button class="rc-apps-marketplace__app-button js-purchase" data-id="{{app.id}}">
+												<button class="rc-button rc-button--primary rc-button--nude rc-button--stack rc-button--no-padding rc-apps-marketplace__table-button js-purchase" data-id="{{app.id}}">
 													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Buy"}}
 												</button>
 											{{else}}
-												<button class="rc-apps-marketplace__app-button js-purchase" data-id="{{app.id}}">
+												<button class="rc-button rc-button--primary rc-button--nude rc-button--stack rc-button--no-padding rc-apps-marketplace__table-button js-purchase" data-id="{{app.id}}">
 													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{_ "Install"}}
 												</button>
