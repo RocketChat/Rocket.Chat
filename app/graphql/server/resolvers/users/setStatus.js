@@ -1,5 +1,4 @@
 import { Users } from '../../../../models';
-
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/users/setStatus.graphqls';
 

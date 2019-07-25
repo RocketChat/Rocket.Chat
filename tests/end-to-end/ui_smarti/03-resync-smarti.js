@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 import supertest from 'supertest';
+
 import { adminEmail, adminUsername, adminPassword } from '../../data/user';
 // eslint-disable-next-line import/no-useless-path-segments
 import { credentials } from '../ui_smarti/00-preparation'; // directly address the folder to support continued testing
@@ -329,7 +330,6 @@ describe('[Test Sync]', function() {
 	});
 
 	describe('[Test full Sync]', function() {
-
 		describe.skip('Test synced messaging', function() {
 			let conversationId;
 
@@ -359,14 +359,12 @@ describe('[Test Sync]', function() {
 							}
 						}
 						found.should.be.equal(true);
-
 					})
 					.end(done);
 			});
 		});
 
 		describe('Test unsynced messaging', function() {
-
 			it('Make Smarti unavailable', (done) => {
 				changeSmartiStatus(smarti_url_inactive, done);
 			});
@@ -473,7 +471,6 @@ describe('[Test Sync]', function() {
 								.expect(204)
 								.end();
 						}
-
 					})
 					.end(done);
 			});
@@ -500,7 +497,6 @@ describe('[Test Sync]', function() {
 						}
 					}
 					found.should.be.equal(true);
-
 				})
 				.end(done);
 		});

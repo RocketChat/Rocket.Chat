@@ -4,8 +4,9 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
-import { SideNav } from './SideNav';
 import _ from 'underscore';
+
+import { SideNav } from './SideNav';
 
 export const AccountBox = (function() {
 	let status = 0;
@@ -26,9 +27,8 @@ export const AccountBox = (function() {
 	function toggle() {
 		if (status) {
 			return close();
-		} else {
-			return open();
 		}
+		return open();
 	}
 	function openFlex() {
 		status = 0;

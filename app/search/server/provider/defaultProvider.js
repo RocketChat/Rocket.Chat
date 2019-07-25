@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { searchProviderService } from '../service/providerService';
 import SearchProvider from '../model/provider';
 
@@ -6,7 +7,6 @@ import SearchProvider from '../model/provider';
  * Implements the default provider (based on mongo db search)
  */
 class DefaultProvider extends SearchProvider {
-
 	/**
 	 * Enable settings: GlobalSearchEnabled, PageSize
 	 */
@@ -34,13 +34,11 @@ class DefaultProvider extends SearchProvider {
 	 * Uses Meteor function 'messageSearch'
 	 */
 	search(text, context, payload = {}, callback) {
-
 		const _rid = payload.searchAll ? undefined : context.rid;
 
 		const _limit = payload.limit || this._settings.get('PageSize');
 
 		Meteor.call('messageSearch', text, _rid, _limit, callback);
-
 	}
 }
 

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
@@ -52,13 +53,12 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-
 		// this function can receive different types of data
 		// if it doesn't have fname and name properties, should be a Room object
 		// so, need to find the related subscription
-		const subscription = roomData && (roomData.fname || roomData.name) ?
-			roomData :
-			Subscriptions.findOne({ rid: roomData._id });
+		const subscription = roomData && (roomData.fname || roomData.name)
+			? roomData
+			: Subscriptions.findOne({ rid: roomData._id });
 
 		if (subscription === undefined) {
 			return console.log('roomData', roomData);

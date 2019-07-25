@@ -3,22 +3,24 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
-import visitor from '../../../imports/client/visitor';
 import _ from 'underscore';
+
+import visitor from '../../../imports/client/visitor';
 
 export const RoomHistoryManager = new class {
 	constructor() {
 		this.defaultLimit = 50;
 		this.histories = {};
 	}
+
 	getRoom(rid) {
-		if ((this.histories[rid] == null)) {
+		if (this.histories[rid] == null) {
 			this.histories[rid] = {
 				hasMore: new ReactiveVar(true),
 				hasMoreNext: new ReactiveVar(false),
 				isLoading: new ReactiveVar(false),
 				unreadNotLoaded: new ReactiveVar(0),
-				firstUnread: new ReactiveVar,
+				firstUnread: new ReactiveVar(),
 				loaded: undefined,
 			};
 		}
@@ -139,65 +141,64 @@ export const RoomHistoryManager = new class {
 
 			setTimeout(function() {
 				const messages = wrapper[0];
-				return instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
+				instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
 			});
 
 			return setTimeout(() => msgElement.removeClass('highlight'), 500);
+		}
+		const room = this.getRoom(message.rid);
+		room.isLoading.set(true);
+		ChatMessage.remove({ rid: message.rid });
+
+		let typeName = undefined;
+
+		const subscription = ChatSubscription.findOne({ rid: message.rid });
+		if (subscription) {
+			// const { ls } = subscription;
+			typeName = subscription.t + subscription.name;
 		} else {
-			const room = this.getRoom(message.rid);
-			room.isLoading.set(true);
-			ChatMessage.remove({ rid: message.rid });
+			const curRoomDoc = ChatRoom.findOne({ _id: message.rid });
+			typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
+		}
 
-			let typeName = undefined;
-
-			const subscription = ChatSubscription.findOne({ rid: message.rid });
-			if (subscription) {
-				// const { ls } = subscription;
-				typeName = subscription.t + subscription.name;
-			} else {
-				const curRoomDoc = ChatRoom.findOne({ _id: message.rid });
-				typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
+		return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
+			for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
+				if (item.t !== 'command') {
+					const roles = [
+						(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 } })) || {},
+						(item.u && item.u._id && RoomRoles.findOne({ rid: item.rid, 'u._id': item.u._id })) || {},
+					].map((e) => e.roles);
+					item.roles = _.union.apply(_.union, roles);
+					ChatMessage.upsert({ _id: item._id }, item);
+				}
 			}
 
-			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
-				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
-					if (item.t !== 'command') {
-						const roles = [
-							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 } })) || {},
-							(item.u && item.u._id && RoomRoles.findOne({ rid: item.rid, 'u._id': item.u._id })) || {},
-						].map((e) => e.roles);
-						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({ _id: item._id }, item);
-					}
-				}
+			Meteor.defer(function() {
+				readMessage.refreshUnreadMark(message.rid, true);
+				RoomManager.updateMentionsMarksOfRoom(typeName);
+				const wrapper = $('.messages-box .wrapper');
+				const msgElement = $(`#${ message._id }`, wrapper);
+				const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
+				wrapper.animate({
+					scrollTop: pos,
+				}, 500);
 
-				Meteor.defer(function() {
-					readMessage.refreshUnreadMark(message.rid, true);
-					RoomManager.updateMentionsMarksOfRoom(typeName);
-					const wrapper = $('.messages-box .wrapper');
-					const msgElement = $(`#${ message._id }`, wrapper);
-					const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
-					wrapper.animate({
-						scrollTop: pos,
-					}, 500);
+				msgElement.addClass('highlight');
 
-					msgElement.addClass('highlight');
-
-					setTimeout(function() {
-						room.isLoading.set(false);
-						const messages = wrapper[0];
-						instance.atBottom = !result.moreAfter && (messages.scrollTop >= (messages.scrollHeight - messages.clientHeight));
-						return 500;
-					});
-
-					return setTimeout(() => msgElement.removeClass('highlight'), 500);
+				setTimeout(function() {
+					room.isLoading.set(false);
+					const messages = wrapper[0];
+					instance.atBottom = !result.moreAfter && (messages.scrollTop >= (messages.scrollHeight - messages.clientHeight));
+					return 500;
 				});
-				if (room.loaded == null) { room.loaded = 0; }
-				room.loaded += result.messages.length;
-				room.hasMore.set(result.moreBefore);
-				return room.hasMoreNext.set(result.moreAfter);
+
+				return setTimeout(() => msgElement.removeClass('highlight'), 500);
 			});
-		}
+			if (room.loaded == null) { room.loaded = 0; }
+			room.loaded += result.messages.length;
+			room.hasMore.set(result.moreBefore);
+			return room.hasMoreNext.set(result.moreAfter);
+		});
 	}
 
 	hasMore(rid) {
@@ -230,8 +231,8 @@ export const RoomHistoryManager = new class {
 		if (this.histories[rid] != null) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);
-			return this.histories[rid].loaded = undefined;
+			this.histories[rid].loaded = undefined;
 		}
 	}
-};
+}();
 this.RoomHistoryManager = RoomHistoryManager;

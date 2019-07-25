@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { slashCommands } from '../../utils';
 import { Notifications } from '../../notifications';
 
@@ -41,14 +42,13 @@ slashCommands.add('help', function Help(command, params, item) {
 		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__(Object.keys(key)[0], {
 				postProcess: 'sprintf',
 				sprintf: [key[Object.keys(key)[0]]],
 			}, user.language),
 		});
 	});
-
 }, {
 	description: 'Show_the_keyboard_shortcut_list',
 });

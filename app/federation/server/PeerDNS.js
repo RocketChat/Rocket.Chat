@@ -1,9 +1,12 @@
 import dns from 'dns';
+
 import { Meteor } from 'meteor/meteor';
-import { FederationDNSCache } from '../../models';
+
 
 import { logger } from './logger';
 import { updateStatus } from './settingsUpdater';
+import { FederationDNSCache } from '../../models';
+
 import { Federation } from '.';
 
 const dnsResolveSRV = Meteor.wrapAsync(dns.resolveSrv);

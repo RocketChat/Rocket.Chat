@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { createClient } from 'webdav';
+
 import { settings } from '../../../settings';
 import { WebdavAccounts } from '../../../models';
-import { createClient } from 'webdav';
 
 Meteor.methods({
 	async getWebdavFileList(accountId, path) {

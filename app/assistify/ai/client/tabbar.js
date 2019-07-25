@@ -10,4 +10,3 @@ TabBar.addButton({
 	template: 'AssistifySmarti',
 	order: 0,
 });
-

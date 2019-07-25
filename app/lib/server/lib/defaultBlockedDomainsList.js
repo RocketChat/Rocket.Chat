@@ -943,4 +943,3 @@ export const emailDomainDefaultBlackList = [
 	'zxcvbnm.com',
 	'zzz.com',
 ];
-

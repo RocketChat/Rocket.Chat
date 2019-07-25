@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { SmartiProxy, verbs } from '../SmartiProxy';
 import { assistifySmarti } from '../../models/AssistifySmarti';
 import { Notifications } from '../../../../notifications/server';
@@ -28,7 +29,6 @@ function notifyClientsSmartiDirty(roomId, conversationId) {
  * This adapter has no state, as all settings are fully buffered. Thus, the complete class is static.
  */
 export class SmartiAdapter {
-
 	static isEnabled() {
 		return !!settings.get('Assistify_AI_Enabled');
 	}
@@ -53,9 +53,8 @@ export class SmartiAdapter {
 	 * @param {String} rid
 	 */
 	static afterCreateChannel(rid) {
-		const room = Rooms.findOneById(rid);
-		SystemLogger.debug('Room created: ', room);
-		SmartiAdapter._createAndPostConversation(room);
+		SystemLogger.debug('Room created: ', rid);
+		SmartiAdapter._createAndPostConversation(rid);
 	}
 
 	/**
@@ -82,7 +81,7 @@ export class SmartiAdapter {
 					return; // we'll not sync direct messages to Smarti for the time being
 				}
 
-				conversationId = SmartiAdapter._createAndPostConversation(room).id;
+				conversationId = SmartiAdapter._createAndPostConversation(message.rid).id;
 			}
 
 			const requestBodyMessage = {
@@ -145,7 +144,6 @@ export class SmartiAdapter {
 	 * @param {*} message - the message which has just been deleted
 	 */
 	static afterMessageDeleted(message) {
-
 		const conversationId = SmartiAdapter.getConversationId(message.rid);
 		if (conversationId) {
 			SystemLogger.debug(`Smarti - Deleting message ${ message.rid } from conversation ${ conversationId }.`);
@@ -164,7 +162,6 @@ export class SmartiAdapter {
 	 * @returns {*}
 	 */
 	static onClose(room) {
-
 		const conversationId = SmartiAdapter.getConversationId(room._id);
 
 		if (conversationId) {
@@ -183,7 +180,6 @@ export class SmartiAdapter {
 	 * @param room - the room just deleted
 	 */
 	static afterRoomErased(room) {
-
 		const conversationId = SmartiAdapter.getConversationId(room._id);
 		if (conversationId) {
 			SystemLogger.debug(`Smarti - Deleting conversation ${ conversationId } after room ${ room._id } erased.`);
@@ -194,6 +190,7 @@ export class SmartiAdapter {
 		}
 	}
 
+
 	/**
 	 * Returns the cached conversationId from the analyzed conversations cache (model AssistifySmarti).
 	 * If the conversation is not cached it will be retrieved from Smarti's legacy/rocket.chat service.
@@ -202,8 +199,13 @@ export class SmartiAdapter {
 	 * @param {*} roomId - the room for which the Smarti conversationId shall be retrieved
 	 */
 	static getConversationId(roomId) {
+		const cachedMapping = assistifySmarti.findOneByRoomId(roomId);
+		let conversationId = cachedMapping ? cachedMapping.conversationId : '';
 
-		let conversationId = null;
+		if (conversationId) {
+			return conversationId;
+		}
+
 		// uncached conversation
 		SystemLogger.debug('Trying Smarti legacy service to retrieve conversation...');
 		const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ roomId }`, null, null, (error) => {
@@ -234,7 +236,6 @@ export class SmartiAdapter {
 	 * @param analysisResult - the analysis result from Smarti
 	 */
 	static analysisCompleted(roomId, conversationId, analysisResult) {
-
 		if (roomId === null) {
 			const conversationCacheEntry = assistifySmarti.findOneByConversationId(conversationId);
 			if (conversationCacheEntry && conversationCacheEntry.rid) {
@@ -252,7 +253,6 @@ export class SmartiAdapter {
 	}
 
 	static updateTokensInMessages(roomId, analysisResult) {
-
 		const allTerms = analysisResult.tokens.reduce((terms, token) => terms.set(token.value,{value: token.value, type: token.type}), new Map()); //eslint-disable-line
 
 		// we'll check whether the tokens found were contained in the last messages. We just pick a bunch (and not only the last one)
@@ -365,7 +365,7 @@ export class SmartiAdapter {
 			// trigger the syncronisation for the whole batch
 			roomsBatch.forEach((room) => {
 				SystemLogger.debug('Smarti syncing', room.name);
-				resyncFailed = resyncFailed || !SmartiAdapter._tryResync(room, ignoreSyncFlag); // we're in a loop. We should not process the next item if an earlier one failed
+				resyncFailed = resyncFailed || !SmartiAdapter._tryResync(room._id, ignoreSyncFlag); // we're in a loop. We should not process the next item if an earlier one failed
 			});
 
 			if (roomsBatch.length === 0) {
@@ -377,7 +377,6 @@ export class SmartiAdapter {
 			if ((batchCount > maxBatches) || resyncFailed) {
 				SystemLogger.error('Sync with Smarti was not successful - try a delta-sync');
 				terminateCurrentSync();
-				return;
 			}
 		}
 
@@ -409,45 +408,48 @@ export class SmartiAdapter {
 	 * @param {String} rid - the id of the room to sync
 	 * @param {boolean} ignoreSyncFlag @see resync(ignoreSyncFlag)
 	 */
-	static _tryResync(room, ignoreSyncFlag) {
+	static _tryResync(roomId, ignoreSyncFlag) {
 		try {
-			SystemLogger.debug('Sync messages for room: ', room._id);
+			SystemLogger.debug('Sync messages for room: ', roomId);
 
 			const limit = parseInt(settings.get('Assistify_AI_Resync_Message_Limit')) || 1000;
 			const messageFindOptions = { sort: { ts: 1 }, limit };
 
 			// only resync rooms containing outdated messages, if a delta sync is requested
 			if (!ignoreSyncFlag || ignoreSyncFlag !== true) {
-				const unsync = Messages.find({ lastSync: { $exists: false }, rid: room._id, t: { $exists: false } }, messageFindOptions).count();
+				const unsync = Messages.find({ lastSync: { $exists: false }, rid: roomId, t: { $exists: false } }, messageFindOptions).count();
 				if (unsync === 0) {
 					SystemLogger.debug('Room is already in sync');
-					SmartiAdapter._markRoomAsSynced(room._id); // this method was asked to resync, but there's nothing to be done => update the sync-metadata
+					SmartiAdapter._markRoomAsSynced(roomId); // this method was asked to resync, but there's nothing to be done => update the sync-metadata
 					return true;
-				} else {
-					SystemLogger.debug('Messages out of sync: ', unsync.length);
 				}
+
+				SystemLogger.debug('Messages out of sync: ', unsync.length);
 			}
 
 			// delete convervation from Smarti, if already exists
-			const conversationId = SmartiAdapter.getConversationId(room._id);
+			const conversationId = SmartiAdapter.getConversationId(roomId);
 			if (conversationId) {
 				SystemLogger.debug(`Conversation found ${ conversationId } - delete and create new conversation`);
 				SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }`);
+
+				// delete the cached mapping as well - else, we'll point to the wrong conversation lteron
+				assistifySmarti.removeByRoomId(roomId);
 			}
 
 			// get the messages of the room and create a conversation from it
-			const messages = Messages.find({ rid: room._id, t: { $exists: false } }, messageFindOptions).fetch();
-			const newSmartiConversation = SmartiAdapter._createAndPostConversation(room, messages);
+			const messages = Messages.find({ rid: roomId, t: { $exists: false } }, messageFindOptions).fetch();
+			const newSmartiConversation = SmartiAdapter._createAndPostConversation(roomId, messages);
 
 			// get the analysis result (synchronously), update the cache and notify rooms
 			// const analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ newSmartiConversation.id }/analysis`);
-			// SmartiAdapter.analysisCompleted(room._id, newSmartiConversation.id, analysisResult);
+			// SmartiAdapter.analysisCompleted(roomId, newSmartiConversation.id, analysisResult);
 			SystemLogger.debug(`Smarti analysis completed for conversation ${ newSmartiConversation.id }`);
 
 			for (let i = 0; i < messages.length; i++) {
 				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(messages[i]._id));
 			}
-			SmartiAdapter._markRoomAsSynced(room._id);
+			SmartiAdapter._markRoomAsSynced(roomId);
 
 			// finally it's done
 			return true;
@@ -465,7 +467,8 @@ export class SmartiAdapter {
 	 *
 	 * @throws {Meteor.Error} - if the conversation could not be created in Smarti
 	 */
-	static _createAndPostConversation(room, messages) {
+	static _createAndPostConversation(roomId, messages) {
+		const room = Rooms.findOneById(roomId);
 
 		// create the conversation "header/metadata"
 		const supportArea = SmartiAdapter._getSupportArea(room);
@@ -590,7 +593,6 @@ export class SmartiAdapter {
 	}
 
 	static _updateMapping(roomId, conversationId) {
-
 		if (!roomId && !conversationId) {
 			const e = new Meteor.Error('Smarti - Unable to update mapping roomId or conversationId undefined');
 			SystemLogger.error(e);
@@ -625,7 +627,7 @@ export class SmartiAdapter {
 				SystemLogger.error('Stop synchronizing with Smarti immediately:', e);
 			}
 		});
-		if ('UP' !== JSON.parse(resp).status) {
+		if (JSON.parse(resp).status !== 'UP') {
 			const e = new Meteor.Error('Smarti not healthy!');
 			SystemLogger.error('Stop synchronizing with Smarti immediately:', e);
 			return false;

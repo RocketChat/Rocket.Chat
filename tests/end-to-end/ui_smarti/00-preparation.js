@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 import supertest from 'supertest';
+
 import { adminUsername, adminPassword } from '../../data/user.js';
 
 export const request = supertest.agent('http://localhost:8080');
@@ -11,7 +12,6 @@ export const credentials = {
 const clientconfig = '{"queryBuilder":[{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationmlt","displayName":"conversationmlt","type":"conversationmlt","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]},{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationsearch","displayName":"conversationsearch","type":"conversationsearch","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]}]}';
 
 describe('[Smarti Connection]', () => {
-
 	describe('[Status]', function() {
 		describe('health', () => {
 			it('Smarti should be UP', (done) => {

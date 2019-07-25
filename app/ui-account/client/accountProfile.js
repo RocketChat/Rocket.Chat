@@ -4,14 +4,15 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+
 import { modal, SideNav } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 const validateEmail = (email) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
 const validateUsername = (username) => {
@@ -131,8 +132,6 @@ Template.accountProfile.helpers({
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
 			return ret;
 		}
-
-		return;
 	},
 	allowDeleteOwnAccount() {
 		return settings.get('Accounts_AllowDeleteOwnAccount');
@@ -178,14 +177,14 @@ Template.accountProfile.helpers({
 Template.accountProfile.onCreated(function() {
 	const self = this;
 	const user = Meteor.user();
-	self.dep = new Tracker.Dependency;
+	self.dep = new Tracker.Dependency();
 	self.realname = new ReactiveVar(user.name);
 	self.email = new ReactiveVar(getUserEmailAddress(user));
 	self.username = new ReactiveVar(user.username);
-	self.password = new ReactiveVar;
-	self.confirmationPassword = new ReactiveVar;
-	self.suggestions = new ReactiveVar;
-	self.avatar = new ReactiveVar;
+	self.password = new ReactiveVar();
+	self.confirmationPassword = new ReactiveVar();
+	self.suggestions = new ReactiveVar();
+	self.avatar = new ReactiveVar();
 	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
 
@@ -209,11 +208,10 @@ Template.accountProfile.onCreated(function() {
 		const instance = this;
 		if (!newPassword) {
 			return callback();
-		} else if (!settings.get('Accounts_AllowPasswordChange')) {
+		} if (!settings.get('Accounts_AllowPasswordChange')) {
 			toastr.remove();
 			toastr.error(t('Password_Change_Disabled'));
 			instance.clearForm();
-			return;
 		}
 	};
 	this.save = function(typedPassword, cb) {
@@ -250,9 +248,8 @@ Template.accountProfile.onCreated(function() {
 				toastr.error(t('RealName_Change_Disabled'));
 				instance.clearForm();
 				return cb && cb();
-			} else {
-				data.realname = s.trim(self.realname.get());
 			}
+			data.realname = s.trim(self.realname.get());
 		}
 		if (s.trim(self.username.get()) !== user.username) {
 			if (!settings.get('Accounts_AllowUsernameChange')) {
@@ -260,9 +257,8 @@ Template.accountProfile.onCreated(function() {
 				toastr.error(t('Username_Change_Disabled'));
 				instance.clearForm();
 				return cb && cb();
-			} else {
-				data.username = s.trim(self.username.get());
 			}
+			data.username = s.trim(self.username.get());
 		}
 		if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
 			if (!settings.get('Accounts_AllowEmailChange')) {
@@ -270,9 +266,8 @@ Template.accountProfile.onCreated(function() {
 				toastr.error(t('Email_Change_Disabled'));
 				instance.clearForm();
 				return cb && cb();
-			} else {
-				data.email = s.trim(self.email.get());
 			}
+			data.email = s.trim(self.email.get());
 		}
 		const customFields = {};
 		$('[data-customfield=true]').each(function() {
@@ -317,7 +312,7 @@ const checkAvailability = _.debounce((username, { usernameAvaliable }) => {
 }, 300);
 
 Template.accountProfile.events({
-	'change [data-customfield="true"], input [data-customfield="true"]':_.debounce((e, i) => {
+	'change [data-customfield="true"], input [data-customfield="true"]': _.debounce((e, i) => {
 		i.dep.changed();
 	}, 300),
 	'click .js-select-avatar-initials'() {
@@ -432,7 +427,6 @@ Template.accountProfile.events({
 				}
 
 				$(e.target).removeClass('loading');
-
 			}, 1000);
 		});
 	},
@@ -507,7 +501,7 @@ Template.accountProfile.events({
 				handleError(error);
 			}
 			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '');
-			return e.currentTarget.disabled = false;
+			e.currentTarget.disabled = false;
 		});
 	},
 	'change .js-select-avatar-upload [type=file]'(event, template) {

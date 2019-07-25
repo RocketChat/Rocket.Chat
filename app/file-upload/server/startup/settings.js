@@ -66,6 +66,7 @@ settings.addGroup('FileUpload', function() {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
 			},
+			secret: true,
 		});
 		this.add('FileUpload_S3_AWSSecretAccessKey', '', {
 			type: 'string',
@@ -73,6 +74,7 @@ settings.addGroup('FileUpload', function() {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
 			},
+			secret: true,
 		});
 		this.add('FileUpload_S3_CDN', '', {
 			type: 'string',
@@ -95,6 +97,7 @@ settings.addGroup('FileUpload', function() {
 				value: 'AmazonS3',
 			},
 			i18nDescription: 'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.',
+			secret: true,
 		});
 		this.add('FileUpload_S3_SignatureVersion', 'v4', {
 			type: 'string',
@@ -142,6 +145,7 @@ settings.addGroup('FileUpload', function() {
 				_id: 'FileUpload_Storage_Type',
 				value: 'GoogleCloudStorage',
 			},
+			secret: true,
 		});
 		this.add('FileUpload_GoogleStorage_AccessId', '', {
 			type: 'string',
@@ -150,6 +154,7 @@ settings.addGroup('FileUpload', function() {
 				_id: 'FileUpload_Storage_Type',
 				value: 'GoogleCloudStorage',
 			},
+			secret: true,
 		});
 		this.add('FileUpload_GoogleStorage_Secret', '', {
 			type: 'string',
@@ -159,6 +164,7 @@ settings.addGroup('FileUpload', function() {
 				_id: 'FileUpload_Storage_Type',
 				value: 'GoogleCloudStorage',
 			},
+			secret: true,
 		});
 		this.add('FileUpload_GoogleStorage_Proxy_Avatars', false, {
 			type: 'boolean',
@@ -207,6 +213,7 @@ settings.addGroup('FileUpload', function() {
 				_id: 'FileUpload_Storage_Type',
 				value: 'Webdav',
 			},
+			secret: true,
 		});
 		this.add('FileUpload_Webdav_Password', '', {
 			type: 'password',
@@ -215,6 +222,7 @@ settings.addGroup('FileUpload', function() {
 				_id: 'FileUpload_Storage_Type',
 				value: 'Webdav',
 			},
+			secret: true,
 		});
 		this.add('FileUpload_Webdav_Proxy_Avatars', false, {
 			type: 'boolean',

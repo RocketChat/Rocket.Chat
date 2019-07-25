@@ -1,7 +1,6 @@
-import { Rooms } from '../../../../models';
-
-import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
+import { Rooms } from '../../../../models';
+import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/channels.graphqls';
 
 const resolver = {
@@ -18,7 +17,7 @@ const resolver = {
 			// Filter
 			if (typeof args.filter !== 'undefined') {
 				// nameFilter
-				if (typeof args.filter.nameFilter !== undefined) {
+				if (typeof args.filter.nameFilter !== 'undefined') {
 					query.name = {
 						$regex: new RegExp(args.filter.nameFilter, 'i'),
 					};

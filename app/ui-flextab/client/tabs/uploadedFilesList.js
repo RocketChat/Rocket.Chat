@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';
@@ -142,7 +141,7 @@ Template.uploadedFilesList.events({
 									name: t('Download'),
 									action: () => {
 										const a = document.createElement('a');
-										a.href = this.file.url;
+										a.href = getURL(this.file.url);
 										a.download = this.file.name;
 										document.body.appendChild(a);
 										a.click();
@@ -152,7 +151,7 @@ Template.uploadedFilesList.events({
 								},
 							],
 						},
-						...(canDelete ? [{
+						...canDelete ? [{
 							items: [
 								{
 									icon: 'trash',
@@ -186,12 +185,12 @@ Template.uploadedFilesList.events({
 									},
 								},
 							],
-						}] : []),
+						}] : [],
 					],
 				},
 			],
 			currentTarget: e.currentTarget,
-			onDestroyed:() => {
+			onDestroyed: () => {
 				e.currentTarget.parentElement.classList.remove('active');
 			},
 		};

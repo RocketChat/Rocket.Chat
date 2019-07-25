@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+
 import { slashCommands } from '../../../utils';
 import { Rooms } from '../../../models';
 import { API } from '../api';
@@ -35,7 +36,7 @@ API.v1.addRoute('commands.list', { authRequired: true }, {
 
 		const totalCount = commands.length;
 		commands = Rooms.processQueryOptionsOnResult(commands, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,

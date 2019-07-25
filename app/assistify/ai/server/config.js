@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings/server';
 import { Settings } from '../../../models/server';
 
 Meteor.startup(() => {
 	const addAISettings = function() {
-
 		this.section('Knowledge_Base', function() {
-
 			this.add('Assistify_AI_Enabled', false, {
 				type: 'boolean',
 				public: true,
@@ -165,9 +164,9 @@ Meteor.startup(() => {
 	};
 
 	// add the setting group if needed or reuse the existing one
-	settings.get('Assistify') ?
-		settings.get('Assistify', addAISettings) :
-		settings.addGroup('Assistify', addAISettings);
+	settings.get('Assistify')
+		? settings.get('Assistify', addAISettings)
+		: settings.addGroup('Assistify', addAISettings);
 });
 
 
@@ -193,4 +192,3 @@ settings.get('Assistify_AI_Smarti_Base_URL', (id, smartiUrl) => {
 settings.get('Assistify_AI_Smarti_Auth_Token', (id, smartiAuthToken) => {
 	Settings.update('CHATPAL_CONFIG', { $set: { 'value.headerstring': `X-Auth-Token: ${ smartiAuthToken }` } });
 });
-

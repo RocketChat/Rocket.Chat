@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import Busboy from 'busboy';
+import filesize from 'filesize';
+
 import { settings } from '../../../../settings';
 import { Settings, Rooms, LivechatVisitors } from '../../../../models';
 import { fileUploadIsValidContentType } from '../../../../utils';
 import { FileUpload } from '../../../../file-upload';
 import { API } from '../../../../api';
-import Busboy from 'busboy';
-import filesize from 'filesize';
+
 let maxFileSize;
 
 settings.get('FileUpload_MaxFileSize', function(key, value) {
@@ -52,7 +54,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 				});
 			});
 
-			busboy.on('field', (fieldname, value) => fields[fieldname] = value);
+			busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
 
 			busboy.on('finish', Meteor.bindEnvironment(() => callback()));
 

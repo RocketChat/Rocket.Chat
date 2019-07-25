@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../functions/hasPermission';
 import { getUsersInRole } from '../functions/getUsersInRole';
 

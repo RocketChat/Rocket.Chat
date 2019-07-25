@@ -5,6 +5,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
+
 import { auth } from '../oauth.js';
 import { RocketChatAnnouncement } from '../../../lib';
 import { popout } from '../../../ui-utils';
@@ -80,15 +81,13 @@ Template.liveStreamTab.helpers({
 			if (popout.context) {
 				popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
 			}
-		} catch (e) {
-			return false;
-		} finally {
 			if (popoutSource != null && livestreamTabSource === popoutSource) {
 				return true;
-			} else {
-				return false;
 			}
+		} catch (e) {
+			return false;
 		}
+		return false;
 	},
 	isPopoutOpen() {
 		return Template.instance().popoutOpen.get();
@@ -104,7 +103,7 @@ Template.liveStreamTab.onCreated(function() {
 	this.popoutOpen = new ReactiveVar(popout.context != null);
 
 	this.autorun(() => {
-		const room = Rooms.findOne(this.data.rid, { fields: { streamingOptions : 1 } });
+		const room = Rooms.findOne(this.data.rid, { fields: { streamingOptions: 1 } });
 		this.streamingOptions.set(room.streamingOptions);
 	});
 });
@@ -192,7 +191,7 @@ Template.liveStreamTab.events({
 					streamingSource: i.streamingOptions.get().url,
 					isAudioOnly: i.streamingOptions.get().isAudioOnly,
 					showVideoControls: true,
-					streamingOptions:  i.streamingOptions.get(),
+					streamingOptions: i.streamingOptions.get(),
 				},
 				onCloseCallback: () => i.popoutOpen.set(false),
 			});
@@ -238,7 +237,7 @@ Template.liveStreamTab.events({
 				streamingSource: i.streamingOptions.get().url,
 				isAudioOnly: i.streamingOptions.get().isAudioOnly,
 				showVideoControls: true,
-				streamingOptions:  i.streamingOptions.get(),
+				streamingOptions: i.streamingOptions.get(),
 			},
 			onCloseCallback: () => i.popoutOpen.set(false),
 		});
@@ -262,7 +261,6 @@ Template.liveStreamTab.events({
 				},
 				onCloseCallback: () => i.popoutOpen.set(false),
 			});
-
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -280,7 +278,7 @@ callbacks.add('openBroadcast', (rid) => {
 			streamingSource: roomData.streamingOptions.url,
 			isAudioOnly: roomData.streamingOptions.isAudioOnly,
 			showVideoControls: true,
-			streamingOptions:  roomData.streamingOptions,
+			streamingOptions: roomData.streamingOptions,
 		},
 	});
 });

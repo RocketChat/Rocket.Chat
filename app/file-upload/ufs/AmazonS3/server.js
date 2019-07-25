@@ -1,9 +1,10 @@
+import stream from 'stream';
+
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
-import stream from 'stream';
 
 /**
  * AmazonS3 store
@@ -11,7 +12,6 @@ import stream from 'stream';
  * @constructor
  */
 export class AmazonS3Store extends UploadFS.Store {
-
 	constructor(options) {
 		// Default options
 		// options.secretAccessKey,

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+
 import { API } from '../../../../api';
 import { Uploads } from '../../../../models';
 import { FileUpload } from '../../../../file-upload';
-
 import { Federation } from '../..';
 
 API.v1.addRoute('federation.uploads', { authRequired: false }, {

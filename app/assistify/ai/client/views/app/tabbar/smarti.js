@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+
 import { ChatRoom } from '../../../../../../models/client/models/ChatRoom';
 import { Notifications } from '../../../../../../notifications/client';
 import { settings } from '../../../../../../settings/client';
@@ -30,7 +31,6 @@ Template.AssistifySmarti.onCreated(function() {
 	Hook into an event issued by the backend to allow requesting an analysis
 	*/
 	Notifications.onRoom(instance.data.rid, 'assistify-smarti-dirty', () => {
-
 		if (this.reactOnSmartiDirty.get()) {
 			if (!settings.get('Assistify_AI_Smarti_Inline_Highlighting_Enabled')) { // Inline highlighting will anyway trigger the analysis - we don't need it twice
 				Meteor.call('analyze', instance.data.rid);
@@ -49,7 +49,6 @@ Template.AssistifySmarti.onDestroyed(function() {
  * @namespace SmartiWidget
  */
 Template.AssistifySmarti.onRendered(function() {
-
 	const instance = this;
 
 	/* in order to avoid duplicated scrollbars, have the outer one hidden */
@@ -96,7 +95,6 @@ Template.AssistifySmarti.onRendered(function() {
 	}
 
 	createSmarti();
-
 });
 
 Template.AssistifySmarti.helpers({
@@ -115,9 +113,8 @@ Template.AssistifySmarti.helpers({
 		const instance = Template.instance();
 		if (instance.smartiLoaded.get()) {
 			return 'ready';
-		} else {
-			return instance.currentTryLoading.get() < instance.maxTriesLoading ? 'loading' : 'not-available';
 		}
+		return instance.currentTryLoading.get() < instance.maxTriesLoading ? 'loading' : 'not-available';
 	},
 	isLoading() {
 		const instance = Template.instance();
@@ -127,7 +124,9 @@ Template.AssistifySmarti.helpers({
 		const instance = Template.instance();
 		if (instance.currentTryLoading.get() < instance.maxTriesLoading && instance.currentTryLoading.get() > 3) {
 			return TAPi18n.__('Widget_loading');
-		} else if (instance.currentTryLoading.get() === instance.maxTriesLoading) {
+		}
+
+		if (instance.currentTryLoading.get() === instance.maxTriesLoading) {
 			return TAPi18n.__('Widget_could_not_load');
 		}
 	},

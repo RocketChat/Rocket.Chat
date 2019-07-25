@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { logger } from './logger';
+import moment from 'moment';
 
+import { logger } from './logger';
+import { ping } from './methods/ping';
 import { FederationPeers } from '../../models';
 
-import { ping } from './methods/ping';
-
-import moment from 'moment';
 
 export class PeerPinger {
 	constructor() {

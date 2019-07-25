@@ -1,4 +1,5 @@
 import { HTTP } from 'meteor/http';
+
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../logger/server';
 
@@ -15,7 +16,6 @@ export const verbs = {
  * All HTTP outbound traffic (from Rocket.Chat to Smarti) should pass the this proxy.
  */
 export class SmartiProxy {
-
 	static get smartiAuthToken() {
 		return settings.get('Assistify_AI_Smarti_Auth_Token');
 	}
@@ -53,11 +53,9 @@ export class SmartiProxy {
 
 			if (response.statusCode < 400) {
 				return response.data || response.content; // .data if it's a json-response
-			} else {
-				SystemLogger.debug('Got unexpected result from Smarti', method, 'to', url, 'response', JSON.stringify(response));
 			}
+			SystemLogger.debug('Got unexpected result from Smarti', method, 'to', url, 'response', JSON.stringify(response));
 		} catch (error) {
-
 			if (error && onError) {
 				return onError(error);
 			}
@@ -71,9 +69,11 @@ export class SmartiProxy {
 	static get googleSearchUrl() {
 		return settings.get('Assistify_AI_Google_CS_URL');
 	}
+
 	static get googleSearchKey() {
 		return settings.get('Assistify_AI_Google_CS_KEY');
 	}
+
 	static get googleSearchId() {
 		return settings.get('Assistify_AI_Google_CS_ID');
 	}
@@ -103,11 +103,9 @@ export class SmartiProxy {
 			if (response.statusCode === 200) {
 				SystemLogger.debug('response: ', response.data ? response.data : response.content);
 				return response.data || response.content; // .data if it's a json-response
-			} else {
-				SystemLogger.debug('Got unexpected result from google', method, 'to', url, 'response', JSON.stringify(response));
 			}
+			SystemLogger.debug('Got unexpected result from google', method, 'to', url, 'response', JSON.stringify(response));
 		} catch (error) {
-
 			if (error && onError) {
 				return onError(error);
 			}

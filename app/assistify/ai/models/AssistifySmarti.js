@@ -20,6 +20,12 @@ class AssistifySmarti extends Base {
 		return this.find(query, { sort });
 	}
 
+	findOneByRoomId(roomId, sort = { ts: -1 }) {
+		const query = { rid: roomId };
+
+		return this.findOne(query, { sort });
+	}
+
 	findOneById(_id, options) {
 		const query = { _id };
 		return this.findOne(query, options);
@@ -33,6 +39,11 @@ class AssistifySmarti extends Base {
 	// REMOVE
 	clear() {
 		const query = { knowledgeProvider: 'smarti' };
+		return this.remove(query);
+	}
+
+	removeByRoomId(roomId) {
+		const query = { rid: roomId };
 		return this.remove(query);
 	}
 }

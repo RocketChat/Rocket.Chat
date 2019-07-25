@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { updateAvatarOfUsername } from '../../app/ui-utils';
 import { Notifications } from '../../app/notifications';
 

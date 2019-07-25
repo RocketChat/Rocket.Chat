@@ -4,8 +4,6 @@ import { Users } from '../../../app/models';
 Migrations.add({
 	version: 107,
 	up() {
-
-
 		Users.update({
 			'preferences.roomsListExhibitionMode': 'activity',
 		}, {
@@ -26,7 +24,7 @@ Migrations.add({
 			},
 			$set: {
 				'preferences.sidebarSortby': 'alphabetical',
-				'preferences.sidebarShowUnread' : true,
+				'preferences.sidebarShowUnread': true,
 				'preferences.sidebarShowFavorites': true,
 			},
 		});

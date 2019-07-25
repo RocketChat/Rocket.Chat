@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { UserPresenceEvents } from 'meteor/konecty:user-presence';
+
 import { Livechat } from './lib/Livechat';
 
 Meteor.startup(() => {

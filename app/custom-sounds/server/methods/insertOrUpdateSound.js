@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { CustomSounds } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
-import s from 'underscore.string';
 
 Meteor.methods({
 	insertOrUpdateSound(soundData) {
@@ -51,18 +52,17 @@ Meteor.methods({
 			createSound._id = _id;
 
 			return _id;
-		} else {
-			// update sound
-			if (soundData.newFile) {
-				RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.previousExtension }`);
-			}
-
-			if (soundData.name !== soundData.previousName) {
-				CustomSounds.setName(soundData._id, soundData.name);
-				Notifications.notifyAll('updateCustomSound', { soundData });
-			}
-
-			return soundData._id;
 		}
+		// update sound
+		if (soundData.newFile) {
+			RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.previousExtension }`);
+		}
+
+		if (soundData.name !== soundData.previousName) {
+			CustomSounds.setName(soundData._id, soundData.name);
+			Notifications.notifyAll('updateCustomSound', { soundData });
+		}
+
+		return soundData._id;
 	},
 });

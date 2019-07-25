@@ -1,4 +1,5 @@
 import { check } from 'meteor/check';
+
 import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';

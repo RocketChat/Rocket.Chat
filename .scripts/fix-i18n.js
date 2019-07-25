@@ -6,8 +6,9 @@
  * - remove all keys not present in source i18n file
  */
 
-const fg = require('fast-glob');
 const fs = require('fs');
+
+const fg = require('fast-glob');
 
 const fixFiles = (path, source, newlineAtEnd = false) => {
 	const sourceFile = JSON.parse(fs.readFileSync(`${ path }${ source }`, 'utf8'));

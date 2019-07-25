@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { CachedCollectionManager } from '../../ui-cached-collection';
+
 import { hasAtLeastOnePermission } from './hasPermission';
-import { AdminBox } from '../../ui-utils/client';
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import { AdminBox } from '../../ui-utils/client/lib/AdminBox';
 
 Meteor.startup(() => {
-
 	CachedCollectionManager.onLogin(() => Meteor.subscribe('roles'));
 
 	AdminBox.addOption({

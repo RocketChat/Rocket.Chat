@@ -5,7 +5,6 @@ import 'photoswipe/dist/photoswipe.css';
 import s from 'underscore.string';
 
 Meteor.startup(() => {
-
 	let currentGallery = null;
 	const initGallery = (items, options) => {
 		if (!currentGallery) {
@@ -36,8 +35,7 @@ Meteor.startup(() => {
 			...defaultGalleryOptions,
 			index: 0,
 			addCaptionHTMLFn(item, captionEl) {
-				captionEl.children[0].innerHTML =
-					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small>`;
+				captionEl.children[0].innerHTML =					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small>`;
 				return true;
 			},
 		};

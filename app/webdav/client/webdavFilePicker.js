@@ -3,10 +3,11 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 import { Session } from 'meteor/session';
+import { Handlebars } from 'meteor/ui';
+
 import { modal, call } from '../../ui-utils';
 import { t } from '../../utils';
 import { fileUploadHandler } from '../../file-upload';
-import { Handlebars } from 'meteor/ui';
 
 Template.webdavFilePicker.rendered = async function() {
 	const { accountId } = this.data;
