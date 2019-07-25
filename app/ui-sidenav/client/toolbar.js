@@ -36,35 +36,15 @@ const getFromServer = (cb, type) => {
 		}
 
 		const resultsFromServer = [];
-		const usersLength = results.users.length;
-		const roomsLength = results.rooms.length;
 
-		if (usersLength) {
-			for (let i = 0; i < usersLength; i++) {
-				resultsFromServer.push({
-					_id: results.users[i]._id,
-					t: 'd',
-					name: results.users[i].username,
-					fname: results.users[i].name,
-				});
-			}
-		}
+		resultsFromServer.push(...results.users.map((user) => ({
+			_id: user._id,
+			t: 'd',
+			name: user.username,
+			fname: user.name,
+		})));
 
-		if (roomsLength) {
-			for (let i = 0; i < roomsLength; i++) {
-				const alreadyOnClient = resultsFromClient.find((item) => item._id === results.rooms[i]._id);
-				if (alreadyOnClient) {
-					continue;
-				}
-
-				resultsFromServer.push({
-					_id: results.rooms[i]._id,
-					t: results.rooms[i].t,
-					name: results.rooms[i].name,
-					lastMessage: results.rooms[i].lastMessage,
-				});
-			}
-		}
+		resultsFromServer.push(...results.rooms.filter((room) => !resultsFromClient.find((item) => [item.rid, item._id].includes(room._id))));
 
 		if (resultsFromServer.length) {
 			cb(resultsFromClient.concat(resultsFromServer));
