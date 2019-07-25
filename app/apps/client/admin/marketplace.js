@@ -75,10 +75,18 @@ Template.marketplace.onCreated(function() {
 
 	this.handleAppAdded = async (appId) => {
 		try {
-			const apps = this.state.get('apps');
 			const installedApp = await Apps.getApp(appId);
-			const app = apps.find(({ id }) => id === installedApp.id);
-			[app.status, app.version] = [installedApp.status, installedApp.version];
+			const app = await Apps.getAppFromMarketplace(appId, installedApp.version);
+			const apps = [
+				...this.state.get('apps').filter(({ id }) => id !== appId),
+				{
+					...app,
+					status: installedApp.status,
+					version: installedApp.version,
+					marketplaceStatus: app.status,
+					marketplaceVersion: app.version,
+				},
+			];
 			this.state.set('apps', apps);
 		} catch (error) {
 			handleAPIError(error);

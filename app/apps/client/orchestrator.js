@@ -75,7 +75,7 @@ class AppClientOrchestrator {
 	}
 
 	getAppsFromMarketplace = async () => {
-		const appsOverviews = await APIClient.get('apps?marketplace=true');
+		const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
 		return appsOverviews.map(({ latest, price, purchaseType }) => ({
 			...latest,
 			price,
@@ -85,6 +85,14 @@ class AppClientOrchestrator {
 
 	getApp = async (appId) => {
 		const { app } = await APIClient.get(`apps/${ appId }`);
+		return app;
+	}
+
+	getAppFromMarketplace = async (appId, version = null) => {
+		const { app } = await APIClient.get(`apps/${ appId }`, {
+			marketplace: 'true',
+			...version && { version },
+		});
 		return app;
 	}
 
