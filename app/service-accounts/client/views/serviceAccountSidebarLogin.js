@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { handleError } from '../../../utils';
+import { callbacks } from '../../../callbacks';
 import FullUser from '../../../models/client/models/FullUser';
 import './serviceAccountSidebarLogin.html';
 import { popover } from '../../../ui-utils/client';
@@ -37,19 +38,20 @@ Template.serviceAccountSidebarLogin.events({
 			if (error) {
 				return handleError(error);
 			}
-			popover.close();
-			Meteor.logout((err) => {
-				if (err) {
-					return handleError(err);
-				}
+			if (Meteor.user() && !Meteor.user().u) {
+				localStorage.setItem('serviceAccountForceLogin', true);
+			} else {
+				localStorage.removeItem('serviceAccountForceLogin');
+			}
+			const user = Meteor.user();
+			Meteor.logout(() => {
+				callbacks.run('afterLogoutCleanUp', user);
+				Meteor.call('logoutCleanUp', user, document.cookie);
+				FlowRouter.go('home');
+				popover.close();
 				Meteor.loginWithToken(token.token, (err) => {
 					if (err) {
 						return handleError(err);
-					}
-					if (Meteor.user() && Meteor.user().u) {
-						localStorage.setItem('serviceAccountForceLogin', true);
-					} else {
-						localStorage.removeItem('serviceAccountForceLogin');
 					}
 				});
 			});
