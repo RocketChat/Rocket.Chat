@@ -1,6 +1,20 @@
 
 # 1.3.0 (Under Release Candidate Process)
 
+## 1.3.0-rc.2
+`2019-07-26  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Update Livechat widget ([#15046](https://github.com/RocketChat/Rocket.Chat/pull/15046))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+
 ## 1.3.0-rc.1
 `2019-07-23  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
