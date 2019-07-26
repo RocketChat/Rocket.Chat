@@ -455,6 +455,7 @@
 	}
 
 	&__button--inactive.rc-button,
+	&__button--warning.rc-button,
 	&__button--failed.rc-button {
 		padding: 0;
 
@@ -478,6 +479,10 @@
 
 	&__button--failed.rc-button {
 		color: var(--rc-color-error);
+	}
+
+	&__button--warning.rc-button {
+		color: var(--rc-color-alert);
 	}
 
 	&__button--working {

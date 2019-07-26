@@ -1,13 +1,41 @@
 #rocket-chat .rc-apps-marketplace {
-	&__status-column {
+	.rc-apps-marketplace__status-column {
 		width: 150px;
 	}
 
-	&__table-button {
+	.rc-apps-marketplace__table-button {
 		justify-content: flex-start;
 	}
 
+	tr .rc-apps-marketplace__table-button--hideable {
+		visibility: hidden;
+	}
+
+	tr .rc-apps-marketplace__table-button--working,
+	tr:hover .rc-apps-marketplace__table-button--hideable {
+		visibility: visible;
+	}
+
+	.rc-apps-marketplace__table-button--working {
+		opacity: 0.6;
+	}
+
+	.rc-apps-marketplace__status {
+		width: 100%;
+		line-height: 40px;
+		color: var(--rc-color-primary-light);
+
+		&--warning {
+			color: var(--rc-color-alert);
+		}
+
+		&--failed {
+			color: var(--rc-color-error);
+		}
+	}
+
 	&__table-button--inactive,
+	&__table-button--warning,
 	&__table-button--failed {
 		pointer-events: none;
 
@@ -20,12 +48,11 @@
 		color: var(--rc-color-primary-light);
 	}
 
-	&__table-button--failed {
-		color: var(--rc-color-error);
+	&__table-button--warning {
+		color: var(--rc-color-alert);
 	}
 
-	&__table-button--working {
-		opacity: 0.6;
-		background: transparent;
+	&__table-button--failed {
+		color: var(--rc-color-error);
 	}
 }

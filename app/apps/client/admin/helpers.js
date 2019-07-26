@@ -7,6 +7,8 @@ import { t } from '../../../utils/client';
 import { Apps } from '../orchestrator';
 
 
+const appEnabledStatuses = ['auto_enabled', 'manually_enabled'];
+
 export const handleAPIError = (error) => {
 	console.error(error);
 	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
@@ -98,7 +100,7 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 		FlowRouter.go('app-logs', { appId: app.id }, { version: app.version });
 	};
 
-	const handleDeactivate = () => promptAppDeactivation(async () => {
+	const handleDisable = () => promptAppDeactivation(async () => {
 		try {
 			await Apps.disableApp(app.id);
 		} catch (error) {
@@ -106,7 +108,7 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 		}
 	});
 
-	const handleActivate = async () => {
+	const handleEnable = async () => {
 		try {
 			await Apps.enableApp(app.id);
 		} catch (error) {
@@ -123,7 +125,7 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 	});
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
-	const isAppEnabled = ['auto_enabled', 'manually_enabled'].includes(app.status);
+	const isAppEnabled = appEnabledStatuses.includes(app.status);
 
 	popover.open({
 		currentTarget,
@@ -149,14 +151,14 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 						isAppEnabled
 							? {
 								icon: 'ban',
-								name: t('Deactivate'),
+								name: t('Disable'),
 								modifier: 'alert',
-								action: handleDeactivate,
+								action: handleDisable,
 							}
 							: {
 								icon: 'check',
-								name: t('Activate'),
-								action: handleActivate,
+								name: t('Enable'),
+								action: handleEnable,
 							},
 						{
 							icon: 'trash',
@@ -189,94 +191,102 @@ export const promptMarketplaceLogin = () => {
 	});
 };
 
-export const createAppButtonPropsHelper = (inactiveClassName, failedClassName) => (app) => {
-	const isInstalled = ({ installed }) => installed;
-	const isFailed = () => false; // TODO
-	const canUpdate = ({ version, marketplaceVersion, isPurchased, price }) =>
-		version && marketplaceVersion
+export const appButtonProps = ({
+	installed,
+	version,
+	marketplaceVersion,
+	isPurchased,
+	isSubscribed,
+	price,
+	purchaseType,
+	subscriptionInfo,
+}) => {
+	const canUpdate = () =>
+		installed
+		&& version && marketplaceVersion
 		&& semver.lt(version, marketplaceVersion)
 		&& (isPurchased || price <= 0);
-	const isOnTrialPeriod = ({ subscriptionInfo: { status } = {} }) => status === 'trialing';
-	const canDownload = ({ isPurchased, isSubscribed }) => isPurchased || isSubscribed;
-	const canTrial = ({ purchaseType, subscriptionInfo }) =>
-		purchaseType === 'subscription' && !subscriptionInfo.status;
-	const canBuy = ({ price }) => price > 0;
+	const canDownload = () => !installed && (isPurchased || isSubscribed);
+	const canTrial = () => !installed && (purchaseType === 'subscription' && !subscriptionInfo.status);
+	const canBuy = () => !installed && price > 0;
+	const canGet = () => !installed;
 
-	if (isInstalled(app)) {
-		if (isFailed(app)) {
-			return {
-				className: failedClassName,
-				icon: 'warning',
-				label: 'Failed',
-			};
-		}
-
-		if (canUpdate(app)) {
-			return {
-				className: 'rc-button--primary js-install',
-				icon: 'reload',
-				label: 'Update',
-			};
-		}
-
-		if (isOnTrialPeriod(app)) {
-			return {
-				className: inactiveClassName,
-				icon: 'checkmark-circled',
-				label: 'Trial period',
-			};
-		}
-
+	if (canUpdate()) {
 		return {
-			className: inactiveClassName,
-			icon: 'checkmark-circled',
-			label: 'Installed',
+			action: 'update',
+			icon: 'reload',
+			label: 'Update',
 		};
 	}
 
-	if (canDownload(app)) {
+	if (canDownload()) {
 		return {
-			className: 'rc-button--primary js-install',
-			icon: 'circled-arrow-down',
+			action: 'install',
 			label: 'Install',
 		};
 	}
 
-	if (canTrial(app)) {
+	if (canTrial()) {
 		return {
-			className: 'rc-button--primary js-purchase',
-			icon: 'circled-arrow-down',
-			label: 'Start a trial',
+			action: 'purchase',
+			label: 'Start trial',
 		};
 	}
 
-	if (canBuy(app)) {
+	if (canBuy()) {
 		return {
-			className: 'rc-button--primary js-purchase',
-			icon: 'circled-arrow-down',
+			action: 'purchase',
 			label: 'Buy',
 		};
 	}
 
-	return {
-		className: 'rc-button--primary js-install',
-		icon: 'circled-arrow-down',
-		label: 'Install',
-	};
+	if (canGet()) {
+		return {
+			action: 'install',
+			label: 'Install',
+		};
+	}
 };
 
-export const triggerButtonLoadingState = (button) => {
-	const icon = button.querySelector('.rc-icon use');
-	const iconHref = icon.getAttribute('href');
+export const appStatusSpanProps = ({
+	installed,
+	status,
+	subscriptionInfo,
+}) => {
+	const isFailed = () => installed && false; // TODO
+	const isEnabled = () => appEnabledStatuses.includes(status);
+	const isOnTrialPeriod = () => subscriptionInfo.status === 'trialing';
 
-	button.classList.add('loading');
-	button.disabled = true;
-	icon.setAttribute('href', '#icon-loading');
+	if (isFailed()) {
+		return {
+			type: 'failed',
+			icon: 'warning',
+			label: 'Failed',
+		};
+	}
 
-	return () => {
-		button.classList.remove('loading');
-		button.disabled = false;
-		icon.setAttribute('href', iconHref);
+	if (!installed) {
+		return;
+	}
+
+	if (isOnTrialPeriod()) {
+		return {
+			icon: 'checkmark-circled',
+			label: 'Trial period',
+		};
+	}
+
+	if (!isEnabled()) {
+		return {
+			type: 'warning',
+			icon: 'warning',
+			label: 'Disabled',
+		};
+	}
+
+	return {
+		icon: 'checkmark-circled',
+		label: 'Enabled',
 	};
 };
 

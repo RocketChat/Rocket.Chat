@@ -10,7 +10,8 @@ import { t } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import {
-	createAppButtonPropsHelper,
+	appButtonProps,
+	appStatusSpanProps,
 	formatPrice,
 	formatPricingPlan,
 	handleAPIError,
@@ -157,7 +158,6 @@ Template.marketplace.onRendered(() => {
 	});
 });
 
-
 Template.marketplace.helpers({
 	isLoggedInCloud() {
 		return Template.instance().state.get('isLoggedInCloud');
@@ -252,10 +252,8 @@ Template.marketplace.helpers({
 
 		return '-';
 	},
-	appButtonProps: createAppButtonPropsHelper(
-		'rc-apps-marketplace__table-button--inactive',
-		'rc-apps-marketplace__table-button--failed'
-	),
+	appButtonProps,
+	appStatusSpanProps,
 });
 
 Template.marketplace.events({
@@ -279,7 +277,7 @@ Template.marketplace.events({
 		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
 		FlowRouter.go('app-manage', { appId }, { version: version || marketplaceVersion });
 	},
-	async 'click .js-install'(event, instance) {
+	async 'click .js-install, click .js-update'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 

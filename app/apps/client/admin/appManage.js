@@ -12,7 +12,8 @@ import { Utilities } from '../../lib/misc/Utilities';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import {
-	createAppButtonPropsHelper,
+	appButtonProps,
+	appStatusSpanProps,
 	formatPrice,
 	formatPricingPlan,
 	handleAPIError,
@@ -211,10 +212,8 @@ Template.appManage.helpers({
 	isLoading() {
 		return Template.instance().state.get('isLoading');
 	},
-	appButtonProps: createAppButtonPropsHelper(
-		'rc-apps-section__button--inactive',
-		'rc-apps-section__button--failed'
-	),
+	appButtonProps,
+	appStatusSpanProps,
 	priceDisplay() {
 		const [purchaseType, price, pricingPlans] = [
 			Template.instance().state.get('purchaseType'),
@@ -349,7 +348,7 @@ Template.appManage.events({
 		triggerAppPopoverMenu(instance.state.all(), currentTarget, instance);
 	},
 
-	async 'click .js-install'(event, instance) {
+	async 'click .js-install, click .js-update'(event, instance) {
 		event.stopPropagation();
 
 		const { id, state } = instance;

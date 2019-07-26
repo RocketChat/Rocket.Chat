@@ -45,19 +45,26 @@
 									</div>
 
 									<div class="rc-apps-details__app-status">
-										{{#let props=(appButtonProps app)}}
-											<button
-												class="rc-button {{props.className}} {{#if working}}rc-apps-section__button--working{{/if}}"
-												disabled={{working}}
-												data-id="{{id}}"
-											>
-												{{#if working}}
-													{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
-												{{else}}
-													{{> icon icon=props.icon block="rc-icon--default-size"}}
-												{{/if}}
-												{{_ props.label}}
-											</button>
+										{{#let buttonProps=(appButtonProps app) statusSpanProps=(appStatusSpanProps app)}}
+											{{#if buttonProps}}
+												<button
+													class="rc-button rc-button--primary {{#if app.working}}rc-apps-marketplace__table-button--working{{/if}} js-{{buttonProps.action}}"
+													disabled={{app.working}}
+													data-id={{app.id}}
+												>
+													{{#if app.working}}
+														{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
+													{{else}}
+														{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
+													{{/if}}
+													{{_ buttonProps.label}}
+												</button>
+											{{else if statusSpanProps}}
+												<span class="rc-apps-marketplace__status {{#if statusSpanProps.type}}rc-apps-marketplace__status--{{statusSpanProps.type}}{{/if}}">
+													{{> icon icon=statusSpanProps.icon block="rc-icon--default-size"}}
+													{{_ statusSpanProps.label}}
+												</span>
+											{{/if}}
 										{{/let}}
 
 										<span class="rc-apps-details__app-button-wrapper">

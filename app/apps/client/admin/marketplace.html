@@ -103,19 +103,24 @@
 								</td>
 								<td>
 									<div class="rc-table-wrapper">
-										{{#let props=(appButtonProps app)}}
-											<button
-												class="rc-button rc-button--nude rc-button--stack rc-button--no-padding rc-apps-marketplace__table-button {{props.className}} {{#if app.working}}rc-apps-marketplace__table-button--working{{/if}}"
-												disabled={{app.working}}
-												data-id="{{app.id}}"
-											>
-												{{#if app.working}}
-													{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
-												{{else}}
-													{{> icon icon=props.icon block="rc-icon--default-size"}}
-												{{/if}}
-												{{_ props.label}}
-											</button>
+										{{#let buttonProps=(appButtonProps app) statusSpanProps=(appStatusSpanProps app)}}
+											{{#if buttonProps}}
+												<button
+													class="rc-button rc-button--primary {{#unless $eq buttonProps.action 'update'}}rc-apps-marketplace__table-button--hideable{{/unless}} {{#if app.working}}rc-apps-marketplace__table-button--working{{/if}} js-{{buttonProps.action}}"
+													disabled={{app.working}}
+													data-id={{app.id}}
+												>
+													{{#if app.working}}
+														{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
+													{{/if}}
+													{{_ buttonProps.label}}
+												</button>
+											{{else if statusSpanProps}}
+												<span class="rc-apps-marketplace__status {{#if statusSpanProps.type}}rc-apps-marketplace__status--{{statusSpanProps.type}}{{/if}}">
+													{{> icon icon=statusSpanProps.icon block="rc-icon--default-size"}}
+													{{_ statusSpanProps.label}}
+												</span>
+											{{/if}}
 										{{/let}}
 
 										{{#if app.installed}}
