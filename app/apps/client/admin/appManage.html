@@ -421,8 +421,8 @@
 															<div class="rc-input__title">{{_ i18nLabel}}</div>
 															<div class="rc-select">
 																<select class="rc-select__element" name="{{id}}">
-																	{{#each languages}}
-																		<option class="rc-select__option" value="{{key}}" selected="{{selectedOption key}}">{{_ name}}</option>
+																	{{#each language in languages}}
+																		<option class="rc-select__option" value="{{language.key}}" selected="{{selectedOption language.key}}">{{_ language.name}}</option>
 																	{{/each}}
 																</select>
 																{{> icon block="rc-select__arrow" icon="arrow-down" }}

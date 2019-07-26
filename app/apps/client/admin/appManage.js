@@ -5,20 +5,19 @@ import { Template } from 'meteor/templating';
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
-import s from 'underscore.string';
 
-import { SideNav, modal } from '../../../ui-utils/client';
-import { isEmail, APIClient } from '../../../utils';
-import { AppEvents } from '../communication';
+import { SideNav } from '../../../ui-utils/client';
+import { isEmail } from '../../../utils';
 import { Utilities } from '../../lib/misc/Utilities';
+import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import {
 	createAppButtonPropsHelper,
 	formatPrice,
 	formatPricingPlan,
 	handleAPIError,
-	triggerButtonLoadingState,
 	triggerAppPopoverMenu,
+	promptSubscription,
 } from './helpers';
 
 import './appManage.html';
@@ -143,7 +142,9 @@ Template.appManage.onCreated(function() {
 
 	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, this.appId);
-		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey, options, lang_tag) : TAPi18n.__(key, options, lang_tag);
+		return TAPi18next.exists(`project:${ appKey }`)
+			? TAPi18n.__(appKey, options, lang_tag)
+			: TAPi18n.__(key, options, lang_tag);
 	};
 
 	const withAppIdFilter = (f) => function(maybeAppId, ...args) {
@@ -236,28 +237,24 @@ Template.appManage.helpers({
 	},
 	isEmail,
 	_(key, ...args) {
-		const options = args.pop().hash;
-		if (!_.isEmpty(args)) {
-			options.sprintf = args;
-		}
+		const [i18nArgs, keyword] = [args.slice(-2), args.slice(-1)[0]];
 
-		return Template.instance().__(key, options);
+		return Template.instance().__(key, {
+			...keyword.hash,
+			sprintf: i18nArgs,
+		});
 	},
 	languages() {
-		const languages = TAPi18n.getLanguages();
-
-		let result = Object.keys(languages).map((key) => {
-			const language = languages[key];
-			return _.extend(language, { key });
-		});
-
-		result = _.sortBy(result, 'key');
-		result.unshift({
-			name: 'Default',
-			en: 'Default',
-			key: '',
-		});
-		return result;
+		return [
+			{
+				key: '',
+				name: 'Default',
+				en: 'Default',
+			},
+			...Object.entries(TAPi18n.getLanguages())
+				.map(([key, language]) => ({ key, ...language }))
+				.sort(({ key: a }, { key: b }) => a.localeCompare(b)),
+		];
 	},
 	selectedOption(_id, val) {
 		const settings = Template.instance().state.get('settings');
@@ -306,39 +303,40 @@ Template.appManage.events({
 		instance.state.set('settings', settings);
 	},
 
-	'click .js-save-settings': async (e, t) => {
-		if (t.state.get('isSaving')) {
+	async 'click .js-save-settings'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const { id, state } = instance;
+
+		if (state.get('isSaving')) {
 			return;
 		}
-		t.state.set('isSaving', true);
-		const settings = t.state.get('settings');
 
+		state.set('isSaving', true);
+
+		const settings = state.get('settings');
 
 		try {
-			const toSave = [];
-			Object.keys(settings).forEach((k) => {
-				const setting = settings[k];
-				if (setting.hasChanged) {
-					toSave.push(setting);
-				}
-			});
+			const toSave = Object.entries(settings)
+				.filter(({ hasChanged }) => hasChanged);
 
-			if (toSave.length === 0) {
-				throw new Error('Nothing to save..');
+			if (!toSave.length) {
+				return;
 			}
-			const updated = await Apps.setAppSettings(t.id.get(), toSave);
+
+			const updated = await Apps.setAppSettings(id, toSave);
 			updated.forEach(({ id, value }) => {
 				settings[id].value = value;
 				settings[id].oldValue = value;
+				settings[id].hasChanged = false;
 			});
-			Object.values(settings).forEach((setting) => {
-				setting.hasChanged = false;
-			});
-			t.state.set('settings', settings);
-		} catch (e) {
-			console.log(e);
+
+			state.set('settings', settings);
+		} catch (error) {
+			handleAPIError(error);
 		} finally {
-			t.state.set('isSaving', false);
+			state.set('isSaving', false);
 		}
 	},
 	'click .js-close'() {
@@ -368,76 +366,75 @@ Template.appManage.events({
 	},
 
 	async 'click .js-purchase'(event, instance) {
-		const { id, purchaseType = 'buy', version } = instance.state.all();
-		const { currentTarget: button } = event;
-		const stopLoading = triggerButtonLoadingState(button);
+		const { state } = instance;
 
-		let data = null;
-		try {
-			data = await APIClient.get(`apps?buildExternalUrl=true&appId=${ id }&purchaseType=${ purchaseType }`);
-		} catch (e) {
-			handleAPIError(e, instance);
-			stopLoading();
+		state.set('working', true);
+
+		const app = state.all();
+
+		await promptSubscription(app, async () => {
+			try {
+				await Apps.installApp(app.id, app.marketplaceVersion);
+			} catch (error) {
+				handleAPIError(error);
+			} finally {
+				state.set('working', false);
+			}
+		}, () => state.set('working', false));
+	},
+
+	'change input[type="checkbox"]'(event, instance) {
+		const { id } = this;
+		const { state } = instance;
+
+		const settings = state.get('settings');
+		const setting = settings[id];
+
+		if (!setting) {
 			return;
 		}
 
-		modal.open({
-			allowOutsideClick: false,
-			data,
-			template: 'iframeModal',
-		}, async () => {
-			try {
-				await APIClient.post('apps/', {
-					appId: id,
-					marketplace: true,
-					version,
-				});
-			} catch (e) {
-				handleAPIError(e, instance);
-			}
+		const value = event.currentTarget.checked;
 
-			try {
-				await loadApp(instance);
-			} catch (e) {
-				handleAPIError(e, instance);
-			} finally {
-				stopLoading();
-			}
-		}, stopLoading);
+		setting.value = value;
+		setting.hasChanged = setting.oldValue !== setting.value;
+
+		state.set('settings', settings);
 	},
 
-	'change input[type="checkbox"]': (e, t) => {
-		const labelFor = $(e.currentTarget).attr('name');
-		const isChecked = $(e.currentTarget).prop('checked');
+	'change .rc-select__element'(event, instance) {
+		const { id } = this;
+		const { state } = instance;
 
-		// $(`input[name="${ labelFor }"]`).prop('checked', !isChecked);
+		const settings = state.get('settings');
+		const setting = settings[id];
 
-		const setting = t.state.get('settings')[labelFor];
-
-		if (setting) {
-			setting.value = isChecked;
-			t.state.get('settings')[labelFor].hasChanged = setting.oldValue !== setting.value;
-			t.state.set('settings', t.state.get('settings'));
+		if (!setting) {
+			return;
 		}
+
+		const { value } = event.currentTarget;
+
+		setting.value = value;
+		setting.hasChanged = setting.oldValue !== setting.value;
+
+		state.set('settings', settings);
 	},
 
-	'change .rc-select__element': (e, t) => {
-		const labelFor = $(e.currentTarget).attr('name');
-		const value = $(e.currentTarget).val();
+	'input input, input textarea, change input[type="color"]': _.throttle(function(event, instance) {
+		const { type, id } = this;
+		const { state } = instance;
 
-		const setting = t.state.get('settings')[labelFor];
+		const settings = state.get('settings');
+		const setting = settings[id];
 
-		if (setting) {
-			setting.value = value;
-			t.state.get('settings')[labelFor].hasChanged = setting.oldValue !== setting.value;
-			t.state.set('settings', t.state.get('settings'));
+		if (!setting) {
+			return;
 		}
-	},
 
-	'input input, input textarea, change input[type="color"]': _.throttle(function(e, t) {
-		let value = s.trim($(e.target).val());
+		let value = event.currentTarget.value.trim();
 
-		switch (this.type) {
+		switch (type) {
 			case 'int':
 				value = parseInt(value);
 				break;
@@ -445,18 +442,13 @@ Template.appManage.events({
 				value = value === '1';
 				break;
 			case 'code':
-				value = $(`.code-mirror-box[data-editor-id="${ this.id }"] .CodeMirror`)[0].CodeMirror.getValue();
+				value = $(`.code-mirror-box[data-editor-id="${ id }"] .CodeMirror`)[0].CodeMirror.getValue();
+				break;
 		}
 
-		const setting = t.state.get('settings')[this.id];
+		setting.value = value;
+		setting.hasChanged = setting.oldValue !== setting.value;
 
-		if (setting) {
-			setting.value = value;
-
-			if (setting.oldValue !== setting.value) {
-				t.state.get('settings')[this.id].hasChanged = true;
-				t.state.set('settings', t.state.get('settings'));
-			}
-		}
+		state.set('settings', settings);
 	}, 500),
 });
