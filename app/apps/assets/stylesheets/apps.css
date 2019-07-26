@@ -146,6 +146,29 @@
 				font-weight: 500;
 			}
 		}
+
+		&__alert {
+			width: 660px;
+			height: 36px;
+
+			margin-bottom: 4px;
+			padding: 8px 16px;
+
+			border-radius: 4px;
+
+			font-size: 14px;
+			line-height: 20px;
+		}
+
+		&__alert-error {
+			color: #f5455c;
+			background: #ffe9ec;
+		}
+
+		&__alert-warning {
+			color: #b68d00;
+			background: #fff6d6;
+		}
 	}
 
 	.rc-apps-container {
