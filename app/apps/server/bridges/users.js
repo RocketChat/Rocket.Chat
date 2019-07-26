@@ -18,6 +18,6 @@ export class AppUserBridge {
 	}
 
 	async getActiveUserCount() {
-		return Users.findActive().count() - Users.findActiveRemote().count();
+		return Users.getActiveLocalUserCount();
 	}
 }
