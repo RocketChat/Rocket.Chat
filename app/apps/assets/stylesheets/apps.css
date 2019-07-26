@@ -352,6 +352,14 @@
 			}
 		}
 
+		& tbody .rc-table-tr .rc-apps-section__app-menu-trigger {
+			visibility: hidden;
+		}
+
+		& tbody .rc-table-tr:hover .rc-apps-section__app-menu-trigger {
+			visibility: visible;
+		}
+
 		& tbody .rc-table-tr:not(.table-no-click):not(.table-no-pointer):hover {
 			background-color: #f7f8fa;
 		}
@@ -440,6 +448,40 @@
 			content: "";
 			cursor: pointer;
 		}
+	}
+
+	&__spinning-icon {
+		animation: spin 1s linear infinite;
+	}
+
+	&__button--inactive.rc-button,
+	&__button--failed.rc-button {
+		padding: 0;
+
+		pointer-events: none;
+
+		border: none;
+		justify-content: flex-start;
+
+		&::before {
+			display: none;
+		}
+	}
+
+	&__button--inactive.rc-button {
+		color: var(--color-gray);
+
+		& .rc-icon {
+			color: var(--rc-color-primary-button-background);
+		}
+	}
+
+	&__button--failed.rc-button {
+		color: var(--rc-color-error);
+	}
+
+	&__button--working {
+		opacity: 0.6;
 	}
 }
 

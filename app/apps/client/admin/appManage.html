@@ -43,57 +43,35 @@
 									</div>
 
 									<div class="rc-apps-details__app-status">
-										{{#if isInstalled}}
-											<span class="rc-apps-details__app-button-wrapper">
-												{{#if isFailed}}
-													<span class="rc-apps-details__app-install-status rc-apps-details__app-install-status-failed">
-														{{> icon icon="warning" block="rc-icon--default-size"}}
-														{{_ "Failed"}}
-													</span>
-												{{else if canUpdate}}
-													<button class="rc-button rc-button--primary js-install">
-														{{> icon icon="reload" block="rc-icon--default-size"}}
-														{{_ "Update_to_version" version=newVersion }}
-													</button>
-												{{else if isFromMarketplace}}
-													<span class="rc-apps-details__app-install-status">
-														{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
-														{{_ "Up to date"}}
-													</span>
+										{{#let props=(appButtonProps app)}}
+											<button
+												class="rc-button {{props.className}} {{#if app.working}}rc-apps-section__button--working{{/if}}"
+												disabled={{app.working}}
+												data-id="{{app.id}}"
+											>
+												{{#if app.working}}
+													{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
 												{{else}}
-													<span class="rc-apps-details__app-install-status">
-														{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
-														{{_ "Installed"}}
+													{{> icon icon=props.icon block="rc-icon--default-size"}}
+												{{/if}}
+												{{_ props.label}}
+											</button>
+										{{/let}}
+
+										<span class="rc-apps-details__app-button-wrapper">
+											{{#unless app.installed}}
+												{{#if priceDisplay}}
+													<span class="rc-apps-details__app-price">
+														{{priceDisplay}}
 													</span>
 												{{/if}}
-											</span>
+											{{/unless}}
+										</span>
 
+										{{#if app.installed}}
 											<button class="rc-button rc-button--nude rc-apps-details__app-menu-trigger js-menu" data-app="{{appId}}">
 												{{> icon icon="menu" block="rc-icon--default-size"}}
 											</button>
-										{{else}}
-											{{#if canTrial}}
-												<button class="rc-button rc-button--primary js-purchase" data-app="{{appId}}">
-													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
-													{{_ "Start a trial"}}
-												</button>
-											{{else if canBuy}}
-												<button class="rc-button rc-button--primary js-purchase" data-app="{{appId}}">
-													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
-													{{_ "Buy"}}
-												</button>
-											{{else}}
-												<button class="rc-button rc-button--primary js-install" data-app="{{appId}}">
-													{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
-													{{_ "Install"}}
-												</button>
-											{{/if}}
-
-											{{#if priceDisplay}}
-												<span class="rc-apps-details__app-price">
-													{{priceDisplay}}
-												</span>
-											{{/if}}
 										{{/if}}
 									</div>
 								</div>
@@ -224,14 +202,14 @@
 															</div>
 														</label>
 														{{#if i18nDescription}}
-															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+															<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{#if i18nAlert}}
 															<div class="rc-input__error">
 																<div class="rc-input__error-icon">
 																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 																</div>
-																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+																<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 															</div>
 														{{/if}}
 													</div>
@@ -246,13 +224,13 @@
 															{{_ i18nLabel}}
 														</span>
 													</label>
-													<span class="rc-switch__description">{{{parseDescription i18nDescription}}}</span>
+													<span class="rc-switch__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</span>
 													{{# if i18nAlert}}
 														<div class="rc-input__error">
 															<div class="rc-input__error-icon">
 																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 															</div>
-															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 														</div>
 													{{/if}}
 												</div>
@@ -269,14 +247,14 @@
 															</div>
 														</label>
 														{{# if i18nDescription}}
-															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+															<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{# if i18nAlert}}
 															<div class="rc-input__error">
 																<div class="rc-input__error-icon">
 																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 																</div>
-																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+																<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 															</div>
 														{{/if}}
 													</div>
@@ -293,14 +271,14 @@
 															</div>
 														</label>
 														{{# if i18nDescription}}
-															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+															<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{# if i18nAlert}}
 															<div class="rc-input__error">
 																<div class="rc-input__error-icon">
 																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 																</div>
-																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+																<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 															</div>
 														{{/if}}
 													</div>
@@ -315,14 +293,14 @@
 															</div>
 														</label>
 														{{# if i18nDescription}}
-															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+															<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{# if i18nAlert}}
 															<div class="rc-input__error">
 																<div class="rc-input__error-icon">
 																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 																</div>
-																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+																<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 															</div>
 														{{/if}}
 													</div>
@@ -339,14 +317,14 @@
 															</div>
 														</label>
 														{{# if i18nDescription}}
-															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+															<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{# if i18nAlert}}
 															<div class="rc-input__error">
 																<div class="rc-input__error-icon">
 																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 																</div>
-																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+																<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 															</div>
 														{{/if}}
 													</div>
@@ -372,14 +350,14 @@
 															</div>
 														</label>
 														{{# if i18nDescription}}
-														<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{# if i18nAlert}}
 														<div class="rc-input__error">
 															<div class="rc-input__error-icon">
 																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 															</div>
-															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 														</div>
 														{{/if}}
 													</div>
@@ -398,14 +376,14 @@
 															</div>
 														</label>
 														{{# if i18nDescription}}
-														<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{# if i18nAlert}}
 														<div class="rc-input__error">
 															<div class="rc-input__error-icon">
 																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 															</div>
-															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 														</div>
 														{{/if}}
 													</div>
@@ -423,14 +401,14 @@
 															</div>
 														</label>
 														{{# if i18nDescription}}
-														<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{# if i18nAlert}}
 														<div class="rc-input__error">
 															<div class="rc-input__error-icon">
 																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 															</div>
-															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 														</div>
 														{{/if}}
 													</div>
@@ -449,14 +427,14 @@
 															</div>
 														</label>
 														{{# if i18nDescription}}
-														<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														<div class="rc-input__description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 														{{/if}}
 														{{# if i18nAlert}}
 														<div class="rc-input__error">
 															<div class="rc-input__error-icon">
 																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 															</div>
-															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															<div class="rc-input__error-message">{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 														</div>
 														{{/if}}
 													</div>
@@ -504,10 +482,10 @@
 														{{/if}}
 
 														{{#if i18nDescription}}
-															<div class="settings-description">{{{parseDescription i18nDescription}}}</div>
+															<div class="settings-description">{{{RocketChatMarkdown (_ i18nDescription)}}}</div>
 															{{/if}}
 															{{#if i18nAlert}}
-															<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{parseDescription i18nAlert}}}</div>
+															<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{RocketChatMarkdown (_ i18nAlert)}}}</div>
 														{{/if}}
 													</div>
 												</div>

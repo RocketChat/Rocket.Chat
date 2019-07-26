@@ -16,7 +16,7 @@ import './apps.html';
 
 Template.apps.onCreated(function() {
 	this.state = new ReactiveDict({
-		apps: [],
+		apps: [], // TODO: maybe use another ReactiveDict here
 		isLoading: true,
 		searchText: '',
 		sortedColumn: 'name',
@@ -34,9 +34,9 @@ Template.apps.onCreated(function() {
 			this.state.set('apps', apps);
 		} catch (error) {
 			handleAPIError(error);
+		} finally {
+			this.state.set('isLoading', false);
 		}
-
-		this.state.set('isLoading', false);
 	})();
 
 	this.handleAppAdded = async (appId) => {

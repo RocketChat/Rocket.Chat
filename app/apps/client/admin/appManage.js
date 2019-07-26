@@ -8,13 +8,13 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import semver from 'semver';
 
-import { Markdown } from '../../../markdown/client';
 import { SideNav, modal } from '../../../ui-utils/client';
 import { isEmail, APIClient } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
 import {
+	createAppButtonPropsHelper,
 	formatPrice,
 	formatPricingPlan,
 	handleAPIError,
@@ -214,30 +214,10 @@ Template.appManage.helpers({
 	isLoading() {
 		return Template.instance().state.get('isLoading');
 	},
-	isInstalled() {
-		return Template.instance().state.get('installed');
-	},
-	canUpdate() {
-		return Template.instance().state.get('installed') && Template.instance().state.get('marketplaceVersion');
-	},
-	isFromMarketplace() {
-		return Template.instance().state.get('subscriptionInfo');
-	},
-	isFailed() {
-		// TODO: Implement
-		return false;
-	},
-	canTrial() {
-		const [purchaseType, subscriptionInfo] = [
-			Template.instance().state.get('purchaseType'),
-			Template.instance().state.get('subscriptionInfo'),
-		];
-		return purchaseType === 'subscription' && subscriptionInfo && !subscriptionInfo.status;
-	},
-	canBuy() {
-		const price = Template.instance().state.get('price');
-		return price > 0;
-	},
+	appButtonProps: createAppButtonPropsHelper(
+		'rc-apps-section__button--inactive',
+		'rc-apps-section__button--failed'
+	),
 	priceDisplay() {
 		const [purchaseType, price, pricingPlans] = [
 			Template.instance().state.get('purchaseType'),
@@ -298,13 +278,6 @@ Template.appManage.helpers({
 	},
 	apis() {
 		return Template.instance().state.get('apis');
-	},
-	parseDescription(i18nDescription) {
-		const item = Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
-
-		item.tokens.forEach((t) => { item.html = item.html.replace(t.token, t.text); });
-
-		return item.html;
 	},
 	curl(method, api) {
 		const example = api.examples[method] || {};

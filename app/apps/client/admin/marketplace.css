@@ -1,35 +1,31 @@
-.rc-apps-marketplace {
-	.rc-table-content .rc-table {
-		.rc-table-tr .rc-apps-section__app-menu-trigger {
-			visibility: hidden;
-		}
+#rocket-chat .rc-apps-marketplace {
+	&__status-column {
+		width: 150px;
+	}
 
-		.rc-table-tr:hover .rc-apps-section__app-menu-trigger {
-			visibility: visible;
-		}
+	&__table-button {
+		justify-content: flex-start;
+	}
 
-		.rc-table-td--small:last-child {
-			width: 150px;
+	&__table-button--inactive,
+	&__table-button--failed {
+		pointer-events: none;
+
+		&::before {
+			display: none;
 		}
 	}
 
-	&__table-button.rc-button {
+	&__table-button--inactive {
 		color: var(--rc-color-primary-light);
+	}
 
-		line-height: 40px;
-		justify-content: flex-start;
+	&__table-button--failed {
+		color: var(--rc-color-error);
+	}
 
-		&.loading {
-			opacity: 0.6;
-			background: transparent;
-
-			&::before {
-				display: none;
-			}
-
-			& > .rc-icon {
-				animation: spin 1s linear infinite;
-			}
-		}
+	&__table-button--working {
+		opacity: 0.6;
+		background: transparent;
 	}
 }

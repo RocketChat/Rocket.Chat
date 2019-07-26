@@ -1,4 +1,5 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import semver from 'semver';
 import toastr from 'toastr';
 
 import { modal, popover } from '../../../ui-utils/client';
@@ -186,6 +187,80 @@ export const promptMarketplaceLogin = () => {
 			FlowRouter.go('cloud-config');
 		}
 	});
+};
+
+export const createAppButtonPropsHelper = (inactiveClassName, failedClassName) => (app) => {
+	const isInstalled = ({ installed }) => installed;
+	const isFailed = () => false; // TODO
+	const canUpdate = ({ version, marketplaceVersion, isPurchased, price }) =>
+		version && semver.lt(version, marketplaceVersion) && (isPurchased || price <= 0);
+	const isOnTrialPeriod = ({ subscriptionInfo: { status } = {} }) => status === 'trialing';
+	const canDownload = ({ isPurchased, isSubscribed }) => isPurchased || isSubscribed;
+	const canTrial = ({ purchaseType, subscriptionInfo }) =>
+		purchaseType === 'subscription' && !subscriptionInfo.status;
+	const canBuy = ({ price }) => price > 0;
+
+	if (isInstalled(app)) {
+		if (isFailed(app)) {
+			return {
+				className: failedClassName,
+				icon: 'warning',
+				label: 'Failed',
+			};
+		}
+
+		if (canUpdate(app)) {
+			return {
+				className: 'rc-button--primary js-install',
+				icon: 'reload',
+				label: 'Update',
+			};
+		}
+
+		if (isOnTrialPeriod(app)) {
+			return {
+				className: inactiveClassName,
+				icon: 'checkmark-circled',
+				label: 'Trial period',
+			};
+		}
+
+		return {
+			className: inactiveClassName,
+			icon: 'checkmark-circled',
+			label: 'Installed',
+		};
+	}
+
+	if (canDownload(app)) {
+		return {
+			className: 'rc-button--primary js-install',
+			icon: 'circled-arrow-down',
+			label: 'Install',
+		};
+	}
+
+	if (canTrial(app)) {
+		return {
+			className: 'rc-button--primary js-purchase',
+			icon: 'circled-arrow-down',
+			label: 'Start a trial',
+		};
+	}
+
+	if (canBuy(app)) {
+		return {
+			className: 'rc-button--primary js-purchase',
+			icon: 'circled-arrow-down',
+			label: 'Buy',
+		};
+	}
+
+	return {
+		className: 'rc-button--primary js-install',
+		icon: 'circled-arrow-down',
+		label: 'Install',
+	};
 };
 
 export const triggerButtonLoadingState = (button) => {

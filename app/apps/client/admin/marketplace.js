@@ -3,21 +3,20 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import semver from 'semver';
 import toastr from 'toastr';
 
+import { SideNav } from '../../../ui-utils/client';
 import { t } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
-import { SideNav } from '../../../ui-utils/client';
 import {
+	createAppButtonPropsHelper,
 	formatPrice,
 	formatPricingPlan,
 	handleAPIError,
 	promptMarketplaceLogin,
 	promptSubscription,
 	triggerAppPopoverMenu,
-	triggerButtonLoadingState,
 } from './helpers';
 
 import './marketplace.html';
@@ -27,7 +26,7 @@ import './marketplace.css';
 Template.marketplace.onCreated(function() {
 	this.state = new ReactiveDict({
 		isLoggedInCloud: true,
-		apps: [],
+		apps: [], // TODO: maybe use another ReactiveDict here
 		isLoading: true,
 		searchText: '',
 		sortedColumn: 'name',
@@ -54,13 +53,21 @@ Template.marketplace.onCreated(function() {
 			const installedApps = await Apps.getApps();
 
 			const apps = appsFromMarketplace.map((app) => {
-				const installedApp = installedApps.find(({ id }) => id === app.id) || {};
+				const installedApp = installedApps.find(({ id }) => id === app.id);
+
+				if (!installedApp) {
+					return {
+						...app,
+						status: undefined,
+						marketplaceVersion: app.version,
+					};
+				}
 
 				return {
 					...app,
+					installed: true,
 					status: installedApp.status,
 					version: installedApp.version,
-					marketplaceStatus: app.status,
 					marketplaceVersion: app.version,
 				};
 			});
@@ -68,22 +75,36 @@ Template.marketplace.onCreated(function() {
 			this.state.set('apps', apps);
 		} catch (error) {
 			handleAPIError(error);
+		} finally {
+			this.state.set('isLoading', false);
 		}
-
-		this.state.set('isLoading', false);
 	})();
+
+	this.startAppWorking = (appId) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		app.working = true;
+		this.state.set('apps', apps);
+	};
+
+	this.stopAppWorking = (appId) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		delete app.working;
+		this.state.set('apps', apps);
+	};
 
 	this.handleAppAdded = async (appId) => {
 		try {
-			const installedApp = await Apps.getApp(appId);
-			const app = await Apps.getAppFromMarketplace(appId, installedApp.version);
+			const { status, version } = await Apps.getApp(appId);
+			const app = await Apps.getAppFromMarketplace(appId, version);
 			const apps = [
 				...this.state.get('apps').filter(({ id }) => id !== appId),
 				{
 					...app,
-					status: installedApp.status,
-					version: installedApp.version,
-					marketplaceStatus: app.status,
+					installed: true,
+					status,
+					version,
 					marketplaceVersion: app.version,
 				},
 			];
@@ -96,8 +117,9 @@ Template.marketplace.onCreated(function() {
 	this.handleAppRemoved = (appId) => {
 		const apps = this.state.get('apps').map((app) => {
 			if (app.id === appId) {
+				delete app.installed;
 				delete app.status;
-				delete app.version;
+				app.version = app.marketplaceVersion;
 			}
 
 			return app;
@@ -230,24 +252,10 @@ Template.marketplace.helpers({
 
 		return '-';
 	},
-	isInstalled({ status }) {
-		return typeof status !== 'undefined';
-	},
-	isOnTrialPeriod({ subscriptionInfo }) {
-		return subscriptionInfo.status === 'trialing';
-	},
-	canUpdate({ version, marketplaceVersion, isPurchased, price }) {
-		return version && semver.lt(version, marketplaceVersion) && (isPurchased || price <= 0);
-	},
-	canDownload({ isPurchased, isSubscribed }) {
-		return isPurchased || isSubscribed;
-	},
-	canTrial({ purchaseType, subscriptionInfo }) {
-		return purchaseType === 'subscription' && !subscriptionInfo.status;
-	},
-	canBuy({ price }) {
-		return price > 0;
-	},
+	appButtonProps: createAppButtonPropsHelper(
+		'rc-apps-marketplace__table-button--inactive',
+		'rc-apps-marketplace__table-button--failed'
+	),
 });
 
 Template.marketplace.events({
@@ -255,7 +263,7 @@ Template.marketplace.events({
 		FlowRouter.go('cloud-config');
 	},
 	'submit .js-search-form'(event) {
-		event.preventDefault();
+		event.stopPropagation();
 		return false;
 	},
 	'keyup .js-search'(event, instance) {
@@ -272,22 +280,7 @@ Template.marketplace.events({
 		FlowRouter.go('app-manage', { appId }, { version: version || marketplaceVersion });
 	},
 	async 'click .js-install'(event, instance) {
-		event.stopPropagation();
-
-		const { currentTarget: button } = event;
-		const stopLoading = triggerButtonLoadingState(button);
-
-		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
-
-		try {
-			await Apps.installApp(app.id, app.marketplaceVersion);
-		} catch (error) {
-			handleAPIError(error);
-		} finally {
-			stopLoading();
-		}
-	},
-	async 'click .js-purchase'(event, instance) {
+		event.preventDefault();
 		event.stopPropagation();
 
 		if (!instance.state.get('isLoggedInCloud')) {
@@ -296,9 +289,31 @@ Template.marketplace.events({
 		}
 
 		const { currentTarget: button } = event;
-		const stopLoading = triggerButtonLoadingState(button);
-
 		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
+
+		try {
+			await Apps.installApp(app.id, app.marketplaceVersion);
+		} catch (error) {
+			handleAPIError(error);
+		} finally {
+			instance.stopAppWorking(app.id);
+		}
+	},
+	async 'click .js-purchase'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (!instance.state.get('isLoggedInCloud')) {
+			promptMarketplaceLogin();
+			return;
+		}
+
+		const { currentTarget: button } = event;
+		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
 
 		await promptSubscription(app, async () => {
 			try {
@@ -306,9 +321,9 @@ Template.marketplace.events({
 			} catch (error) {
 				handleAPIError(error);
 			} finally {
-				stopLoading();
+				instance.stopAppWorking(app.id);
 			}
-		}, stopLoading);
+		}, instance.stopAppWorking.bind(instance, app.id));
 	},
 	'click .js-menu'(event, instance) {
 		event.stopPropagation();
