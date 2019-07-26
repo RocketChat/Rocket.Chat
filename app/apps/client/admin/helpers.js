@@ -93,6 +93,10 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 		}
 	});
 
+	const handleViewLogs = () => {
+		FlowRouter.go('app-logs', { appId: app.id }, { version: app.version });
+	};
+
 	const handleDeactivate = () => promptAppDeactivation(async () => {
 		try {
 			await Apps.disableApp(app.id);
@@ -125,15 +129,20 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 		instance,
 		columns: [{
 			groups: [
-				...canAppBeSubscribed ? [{
+				{
 					items: [
-						{
+						...canAppBeSubscribed ? [{
 							icon: 'card',
 							name: t('Subscription'),
 							action: handleSubscription,
+						}] : [],
+						{
+							icon: 'list-alt',
+							name: t('View_Logs'),
+							action: handleViewLogs,
 						},
 					],
-				}] : [],
+				},
 				{
 					items: [
 						isAppEnabled

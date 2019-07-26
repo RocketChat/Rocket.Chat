@@ -143,6 +143,8 @@ class AppClientOrchestrator {
 
 	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`)
 
+	syncApp = (appId) => APIClient.post(`apps/${ appId }/sync`)
+
 	setAppStatus = async (appId, status) => {
 		const { status: effectiveStatus } = await APIClient.post(`apps/${ appId }/status`, { status });
 		return effectiveStatus;

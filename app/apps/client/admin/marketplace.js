@@ -236,8 +236,8 @@ Template.marketplace.helpers({
 	isOnTrialPeriod({ subscriptionInfo }) {
 		return subscriptionInfo.status === 'trialing';
 	},
-	canUpdate({ version, marketplaceVersion }) {
-		return version && semver.lt(version, marketplaceVersion);
+	canUpdate({ version, marketplaceVersion, isPurchased, price }) {
+		return version && semver.lt(version, marketplaceVersion) && (isPurchased || price <= 0);
 	},
 	canDownload({ isPurchased, isSubscribed }) {
 		return isPurchased || isSubscribed;

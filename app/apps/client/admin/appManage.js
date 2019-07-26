@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
@@ -9,218 +8,131 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import semver from 'semver';
 
-import { isEmail, t, APIClient } from '../../../utils';
+import { isEmail, APIClient } from '../../../utils';
 import { Markdown } from '../../../markdown/client';
 import { modal } from '../../../ui-utils';
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
-import { SideNav, popover } from '../../../ui-utils/client';
+import { SideNav } from '../../../ui-utils/client';
 import {
 	formatPrice,
 	formatPricingPlan,
 	handleAPIError,
 	triggerButtonLoadingState,
+	triggerAppPopoverMenu,
 } from './helpers';
 
 import './appManage.html';
 import './appManage.css';
 
 
-const fetchAppFromMarketplace = async (appId, version, collectError) => {
-	let app;
-
+const attachAPIs = async (appId, state) => {
 	try {
-		app = await Apps.getAppFromMarketplace(appId, version);
-		if (app.bundledIn && app.bundledIn.length) {
-			app.bundledIn = await Promise.all(app.bundledIn.map(async (bundledIn) => {
-				try {
-					const apps = await Apps.getAppsOnBundle(bundledIn.bundleId);
-					bundledIn.apps = apps.slice(0, 4);
-				} catch (error) {
-					collectError(error);
-				}
-
-				return bundledIn;
-			}));
-		}
-	} catch (error) {
-		collectError(error);
-	}
-
-	return app;
-};
-
-const fetchApp = async (appId, version, collectError) => {
-	let app;
-
-	try {
-		app = await Apps.getApp(appId);
-		app.apis = await Apps.getAppApis(appId);
-	} catch (error) {
-		collectError(error);
-	}
-
-	return app;
-};
-
-const fetchLatestAppFromMarketplace = async (appId, version, collectError) => {
-	let app;
-
-	try {
-		app = Apps.getLatestAppFromMarketplace(appId, version);
-	} catch (error) {
-		collectError(error);
-	}
-
-	return app;
-};
-
-const getApp = async (instance) => {
-	const { appId, version } = instance;
-
-	const appInfo = { remote: undefined, local: undefined };
-
-	const errors = [];
-	const collectError = errors.push.bind(errors);
-	[appInfo.remote, appInfo.local] = await Promise.all([ // the promises shouldn't reject
-		fetchAppFromMarketplace(appId, version, collectError),
-		fetchApp(appId, version, collectError),
-	]);
-
-	if (!appInfo.remote && !appInfo.local) {
-		instance.state.set('errors', errors);
-		instance.error.set(errors[errors.length - 1]);
-		return;
-	}
-
-	errors.forEach(handleAPIError);
-
-	if (appInfo.local) {
-		instance.state.set('apis', appInfo.local.apis);
-
-		appInfo.local.installed = true;
-
-		if (appInfo.remote) {
-			appInfo.local.categories = appInfo.remote.categories;
-			appInfo.local.isPurchased = appInfo.remote.isPurchased;
-			appInfo.local.price = appInfo.remote.price;
-			appInfo.local.bundledIn = appInfo.remote.bundledIn;
-			appInfo.local.purchaseType = appInfo.remote.purchaseType;
-			appInfo.local.subscriptionInfo = appInfo.remote.subscriptionInfo;
-
-			if (semver.gt(appInfo.remote.version, appInfo.local.version) && (appInfo.remote.isPurchased || appInfo.remote.price <= 0)) {
-				appInfo.local.newVersion = appInfo.remote.version;
-			}
-		}
-
-		instance.handleSettingUpdated({ appId });
-	}
-
-	instance.app.set(appInfo.local || appInfo.remote);
-	instance.isLoading.set(false);
-
-	if (!appInfo.remote || !appInfo.local) {
-		return;
-	}
-
-	const update = await fetchLatestAppFromMarketplace(appId, version, handleAPIError);
-
-	if (!update) {
-		return;
-	}
-
-	if (semver.gt(update.version, appInfo.local.version) && (update.isPurchased || update.price <= 0)) {
-		appInfo.local.newVersion = update.version;
-
-		instance.app.set(appInfo.local);
-	}
-};
-
-const promptModifySubscription = async (app, instance) => {
-	let data = null;
-	try {
-		data = await Apps.buildExternalUrl(app.id, app.purchaseType, true);
-	} catch (e) {
-		handleAPIError(e, instance);
-		return;
-	}
-
-	modal.open({
-		allowOutsideClick: false,
-		data,
-		template: 'iframeModal',
-	}, async () => {
-		try {
-			await APIClient.post(`apps/${ app.id }/sync`, {});
-			await getApp(instance);
-		} catch (error) {
-			handleAPIError(error);
-		}
-	});
-};
-
-const setAppStatus = async (app, status, instance) => {
-	try {
-		app.status = await Apps.setAppStatus(app.id, status);
-		instance.app.set(app);
+		const apis = await Apps.getAppApis(appId);
+		state.set('apis', apis);
 	} catch (error) {
 		handleAPIError(error);
 	}
 };
 
-const activateApp = (app, instance) => {
-	setAppStatus(app, 'manually_enabled', instance);
-};
+const attachSettings = async (appId, state) => {
+	try {
+		const settings = await Apps.getAppSettings(appId);
 
-const promptAppDeactivation = (app, instance) => {
-	modal.open({
-		text: t('Apps_Marketplace_Deactivate_App_Prompt'),
-		type: 'warning',
-		showCancelButton: true,
-		confirmButtonColor: '#DD6B55',
-		confirmButtonText: t('Yes'),
-		cancelButtonText: t('No'),
-		closeOnConfirm: true,
-		html: false,
-	}, (confirmed) => {
-		if (!confirmed) {
-			return;
+		for (const setting of Object.values(settings)) {
+			setting.i18nPlaceholder = setting.i18nPlaceholder || ' ';
+			setting.value = setting.value !== undefined && setting.value !== null ? setting.value : setting.packageValue;
+			setting.oldValue = setting.value;
+			setting.hasChanged = false;
 		}
-		setAppStatus(app, 'manually_disabled', instance);
-	});
-};
 
-const uninstallApp = async ({ id }, instance) => {
-	try {
-		await Apps.uninstallApp(id);
-	} catch (e) {
-		handleAPIError(e, instance);
-	}
-
-	try {
-		await getApp(instance);
+		state.set('settings', settings);
 	} catch (error) {
-		handleAPIError(error, instance);
+		handleAPIError(error);
 	}
 };
 
-const promptAppUninstall = (app, instance) => {
-	modal.open({
-		text: t('Apps_Marketplace_Uninstall_App_Prompt'),
-		type: 'warning',
-		showCancelButton: true,
-		confirmButtonColor: '#DD6B55',
-		confirmButtonText: t('Yes'),
-		cancelButtonText: t('No'),
-		closeOnConfirm: true,
-		html: false,
-	}, (confirmed) => {
-		if (!confirmed) {
-			return;
+const attachBundlesApps = (bundledIn, state) => {
+	if (!bundledIn || !bundledIn.length) {
+		return;
+	}
+
+	bundledIn.forEach(async (bundle, i) => {
+		try {
+			const apps = await Apps.getAppsOnBundle(bundle.bundleId);
+			bundle.apps = apps.slice(0, 4);
+		} catch (error) {
+			handleAPIError(error);
 		}
-		uninstallApp(app, instance);
+
+		bundledIn[i] = bundle;
+		state.set('bundledIn', bundledIn);
 	});
+};
+
+const attachMarketplaceInformation = async (appId, version, state) => {
+	try {
+		const {
+			categories,
+			isPurchased,
+			price,
+			bundledIn,
+			purchaseType,
+			subscriptionInfo,
+			version: marketplaceVersion,
+		} = await Apps.getLatestAppFromMarketplace(appId, version);
+
+		state.set({
+			categories,
+			isPurchased,
+			price,
+			bundledIn,
+			purchaseType,
+			subscriptionInfo,
+		});
+
+		if (semver.lt(version, marketplaceVersion) && (isPurchased || price <= 0)) {
+			state.set('marketplaceVersion', marketplaceVersion);
+		}
+
+		attachBundlesApps(bundledIn, state);
+	} catch (error) {
+		handleAPIError(error);
+	}
+};
+
+const loadApp = async (instance) => {
+	const { appId, version, state } = instance;
+
+	let app;
+	try {
+		app = await Apps.getApp(appId);
+	} catch (error) {
+		console.error(error);
+	}
+
+	if (app) {
+		state.set({ ...app, installed: true, isLoading: false });
+
+		attachAPIs(appId, state);
+		attachSettings(appId, state);
+		attachMarketplaceInformation(appId, version, state);
+
+		return;
+	}
+
+	try {
+		app = await Apps.getAppFromMarketplace(appId, version);
+	} catch (error) {
+		state.set('error', error);
+	}
+
+	if (app) {
+		state.set({ ...app, isLoading: false });
+
+		attachBundlesApps(app.bundledIn, state);
+	}
 };
 
 Template.appManage.onCreated(function() {
@@ -229,72 +141,40 @@ Template.appManage.onCreated(function() {
 	this.state = new ReactiveDict({
 		id: this.appId,
 		version: this.version,
+		settings: {},
 	});
 
-	this.isLoading = new ReactiveVar(true);
-	this.isSaving = new ReactiveVar(false);
-	this.error = new ReactiveVar('');
-	this.app = new ReactiveVar({});
-	this.appsList = new ReactiveVar([]);
-	this.settings = new ReactiveVar({});
-	this.apis = new ReactiveVar([]);
-
-	getApp(this);
+	loadApp(this);
 
 	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, this.appId);
 		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey, options, lang_tag) : TAPi18n.__(key, options, lang_tag);
 	};
 
-	this.handleStatusChanged = ({ appId, status }) => {
+	const withAppIdFilter = (f) => function(maybeAppId, ...args) {
+		const appId = maybeAppId.appId || maybeAppId;
 		if (appId !== this.appId) {
 			return;
 		}
 
-		const app = this.app.get();
-		app.status = status;
-		this.app.set(app);
+		f.call(this, maybeAppId, ...args);
 	};
 
-	this.handleSettingUpdated = async ({ appId }) => {
-		if (appId !== this.appId) {
-			return;
-		}
+	this.handleStatusChanged = withAppIdFilter(({ status }) => {
+		this.state.set('status', status);
+	});
 
-		const settings = await Apps.getAppSettings(this.appId);
-		for (const setting of Object.values(settings)) {
-			setting.i18nPlaceholder = setting.i18nPlaceholder || ' ';
-			setting.value = setting.value !== undefined && setting.value !== null ? setting.value : setting.packageValue;
-			setting.oldValue = setting.value;
-			setting.hasChanged = false;
-		}
+	this.handleSettingUpdated = withAppIdFilter(() => {
+		attachSettings(this.appId, this.state);
+	});
 
-		this.settings.set(settings);
-	};
+	this.handleAppAdded = withAppIdFilter(() => {
+		loadApp(this);
+	});
 
-	this.handleAppAdded = async (appId) => {
-		if (appId !== this.appId) {
-			return;
-		}
-
-		try {
-			await getApp(this);
-		} catch (e) {
-			handleAPIError(e, this);
-		}
-	};
-
-	this.handleAppRemoved = async (appId) => {
-		if (appId !== this.appId) {
-			return;
-		}
-
-		try {
-			await getApp(this);
-		} catch (error) {
-			handleAPIError(error);
-		}
-	};
+	this.handleAppRemoved = withAppIdFilter(() => {
+		loadApp(this);
+	});
 
 	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAdded);
 	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
@@ -318,51 +198,63 @@ Template.appManage.onRendered(() => {
 
 Template.appManage.helpers({
 	isSettingsPristine() {
-		const settings = Template.instance().settings.get();
+		const settings = Template.instance().state.get('settings');
 		return !Object.values(settings).some(({ hasChanged }) => hasChanged);
 	},
 	isSaving() {
-		return Template.instance().isSaving.get();
+		return Template.instance().state.get('isSaving');
+	},
+	error() {
+		const error = Template.instance().state.get('error');
+
+		return error && (
+			(error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error)
+			|| error.message
+		);
 	},
 	isLoading() {
-		return Template.instance().isLoading.get();
+		return Template.instance().state.get('isLoading');
 	},
 	isInstalled() {
-		const app = Template.instance().app.get();
-		return app.installed;
+		return Template.instance().state.get('installed');
 	},
 	canUpdate() {
-		const app = Template.instance().app.get();
-		return app.installed && app.newVersion;
+		return Template.instance().state.get('installed') && Template.instance().state.get('marketplaceVersion');
 	},
 	isFromMarketplace() {
-		const app = Template.instance().app.get();
-		return app.subscriptionInfo;
+		return Template.instance().state.get('subscriptionInfo');
 	},
 	isFailed() {
 		// TODO: Implement
 		return false;
 	},
 	canTrial() {
-		const app = Template.instance().app.get();
-		return app.purchaseType === 'subscription' && app.subscriptionInfo && !app.subscriptionInfo.status;
+		const [purchaseType, subscriptionInfo] = [
+			Template.instance().state.get('purchaseType'),
+			Template.instance().state.get('subscriptionInfo'),
+		];
+		return purchaseType === 'subscription' && subscriptionInfo && !subscriptionInfo.status;
 	},
 	canBuy() {
-		const app = Template.instance().app.get();
-		return app.price > 0;
+		const price = Template.instance().state.get('price');
+		return price > 0;
 	},
 	priceDisplay() {
-		const app = Template.instance().app.get();
-		if (app.purchaseType === 'subscription') {
-			if (!app.pricingPlans || !Array.isArray(app.pricingPlans) || app.pricingPlans.length === 0) {
+		const [purchaseType, price, pricingPlans] = [
+			Template.instance().state.get('purchaseType'),
+			Template.instance().state.get('price'),
+			Template.instance().state.get('pricingPlans'),
+		];
+		if (purchaseType === 'subscription') {
+			if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
 				return;
 			}
 
-			return formatPricingPlan(app.pricingPlans[0]);
+			return formatPricingPlan(pricingPlans[0]);
 		}
 
-		if (app.price > 0) {
-			return formatPrice(app.price);
+		if (price > 0) {
+			return formatPrice(price);
 		}
 
 		return 'Free';
@@ -393,24 +285,17 @@ Template.appManage.helpers({
 		return result;
 	},
 	selectedOption(_id, val) {
-		const settings = Template.instance().settings.get();
+		const settings = Template.instance().state.get('settings');
 		return settings[_id].value === val;
 	},
-	error() {
-		if (Template.instance().error) {
-			return Template.instance().error.get();
-		}
-
-		return '';
-	},
 	app() {
-		return Template.instance().app.get();
+		return Template.instance().state.all();
 	},
 	categories() {
-		return Template.instance().app.get().categories;
+		return Template.instance().state.get('categories');
 	},
 	settings() {
-		return Object.values(Template.instance().settings.get());
+		return Object.values(Template.instance().state.get('settings'));
 	},
 	apis() {
 		return Template.instance().state.get('apis');
@@ -443,22 +328,22 @@ Template.appManage.helpers({
 
 Template.appManage.events({
 	'click .js-cancel-editing-settings'(event, instance) {
-		const settings = instance.settings.get();
+		const settings = instance.state.get('settings');
 
 		for (const setting of Object.values(settings)) {
 			setting.value = setting.oldValue;
 			setting.hasChanged = false;
 		}
 
-		instance.settings.set(settings);
+		instance.state.set('settings', settings);
 	},
 
 	'click .js-save-settings': async (e, t) => {
-		if (t.isSaving.get()) {
+		if (t.state.get('isSaving')) {
 			return;
 		}
-		t.isSaving.set(true);
-		const settings = t.settings.get();
+		t.state.set('isSaving', true);
+		const settings = t.state.get('settings');
 
 
 		try {
@@ -481,69 +366,21 @@ Template.appManage.events({
 			Object.values(settings).forEach((setting) => {
 				setting.hasChanged = false;
 			});
-			t.settings.set(settings);
+			t.state.set('settings', settings);
 		} catch (e) {
 			console.log(e);
 		} finally {
-			t.isSaving.set(false);
+			t.state.set('isSaving', false);
 		}
 	},
 	'click .js-close'() {
 		window.history.back();
 	},
-	'click .js-menu'(e, instance) {
-		e.stopPropagation();
-		const { currentTarget } = e;
+	'click .js-menu'(event, instance) {
+		event.stopPropagation();
+		const { currentTarget } = event;
 
-		const app = instance.app.get();
-		const isActive = app && ['auto_enabled', 'manually_enabled'].includes(app.status);
-
-		popover.open({
-			currentTarget,
-			instance,
-			columns: [{
-				groups: [
-					{
-						items: [
-							...this.purchaseType === 'subscription' ? [{
-								icon: 'card',
-								name: t('Subscription'),
-								action: () => promptModifySubscription(this, instance),
-							}] : [],
-							{
-								icon: 'list-alt',
-								name: t('View_Logs'),
-								action: () => {
-									FlowRouter.go(`/admin/apps/${ app.id }/logs`, {}, { version: FlowRouter.getQueryParam('version') });
-								},
-							},
-						],
-					},
-					{
-						items: [
-							isActive
-								? {
-									icon: 'ban',
-									name: t('Deactivate'),
-									modifier: 'alert',
-									action: () => promptAppDeactivation(app, instance),
-								}
-								: {
-									icon: 'check',
-									name: t('Activate'),
-									action: () => activateApp(app, instance),
-								},
-							{
-								icon: 'trash',
-								name: t('Uninstall'),
-								modifier: 'alert',
-								action: () => promptAppUninstall(app, instance),
-							},
-						],
-					},
-				],
-			}],
-		});
+		triggerAppPopoverMenu(instance.state.all(), currentTarget, instance);
 	},
 
 	async 'click .js-install'(event, instance) {
@@ -552,7 +389,7 @@ Template.appManage.events({
 		const { currentTarget: button } = event;
 		const stopLoading = triggerButtonLoadingState(button);
 
-		const { id, version } = instance.app.get();
+		const { id, version } = instance.state.all();
 
 		try {
 			await APIClient.post('apps/', {
@@ -565,7 +402,7 @@ Template.appManage.events({
 		}
 
 		try {
-			await getApp(instance);
+			await loadApp(instance);
 		} catch (e) {
 			handleAPIError(e, instance);
 		} finally {
@@ -574,7 +411,7 @@ Template.appManage.events({
 	},
 
 	async 'click .js-purchase'(event, instance) {
-		const { id, purchaseType = 'buy', version } = instance.app.get();
+		const { id, purchaseType = 'buy', version } = instance.state.all();
 		const { currentTarget: button } = event;
 		const stopLoading = triggerButtonLoadingState(button);
 
@@ -603,7 +440,7 @@ Template.appManage.events({
 			}
 
 			try {
-				await getApp(instance);
+				await loadApp(instance);
 			} catch (e) {
 				handleAPIError(e, instance);
 			} finally {
@@ -618,12 +455,12 @@ Template.appManage.events({
 
 		// $(`input[name="${ labelFor }"]`).prop('checked', !isChecked);
 
-		const setting = t.settings.get()[labelFor];
+		const setting = t.state.get('settings')[labelFor];
 
 		if (setting) {
 			setting.value = isChecked;
-			t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
-			t.settings.set(t.settings.get());
+			t.state.get('settings')[labelFor].hasChanged = setting.oldValue !== setting.value;
+			t.state.set('settings', t.state.get('settings'));
 		}
 	},
 
@@ -631,12 +468,12 @@ Template.appManage.events({
 		const labelFor = $(e.currentTarget).attr('name');
 		const value = $(e.currentTarget).val();
 
-		const setting = t.settings.get()[labelFor];
+		const setting = t.state.get('settings')[labelFor];
 
 		if (setting) {
 			setting.value = value;
-			t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
-			t.settings.set(t.settings.get());
+			t.state.get('settings')[labelFor].hasChanged = setting.oldValue !== setting.value;
+			t.state.set('settings', t.state.get('settings'));
 		}
 	},
 
@@ -654,14 +491,14 @@ Template.appManage.events({
 				value = $(`.code-mirror-box[data-editor-id="${ this.id }"] .CodeMirror`)[0].CodeMirror.getValue();
 		}
 
-		const setting = t.settings.get()[this.id];
+		const setting = t.state.get('settings')[this.id];
 
 		if (setting) {
 			setting.value = value;
 
 			if (setting.oldValue !== setting.value) {
-				t.settings.get()[this.id].hasChanged = true;
-				t.settings.set(t.settings.get());
+				t.state.get('settings')[this.id].hasChanged = true;
+				t.state.set('settings', t.state.get('settings'));
 			}
 		}
 	}, 500),

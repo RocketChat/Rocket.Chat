@@ -173,7 +173,9 @@
 												</div>
 												<div class="rc-apps-details__bundle_body">
 													<div class="rc-apps-details__bundle_body_title">{{ bundleName }}</div>
-													{{bundleAppNames apps}}
+													{{#if apps}}
+														{{bundleAppNames apps}}
+													{{/if}}
 												</div>
 											</div>
 										{{/each}}
