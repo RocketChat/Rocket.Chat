@@ -2,12 +2,14 @@
 	{{#with app}}
 		<section class="page-container page-home page-static page-settings rc-apps-section">
 			{{# header sectionName='App_Details' fixedHeight=true hideHelp=true fullpage=true}}
-				<div class="rc-header__section-button">
-					{{#unless isSettingsPristine}}
-						<button class="rc-button rc-button--cancel js-cancel-editing-settings">{{_ "Cancel" }}</button>
-					{{/unless}}
-					<button class="rc-button rc-button--primary js-save-settings {{#if isSaving}} loading{{/if}}" disabled='{{isSettingsPristine}}'>{{_ "Save_changes" }}</button>
-				</div>
+				{{#if installed}}
+					<div class="rc-header__section-button">
+						{{#unless isSettingsPristine}}
+							<button class="rc-button rc-button--cancel js-cancel-editing-settings">{{_ "Cancel" }}</button>
+						{{/unless}}
+						<button class="rc-button rc-button--primary js-save-settings {{#if isSaving}}loading{{/if}}" disabled='{{isSettingsPristine}}'>{{_ "Save_changes" }}</button>
+					</div>
+				{{/if}}
 
 				<div class="rc-header__block rc-header__block-action">
 					<button class="rc-button rc-button--nude js-close">
@@ -45,11 +47,11 @@
 									<div class="rc-apps-details__app-status">
 										{{#let props=(appButtonProps app)}}
 											<button
-												class="rc-button {{props.className}} {{#if app.working}}rc-apps-section__button--working{{/if}}"
-												disabled={{app.working}}
-												data-id="{{app.id}}"
+												class="rc-button {{props.className}} {{#if working}}rc-apps-section__button--working{{/if}}"
+												disabled={{working}}
+												data-id="{{id}}"
 											>
-												{{#if app.working}}
+												{{#if working}}
 													{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
 												{{else}}
 													{{> icon icon=props.icon block="rc-icon--default-size"}}
@@ -59,7 +61,7 @@
 										{{/let}}
 
 										<span class="rc-apps-details__app-button-wrapper">
-											{{#unless app.installed}}
+											{{#unless installed}}
 												{{#if priceDisplay}}
 													<span class="rc-apps-details__app-price">
 														{{priceDisplay}}
@@ -68,7 +70,7 @@
 											{{/unless}}
 										</span>
 
-										{{#if app.installed}}
+										{{#if installed}}
 											<button class="rc-button rc-button--nude rc-apps-details__app-menu-trigger js-menu" data-app="{{appId}}">
 												{{> icon icon="menu" block="rc-icon--default-size"}}
 											</button>
