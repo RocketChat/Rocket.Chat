@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
 import { RealAppBridges } from './bridges';
@@ -6,7 +7,7 @@ import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { settings } from '../../settings';
-import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
+import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel, Roles, Users } from '../../models';
 
 export let Apps;
 
@@ -122,7 +123,48 @@ class AppServerOrchestrator {
 			return Promise.resolve();
 		}
 
-		return this._manager.updateAppsMarketplaceInfo(apps);
+		return this._manager.updateAppsMarketplaceInfo(apps)
+			.then((apps) => {
+				this.notifyAdminsAboutInvalidAppsIfNecessary(apps);
+				return apps;
+			});
+	}
+
+	notifyAdminsAboutInvalidAppsIfNecessary(apps) {
+		const invalidApps = apps.filter((app) => app.getLatestLicenseValidationResult().hasErrors());
+
+		if (invalidApps.length === 0) {
+			return;
+		}
+
+		const id = 'someAppInInvalidState';
+		const title = 'Warning';
+		const text = 'There is one or more apps in an invalid state. Click here to review.';
+		const link = '/admin/apps';
+
+		Roles.findUsersInRole('admin').forEach((adminUser) => {
+			Users.removeBannerById(id);
+
+			try {
+				Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
+
+				Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', {
+					msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(text, adminUser.language) }\n${ link }`,
+					rid: [adminUser._id, 'rocket.cat'].sort().join(''),
+				}));
+			} catch (e) {
+				console.error(e);
+			}
+
+			Users.addBannerById(adminUser._id, {
+				id,
+				priority: 10,
+				title,
+				text,
+				modifiers: ['danger'],
+				link,
+			});
+		});
 	}
 }
 
