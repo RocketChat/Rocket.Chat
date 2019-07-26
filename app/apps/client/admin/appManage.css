@@ -93,6 +93,14 @@
 		}
 	}
 
+	&__app-install-status-failed {
+		color: #f5455c;
+
+		& > .rc-icon {
+			color: #f5455c;
+		}
+	}
+
 	&__app-price {
 		letter-spacing: -0.2px;
 

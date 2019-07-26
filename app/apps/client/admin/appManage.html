@@ -45,7 +45,12 @@
 									<div class="rc-apps-details__app-status">
 										{{#if isInstalled}}
 											<span class="rc-apps-details__app-button-wrapper">
-												{{#if canUpdate}}
+												{{#if isFailed}}
+													<span class="rc-apps-details__app-install-status rc-apps-details__app-install-status-failed">
+														{{> icon icon="warning" block="rc-icon--default-size"}}
+														{{_ "Failed"}}
+													</span>
+												{{else if canUpdate}}
 													<button class="rc-button rc-button--primary js-install">
 														{{> icon icon="reload" block="rc-icon--default-size"}}
 														{{_ "Update_to_version" version=newVersion }}

@@ -339,6 +339,10 @@ Template.appManage.helpers({
 		const app = Template.instance().app.get();
 		return app.subscriptionInfo;
 	},
+	isFailed() {
+		// TODO: Implement
+		return false;
+	},
 	canTrial() {
 		const app = Template.instance().app.get();
 		return app.purchaseType === 'subscription' && app.subscriptionInfo && !app.subscriptionInfo.status;
