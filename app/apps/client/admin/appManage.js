@@ -6,7 +6,6 @@ import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import s from 'underscore.string';
-import semver from 'semver';
 
 import { SideNav, modal } from '../../../ui-utils/client';
 import { isEmail, APIClient } from '../../../utils';
@@ -89,11 +88,8 @@ const attachMarketplaceInformation = async (appId, version, state) => {
 			bundledIn,
 			purchaseType,
 			subscriptionInfo,
+			marketplaceVersion,
 		});
-
-		if (semver.lt(version, marketplaceVersion) && (isPurchased || price <= 0)) {
-			state.set('marketplaceVersion', marketplaceVersion);
-		}
 
 		attachBundlesApps(bundledIn, state);
 	} catch (error) {
@@ -358,27 +354,16 @@ Template.appManage.events({
 	async 'click .js-install'(event, instance) {
 		event.stopPropagation();
 
-		const { currentTarget: button } = event;
-		const stopLoading = triggerButtonLoadingState(button);
+		const { id, state } = instance;
 
-		const { id, version } = instance.state.all();
-
-		try {
-			await APIClient.post('apps/', {
-				appId: id,
-				marketplace: true,
-				version,
-			});
-		} catch (e) {
-			handleAPIError(e, instance);
-		}
+		state.set('working', true);
 
 		try {
-			await loadApp(instance);
-		} catch (e) {
-			handleAPIError(e, instance);
+			await Apps.installApp(id, state.get('marketplaceVersion'));
+		} catch (error) {
+			handleAPIError(error);
 		} finally {
-			stopLoading();
+			state.set('working', false);
 		}
 	},
 

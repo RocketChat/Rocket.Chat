@@ -193,7 +193,9 @@ export const createAppButtonPropsHelper = (inactiveClassName, failedClassName) =
 	const isInstalled = ({ installed }) => installed;
 	const isFailed = () => false; // TODO
 	const canUpdate = ({ version, marketplaceVersion, isPurchased, price }) =>
-		version && semver.lt(version, marketplaceVersion) && (isPurchased || price <= 0);
+		version && marketplaceVersion
+		&& semver.lt(version, marketplaceVersion)
+		&& (isPurchased || price <= 0);
 	const isOnTrialPeriod = ({ subscriptionInfo: { status } = {} }) => status === 'trialing';
 	const canDownload = ({ isPurchased, isSubscribed }) => isPurchased || isSubscribed;
 	const canTrial = ({ purchaseType, subscriptionInfo }) =>
