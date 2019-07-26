@@ -6,6 +6,8 @@ import { API } from '../../../api/server';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
+import { Settings, Users } from '../../../models/server';
+import { Apps } from '../orchestrator';
 
 const getDefaultHeaders = () => ({
 	'X-Apps-Engine-Version': Info.marketplaceApiVersion,
@@ -110,10 +112,14 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Unauthorized' });
 					}
 
+					const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
+
+					const seats = Users.findActive().count() - Users.findActiveRemote().count();
+
 					return API.v1.success({
 						url: `${ baseUrl }/apps/${ this.queryParams.appId }/${
-							this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : 'subscribe'
-						}?workspaceId=${ workspaceId }&token=${ token }`,
+							this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
+						}?workspaceId=${ workspaceId }&token=${ token }&seats=${ seats }`,
 					});
 				}
 
@@ -389,6 +395,32 @@ export class AppsRestApi {
 					return API.v1.success({ app: info });
 				}
 				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+			},
+		});
+
+		this.api.addRoute(':id/sync', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+			post() {
+				const baseUrl = orchestrator.getMarketplaceUrl();
+
+				const headers = getDefaultHeaders();
+				const token = getWorkspaceAccessToken();
+				if (token) {
+					headers.Authorization = `Bearer ${ token }`;
+				}
+
+				const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
+
+				const result = HTTP.get(`${ baseUrl }/v1/workspaces/${ workspaceIdSetting.value }/apps/${ this.urlParams.id }`, {
+					headers,
+				});
+
+				if (result.statusCode !== 200) {
+					return API.v1.failure();
+				}
+
+				Promise.await(Apps.updateAppsMarketplaceInfo(result.data));
+
+				return API.v1.success({ app: result.data });
 			},
 		});
 

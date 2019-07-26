@@ -15,9 +15,25 @@ export const handleAPIError = (error) => {
 export const promptSubscription = async (app, callback, cancelCallback) => {
 	let data = null;
 	try {
-		data = await Apps.buildExternalUrl(app.id, app.purchaseType);
+		data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
 	} catch (error) {
 		handleAPIError(error);
+		return;
+	}
+
+	modal.open({
+		allowOutsideClick: false,
+		data,
+		template: 'iframeModal',
+	}, callback, cancelCallback);
+};
+
+const promptModifySubscription = async (app, callback, cancelCallback) => {
+	let data = null;
+	try {
+		data = await Apps.buildExternalUrl(app.id, app.purchaseType, true);
+	} catch (e) {
+		handleAPIError(e);
 		return;
 	}
 
@@ -69,9 +85,9 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 		return;
 	}
 
-	const handleSubscription = () => promptSubscription(app, async () => {
+	const handleSubscription = () => promptModifySubscription(app, async () => {
 		try {
-			await Apps.installApp(app.id, app.marketplaceVersion);
+			await Apps.syncApp(app.id);
 		} catch (error) {
 			handleAPIError(error);
 		}

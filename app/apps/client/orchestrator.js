@@ -152,11 +152,12 @@ class AppClientOrchestrator {
 
 	disableApp = (appId) => this.setAppStatus(appId, 'manually_disabled')
 
-	buildExternalUrl = (appId, purchaseType = 'buy') =>
+	buildExternalUrl = (appId, purchaseType = 'buy', details = false) =>
 		APIClient.get('apps', {
 			buildExternalUrl: 'true',
 			appId,
 			purchaseType,
+			details,
 		})
 
 	getCategories = async () => {

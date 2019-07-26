@@ -137,10 +137,10 @@ const getApp = async (instance) => {
 	}
 };
 
-const promptSubscription = async (app, instance) => {
+const promptModifySubscription = async (app, instance) => {
 	let data = null;
 	try {
-		data = await Apps.buildExternalUrl(app.id, app.purchaseType);
+		data = await Apps.buildExternalUrl(app.id, app.purchaseType, true);
 	} catch (e) {
 		handleAPIError(e, instance);
 		return;
@@ -152,7 +152,7 @@ const promptSubscription = async (app, instance) => {
 		template: 'iframeModal',
 	}, async () => {
 		try {
-			await Apps.installApp(app.id, app.version);
+			await APIClient.post(`apps/${ app.id }/sync`, {});
 			await getApp(instance);
 		} catch (error) {
 			handleAPIError(error);
@@ -504,7 +504,7 @@ Template.appManage.events({
 							...this.purchaseType === 'subscription' ? [{
 								icon: 'card',
 								name: t('Subscription'),
-								action: () => promptSubscription(this, instance),
+								action: () => promptModifySubscription(this, instance),
 							}] : [],
 							{
 								icon: 'list-alt',

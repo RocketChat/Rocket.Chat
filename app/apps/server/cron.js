@@ -4,14 +4,16 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
-import { Settings } from '../../models/server';
+import { Settings, Users } from '../../models/server';
 
 export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(() => {
 	const token = getWorkspaceAccessToken();
 	const baseUrl = Apps.getMarketplaceUrl();
 	const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
 
-	const fullUrl = `${ baseUrl }/v1/workspaces/${ workspaceIdSetting.value }/apps`;
+	const currentSeats = Users.findActive().count() - Users.findActiveRemote().count();
+
+	const fullUrl = `${ baseUrl }/v1/workspaces/${ workspaceIdSetting.value }/apps?seats=${ currentSeats }`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${ token }`,
