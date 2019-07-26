@@ -6,14 +6,13 @@
 					<button class="webdav-breadcrumb-folder js-webdav-breadcrumb-folder" aria-label="Home" data-index="-1">
 						<i class="icon-home"></i>
 					</button>
-					<i class="icon-angle-right"></i>
 				</div>
 				{{#each parentFolder in parentFolders}}
 					<div class="webdav-breadcrumb-item">
+						<i class="icon-angle-right"></i>
 						<button class="webdav-breadcrumb-folder js-webdav-breadcrumb-folder" aria-label="{{ parentFolder }}" data-index="{{@index}}">
 							{{ parentFolder }}
 						</button>
-						<i class="icon-angle-right"></i>
 					</div>
 				{{/each}}
 			</div>
@@ -83,9 +82,7 @@
 								</tr>
 							{{else}}
 								<tr class="table-no-click">
-									<td colspan="4" class="center-cell">
-										Nothing Found! 
-									</td>
+									<td colspan="4" class="center-cell">{{_ "Nothing_found"}}</td>
 								</tr>
 							{{/each}}
 						</tbody>
@@ -124,9 +121,7 @@
 								<div>{{getName this.basename}}</div>
 							</div>
 						{{else}}
-							<div class="grid-empty">
-								Nothing Found!
-							</div>
+							<div class="grid-empty">{{_ "Nothing_found"}}</div>
 						{{/each}}
 					</div>
 				{{/if}}

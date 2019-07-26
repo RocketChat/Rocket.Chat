@@ -72,7 +72,8 @@
 			align-items: center;
 			flex-flow: row nowrap;
 			-ms-overflow-style: none;
-			scrollbar-width: none;
+
+			/* scrollbar-width: none; */
 
 			&::-webkit-scrollbar {
 				display: none;
