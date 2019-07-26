@@ -98,10 +98,19 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	getAppFromMarketplace = async (appId, version = null) => {
+	getAppFromMarketplace = async (appId, version) => {
 		const { app } = await APIClient.get(`apps/${ appId }`, {
 			marketplace: 'true',
-			...version && { version },
+			version,
+		});
+		return app;
+	}
+
+	getLatestAppFromMarketplace = async (appId, version) => {
+		const { app } = await APIClient.get(`apps/${ appId }`, {
+			marketplace: 'true',
+			update: 'true',
+			appVersion: version,
 		});
 		return app;
 	}

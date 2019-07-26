@@ -64,6 +64,18 @@ const fetchApp = async (appId, version, collectError) => {
 	return app;
 };
 
+const fetchLatestAppFromMarketplace = async (appId, version, collectError) => {
+	let app;
+
+	try {
+		app = Apps.getLatestAppFromMarketplace(appId, version);
+	} catch (error) {
+		collectError(error);
+	}
+
+	return app;
+};
+
 const getApp = async (instance) => {
 	const { appId, version } = instance;
 
@@ -82,54 +94,47 @@ const getApp = async (instance) => {
 		return;
 	}
 
-	instance.apis.set(appInfo.local.apis);
+	errors.forEach(handleAPIError);
 
-	return Promise.resolve()
-		.then(() => {
-			if (appInfo.local) {
-				appInfo.local.installed = true;
+	if (appInfo.local) {
+		instance.state.set('apis', appInfo.local.apis);
 
-				if (appInfo.remote) {
-					appInfo.local.categories = appInfo.remote.categories;
-					appInfo.local.isPurchased = appInfo.remote.isPurchased;
-					appInfo.local.price = appInfo.remote.price;
-					appInfo.local.bundledIn = appInfo.remote.bundledIn;
-					appInfo.local.purchaseType = appInfo.remote.purchaseType;
-					appInfo.local.subscriptionInfo = appInfo.remote.subscriptionInfo;
+		appInfo.local.installed = true;
 
-					if (semver.gt(appInfo.remote.version, appInfo.local.version) && (appInfo.remote.isPurchased || appInfo.remote.price <= 0)) {
-						appInfo.local.newVersion = appInfo.remote.version;
-					}
-				}
+		if (appInfo.remote) {
+			appInfo.local.categories = appInfo.remote.categories;
+			appInfo.local.isPurchased = appInfo.remote.isPurchased;
+			appInfo.local.price = appInfo.remote.price;
+			appInfo.local.bundledIn = appInfo.remote.bundledIn;
+			appInfo.local.purchaseType = appInfo.remote.purchaseType;
+			appInfo.local.subscriptionInfo = appInfo.remote.subscriptionInfo;
 
-				instance.handleSettingUpdated({ appId });
+			if (semver.gt(appInfo.remote.version, appInfo.local.version) && (appInfo.remote.isPurchased || appInfo.remote.price <= 0)) {
+				appInfo.local.newVersion = appInfo.remote.version;
 			}
+		}
 
-			instance.app.set(appInfo.local || appInfo.remote);
-			instance.ready.set(true);
+		instance.handleSettingUpdated({ appId });
+	}
 
-			if (appInfo.remote && appInfo.local) {
-				try {
-					return APIClient.get(`apps/${ appId }?marketplace=true&update=true&appVersion=${ instance.version }`);
-				} catch (error) {
-					handleAPIError(error);
-				}
-			}
+	instance.app.set(appInfo.local || appInfo.remote);
+	instance.isLoading.set(false);
 
-			return false;
-		}).then((updateInfo) => {
-			if (!updateInfo) {
-				return;
-			}
+	if (!appInfo.remote || !appInfo.local) {
+		return;
+	}
 
-			const update = updateInfo.app;
+	const update = await fetchLatestAppFromMarketplace(appId, version, handleAPIError);
 
-			if (semver.gt(update.version, appInfo.local.version) && (update.isPurchased || update.price <= 0)) {
-				appInfo.local.newVersion = update.version;
+	if (!update) {
+		return;
+	}
 
-				instance.app.set(appInfo.local);
-			}
-		});
+	if (semver.gt(update.version, appInfo.local.version) && (update.isPurchased || update.price <= 0)) {
+		appInfo.local.newVersion = update.version;
+
+		instance.app.set(appInfo.local);
+	}
 };
 
 const promptSubscription = async (app, instance) => {
@@ -226,13 +231,13 @@ Template.appManage.onCreated(function() {
 		version: this.version,
 	});
 
-	this.ready = new ReactiveVar(false);
+	this.isLoading = new ReactiveVar(true);
+	this.isSaving = new ReactiveVar(false);
 	this.error = new ReactiveVar('');
 	this.app = new ReactiveVar({});
 	this.appsList = new ReactiveVar([]);
 	this.settings = new ReactiveVar({});
 	this.apis = new ReactiveVar([]);
-	this.loading = new ReactiveVar(false);
 
 	getApp(this);
 
@@ -316,6 +321,12 @@ Template.appManage.helpers({
 		const settings = Template.instance().settings.get();
 		return !Object.values(settings).some(({ hasChanged }) => hasChanged);
 	},
+	isSaving() {
+		return Template.instance().isSaving.get();
+	},
+	isLoading() {
+		return Template.instance().isLoading.get();
+	},
 	isInstalled() {
 		const app = Template.instance().app.get();
 		return app.installed;
@@ -381,13 +392,6 @@ Template.appManage.helpers({
 		const settings = Template.instance().settings.get();
 		return settings[_id].value === val;
 	},
-	isReady() {
-		if (Template.instance().ready) {
-			return Template.instance().ready.get();
-		}
-
-		return false;
-	},
 	error() {
 		if (Template.instance().error) {
 			return Template.instance().error.get();
@@ -405,7 +409,7 @@ Template.appManage.helpers({
 		return Object.values(Template.instance().settings.get());
 	},
 	apis() {
-		return Template.instance().apis.get();
+		return Template.instance().state.get('apis');
 	},
 	parseDescription(i18nDescription) {
 		const item = Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
@@ -413,9 +417,6 @@ Template.appManage.helpers({
 		item.tokens.forEach((t) => { item.html = item.html.replace(t.token, t.text); });
 
 		return item.html;
-	},
-	saving() {
-		return Template.instance().loading.get();
 	},
 	curl(method, api) {
 		const example = api.examples[method] || {};
@@ -449,10 +450,10 @@ Template.appManage.events({
 	},
 
 	'click .js-save-settings': async (e, t) => {
-		if (t.loading.get()) {
+		if (t.isSaving.get()) {
 			return;
 		}
-		t.loading.set(true);
+		t.isSaving.set(true);
 		const settings = t.settings.get();
 
 
@@ -480,7 +481,7 @@ Template.appManage.events({
 		} catch (e) {
 			console.log(e);
 		} finally {
-			t.loading.set(false);
+			t.isSaving.set(false);
 		}
 	},
 	'click .js-close'() {

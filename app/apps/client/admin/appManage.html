@@ -6,7 +6,7 @@
 					{{#unless isSettingsPristine}}
 						<button class="rc-button rc-button--cancel js-cancel-editing-settings">{{_ "Cancel" }}</button>
 					{{/unless}}
-					<button class="rc-button rc-button--primary js-save-settings {{#if saving}} loading{{/if}}" disabled='{{isSettingsPristine}}'>{{_ "Save_changes" }}</button>
+					<button class="rc-button rc-button--primary js-save-settings {{#if isSaving}} loading{{/if}}" disabled='{{isSettingsPristine}}'>{{_ "Save_changes" }}</button>
 				</div>
 
 				<div class="rc-header__block rc-header__block-action">
@@ -23,7 +23,9 @@
 							<i class="icon-attention"></i>
 							<p>{{error}}</p>
 						</div>
-					{{else if isReady}}
+					{{else if isLoading}}
+						{{> loading}}
+					{{else}}
 						<div class="rc-apps-details">
 							<div class="rc-apps-container rc-apps-container__header">
 								{{#if iconFileData}}
@@ -502,8 +504,6 @@
 								{{/if}}
 							</div>
 						</div>
-					{{else}}
-						{{> loading}}
 					{{/if}}
 				{{/requiresPermission}}
 			</div>
