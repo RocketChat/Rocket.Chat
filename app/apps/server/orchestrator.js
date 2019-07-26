@@ -8,11 +8,13 @@ import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsers
 import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { settings } from '../../settings';
 import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel, Roles, Users } from '../../models';
+import { Logger } from '../../logger';
 
 export let Apps;
 
 class AppServerOrchestrator {
 	constructor() {
+		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 		Permissions.createOrUpdate('manage-apps', ['admin']);
 
 		this._marketplaceUrl = 'https://marketplace.rocket.chat';
@@ -81,6 +83,10 @@ class AppServerOrchestrator {
 
 	isDebugging() {
 		return settings.get('Apps_Framework_Development_Mode');
+	}
+
+	getRocketChatLogger() {
+		return this._rocketchatLogger;
 	}
 
 	debugLog(...args) {
