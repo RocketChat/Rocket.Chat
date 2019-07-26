@@ -8,13 +8,12 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import semver from 'semver';
 
-import { isEmail, APIClient } from '../../../utils';
 import { Markdown } from '../../../markdown/client';
-import { modal } from '../../../ui-utils';
+import { SideNav, modal } from '../../../ui-utils/client';
+import { isEmail, APIClient } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
-import { SideNav } from '../../../ui-utils/client';
 import {
 	formatPrice,
 	formatPricingPlan,
