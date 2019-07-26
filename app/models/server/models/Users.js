@@ -1120,6 +1120,10 @@ Find users to send a message by email if:
 
 		return this.find(query, options);
 	}
+
+	getActiveLocalUserCount() {
+		return this.findActive().count() - this.findActiveRemote().count();
+	}
 }
 
 export default new Users(Meteor.users, true);

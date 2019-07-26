@@ -128,7 +128,7 @@ export class AppsRestApi {
 
 					const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
 
-					const seats = Users.findActive().count() - Users.findActiveRemote().count();
+					const seats = Users.getActiveLocalUserCount();
 
 					return API.v1.success({
 						url: `${ baseUrl }/apps/${ this.queryParams.appId }/${

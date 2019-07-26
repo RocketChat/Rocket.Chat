@@ -11,7 +11,7 @@ export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(() => {
 	const baseUrl = Apps.getMarketplaceUrl();
 	const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
 
-	const currentSeats = Users.findActive().count() - Users.findActiveRemote().count();
+	const currentSeats = Users.getActiveLocalUserCount();
 
 	const fullUrl = `${ baseUrl }/v1/workspaces/${ workspaceIdSetting.value }/apps?seats=${ currentSeats }`;
 	const options = {
