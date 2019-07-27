@@ -242,7 +242,7 @@ export const appButtonProps = ({
 
 	if (canGet()) {
 		return {
-			action: 'install',
+			action: 'purchase',
 			label: 'Install',
 		};
 	}
