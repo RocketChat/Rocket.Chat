@@ -9,7 +9,7 @@
             <h1 title="Not registered">{{_ "Not registered"}}</h1>
           {{/if}}
           <ul>
-            <li><i class="icon-eye"></i><span>{{state}}</span></li>
+            <li><i class="icon-eye"></i><span>{{status}}</span></li>
             {{#if visitorInfo}} <li><i class="icon-mail"></i> {{visitorInfo.email}}&nbsp;<i class="icon-ok success-color"></i></li> {{/if}}
             {{#if deviceInfo}}<li><i class="{{osIcon}}"></i><span>{{deviceInfo.os}} {{deviceInfo.osVersion}}</span></li>{{/if}}
             {{#if deviceInfo}}<li><i class="{{browserIcon}}"></i><span>{{deviceInfo.browserName}} {{deviceInfo.browserVersion}}</span></li>{{/if}}

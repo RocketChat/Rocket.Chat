@@ -35,14 +35,14 @@ Meteor.publish('livechat:location', function(filter = {}) {
 		return this.error(new Meteor.Error('error-invalid-time', 'Invalid Time', { publish: 'livechat:location' }));
 	}
 
-	let query = {};
+	const query = {};
 
 	if (fromTime && toTime && valueTime) {
 		query.createdAt = {
 			$gte: moment(toTime).toDate(),
 			$lt: moment(fromTime).toDate(),
 		};
-	} else {
+	} else if (from && to) {
 		from = moment(from).add(1, 'days');
 		to = moment(to).add(1, 'days');
 		if (moment(from).diff(to) === 0) {
@@ -53,7 +53,7 @@ Meteor.publish('livechat:location', function(filter = {}) {
 		} else {
 			query.createdAt = {
 				$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
-				$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+				$lte: moment(to).utcOffset(0).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate(),
 			};
 		}
 	}
@@ -62,15 +62,7 @@ Meteor.publish('livechat:location', function(filter = {}) {
 		query['visitorInfo.name'] = new RegExp(filter.name, 'i');
 	}
 	if (filter.state) {
-		if (filter.state === 'chatting') {
-			query.state = 'chatting';
-		} else if (filter.state === 'registered') {
-			query.state = 'registered';
-		} else if (filter.state === 'idle') {
-			query.state = 'idle';
-		} else {
-			query = {};
-		}
+		query.state = filter.state;
 	}
 
 	const self = this;

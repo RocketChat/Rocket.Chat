@@ -60,10 +60,10 @@
         {{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
         <thead>
           <tr>
-            <th width="20%">
+            <th width="15%">
               <div class="table-fake-th">{{_ "Visitor Info"}}</div>
             </th>
-            <th width="20%">
+            <th width="25%">
               <div class="table-fake-th">{{_ "Location"}}</div>
             </th>
             <th width="5%">
@@ -80,6 +80,9 @@
             </th>
             <th width="15%">
               <div class="table-fake-th">{{_ "Time on Site"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Chat Status"}}</div>
             </th>
             <th width="10%">
               <div class="table-fake-th">{{_ "Agent Info"}}</div>
@@ -111,7 +114,7 @@
             <td>
               <i class="{{osIcon}}"></i><i class="{{browserIcon}}"></i>
             </td>
-            <td>{{state}}</td>
+            <td>{{status}}</td>
             <td>{{sessionStarted}}</td>
             <td>
               {{#if timeSince}}
@@ -121,11 +124,14 @@
               {{/if}}
             </td>
             <td>
+              {{chatStatus}}
+            </td>
+            <td>
               {{#if servedBy}}
                 {{servedBy.username}}
               {{else}}
               {{#if visitorInfo}}
-                {{#if checkRegister state}}
+                {{#if checkRegister}}
                 <button class="rc-button rc-button--primary js-load-more">{{_ "Chat"}}</button>
                 {{else}}
                   {{_ "No Info"}}

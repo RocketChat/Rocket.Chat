@@ -73,6 +73,19 @@ export class LivechatSessions extends Base {
 		return this.update(query, update);
 	}
 
+	findOneVisitorByTokenAndUpdateStatus(token, status) {
+		const query = {
+			token,
+		};
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	findOneVisitorByTokenAndUpdateCount(token) {
 		const query = {
 			token,

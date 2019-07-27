@@ -19,8 +19,8 @@ Template.livechatDashboard.helpers({
 	visitors() {
 		return Template.instance().users.get();
 	},
-	checkRegister(state) {
-		return state === 'registered';
+	checkRegister() {
+		return this.state === 'registered';
 	},
 	totalVisitors() {
 		return Template.instance().users.get().length;
@@ -150,13 +150,6 @@ Template.livechatDashboard.onCreated(function() {
 		this.ready.set(this.subscribe('livechat:rooms', {}, 0, this.limit.get()).ready());
 	});
 
-	if (Template.instance().daterange.get()) {
-		this.filter.set({
-			from: moment(Template.instance().daterange.get().from, 'MMM D YYYY').toISOString(),
-			to: moment(Template.instance().daterange.get().to, 'MMM D YYYY').toISOString(),
-		});
-	}
-
 	this.autorun(() => {
 		const sub = this.subscribe('livechat:location', this.filter.get());
 		if (sub.ready()) {
@@ -194,6 +187,14 @@ Template.livechatDashboard.onCreated(function() {
 					const room = LivechatRoom.findOne({ t: 'l', 'v.token': val.token });
 					if (room && room.servedBy) {
 						val.servedBy = room.servedBy;
+					}
+
+					if (room && room.open) {
+						val.chatStatus = 'Chatting';
+					} else if (room && room.closedAt) {
+						val.chatStatus = 'Closed';
+					} else {
+						val.chatStatus = 'Not Started';
 					}
 					if (['Macintosh', 'iPhone', 'iPad'].indexOf(val.deviceInfo.os) !== -1) {
 						val.osIcon = 'icon-apple';
