@@ -50,6 +50,7 @@ import './components/table';
 import './components/tabs';
 import './components/popupList.html';
 import './components/popupList';
+import './components/ReactComponent';
 import './components/selectDropdown.html';
 
 import './components/header/header.html';
