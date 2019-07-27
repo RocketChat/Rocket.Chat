@@ -25,7 +25,7 @@
 		letter-spacing: 0;
 		text-transform: initial;
 
-		color: #54585e;
+		color: var(--color-dark-medium);
 
 		font-size: 22px;
 		font-weight: normal;
@@ -68,7 +68,7 @@
 	.rc-apps-container__header {
 		padding-top: 10px;
 
-		border-bottom: 1.5px solid #efefef;
+		border-bottom: 1.5px solid var(--color-gray-lightest);
 	}
 
 	/*
@@ -102,7 +102,7 @@
 
 		color: #9da2a9;
 		border-radius: 2px;
-		background: #f3f4f5;
+		background: var(--color-gray-lightest);
 
 		font-size: 12px;
 		font-weight: 500;
@@ -150,22 +150,6 @@
 		padding: 0.5rem 0;
 
 		padding-right: 10px;
-	}
-
-	td.rc-apps-marketplace-price {
-		text-align: right;
-
-		button {
-			font-weight: 600;
-		}
-
-		.rc-icon {
-			color: #3582f3;
-		}
-	}
-
-	th.rc-apps-marketplace-price {
-		width: 120px;
 	}
 
 	&__wrap-actions {
@@ -283,7 +267,7 @@
 					text-overflow: ellipsis;
 
 					color: var(--color-gray);
-					background-color: var(--color-gray-light);
+					background-color: var(--color-gray-lightest);
 
 					font-size: 0.625rem;
 					font-weight: 500;
