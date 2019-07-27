@@ -282,9 +282,8 @@
 					text-transform: none;
 					text-overflow: ellipsis;
 
-					color: #9da1a8;
-					border-radius: 9999px;
-					background-color: #eef0f3;
+					color: var(--color-gray);
+					background-color: var(--color-gray-light);
 
 					font-size: 0.625rem;
 					font-weight: 500;
