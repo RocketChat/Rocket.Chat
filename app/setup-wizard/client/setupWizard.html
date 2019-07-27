@@ -2,9 +2,9 @@
 	<div class="rc-old connection-status">
 		{{> status}}
 	</div>
+	{{> ReactComponent reactComponentArgs}}
 	<div class="setup-wizard">
 		{{> setupWizardInfo infoArgs}}
-
 		<section class="setup-wizard-forms">
 			<div class="setup-wizard-forms__wrapper">
 				<form class="setup-wizard-forms__box {{formLoadStateClass}}" novalidate>

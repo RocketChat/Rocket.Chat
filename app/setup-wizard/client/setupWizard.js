@@ -13,6 +13,7 @@ import { hasRole } from '../../authorization';
 import { Users } from '../../models';
 import { t, handleError } from '../../utils';
 import { call } from '../../ui-utils';
+import { SetupWizard } from '../../../client/components/setupWizard/SetupWizard';
 
 const cannotSetup = () => {
 	const showSetupWizard = settings.get('Show_Setup_Wizard');
@@ -253,9 +254,14 @@ Template.setupWizard.events({
 });
 
 Template.setupWizard.helpers({
-	currentStep() {
-		return Template.instance().state.get('currentStep');
-	},
+	reactComponentArgs: () => ({
+		Component: SetupWizard,
+		wizardSettings: Template.instance().wizardSettings.get(),
+		setWizardSettings: Template.instance().wizardSettings.set.bind(Template.instance().wizardSettings),
+		state: Template.instance().state.all(),
+		setState: Template.instance().state.set.bind(Template.instance().state),
+	}),
+	currentStep: () => Template.instance().state.get('currentStep'),
 	currentStepTitle() {
 		switch (Template.instance().state.get('currentStep')) {
 			case 1:
