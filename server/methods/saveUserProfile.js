@@ -31,7 +31,7 @@ Meteor.methods({
 			}
 
 			const passCheck = Accounts._checkPassword(user, {
-				digest: typedPassword,
+				digest: typedPassword.toLowerCase(),
 				algorithm: 'sha-256',
 			});
 

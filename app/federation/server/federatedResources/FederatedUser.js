@@ -67,6 +67,9 @@ export class FederatedUser extends FederatedResource {
 			localUser.username = user.username.split('@')[0];
 			localUser.name = user.name.split('@')[0];
 		}
+		if (federation.peer !== localPeerIdentifier) {
+			localUser.isRemote = true;
+		}
 
 		return localUser;
 	}
