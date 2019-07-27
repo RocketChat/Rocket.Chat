@@ -7,7 +7,6 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 
 Meteor.methods({
 	'jitsi:generateAccessToken': (rid) => {
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:generateToken' });
 		}
@@ -58,7 +57,7 @@ Meteor.methods({
 			nbf: jws.IntDate.get('now'),
 			exp: jws.IntDate.get(`now + ${ JITSI_OPTIONS.jitsi_lifetime_token }`),
 			aud: 'RocketChat',
-			room: (jitsiLimitTokenToRoom) ? jitsiRoom : '*',
+			room: jitsiLimitTokenToRoom ? jitsiRoom : '*',
 			context: '', // first empty
 		};
 

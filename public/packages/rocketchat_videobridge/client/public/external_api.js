@@ -98,7 +98,7 @@ var JitsiMeetExternalAPI;
  */
 function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, configOverwrite, interfaceConfigOverwrite, noSsl, token) {
     if (!width || width < MIN_WIDTH) width = MIN_WIDTH;
-		if (!height || height < MIN_HEIGHT) height = MIN_HEIGHT;
+    if (!height || height < MIN_HEIGHT) height = MIN_HEIGHT;
 
     this.parentNode = null;
     if (parentNode) {
