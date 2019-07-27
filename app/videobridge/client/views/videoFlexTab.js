@@ -112,7 +112,7 @@ Template.videoFlexTab.onRendered(function() {
 			let accessToken = null;
 			if (isEnabledTokenAuth) {
 				accessToken = await new Promise((resolve, reject) => {
-					Meteor.call('jitsi:generateAccessToken', jitsiRoom, (error, result) => {
+					Meteor.call('jitsi:generateAccessToken', rid, (error, result) => {
 						if (error) {
 							return reject(error);
 						}

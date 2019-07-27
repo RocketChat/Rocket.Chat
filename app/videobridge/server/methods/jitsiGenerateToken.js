@@ -1,13 +1,24 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../settings';
 import { jws } from 'jsrsasign';
 
+import { Rooms } from '../../../models';
+import { settings } from '../../../settings';
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+
 Meteor.methods({
-	'jitsi:generateAccessToken': (jitsiRoom) => {
+	'jitsi:generateAccessToken': (rid) => {
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:generateToken' });
 		}
+
+		const room = Rooms.findOneById(rid);
+
+		if (!canAccessRoom(room, Meteor.user())) {
+			throw new Meteor.Error('error-not-allowed', 'not allowed', { method: 'jitsi:generateToken' });
+		}
+
+		const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid;
 
 		const jitsiDomain = settings.get('Jitsi_Domain');
 		const jitsiApplicationId = settings.get('Jitsi_Application_ID');
@@ -24,6 +35,7 @@ Meteor.methods({
 					id: user._id,
 				},
 			};
+
 			return payload;
 		}
 
