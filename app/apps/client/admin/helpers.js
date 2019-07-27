@@ -229,7 +229,7 @@ export const appButtonProps = ({
 	if (canTrial()) {
 		return {
 			action: 'purchase',
-			label: 'Start trial',
+			label: 'Trial',
 		};
 	}
 
