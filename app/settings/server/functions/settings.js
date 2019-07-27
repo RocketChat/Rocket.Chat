@@ -39,6 +39,7 @@ settings.add = function(_id, value, options = {}) {
 	options.valueSource = 'packageValue';
 	options.hidden = options.hidden || false;
 	options.blocked = options.blocked || false;
+	options.secret = options.secret || false;
 	if (options.sorter == null) {
 		options.sorter = settings._sorter[options.group]++;
 	}

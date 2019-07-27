@@ -17,9 +17,9 @@
 			<ul class="thread">
 				{{# with messageContext}}
 				{{#if isLoading}}
-				<li class="load-more">
-					{{> loading}}
-				</li>
+					<li class="load-more">
+						{{> loading}}
+					</li>
 				{{else}}
 						{{> message groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u ignored=false}}
 						{{#each msg in messages}}

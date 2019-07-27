@@ -497,7 +497,7 @@ API.v1.addRoute('groups.members', { authRequired: true }, {
 		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
 
 		const users = Users.find({ _id: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
+			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 			sort: { username: sort.username != null ? sort.username : 1 },
 		}).fetch();
 
@@ -664,7 +664,7 @@ API.v1.addRoute('groups.setCustomFields', { authRequired: true }, {
 
 API.v1.addRoute('groups.setDescription', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.description || !this.bodyParams.description.trim()) {
+		if (!this.bodyParams.hasOwnProperty('description')) {
 			return API.v1.failure('The bodyParam "description" is required');
 		}
 
@@ -682,7 +682,7 @@ API.v1.addRoute('groups.setDescription', { authRequired: true }, {
 
 API.v1.addRoute('groups.setPurpose', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.purpose || !this.bodyParams.purpose.trim()) {
+		if (!this.bodyParams.hasOwnProperty('purpose')) {
 			return API.v1.failure('The bodyParam "purpose" is required');
 		}
 
@@ -722,7 +722,7 @@ API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
 
 API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
+		if (!this.bodyParams.hasOwnProperty('topic')) {
 			return API.v1.failure('The bodyParam "topic" is required');
 		}
 
@@ -762,7 +762,7 @@ API.v1.addRoute('groups.setType', { authRequired: true }, {
 
 API.v1.addRoute('groups.setAnnouncement', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+		if (!this.bodyParams.hasOwnProperty('announcement')) {
 			return API.v1.failure('The bodyParam "announcement" is required');
 		}
 

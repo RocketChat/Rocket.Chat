@@ -65,6 +65,12 @@ export const QueueMethods = {
 			desktopNotifications: 'all',
 			mobilePushNotifications: 'all',
 			emailNotifications: 'all',
+			v: {
+				_id: guest._id,
+				username: guest.username,
+				token: message.token,
+				status: guest.status,
+			},
 		};
 
 		if (guest.department) {

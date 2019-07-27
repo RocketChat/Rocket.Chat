@@ -128,6 +128,258 @@ export class SlackImporter extends Base {
 		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
+	performUserImport(user, startedByUserId) {
+		if (!user.do_import) {
+			return;
+		}
+
+		Meteor.runAsUser(startedByUserId, () => {
+			const existantUser = Users.findOneByEmailAddress(user.profile.email) || Users.findOneByUsernameIgnoringCase(user.name);
+			if (existantUser) {
+				user.rocketId = existantUser._id;
+				Users.update({ _id: user.rocketId }, { $addToSet: { importIds: user.id } });
+				this.userTags.push({
+					slack: `<@${ user.id }>`,
+					slackLong: `<@${ user.id }|${ user.name }>`,
+					rocket: `@${ existantUser.username }`,
+				});
+			} else {
+				const userId = user.profile.email ? Accounts.createUser({ email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }) : Accounts.createUser({ username: user.name, password: Date.now() + user.name, joinDefaultChannelsSilenced: true });
+				Meteor.runAsUser(userId, () => {
+					Meteor.call('setUsername', user.name, { joinDefaultChannelsSilenced: true });
+
+					const url = user.profile.image_original || user.profile.image_512;
+					try {
+						Meteor.call('setAvatarFromService', url, undefined, 'url');
+					} catch (error) {
+						this.logger.warn(`Failed to set ${ user.name }'s avatar from url ${ url }`);
+						console.log(`Failed to set ${ user.name }'s avatar from url ${ url }`);
+					}
+
+					// Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
+					if (user.tz_offset) {
+						Meteor.call('userSetUtcOffset', user.tz_offset / 3600);
+					}
+				});
+
+				Users.update({ _id: userId }, { $addToSet: { importIds: user.id } });
+
+				if (user.profile.real_name) {
+					Users.setName(userId, user.profile.real_name);
+				}
+
+				// Deleted users are 'inactive' users in Rocket.Chat
+				if (user.deleted) {
+					Meteor.call('setUserActiveStatus', userId, false);
+				}
+
+				user.rocketId = userId;
+				this.userTags.push({
+					slack: `<@${ user.id }>`,
+					slackLong: `<@${ user.id }|${ user.name }>`,
+					rocket: `@${ user.name }`,
+				});
+			}
+
+			this.addCountCompleted(1);
+		});
+	}
+
+	processMessageSubType(message, room, msgDataDefaults, missedTypes) {
+		const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
+
+		let rocketUser = this.getRocketUser(message.user);
+		const useRocketCat = !rocketUser;
+
+		if (useRocketCat) {
+			rocketUser = Users.findOneById('rocket.cat', { fields: { username: 1, name: 1 } });
+		}
+
+		if (!rocketUser) {
+			return;
+		}
+
+		switch (message.subtype) {
+			case 'channel_join':
+				if (!useRocketCat) {
+					Messages.createUserJoinWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
+				}
+				break;
+			case 'channel_leave':
+				if (!useRocketCat) {
+					Messages.createUserLeaveWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
+				}
+				break;
+			case 'me_message': {
+				const msgObj = {
+					...msgDataDefaults,
+					msg: `_${ this.convertSlackMessageToRocketChat(message.text) }_`,
+				};
+				sendMessage(rocketUser, msgObj, room, true);
+				break;
+			}
+			case 'bot_message':
+			case 'slackbot_response': {
+				const botUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
+				const botUsername = this.bots[message.bot_id] ? this.bots[message.bot_id].name : message.username;
+				const msgObj = {
+					...msgDataDefaults,
+					msg: this.convertSlackMessageToRocketChat(message.text),
+					rid: room._id,
+					bot: true,
+					attachments: message.attachments,
+					username: botUsername || undefined,
+				};
+
+				if (message.edited) {
+					msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
+					const editedBy = this.getRocketUser(message.edited.user);
+					if (editedBy) {
+						msgObj.editedBy = {
+							_id: editedBy._id,
+							username: editedBy.username,
+						};
+					}
+				}
+
+				if (message.icons) {
+					msgObj.emoji = message.icons.emoji;
+				}
+				sendMessage(botUser, msgObj, room, true);
+				break;
+			}
+
+			case 'channel_purpose':
+				Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', room._id, message.purpose, rocketUser, msgDataDefaults);
+				break;
+			case 'channel_topic':
+				Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, rocketUser, msgDataDefaults);
+				break;
+			case 'channel_name':
+				Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, rocketUser, msgDataDefaults);
+				break;
+			case 'pinned_item':
+				if (message.attachments) {
+					const msgObj = {
+						...msgDataDefaults,
+						attachments: [{
+							text: this.convertSlackMessageToRocketChat(message.attachments[0].text),
+							author_name: message.attachments[0].author_subname,
+							author_icon: getUserAvatarURL(message.attachments[0].author_subname),
+						}],
+					};
+
+					Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', rocketUser, msgObj);
+				} else {
+					// TODO: make this better
+					this.logger.debug('Pinned item with no attachment, needs work.');
+					// Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUser(message.user), msgDataDefaults
+				}
+				break;
+			case 'file_share':
+				if (message.file && message.file.url_private_download !== undefined) {
+					const details = {
+						message_id: `slack-${ message.ts.replace(/\./g, '-') }`,
+						name: message.file.name,
+						size: message.file.size,
+						type: message.file.mimetype,
+						rid: room._id,
+					};
+					this.uploadFile(details, message.file.url_private_download, rocketUser, room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
+				}
+				break;
+			default:
+				if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
+					missedTypes[message.subtype] = message;
+				}
+				break;
+		}
+	}
+
+	performMessageImport(message, room, missedTypes, slackChannel) {
+		const msgDataDefaults = {
+			_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }`,
+			ts: new Date(parseInt(message.ts.split('.')[0]) * 1000),
+		};
+
+		// Process the reactions
+		if (message.reactions && message.reactions.length > 0) {
+			msgDataDefaults.reactions = {};
+
+			message.reactions.forEach((reaction) => {
+				reaction.name = `:${ reaction.name }:`;
+				msgDataDefaults.reactions[reaction.name] = { usernames: [] };
+
+				reaction.users.forEach((u) => {
+					const rcUser = this.getRocketUser(u);
+					if (!rcUser) { return; }
+
+					msgDataDefaults.reactions[reaction.name].usernames.push(rcUser.username);
+				});
+
+				if (msgDataDefaults.reactions[reaction.name].usernames.length === 0) {
+					delete msgDataDefaults.reactions[reaction.name];
+				}
+			});
+		}
+
+		if (message.type === 'message') {
+			if (message.files) {
+				const fileUser = this.getRocketUser(message.user);
+				let fileIndex = 0;
+
+				message.files.forEach((file) => {
+					fileIndex++;
+					if (file.url_private_download === undefined) {
+						return;
+					}
+					const msgObj = {
+						_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }-file${ fileIndex }`,
+						ts: msgDataDefaults.ts,
+						msg: file.url_private_download,
+					};
+					sendMessage(fileUser, msgObj, room, true);
+				});
+			}
+
+			if (message.subtype) {
+				this.processMessageSubType(message, room, msgDataDefaults, missedTypes);
+			} else {
+				const user = this.getRocketUser(message.user);
+				if (user) {
+					const msgObj = {
+						...msgDataDefaults,
+						msg: this.convertSlackMessageToRocketChat(message.text),
+						rid: room._id,
+						u: {
+							_id: user._id,
+							username: user.username,
+						},
+					};
+
+					if (message.edited) {
+						msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
+						const editedBy = this.getRocketUser(message.edited.user);
+						if (editedBy) {
+							msgObj.editedBy = {
+								_id: editedBy._id,
+								username: editedBy.username,
+							};
+						}
+					}
+
+					try {
+						sendMessage(this.getRocketUser(message.user), msgObj, room, true);
+					} catch (e) {
+						this.logger.warn(`Failed to import the message: ${ msgDataDefaults._id }`);
+					}
+				}
+			}
+		}
+
+		this.addCountCompleted(1);
+	}
+
 	startImport(importSelection) {
 		super.startImport(importSelection);
 		const start = Date.now();
@@ -158,62 +410,7 @@ export class SlackImporter extends Base {
 		Meteor.defer(() => {
 			try {
 				super.updateProgress(ProgressStep.IMPORTING_USERS);
-				this.users.users.forEach((user) => {
-					if (!user.do_import) {
-						return;
-					}
-
-					Meteor.runAsUser(startedByUserId, () => {
-						const existantUser = Users.findOneByEmailAddress(user.profile.email) || Users.findOneByUsernameIgnoringCase(user.name);
-						if (existantUser) {
-							user.rocketId = existantUser._id;
-							Users.update({ _id: user.rocketId }, { $addToSet: { importIds: user.id } });
-							this.userTags.push({
-								slack: `<@${ user.id }>`,
-								slackLong: `<@${ user.id }|${ user.name }>`,
-								rocket: `@${ existantUser.username }`,
-							});
-						} else {
-							const userId = user.profile.email ? Accounts.createUser({ email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }) : Accounts.createUser({ username: user.name, password: Date.now() + user.name, joinDefaultChannelsSilenced: true });
-							Meteor.runAsUser(userId, () => {
-								Meteor.call('setUsername', user.name, { joinDefaultChannelsSilenced: true });
-
-								const url = user.profile.image_original || user.profile.image_512;
-								try {
-									Meteor.call('setAvatarFromService', url, undefined, 'url');
-								} catch (error) {
-									this.logger.warn(`Failed to set ${ user.name }'s avatar from url ${ url }`);
-									console.log(`Failed to set ${ user.name }'s avatar from url ${ url }`);
-								}
-
-								// Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
-								if (user.tz_offset) {
-									Meteor.call('userSetUtcOffset', user.tz_offset / 3600);
-								}
-							});
-
-							Users.update({ _id: userId }, { $addToSet: { importIds: user.id } });
-
-							if (user.profile.real_name) {
-								Users.setName(userId, user.profile.real_name);
-							}
-
-							// Deleted users are 'inactive' users in Rocket.Chat
-							if (user.deleted) {
-								Meteor.call('setUserActiveStatus', userId, false);
-							}
-
-							user.rocketId = userId;
-							this.userTags.push({
-								slack: `<@${ user.id }>`,
-								slackLong: `<@${ user.id }|${ user.name }>`,
-								rocket: `@${ user.name }`,
-							});
-						}
-
-						this.addCountCompleted(1);
-					});
-				});
+				this.users.users.forEach((user) => this.performUserImport(user, startedByUserId));
 				this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 
 				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
@@ -271,171 +468,23 @@ export class SlackImporter extends Base {
 				this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
 
 				const missedTypes = {};
-				const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
+
 				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 				Object.keys(this.messages).forEach((channel) => {
 					const messagesObj = this.messages[channel];
 
 					Meteor.runAsUser(startedByUserId, () => {
 						const slackChannel = this.getSlackChannelFromName(channel);
-						if (!slackChannel || !slackChannel.do_import) { return; }
+						if (!slackChannel || !slackChannel.do_import) {
+							return;
+						}
+
 						const room = Rooms.findOneById(slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 						Object.keys(messagesObj).forEach((date) => {
 							const msgs = messagesObj[date];
 							msgs.messages.forEach((message) => {
 								this.updateRecord({ messagesstatus: `${ channel }/${ date }.${ msgs.messages.length }` });
-								const msgDataDefaults = {
-									_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }`,
-									ts: new Date(parseInt(message.ts.split('.')[0]) * 1000),
-								};
-
-								// Process the reactions
-								if (message.reactions && message.reactions.length > 0) {
-									msgDataDefaults.reactions = {};
-
-									message.reactions.forEach((reaction) => {
-										reaction.name = `:${ reaction.name }:`;
-										msgDataDefaults.reactions[reaction.name] = { usernames: [] };
-
-										reaction.users.forEach((u) => {
-											const rcUser = this.getRocketUser(u);
-											if (!rcUser) { return; }
-
-											msgDataDefaults.reactions[reaction.name].usernames.push(rcUser.username);
-										});
-
-										if (msgDataDefaults.reactions[reaction.name].usernames.length === 0) {
-											delete msgDataDefaults.reactions[reaction.name];
-										}
-									});
-								}
-
-								if (message.type === 'message') {
-									if (message.files && message.files[0].url_private_download !== undefined) {
-										const msgObj = {
-											...msgDataDefaults,
-											msg: this.convertSlackMessageToRocketChat(message.files[0].url_private_download),
-										};
-										sendMessage(this.getRocketUser(message.user), msgObj, room, true);
-									}
-									if (message.subtype) {
-										if (message.subtype === 'channel_join') {
-											if (this.getRocketUser(message.user)) {
-												Messages.createUserJoinWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
-											}
-										} else if (message.subtype === 'channel_leave') {
-											if (this.getRocketUser(message.user)) {
-												Messages.createUserLeaveWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
-											}
-										} else if (message.subtype === 'me_message') {
-											const msgObj = {
-												...msgDataDefaults,
-												msg: `_${ this.convertSlackMessageToRocketChat(message.text) }_`,
-											};
-											sendMessage(this.getRocketUser(message.user), msgObj, room, true);
-										} else if (message.subtype === 'bot_message' || message.subtype === 'slackbot_response') {
-											const botUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
-											const botUsername = this.bots[message.bot_id] ? this.bots[message.bot_id].name : message.username;
-											const msgObj = {
-												...msgDataDefaults,
-												msg: this.convertSlackMessageToRocketChat(message.text),
-												rid: room._id,
-												bot: true,
-												attachments: message.attachments,
-												username: botUsername || undefined,
-											};
-
-											if (message.edited) {
-												msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
-												const editedBy = this.getRocketUser(message.edited.user);
-												if (editedBy) {
-													msgObj.editedBy = {
-														_id: editedBy._id,
-														username: editedBy.username,
-													};
-												}
-											}
-
-											if (message.icons) {
-												msgObj.emoji = message.icons.emoji;
-											}
-											sendMessage(botUser, msgObj, room, true);
-										} else if (message.subtype === 'channel_purpose') {
-											if (this.getRocketUser(message.user)) {
-												Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', room._id, message.purpose, this.getRocketUser(message.user), msgDataDefaults);
-											}
-										} else if (message.subtype === 'channel_topic') {
-											if (this.getRocketUser(message.user)) {
-												Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, this.getRocketUser(message.user), msgDataDefaults);
-											}
-										} else if (message.subtype === 'channel_name') {
-											if (this.getRocketUser(message.user)) {
-												Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, this.getRocketUser(message.user), msgDataDefaults);
-											}
-										} else if (message.subtype === 'pinned_item') {
-											if (message.attachments) {
-												const msgObj = {
-													...msgDataDefaults,
-													attachments: [{
-														text: this.convertSlackMessageToRocketChat(message.attachments[0].text),
-														author_name: message.attachments[0].author_subname,
-														author_icon: getUserAvatarURL(message.attachments[0].author_subname),
-													}],
-												};
-												Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', this.getRocketUser(message.user), msgObj);
-											} else {
-												// TODO: make this better
-												this.logger.debug('Pinned item with no attachment, needs work.');
-												// RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUser(message.user), msgDataDefaults
-											}
-										} else if (message.subtype === 'file_share') {
-											if (message.file && message.file.url_private_download !== undefined) {
-												const details = {
-													message_id: `slack-${ message.ts.replace(/\./g, '-') }`,
-													name: message.file.name,
-													size: message.file.size,
-													type: message.file.mimetype,
-													rid: room._id,
-												};
-												this.uploadFile(details, message.file.url_private_download, this.getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
-											}
-										} else if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
-											missedTypes[message.subtype] = message;
-										}
-									} else {
-										const user = this.getRocketUser(message.user);
-										if (user) {
-											const msgObj = {
-												...msgDataDefaults,
-												msg: this.convertSlackMessageToRocketChat(message.text),
-												rid: room._id,
-												u: {
-													_id: user._id,
-													username: user.username,
-												},
-											};
-
-											if (message.edited) {
-												msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
-												const editedBy = this.getRocketUser(message.edited.user);
-												if (editedBy) {
-													msgObj.editedBy = {
-														_id: editedBy._id,
-														username: editedBy.username,
-													};
-												}
-											}
-
-											try {
-												sendMessage(this.getRocketUser(message.user), msgObj, room, true);
-											} catch (e) {
-												this.logger.warn(`Failed to import the message: ${ msgDataDefaults._id }`);
-											}
-										}
-									}
-								}
-
-								this.addCountCompleted(1);
+								return this.performMessageImport(message, room, missedTypes, slackChannel);
 							});
 						});
 					});

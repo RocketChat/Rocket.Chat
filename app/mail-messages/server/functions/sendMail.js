@@ -42,24 +42,25 @@ export const sendMail = function(from, subject, body, dryrun, query) {
 			});
 		});
 	}
-
 	return Meteor.users.find(userQuery).forEach(function(user) {
-		const email = `${ user.name } <${ user.emails[0].address }>`;
+		if (user && user.emails && Array.isArray(user.emails) && user.emails.length) {
+			const email = `${ user.name } <${ user.emails[0].address }>`;
 
-		const html = placeholders.replace(body, {
-			unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
-				_id: user._id,
-				createdAt: user.createdAt.getTime(),
-			})),
-			name: s.escapeHTML(user.name),
-			email: s.escapeHTML(email),
-		});
-		console.log(`Sending email to ${ email }`);
-		return Mailer.send({
-			to: email,
-			from,
-			subject,
-			html,
-		});
+			const html = placeholders.replace(body, {
+				unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
+					_id: user._id,
+					createdAt: user.createdAt.getTime(),
+				})),
+				name: s.escapeHTML(user.name),
+				email: s.escapeHTML(email),
+			});
+			console.log(`Sending email to ${ email }`);
+			return Mailer.send({
+				to: email,
+				from,
+				subject,
+				html,
+			});
+		}
 	});
 };

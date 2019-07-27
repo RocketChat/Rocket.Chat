@@ -35,6 +35,17 @@ export class LivechatVisitors extends Base {
 	}
 
 	/**
+	 * Find One visitor by _id
+	 */
+	findOneById(_id, options) {
+		const query = {
+			_id,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	/**
 	 * Gets visitor by token
 	 * @param {string} token - Visitor token
 	 */

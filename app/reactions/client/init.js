@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-import { Rooms, Subscriptions } from '../../models';
+import { Rooms } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { EmojiPicker } from '../../emoji';
@@ -17,7 +17,13 @@ Template.room.events({
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+		if (room.ro && !room.reactWhenReadOnly) {
+			if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
+				return false;
+			}
+		}
+
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 			return false;
 		}
 
@@ -62,17 +68,26 @@ Meteor.startup(function() {
 			const { msg } = messageArgs(this);
 			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
 		},
-		condition(message) {
-			const room = Rooms.findOne({ _id: message.rid });
-			const user = Meteor.user();
-
+		condition({ msg: message, u: user, room, subscription }) {
 			if (!room) {
 				return false;
-			} if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+			}
+
+			if (room.ro && !room.reactWhenReadOnly) {
+				if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
+					return false;
+				}
+			}
+
+			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 				return false;
-			} if (!Subscriptions.findOne({ rid: message.rid })) {
+			}
+
+			if (!subscription) {
 				return false;
-			} if (message.private) {
+			}
+
+			if (message.private) {
 				return false;
 			}
 
