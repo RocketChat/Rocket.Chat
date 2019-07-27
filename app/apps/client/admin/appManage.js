@@ -266,8 +266,8 @@ Template.appManage.helpers({
 	app() {
 		return Template.instance().state.all();
 	},
-	categories() {
-		return Template.instance().state.get('categories');
+	failure() {
+		return Template.instance().state.get('failure');
 	},
 	settings() {
 		return Object.values(Template.instance().state.get('settings'));

@@ -253,7 +253,7 @@ export const appStatusSpanProps = ({
 	status,
 	subscriptionInfo,
 }) => {
-	const isFailed = () => installed && false; // TODO
+	const isFailed = () => installed && ['invalid_license_disabled'].includes(status); // TODO
 	const isEnabled = () => appEnabledStatuses.includes(status);
 	const isOnTrialPeriod = () => subscriptionInfo && subscriptionInfo.status === 'trialing';
 
