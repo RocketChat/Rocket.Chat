@@ -4,10 +4,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
 import _ from 'underscore';
 
 import { SideNav } from '../../../ui-utils/client';
-import { isEmail } from '../../../utils';
+import { isEmail, t } from '../../../utils';
 import { Utilities } from '../../lib/misc/Utilities';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
@@ -97,9 +98,7 @@ const attachMarketplaceInformation = async (appId, version, state) => {
 	}
 };
 
-const loadApp = async (instance) => {
-	const { appId, version, state } = instance;
-
+const loadApp = async ({ appId, version, state }) => {
 	let app;
 	try {
 		app = await Apps.getApp(appId);
@@ -124,7 +123,9 @@ const loadApp = async (instance) => {
 	}
 
 	if (app) {
-		state.set({ ...app, isLoading: false });
+		delete app.status;
+		app.marketplaceVersion = app.version;
+		state.set({ ...app, installed: false, isLoading: false });
 
 		attachBundlesApps(app.bundledIn, state);
 	}
@@ -137,6 +138,8 @@ Template.appManage.onCreated(function() {
 		id: this.appId,
 		version: this.version,
 		settings: {},
+		isLoading: true,
+		isSaving: false,
 	});
 
 	loadApp(this);
@@ -148,7 +151,7 @@ Template.appManage.onCreated(function() {
 			: TAPi18n.__(key, options, lang_tag);
 	};
 
-	const withAppIdFilter = (f) => function(maybeAppId, ...args) {
+	const withAppIdFilter = (f) => (maybeAppId, ...args) => {
 		const appId = maybeAppId.appId || maybeAppId;
 		if (appId !== this.appId) {
 			return;
@@ -159,6 +162,7 @@ Template.appManage.onCreated(function() {
 
 	this.handleStatusChanged = withAppIdFilter(({ status }) => {
 		this.state.set('status', status);
+		toastr.info(t(`App_status_${ status }`), this.state.get('name'));
 	});
 
 	this.handleSettingUpdated = withAppIdFilter(() => {
@@ -351,12 +355,12 @@ Template.appManage.events({
 	async 'click .js-install, click .js-update'(event, instance) {
 		event.stopPropagation();
 
-		const { id, state } = instance;
+		const { appId, state } = instance;
 
 		state.set('working', true);
 
 		try {
-			await Apps.installApp(id, state.get('marketplaceVersion'));
+			await Apps.installApp(appId, state.get('marketplaceVersion'));
 		} catch (error) {
 			handleAPIError(error);
 		} finally {

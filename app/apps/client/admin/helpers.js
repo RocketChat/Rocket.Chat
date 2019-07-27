@@ -255,7 +255,7 @@ export const appStatusSpanProps = ({
 }) => {
 	const isFailed = () => installed && false; // TODO
 	const isEnabled = () => appEnabledStatuses.includes(status);
-	const isOnTrialPeriod = () => subscriptionInfo.status === 'trialing';
+	const isOnTrialPeriod = () => subscriptionInfo && subscriptionInfo.status === 'trialing';
 
 	if (isFailed()) {
 		return {

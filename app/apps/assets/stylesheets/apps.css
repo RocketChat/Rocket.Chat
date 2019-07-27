@@ -60,117 +60,6 @@
 		line-height: 20px;
 	}
 
-	.rc-apps-details {
-		margin-bottom: 0;
-		padding: 0;
-
-		&__description {
-			padding-bottom: 50px;
-
-			border-bottom: 1.5px solid #efefef;
-		}
-
-		&__photo {
-			width: 96px;
-			height: 96px;
-			margin-right: 21px;
-
-			background-color: #f7f7f7;
-		}
-
-		&__content {
-			padding: 0;
-		}
-
-		&__col {
-			display: inline-block;
-
-			margin-right: 8px;
-		}
-
-		&__bundles {
-			display: flex;
-
-			padding-bottom: 20px;
-
-			border-bottom: 1.5px solid #efefef;
-		}
-
-		&__bundle {
-			display: flex;
-
-			width: 50%;
-		}
-
-		&__bundle_icons {
-			display: flex;
-			overflow: hidden;
-
-			min-width: 99px;
-			max-width: 99px;
-			height: 99px;
-
-			padding: 2px;
-
-			border-radius: 2px;
-
-			background-color: #e6e8eb;
-			flex-wrap: wrap;
-		}
-
-		&__bundle_icon {
-			min-width: 40px;
-			max-width: 40px;
-			height: 40px;
-
-			margin-top: 5px;
-			margin-left: 5px;
-
-			border-radius: 2px;
-
-			background-color: #f7f7f7;
-			background-repeat: no-repeat;
-			background-position: center center;
-			background-size: contain;
-		}
-
-		&__bundle_body {
-			padding: 5px 10px;
-
-			color: #9da1a7;
-
-			&_title {
-				color: #151924;
-
-				font-size: 1.1em;
-				font-weight: 500;
-			}
-		}
-
-		&__alert {
-			width: 660px;
-			height: 36px;
-
-			margin-bottom: 4px;
-			padding: 8px 16px;
-
-			border-radius: 4px;
-
-			font-size: 14px;
-			line-height: 20px;
-		}
-
-		&__alert-error {
-			color: #f5455c;
-			background: #ffe9ec;
-		}
-
-		&__alert-warning {
-			color: #b68d00;
-			background: #fff6d6;
-		}
-	}
-
 	.rc-apps-container {
 		margin-top: 0;
 		padding-bottom: 15px;
@@ -448,45 +337,34 @@
 			content: "";
 			cursor: pointer;
 		}
+
+		& .rc-icon {
+			margin: 0;
+		}
 	}
 
 	&__spinning-icon {
 		animation: spin 1s linear infinite;
 	}
 
-	&__button--inactive.rc-button,
-	&__button--warning.rc-button,
-	&__button--failed.rc-button {
-		padding: 0;
-
-		pointer-events: none;
-
-		border: none;
-		justify-content: flex-start;
-
-		&::before {
-			display: none;
-		}
-	}
-
-	&__button--inactive.rc-button {
-		color: var(--color-gray);
-
-		& .rc-icon {
-			color: var(--rc-color-primary-button-background);
-		}
-	}
-
-	&__button--failed.rc-button {
-		color: var(--rc-color-error);
-	}
-
-	&__button--warning.rc-button {
-		color: var(--rc-color-alert);
-	}
-
 	&__button--working {
 		opacity: 0.6;
+	}
+
+	&__status {
+		width: 100%;
+
+		color: var(--rc-color-primary-light);
+
+		line-height: 40px;
+
+		&--warning {
+			color: var(--rc-color-alert);
+		}
+
+		&--failed {
+			color: var(--rc-color-error);
+		}
 	}
 }
 

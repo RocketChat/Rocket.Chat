@@ -36,41 +36,45 @@
 									<div class="rc-apps-details__photo" style="background-image:url({{iconFileContent}})"></div>
 								{{/if}}
 								<div class="rc-apps-details__content">
-									<h2 class="rc-apps-details__app-name">{{name}}</h2>
-									<div class="rc-apps-details__app-info">
+									<h2 class="rc-apps-details__name">{{name}}</h2>
+									<div class="rc-apps-details__row">
 										{{#if author.name}}
-											<span class="rc-apps-details__app-author">by {{author.name}}</span>
+											<span class="rc-apps-details__author">by {{author.name}}</span>
 										{{/if}}
-										<span class="rc-apps-details__app-version">Version {{version}}</span>
+										<span class="rc-apps-details__side-info">Version {{version}}</span>
 									</div>
 
-									<div class="rc-apps-details__app-status">
-										{{#let buttonProps=(appButtonProps app) statusSpanProps=(appStatusSpanProps app)}}
+									<div class="rc-apps-details__row rc-apps-details__row--centered">
+										{{#let buttonProps=(appButtonProps .) statusSpanProps=(appStatusSpanProps .)}}
 											{{#if buttonProps}}
 												<button
-													class="rc-button rc-button--primary {{#if app.working}}rc-apps-marketplace__table-button--working{{/if}} js-{{buttonProps.action}}"
-													disabled={{app.working}}
-													data-id={{app.id}}
+													class="rc-button rc-button--primary {{#if working}}rc-apps-section__button--working{{/if}} js-{{buttonProps.action}}"
+													disabled={{working}}
+													data-id={{id}}
 												>
-													{{#if app.working}}
+													{{#if working}}
 														{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
+													{{else if ($eq buttonProps.action 'update')}}
+														{{> icon icon="reload" block="rc-icon--default-size"}}
 													{{else}}
 														{{> icon icon="circled-arrow-down" block="rc-icon--default-size"}}
 													{{/if}}
 													{{_ buttonProps.label}}
 												</button>
-											{{else if statusSpanProps}}
-												<span class="rc-apps-marketplace__status {{#if statusSpanProps.type}}rc-apps-marketplace__status--{{statusSpanProps.type}}{{/if}}">
+											{{/if}}
+
+											{{#if statusSpanProps}}
+												<span class="rc-apps-section__status {{#if statusSpanProps.type}}rc-apps-section__status--{{statusSpanProps.type}}{{/if}}">
 													{{> icon icon=statusSpanProps.icon block="rc-icon--default-size"}}
 													{{_ statusSpanProps.label}}
 												</span>
 											{{/if}}
 										{{/let}}
 
-										<span class="rc-apps-details__app-button-wrapper">
+										<span class="rc-apps-details__side-info-wrapper">
 											{{#unless installed}}
 												{{#if priceDisplay}}
-													<span class="rc-apps-details__app-price">
+													<span class="rc-apps-details__side-info rc-apps-details__side-info--twice">
 														{{priceDisplay}}
 													</span>
 												{{/if}}
@@ -78,7 +82,7 @@
 										</span>
 
 										{{#if installed}}
-											<button class="rc-button rc-button--nude rc-apps-details__app-menu-trigger js-menu" data-app="{{appId}}">
+											<button class="rc-apps-section__app-menu-trigger js-menu" data-app="{{appId}}">
 												{{> icon icon="menu" block="rc-icon--default-size"}}
 											</button>
 										{{/if}}
