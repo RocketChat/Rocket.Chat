@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasRole } from '../../authorization';
-import { Settings } from '../../models';
+import { hasRole } from '../../app/authorization';
+import { Settings } from '../../app/models';
 
 Meteor.methods({
 	getSetupWizardParameters() {
