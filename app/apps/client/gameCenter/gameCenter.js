@@ -2,6 +2,7 @@ import toastr from 'toastr';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+import { modal } from '../../../ui-utils';
 import { APIClient } from '../../../utils';
 
 const getactivatedGames = async (instance) => {
@@ -50,5 +51,16 @@ Template.GameCenter.helpers({
 				return instance.page.set(instance.page.get() + 1);
 			}
 		};
+	},
+});
+
+Template.GameCenter.events({
+	'click .rc-table-tr'() {
+		modal.open({
+			allowOutsideClick: false,
+			data: this,
+			template: 'GameModal',
+			type: 'rc-game',
+		});
 	},
 });
