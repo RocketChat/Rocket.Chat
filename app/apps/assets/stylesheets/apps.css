@@ -353,10 +353,13 @@
 
 .rc-game.close {
 	position: absolute;
-	right: -25px;
 	top: -30px;
-	color: #e9ebee;
+	right: -25px;
+
 	cursor: pointer;
+
+	color: #e9ebee;
+
 	font-size: 20px;
 
 	&:hover {
