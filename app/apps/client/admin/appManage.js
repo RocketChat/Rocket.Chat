@@ -266,8 +266,13 @@ Template.appManage.helpers({
 	app() {
 		return Template.instance().state.all();
 	},
-	failure() {
-		return Template.instance().state.get('failure');
+	errors() {
+		const { errors } = Template.instance().state.get('licenseValidation');
+		return Object.values(errors);
+	},
+	warnings() {
+		const { warnings } = Template.instance().state.get('licenseValidation');
+		return Object.values(warnings);
 	},
 	settings() {
 		return Object.values(Template.instance().state.get('settings'));

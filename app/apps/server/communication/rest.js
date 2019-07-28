@@ -247,7 +247,7 @@ export class AppsRestApi {
 				return API.v1.success({
 					app: info,
 					implemented: aff.getImplementedInferfaces(),
-					warnings: aff.getLicenseValidationResult().getWarnings(),
+					licenseValidation: aff.getLicenseValidationResult(),
 				});
 			},
 		});
@@ -352,10 +352,16 @@ export class AppsRestApi {
 
 				if (prl) {
 					const info = prl.getInfo();
-					info.status = prl.getStatus();
 
-					return API.v1.success({ app: info });
+					return API.v1.success({
+						app: {
+							...info,
+							status: prl.getStatus(),
+							licenseValidation: prl.getLatestLicenseValidationResult(),
+						},
+					});
 				}
+
 				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
@@ -366,13 +372,13 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
 					}
 
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'binary' } });
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: null } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'binary');
+					buff = result.content;
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
@@ -386,7 +392,7 @@ export class AppsRestApi {
 					try {
 						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
 							headers,
-							npmRequestOptions: { encoding: 'binary' },
+							npmRequestOptions: { encoding: null },
 						});
 					} catch (e) {
 						orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
@@ -402,7 +408,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'binary');
+					buff = result.content;
 				} else {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });

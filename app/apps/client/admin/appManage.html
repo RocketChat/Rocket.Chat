@@ -92,11 +92,17 @@
 						</div>
 						<div class="rc-apps-container">
 							<div class="rc-apps-details__content">
-								{{#if failure}}
-									<div class="rc-apps-details__alert rc-apps-details__alert-error">
-										{{failure}}
+								{{#each warnings}}
+									<div class="rc-apps-details__alert rc-apps-details__alert-warning">
+										{{.}}
 									</div>
-								{{/if}}
+								{{/each}}
+
+								{{#each errors}}
+									<div class="rc-apps-details__alert rc-apps-details__alert-error">
+										{{.}}
+									</div>
+								{{/each}}
 
 								{{#if categories}}
 									<div class="rc-apps-details__row rc-apps-details__block">
