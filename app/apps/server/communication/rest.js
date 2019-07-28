@@ -473,7 +473,7 @@ export class AppsRestApi {
 					return API.v1.failure();
 				}
 
-				Promise.await(Apps.updateAppsMarketplaceInfo(result.data));
+				Promise.await(Apps.updateAppsMarketplaceInfo([result.data]));
 
 				return API.v1.success({ app: result.data });
 			},
