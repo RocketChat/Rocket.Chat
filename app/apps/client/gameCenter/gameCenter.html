@@ -12,22 +12,16 @@
 			</tr>
 		</thead>
 		{{#each games}}
-		<tr class="rc-table-tr" data-name="{{latest.name}}">
+		<tr class="rc-table-tr" data-name="{{name}}">
 			<td>
 				<div class="rc-table-wrapper">
-					{{#if latest.iconFileData}}
-					<div class="rc-table-avatar"
-						style="background-image:url(data:image/png;base64,{{latest.iconFileData}})"></div>
-					{{else}}
-					<div class="rc-table-avatar" style="background-image:url({{latest.iconFileContent}})"></div>
+					{{#if icon}}
+					<div class="rc-table-avatar" style="background-image:url({{icon}})"></div>
 					{{/if}}
 					<div class="rc-table-info">
 						<span class="rc-table-title">
-							{{latest.name}}
+							{{name}}
 						</span>
-						{{#if latest.author.name}}
-						<span class="rc-table-subtitle">by {{latest.author.name}}</span>
-						{{/if}}
 					</div>
 				</div>
 			</td>
@@ -35,15 +29,15 @@
 				<div class="rc-table-wrapper">
 					<div class="rc-table-info">
 						<span class="rc-table-title">
-							{{#if latest.summary}}
-							{{latest.summary}}
+							{{#if summary}}
+							{{summary}}
 							{{else}}
-							{{latest.description}}
+							{{description}}
 							{{/if}}
 						</span>
-						{{#if latest.summary}}
+						{{#if summary}}
 						<span class="rc-table-subtitle">
-							{{latest.description}}
+							{{description}}
 						</span>
 						{{/if}}
 					</div>

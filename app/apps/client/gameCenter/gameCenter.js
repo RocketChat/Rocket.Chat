@@ -6,12 +6,7 @@ import { APIClient } from '../../../utils';
 
 const getactivatedGames = async (instance) => {
 	try {
-		const data = await APIClient.get('apps');
-		const activatedGames = data.apps.filter((app) =>
-			app.status === 'manually_enabled'
-			&& app.category && app.category === 'game'
-		);
-		const games = activatedGames.map((game) => ({ latest: game }));
+		const { games } = await APIClient.get('apps/games');
 		instance.games.set(games);
 	} catch (e) {
 		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
