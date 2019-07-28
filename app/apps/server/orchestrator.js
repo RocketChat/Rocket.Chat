@@ -72,6 +72,10 @@ class AppServerOrchestrator {
 		return this._manager;
 	}
 
+	getGames() {
+		return this._manager.externalComponentManager.providedComponents;
+	}
+
 	isEnabled() {
 		return settings.get('Apps_Framework_enabled');
 	}
