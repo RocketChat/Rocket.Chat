@@ -1,61 +1,57 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useContext, useEffect } from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
-import { Icon } from '../basic/Icon';
+import { Input } from '../basic/Input';
+import { SetupWizardFormContext } from './SetupWizardForm';
 
 export function SettingsBasedStep({ active, formState, step }) {
 	const t = useTranslation();
 
+	const { setBackEnabled, setContinueEnabled } = useContext(SetupWizardFormContext);
+
+	useEffect(() => {
+		if (!active) {
+			return;
+		}
+
+		setBackEnabled(true);
+		setContinueEnabled(true);
+	}, [active]);
+
 	const fields = Object.values(formState).filter((setting) => setting.step === step);
 
-	return <div
-		className={[
-			'setup-wizard-forms__content-step',
-			active && 'setup-wizard-forms__content-step--active',
-		].filter(Boolean).join(' ')}
-	>
-		{fields.map(({ id, type, label, value, options }, i) => <Fragment key={i}>
+	return <>
+		{fields.map(({ id, type, label, value, options, setValue }, i) => <Fragment key={i}>
 			{type === 'string'
-				&& <div className='rc-input'>
-					<label className='rc-input__label'>
-						<div className='rc-input__title'>{t(label)}</div>
-						<div className='rc-input__wrapper'>
-							<input type='text' className='rc-input__element js-setting-data' name={id} defaultValue={value} />
-						</div>
-					</label>
-				</div>}
+				&& <Input
+					type='text'
+					title={t(label)}
+					name={id}
+					value={value}
+					onChange={({ currentTarget: { value } }) => setValue(value)}
+				/>}
 
 			{type === 'select'
-				&& <div className='rc-input'>
-					<label className='rc-input__label'>
-						<div className='rc-input__title'>{t(label)}</div>
-						<div className='rc-select'>
-							<select className='rc-select__element js-setting-data' name={id} defaultValue={value}>
-								<option>{t('Select_an_option')}</option>
-								{options.map(({ optionLabel, optionValue }, j) =>
-									<option key={j} className='rc-select__option' value={optionValue}>{t(optionLabel)}</option>
-								)}
-							</select>
-							<Icon block='rc-select__arrow' icon='arrow-down' />
-						</div>
-					</label>
-				</div>}
+				&& <Input
+					type='select'
+					title={t(label)}
+					name={id}
+					placeholder={t('Select_an_option')}
+					options={options.map(({ label, value }) => ({ label: t(label), value }))}
+					value={value || ''}
+					onChange={({ currentTarget: { value } }) => setValue(value)}
+				/>}
 
 			{type === 'language'
-				&& <div className='rc-input'>
-					<label className='rc-input__label'>
-						<div className='rc-input__title'>{t(label)}</div>
-						<div className='rc-select'>
-							<select className='rc-select__element js-setting-data' name={id} defaultValue={value}>
-								<option>{t('Default')}</option>
-								{options.map(({ optionLabel, optionValue }, j) =>
-									<option key={j} className='rc-select__option' value={optionValue} dir='auto'>{t(optionLabel)}</option>
-								)}
-							</select>
-							<Icon block='rc-select__arrow' icon='arrow-down' />
-						</div>
-					</label>
-				</div>}
+				&& <Input
+					type='select'
+					title={t(label)}
+					name={id}
+					placeholder={t('Default')}
+					options={options}
+					value={value || ''}
+					onChange={({ currentTarget: { value } }) => setValue(value)}
+				/>}
 		</Fragment>)}
-	</div>;
+	</>;
 }
