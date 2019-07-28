@@ -178,6 +178,14 @@ export class AppsRestApi {
 			},
 		});
 
+		this.api.addRoute('games', { authRequired: false }, {
+			get() {
+				const games = orchestrator.getGames();
+
+				return API.v1.success({ games: Array.from(games.values()) });
+			},
+		});
+
 		this.api.addRoute('languages', { authRequired: false }, {
 			get() {
 				const apps = manager.get().map((prl) => ({
