@@ -7,7 +7,7 @@ import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
 import { Settings, Users, Roles } from '../../models/server';
 
-const notifyAdminsAboutInvalidAppsIfNecessary = Meteor.bindEnvironment((apps) => {
+const notifyAdminsAboutInvalidAppsIfNecessary = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidAppsIfNecessary(apps) {
 	const invalidApps = apps.filter((app) => app.getLatestLicenseValidationResult().hasErrors);
 
 	if (invalidApps.length === 0) {
@@ -45,7 +45,7 @@ const notifyAdminsAboutInvalidAppsIfNecessary = Meteor.bindEnvironment((apps) =>
 	});
 });
 
-export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(() => {
+export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUpdateMarketplaceInfo() {
 	const token = getWorkspaceAccessToken();
 	const baseUrl = Apps.getMarketplaceUrl();
 	const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();

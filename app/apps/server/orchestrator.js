@@ -6,7 +6,7 @@ import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { settings } from '../../settings';
-import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel, Roles, Users } from '../../models';
+import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
 import { Logger } from '../../logger';
 
 export let Apps;
