@@ -130,14 +130,11 @@ class AppServerOrchestrator {
 		}
 
 		return this._manager.updateAppsMarketplaceInfo(apps)
-			.then((apps) => {
-				this.notifyAdminsAboutInvalidAppsIfNecessary(apps);
-				return apps;
-			});
+			.then(() => this.notifyAdminsAboutInvalidAppsIfNecessary());
 	}
 
-	notifyAdminsAboutInvalidAppsIfNecessary(apps) {
-		const invalidApps = apps.filter((app) => app.getLatestLicenseValidationResult().hasErrors());
+	notifyAdminsAboutInvalidAppsIfNecessary() {
+		const invalidApps = this._manager.get().filter((app) => app.getLatestLicenseValidationResult().hasErrors);
 
 		if (invalidApps.length === 0) {
 			return;
@@ -146,16 +143,17 @@ class AppServerOrchestrator {
 		const id = 'someAppInInvalidState';
 		const title = 'Warning';
 		const text = 'There is one or more apps in an invalid state. Click here to review.';
+		const rocketCatMessage = 'There is one or more apps in an invalid state. Go to Administration > Apps to review.';
 		const link = '/admin/apps';
 
 		Roles.findUsersInRole('admin').forEach((adminUser) => {
-			Users.removeBannerById(id);
+			Users.removeBannerById(adminUser._id, { id });
 
 			try {
 				Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
 
 				Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', {
-					msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(text, adminUser.language) }\n${ link }`,
+					msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(rocketCatMessage, adminUser.language) }\n`,
 					rid: [adminUser._id, 'rocket.cat'].sort().join(''),
 				}));
 			} catch (e) {
