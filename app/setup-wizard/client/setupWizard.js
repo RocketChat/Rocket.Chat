@@ -151,9 +151,17 @@ Template.setupWizard.onCreated(async function() {
 		}
 	});
 
-	const { settings, allowStandaloneServer } = await call('getSetupWizardParameters') || {};
-	this.wizardSettings.set(settings);
-	this.allowStandaloneServer.set(allowStandaloneServer);
+	this.autorun(async (c) => {
+		if (!Meteor.userId()) {
+			return;
+		}
+
+		const { settings, allowStandaloneServer } = await call('getSetupWizardParameters') || {};
+		this.wizardSettings.set(settings);
+		this.allowStandaloneServer.set(allowStandaloneServer);
+
+		c.stop();
+	});
 });
 
 Template.setupWizard.onRendered(function() {
@@ -260,6 +268,7 @@ Template.setupWizard.helpers({
 		setWizardSettings: Template.instance().wizardSettings.set.bind(Template.instance().wizardSettings),
 		state: Template.instance().state.all(),
 		setState: Template.instance().state.set.bind(Template.instance().state),
+		allowStandaloneServer: Template.instance().allowStandaloneServer.get(),
 	}),
 	currentStep: () => Template.instance().state.get('currentStep'),
 	currentStepTitle() {
@@ -370,30 +379,30 @@ Template.setupWizard.helpers({
 	},
 });
 
-Template.setupWizardInfo.helpers({
-	stepItemModifier(step) {
-		const { currentStep } = Template.currentData();
+// Template.setupWizardInfo.helpers({
+// 	stepItemModifier(step) {
+// 		const { currentStep } = Template.currentData();
 
-		if (currentStep === step) {
-			return 'setup-wizard-info__steps-item--active';
-		}
+// 		if (currentStep === step) {
+// 			return 'setup-wizard-info__steps-item--active';
+// 		}
 
-		if (currentStep > step) {
-			return 'setup-wizard-info__steps-item--past';
-		}
+// 		if (currentStep > step) {
+// 			return 'setup-wizard-info__steps-item--past';
+// 		}
 
-		return '';
-	},
-	stepTitle(step) {
-		switch (step) {
-			case 1:
-				return 'Admin_Info';
-			case 2:
-				return 'Organization_Info';
-			case 3:
-				return 'Server_Info';
-			case 4:
-				return 'Register_Server';
-		}
-	},
-});
+// 		return '';
+// 	},
+// 	stepTitle(step) {
+// 		switch (step) {
+// 			case 1:
+// 				return 'Admin_Info';
+// 			case 2:
+// 				return 'Organization_Info';
+// 			case 3:
+// 				return 'Server_Info';
+// 			case 4:
+// 				return 'Register_Server';
+// 		}
+// 	},
+// });

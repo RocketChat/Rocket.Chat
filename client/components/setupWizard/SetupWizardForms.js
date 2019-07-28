@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
 import { Button } from '../basic/Button';
-import { useSetting } from '../../hooks/useSetting';
 import { AdminUserInformationStep } from './AdminUserInformationStep';
 import { SettingsBasedStep } from './SettingsBasedStep';
 import { RegisterServerStep } from './RegisterServerStep';
@@ -37,22 +36,10 @@ const Footer = ({ children }) => <footer className='setup-wizard-forms__footer'>
 	{children}
 </footer>;
 
-export function SetupWizardForms({ steps, currentStep, formState, settings, input }) {
+export function SetupWizardForms({ steps, currentStep, formState, allowStandaloneServer }) {
 	const t = useTranslation();
 	const currentStepNumber = useMemo(() => steps.indexOf(currentStep) + 1, [steps, currentStep]);
 	const currentStepIndex = useMemo(() => steps.indexOf(currentStep), [steps, currentStep]);
-	const [setupWizardStatus] = useSetting('Show_Setup_Wizard');
-	const loaded = useMemo(() => {
-		switch (currentStepIndex) {
-			case 0:
-				return setupWizardStatus === 'pending';
-			case 1:
-			case 2:
-				return settings.length > 0;
-			case 3:
-				return true;
-		}
-	}, [currentStepIndex, setupWizardStatus, settings]);
 	const showBackButton = useMemo(() => {
 		switch (currentStepIndex) {
 			case 2:
@@ -65,17 +52,18 @@ export function SetupWizardForms({ steps, currentStep, formState, settings, inpu
 	const isContinueDisabled = useMemo(() => {
 		switch (currentStepIndex) {
 			case 0:
-				return Object.entries(input)
-					.filter(([key, value]) => /registration-/.test(key) && !value)
-					.length !== 0;
+				return !(formState.name && formState.name.value)
+					|| !(formState.username && formState.username.value)
+					|| !(formState.email && formState.email.value)
+					|| !(formState.pass && formState.pass.value);
 		}
 
 		return false;
-	}, [currentStepIndex, input]);
+	}, [currentStepIndex, formState]);
 
 	return <section className='setup-wizard-forms'>
 		<Wrapper>
-			<Form loaded={loaded}>
+			<Form loaded>
 				<Header>
 					<HeaderStep>{t('Step')} {currentStepNumber}</HeaderStep>
 					<HeaderTitle>{t(currentStep.title)}</HeaderTitle>
@@ -83,9 +71,9 @@ export function SetupWizardForms({ steps, currentStep, formState, settings, inpu
 
 				<Content>
 					<AdminUserInformationStep active={currentStepIndex === 0} formState={formState} />
-					<SettingsBasedStep active={currentStepIndex === 1} />
-					<SettingsBasedStep active={currentStepIndex === 2} />
-					<RegisterServerStep active={currentStepIndex === 3} />
+					<SettingsBasedStep active={currentStepIndex === 1} formState={formState} step={steps[1]} />
+					<SettingsBasedStep active={currentStepIndex === 2} formState={formState} step={steps[2]} />
+					<RegisterServerStep active={currentStepIndex === 3} formState={formState} allowStandaloneServer={allowStandaloneServer} />
 				</Content>
 
 				<Footer>
