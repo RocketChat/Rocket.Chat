@@ -2,13 +2,9 @@ import { TabBar } from '../../../ui-utils/client';
 import { APIClient } from '../../../utils';
 
 (async function() {
-	const data = await APIClient.get('apps');
-	const activatedGames = data.apps.filter((app) =>
-		app.status === 'manually_enabled'
-		&& app.category
-		&& app.category === 'game'
-	);
-	if (activatedGames.length > 0) {
+	const { games } = await APIClient.get('apps/games');
+	// TODO Need to filter the games enabled by the admin only
+	if (games.length > 0) {
 		TabBar.addButton({
 			groups: ['channel', 'group', 'direct'],
 			id: 'gameCenter',
