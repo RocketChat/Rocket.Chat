@@ -190,23 +190,21 @@ Template.appManage.onCreated(function() {
 		attachSettings(this.appId, this.state);
 	});
 
-	this.handleAppAdded = withAppIdFilter(() => {
+	this.handleAppAddedOrUpdatedOrRemoved = withAppIdFilter(() => {
 		loadApp(this);
 	});
 
-	this.handleAppRemoved = withAppIdFilter(() => {
-		loadApp(this);
-	});
-
-	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAdded);
-	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdatedOrRemoved);
+	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdatedOrRemoved);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppAddedOrUpdatedOrRemoved);
 	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleStatusChanged);
 	Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, this.handleSettingUpdated);
 });
 
 Template.apps.onDestroyed(function() {
-	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAdded);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdatedOrRemoved);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdatedOrRemoved);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleAppAddedOrUpdatedOrRemoved);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleStatusChanged);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, this.handleSettingUpdated);
 });
