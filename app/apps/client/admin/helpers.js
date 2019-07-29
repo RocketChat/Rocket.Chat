@@ -274,6 +274,10 @@ export const appStatusSpanProps = ({
 	status,
 	subscriptionInfo,
 }) => {
+	if (!installed) {
+		return;
+	}
+
 	const isFailed = () => installed && ['invalid_license_disabled'].includes(status); // TODO
 	const isEnabled = () => appEnabledStatuses.includes(status);
 	const isOnTrialPeriod = () => subscriptionInfo && subscriptionInfo.status === 'trialing';
@@ -286,22 +290,18 @@ export const appStatusSpanProps = ({
 		};
 	}
 
-	if (!installed) {
-		return;
+	if (!isEnabled()) {
+		return {
+			type: 'warning',
+			icon: 'warning',
+			label: 'Disabled',
+		};
 	}
 
 	if (isOnTrialPeriod()) {
 		return {
 			icon: 'checkmark-circled',
 			label: 'Trial period',
-		};
-	}
-
-	if (!isEnabled()) {
-		return {
-			type: 'warning',
-			icon: 'warning',
-			label: 'Disabled',
 		};
 	}
 
