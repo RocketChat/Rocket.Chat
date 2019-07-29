@@ -24,11 +24,6 @@ const createAppsRouteAction = (centerTemplate) => async () => {
 	}
 };
 
-FlowRouter.route('/admin/marketplace', {
-	name: 'marketplace',
-	action: createAppsRouteAction('marketplace'),
-});
-
 FlowRouter.route('/admin/apps', {
 	name: 'apps',
 	action: createAppsRouteAction('apps'),
@@ -47,4 +42,14 @@ FlowRouter.route('/admin/apps/:appId', {
 FlowRouter.route('/admin/apps/:appId/logs', {
 	name: 'app-logs',
 	action: createAppsRouteAction('appLogs'),
+});
+
+FlowRouter.route('/admin/marketplace', {
+	name: 'marketplace',
+	action: createAppsRouteAction('marketplace'),
+});
+
+FlowRouter.route('/admin/marketplace/:appId', {
+	name: 'marketplace-app',
+	action: createAppsRouteAction('appManage'),
 });

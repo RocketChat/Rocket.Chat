@@ -212,24 +212,6 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 	});
 };
 
-export const promptMarketplaceLogin = () => {
-	modal.open({
-		title: t('Apps_Marketplace_Login_Required_Title'),
-		text: t('Apps_Marketplace_Login_Required_Description'),
-		type: 'info',
-		showCancelButton: true,
-		confirmButtonColor: '#DD6B55',
-		confirmButtonText: t('Login'),
-		cancelButtonText: t('Cancel'),
-		closeOnConfirm: true,
-		html: false,
-	}, (confirmed) => {
-		if (confirmed) {
-			FlowRouter.go('cloud-config');
-		}
-	});
-};
-
 export const appButtonProps = ({
 	installed,
 	version,
@@ -345,9 +327,33 @@ export const formatPricingPlan = (pricingPlan) => {
 	});
 };
 
+const promptCloudLogin = () => {
+	modal.open({
+		title: t('Apps_Marketplace_Login_Required_Title'),
+		text: t('Apps_Marketplace_Login_Required_Description'),
+		type: 'info',
+		showCancelButton: true,
+		confirmButtonColor: '#DD6B55',
+		confirmButtonText: t('Login'),
+		cancelButtonText: t('Cancel'),
+		closeOnConfirm: true,
+		html: false,
+	}, (confirmed) => {
+		if (confirmed) {
+			FlowRouter.go('cloud-config');
+		}
+	});
+};
+
 export const checkCloudLogin = async () => {
 	try {
-		return await call('cloud:checkUserLoggedIn');
+		const isLoggedIn = await call('cloud:checkUserLoggedIn');
+
+		if (!isLoggedIn) {
+			promptCloudLogin();
+		}
+
+		return isLoggedIn;
 	} catch (error) {
 		handleAPIError(error);
 		return false;

@@ -20,6 +20,7 @@ import {
 	triggerAppPopoverMenu,
 	promptSubscription,
 	warnStatusChange,
+	checkCloudLogin,
 } from './helpers';
 
 import './appManage.html';
@@ -117,6 +118,13 @@ const loadApp = async ({ appId, version, state, _app }) => {
 		attachSettings(appId, state);
 		attachMarketplaceInformation(appId, version, _app);
 
+		if (FlowRouter.current().route.getRouteName() === 'marketplace-app') {
+			FlowRouter.withReplaceState(() => {
+				FlowRouter.go('app-manage', { appId });
+			});
+			return;
+		}
+
 		return;
 	}
 
@@ -134,6 +142,12 @@ const loadApp = async ({ appId, version, state, _app }) => {
 		_app.set({ ...app, installed: false });
 
 		attachBundlesApps(app.bundledIn, _app);
+
+		if (FlowRouter.current().route.getRouteName() === 'app-manage') {
+			FlowRouter.withReplaceState(() => {
+				FlowRouter.go('marketplace-app', { appId });
+			});
+		}
 	}
 };
 
@@ -355,6 +369,16 @@ Template.appManage.events({
 		}
 	},
 	'click .js-close'() {
+		if (FlowRouter.current().route.getRouteName() === 'marketplace-app') {
+			FlowRouter.go('marketplace');
+			return;
+		}
+
+		if (FlowRouter.current().route.getRouteName() === 'app-manage') {
+			FlowRouter.go('apps');
+			return;
+		}
+
 		window.history.back();
 	},
 	'click .js-menu'(event, instance) {
@@ -366,6 +390,10 @@ Template.appManage.events({
 
 	async 'click .js-install, click .js-update'(event, instance) {
 		event.stopPropagation();
+
+		if (!await checkCloudLogin()) {
+			return;
+		}
 
 		const { appId, _app } = instance;
 
@@ -383,6 +411,10 @@ Template.appManage.events({
 
 	async 'click .js-purchase'(event, instance) {
 		const { _app } = instance;
+
+		if (!await checkCloudLogin()) {
+			return;
+		}
 
 		_app.set('working', true);
 

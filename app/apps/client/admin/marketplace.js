@@ -271,7 +271,7 @@ Template.marketplace.events({
 			version,
 			marketplaceVersion,
 		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
-		FlowRouter.go('app-manage', { appId }, { version: version || marketplaceVersion });
+		FlowRouter.go('marketplace-app', { appId }, { version: version || marketplaceVersion });
 	},
 	async 'click .js-install, click .js-update'(event, instance) {
 		event.preventDefault();

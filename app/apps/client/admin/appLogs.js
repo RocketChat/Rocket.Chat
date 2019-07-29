@@ -97,7 +97,7 @@ Template.appLogs.events({
 	},
 
 	'click .js-cancel': () => {
-		window.history.back();
+		FlowRouter.go('apps');
 	},
 
 	'click .js-refresh': (e, t) => {
