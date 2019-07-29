@@ -1,3 +1,4 @@
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import semver from 'semver';
 import toastr from 'toastr';
@@ -5,21 +6,6 @@ import toastr from 'toastr';
 import { modal, popover, call } from '../../../ui-utils/client';
 import { t } from '../../../utils/client';
 import { Apps } from '../orchestrator';
-
-// TODO: get this list from Apps Engine
-export const AppStatus = Object.freeze({
-	UNKNOWN: 'unknown',
-	CONSTRUCTED: 'constructed',
-	INITIALIZED: 'initialized',
-	AUTO_ENABLED: 'auto_enabled',
-	MANUALLY_ENABLED: 'manually_enabled',
-	COMPILER_ERROR_DISABLED: 'compiler_error_disabled',
-	INVALID_LICENSE_DISABLED: 'invalid_license_disabled',
-	ERROR_DISABLED: 'error_disabled',
-	MANUALLY_DISABLED: 'manually_disabled',
-	INVALID_SETTINGS_DISABLED: 'invalid_settings_disabled',
-	DISABLED: 'disabled',
-});
 
 const appEnabledStatuses = [
 	AppStatus.AUTO_ENABLED,
