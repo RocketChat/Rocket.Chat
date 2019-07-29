@@ -49,6 +49,39 @@ export const warnStatusChange = (appName, status) => {
 	toastr.info(t(`App_status_${ status }`), appName);
 };
 
+const promptCloudLogin = () => {
+	modal.open({
+		title: t('Apps_Marketplace_Login_Required_Title'),
+		text: t('Apps_Marketplace_Login_Required_Description'),
+		type: 'info',
+		showCancelButton: true,
+		confirmButtonColor: '#DD6B55',
+		confirmButtonText: t('Login'),
+		cancelButtonText: t('Cancel'),
+		closeOnConfirm: true,
+		html: false,
+	}, (confirmed) => {
+		if (confirmed) {
+			FlowRouter.go('cloud-config');
+		}
+	});
+};
+
+export const checkCloudLogin = async () => {
+	try {
+		const isLoggedIn = await call('cloud:checkUserLoggedIn');
+
+		if (!isLoggedIn) {
+			promptCloudLogin();
+		}
+
+		return isLoggedIn;
+	} catch (error) {
+		handleAPIError(error);
+		return false;
+	}
+};
+
 export const promptSubscription = async (app, callback, cancelCallback) => {
 	let data = null;
 	try {
@@ -66,13 +99,16 @@ export const promptSubscription = async (app, callback, cancelCallback) => {
 	}, callback, cancelCallback);
 };
 
-const promptModifySubscription = async (app, callback, cancelCallback) => {
+const promptModifySubscription = async (app, callback) => {
+	if (!await checkCloudLogin()) {
+		return;
+	}
+
 	let data = null;
 	try {
 		data = await Apps.buildExternalUrl(app.id, app.purchaseType, true);
-	} catch (e) {
-		handleAPIError(e);
-		cancelCallback();
+	} catch (error) {
+		handleAPIError(error);
 		return;
 	}
 
@@ -80,7 +116,7 @@ const promptModifySubscription = async (app, callback, cancelCallback) => {
 		allowOutsideClick: false,
 		data,
 		template: 'iframeModal',
-	}, callback, cancelCallback);
+	}, callback);
 };
 
 const promptAppDeactivation = (callback) => {
@@ -118,24 +154,6 @@ const promptAppUninstall = (isSubscribed, callback) => {
 			return;
 		}
 		callback();
-	});
-};
-
-const promptCloudLogin = () => {
-	modal.open({
-		title: t('Apps_Marketplace_Login_Required_Title'),
-		text: t('Apps_Marketplace_Login_Required_Description'),
-		type: 'info',
-		showCancelButton: true,
-		confirmButtonColor: '#DD6B55',
-		confirmButtonText: t('Login'),
-		cancelButtonText: t('Cancel'),
-		closeOnConfirm: true,
-		html: false,
-	}, (confirmed) => {
-		if (confirmed) {
-			FlowRouter.go('cloud-config');
-		}
 	});
 };
 
@@ -342,19 +360,4 @@ export const formatPricingPlan = (pricingPlan) => {
 	return t(pricingPlanTranslationString, {
 		price: formatPrice(pricingPlan.price),
 	});
-};
-
-export const checkCloudLogin = async () => {
-	try {
-		const isLoggedIn = await call('cloud:checkUserLoggedIn');
-
-		if (!isLoggedIn) {
-			promptCloudLogin();
-		}
-
-		return isLoggedIn;
-	} catch (error) {
-		handleAPIError(error);
-		return false;
-	}
 };
