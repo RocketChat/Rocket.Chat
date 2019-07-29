@@ -120,6 +120,15 @@ Template.setupWizard.onCreated(async function() {
 	const state = (jsonString && JSON.parse(jsonString)) || statusDefault;
 	this.state.set(state);
 
+	this.autorun(async () => {
+		if (!Meteor.userId()) {
+			return;
+		}
+		const { settings, allowStandaloneServer } = await call('getSetupWizardParameters') || {};
+		this.wizardSettings.set(settings);
+		this.allowStandaloneServer.set(allowStandaloneServer);
+	});
+
 	this.autorun(() => {
 		const state = this.state.all();
 		state['registration-pass'] = '';
@@ -149,10 +158,6 @@ Template.setupWizard.onCreated(async function() {
 			this.state.set('registration-pass', '');
 		}
 	});
-
-	const { settings, allowStandaloneServer } = await call('getSetupWizardParameters') || {};
-	this.wizardSettings.set(settings);
-	this.allowStandaloneServer.set(allowStandaloneServer);
 });
 
 Template.setupWizard.onRendered(function() {
