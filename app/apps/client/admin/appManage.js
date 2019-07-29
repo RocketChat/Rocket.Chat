@@ -182,30 +182,26 @@ Template.appManage.onCreated(function() {
 		f.call(this, maybeAppId, ...args);
 	};
 
-	this.handleStatusChanged = withAppIdFilter(({ status }) => {
-		this._app.set('status', status);
-	});
-
 	this.handleSettingUpdated = withAppIdFilter(() => {
 		attachSettings(this.appId, this.state);
 	});
 
-	this.handleAppAddedOrUpdatedOrRemoved = withAppIdFilter(() => {
+	this.handleChange = withAppIdFilter(() => {
 		loadApp(this);
 	});
 
-	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdatedOrRemoved);
-	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdatedOrRemoved);
-	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppAddedOrUpdatedOrRemoved);
-	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleStatusChanged);
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleChange);
+	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleChange);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleChange);
+	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleChange);
 	Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, this.handleSettingUpdated);
 });
 
 Template.apps.onDestroyed(function() {
-	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdatedOrRemoved);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdatedOrRemoved);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleAppAddedOrUpdatedOrRemoved);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleStatusChanged);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleChange);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, this.handleChange);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleChange);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleChange);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, this.handleSettingUpdated);
 });
 
