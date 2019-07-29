@@ -1,12 +1,12 @@
 import { RoutingManager } from '../RoutingManager';
 import { Users } from '../../../../models';
 
-/* Ongoing Chats Queuing method:
+/* Load Balancing Queuing method:
 	*
 	* default method where the agent with the least number
 	* of open chats is paired with the incoming livechat
 */
-class OngoingChats {
+class LoadBalancing {
 	constructor() {
 		this.config = {
 			previewRoom: false,
@@ -35,4 +35,4 @@ class OngoingChats {
 	}
 }
 
-RoutingManager.registerMethod('Ongoing_Chats', OngoingChats);
+RoutingManager.registerMethod('Load_Balancing', LoadBalancing);

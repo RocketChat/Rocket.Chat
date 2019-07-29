@@ -371,7 +371,7 @@ Meteor.startup(function() {
 			{ key: 'External', i18nLabel: 'External_Service' },
 			{ key: 'Least_Amount', i18nLabel: 'Least_Amount' },
 			{ key: 'Guest_Pool', i18nLabel: 'Guest_Pool' },
-			{ key: 'Ongoing_Chats', i18nLabel: 'Ongoing_Chats' },
+			{ key: 'Load_Balancing', i18nLabel: 'Load_Balancing' },
 		],
 	});
 

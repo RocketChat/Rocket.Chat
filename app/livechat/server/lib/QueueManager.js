@@ -36,7 +36,7 @@ export const QueueManager = {
 				inquiry = values[1];
 			})
 			.catch((error) => {
-				console.error(error);
+				throw new Meteor.Error(error);
 			});
 
 		Rooms.updateLivechatRoomCount();

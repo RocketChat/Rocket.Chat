@@ -273,7 +273,6 @@ export const Livechat = {
 		if (!room || room.t !== 'l' || !room.open) {
 			return false;
 		}
-
 		const now = new Date();
 
 		const closeData = {

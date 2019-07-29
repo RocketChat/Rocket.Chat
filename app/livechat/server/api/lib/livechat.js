@@ -37,6 +37,7 @@ export function findRoom(token, rid) {
 		servedBy: 1,
 		open: 1,
 		v: 1,
+		ts: 1,
 	};
 
 	if (!rid) {
@@ -75,8 +76,13 @@ export async function getRoom({ guest, rid, roomInfo, agent }, callback) {
 		ts: new Date(),
 	};
 
-	const room = await Livechat.getRoom(guest, message, roomInfo, agent);
-	callback && callback(null, room);
+	try {
+		const room = await Livechat.getRoom(guest, message, roomInfo, agent);
+		callback && callback(null, room);
+	} catch (error) {
+		console.log('passanaod da');
+		throw new Error(error);
+	}
 }
 
 export function findAgent(agentId) {

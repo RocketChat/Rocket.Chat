@@ -70,7 +70,7 @@ import './lib/RoutingManager';
 import './lib/routing/External';
 import './lib/routing/GuestPool';
 import './lib/routing/LeastAmount';
-import './lib/routing/OngoingChats';
+import './lib/routing/LoadBalancing';
 import './sendMessageBySMS';
 import './unclosedLivechats';
 import './publications/customFields';

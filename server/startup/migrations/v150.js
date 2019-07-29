@@ -4,7 +4,7 @@ import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 
 Migrations.add({
-	version: 149,
+	version: 150,
 	up() {
 		const oldSetting = Settings.findOne({ _id: 'Livechat_guest_pool_with_no_agents' });
 		if (oldSetting) {
@@ -32,6 +32,25 @@ Migrations.add({
 					console.error(error);
 				}
 			}
+		});
+
+		// There was a bug when closing livechat Rooms from the Widget side, the `ts` field was missing
+		// when passing the Room object through the Livechat.closeRoom method
+		// The `chatDuration` metric will be used to estimate the wait time in the new waiting queue feature
+		Rooms.find({
+			t: 'l',
+			closedAt: { $exists: true },
+			metrics: { $exists: true },
+			'metrics.chatDuration': NaN,
+		}).forEach((room) => {
+			Rooms.update(
+				room._id,
+				{
+					$set: {
+						'metrics.chatDuration': (room.closedAt - room.ts) / 1000,
+					},
+				}
+			);
 		});
 
 		// Change the status of the current open inquiries from "open" to "queued"
