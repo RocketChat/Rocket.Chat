@@ -4,11 +4,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
-import toastr from 'toastr';
 import _ from 'underscore';
 
 import { SideNav } from '../../../ui-utils/client';
-import { isEmail, t } from '../../../utils';
+import { isEmail } from '../../../utils';
 import { Utilities } from '../../lib/misc/Utilities';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
@@ -53,7 +52,7 @@ const attachSettings = async (appId, state) => {
 	}
 };
 
-const attachBundlesApps = (bundledIn, state) => {
+const attachBundlesApps = (bundledIn, _app) => {
 	if (!bundledIn || !bundledIn.length) {
 		return;
 	}
@@ -67,11 +66,11 @@ const attachBundlesApps = (bundledIn, state) => {
 		}
 
 		bundledIn[i] = bundle;
-		state.set('bundledIn', bundledIn);
+		_app.set('bundledIn', bundledIn);
 	});
 };
 
-const attachMarketplaceInformation = async (appId, version, state) => {
+const attachMarketplaceInformation = async (appId, version, _app) => {
 	try {
 		const {
 			categories,
@@ -83,7 +82,7 @@ const attachMarketplaceInformation = async (appId, version, state) => {
 			version: marketplaceVersion,
 		} = await Apps.getLatestAppFromMarketplace(appId, version);
 
-		state.set({
+		_app.set({
 			categories,
 			isPurchased,
 			price,
@@ -93,13 +92,13 @@ const attachMarketplaceInformation = async (appId, version, state) => {
 			marketplaceVersion,
 		});
 
-		attachBundlesApps(bundledIn, state);
+		attachBundlesApps(bundledIn, _app);
 	} catch (error) {
 		handleAPIError(error);
 	}
 };
 
-const loadApp = async ({ appId, version, state }) => {
+const loadApp = async ({ appId, version, state, _app }) => {
 	let app;
 	try {
 		app = await Apps.getApp(appId);
@@ -107,12 +106,16 @@ const loadApp = async ({ appId, version, state }) => {
 		console.error(error);
 	}
 
+	state.set('settings', {});
+
 	if (app) {
-		state.set({ ...app, installed: true, isLoading: false });
+		state.set('isLoading', false);
+		_app.clear();
+		_app.set({ ...app, installed: true });
 
 		attachAPIs(appId, state);
 		attachSettings(appId, state);
-		attachMarketplaceInformation(appId, version, state);
+		attachMarketplaceInformation(appId, version, _app);
 
 		return;
 	}
@@ -126,9 +129,11 @@ const loadApp = async ({ appId, version, state }) => {
 	if (app) {
 		delete app.status;
 		app.marketplaceVersion = app.version;
-		state.set({ ...app, installed: false, isLoading: false });
+		state.set('isLoading', false);
+		_app.clear();
+		_app.set({ ...app, installed: false });
 
-		attachBundlesApps(app.bundledIn, state);
+		attachBundlesApps(app.bundledIn, _app);
 	}
 };
 
@@ -136,11 +141,13 @@ Template.appManage.onCreated(function() {
 	this.appId = FlowRouter.getParam('appId');
 	this.version = FlowRouter.getQueryParam('version');
 	this.state = new ReactiveDict({
-		id: this.appId,
-		version: this.version,
 		settings: {},
 		isLoading: true,
 		isSaving: false,
+	});
+	this._app = new ReactiveDict({
+		id: this.appId,
+		version: this.version,
 	});
 
 	loadApp(this);
@@ -162,8 +169,7 @@ Template.appManage.onCreated(function() {
 	};
 
 	this.handleStatusChanged = withAppIdFilter(({ status }) => {
-		this.state.set('status', status);
-		toastr.info(t(`App_status_${ status }`), this.state.get('name'));
+		this._app.set('status', status);
 	});
 
 	this.handleSettingUpdated = withAppIdFilter(() => {
@@ -221,9 +227,9 @@ Template.appManage.helpers({
 	appStatusSpanProps,
 	priceDisplay() {
 		const [purchaseType, price, pricingPlans] = [
-			Template.instance().state.get('purchaseType'),
-			Template.instance().state.get('price'),
-			Template.instance().state.get('pricingPlans'),
+			Template.instance()._app.get('purchaseType'),
+			Template.instance()._app.get('price'),
+			Template.instance()._app.get('pricingPlans'),
 		];
 		if (purchaseType === 'subscription') {
 			if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
@@ -265,14 +271,14 @@ Template.appManage.helpers({
 		return settings[_id].value === val;
 	},
 	app() {
-		return Template.instance().state.all();
+		return Template.instance()._app.all();
 	},
 	errors() {
-		const { errors } = Template.instance().state.get('licenseValidation');
+		const { errors = {} } = Template.instance()._app.get('licenseValidation') || {};
 		return Object.values(errors);
 	},
 	warnings() {
-		const { warnings } = Template.instance().state.get('licenseValidation');
+		const { warnings = {} } = Template.instance()._app.get('licenseValidation') || {};
 		return Object.values(warnings);
 	},
 	settings() {
@@ -355,43 +361,43 @@ Template.appManage.events({
 		event.stopPropagation();
 		const { currentTarget } = event;
 
-		triggerAppPopoverMenu(instance.state.all(), currentTarget, instance);
+		triggerAppPopoverMenu(instance._app.all(), currentTarget, instance);
 	},
 
 	async 'click .js-install, click .js-update'(event, instance) {
 		event.stopPropagation();
 
-		const { appId, state } = instance;
+		const { appId, _app } = instance;
 
-		state.set('working', true);
+		_app.set('working', true);
 
 		try {
-			const { status } = await Apps.installApp(appId, state.get('marketplaceVersion'));
-			warnStatusChange(state.get('name'), status);
+			const { status } = await Apps.installApp(appId, _app.get('marketplaceVersion'));
+			warnStatusChange(_app.get('name'), status);
 		} catch (error) {
 			handleAPIError(error);
 		} finally {
-			state.set('working', false);
+			_app.set('working', false);
 		}
 	},
 
 	async 'click .js-purchase'(event, instance) {
-		const { state } = instance;
+		const { _app } = instance;
 
-		state.set('working', true);
+		_app.set('working', true);
 
-		const app = state.all();
+		const app = _app.all();
 
 		await promptSubscription(app, async () => {
 			try {
 				const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
-				warnStatusChange(state.get('name'), status);
+				warnStatusChange(app.name, status);
 			} catch (error) {
 				handleAPIError(error);
 			} finally {
-				state.set('working', false);
+				_app.set('working', false);
 			}
-		}, () => state.set('working', false));
+		}, () => _app.set('working', false));
 	},
 
 	'change input[type="checkbox"]'(event, instance) {
