@@ -149,7 +149,7 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 	}
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
-	const isSubscribed = app.subscriptionInfo && !!app.subscriptionInfo.status;
+	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 	const isAppEnabled = appEnabledStatuses.includes(app.status);
 
 	const handleSubscription = () => promptModifySubscription(app, async () => {
