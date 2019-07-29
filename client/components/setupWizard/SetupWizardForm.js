@@ -1,101 +1,211 @@
-import React, { createContext, useMemo, useState } from 'react';
+import React, { Fragment } from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
 import { Button } from '../basic/Button';
-import { AdminUserInformationStep } from './AdminUserInformationStep';
-import { SettingsBasedStep } from './SettingsBasedStep';
-import { RegisterServerStep } from './RegisterServerStep';
+import { Input } from '../basic/Input';
+import { Icon } from '../basic/Icon';
+import { SetupWizardStep } from './SetupWizardStep';
+import { useSetupWizardState } from './SetupWizardState';
+import { AdminUserInformationStep } from './steps/AdminUserInformationStep';
 
-const Wrapper = ({ children }) => <div className='setup-wizard-forms__wrapper'>
-	{children}
-</div>;
-
-const Form = ({ children, loaded, onSubmit }) => <form
-	className={[
-		'setup-wizard-forms__box',
-		loaded && 'setup-wizard-forms__box--loaded',
-	].filter(Boolean).join(' ')}
-	noValidate
-	onSubmit={onSubmit}
->
+const Form = ({ children, ...props }) => <form className='setup-wizard-forms__wrapper' {...props}>
 	{children}
 </form>;
 
-const Header = ({ children }) => <header className='setup-wizard-forms__header'>
-	{children}
-</header>;
+function SettingsBasedStep({ active, number, title, fields, onBackClick, onContinueClick }) {
+	const t = useTranslation();
 
-const HeaderStep = ({ children }) => <span className='setup-wizard-forms__header-step'>{children}</span>;
+	return <SetupWizardStep loaded active={active}>
+		<SetupWizardStep.Header number={number} title={title} />
 
-const HeaderTitle = ({ children }) => <h1 className='setup-wizard-forms__header-title'>{children}</h1>;
+		<SetupWizardStep.Content>
+			{fields.map(({ id, type, label, value, options, setValue }, i) => <Fragment key={i}>
+				{type === 'string'
+				&& <Input
+					type='text'
+					title={t(label)}
+					name={id}
+					value={value}
+					onChange={({ currentTarget: { value } }) => setValue(value)}
+				/>}
 
-const Content = ({ children }) => <main className='setup-wizard-forms__content'>
-	{children}
-</main>;
+				{type === 'select'
+				&& <Input
+					type='select'
+					title={t(label)}
+					name={id}
+					placeholder={t('Select_an_option')}
+					options={options.map(({ label, value }) => ({ label: t(label), value }))}
+					value={value || ''}
+					onChange={({ currentTarget: { value } }) => setValue(value)}
+				/>}
 
-const ContentStep = ({ children, active }) => <div
+				{type === 'language'
+				&& <Input
+					type='select'
+					title={t(label)}
+					name={id}
+					placeholder={t('Default')}
+					options={options}
+					value={value || ''}
+					onChange={({ currentTarget: { value } }) => setValue(value)}
+				/>}
+			</Fragment>)}
+
+		</SetupWizardStep.Content>
+
+		<SetupWizardStep.Footer>
+			<Button secondary onClick={onBackClick}>
+				{t('Back')}
+			</Button>
+			<Button primary onClick={onContinueClick}>
+				{t('Continue')}
+			</Button>
+		</SetupWizardStep.Footer>
+	</SetupWizardStep>;
+}
+
+const Paragraph = ({ children }) => <p className='setup-wizard-forms__content-text'>{children}</p>;
+
+const Option = ({ children, value, checked, disabled, label, onChange }) => <label
 	className={[
-		'setup-wizard-forms__content-step',
-		active && 'setup-wizard-forms__content-step--active',
+		'setup-wizard-forms__content-register-option',
+		checked && 'setup-wizard-forms__content-register-option--selected',
+		disabled && 'setup-wizard-forms__content-register-option--disabled',
 	].filter(Boolean).join(' ')}
 >
+	<div className='setup-wizard-forms__content-register-radio'>
+		<input type='radio' name='registerServer' value={value} className='setup-wizard-forms__content-register-radio-element' checked={checked} onChange={onChange}/>
+		<span className='setup-wizard-forms__content-register-radio-fake' />
+		<span className='setup-wizard-forms__content-register-radio-text'>{label}</span>
+	</div>
 	{children}
-</div>;
+</label>;
 
-const Footer = ({ children }) => <footer className='setup-wizard-forms__footer'>
+const Items = ({ children }) => <ul className='setup-wizard-forms__content-register-items'>
 	{children}
-</footer>;
+</ul>;
 
-export const SetupWizardFormContext = createContext();
+const Item = ({ children, icon }) => <li className='setup-wizard-forms__content-register-item'>
+	<Icon block='setup-wizard-forms__content-register-radio-icon' icon={icon} />
+	{children}
+</li>;
 
-export function SetupWizardForm({ steps, currentStep, formState, allowStandaloneServer, handleBackClick, handleContinueClick }) {
+const CheckBox = ({ checked, disabled, label, onChange }) => <label className='setup-wizard-forms__content-register-checkbox'>
+	<input type='checkbox' name='optIn' value='true' className='setup-wizard-forms__content-register-checkbox-element' checked={checked} disabled={disabled} onChange={onChange}/>
+	<span className='setup-wizard-forms__content-register-checkbox-fake'>
+		<Icon block='setup-wizard-forms__content-register-checkbox-fake-icon' icon='check' />
+	</span>
+	<span className='setup-wizard-forms__content-register-checkbox-text'>{label}</span>
+</label>;
+
+function RegisterServerStep({ active, formState: { registerServer, optIn }, allowStandaloneServer, onBackClick, onContinueClick }) {
 	const t = useTranslation();
-	const [isBackEnabled, setBackEnabled] = useState(false);
-	const [isContinueEnabled, setContinueEnabled] = useState(false);
 
-	const currentStepNumber = useMemo(() => steps.indexOf(currentStep) + 1, [steps, currentStep]);
-	const currentStepIndex = useMemo(() => steps.indexOf(currentStep), [steps, currentStep]);
+	return <SetupWizardStep loaded active={active}>
+		<SetupWizardStep.Header number={4} title={t('Register_Server')} />
+
+		<SetupWizardStep.Content>
+			<Paragraph>{t('Register_Server_Info')}</Paragraph>
+
+			<div className='setup-wizard-forms__content-register'>
+				<Option
+					label={t('Register_Server_Registered')}
+					value='true'
+					checked={registerServer.value}
+					onChange={({ currentTarget: { checked } }) => {
+						registerServer.setValue(checked);
+						optIn.setValue(checked);
+					}}
+				>
+					<Items>
+						<Item icon='check'>{t('Register_Server_Registered_Push_Notifications')}</Item>
+						<Item icon='check'>{t('Register_Server_Registered_Livechat')}</Item>
+						<Item icon='check'>{t('Register_Server_Registered_OAuth')}</Item>
+						<Item icon='check'>{t('Register_Server_Registered_Marketplace')}</Item>
+					</Items>
+					<CheckBox
+						label={t('Register_Server_Opt_In')}
+						disabled={!registerServer.value}
+						checked={optIn.value}
+						onChange={({ currentTarget: { checked } }) => {
+							optIn.setValue(checked);
+						}}
+					/>
+				</Option>
+				<Option
+					label={t('Register_Server_Standalone')}
+					value='false'
+					disabled={!allowStandaloneServer}
+					checked={!registerServer.value}
+					onChange={({ currentTarget: { checked } }) => {
+						registerServer.setValue(!checked);
+						optIn.setValue(!checked);
+					}}
+				>
+					<Items>
+						<Item icon='circle'>{t('Register_Server_Standalone_Service_Providers')}</Item>
+						<Item icon='circle'>{t('Register_Server_Standalone_Update_Settings')}</Item>
+						<Item icon='circle'>{t('Register_Server_Standalone_Own_Certificates')}</Item>
+					</Items>
+				</Option>
+			</div>
+		</SetupWizardStep.Content>
+
+		<SetupWizardStep.Footer>
+			<Button secondary onClick={onBackClick}>
+				{t('Back')}
+			</Button>
+			<Button submit primary onClick={onContinueClick}>
+				{t('Continue')}
+			</Button>
+		</SetupWizardStep.Footer>
+	</SetupWizardStep>;
+}
+
+export function SetupWizardForm() {
+	const t = useTranslation();
+	const {
+		currentStepNumber,
+		steps,
+		formState,
+		allowStandaloneServer,
+		handleBackClick,
+		handleContinueClick,
+	} = useSetupWizardState();
+	const currentStepIndex = currentStepNumber - 1;
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		event.stopPropagation();
-		handleContinueClick();
 	};
 
-	return <SetupWizardFormContext.Provider value={{ setBackEnabled, setContinueEnabled }}>
-		<section className='setup-wizard-forms'>
-			<Wrapper>
-				<Form loaded onSubmit={handleSubmit}>
-					<Header>
-						<HeaderStep>{t('Step')} {currentStepNumber}</HeaderStep>
-						<HeaderTitle>{t(currentStep.title)}</HeaderTitle>
-					</Header>
-
-					<Content>
-						<ContentStep active={currentStepIndex === 0}>
-							<AdminUserInformationStep active={currentStepIndex === 0} formState={formState} />
-						</ContentStep>
-						<ContentStep active={currentStepIndex === 1}>
-							<SettingsBasedStep active={currentStepIndex === 1} formState={formState} step={steps[1]} />
-						</ContentStep>
-						<ContentStep active={currentStepIndex === 2}>
-							<SettingsBasedStep active={currentStepIndex === 2} formState={formState} step={steps[2]} />
-						</ContentStep>
-						<ContentStep active={currentStepIndex === 3}>
-							<RegisterServerStep active={currentStepIndex === 3} formState={formState} allowStandaloneServer={allowStandaloneServer} />
-						</ContentStep>
-					</Content>
-
-					<Footer>
-						<Button secondary disabled={!isBackEnabled} onClick={handleBackClick}>
-							{t('Back')}
-						</Button>
-						<Button submit primary disabled={!isContinueEnabled} onClick={handleContinueClick}>
-							{t('Continue')}
-						</Button>
-					</Footer>
-				</Form>
-			</Wrapper>
-		</section>
-	</SetupWizardFormContext.Provider>;
+	return <section className='setup-wizard-forms'>
+		<Form noValidate onSubmit={handleSubmit}>
+			<AdminUserInformationStep />
+			<SettingsBasedStep
+				active={currentStepIndex === 1}
+				number={2}
+				title={t('Organization_Info')}
+				fields={Object.values(formState).filter((setting) => setting.step === steps[1])}
+				onBackClick={handleBackClick}
+				onContinueClick={handleContinueClick}
+			/>
+			<SettingsBasedStep
+				active={currentStepIndex === 2}
+				number={3}
+				title={t('Server_Info')}
+				fields={Object.values(formState).filter((setting) => setting.step === steps[2])}
+				onBackClick={handleBackClick}
+				onContinueClick={handleContinueClick}
+			/>
+			<RegisterServerStep
+				active={currentStepIndex === 3}
+				formState={formState}
+				allowStandaloneServer={allowStandaloneServer}
+				onBackClick={handleBackClick}
+				onContinueClick={handleContinueClick}
+			/>
+		</Form>
+	</section>;
 }

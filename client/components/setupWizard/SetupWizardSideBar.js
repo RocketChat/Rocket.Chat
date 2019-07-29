@@ -1,6 +1,11 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
+import { useSetupWizardState } from './SetupWizardState';
+
+const Container = ({ children }) => <aside className='setup-wizard-info'>
+	{children}
+</aside>;
 
 const Header = ({ children }) => <header className='setup-wizard-info__header'>
 	{children}
@@ -31,11 +36,11 @@ const Step = ({ children, active, past, boundAbove }) => <li className={[
 	{boundAbove && <span className='setup-wizard-info__steps-item-bonding' />}
 </li>;
 
-export function SetupWizardSideBar({ steps = [], currentStep }) {
+export function SetupWizardSideBar() {
 	const t = useTranslation();
-	const currentStepIndex = useMemo(() => steps.indexOf(currentStep), [steps, currentStep]);
+	const { currentStepNumber, steps } = useSetupWizardState();
 
-	return <section className='setup-wizard-info'>
+	return <Container>
 		<Header>
 			<HeaderLogo />
 			<HeaderTag>{t('Setup_Wizard')}</HeaderTag>
@@ -46,15 +51,15 @@ export function SetupWizardSideBar({ steps = [], currentStep }) {
 			<ContentText>{t('Setup_Wizard_Info')}</ContentText>
 
 			<Steps>
-				{steps.map((step, i) => <Step
-					key={i}
-					active={currentStepIndex === i}
-					past={currentStepIndex > i}
-					boundAbove={i > 0}
+				{steps.map(({ number, i18nTitleKey }) => <Step
+					key={number}
+					active={currentStepNumber === number}
+					past={currentStepNumber > number}
+					boundAbove={number > 1}
 				>
-					{t(step.title)}
+					{t(i18nTitleKey)}
 				</Step>)}
 			</Steps>
 		</Content>
-	</section>;
+	</Container>;
 }

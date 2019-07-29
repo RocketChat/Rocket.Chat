@@ -44,7 +44,7 @@ export const Input = ({
 			</select>
 			<Icon block='rc-select__arrow' icon='arrow-down' />
 		</div>}
-		{error && <div className='rc-input__error'>
+		{typeof error === 'string' && error && <div className='rc-input__error'>
 			<div className='rc-input__error-icon'>
 				<Icon block='rc-input__error-icon' icon='warning' className='rc-input__error-icon-svg'/>
 			</div>
