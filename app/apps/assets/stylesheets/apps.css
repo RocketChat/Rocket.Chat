@@ -294,13 +294,13 @@
 		flex: 0 0 auto;
 
 		margin-left: auto;
-		margin-inline-start: auto;
 		padding: 0;
 
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		align-items: center;
 		appearance: none;
+		margin-inline-start: auto;
 
 		&:active {
 			transform: translateY(2px);
