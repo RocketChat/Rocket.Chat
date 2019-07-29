@@ -27,7 +27,7 @@ class AppClientOrchestrator {
 
 	load = async (isEnabled) => {
 		if (!this.isLoaded) {
-			this.ws = new AppWebsocketReceiver(this);
+			this.ws = new AppWebsocketReceiver();
 			this.registerAdminMenuItems();
 			this.isLoaded = true;
 		}

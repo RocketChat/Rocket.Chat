@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import EventEmitter from 'wolfy87-eventemitter';
 
 import { slashCommands, APIClient } from '../../../utils';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
@@ -15,75 +16,43 @@ export const AppEvents = Object.freeze({
 	COMMAND_REMOVED: 'command/removed',
 });
 
-export class AppWebsocketReceiver {
-	constructor(orch) {
-		this.orch = orch;
+export class AppWebsocketReceiver extends EventEmitter {
+	constructor() {
+		super();
+
 		this.streamer = new Meteor.Streamer('apps');
 
 		CachedCollectionManager.onLogin(() => {
 			this.listenStreamerEvents();
 		});
-
-		this.listeners = {};
-
-		Object.values(AppEvents).forEach((v) => {
-			this.listeners[v] = [];
-		});
 	}
 
 	listenStreamerEvents() {
-		this.streamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
-		this.streamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
-		this.streamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
-		this.streamer.on(AppEvents.APP_STATUS_CHANGE, this.onAppStatusUpdated.bind(this));
-		this.streamer.on(AppEvents.APP_SETTING_UPDATED, this.onAppSettingUpdated.bind(this));
-		this.streamer.on(AppEvents.COMMAND_ADDED, this.onCommandAdded.bind(this));
-		this.streamer.on(AppEvents.COMMAND_DISABLED, this.onCommandDisabled.bind(this));
-		this.streamer.on(AppEvents.COMMAND_UPDATED, this.onCommandUpdated.bind(this));
-		this.streamer.on(AppEvents.COMMAND_REMOVED, this.onCommandDisabled.bind(this));
+		Object.values(AppEvents).forEach((eventName) => {
+			this.streamer.on(eventName, this.emit.bind(this, eventName));
+		});
+
+		this.streamer.on(AppEvents.COMMAND_ADDED, this.onCommandAddedOrUpdated);
+		this.streamer.on(AppEvents.COMMAND_UPDATED, this.onCommandAddedOrUpdated);
+		this.streamer.on(AppEvents.COMMAND_REMOVED, this.onCommandRemovedOrDisabled);
+		this.streamer.on(AppEvents.COMMAND_DISABLED, this.onCommandRemovedOrDisabled);
 	}
 
 	registerListener(event, listener) {
-		this.listeners[event].push(listener);
+		this.on(event, listener);
 	}
 
 	unregisterListener(event, listener) {
-		this.listeners[event].splice(this.listeners[event].indexOf(listener), 1);
+		this.off(event, listener);
 	}
 
-	onAppAdded(appId) {
-		this.listeners[AppEvents.APP_ADDED].forEach((listener) => listener(appId));
-	}
-
-	onAppRemoved(appId) {
-		this.listeners[AppEvents.APP_REMOVED].forEach((listener) => listener(appId));
-	}
-
-	onAppUpdated(appId) {
-		this.listeners[AppEvents.APP_UPDATED].forEach((listener) => listener(appId));
-	}
-
-	onAppStatusUpdated({ appId, status }) {
-		this.listeners[AppEvents.APP_STATUS_CHANGE].forEach((listener) => listener({ appId, status }));
-	}
-
-	onAppSettingUpdated({ appId }) {
-		this.listeners[AppEvents.APP_SETTING_UPDATED].forEach((listener) => listener({ appId }));
-	}
-
-	onCommandAdded(command) {
+	onCommandAddedOrUpdated = (command) => {
 		APIClient.v1.get('commands.get', { command }).then((result) => {
 			slashCommands.commands[command] = result.command;
 		});
 	}
 
-	onCommandDisabled(command) {
+	onCommandRemovedOrDisabled = (command) => {
 		delete slashCommands.commands[command];
-	}
-
-	onCommandUpdated(command) {
-		APIClient.v1.get('commands.get', { command }).then((result) => {
-			slashCommands.commands[command] = result.command;
-		});
 	}
 }
