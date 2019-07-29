@@ -234,7 +234,7 @@ export const appButtonProps = ({
 		};
 	}
 
-	if (!installed) {
+	if (installed) {
 		return;
 	}
 
