@@ -101,9 +101,11 @@ const promptAppDeactivation = (callback) => {
 	});
 };
 
-const promptAppUninstall = (callback) => {
+const promptAppUninstall = (isSubscribed, callback) => {
 	modal.open({
-		text: t('Apps_Marketplace_Uninstall_App_Prompt'),
+		text: isSubscribed
+			? t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt')
+			: t('Apps_Marketplace_Uninstall_App_Prompt'),
 		type: 'warning',
 		showCancelButton: true,
 		confirmButtonColor: '#DD6B55',
@@ -119,10 +121,32 @@ const promptAppUninstall = (callback) => {
 	});
 };
 
+const promptCloudLogin = () => {
+	modal.open({
+		title: t('Apps_Marketplace_Login_Required_Title'),
+		text: t('Apps_Marketplace_Login_Required_Description'),
+		type: 'info',
+		showCancelButton: true,
+		confirmButtonColor: '#DD6B55',
+		confirmButtonText: t('Login'),
+		cancelButtonText: t('Cancel'),
+		closeOnConfirm: true,
+		html: false,
+	}, (confirmed) => {
+		if (confirmed) {
+			FlowRouter.go('cloud-config');
+		}
+	});
+};
+
 export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 	if (!app) {
 		return;
 	}
+
+	const canAppBeSubscribed = app.purchaseType === 'subscription';
+	const isSubscribed = app.subscriptionInfo && !!app.subscriptionInfo.status;
+	const isAppEnabled = appEnabledStatuses.includes(app.status);
 
 	const handleSubscription = () => promptModifySubscription(app, async () => {
 		try {
@@ -154,16 +178,13 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 		}
 	};
 
-	const handleUninstall = () => promptAppUninstall(async () => {
+	const handleUninstall = () => promptAppUninstall(isSubscribed, async () => {
 		try {
 			await Apps.uninstallApp(app.id);
 		} catch (error) {
 			handleAPIError(error);
 		}
 	});
-
-	const canAppBeSubscribed = app.purchaseType === 'subscription';
-	const isAppEnabled = appEnabledStatuses.includes(app.status);
 
 	popover.open({
 		currentTarget,
@@ -216,7 +237,6 @@ export const appButtonProps = ({
 	version,
 	marketplaceVersion,
 	isPurchased,
-	isSubscribed,
 	price,
 	purchaseType,
 	subscriptionInfo,
@@ -237,7 +257,7 @@ export const appButtonProps = ({
 		return;
 	}
 
-	const canDownload = isPurchased || isSubscribed;
+	const canDownload = isPurchased;
 	if (canDownload) {
 		return {
 			action: 'install',
@@ -321,24 +341,6 @@ export const formatPricingPlan = (pricingPlan) => {
 
 	return t(pricingPlanTranslationString, {
 		price: formatPrice(pricingPlan.price),
-	});
-};
-
-const promptCloudLogin = () => {
-	modal.open({
-		title: t('Apps_Marketplace_Login_Required_Title'),
-		text: t('Apps_Marketplace_Login_Required_Description'),
-		type: 'info',
-		showCancelButton: true,
-		confirmButtonColor: '#DD6B55',
-		confirmButtonText: t('Login'),
-		cancelButtonText: t('Cancel'),
-		closeOnConfirm: true,
-		html: false,
-	}, (confirmed) => {
-		if (confirmed) {
-			FlowRouter.go('cloud-config');
-		}
 	});
 };
 
