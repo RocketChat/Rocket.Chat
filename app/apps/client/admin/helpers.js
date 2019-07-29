@@ -222,17 +222,11 @@ export const appButtonProps = ({
 	purchaseType,
 	subscriptionInfo,
 }) => {
-	const canUpdate = () =>
-		installed
+	const canUpdate = installed
 		&& version && marketplaceVersion
 		&& semver.lt(version, marketplaceVersion)
 		&& (isPurchased || price <= 0);
-	const canDownload = () => !installed && (isPurchased || isSubscribed);
-	const canTrial = () => !installed && (purchaseType === 'subscription' && !subscriptionInfo.status);
-	const canBuy = () => !installed && price > 0;
-	const canGet = () => !installed;
-
-	if (canUpdate()) {
+	if (canUpdate) {
 		return {
 			action: 'update',
 			icon: 'reload',
@@ -240,33 +234,38 @@ export const appButtonProps = ({
 		};
 	}
 
-	if (canDownload()) {
+	if (!installed) {
+		return;
+	}
+
+	const canDownload = isPurchased || isSubscribed;
+	if (canDownload) {
 		return {
 			action: 'install',
 			label: 'Install',
 		};
 	}
 
-	if (canTrial()) {
+	const canTrial = purchaseType === 'subscription' && !subscriptionInfo.status;
+	if (canTrial) {
 		return {
 			action: 'purchase',
 			label: 'Trial',
 		};
 	}
 
-	if (canBuy()) {
+	const canBuy = price > 0;
+	if (canBuy) {
 		return {
 			action: 'purchase',
 			label: 'Buy',
 		};
 	}
 
-	if (canGet()) {
-		return {
-			action: 'purchase',
-			label: 'Install',
-		};
-	}
+	return {
+		action: 'purchase',
+		label: 'Install',
+	};
 };
 
 export const appStatusSpanProps = ({
@@ -278,11 +277,8 @@ export const appStatusSpanProps = ({
 		return;
 	}
 
-	const isFailed = () => installed && ['invalid_license_disabled'].includes(status); // TODO
-	const isEnabled = () => appEnabledStatuses.includes(status);
-	const isOnTrialPeriod = () => subscriptionInfo && subscriptionInfo.status === 'trialing';
-
-	if (isFailed()) {
+	const isFailed = appErroredStatuses.includes(status);
+	if (isFailed) {
 		return {
 			type: 'failed',
 			icon: 'warning',
@@ -290,7 +286,8 @@ export const appStatusSpanProps = ({
 		};
 	}
 
-	if (!isEnabled()) {
+	const isEnabled = appEnabledStatuses.includes(status);
+	if (!isEnabled) {
 		return {
 			type: 'warning',
 			icon: 'warning',
@@ -298,7 +295,8 @@ export const appStatusSpanProps = ({
 		};
 	}
 
-	if (isOnTrialPeriod()) {
+	const isOnTrialPeriod = subscriptionInfo && subscriptionInfo.status === 'trialing';
+	if (isOnTrialPeriod) {
 		return {
 			icon: 'checkmark-circled',
 			label: 'Trial period',
