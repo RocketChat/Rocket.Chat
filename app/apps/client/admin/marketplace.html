@@ -106,7 +106,7 @@
 										{{#let buttonProps=(appButtonProps app) statusSpanProps=(appStatusSpanProps app)}}
 											{{#if buttonProps}}
 												<button
-													class="rc-button rc-button--primary {{#unless $eq buttonProps.action 'update'}}rc-apps-marketplace__table-button--hideable{{/unless}} {{#if app.working}}rc-apps-marketplace__table-button--working{{/if}} js-{{buttonProps.action}}"
+													class="rc-button rc-button--primary {{#unless $eq buttonProps.action 'update'}}rc-apps-section__table-button--hideable{{/unless}} {{#if app.working}}rc-apps-section__table-button--working{{/if}} js-{{buttonProps.action}}"
 													disabled={{app.working}}
 													data-id={{app.id}}
 												>

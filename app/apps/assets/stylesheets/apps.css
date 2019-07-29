@@ -355,6 +355,19 @@
 	&__status-column {
 		width: 150px;
 	}
+
+	tr .rc-apps-section__table-button--hideable {
+		visibility: hidden;
+	}
+
+	tr .rc-apps-section__table-button--working,
+	tr:hover .rc-apps-section__table-button--hideable {
+		visibility: visible;
+	}
+
+	.rc-apps-section__table-button--working {
+		opacity: 0.6;
+	}
 }
 
 @keyframes play90 {

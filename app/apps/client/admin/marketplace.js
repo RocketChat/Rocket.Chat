@@ -20,7 +20,6 @@ import {
 } from './helpers';
 
 import './marketplace.html';
-import './marketplace.css';
 
 
 Template.marketplace.onCreated(function() {
