@@ -1,4 +1,20 @@
 
+# 1.1.4
+`2019-07-29  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Not sanitized message types ([#15054](https://github.com/RocketChat/Rocket.Chat/pull/15054))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 # 1.1.3
 `2019-06-21  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
