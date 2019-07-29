@@ -9,7 +9,12 @@ import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import { SideNav } from '../../../ui-utils/client';
 import { t } from '../../../utils/client';
-import { handleAPIError, triggerAppPopoverMenu } from './helpers';
+import {
+	appButtonProps,
+	appStatusSpanProps,
+	handleAPIError,
+	triggerAppPopoverMenu,
+} from './helpers';
 
 import './apps.html';
 
@@ -30,7 +35,27 @@ Template.apps.onCreated(function() {
 
 	(async () => {
 		try {
-			const apps = await Apps.getApps();
+			const appsFromMarketplace = await Apps.getAppsFromMarketplace();
+			const installedApps = await Apps.getApps();
+
+			const apps = installedApps.map((app) => {
+				const appFromMarketplace = appsFromMarketplace.find(({ id }) => id === app.id);
+
+				if (!appFromMarketplace) {
+					return {
+						...app,
+						installed: true,
+					};
+				}
+
+				return {
+					...app,
+					installed: true,
+					categories: appFromMarketplace.categories,
+					marketplaceVersion: appFromMarketplace.version,
+				};
+			});
+
 			this.state.set('apps', apps);
 		} catch (error) {
 			handleAPIError(error);
@@ -39,10 +64,20 @@ Template.apps.onCreated(function() {
 		}
 	})();
 
-	this.handleAppAdded = async (appId) => {
+	this.handleAppAddedOrUpdated = async (appId) => {
 		try {
 			const app = await Apps.getApp(appId);
-			this.state.set('apps', [...this.state.get('apps'), app]);
+			const { categories, version: marketplaceVersion } = await Apps.getAppFromMarketplace(appId, app.version) || {};
+			const apps = [
+				...this.state.get('apps').filter(({ id }) => id !== appId),
+				{
+					...app,
+					installed: true,
+					categories,
+					marketplaceVersion,
+				},
+			];
+			this.state.set('apps', apps);
 		} catch (error) {
 			handleAPIError(error);
 		}
@@ -64,13 +99,15 @@ Template.apps.onCreated(function() {
 		toastr.info(t(`App_status_${ status }`), app.name);
 	};
 
-	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdated);
 	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
 	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleAppStatusChange);
 });
 
 Template.apps.onDestroyed(function() {
-	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdated);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleAppStatusChange);
 });
@@ -150,6 +187,8 @@ Template.apps.helpers({
 			.filter(({ name }) => name.toLocaleLowerCase().includes(searchText))
 			.sort(({ [sortedColumn]: a }, { [sortedColumn]: b }) => sortingFactor * String(a).localeCompare(String(b)));
 	},
+	appButtonProps,
+	appStatusSpanProps,
 });
 
 Template.apps.events({

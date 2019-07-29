@@ -1,8 +1,4 @@
 #rocket-chat .rc-apps-marketplace {
-	.rc-apps-marketplace__status-column {
-		width: 150px;
-	}
-
 	tr .rc-apps-marketplace__table-button--hideable {
 		visibility: hidden;
 	}

@@ -293,6 +293,8 @@
 		display: flex;
 		flex: 0 0 auto;
 
+		margin-left: auto;
+		margin-inline-start: auto;
 		padding: 0;
 
 		font-size: 0.875rem;
@@ -348,6 +350,10 @@
 		&--failed {
 			color: var(--rc-color-error);
 		}
+	}
+
+	&__status-column {
+		width: 150px;
 	}
 }
 

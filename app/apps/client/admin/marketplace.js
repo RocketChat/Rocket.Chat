@@ -95,7 +95,7 @@ Template.marketplace.onCreated(function() {
 		this.state.set('apps', apps);
 	};
 
-	this.handleAppAdded = async (appId) => {
+	this.handleAppAddedOrUpdated = async (appId) => {
 		try {
 			const { status, version } = await Apps.getApp(appId);
 			const app = await Apps.getAppFromMarketplace(appId, version);
@@ -140,13 +140,15 @@ Template.marketplace.onCreated(function() {
 		toastr.info(t(`App_status_${ status }`), app.name);
 	};
 
-	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdated);
 	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
 	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleAppStatusChange);
 });
 
 Template.marketplace.onDestroyed(function() {
-	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdated);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleAppStatusChange);
 });

@@ -43,6 +43,9 @@
 							<th class="rc-table-td">
 								<div class="table-fake-th">{{_ "Details"}}</div>
 							</th>
+							<th class="rc-apps-marketplace__status-column">
+								<div class="table-fake-th">{{_ "Status"}}</div>
+							</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -75,13 +78,36 @@
 													{{app.description}}
 												{{/if}}
 											</span>
-											{{!-- There is no current way to get the app categories from the API --}}
-											{{!-- <span class="rc-table-subtitle rc-apps-categories">
+											<span class="rc-table-subtitle rc-apps-categories">
 												{{#each category in app.categories}}
 												<span class="rc-apps-category">{{category}}</span>
 												{{/each}}
-											</span> --}}
+											</span>
 										</div>
+									</div>
+								</td>
+								<td>
+									<div class="rc-table-wrapper">
+										{{#let buttonProps=(appButtonProps app) statusSpanProps=(appStatusSpanProps app)}}
+											{{#if buttonProps}}
+												<button
+													class="rc-button rc-button--primary {{#unless $eq buttonProps.action 'update'}}rc-apps-marketplace__table-button--hideable{{/unless}} {{#if app.working}}rc-apps-marketplace__table-button--working{{/if}} js-{{buttonProps.action}}"
+													disabled={{app.working}}
+													data-id={{app.id}}
+												>
+													{{#if app.working}}
+														{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
+													{{/if}}
+													{{_ buttonProps.label}}
+												</button>
+											{{else if statusSpanProps}}
+												<span class="rc-apps-section__status {{#if statusSpanProps.type}}rc-apps-section__status--{{statusSpanProps.type}}{{/if}}">
+													{{> icon icon=statusSpanProps.icon block="rc-icon--default-size"}}
+													{{_ statusSpanProps.label}}
+												</span>
+											{{/if}}
+										{{/let}}
+
 										<button class="rc-apps-section__app-menu-trigger js-menu" data-id="{{app.id}}">
 											{{> icon icon="menu" block="rc-icon--default-size"}}
 										</button>
@@ -91,7 +117,7 @@
 						{{/each}}
 						{{#if isLoading}}
 							<tr>
-								<td colspan="2" style="position: relative">{{> loading}}</td>
+								<td colspan="3" style="position: relative">{{> loading}}</td>
 							</tr>
 						{{/if}}
 					</tbody>
