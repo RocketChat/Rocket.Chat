@@ -255,7 +255,7 @@ export class Messages extends Base {
 
 			$or: following,
 		};
-		console.log(query);
+
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =			{ $nin: types };
 		}
@@ -281,7 +281,7 @@ export class Messages extends Base {
 				{ $or: listOfAccessibleRoomsObject },
 			],
 		};
-		console.log(query);
+
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =			{ $nin: types };
 		}
@@ -290,7 +290,7 @@ export class Messages extends Base {
 		for(let i = 0; i < msg.length - 1 ; i++){
 			if(msg[i].rid === msg[i+1].rid){
 				if(msg[i]['u._id'] === msg[i+1]['u._id']){
-					if((msg[i].ts - msg[i+1].ts) > 15e3){
+					if((msg[i].ts - msg[i+1].ts) > 20e3){
 						const temp = new Object();
 						temp._id = msg[i]._id;
 						msgIndex.push(temp);
@@ -308,18 +308,16 @@ export class Messages extends Base {
 				msgIndex.push(temp);
 			}
 		}
-		console.log(msgIndex.length);
+
 		query = {
-			$or:[ { _id: '3Kgd5Yp3gKB3Pv7Tw' },
-			    { _id: '8jHWMBDjAXp2nJFHD' },
-		 { _id: 'o8s7fFfB7yeuPZnJq' },],
+			$or: msgIndex,
 
 	};
-		console.log(query);
+
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =			{ $nin: types };
 		}
-	//	console.log(this.find(query, options).fetch());
+
 		return this.find(query, options);
 	}
 
@@ -478,6 +476,39 @@ export class Messages extends Base {
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =			{ $nin: types };
 		}
+		let msg = this.find(query, { sort: {rid: 1, 'u._id':1, ts: -1}, fields: {_id: 1, 'u._id':1, ts:1, rid:1}}).fetch();
+		let msgIndex = [];
+		for(let i = 0; i < msg.length - 1 ; i++){
+			if(msg[i].rid === msg[i+1].rid){
+				if(msg[i]['u._id'] === msg[i+1]['u._id']){
+					if((msg[i].ts - msg[i+1].ts) > 20e3){
+						const temp = new Object();
+						temp._id = msg[i]._id;
+						msgIndex.push(temp);
+					}
+				}
+				else{
+					const temp = new Object();
+					temp._id = msg[i]._id;
+					msgIndex.push(temp);
+				}
+			}
+			else{
+				const temp = new Object();
+				temp._id = msg[i]._id;
+				msgIndex.push(temp);
+			}
+		}
+
+		query = {
+			$or: msgIndex,
+
+		};
+
+
+		if (Match.test(types, [String]) && (types.length > 0)) {
+			query.t =			{ $nin: types };
+		}
 
 		return this.find(query, options);
 	}
@@ -541,6 +572,37 @@ export class Messages extends Base {
 				$gt: afterTimestamp,
 				$lt: beforeTimestamp,
 			},
+		};
+		if (Match.test(types, [String]) && (types.length > 0)) {
+			query.t =			{ $nin: types };
+		}
+		let msg = this.find(query, { sort: {rid: 1, 'u._id':1, ts: -1}, fields: {_id: 1, 'u._id':1, ts:1, rid:1}}).fetch();
+		let msgIndex = [];
+		for(let i = 0; i < msg.length - 1 ; i++){
+			if(msg[i].rid === msg[i+1].rid){
+				if(msg[i]['u._id'] === msg[i+1]['u._id']){
+					if((msg[i].ts - msg[i+1].ts) > 20e3){
+						const temp = new Object();
+						temp._id = msg[i]._id;
+						msgIndex.push(temp);
+					}
+				}
+				else{
+					const temp = new Object();
+					temp._id = msg[i]._id;
+					msgIndex.push(temp);
+				}
+			}
+			else{
+				const temp = new Object();
+				temp._id = msg[i]._id;
+				msgIndex.push(temp);
+			}
+		}
+
+		query = {
+			$or: msgIndex,
+
 		};
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =			{ $nin: types };
