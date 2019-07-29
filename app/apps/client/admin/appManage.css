@@ -87,26 +87,23 @@
 	}
 
 	&__alert {
-		width: 660px;
-		height: 36px;
-
-		margin-bottom: 4px;
-		padding: 8px 16px;
+		margin: 0.25rem 0;
+		padding: 0.5rem 1rem;
 
 		border-radius: 4px;
 
-		font-size: 14px;
-		line-height: 20px;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
 	}
 
 	&__alert-error {
-		color: #f5455c;
-		background: #ffe9ec;
+		color: var(--color-red);
+		background-color: #ffe9ec;
 	}
 
 	&__alert-warning {
 		color: #b68d00;
-		background: #fff6d6;
+		background-color: #fff6d6;
 	}
 
 	&__name {
