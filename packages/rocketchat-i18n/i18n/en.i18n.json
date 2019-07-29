@@ -338,6 +338,7 @@
   "App_status_disabled": "Disabled",
   "App_status_error_disabled": "Disabled: Uncaught Error",
   "App_status_initialized": "Initialized",
+  "App_status_invalid_license_disabled": "Disabled: Invalid License",
   "App_status_invalid_settings_disabled": "Disabled: Configuration Needed",
   "App_status_manually_disabled": "Disabled: Manually",
   "App_status_manually_enabled": "Enabled",
