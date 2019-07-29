@@ -6,13 +6,48 @@ import { modal, popover, call } from '../../../ui-utils/client';
 import { t } from '../../../utils/client';
 import { Apps } from '../orchestrator';
 
+// TODO: get this list from Apps Engine
+export const AppStatus = Object.freeze({
+	UNKNOWN: 'unknown',
+	CONSTRUCTED: 'constructed',
+	INITIALIZED: 'initialized',
+	AUTO_ENABLED: 'auto_enabled',
+	MANUALLY_ENABLED: 'manually_enabled',
+	COMPILER_ERROR_DISABLED: 'compiler_error_disabled',
+	INVALID_LICENSE_DISABLED: 'invalid_license_disabled',
+	ERROR_DISABLED: 'error_disabled',
+	MANUALLY_DISABLED: 'manually_disabled',
+	INVALID_SETTINGS_DISABLED: 'invalid_settings_disabled',
+	DISABLED: 'disabled',
+});
 
-const appEnabledStatuses = ['auto_enabled', 'manually_enabled'];
+const appEnabledStatuses = [
+	AppStatus.AUTO_ENABLED,
+	AppStatus.MANUALLY_ENABLED,
+];
+
+const appErroredStatuses = [
+	AppStatus.COMPILER_ERROR_DISABLED,
+	AppStatus.ERROR_DISABLED,
+	AppStatus.MANUALLY_DISABLED,
+	AppStatus.INVALID_SETTINGS_DISABLED,
+	AppStatus.INVALID_LICENSE_DISABLED,
+	AppStatus.DISABLED,
+];
 
 export const handleAPIError = (error) => {
 	console.error(error);
 	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
 	toastr.error(message);
+};
+
+export const warnStatusChange = (appName, status) => {
+	if (appErroredStatuses.includes(status)) {
+		toastr.error(t(`App_status_${ status }`), appName);
+		return;
+	}
+
+	toastr.info(t(`App_status_${ status }`), appName);
 };
 
 export const promptSubscription = async (app, callback, cancelCallback) => {
@@ -104,7 +139,8 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 
 	const handleDisable = () => promptAppDeactivation(async () => {
 		try {
-			await Apps.disableApp(app.id);
+			const effectiveStatus = await Apps.disableApp(app.id);
+			warnStatusChange(app.name, effectiveStatus);
 		} catch (error) {
 			handleAPIError(error);
 		}
@@ -112,7 +148,8 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 
 	const handleEnable = async () => {
 		try {
-			await Apps.enableApp(app.id);
+			const effectiveStatus = await Apps.enableApp(app.id);
+			warnStatusChange(app.name, effectiveStatus);
 		} catch (error) {
 			handleAPIError(error);
 		}

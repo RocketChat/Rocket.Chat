@@ -136,11 +136,14 @@ class AppClientOrchestrator {
 		return languages;
 	}
 
-	installApp = (appId, version) => APIClient.post('apps/', {
-		appId,
-		marketplace: true,
-		version,
-	})
+	installApp = async (appId, version) => {
+		const { app } = await APIClient.post('apps/', {
+			appId,
+			marketplace: true,
+			version,
+		});
+		return app;
+	}
 
 	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`)
 

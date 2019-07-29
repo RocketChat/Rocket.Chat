@@ -20,6 +20,7 @@ import {
 	handleAPIError,
 	triggerAppPopoverMenu,
 	promptSubscription,
+	warnStatusChange,
 } from './helpers';
 
 import './appManage.html';
@@ -365,7 +366,8 @@ Template.appManage.events({
 		state.set('working', true);
 
 		try {
-			await Apps.installApp(appId, state.get('marketplaceVersion'));
+			const { status } = await Apps.installApp(appId, state.get('marketplaceVersion'));
+			warnStatusChange(state.get('name'), status);
 		} catch (error) {
 			handleAPIError(error);
 		} finally {
@@ -382,7 +384,8 @@ Template.appManage.events({
 
 		await promptSubscription(app, async () => {
 			try {
-				await Apps.installApp(app.id, app.marketplaceVersion);
+				const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+				warnStatusChange(state.get('name'), status);
 			} catch (error) {
 				handleAPIError(error);
 			} finally {

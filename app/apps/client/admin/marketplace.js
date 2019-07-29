@@ -2,7 +2,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import toastr from 'toastr';
 
 import { SideNav, call } from '../../../ui-utils/client';
 import { t } from '../../../utils';
@@ -17,6 +16,7 @@ import {
 	handleAPIError,
 	promptSubscription,
 	triggerAppPopoverMenu,
+	warnStatusChange,
 } from './helpers';
 
 import './marketplace.html';
@@ -132,7 +132,6 @@ Template.marketplace.onCreated(function() {
 
 		app.status = status;
 		this.state.set('apps', apps);
-		toastr.info(t(`App_status_${ status }`), app.name);
 	};
 
 	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
@@ -290,7 +289,8 @@ Template.marketplace.events({
 		instance.startAppWorking(app.id);
 
 		try {
-			await Apps.installApp(app.id, app.marketplaceVersion);
+			const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+			warnStatusChange(app.name, status);
 		} catch (error) {
 			handleAPIError(error);
 		} finally {
@@ -314,7 +314,8 @@ Template.marketplace.events({
 
 		await promptSubscription(app, async () => {
 			try {
-				await Apps.installApp(app.id, app.marketplaceVersion);
+				const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+				warnStatusChange(app.name, status);
 			} catch (error) {
 				handleAPIError(error);
 			} finally {
