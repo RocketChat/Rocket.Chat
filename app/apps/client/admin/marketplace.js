@@ -1,21 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
-import { SideNav } from '../../../ui-utils/client';
+import { SideNav, call } from '../../../ui-utils/client';
 import { t } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import {
 	appButtonProps,
 	appStatusSpanProps,
+	checkCloudLogin,
 	formatPrice,
 	formatPricingPlan,
 	handleAPIError,
-	promptMarketplaceLogin,
 	promptSubscription,
 	triggerAppPopoverMenu,
 } from './helpers';
@@ -39,16 +38,13 @@ Template.marketplace.onCreated(function() {
 		wasEndReached: false,
 	});
 
-	Meteor.call('cloud:checkUserLoggedIn', (error, isLoggedInCloud) => {
-		if (error) {
-			console.warn(error);
-			return;
+	(async () => {
+		try {
+			this.state.set('isLoggedInCloud', await call('cloud:checkUserLoggedIn'));
+		} catch (error) {
+			handleAPIError(error);
 		}
 
-		this.state.set('isLoggedInCloud', isLoggedInCloud);
-	});
-
-	(async () => {
 		try {
 			const appsFromMarketplace = await Apps.getAppsFromMarketplace();
 			const installedApps = await Apps.getApps();
@@ -283,8 +279,9 @@ Template.marketplace.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (!instance.state.get('isLoggedInCloud')) {
-			promptMarketplaceLogin();
+		const isLoggedInCloud = await checkCloudLogin();
+		instance.state.set('isLoggedInCloud', isLoggedInCloud);
+		if (!isLoggedInCloud) {
 			return;
 		}
 
@@ -305,8 +302,9 @@ Template.marketplace.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (!instance.state.get('isLoggedInCloud')) {
-			promptMarketplaceLogin();
+		const isLoggedInCloud = await checkCloudLogin();
+		instance.state.set('isLoggedInCloud', isLoggedInCloud);
+		if (!isLoggedInCloud) {
 			return;
 		}
 

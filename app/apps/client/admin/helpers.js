@@ -2,7 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import semver from 'semver';
 import toastr from 'toastr';
 
-import { modal, popover } from '../../../ui-utils/client';
+import { modal, popover, call } from '../../../ui-utils/client';
 import { t } from '../../../utils/client';
 import { Apps } from '../orchestrator';
 
@@ -21,6 +21,7 @@ export const promptSubscription = async (app, callback, cancelCallback) => {
 		data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
 	} catch (error) {
 		handleAPIError(error);
+		cancelCallback();
 		return;
 	}
 
@@ -37,6 +38,7 @@ const promptModifySubscription = async (app, callback, cancelCallback) => {
 		data = await Apps.buildExternalUrl(app.id, app.purchaseType, true);
 	} catch (e) {
 		handleAPIError(e);
+		cancelCallback();
 		return;
 	}
 
@@ -304,4 +306,13 @@ export const formatPricingPlan = (pricingPlan) => {
 	return t(pricingPlanTranslationString, {
 		price: formatPrice(pricingPlan.price),
 	});
+};
+
+export const checkCloudLogin = async () => {
+	try {
+		return await call('cloud:checkUserLoggedIn');
+	} catch (error) {
+		handleAPIError(error);
+		return false;
+	}
 };

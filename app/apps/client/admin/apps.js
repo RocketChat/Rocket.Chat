@@ -12,7 +12,9 @@ import { t } from '../../../utils/client';
 import {
 	appButtonProps,
 	appStatusSpanProps,
+	checkCloudLogin,
 	handleAPIError,
+	promptSubscription,
 	triggerAppPopoverMenu,
 } from './helpers';
 
@@ -63,6 +65,20 @@ Template.apps.onCreated(function() {
 			this.state.set('isLoading', false);
 		}
 	})();
+
+	this.startAppWorking = (appId) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		app.working = true;
+		this.state.set('apps', apps);
+	};
+
+	this.stopAppWorking = (appId) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		delete app.working;
+		this.state.set('apps', apps);
+	};
 
 	this.handleAppAddedOrUpdated = async (appId) => {
 		try {
@@ -213,6 +229,50 @@ Template.apps.events({
 			version,
 		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
 		FlowRouter.go('app-manage', { appId }, { version });
+	},
+	async 'click .js-install, click .js-update'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (!await checkCloudLogin()) {
+			return;
+		}
+
+		const { currentTarget: button } = event;
+		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
+
+		try {
+			await Apps.installApp(app.id, app.marketplaceVersion);
+		} catch (error) {
+			handleAPIError(error);
+		} finally {
+			instance.stopAppWorking(app.id);
+		}
+	},
+	async 'click .js-purchase'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (!await checkCloudLogin()) {
+			return;
+		}
+
+		const { currentTarget: button } = event;
+		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
+
+		await promptSubscription(app, async () => {
+			try {
+				await Apps.installApp(app.id, app.marketplaceVersion);
+			} catch (error) {
+				handleAPIError(error);
+			} finally {
+				instance.stopAppWorking(app.id);
+			}
+		}, instance.stopAppWorking.bind(instance, app.id));
 	},
 	'click .js-menu'(event, instance) {
 		event.stopPropagation();
