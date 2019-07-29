@@ -248,7 +248,7 @@ export const appButtonProps = ({
 	const canUpdate = installed
 		&& version && marketplaceVersion
 		&& semver.lt(version, marketplaceVersion)
-		&& (isPurchased || price <= 0);
+		&& isPurchased;
 	if (canUpdate) {
 		return {
 			action: 'update',
