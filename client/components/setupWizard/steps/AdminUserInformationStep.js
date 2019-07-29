@@ -1,7 +1,9 @@
-import React, { useMemo, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
 
+import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
 import { callbacks } from '../../../../app/callbacks/client';
 import { useSetting } from '../../../hooks/useSetting';
@@ -10,35 +12,30 @@ import { Button } from '../../basic/Button';
 import { Input } from '../../basic/Input';
 import { useSetupWizardState } from '../SetupWizardState';
 import { SetupWizardStep } from '../SetupWizardStep';
-import { call } from '../../../../app/ui-utils/client';
-import { useSession } from '../../../hooks/useSession';
 
 export function AdminUserInformationStep() {
-	const t = useTranslation();
-	const [regexpForUsernameValidation] = useSetting('UTF8_Names_Validation');
-	const [, setForcedLogin] = useSession('forceLogin');
-
-	const usernameRegExp = useMemo(() => new RegExp(`^${ regexpForUsernameValidation }$`), [regexpForUsernameValidation]);
-	const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
-
 	const { currentStep, steps, goToNextStep } = useSetupWizardState();
 
 	const step = useMemo(() => steps.find(({ id }) => id === 'admin-info'), [steps]);
 	const active = useMemo(() => currentStep.id === 'admin-info', [currentStep]);
 
+	const regexpForUsernameValidation = useSetting('UTF8_Names_Validation');
+	const usernameRegExp = useMemo(() => new RegExp(`^${ regexpForUsernameValidation }$`), [regexpForUsernameValidation]);
+	const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
+
 	const [name, setName] = useState('');
-	const [isNameValid, validateName] = useState(true);
 	const [username, setUsername] = useState('');
-	const [isUsernameValid, validateUsername] = useState(true);
 	const [email, setEmail] = useState('');
-	const [isEmailValid, validateEmail] = useState(true);
 	const [password, setPassword] = useState('');
+
+	const [isNameValid, validateName] = useState(true);
+	const [isUsernameValid, validateUsername] = useState(true);
+	const [isEmailValid, validateEmail] = useState(true);
 	const [isPasswordValid, validatePassword] = useState(true);
 
-	const isContinueEnabled = useMemo(
-		() => name && username && email && password,
-		[name, username, email, password]
-	);
+	const isContinueEnabled = useMemo(() => name && username && email && password, [name, username, email, password]);
+
+	const t = useTranslation();
 
 	const validate = () => {
 		const isNameValid = !!name;
@@ -78,7 +75,7 @@ export function AdminUserInformationStep() {
 			throw error;
 		}
 
-		setForcedLogin(false);
+		Session.set('forceLogin', false);
 
 		await call('setUsername', username);
 
