@@ -52,8 +52,6 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdmi
 const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(function _notifyAdminsAboutRenewedApps(apps) {
 	const renewedApps = apps.filter((app) => app.getStatus() === AppStatus.DISABLED && app.getPreviousStatus() === AppStatus.INVALID_LICENSE_DISABLED);
 
-	console.log(renewedApps, apps.length, apps.map((app) => ({ s: app.getStatus(), p: app.getPreviousStatus() })));
-
 	if (renewedApps.length === 0) {
 		return;
 	}
