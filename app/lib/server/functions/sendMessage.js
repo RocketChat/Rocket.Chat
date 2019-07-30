@@ -17,7 +17,7 @@ import { isURL } from '../../../utils/lib/isURL';
  * is going to be rendered in the href attribute of a
  * link.
  */
-const ValidHref = Match.Where((value) => {
+const ValidLinkParam = Match.Where((value) => {
 	check(value, String);
 
 	if (!isURL(value)) {
@@ -62,8 +62,8 @@ const validateAttachmentsActions = (attachmentActions) => {
 	check(attachmentActions, objectMaybeIncluding({
 		type: String,
 		text: String,
-		url: ValidHref,
-		image_url: ValidHref,
+		url: ValidLinkParam,
+		image_url: ValidLinkParam,
 		is_webview: Boolean,
 		webview_height_ratio: String,
 		msg: String,
@@ -76,26 +76,26 @@ const validateAttachment = (attachment) => {
 		color: String,
 		text: String,
 		ts: Match.OneOf(String, Match.Integer),
-		thumb_url: ValidHref,
+		thumb_url: ValidLinkParam,
 		button_alignment: String,
 		actions: [Match.Any],
-		message_link: ValidHref,
+		message_link: ValidLinkParam,
 		collapsed: Boolean,
 		author_name: String,
-		author_link: ValidHref,
-		author_icon: ValidHref,
+		author_link: ValidLinkParam,
+		author_icon: ValidLinkParam,
 		title: String,
-		title_link: ValidHref,
+		title_link: ValidLinkParam,
 		title_link_download: Boolean,
 		image_dimensions: Object,
-		image_url: ValidHref,
+		image_url: ValidLinkParam,
 		image_preview: String,
 		image_type: String,
 		image_size: Number,
-		audio_url: ValidHref,
+		audio_url: ValidLinkParam,
 		audio_type: String,
 		audio_size: Number,
-		video_url: ValidHref,
+		video_url: ValidLinkParam,
 		video_type: String,
 		video_size: Number,
 		fields: [Match.Any],
@@ -119,7 +119,7 @@ const validateMessage = (message) => {
 		text: String,
 		alias: String,
 		emoji: String,
-		avatar: ValidHref,
+		avatar: ValidLinkParam,
 		attachments: [Match.Any],
 	}));
 
