@@ -315,6 +315,10 @@ export class AppsRestApi {
 							return API.v1.internalError();
 						}
 
+						if (e.response.statusCode === 404) {
+							return API.v1.notFound();
+						}
+
 						return API.v1.failure();
 					}
 
@@ -345,6 +349,10 @@ export class AppsRestApi {
 
 						if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
 							return API.v1.internalError();
+						}
+
+						if (e.response.statusCode === 404) {
+							return API.v1.notFound();
 						}
 
 						return API.v1.failure();
