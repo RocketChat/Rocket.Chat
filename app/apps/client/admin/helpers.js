@@ -85,27 +85,29 @@ export const promptSubscription = async (app, callback, cancelCallback) => {
 	}, callback, cancelCallback);
 };
 
-const promptModifySubscription = async (app, callback) => {
+const promptModifySubscription = async ({ id, purchaseType }) => {
 	if (!await checkCloudLogin()) {
 		return;
 	}
 
 	let data = null;
 	try {
-		data = await Apps.buildExternalUrl(app.id, app.purchaseType, true);
+		data = await Apps.buildExternalUrl(id, purchaseType, true);
 	} catch (error) {
 		handleAPIError(error);
 		return;
 	}
 
-	modal.open({
-		allowOutsideClick: false,
-		data,
-		template: 'iframeModal',
-	}, callback);
+	await new Promise((resolve) => {
+		modal.open({
+			allowOutsideClick: false,
+			data,
+			template: 'iframeModal',
+		}, resolve);
+	});
 };
 
-const promptAppDeactivation = (callback) => {
+const promptAppDeactivation = () => new Promise((resolve) => {
 	modal.open({
 		text: t('Apps_Marketplace_Deactivate_App_Prompt'),
 		type: 'warning',
@@ -115,19 +117,12 @@ const promptAppDeactivation = (callback) => {
 		cancelButtonText: t('No'),
 		closeOnConfirm: true,
 		html: false,
-	}, (confirmed) => {
-		if (!confirmed) {
-			return;
-		}
-		callback();
-	});
-};
+	}, resolve, () => resolve(false));
+});
 
-const promptAppUninstall = (isSubscribed, callback) => {
+const promptAppUninstall = () => new Promise((resolve) => {
 	modal.open({
-		text: isSubscribed
-			? t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt')
-			: t('Apps_Marketplace_Uninstall_App_Prompt'),
+		text: t('Apps_Marketplace_Uninstall_App_Prompt'),
 		type: 'warning',
 		showCancelButton: true,
 		confirmButtonColor: '#DD6B55',
@@ -135,13 +130,20 @@ const promptAppUninstall = (isSubscribed, callback) => {
 		cancelButtonText: t('No'),
 		closeOnConfirm: true,
 		html: false,
-	}, (confirmed) => {
-		if (!confirmed) {
-			return;
-		}
-		callback();
-	});
-};
+	}, resolve, () => resolve(false));
+});
+
+const promptSubscribedAppUninstall = () => new Promise((resolve) => {
+	modal.open({
+		text: t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt'),
+		type: 'info',
+		showCancelButton: true,
+		confirmButtonText: t('Apps_Marketplace_Modify_App_Subscription'),
+		cancelButtonText: t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway'),
+		closeOnConfirm: true,
+		html: false,
+	}, resolve, () => resolve(false));
+});
 
 export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 	if (!app) {
@@ -152,26 +154,31 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 	const isAppEnabled = appEnabledStatuses.includes(app.status);
 
-	const handleSubscription = () => promptModifySubscription(app, async () => {
+	const handleSubscription = async () => {
+		await promptModifySubscription(app);
 		try {
 			await Apps.syncApp(app.id);
 		} catch (error) {
 			handleAPIError(error);
 		}
-	});
+	};
 
 	const handleViewLogs = () => {
 		FlowRouter.go('app-logs', { appId: app.id }, { version: app.version });
 	};
 
-	const handleDisable = () => promptAppDeactivation(async () => {
+	const handleDisable = async () => {
+		if (!await promptAppDeactivation()) {
+			return;
+		}
+
 		try {
 			const effectiveStatus = await Apps.disableApp(app.id);
 			warnStatusChange(app.name, effectiveStatus);
 		} catch (error) {
 			handleAPIError(error);
 		}
-	});
+	};
 
 	const handleEnable = async () => {
 		try {
@@ -182,13 +189,29 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 		}
 	};
 
-	const handleUninstall = () => promptAppUninstall(isSubscribed, async () => {
+	const handleUninstall = async () => {
+		if (isSubscribed) {
+			const modifySubscription = await promptSubscribedAppUninstall();
+			if (modifySubscription) {
+				await promptModifySubscription(app);
+				try {
+					await Apps.syncApp(app.id);
+				} catch (error) {
+					handleAPIError(error);
+				}
+				return;
+			}
+		}
+
+		if (!await promptAppUninstall()) {
+			return;
+		}
 		try {
 			await Apps.uninstallApp(app.id);
 		} catch (error) {
 			handleAPIError(error);
 		}
-	});
+	};
 
 	popover.open({
 		currentTarget,
