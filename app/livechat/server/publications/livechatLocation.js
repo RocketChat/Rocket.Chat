@@ -16,7 +16,8 @@ Meteor.publish('livechat:location', function(filter = {}) {
 
 	check(filter, {
 		name: Match.Maybe(String), // Visitor name
-		state: Match.Maybe(String), // 'chatting', 'registered', or 'idle', offline
+		status: Match.Maybe(String), // 'online', 'away', 'offline'
+		chatStatus: Match.Maybe(String),
 		from: Match.Maybe(String),
 		to: Match.Maybe(String),
 		fromTime: Match.Maybe(String),
@@ -61,8 +62,12 @@ Meteor.publish('livechat:location', function(filter = {}) {
 	if (filter.name) {
 		query['visitorInfo.name'] = new RegExp(filter.name, 'i');
 	}
-	if (filter.state) {
-		query.state = filter.state;
+	if (filter.status) {
+		query.status = filter.status;
+	}
+
+	if (filter.chatStatus) {
+		query.chatStatus = filter.chatStatus;
 	}
 
 	const self = this;

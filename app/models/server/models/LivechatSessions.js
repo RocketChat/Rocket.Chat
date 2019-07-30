@@ -18,25 +18,25 @@ export class LivechatSessions extends Base {
 		const update = {
 			$set: {
 				visitorInfo,
-				state: 'registered',
 			},
 		};
 
 		return this.update(query, update);
 	}
 
-	findOneVisitorByTokenAndUpdateState(token, state) {
+	findOneVisitorByTokenAndUpdateStatus(token, status, chatStatus) {
 		const query = {
 			token,
 		};
 		let update;
 		const sessionInfo = this.findOne(query);
-		if (state === 'chatting') {
+		if (status === 'online') {
 			const { chatStart } = sessionInfo;
 			if (!chatStart) {
 				update = {
 					$set: {
-						state,
+						status,
+						chatStatus,
 						chatStartTime: new Date(),
 						chatStart: true,
 					},
@@ -47,17 +47,19 @@ export class LivechatSessions extends Base {
 			} else {
 				update = {
 					$set: {
-						state,
+						status,
+						chatStatus,
 					},
 					$unset: {
 						offlineTime: '',
 					},
 				};
 			}
-		} else if (state === 'offline') {
+		} else if (status === 'offline') {
 			update = {
 				$set: {
-					state,
+					status,
+					chatStatus,
 					offlineTime: new Date(),
 					chatStart: false,
 				},
@@ -65,23 +67,11 @@ export class LivechatSessions extends Base {
 		} else {
 			update = {
 				$set: {
-					state,
+					status,
+					chatStatus,
 				},
 			};
 		}
-
-		return this.update(query, update);
-	}
-
-	findOneVisitorByTokenAndUpdateStatus(token, status) {
-		const query = {
-			token,
-		};
-		const update = {
-			$set: {
-				status,
-			},
-		};
 
 		return this.update(query, update);
 	}
@@ -117,7 +107,6 @@ export class LivechatSessions extends Base {
 			deviceInfo,
 			createdAt: new Date(),
 			count: 1,
-			state: 'idle',
 		});
 	}
 }

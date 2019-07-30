@@ -3,16 +3,6 @@ import { check, Match } from 'meteor/check';
 import { API } from '../../../../api';
 import { Livechat } from '../../lib/Livechat';
 
-API.v1.addRoute('livechat/changeUserState/:token/:state', {
-	post() {
-		check(this.urlParams, {
-			token: String,
-			state: String,
-		});
-		return Livechat.updateVisitorState(this.urlParams.token, this.urlParams.state);
-	},
-});
-
 API.v1.addRoute('livechat/updateVisitCount/:token', {
 	post() {
 		check(this.urlParams, {
@@ -77,5 +67,24 @@ API.v1.addRoute('livechat/updateVisitorSessionOnRegister', {
 		});
 
 		return Livechat.updateVisitorSession(this.bodyParams.visitor);
+	},
+});
+
+API.v1.addRoute('livechat/updateSessionStatus', {
+	post() {
+		try {
+			check(this.bodyParams, {
+				token: String,
+				status: String,
+			});
+
+			const { token, status } = this.bodyParams;
+
+			Livechat.notifyGuestSessionStatusChanged(token, status);
+
+			return API.v1.success({ token, status });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
 	},
 });

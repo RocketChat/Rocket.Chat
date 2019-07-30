@@ -785,6 +785,19 @@ export const Livechat = {
 		LivechatRooms.updateVisitorStatus(token, status);
 	},
 
+	notifyGuestSessionStatusChanged(token, status) {
+		const room = Rooms.findByVisitorToken(token, { sort: { ts: -1 } }).map((data) => data)[0];
+		let chatStatus;
+		if (room && room.open) {
+			chatStatus = 'Chatting';
+		} else if (room && room.closedAt) {
+			chatStatus = 'Closed';
+		} else {
+			chatStatus = 'Not Started';
+		}
+		LivechatSessions.findOneVisitorByTokenAndUpdateStatus(token, status, chatStatus);
+	},
+
 	sendOfflineMessage(data = {}) {
 		if (!settings.get('Livechat_display_offline_form')) {
 			return false;
@@ -862,10 +875,6 @@ export const Livechat = {
 
 	updateVisitorSession(visitor = {}) {
 		return LivechatSessions.findOneVisitorAndUpdateSession(visitor);
-	},
-
-	updateVisitorState(token, state) {
-		return LivechatSessions.findOneVisitorByTokenAndUpdateState(token, state);
 	},
 
 	updateVisitorCount(token) {

@@ -19,9 +19,6 @@ Template.livechatDashboard.helpers({
 	visitors() {
 		return Template.instance().users.get();
 	},
-	checkRegister() {
-		return this.state === 'registered';
-	},
 	totalVisitors() {
 		return Template.instance().users.get().length;
 	},
@@ -184,7 +181,7 @@ Template.livechatDashboard.onCreated(function() {
 						val.pageInfo = pageInfo;
 					}
 
-					const room = LivechatRoom.findOne({ t: 'l', 'v.token': val.token });
+					const room = LivechatRoom.find({ t: 'l', 'v.token': val.token }, { sort: { ts: -1 } }).map((data) => data)[0];
 					if (room && room.servedBy) {
 						val.servedBy = room.servedBy;
 					}

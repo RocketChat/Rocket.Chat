@@ -9,12 +9,22 @@
           </div>
           <div class="form-group">
             <div class="rc-select">
-              <select class="rc-select__element" name="state">
+              <select class="rc-select__element" name="status">
                 <option class="rc-select__option" value="">{{_ "All"}}</option>
-                <option class="rc-select__option" value="chatting">{{_ "Chatting"}}</option>
-                <option class="rc-select__option" value="registered">{{_ "Registered"}}</option>
-                <option class="rc-select__option" value="idle">{{_ "Idle"}}</option>
+                <option class="rc-select__option" value="online">{{_ "Online"}}</option>
+                <option class="rc-select__option" value="away">{{_ "Away"}}</option>
                 <option class="rc-select__option" value="offline">{{_ "Offline"}}</option>
+              </select>
+              {{> icon block="rc-select__arrow" icon="arrow-down" }}
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="rc-select">
+              <select class="rc-select__element" name="chatStatus">
+                <option class="rc-select__option" value="">{{_ "All"}}</option>
+                <option class="rc-select__option" value="Chatting">{{_ "Chatting"}}</option>
+                <option class="rc-select__option" value="Not Started">{{_ "Not Started"}}</option>
+                <option class="rc-select__option" value="Closed">{{_ "Closed"}}</option>
               </select>
               {{> icon block="rc-select__arrow" icon="arrow-down" }}
             </div>
@@ -63,6 +73,9 @@
             <th width="15%">
               <div class="table-fake-th">{{_ "Visitor Info"}}</div>
             </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Status"}}</div>
+            </th>
             <th width="25%">
               <div class="table-fake-th">{{_ "Location"}}</div>
             </th>
@@ -71,9 +84,6 @@
             </th>
             <th width="5%">
               <div class="table-fake-th">{{_ "Device"}}</div>
-            </th>
-            <th width="10%">
-              <div class="table-fake-th">{{_ "Status"}}</div>
             </th>
             <th width="15%">
               <div class="table-fake-th">{{_ "Session Started"}}</div>
@@ -109,12 +119,14 @@
                 {{/if}}
               </div>
             </td>
+            <td>
+              {{status}}
+            </td>
             <td>{{location.city}}, {{location.countryName}}</td>
             <td>{{count}}</td>
             <td>
               <i class="{{osIcon}}"></i><i class="{{browserIcon}}"></i>
             </td>
-            <td>{{status}}</td>
             <td>{{sessionStarted}}</td>
             <td>
               {{#if timeSince}}
@@ -123,22 +135,12 @@
                 {{_ "No Info"}}
               {{/if}}
             </td>
-            <td>
-              {{chatStatus}}
-            </td>
+            <td>{{chatStatus}}</td>
             <td>
               {{#if servedBy}}
                 {{servedBy.username}}
               {{else}}
-              {{#if visitorInfo}}
-                {{#if checkRegister}}
-                <button class="rc-button rc-button--primary js-load-more">{{_ "Chat"}}</button>
-                {{else}}
-                  {{_ "No Info"}}
-                {{/if}}
-              {{else}}
                 {{_ "No Info"}}
-              {{/if}}
               {{/if}}
             </td>
           </tr>
