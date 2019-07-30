@@ -2752,4 +2752,19 @@ settings.addGroup('Rate Limiter', function() {
 	});
 });
 
+settings.addGroup('Alexa', function() {
+	this.add('Alexa_Enable', false, {
+		type: 'boolean',
+		public: true,
+	});
+	this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
+		type: 'string',
+		public: true,
+		enableQuery: {
+			_id: 'Alexa_Enable',
+			value: true,
+		},
+	});
+});
+
 settings.init();

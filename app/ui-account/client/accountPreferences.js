@@ -8,6 +8,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
+
 import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
@@ -73,6 +74,9 @@ Template.accountPreferences.helpers({
 	highlights() {
 		const userHighlights = getUserPreference(Meteor.userId(), 'highlights');
 		return userHighlights ? userHighlights.join(',\n') : undefined;
+	},
+	alexaServerName() {
+		return getUserPreference(Meteor.userId(), 'alexaServerName');
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -175,6 +179,7 @@ Template.accountPreferences.onCreated(function() {
 			return s.trim(e);
 		}));
 		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map((option) => ({ action: option.value, label: option.text }));
+		data.alexaServerName = $('#alexaServerName').val();
 
 		let reload = false;
 
@@ -293,6 +298,7 @@ Template.accountPreferences.onRendered(function() {
 	});
 });
 
+
 Template.accountPreferences.events({
 	'click .rc-header__section-button .save'(e, t) {
 		t.save();
@@ -340,5 +346,47 @@ Template.accountPreferences.events({
 		const optionIndex = Array.from(options).findIndex((option) => option.value === selectedOption);
 
 		selectEl.remove(optionIndex);
+	},
+	// 'click .add'(e, tmpl) {
+	'click .add'(e, instance) {
+		e.preventDefault();
+
+		const serverName = instance.find('#alexaServerName').value.trim();
+
+		if (!serverName) {
+			return toastr.error(t('Register_Alexa_Servername_Error'));
+		}
+
+		const tokenName = `alexa-${ serverName }`;
+
+		Meteor.call('personalAccessTokens:generateToken', { tokenName }, (error, token) => {
+			if (error) {
+				return toastr.error(t(error.error));
+			}
+
+			const serverURL = `${ window.location.protocol }//${ window.location.hostname }`;
+			const userID = Meteor.userId();
+
+			Meteor.call('registerAlexaUser', serverURL, serverName, userID, token, function(err, res) {
+				if (err) {
+					return toastr.error(t(err.error));
+				}
+				if (res === false) {
+					return toastr.error(t('Register_Alexa_Server_Error'));
+				}
+
+				const alexaPinCode = res.code;
+
+				modal.open({
+					title: t('Register_Alexa_Token_Generated'),
+					text: t('Register_Alexa_Token_Generated_Modal', { pinCode: alexaPinCode }),
+					type: 'success',
+					confirmButtonColor: '#DD6B55',
+					confirmButtonText: 'Ok',
+					closeOnConfirm: true,
+					html: true,
+				});
+			});
+		});
 	},
 });
