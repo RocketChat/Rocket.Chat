@@ -5,7 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 
 import { LivechatRoom } from '../../../collections/LivechatRoom';
-import { setDateRange, updateDateRange } from '../../../lib/dateHandler';
+import { updateDateRange } from '../../../lib/dateHandler';
 import { setTimeRange } from '../../../lib/timeHandler';
 import { visitorNavigationHistory } from '../../../collections/LivechatVisitorNavigation';
 import { RocketChatTabBar, popover } from '../../../../../ui-utils';
@@ -14,6 +14,7 @@ import { t } from '../../../../../utils';
 import './livechatRealTimeVisitorsDashboard.html';
 
 const LivechatLocation = new Mongo.Collection('livechatLocation');
+const timeFilter = ['last-thirty-minutes', 'last-hour', 'last-six-hour', 'last-twelve-hour'];
 
 Template.livechatDashboard.helpers({
 	visitors() {
@@ -31,17 +32,16 @@ Template.livechatDashboard.helpers({
 	timerange() {
 		return Template.instance().timerange.get();
 	},
-	daterange() {
-		return Template.instance().daterange.get();
-	},
 	showLeftNavButton() {
-		if (Template.instance().daterange.get().value === 'custom') {
+		const { value } = Template.instance().timerange.get();
+		if (value === 'custom' || timeFilter.includes(value)) {
 			return false;
 		}
 		return true;
 	},
 	showRightNavButton() {
-		if (Template.instance().daterange.get().value === 'custom' || Template.instance().daterange.get().value === 'today' || Template.instance().daterange.get().value === 'this-week' || Template.instance().daterange.get().value === 'this-month') {
+		const { value } = Template.instance().timerange.get();
+		if (value === 'custom' || value === 'today' || value === 'this-week' || value === 'this-month' || timeFilter.includes(value)) {
 			return false;
 		}
 		return true;
@@ -69,29 +69,15 @@ Template.livechatDashboard.events({
 		};
 		popover.open(config);
 	},
-	'click .lc-date-picker-btn'(e) {
-		e.preventDefault();
-		const options = [];
-		const config = {
-			template: 'livechatAnalyticsDaterange',
-			currentTarget: e.currentTarget,
-			data: {
-				options,
-				daterange: Template.instance().daterange,
-			},
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-		popover.open(config);
-	},
-	'click .lc-daterange-prev'(e) {
+	'click .lc-timerange-prev'(e) {
 		e.preventDefault();
 
-		Template.instance().daterange.set(updateDateRange(Template.instance().daterange.get(), -1));
+		Template.instance().timerange.set(updateDateRange(Template.instance().timerange.get(), -1));
 	},
-	'click .lc-daterange-next'(e) {
+	'click .lc-timerange-next'(e) {
 		e.preventDefault();
 
-		Template.instance().daterange.set(updateDateRange(Template.instance().daterange.get(), 1));
+		Template.instance().timerange.set(updateDateRange(Template.instance().timerange.get(), 1));
 	},
 	'submit form'(event, instance) {
 		event.preventDefault();
@@ -110,16 +96,17 @@ Template.livechatDashboard.events({
 
 Template.livechatDashboard.onRendered(function() {
 	this.autorun(() => {
-		if (Template.instance().timerange.get().value !== 'none') {
+		if (timeFilter.includes(Template.instance().timerange.get().value)) {
 			this.filter.set({
 				fromTime: moment(Template.instance().timerange.get().from, 'Do, hh:mm a').toISOString(),
 				toTime: moment(Template.instance().timerange.get().to, 'Do, hh:mm a').toISOString(),
 				valueTime: Template.instance().timerange.get().value,
 			});
-		} else if (Template.instance().daterange.get()) {
+		} else {
 			this.filter.set({
-				from: moment(Template.instance().daterange.get().from, 'MMM D YYYY').toISOString(),
-				to: moment(Template.instance().daterange.get().to, 'MMM D YYYY').toISOString(),
+				fromTime: moment(Template.instance().timerange.get().from, 'MMM D YYYY').toISOString(),
+				toTime: moment(Template.instance().timerange.get().to, 'MMM D YYYY').toISOString(),
+				valueTime: Template.instance().timerange.get().value,
 			});
 		}
 	});
@@ -134,13 +121,9 @@ Template.livechatDashboard.onCreated(function() {
 	this.tabBarData = new ReactiveVar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 
-	this.daterange = new ReactiveVar({});
 	this.timerange = new ReactiveVar({});
 	this.autorun(() => {
 		Template.instance().timerange.set(setTimeRange());
-	});
-	this.autorun(() => {
-		Template.instance().daterange.set(setDateRange());
 	});
 
 	this.autorun(() => {

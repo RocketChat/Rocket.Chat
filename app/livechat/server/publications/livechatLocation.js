@@ -18,44 +18,39 @@ Meteor.publish('livechat:location', function(filter = {}) {
 		name: Match.Maybe(String), // Visitor name
 		status: Match.Maybe(String), // 'online', 'away', 'offline'
 		chatStatus: Match.Maybe(String),
-		from: Match.Maybe(String),
-		to: Match.Maybe(String),
 		fromTime: Match.Maybe(String),
 		toTime: Match.Maybe(String),
 		valueTime: Match.Maybe(String),
 	});
 
-	let { from, to } = filter;
 	const { fromTime, toTime, valueTime } = filter;
-
-	if (!(moment(from).isValid() && moment(to).isValid())) {
-		return this.error(new Meteor.Error('error-invalid-date', 'Invalid Date', { publish: 'livechat:location' }));
-	}
 
 	if (!(moment(fromTime).isValid() && moment(toTime).isValid())) {
 		return this.error(new Meteor.Error('error-invalid-time', 'Invalid Time', { publish: 'livechat:location' }));
 	}
 
 	const query = {};
-
+	const timeFilter = ['last-thirty-minutes', 'last-hour', 'last-six-hour', 'last-twelve-hour'];
 	if (fromTime && toTime && valueTime) {
-		query.createdAt = {
-			$gte: moment(toTime).toDate(),
-			$lt: moment(fromTime).toDate(),
-		};
-	} else if (from && to) {
-		from = moment(from).add(1, 'days');
-		to = moment(to).add(1, 'days');
-		if (moment(from).diff(to) === 0) {
+		if (timeFilter.includes(valueTime)) {
 			query.createdAt = {
-				$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
-				$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).add(1, 'days').toDate(),
+				$gte: moment(toTime).toDate(),
+				$lt: moment(fromTime).toDate(),
 			};
 		} else {
-			query.createdAt = {
-				$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
-				$lte: moment(to).utcOffset(0).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate(),
-			};
+			const from = moment(fromTime).add(1, 'days');
+			const to = moment(toTime).add(1, 'days');
+			if (moment(from).diff(to) === 0) {
+				query.createdAt = {
+					$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+					$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).add(1, 'days').toDate(),
+				};
+			} else {
+				query.createdAt = {
+					$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+					$lte: moment(to).utcOffset(0).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate(),
+				};
+			}
 		}
 	}
 

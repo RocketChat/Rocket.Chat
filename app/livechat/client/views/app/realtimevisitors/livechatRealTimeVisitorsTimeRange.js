@@ -20,15 +20,6 @@ Template.livechatRealTimeVisitorsTimeRange.events({
 		popover.close();
 
 		switch (value) {
-			case 'none':
-				Template.currentData().timerange.set(setTimeRange(value));
-				break;
-			case 'last-one-minute':
-				Template.currentData().timerange.set(setTimeRange(value, moment(), moment().subtract(1, 'minutes')));
-				break;
-			case 'last-10-minutes':
-				Template.currentData().timerange.set(setTimeRange(value, moment(), moment().subtract(10, 'minutes')));
-				break;
 			case 'last-thirty-minutes':
 				Template.currentData().timerange.set(setTimeRange(value, moment(), moment().subtract(30, 'minutes')));
 				break;
@@ -40,6 +31,38 @@ Template.livechatRealTimeVisitorsTimeRange.events({
 				break;
 			case 'last-twelve-hour':
 				Template.currentData().timerange.set(setTimeRange(value, moment(), moment().subtract(12, 'hours')));
+				break;
+			case 'custom':
+				const target = document.getElementsByClassName('lc-time-picker-btn')[0];
+				const options = [];
+				const config = {
+					template: 'livechatRealTimeVisitorsCustomDaterange',
+					currentTarget: target,
+					data: {
+						options,
+						timerange: Template.currentData().timerange,
+					},
+					offsetVertical: target.clientHeight + 10,
+				};
+				popover.open(config);
+				break;
+			case 'today':
+				Template.currentData().timerange.set(setTimeRange(value, moment().startOf('day'), moment().startOf('day')));
+				break;
+			case 'yesterday':
+				Template.currentData().timerange.set(setTimeRange(value, moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').startOf('day')));
+				break;
+			case 'this-week':
+				Template.currentData().timerange.set(setTimeRange(value, moment().startOf('week'), moment().endOf('week')));
+				break;
+			case 'prev-week':
+				Template.currentData().timerange.set(setTimeRange(value, moment().subtract(1, 'weeks').startOf('week'), moment().subtract(1, 'weeks').endOf('week')));
+				break;
+			case 'this-month':
+				Template.currentData().timerange.set(setTimeRange(value, moment().startOf('month'), moment().endOf('month')));
+				break;
+			case 'prev-month':
+				Template.currentData().timerange.set(setTimeRange(value, moment().subtract(1, 'months').startOf('month'), moment().subtract(1, 'months').endOf('month')));
 				break;
 		}
 	},

@@ -1,24 +1,6 @@
 <template name="livechatRealTimeVisitorsTimeRange">
   <div class="rc-popover__column">
     <ul class="rc-popover__list">
-      <li class="rc-popover__item {{bold 'None'}}">
-        <label class="rc-popover__label">
-          <input type="radio" name="lc-timerange" value="none" class="hidden">
-          <span class="rc-popover__item-text">{{_ "None"}}</span>
-        </label>
-      </li>
-      <li class="rc-popover__item {{bold 'last-one-minute'}}">
-        <label class="rc-popover__label">
-          <input type="radio" name="lc-timerange" value="last-one-minute" class="hidden">
-          <span class="rc-popover__item-text">{{_ "Last Minute"}}</span>
-        </label>
-      </li>
-      <li class="rc-popover__item {{bold 'last-10-minutes'}}">
-        <label class="rc-popover__label">
-          <input type="radio" name="lc-timerange" value="last-10-minutes" class="hidden">
-          <span class="rc-popover__item-text">{{_ "Last 10 Minutes"}}</span>
-        </label>
-      </li>
       <li class="rc-popover__item {{bold 'last-thirty-minutes'}}">
         <label class="rc-popover__label">
           <input type="radio" name="lc-timerange" value="last-thirty-minutes" class="hidden">
@@ -41,6 +23,48 @@
         <label class="rc-popover__label">
           <input type="radio" name="lc-timerange" value="last-twelve-hour" class="hidden">
           <span class="rc-popover__item-text">{{_ "Last 12 Hours"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'today'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="today" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Today"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'yesterday'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="yesterday" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Yesterday"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'this-week'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="this-week" class="hidden">
+          <span class="rc-popover__item-text">{{_ "This_week"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'prev-week'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="prev-week" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Previous_week"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'this-month'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="this-month" class="hidden">
+          <span class="rc-popover__item-text">{{_ "This_month"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'prev-month'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="prev-month" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Previous_month"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'custom'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="custom" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Custom_dates"}}</span>
         </label>
       </li>
     </ul>
