@@ -139,6 +139,7 @@ const promptSubscribedAppUninstall = () => new Promise((resolve) => {
 		showCancelButton: true,
 		confirmButtonText: t('Apps_Marketplace_Modify_App_Subscription'),
 		cancelButtonText: t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway'),
+		cancelButtonColor: '#DD6B55',
 		closeOnConfirm: true,
 		html: false,
 	}, resolve, () => resolve(false));
@@ -200,6 +201,13 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 				}
 				return;
 			}
+
+			try {
+				await Apps.uninstallApp(app.id);
+			} catch (error) {
+				handleAPIError(error);
+			}
+			return;
 		}
 
 		if (!await promptAppUninstall()) {
