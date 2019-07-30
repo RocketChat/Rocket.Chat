@@ -310,7 +310,12 @@ export class AppsRestApi {
 						});
 					} catch (e) {
 						orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', e.response.data);
-						return API.v1.internalError();
+
+						if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+							return API.v1.internalError();
+						}
+
+						return API.v1.failure();
 					}
 
 					if (!result || result.statusCode !== 200 || result.data.length === 0) {
@@ -337,7 +342,12 @@ export class AppsRestApi {
 						});
 					} catch (e) {
 						orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', e.response.data);
-						return API.v1.internalError();
+
+						if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+							return API.v1.internalError();
+						}
+
+						return API.v1.failure();
 					}
 
 					if (result.statusCode !== 200 || result.data.length === 0) {
