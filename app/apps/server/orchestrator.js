@@ -7,11 +7,13 @@ import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsers
 import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { settings } from '../../settings';
 import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
+import { Logger } from '../../logger';
 
 export let Apps;
 
 class AppServerOrchestrator {
 	constructor() {
+		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 		Permissions.createOrUpdate('manage-apps', ['admin']);
 
 		this._marketplaceUrl = 'https://marketplace.rocket.chat';
@@ -82,6 +84,10 @@ class AppServerOrchestrator {
 		return settings.get('Apps_Framework_Development_Mode');
 	}
 
+	getRocketChatLogger() {
+		return this._rocketchatLogger;
+	}
+
 	debugLog(...args) {
 		if (this.isDebugging()) {
 			// eslint-disable-next-line
@@ -122,7 +128,8 @@ class AppServerOrchestrator {
 			return Promise.resolve();
 		}
 
-		return this._manager.updateAppsMarketplaceInfo(apps);
+		return this._manager.updateAppsMarketplaceInfo(apps)
+			.then(() => this._manager.get());
 	}
 }
 
