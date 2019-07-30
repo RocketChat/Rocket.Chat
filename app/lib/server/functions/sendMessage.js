@@ -6,6 +6,7 @@ import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
+import { isURL } from '../../../utils/lib/isURL';
 
 /**
  * IMPORTANT
@@ -18,6 +19,10 @@ import { Markdown } from '../../../markdown/server';
  */
 const ValidHref = Match.Where((value) => {
 	check(value, String);
+
+	if (!isURL(value)) {
+		throw new Error('Invalid href value provided');
+	}
 
 	if (/^javascript:/i.test(value)) {
 		throw new Error('Invalid href value provided');
@@ -58,7 +63,7 @@ const validateAttachmentsActions = (attachmentActions) => {
 		type: String,
 		text: String,
 		url: ValidHref,
-		image_url: String,
+		image_url: ValidHref,
 		is_webview: Boolean,
 		webview_height_ratio: String,
 		msg: String,
@@ -71,26 +76,26 @@ const validateAttachment = (attachment) => {
 		color: String,
 		text: String,
 		ts: Match.OneOf(String, Match.Integer),
-		thumb_url: String,
+		thumb_url: ValidHref,
 		button_alignment: String,
 		actions: [Match.Any],
 		message_link: ValidHref,
 		collapsed: Boolean,
 		author_name: String,
 		author_link: ValidHref,
-		author_icon: String,
+		author_icon: ValidHref,
 		title: String,
 		title_link: ValidHref,
 		title_link_download: Boolean,
 		image_dimensions: Object,
-		image_url: String,
+		image_url: ValidHref,
 		image_preview: String,
 		image_type: String,
 		image_size: Number,
-		audio_url: String,
+		audio_url: ValidHref,
 		audio_type: String,
 		audio_size: Number,
-		video_url: String,
+		video_url: ValidHref,
 		video_type: String,
 		video_size: Number,
 		fields: [Match.Any],
@@ -114,7 +119,7 @@ const validateMessage = (message) => {
 		text: String,
 		alias: String,
 		emoji: String,
-		avatar: String,
+		avatar: ValidHref,
 		attachments: [Match.Any],
 	}));
 
