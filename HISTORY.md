@@ -1,6 +1,29 @@
 
 # 1.3.0 (Under Release Candidate Process)
 
+## 1.3.0-rc.3
+`2019-07-29  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- setupWizard calling multiple getSetupWizardParameters ([#15060](https://github.com/RocketChat/Rocket.Chat/pull/15060))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: getSetupWizardParameters ([#15067](https://github.com/RocketChat/Rocket.Chat/pull/15067))
+- Regression: Webdav File Picker search and fixed overflows ([#15027](https://github.com/RocketChat/Rocket.Chat/pull/15027) by [@ubarsaiyan](https://github.com/ubarsaiyan))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@ubarsaiyan](https://github.com/ubarsaiyan)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 1.3.0-rc.2
 `2019-07-26  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
@@ -150,6 +173,14 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 
+# 1.2.2
+`2019-07-29`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
 # 1.2.1
 `2019-06-28  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -255,6 +286,14 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 1.1.4
+`2019-07-29`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
 
 # 1.1.3
 `2019-06-21  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
@@ -492,6 +531,22 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 1.0.4
+`2019-07-29  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Not sanitized message types ([#15054](https://github.com/RocketChat/Rocket.Chat/pull/15054))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
 
 # 1.0.3
 `2019-05-09  ·  1 🔍  ·  8 👩‍💻👨‍💻`
