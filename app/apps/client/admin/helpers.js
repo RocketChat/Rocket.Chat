@@ -357,15 +357,19 @@ export const appStatusSpanProps = ({
 export const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
 
 export const formatPricingPlan = (pricingPlan) => {
-	const perUser = pricingPlan.isPerSeat && pricingPlan.tiers && pricingPlan.tiers.length;
+	const { strategy, price } = pricingPlan;
+
+	const tier = Array.isArray(pricingPlan.tiers)
+		? pricingPlan.tiers.find((tier) => tier.price === price)
+		: null;
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
-		pricingPlan.strategy,
-		perUser && 'perUser',
+		strategy,
+		(tier && tier.perUnit) && 'perUser',
 	].filter(Boolean).join('_');
 
 	return t(pricingPlanTranslationString, {
-		price: formatPrice(pricingPlan.price),
+		price: formatPrice(price),
 	});
 };
