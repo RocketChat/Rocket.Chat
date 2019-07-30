@@ -17,7 +17,6 @@ const appErroredStatuses = [
 	AppStatus.ERROR_DISABLED,
 	AppStatus.INVALID_SETTINGS_DISABLED,
 	AppStatus.INVALID_LICENSE_DISABLED,
-	AppStatus.DISABLED,
 ];
 
 export const handleAPIError = (error) => {
