@@ -676,17 +676,23 @@ export const Livechat = {
 		Rooms.removeByVisitorToken(token);
 	},
 
-	saveDepartment(_id, departmentData, departmentAgents) {
+	saveDepartment(_id, departmentData, departmentAgents, customFields = []) {
 		check(_id, Match.Maybe(String));
 
-		check(departmentData, {
+		const validationFields = {
 			enabled: Boolean,
 			name: String,
 			description: Match.Optional(String),
 			showOnRegistration: Boolean,
 			email: String,
 			showOnOfflineForm: Boolean,
+		};
+
+		customFields.forEach((field) => {
+			validationFields[field] = Match.OneOf(String, Match.Integer, Boolean);
 		});
+
+		check(departmentData, validationFields);
 
 		check(departmentAgents, [
 			Match.ObjectIncluding({

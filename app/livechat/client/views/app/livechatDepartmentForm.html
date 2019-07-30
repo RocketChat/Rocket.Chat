@@ -43,6 +43,9 @@
 								<label><input type="radio" name="showOnOfflineForm" value="0" checked="{{showOnOfflineForm false}}" /> {{_ "No"}}</label>
 							</div>
 						</div>
+						{{#if customFieldsTemplate}}
+							{{> Template.dynamic template=customFieldsTemplate data=data }}
+						{{/if}}
 						<hr />
 						<h2>{{_ "Agents"}}</h2>
 
@@ -91,9 +94,7 @@
 									</tbody>
 								{{/table}}
 							</div>
-
 						</fieldset>
-
 					</fieldset>
 					<div class="rc-button__group">
 						<button class="rc-button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
