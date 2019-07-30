@@ -12,6 +12,7 @@ import { callbacks } from '../../callbacks';
 import { hasRole } from '../../authorization';
 import { Users } from '../../models';
 import { t, handleError } from '../../utils';
+import { call } from '../../ui-utils';
 
 const cannotSetup = () => {
 	const showSetupWizard = settings.get('Show_Setup_Wizard');
@@ -100,26 +101,43 @@ const persistSettings = (state, callback) => {
 	});
 };
 
-Template.setupWizard.onCreated(function() {
-	this.state = new ReactiveDict();
-	this.state.set('currentStep', 1);
-	this.state.set('registerServer', true);
-	this.state.set('optIn', true);
+Template.setupWizard.onCreated(async function() {
+	const statusDefault = {
+		currentStep: 1,
+		registerServer: true,
+		optIn: true,
+	};
+	this.state = new ReactiveDict(statusDefault);
 
 	this.wizardSettings = new ReactiveVar([]);
 	this.allowStandaloneServer = new ReactiveVar(false);
 
 	if (localStorage.getItem('wizardFinal')) {
-		FlowRouter.go('setup-wizard-final');
-		return;
+		return FlowRouter.go('setup-wizard-final');
 	}
 
 	const jsonString = localStorage.getItem('wizard');
-	const state = (jsonString && JSON.parse(jsonString)) || {};
-	Object.entries(state).forEach((entry) => this.state.set(...entry));
+	const state = (jsonString && JSON.parse(jsonString)) || statusDefault;
+	this.state.set(state);
 
-	this.autorun((c) => {
+	this.autorun(async () => {
+		if (!Meteor.userId()) {
+			return;
+		}
+		const { settings, allowStandaloneServer } = await call('getSetupWizardParameters') || {};
+		this.wizardSettings.set(settings);
+		this.allowStandaloneServer.set(allowStandaloneServer);
+	});
+
+	this.autorun(() => {
+		const state = this.state.all();
+		state['registration-pass'] = '';
+		localStorage.setItem('wizard', JSON.stringify(state));
+	});
+
+	this.autorun(async (c) => {
 		const cantSetup = cannotSetup();
+
 		if (typeof cantSetup === 'undefined') {
 			return;
 		}
@@ -130,27 +148,14 @@ Template.setupWizard.onCreated(function() {
 			return;
 		}
 
-		const state = this.state.all();
-		state['registration-pass'] = '';
-		localStorage.setItem('wizard', JSON.stringify(state));
+		if (!Meteor.userId()) {
+			return this.state.set('currentStep', 1);
+		}
 
-		if (Meteor.userId()) {
-			Meteor.call('getSetupWizardParameters', (error, { settings, allowStandaloneServer } = {}) => {
-				if (error) {
-					return handleError(error);
-				}
-
-				this.wizardSettings.set(settings);
-				this.allowStandaloneServer.set(allowStandaloneServer);
-			});
-
-			if (this.state.get('currentStep') === 1) {
-				this.state.set('currentStep', 2);
-			} else {
-				this.state.set('registration-pass', '');
-			}
-		} else if (this.state.get('currentStep') !== 1) {
-			this.state.set('currentStep', 1);
+		if (this.state.get('currentStep') === 1) {
+			this.state.set('currentStep', 2);
+		} else {
+			this.state.set('registration-pass', '');
 		}
 	});
 });
