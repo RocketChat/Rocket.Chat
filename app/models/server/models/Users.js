@@ -21,6 +21,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
+		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -462,6 +463,10 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findActive(options = {}) {
+		return this.find({ active: true }, options);
+	}
+
 	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
@@ -664,6 +669,14 @@ export class Users extends Base {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findRemote(options = {}) {
+		return this.find({ isRemote: true }, options);
+	}
+
+	findActiveRemote(options = {}) {
+		return this.find({ active: true, isRemote: true }, options);
 	}
 
 	// UPDATE
@@ -1106,6 +1119,10 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	getActiveLocalUserCount() {
+		return this.findActive().count() - this.findActiveRemote().count();
 	}
 }
 

@@ -1,4 +1,9 @@
 .permissions-manager {
+	display: flex;
+	flex-direction: column;
+
+	height: 100%;
+
 	&.page-container {
 		padding-bottom: 0 !important;
 	}
