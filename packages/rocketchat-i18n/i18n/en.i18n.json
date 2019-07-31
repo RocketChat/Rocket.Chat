@@ -2577,6 +2577,8 @@
   "Register_Alexa_Token_Generated": "Alexa Pincode Generated",
   "Register_Alexa_Token_Generated_Modal": "This generated pincode is valid for 5 Minutes, use it with your Alexa device. <br/>Pincode: <strong>__pinCode__</strong><br/>",
   "Register_Alexa_Server_Error": "Internal Server Error",
+  "Register_Alexa_Enable_Server": "Enable Alexa Server",
+  "Register_Alexa_Enable_Server_Proxy_URL": "Server Register Endpoint",
   "S_new_messages_since_s": "%s new messages since %s",
   "Same_As_Token_Sent_Via": "Same as \"Token Sent Via\"",
   "Same_Style_For_Mentions": "Same style for mentions",

@@ -75,6 +75,9 @@ Template.accountPreferences.helpers({
 		const userHighlights = getUserPreference(Meteor.userId(), 'highlights');
 		return userHighlights ? userHighlights.join(',\n') : undefined;
 	},
+	alexaServerEnabled() {
+		return settings.get('Register_Alexa_Enable_Server') !== false;
+	},
 	alexaServerName() {
 		return getUserPreference(Meteor.userId(), 'alexaServerName');
 	},

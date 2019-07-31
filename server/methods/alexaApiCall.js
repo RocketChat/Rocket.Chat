@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
+import { settings } from '../../app/settings';
+
 Meteor.methods({
 	registerAlexaUser(serverurl, servername, userid, token) {
 		this.unblock();
-		const apiUrl = 'https://rc-fb-04.herokuapp.com/register';
+		const apiUrl = settings.get('Register_Alexa_Enable_Server_Proxy_URL');
+		console.log('APIURL', `${ apiUrl }`);
 		const body = { serverurl, servername, userid, token };
 		try {
 			const result = HTTP.call('POST', apiUrl, {
