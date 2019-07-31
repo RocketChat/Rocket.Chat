@@ -366,7 +366,7 @@ export const formatPricingPlan = (pricingPlan) => {
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
 		strategy,
-		(tier && tier.perUnit) && 'perUser',
+		tier && tier.perUnit && 'perUser',
 	].filter(Boolean).join('_');
 
 	return t(pricingPlanTranslationString, {
