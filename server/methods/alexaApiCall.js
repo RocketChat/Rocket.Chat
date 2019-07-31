@@ -7,7 +7,6 @@ Meteor.methods({
 	registerAlexaUser(serverurl, servername, userid, token) {
 		this.unblock();
 		const apiUrl = settings.get('Register_Alexa_Enable_Server_Proxy_URL');
-		console.log('APIURL', `${ apiUrl }`);
 		const body = { serverurl, servername, userid, token };
 		try {
 			const result = HTTP.call('POST', apiUrl, {
