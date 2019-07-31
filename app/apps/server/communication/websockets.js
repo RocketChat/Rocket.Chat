@@ -88,6 +88,7 @@ export class AppServerListener {
 	}
 
 	async onAppSettingUpdated({ appId, setting }) {
+		this.received.set(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`, { appId, setting, when: new Date() });
 		await this.orch.getManager().getSettingsManager().updateAppSetting(appId, setting);
 		this.clientStreamer.emit(AppEvents.APP_SETTING_UPDATED, { appId });
 	}
