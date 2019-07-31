@@ -99,33 +99,37 @@ class AppServerOrchestrator {
 		return this._marketplaceUrl;
 	}
 
-	load() {
+	async load() {
 		// Don't try to load it again if it has
 		// already been loaded
 		if (this.isLoaded()) {
-			return Promise.resolve();
+			return;
 		}
+
+		this.getNotifier().initializeListener();
 
 		return this._manager.load()
 			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${ affs.length } Apps!`))
 			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err));
 	}
 
-	unload() {
+	async unload() {
 		// Don't try to unload it if it's already been
 		// unlaoded or wasn't unloaded to start with
 		if (!this.isLoaded()) {
-			return Promise.resolve();
+			return;
 		}
+
+		this.getNotifier().terminateListener();
 
 		return this._manager.unload()
 			.then(() => console.log('Unloaded the Apps Framework.'))
 			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
 	}
 
-	updateAppsMarketplaceInfo(apps = []) {
+	async updateAppsMarketplaceInfo(apps = []) {
 		if (!this.isLoaded()) {
-			return Promise.resolve();
+			return;
 		}
 
 		return this._manager.updateAppsMarketplaceInfo(apps)
