@@ -7,7 +7,7 @@ export class WebdavAccounts extends Base {
 	constructor() {
 		super('webdav_accounts');
 
-		this.tryEnsureIndex({ user_id: 1, server_url: 1, name: 1 }, { unique: 1 });
+		this.tryEnsureIndex({ user_id: 1 });
 	}
 
 	findWithUserId(user_id, options) {

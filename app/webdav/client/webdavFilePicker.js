@@ -35,7 +35,7 @@ async function showWebdavFileList() {
 		webdavNodes: [],
 	});
 	try {
-		const response = await call('getWebdavFileList', accountId, directory);
+		const response = await call('getWebdavFileList', accountId, directory).catch((err) => console.log(err));
 		if (!response.success) {
 			modal.close();
 			toastr.error(t(response.message));

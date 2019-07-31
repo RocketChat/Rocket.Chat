@@ -23,6 +23,13 @@ Meteor.methods({
 			pass: String,
 		}));
 
+		const duplicateAccount = WebdavAccounts.findOne({ user_id: userId, server_url: formData.serverURL, username: formData.username });
+		if (duplicateAccount !== undefined) {
+			throw new Meteor.Error('duplicated-account', {
+				method: 'addWebdavAccount',
+			});
+		}
+
 		const client = createClient(
 			formData.serverURL,
 			{
@@ -43,11 +50,6 @@ Meteor.methods({
 			await client.stat('/');
 			WebdavAccounts.insert(accountData);
 		} catch (error) {
-			if (error.code === 11000) {
-				throw new Meteor.Error('duplicated-account', {
-					method: 'addWebdavAccount',
-				});
-			}
 			throw new Meteor.Error('could-not-access-webdav', {
 				method: 'addWebdavAccount',
 			});

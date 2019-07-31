@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { createClient } from 'webdav';
 
 import { settings } from '../../../settings';
+import { getWebdavCredentials } from './getWebdavCredentials';
 import { WebdavAccounts } from '../../../models';
 
 Meteor.methods({
@@ -19,21 +20,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'getWebdavFileList' });
 		}
 
-		const client = account.token
-			? createClient(
-				account.server_url,
-				{
-					token: account.token,
-				}
-			) : createClient(
-				account.server_url,
-				{
-					username: account.username,
-					password: account.password,
-				}
-			);
-
 		try {
+			const cred = getWebdavCredentials(account);
+			const client = createClient(account.server_url, cred);
 			const data = await client.getDirectoryContents(path);
 			return { success: true, data };
 		} catch (error) {

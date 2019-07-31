@@ -22,7 +22,11 @@ Meteor.startup(() => {
 					serverURL: `${ services.nextcloud.serverURL }/remote.php/webdav/`,
 					token,
 				};
-				Meteor.runAsUser(user._id, () => Meteor.call('addWebdavAccountByToken', data));
+				try {
+					Meteor.runAsUser(user._id, () => Meteor.call('addWebdavAccountByToken', data));
+				} catch (error) {
+					console.log(error);
+				}
 			}, callbacks.priority.MEDIUM, 'add-webdav-server');
 		}
 		callbacks.remove('afterValidateLogin', 'add-webdav-server');
