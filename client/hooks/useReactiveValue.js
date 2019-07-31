@@ -1,7 +1,7 @@
 import { Tracker } from 'meteor/tracker';
 import { useEffect, useState } from 'react';
 
-export const useReactiveValue = (getValue) => {
+export const useReactiveValue = (getValue, deps = []) => {
 	const [value, setValue] = useState(getValue);
 
 	useEffect(() => {
@@ -12,7 +12,7 @@ export const useReactiveValue = (getValue) => {
 		return () => {
 			computation.stop();
 		};
-	}, []);
+	}, deps);
 
 	return value;
 };
