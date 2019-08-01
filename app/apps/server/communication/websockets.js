@@ -163,7 +163,6 @@ export class AppServerNotifier {
 	}
 
 	async appRemoved(appId) {
-		console.log('bridge', AppEvents.APP_REMOVED);
 		this.engineStreamer.emit(AppEvents.APP_REMOVED, appId);
 		this.clientStreamer.emit(AppEvents.APP_REMOVED, appId);
 	}
