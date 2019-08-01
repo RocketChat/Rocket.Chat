@@ -22,12 +22,8 @@ const useStepRouting = () => {
 	useEffect(() => {
 		if (!userId) {
 			setCurrentStep(1);
-			return;
-		}
-
-		if (currentStep === 1) {
+		} else if (currentStep === 1) {
 			setCurrentStep(2);
-			return;
 		}
 
 		FlowRouter.withReplaceState(() => {
