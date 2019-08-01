@@ -1,18 +1,19 @@
 import React from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
+import './StepHeader.css';
 
-const Header = (props) => <header className='setup-wizard-forms__header' {...props} />;
+const Container = (props) => <header className='SetupWizard__StepHeader' {...props} />;
 
-const HeaderStep = (props) => <span className='setup-wizard-forms__header-step' {...props} />;
+const RunningHead = (props) => <p className='SetupWizard__StepHeader-runningHead' {...props} />;
 
-const HeaderTitle = (props) => <h1 className='setup-wizard-forms__header-title' {...props} />;
+const Title = (props) => <h2 className='SetupWizard__StepHeader-title' {...props} />;
 
-export function StepHeader({ step, title }) {
+export function StepHeader({ number, title }) {
 	const t = useTranslation();
 
-	return <Header>
-		<HeaderStep>{t('Step')} {step}</HeaderStep>
-		<HeaderTitle>{title}</HeaderTitle>
-	</Header>;
+	return <Container>
+		<RunningHead>{t('Step')} {number}</RunningHead>
+		<Title>{title}</Title>
+	</Container>;
 }

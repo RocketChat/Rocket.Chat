@@ -1,0 +1,205 @@
+.SetupWizard__RegisterServerStep-text {
+	margin-bottom: 3rem;
+
+	color: var(--color-gray);
+
+	font-size: 1rem;
+
+	font-weight: 500;
+
+	line-height: 1.5rem;
+}
+
+.SetupWizard__RegisterServerStep-content {
+	display: flex;
+	flex-direction: column;
+}
+
+.SetupWizard__RegisterServerStep-radioButton {
+	position: relative;
+
+	display: flex;
+
+	margin: 0 -0.5rem 1rem;
+
+	cursor: inherit;
+}
+
+.SetupWizard__RegisterServerStep-radioButtonInput {
+	position: absolute;
+
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+
+  white-space: nowrap;
+
+  border: 0;
+  clip-path: inset(50%);
+}
+
+.SetupWizard__RegisterServerStep-radioButtonFake {
+	display: block;
+
+	width: 20px;
+	height: 20px;
+	margin: 0 0.5rem;
+
+	border: 2px solid var(--color-dark-20);
+	border-radius: 50%;
+}
+
+.SetupWizard__RegisterServerStep-radioButtonLabel {
+	font-weight: 500;
+}
+
+.SetupWizard__RegisterServerStep-radioButtonInput:checked + .SetupWizard__RegisterServerStep-radioButtonFake {
+	position: relative;
+
+	border-color: var(--rc-color-button-primary);
+
+	&::before {
+		position: absolute;
+
+		width: 100%;
+		height: 100%;
+
+		content: '';
+
+		border: 2px solid transparent;
+		border-radius: 50%;
+
+		background-color: var(--rc-color-button-primary);
+
+		background-clip: padding-box;
+	}
+}
+
+.SetupWizard__RegisterServerStep-option {
+	display: block;
+
+	padding: 1.5rem;
+
+	cursor: pointer;
+
+	color: var(--color-dark);
+	border: 2px solid var(--color-dark-10);
+
+	border-radius: 2px;
+
+	font-size: 0.875rem;
+
+	line-height: 1.25rem;
+
+	&:first-child {
+		margin-bottom: 1rem;
+	}
+
+	&--selected {
+		border-color: var(--rc-color-button-primary);
+	}
+
+	&--disabled {
+		opacity: 0.25;
+	}
+}
+
+.SetupWizard__RegisterServerStep-checkBox {
+	position: relative;
+
+	display: flex;
+
+	margin: 0 -0.5rem 1rem;
+
+	cursor: inherit;
+}
+
+.SetupWizard__RegisterServerStep-checkBoxInput {
+	position: absolute;
+
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+
+  white-space: nowrap;
+
+  border: 0;
+  clip-path: inset(50%);
+}
+
+.SetupWizard__RegisterServerStep-checkBoxFake {
+	display: block;
+
+	width: 16px;
+	height: 16px;
+	margin: 2px 0.5rem;
+
+	border: 2px solid var(--color-dark-20);
+	border-radius: 2px;
+
+	& > .rc-icon {
+		display: none;
+
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.SetupWizard__RegisterServerStep-checkBoxLabel {
+	color: var(--color-dark-70);
+}
+
+.SetupWizard__RegisterServerStep-checkBoxInput:checked + .SetupWizard__RegisterServerStep-checkBoxFake {
+	position: relative;
+
+	color: var(--rc-color-content);
+
+	border-color: var(--rc-color-button-primary);
+	background-color: var(--rc-color-button-primary);
+
+	& > .rc-icon {
+		display: block;
+	}
+}
+
+.SetupWizard__RegisterServerStep-items {
+	& + * {
+		margin-top: 1rem;
+	}
+}
+
+.SetupWizard__RegisterServerStep-item {
+	display: flex;
+
+	margin: 0 -0.5rem 0.5rem;
+	align-items: center;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	& > .SetupWizard__RegisterServerStep-item-icon {
+		width: 20px;
+		min-width: 20px;
+		height: 20px;
+		margin: 0 0.5rem;
+		align-self: baseline;
+
+		&--check {
+			color: var(--rc-color-button-primary);
+		}
+
+		&--circle {
+			height: 6px;
+			margin: 7px 0.5rem;
+		}
+	}
+}

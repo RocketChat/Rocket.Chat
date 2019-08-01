@@ -10,7 +10,7 @@ export function SetupWizard() {
 	return <StateChecker>
 		<ParametersProvider>
 			<StepsState>
-				<div className='setup-wizard SetupWizard'>
+				<div className='SetupWizard'>
 					<Steps />
 				</div>
 			</StepsState>

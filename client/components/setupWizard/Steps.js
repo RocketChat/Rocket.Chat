@@ -8,9 +8,9 @@ import { Epilogue } from './Epilogue';
 import { SideBar } from './SideBar';
 import { useSetupWizardStepsState, finalStep } from './StepsState';
 
-const Container = (props) => <section className='setup-wizard-forms' {...props} />;
+const Container = (props) => <section className='SetupWizard__Steps' {...props} />;
 
-const Wrapper = (props) => <div className='setup-wizard-forms__wrapper' {...props} />;
+const Wrapper = (props) => <div className='SetupWizard__Steps-wrapper' {...props} />;
 
 export function Steps() {
 	const { currentStep } = useSetupWizardStepsState();

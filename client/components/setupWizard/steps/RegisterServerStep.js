@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-import { settings } from '../../../../app/settings/lib/settings';
 import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -11,49 +10,47 @@ import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
+import { batchSetSettings } from '../functions';
 
-const Paragraph = (props) => <p className='setup-wizard-forms__content-text' {...props} />;
+const Text = (props) => <p className='SetupWizard__RegisterServerStep-text' {...props} />;
 
-const Option = ({ children, value, checked, disabled, label, onChange }) => <label
-	className={[
-		'setup-wizard-forms__content-register-option',
-		checked && 'setup-wizard-forms__content-register-option--selected',
-		disabled && 'setup-wizard-forms__content-register-option--disabled',
-	].filter(Boolean).join(' ')}
->
-	<div className='setup-wizard-forms__content-register-radio'>
-		<input type='radio' name='registerServer' value={value} className='setup-wizard-forms__content-register-radio-element' checked={checked} onChange={onChange}/>
-		<span className='setup-wizard-forms__content-register-radio-fake' />
-		<span className='setup-wizard-forms__content-register-radio-text'>{label}</span>
-	</div>
-	{children}
-</label>;
+const Content = (props) => <div className='SetupWizard__RegisterServerStep-content' {...props} />;
 
-const Items = ({ children }) => <ul className='setup-wizard-forms__content-register-items'>
-	{children}
-</ul>;
+const RadioButton = ({ label, ...props }) =>
+	<div className='SetupWizard__RegisterServerStep-radioButton'>
+		<input type='radio' className='SetupWizard__RegisterServerStep-radioButtonInput' {...props} />
+		<span className='SetupWizard__RegisterServerStep-radioButtonFake' />
+		<span className='SetupWizard__RegisterServerStep-radioButtonLabel'>{label}</span>
+	</div>;
 
-const Item = ({ children, icon }) => <li className='setup-wizard-forms__content-register-item'>
-	<Icon block='setup-wizard-forms__content-register-radio-icon' icon={icon} />
-	{children}
-</li>;
+const CheckBox = ({ label, ...props }) =>
+	<label className='SetupWizard__RegisterServerStep-checkBox'>
+		<input type='checkbox' className='SetupWizard__RegisterServerStep-checkBoxInput' {...props} />
+		<span className='SetupWizard__RegisterServerStep-checkBoxFake'>
+			<Icon icon='check' />
+		</span>
+		<span className='SetupWizard__RegisterServerStep-checkBoxLabel'>{label}</span>
+	</label>;
 
-const CheckBox = ({ checked, disabled, label, onChange }) => <label className='setup-wizard-forms__content-register-checkbox'>
-	<input type='checkbox' name='optIn' value='true' className='setup-wizard-forms__content-register-checkbox-element' checked={checked} disabled={disabled} onChange={onChange}/>
-	<span className='setup-wizard-forms__content-register-checkbox-fake'>
-		<Icon block='setup-wizard-forms__content-register-checkbox-fake-icon' icon='check' />
-	</span>
-	<span className='setup-wizard-forms__content-register-checkbox-text'>{label}</span>
-</label>;
+const Option = ({ children, label, selected, disabled, ...props }) =>
+	<label
+		className={[
+			'SetupWizard__RegisterServerStep-option',
+			selected && 'SetupWizard__RegisterServerStep-option--selected',
+			disabled && 'SetupWizard__RegisterServerStep-option--disabled',
+		].filter(Boolean).join(' ')}
+	>
+		<RadioButton label={label} checked={selected} disabled={disabled} {...props} />
+		{children}
+	</label>;
 
-const batchSetSettings = (values) => new Promise((resolve, reject) => settings.batchSet(values, (error) => {
-	if (error) {
-		reject(error);
-		return;
-	}
+const Items = (props) => <ul className='SetupWizard__RegisterServerStep-items' {...props} />;
 
-	resolve();
-}));
+const Item = ({ children, icon, ...props }) =>
+	<li className='SetupWizard__RegisterServerStep-item' {...props}>
+		<Icon block='SetupWizard__RegisterServerStep-item-icon' icon={icon} />
+		{children}
+	</li>;
 
 export function RegisterServerStep({ step, title }) {
 	const { canDeclineServerRegistration } = useSetupWizardParameters();
@@ -109,16 +106,17 @@ export function RegisterServerStep({ step, title }) {
 	};
 
 	return <Step active={active} working={commiting}>
-		<StepHeader step={step} title={title} />
+		<StepHeader number={step} title={title} />
 
 		<StepContent>
-			<Paragraph>{title}</Paragraph>
+			<Text>{t('Register_Server_Info')}</Text>
 
-			<div className='setup-wizard-forms__content-register'>
+			<Content>
 				<Option
 					label={t('Register_Server_Registered')}
+					name='registerServer'
 					value='true'
-					checked={registerServer}
+					selected={registerServer}
 					onChange={({ currentTarget: { checked } }) => {
 						setRegisterServer(checked);
 						setOptInMarketingEmails(checked);
@@ -131,6 +129,8 @@ export function RegisterServerStep({ step, title }) {
 						<Item icon='check'>{t('Register_Server_Registered_Marketplace')}</Item>
 					</Items>
 					<CheckBox
+						name='optInMarketingEmails'
+						value='true'
 						label={t('Register_Server_Opt_In')}
 						disabled={!registerServer}
 						checked={optInMarketingEmails}
@@ -141,9 +141,10 @@ export function RegisterServerStep({ step, title }) {
 				</Option>
 				<Option
 					label={t('Register_Server_Standalone')}
+					name='registerServer'
 					value='false'
 					disabled={!canDeclineServerRegistration}
-					checked={!registerServer}
+					selected={!registerServer}
 					onChange={({ currentTarget: { checked } }) => {
 						setRegisterServer(!checked);
 						setOptInMarketingEmails(!checked);
@@ -155,7 +156,7 @@ export function RegisterServerStep({ step, title }) {
 						<Item icon='circle'>{t('Register_Server_Standalone_Own_Certificates')}</Item>
 					</Items>
 				</Option>
-			</div>
+			</Content>
 		</StepContent>
 
 		<Pager disabled={commiting} onBackClick={handleBackClick} onContinueClick={handleContinueClick} />

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
@@ -14,18 +13,7 @@ import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
-
-// TODO: move it to its own helper module
-const loginWithPassword = (email, password) => new Promise((resolve, reject) => {
-	Meteor.loginWithPassword(email, password, (error) => {
-		if (error) {
-			reject(error);
-			return;
-		}
-
-		resolve();
-	});
-});
+import { loginWithPassword } from '../functions';
 
 const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
 	await call('registerUser', { name, username, email, pass: password });

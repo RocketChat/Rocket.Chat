@@ -3,32 +3,24 @@ import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSetting } from '../../hooks/useSetting';
 import { Button } from '../basic/Button';
-import { settings } from '../../../app/settings/lib/settings';
+import { setSetting } from './functions';
+import './Epilogue.css';
 
-const Container = (props) => <section className='setup-wizard-final' {...props} />;
+const Container = (props) => <section className='SetupWizard__Epilogue' {...props} />;
 
-const Header = (props) => <header className='setup-wizard-info__header setup-wizard-final__header' {...props} />;
+const Header = (props) => <header className='SetupWizard__Epilogue-header' {...props} />;
 
-const HeaderLogo = (props) => <img className='setup-wizard-info__header-logo' src='images/logo/logo.svg' {...props} />;
+const HeaderLogo = (props) => <img className='SetupWizard__Epilogue-headerLogo' src='images/logo/logo.svg' {...props} />;
 
-const Content = (props) => <main className='setup-wizard-final__box' {...props} />;
+const Content = (props) => <main className='SetupWizard__Epilogue-content' {...props} />;
 
-const Subtitle = (props) => <span className='setup-wizard-forms__header-step' {...props} />;
+const Subtitle = (props) => <span className='SetupWizard__Epilogue-runningHead' {...props} />;
 
-const Title = (props) => <h1 className='setup-wizard-info__content-title setup-wizard-final__box-title' {...props} />;
+const Title = (props) => <h1 className='SetupWizard__Epilogue-title' {...props} />;
 
-const LinkLabel = (props) => <span className='setup-wizard-final__link-text' {...props} />;
+const LinkLabel = (props) => <span className='SetupWizard__Epilogue-linkLabel' {...props} />;
 
-const Link = (props) => <span className='setup-wizard-final__link' {...props} />;
-
-const setSetting = (_id, value) => new Promise((resolve, reject) => settings.set(_id, value, (error) => {
-	if (error) {
-		reject(error);
-		return;
-	}
-
-	resolve();
-}));
+const Link = (props) => <span className='SetupWizard__Epilogue-link' {...props} />;
 
 export function Epilogue() {
 	const t = useTranslation();

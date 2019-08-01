@@ -1,0 +1,21 @@
+.SetupWizard__Step {
+	display: none;
+
+	flex-direction: column;
+
+	width: 350px;
+	min-height: min-content;
+	margin: 3rem;
+
+	transition: opacity 1s linear;
+
+	opacity: 1;
+
+	&--active {
+		display: flex;
+	}
+
+	&--working {
+		opacity: 0.5;
+	}
+}

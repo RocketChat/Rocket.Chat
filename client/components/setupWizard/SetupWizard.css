@@ -7,6 +7,40 @@
 	background-color: var(--color-dark-05);
 
 	justify-content: center;
+
+	& .rc-input {
+		&:not(:last-child) {
+			margin-bottom: 1.5rem;
+		}
+
+		&__title {
+			letter-spacing: 0.03rem;
+
+			text-transform: uppercase;
+
+			color: var(--color-dark-30);
+
+			font-size: 0.625rem;
+
+			line-height: 1rem;
+		}
+
+		&__element {
+			color: #030c1a;
+
+			font-weight: 500;
+		}
+	}
+
+	& .rc-select {
+		&__element {
+			color: #030c1a;
+
+			font-size: 0.875rem;
+
+			font-weight: 500;
+		}
+	}
 }
 
 @media (width <= 760px) {

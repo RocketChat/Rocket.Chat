@@ -2,34 +2,35 @@ import React from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSetupWizardStepsState } from './StepsState';
+import './SideBar.css';
 
-const Container = (props) => <aside className='setup-wizard-info' {...props} />;
+const Container = (props) => <aside className='SetupWizard__SideBar' {...props} />;
 
-const Header = (props) => <header className='setup-wizard-info__header' {...props} />;
+const Header = (props) => <header className='SetupWizard__SideBar-header' {...props} />;
 
-const HeaderLogo = (props) => <img className='setup-wizard-info__header-logo' src='images/logo/logo.svg' {...props} />;
+const HeaderLogo = (props) => <img className='SetupWizard__SideBar-headerLogo' src='images/logo/logo.svg' {...props} />;
 
-const HeaderTag = (props) => <span className='setup-wizard-info__header-tag' {...props} />;
+const HeaderTag = (props) => <span className='SetupWizard__SideBar-headerTag' {...props} />;
 
-const Content = (props) => <div className='setup-wizard-info__content' {...props} />;
+const Content = (props) => <div className='.SetupWizard__SideBar-content' {...props} />;
 
-const ContentTitle = (props) => <h1 className='setup-wizard-info__content-title' {...props} />;
+const Title = (props) => <h2 className='SetupWizard__SideBar-title' {...props} />;
 
-const ContentText = (props) => <p className='setup-wizard-info__content-text' {...props} />;
+const Text = (props) => <p className='SetupWizard__SideBar-text' {...props} />;
 
-const Steps = (props) => <ol className='setup-wizard-info__steps' {...props} />;
+const Steps = (props) => <ol className='SetupWizard__SideBar-steps' {...props} />;
 
-const Step = ({ children, active, past, boundAbove, ...props }) =>
+const Step = ({ children, number, active, past, ...props }) =>
 	<li
 		className={[
-			'setup-wizard-info__steps-item',
-			active && 'setup-wizard-info__steps-item--active',
-			past && 'setup-wizard-info__steps-item--past',
+			'SetupWizard__SideBar-step',
+			active && 'SetupWizard__SideBar-step--active',
+			past && 'SetupWizard__SideBar-step--past',
 		].filter(Boolean).join(' ')}
+		data-number={number}
 		{...props}
 	>
 		{children}
-		{boundAbove && <span className='setup-wizard-info__steps-item-bonding' />}
 	</li>;
 
 export function SideBar({ steps = [] }) {
@@ -44,16 +45,16 @@ export function SideBar({ steps = [] }) {
 		</Header>
 
 		<Content>
-			<ContentTitle>{t('Setup_Wizard')}</ContentTitle>
-			<ContentText>{t('Setup_Wizard_Info')}</ContentText>
+			<Title>{t('Setup_Wizard')}</Title>
+			<Text>{t('Setup_Wizard_Info')}</Text>
 
 			<Steps>
 				{steps.map(({ step, title }) =>
 					<Step
 						key={step}
+						number={step}
 						active={step === currentStep}
 						past={step < currentStep}
-						boundAbove={step > 1}
 					>
 						{title}
 					</Step>

@@ -1,7 +1,6 @@
 import { TAPi18n } from 'meteor/tap:i18n';
 import React, { Fragment, useEffect, useReducer, useState } from 'react';
 
-import { settings } from '../../../../app/settings/lib/settings';
 import { handleError } from '../../../../app/utils/client';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
@@ -12,6 +11,7 @@ import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
+import { batchSetSettings } from '../functions';
 
 const useFields = () => {
 	const reset = 'RESET';
@@ -35,15 +35,6 @@ const useFields = () => {
 
 	return { fields, resetFields, setFieldValue };
 };
-
-const batchSetSettings = (values) => new Promise((resolve, reject) => settings.batchSet(values, (error) => {
-	if (error) {
-		reject(error);
-		return;
-	}
-
-	resolve();
-}));
 
 export function SettingsBasedStep({ step, title }) {
 	const { settings } = useSetupWizardParameters();
@@ -86,7 +77,7 @@ export function SettingsBasedStep({ step, title }) {
 	};
 
 	return <Step active={active} working={commiting}>
-		<StepHeader step={step} title={title} />
+		<StepHeader number={step} title={title} />
 
 		<StepContent>
 			{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
