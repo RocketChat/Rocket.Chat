@@ -95,6 +95,10 @@ const attachMarketplaceInformation = async (appId, version, _app) => {
 
 		attachBundlesApps(bundledIn, _app);
 	} catch (error) {
+		if (error.xhr && error.xhr.status === 404) {
+			return;
+		}
+
 		handleAPIError(error);
 	}
 };
