@@ -1,3 +1,1 @@
-import { AppWebsocketReceiver, AppEvents } from './websockets';
-
-export { AppWebsocketReceiver, AppEvents };
+export { AppWebsocketReceiver, AppEvents } from './websockets';
