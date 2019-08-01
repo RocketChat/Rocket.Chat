@@ -21,6 +21,8 @@ Meteor.publish('livechat:location', function(filter = {}) {
 		fromTime: Match.Maybe(String),
 		toTime: Match.Maybe(String),
 		valueTime: Match.Maybe(String),
+		from: Match.Maybe(String),
+		to: Match.Maybe(String),
 	});
 
 	const { fromTime, toTime, valueTime } = filter;

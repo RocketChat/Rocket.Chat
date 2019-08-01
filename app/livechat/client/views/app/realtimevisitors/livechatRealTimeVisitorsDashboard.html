@@ -2,6 +2,23 @@
   {{#requiresPermission 'view-livechat-manager'}}
   <div class="main-content-flex">
     <section class="flex-tab-main-content">
+      <div class="lc-monitoring-flex">
+        <div class="section lc-monitoring-doughnut-chart">
+          <div class="section-content border-component-color">
+            <div class="lc-monitoring-chart-container">
+              <canvas id="lc-status-chart"></canvas>
+            </div>
+          </div>
+        </div>
+        {{#each sessionOverview}}
+        <div class="lc-analytics-ov-col">
+          <div class="lc-analytics-ov-case">
+            <span class="title">{{_ title}}</span>
+            <span class="value">{{value}}</span>
+          </div>
+        </div>
+        {{/each}}
+      </div>
       <fieldset>
         <form class="form-inline" method="post">
           <div class="form-group">

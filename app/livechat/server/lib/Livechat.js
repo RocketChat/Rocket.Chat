@@ -297,7 +297,6 @@ export const Livechat = {
 
 		LivechatRooms.closeByRoomId(room._id, closeData);
 		LivechatInquiry.closeByRoomId(room._id, closeData);
-
 		const message = {
 			t: 'livechat-close',
 			msg: comment,
@@ -311,6 +310,11 @@ export const Livechat = {
 
 		if (room.servedBy) {
 			Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
+		}
+
+		if (room.v) {
+			// Set chat Status of livechat session
+			LivechatSessions.updateChatStatusOnRoomCloseOrDeleteByToken(room.v.token, 'Closed');
 		}
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
 

@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  *
  * @param  {Object} dbCursor cursor to minimongo result
@@ -195,5 +197,39 @@ export const getTimingsOverviewData = (dbCursor) => {
 	}, {
 		title: 'Avg_response_time',
 		value: total ? secondsToHHMMSS((totalResponseTime / total).toFixed(2)) : '-',
+	}];
+};
+
+const calculateAvgTime = (duration) => {
+	const hours = parseFloat(duration.get('hours'));
+	const minutes = parseFloat(duration.get('minutes'));
+	const seconds = parseFloat(duration.get('seconds'));
+
+	return (hours * 60) + minutes + (seconds / 60);
+};
+
+export const getSessionOverviewData = (dbCursor) => {
+	let totalOnline = 0;
+	let totalCompletedChat = 0;
+	let timeDuration = 0;
+	dbCursor.forEach(function(data) {
+		if (data.status === 'online') {
+			totalOnline++;
+		}
+
+		if (data.offlineTime) {
+			totalCompletedChat++;
+			const offlineTime = moment(data.offlineTime);
+			timeDuration += calculateAvgTime(moment.duration(offlineTime.diff(data.createdAt)));
+		}
+	});
+
+	const avg = parseFloat(timeDuration / totalCompletedChat).toFixed(2);
+	return [{
+		title: 'Online Visitors',
+		value: totalOnline,
+	}, {
+		title: 'Average Time on Site',
+		value: avg,
 	}];
 };

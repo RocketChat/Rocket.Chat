@@ -1,9 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../models';
+import { LivechatSessions } from '../../../models';
 
 Meteor.methods({
-	'livechat:getRoomInfo'({ token }) {
-		return Rooms.findLivechatByVisitorToken(token);
+	'livechat:updateChatStatus'({ token }) {
+		console.log('this is token', token);
+
+		const test = LivechatSessions.updateChatStatusOnRoomCloseOrDeleteByToken(token, 'Not Started');
+		console.log('ths', test);
+		return test;
 	},
 });

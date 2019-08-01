@@ -109,6 +109,20 @@ export class LivechatSessions extends Base {
 			count: 1,
 		});
 	}
+
+	updateChatStatusOnRoomCloseOrDeleteByToken(token, status) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$set: {
+				chatStatus: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
 
 export default new LivechatSessions();

@@ -1,20 +1,73 @@
 import { Template } from 'meteor/templating';
-import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 
+import { drawDoughnutChart, updateChart } from '../../../lib/chartHandler';
 import { LivechatRoom } from '../../../collections/LivechatRoom';
+import { getSessionOverviewData } from '../../../lib/dataHandler';
 import { updateDateRange } from '../../../lib/dateHandler';
 import { setTimeRange } from '../../../lib/timeHandler';
 import { visitorNavigationHistory } from '../../../collections/LivechatVisitorNavigation';
+import { LivechatLocation } from '../../../collections/LivechatLocation';
 import { RocketChatTabBar, popover } from '../../../../../ui-utils';
 import { t } from '../../../../../utils';
 
 import './livechatRealTimeVisitorsDashboard.html';
 
-const LivechatLocation = new Mongo.Collection('livechatLocation');
+let chartContexts = {};
+let templateInstance;
+
 const timeFilter = ['last-thirty-minutes', 'last-hour', 'last-six-hour', 'last-twelve-hour'];
+
+const initChart = {
+	'lc-status-chart'() {
+		return drawDoughnutChart(
+			document.getElementById('lc-status-chart'),
+			'Status',
+			chartContexts['lc-status-chart'],
+			['Chatting', 'Closed', 'Not Started'], [0, 0, 0]);
+	},
+};
+
+const initAllCharts = () => {
+	chartContexts['lc-status-chart'] = initChart['lc-status-chart']();
+};
+
+const updateChartData = (chartId, label, data) => {
+	// update chart
+	if (!chartContexts[chartId]) {
+		chartContexts[chartId] = initChart[chartId]();
+	}
+
+	updateChart(chartContexts[chartId], label, data);
+};
+
+const updateChatsChart = () => {
+	const createdAt = {
+		$gte: moment().startOf('day').toDate(),
+		$lte: moment().endOf('day').toDate(),
+	};
+	const chats = {
+		chatting: LivechatLocation.find({ chatStatus: 'Chatting', createdAt }).count(),
+		closed: LivechatLocation.find({ chatStatus: 'Closed', createdAt }).count(),
+		notStarted: LivechatLocation.find({ chatStatus: 'Not Started', createdAt }).count(),
+	};
+
+	updateChartData('lc-status-chart', 'Chatting', [chats.chatting]);
+	updateChartData('lc-status-chart', 'Closed', [chats.closed]);
+	updateChartData('lc-status-chart', 'Not Started', [chats.notStarted]);
+};
+
+const updateSessionOverviews = () => {
+	const createdAt = {
+		$gte: moment().startOf('day').toDate(),
+		$lte: moment().endOf('day').toDate(),
+	};
+	const data = getSessionOverviewData(LivechatLocation.find({ createdAt }));
+
+	templateInstance.sessionOverview.set(data);
+};
 
 Template.livechatDashboard.helpers({
 	visitors() {
@@ -45,6 +98,9 @@ Template.livechatDashboard.helpers({
 			return false;
 		}
 		return true;
+	},
+	sessionOverview() {
+		return Template.instance().sessionOverview.get();
 	},
 });
 
@@ -95,18 +151,23 @@ Template.livechatDashboard.events({
 });
 
 Template.livechatDashboard.onRendered(function() {
+	chartContexts = {};
+	templateInstance = Template.instance();
+	initAllCharts();
+
 	this.autorun(() => {
-		if (timeFilter.includes(Template.instance().timerange.get().value)) {
+		const { from, to, value } = Template.instance().timerange.get();
+		if (timeFilter.includes(value)) {
 			this.filter.set({
-				fromTime: moment(Template.instance().timerange.get().from, 'Do, hh:mm a').toISOString(),
-				toTime: moment(Template.instance().timerange.get().to, 'Do, hh:mm a').toISOString(),
-				valueTime: Template.instance().timerange.get().value,
+				fromTime: moment(from, 'Do, hh:mm a').toISOString(),
+				toTime: moment(to, 'Do, hh:mm a').toISOString(),
+				valueTime: value,
 			});
 		} else {
 			this.filter.set({
-				fromTime: moment(Template.instance().timerange.get().from, 'MMM D YYYY').toISOString(),
-				toTime: moment(Template.instance().timerange.get().to, 'MMM D YYYY').toISOString(),
-				valueTime: Template.instance().timerange.get().value,
+				fromTime: moment(from, 'MMM D YYYY').toISOString(),
+				toTime: moment(to, 'MMM D YYYY').toISOString(),
+				valueTime: value,
 			});
 		}
 	});
@@ -120,6 +181,7 @@ Template.livechatDashboard.onCreated(function() {
 	this.tabBar = new RocketChatTabBar();
 	this.tabBarData = new ReactiveVar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
+	this.sessionOverview = new ReactiveVar();
 
 	this.timerange = new ReactiveVar({});
 	this.autorun(() => {
@@ -188,5 +250,21 @@ Template.livechatDashboard.onCreated(function() {
 			}
 			this.users.set(users);
 		}
+	});
+
+	const updateSessionDashboard = (fields) => {
+		if (fields.chatStatus) {
+			updateChatsChart();
+		}
+		updateSessionOverviews();
+	};
+
+	LivechatLocation.find().observeChanges({
+		changed(id, fields) {
+			updateSessionDashboard(fields);
+		},
+		added(id, fields) {
+			updateSessionDashboard(fields);
+		},
 	});
 });
