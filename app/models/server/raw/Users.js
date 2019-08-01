@@ -19,4 +19,8 @@ export class UsersRaw extends BaseRaw {
 
 		return this.findOne(query, { fields: { roles: 1 } });
 	}
+
+	getDistinctFederationPeers() {
+		return this.col.distinct('federation.peer', { federation: { $exists: true } });
+	}
 }
