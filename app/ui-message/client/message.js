@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import s from 'underscore.string';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -78,6 +79,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
+		msg.msg = s.escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
@@ -203,6 +205,10 @@ Template.message.helpers({
 		if (msg.u && msg.u._id === u._id) {
 			return 'own';
 		}
+	},
+	t() {
+		const { msg } = this;
+		return msg.t;
 	},
 	timestamp() {
 		const { msg } = this;

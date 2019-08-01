@@ -1716,6 +1716,7 @@
   "Mentions_only": "Mentions seulement",
   "Merge_Channels": "Fusionner les chaînes",
   "Message_AllowBadWordsFilter": "Autoriser le filtrage des mots interdits dans les messages",
+  "Message_AllowConvertLongMessagesToAttachment": "Autoriser la conversion de longs messages en pièce jointe",
   "Message_AllowDeleting": "Autoriser la suppression de message",
   "Message_AllowDeleting_BlockDeleteInMinutes": "Bloquer la suppression des messages après (n) minutes",
   "Message_AllowDeleting_BlockDeleteInMinutes_Description": "Entrez 0 pour désactiver le blocage.",
