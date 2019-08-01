@@ -8,11 +8,11 @@ const HeaderStep = (props) => <span className='setup-wizard-forms__header-step' 
 
 const HeaderTitle = (props) => <h1 className='setup-wizard-forms__header-title' {...props} />;
 
-export function StepHeader({ number, title }) {
+export function StepHeader({ step, title }) {
 	const t = useTranslation();
 
 	return <Header>
-		<HeaderStep>{t('Step')} {number}</HeaderStep>
+		<HeaderStep>{t('Step')} {step}</HeaderStep>
 		<HeaderTitle>{title}</HeaderTitle>
 	</Header>;
 }

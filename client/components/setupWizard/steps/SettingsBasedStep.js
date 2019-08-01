@@ -51,6 +51,7 @@ export function SettingsBasedStep({ step, title }) {
 		resetFields(
 			settings
 				.filter(({ wizard: { step } }) => step === currentStep)
+				.filter(({ type }) => ['string', 'select', 'language'].includes(type))
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
 				.map(({ value, ...field }) => ({ ...field, value: value || '' }))
 		);
@@ -66,7 +67,7 @@ export function SettingsBasedStep({ step, title }) {
 		setCommiting(true);
 
 		try {
-			await batchSetSettings(fields);
+			await batchSetSettings(fields.map(({ _id, value }) => ({ _id, value })));
 			goToNextStep();
 		} catch (error) {
 			console.error(error);

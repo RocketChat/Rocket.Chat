@@ -101,7 +101,7 @@ export function RegisterServerStep({ step, title }) {
 	};
 
 	return <Step active={active} working={commiting}>
-		<StepHeader number={step.number} title={t(step.i18nTitleKey)} />
+		<StepHeader step={step} title={title} />
 
 		<StepContent>
 			<Paragraph>{title}</Paragraph>
