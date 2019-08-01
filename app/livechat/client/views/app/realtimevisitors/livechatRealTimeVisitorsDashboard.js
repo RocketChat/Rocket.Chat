@@ -4,13 +4,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 
-import { LivechatRoom } from '../../collections/LivechatRoom';
-import { setDateRange, updateDateRange } from '../../lib/dateHandler';
-import { visitorNavigationHistory } from '../../collections/LivechatVisitorNavigation';
-import { RocketChatTabBar, popover } from '../../../../ui-utils';
-import { t } from '../../../../utils';
+import { LivechatRoom } from '../../../collections/LivechatRoom';
+import { setDateRange, updateDateRange } from '../../../lib/dateHandler';
+import { setTimeRange } from '../../../lib/timeHandler';
+import { visitorNavigationHistory } from '../../../collections/LivechatVisitorNavigation';
+import { RocketChatTabBar, popover } from '../../../../../ui-utils';
+import { t } from '../../../../../utils';
 
-import './livechatDashboard.html';
+import './livechatRealTimeVisitorsDashboard.html';
 
 const LivechatLocation = new Mongo.Collection('livechatLocation');
 
@@ -29,6 +30,9 @@ Template.livechatDashboard.helpers({
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
 		};
+	},
+	timerange() {
+		return Template.instance().timerange.get();
 	},
 	daterange() {
 		return Template.instance().daterange.get();
@@ -53,6 +57,20 @@ Template.livechatDashboard.events({
 		instance.tabBar.setTemplate('visitorSession');
 		instance.tabBar.setData({ label: t('Session_Info'), icon: 'info-circled' });
 		instance.tabBar.open();
+	},
+	'click .lc-time-picker-btn'(e) {
+		e.preventDefault();
+		const options = [];
+		const config = {
+			template: 'livechatRealTimeVisitorsTimeRange',
+			currentTarget: e.currentTarget,
+			data: {
+				options,
+				timerange: Template.instance().timerange,
+			},
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+		popover.open(config);
 	},
 	'click .lc-date-picker-btn'(e) {
 		e.preventDefault();
@@ -88,11 +106,6 @@ Template.livechatDashboard.events({
 			}
 		});
 
-		if (Template.instance().daterange.get()) {
-			filter.from = moment(Template.instance().daterange.get().from, 'MMM D YYYY').toISOString();
-			filter.to = moment(Template.instance().daterange.get().to, 'MMM D YYYY').toISOString();
-		}
-
 		instance.filter.set(filter);
 		instance.limit.set(20);
 	},
@@ -100,7 +113,13 @@ Template.livechatDashboard.events({
 
 Template.livechatDashboard.onRendered(function() {
 	this.autorun(() => {
-		if (Template.instance().daterange.get()) {
+		if (Template.instance().timerange.get().value !== 'none') {
+			this.filter.set({
+				fromTime: moment(Template.instance().timerange.get().from, 'Do, hh:mm a').toISOString(),
+				toTime: moment(Template.instance().timerange.get().to, 'Do, hh:mm a').toISOString(),
+				valueTime: Template.instance().timerange.get().value,
+			});
+		} else if (Template.instance().daterange.get()) {
 			this.filter.set({
 				from: moment(Template.instance().daterange.get().from, 'MMM D YYYY').toISOString(),
 				to: moment(Template.instance().daterange.get().to, 'MMM D YYYY').toISOString(),
@@ -119,6 +138,10 @@ Template.livechatDashboard.onCreated(function() {
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 
 	this.daterange = new ReactiveVar({});
+	this.timerange = new ReactiveVar({});
+	this.autorun(() => {
+		Template.instance().timerange.set(setTimeRange());
+	});
 	this.autorun(() => {
 		Template.instance().daterange.set(setDateRange());
 	});
@@ -137,14 +160,21 @@ Template.livechatDashboard.onCreated(function() {
 	this.autorun(() => {
 		const sub = this.subscribe('livechat:location', this.filter.get());
 		if (sub.ready()) {
-			const users = LivechatLocation.find({}).map((data) => data);
+			const users = LivechatLocation.find({}, { sort: { createdAt: -1 } }).map((data) => data);
 			if (users && users.length > 0) {
 				users.map((val) => {
+					const currentTime = moment();
+					val.sessionStarted = moment(val.createdAt).format('MMM Do hh:mm a');
 					if (val.offlineTime) {
-						val.timeSince = moment(val.offlineTime).format('Do MMM YYYY');
+						const duration = moment.duration(currentTime.diff(val.offlineTime));
+						const hours = duration.get('hours');
+						const days = duration.get('d');
+						if (days >= 1) {
+							val.timeSince = `${ days }d`;
+						} else {
+							val.timeSince = `${ hours }h:${ duration.get('minutes') }m:${ duration.get('seconds') }s`;
+						}
 					} else {
-						// eslint-disable-next-line new-cap
-						const currentTime = new moment();
 						const duration = moment.duration(currentTime.diff(val.chatStartTime));
 						const hours = duration.get('hours');
 						const days = duration.get('d');

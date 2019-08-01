@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 
 import { t } from '../../../../../utils';
-import './visitorSession.html';
+import './livechatRealTimeVisitorSession.html';
 
 Template.visitorSession.helpers({
 	user() {

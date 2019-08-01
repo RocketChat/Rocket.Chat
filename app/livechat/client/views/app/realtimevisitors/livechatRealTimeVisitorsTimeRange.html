@@ -1,0 +1,48 @@
+<template name="livechatRealTimeVisitorsTimeRange">
+  <div class="rc-popover__column">
+    <ul class="rc-popover__list">
+      <li class="rc-popover__item {{bold 'None'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="none" class="hidden">
+          <span class="rc-popover__item-text">{{_ "None"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'last-one-minute'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="last-one-minute" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Last Minute"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'last-10-minutes'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="last-10-minutes" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Last 10 Minutes"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'last-thirty-minutes'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="last-thirty-minutes" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Last 30 Minutes"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'last-hour'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="last-hour" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Last Hour"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'last-six-hour'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="last-six-hour" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Last 6 hours"}}</span>
+        </label>
+      </li>
+      <li class="rc-popover__item {{bold 'last-twelve-hour'}}">
+        <label class="rc-popover__label">
+          <input type="radio" name="lc-timerange" value="last-twelve-hour" class="hidden">
+          <span class="rc-popover__item-text">{{_ "Last 12 Hours"}}</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+</template>

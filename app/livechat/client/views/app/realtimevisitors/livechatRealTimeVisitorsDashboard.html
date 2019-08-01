@@ -44,6 +44,16 @@
             </button>
             {{/if}}
           </div>
+          <br>
+          <div class="form-group lc-time">
+            <button class="rc-tooltip rc-tooltip--down js-button lc-time-picker-btn">
+              {{#with timerange}}
+                <span class="lc-time-from">{{from}}</span>
+                <span class="fade">{{btw}}</span>
+                <span class="lc-time-to">{{to}}</span>
+              {{/with}}
+            </button>
+          </div>
         </form>
       </fieldset>
       <div class="rc-table-content">
@@ -56,19 +66,22 @@
             <th width="20%">
               <div class="table-fake-th">{{_ "Location"}}</div>
             </th>
-            <th width="10%">
+            <th width="5%">
               <div class="table-fake-th">{{_ "Visits"}}</div>
             </th>
-            <th width="10%">
+            <th width="5%">
               <div class="table-fake-th">{{_ "Device"}}</div>
             </th>
             <th width="10%">
-              <div class="table-fake-th">{{_ "State"}}</div>
+              <div class="table-fake-th">{{_ "Status"}}</div>
+            </th>
+            <th width="15%">
+              <div class="table-fake-th">{{_ "Session Started"}}</div>
             </th>
             <th width="15%">
               <div class="table-fake-th">{{_ "Time on Site"}}</div>
             </th>
-            <th width="15%">
+            <th width="10%">
               <div class="table-fake-th">{{_ "Agent Info"}}</div>
             </th>
           </tr>
@@ -99,6 +112,7 @@
               <i class="{{osIcon}}"></i><i class="{{browserIcon}}"></i>
             </td>
             <td>{{state}}</td>
+            <td>{{sessionStarted}}</td>
             <td>
               {{#if timeSince}}
                 {{timeSince}}
@@ -106,18 +120,18 @@
                 {{_ "No Info"}}
               {{/if}}
             </td>
-            <td class="rc-button__group">
+            <td>
               {{#if servedBy}}
-              {{servedBy.username}}
+                {{servedBy.username}}
               {{else}}
               {{#if visitorInfo}}
-              {{#if checkRegister state}}
-              <button class="rc-button rc-button--primary js-load-more">{{_ "Chat"}}</button>
+                {{#if checkRegister state}}
+                <button class="rc-button rc-button--primary js-load-more">{{_ "Chat"}}</button>
+                {{else}}
+                  {{_ "No Info"}}
+                {{/if}}
               {{else}}
-              {{_ "No Info"}}
-              {{/if}}
-              {{else}}
-              {{_ "No Info"}}
+                {{_ "No Info"}}
               {{/if}}
               {{/if}}
             </td>

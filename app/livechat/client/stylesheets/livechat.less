@@ -5,6 +5,17 @@
 @secondary-font-color: #7f7f7f;
 @info-font-color: #aaaaaa;
 
+.lc-time {
+  float: left;
+  margin-top: -0px;
+}
+
+.lc-time-from,
+.lc-time-to {
+  font-weight: 400;
+  font-size: 15px;
+}
+
 .table-location {
   font-family: arial, sans-serif;
   border-collapse: collapse;
@@ -15,6 +26,10 @@ td, th {
   border: 1px solid #2e0707;
   text-align: left;
   padding: 8px;
+}
+
+.rc-table-tr {
+  height: 60px;
 }
 
 tr:nth-child(even) {
@@ -275,7 +290,7 @@ tr:nth-child(even) {
 }
 
 .lc-analytics-header {
-	float: right;
+  float: right;
   & > .lc-date-picker-btn {
     font-weight: inherit;
     font-size: inherit;

@@ -19,27 +19,45 @@ Meteor.publish('livechat:location', function(filter = {}) {
 		state: Match.Maybe(String), // 'chatting', 'registered', or 'idle', offline
 		from: Match.Maybe(String),
 		to: Match.Maybe(String),
+		fromTime: Match.Maybe(String),
+		toTime: Match.Maybe(String),
+		valueTime: Match.Maybe(String),
 	});
 
 	let { from, to } = filter;
+	const { fromTime, toTime, valueTime } = filter;
 
 	if (!(moment(from).isValid() && moment(to).isValid())) {
 		return this.error(new Meteor.Error('error-invalid-date', 'Invalid Date', { publish: 'livechat:location' }));
 	}
+
+	if (!(moment(fromTime).isValid() && moment(toTime).isValid())) {
+		return this.error(new Meteor.Error('error-invalid-time', 'Invalid Time', { publish: 'livechat:location' }));
+	}
+
 	let query = {};
-	from = moment(from).add(1, 'days');
-	to = moment(to).add(1, 'days');
-	if (moment(from).diff(to) === 0) {
+
+	if (fromTime && toTime && valueTime) {
 		query.createdAt = {
-			$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
-			$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).add(1, 'days').toDate(),
+			$gte: moment(toTime).toDate(),
+			$lt: moment(fromTime).toDate(),
 		};
 	} else {
-		query.createdAt = {
-			$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
-			$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
-		};
+		from = moment(from).add(1, 'days');
+		to = moment(to).add(1, 'days');
+		if (moment(from).diff(to) === 0) {
+			query.createdAt = {
+				$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+				$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).add(1, 'days').toDate(),
+			};
+		} else {
+			query.createdAt = {
+				$gte: moment(from).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+				$lt: moment(to).utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate(),
+			};
+		}
 	}
+
 	if (filter.name) {
 		query['visitorInfo.name'] = new RegExp(filter.name, 'i');
 	}
