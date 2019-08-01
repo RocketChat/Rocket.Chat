@@ -1,17 +1,17 @@
 import { TAPi18n } from 'meteor/tap:i18n';
 import React, { Fragment, useEffect, useReducer, useState } from 'react';
 
+import { settings } from '../../../../app/settings/lib/settings';
+import { handleError } from '../../../../app/utils/client';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Input } from '../../basic/Input';
+import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
-import { Pager } from '../Pager';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
-import { handleError } from '../../../../app/utils/client';
 
 const useFields = () => {
 	const reset = 'RESET';
@@ -36,11 +36,19 @@ const useFields = () => {
 	return { fields, resetFields, setFieldValue };
 };
 
+const batchSetSettings = (values) => new Promise((resolve, reject) => settings.batchSet(values, (error) => {
+	if (error) {
+		reject(error);
+		return;
+	}
+
+	resolve();
+}));
+
 export function SettingsBasedStep({ step, title }) {
 	const { settings } = useSetupWizardParameters();
 	const { currentStep, goToPreviousStep, goToNextStep } = useSetupWizardStepsState();
 	const { fields, resetFields, setFieldValue } = useFields();
-	const batchSetSettings = useBatchSetSettings();
 	const [commiting, setCommiting] = useState(false);
 
 	const active = step === currentStep;

@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { Button } from '../basic/Button';
 
-const Footer = (props) => <footer className='setup-wizard-forms__footer' {...props} />;
+const Footer = (props) => <footer className='Pager' {...props} />;
 
 export function Pager({ disabled, onBackClick, onContinueClick }) {
 	const t = useTranslation();

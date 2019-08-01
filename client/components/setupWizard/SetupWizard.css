@@ -1,0 +1,17 @@
+.SetupWizard {
+	display: flex;
+
+	width: 100%;
+	height: 100vh;
+
+	background-color: var(--color-dark-05);
+
+	justify-content: center;
+}
+
+@media (width <= 760px) {
+	.SetupWizard {
+		flex-direction: column;
+		justify-content: initial;
+	}
+}

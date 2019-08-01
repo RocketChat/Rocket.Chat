@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { settings } from '../../../../app/settings/lib/settings';
 import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -10,7 +11,6 @@ import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 
 const Paragraph = (props) => <p className='setup-wizard-forms__content-text' {...props} />;
 
@@ -46,10 +46,18 @@ const CheckBox = ({ checked, disabled, label, onChange }) => <label className='s
 	<span className='setup-wizard-forms__content-register-checkbox-text'>{label}</span>
 </label>;
 
+const batchSetSettings = (values) => new Promise((resolve, reject) => settings.batchSet(values, (error) => {
+	if (error) {
+		reject(error);
+		return;
+	}
+
+	resolve();
+}));
+
 export function RegisterServerStep({ step, title }) {
 	const { canDeclineServerRegistration } = useSetupWizardParameters();
 	const { currentStep, goToPreviousStep, goToFinalStep } = useSetupWizardStepsState();
-	const batchSetSettings = useBatchSetSettings();
 
 	const active = step === currentStep;
 

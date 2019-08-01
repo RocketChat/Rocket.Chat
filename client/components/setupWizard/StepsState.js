@@ -7,10 +7,17 @@ const Context = createContext();
 
 export const useSetupWizardStepsState = () => useContext(Context);
 
+export const finalStep = 'final';
+
 const useStepRouting = () => {
 	const userId = useUserId();
 	const [currentStep, setCurrentStep] = useState(() => {
 		const param = FlowRouter.getParam('step');
+
+		if (param === finalStep) {
+			return finalStep;
+		}
+
 		const step = parseInt(param, 10);
 		if (Number.isFinite(step) && step >= 1) {
 			return step;
@@ -41,10 +48,7 @@ export function StepsState({ children }) {
 		currentStep,
 		goToPreviousStep: () => setCurrentStep(currentStep - 1),
 		goToNextStep: () => setCurrentStep(currentStep + 1),
-		goToFinalStep: () => {
-			localStorage.setItem('wizardFinal', true);
-			setCurrentStep('final');
-		},
+		goToFinalStep: () => setCurrentStep(finalStep),
 	}), [currentStep]);
 
 	return <Context.Provider value={value}>

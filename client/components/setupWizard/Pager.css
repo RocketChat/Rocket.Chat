@@ -1,0 +1,10 @@
+.Pager {
+	display: flex;
+	flex-direction: row;
+
+	margin: 0 -0.5rem 2rem;
+
+	& .rc-button {
+		margin: 0 0.5rem;
+	}
+}
