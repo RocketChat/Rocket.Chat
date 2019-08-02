@@ -217,11 +217,26 @@ const convertTimeAvg = (duration) => {
 	return `${ hours }:${ minutes }:${ seconds }`;
 };
 
+const getKeyHavingMaxValue = (map, def) => {
+	let maxValue = 0;
+	let maxKey = def;	// default
+
+	map.forEach((value, key) => {
+		if (value > maxValue) {
+			maxValue = value;
+			maxKey = key;
+		}
+	});
+
+	return maxKey;
+};
+
 export const getSessionOverviewData = (dbCursor) => {
 	let totalOnline = 0;
 	let totalCompletedChat = 0;
 	let timeDuration = 0;
 	let busiestTime = 0;
+	const mostCountryVisitors = new Map();
 	dbCursor.forEach(function(data) {
 		if (data.status === 'online') {
 			totalOnline++;
@@ -236,11 +251,17 @@ export const getSessionOverviewData = (dbCursor) => {
 				busiestTime = moment.duration(offlineTime.diff(data.createdAt));
 			}
 		}
+
+		if (data.location) {
+			const { countryName } = data.location;
+			mostCountryVisitors.set(countryName, mostCountryVisitors.has(countryName) ? mostCountryVisitors.get(countryName) + 1 : 1);
+		}
 	});
 
 	let avg = parseFloat(timeDuration / totalCompletedChat).toFixed(2);
 	const avgTimeDuration = moment.duration(Number(avg));
 	const avgTime = convertTimeAvg(avgTimeDuration);
+	const MaxVisitorsFrom = getKeyHavingMaxValue(mostCountryVisitors, '-');
 	if (moment.isDuration(busiestTime)) {
 		busiestTime = busiestTime.humanize();
 	}
@@ -248,13 +269,16 @@ export const getSessionOverviewData = (dbCursor) => {
 		avg = '-';
 	}
 	return [{
-		title: 'Online Visitors',
+		title: 'Online_Visitors',
 		value: totalOnline,
 	}, {
-		title: 'Average Time on Site',
+		title: 'Avg_time_on_site',
 		value: avgTime,
 	}, {
-		title: 'Busiest Chat Time',
+		title: 'Busiest_chat_time',
 		value: busiestTime,
+	}, {
+		title: 'Most_visitors_from',
+		value: MaxVisitorsFrom,
 	}];
 };

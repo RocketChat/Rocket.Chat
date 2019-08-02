@@ -114,14 +114,17 @@ Template.livechatDashboard.helpers({
 		const data = Template.instance().sessionOverview.get();
 		if (!data) {
 			const send = [{
-				title: 'Online Visitors',
+				title: 'Online_Visitors',
 				value: '-',
 			}, {
-				title: 'Average Time on Site',
+				title: 'Avg_time_on_site',
 				value: '-',
 			},
 			{
-				title: 'Busiest Chat Time',
+				title: 'Busiest_chat_time',
+				value: '-',
+			}, {
+				title: 'Most_visitors_from',
 				value: '-',
 			}];
 			return chunkArray(send, 2);
