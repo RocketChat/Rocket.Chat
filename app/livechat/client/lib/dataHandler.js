@@ -200,18 +200,28 @@ export const getTimingsOverviewData = (dbCursor) => {
 	}];
 };
 
-const calculateAvgTime = (duration) => {
-	const hours = parseFloat(duration.get('hours'));
-	const minutes = parseFloat(duration.get('minutes'));
-	const seconds = parseFloat(duration.get('seconds'));
+const convertTimeAvg = (duration) => {
+	let hours = Number(duration.get('h'));
+	let minutes = Number(duration.get('m'));
+	let seconds = Number(duration.get('s'));
 
-	return (hours * 60) + minutes + (seconds / 60);
+	if (hours.toString().length === 1) {
+		hours = `0${ hours }`;
+	}
+	if (minutes.toString().length === 1) {
+		minutes = `0${ minutes }`;
+	}
+	if (seconds.toString().length === 1) {
+		seconds = `0${ seconds }`;
+	}
+	return `${ hours }:${ minutes }:${ seconds }`;
 };
 
 export const getSessionOverviewData = (dbCursor) => {
 	let totalOnline = 0;
 	let totalCompletedChat = 0;
 	let timeDuration = 0;
+	let busiestTime = 0;
 	dbCursor.forEach(function(data) {
 		if (data.status === 'online') {
 			totalOnline++;
@@ -220,16 +230,31 @@ export const getSessionOverviewData = (dbCursor) => {
 		if (data.offlineTime) {
 			totalCompletedChat++;
 			const offlineTime = moment(data.offlineTime);
-			timeDuration += calculateAvgTime(moment.duration(offlineTime.diff(data.createdAt)));
+			timeDuration += offlineTime.diff(data.createdAt);
+
+			if (offlineTime.diff(data.createdAt) > busiestTime) {
+				busiestTime = moment.duration(offlineTime.diff(data.createdAt));
+			}
 		}
 	});
 
-	const avg = parseFloat(timeDuration / totalCompletedChat).toFixed(2);
+	let avg = parseFloat(timeDuration / totalCompletedChat).toFixed(2);
+	const avgTimeDuration = moment.duration(Number(avg));
+	const avgTime = convertTimeAvg(avgTimeDuration);
+	if (moment.isDuration(busiestTime)) {
+		busiestTime = busiestTime.humanize();
+	}
+	if (isNaN(avg)) {
+		avg = '-';
+	}
 	return [{
 		title: 'Online Visitors',
 		value: totalOnline,
 	}, {
 		title: 'Average Time on Site',
-		value: avg,
+		value: avgTime,
+	}, {
+		title: 'Busiest Chat Time',
+		value: busiestTime,
 	}];
 };

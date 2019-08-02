@@ -69,6 +69,17 @@ const updateSessionOverviews = () => {
 	templateInstance.sessionOverview.set(data);
 };
 
+const chunkArray = (arr, chunkCount) => {	// split array into n almost equal arrays
+	const chunks = [];
+	while (arr.length) {
+		const chunkSize = Math.ceil(arr.length / chunkCount--);
+		const chunk = arr.slice(0, chunkSize);
+		chunks.push(chunk);
+		arr = arr.slice(chunkSize);
+	}
+	return chunks;
+};
+
 Template.livechatDashboard.helpers({
 	visitors() {
 		return Template.instance().users.get();
@@ -100,7 +111,22 @@ Template.livechatDashboard.helpers({
 		return true;
 	},
 	sessionOverview() {
-		return Template.instance().sessionOverview.get();
+		const data = Template.instance().sessionOverview.get();
+		if (!data) {
+			const send = [{
+				title: 'Online Visitors',
+				value: '-',
+			}, {
+				title: 'Average Time on Site',
+				value: '-',
+			},
+			{
+				title: 'Busiest Chat Time',
+				value: '-',
+			}];
+			return chunkArray(send, 2);
+		}
+		return chunkArray(data, 2);
 	},
 });
 
