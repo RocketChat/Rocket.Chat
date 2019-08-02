@@ -39,7 +39,6 @@ standard-minifier-js@2.4.1
 tracker@1.2.0
 
 #rocketchat:google-natural-language
-rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 
