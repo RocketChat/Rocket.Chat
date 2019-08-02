@@ -92,7 +92,6 @@ oauth2@1.2.1
 raix:eventemitter
 routepolicy@1.1.0
 sha@1.0.9
-swydo:graphql
 templating
 webapp@1.7.3
 webapp-hashing@1.0.9
