@@ -1,5 +1,6 @@
 import { Rooms, Subscriptions } from '../../../app/models';
 import { Notifications } from '../../../app/notifications';
+import { NOTIFY_BY_ID } from '../../../app/emitter/server';
 
 import { fields } from '.';
 
@@ -33,5 +34,6 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 			});
 		}
 		Notifications.streamUser.__emit(id, clientAction, data);
+		NOTIFY_BY_ID.room(id, data);
 	}
 });

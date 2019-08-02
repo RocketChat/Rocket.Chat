@@ -15,6 +15,7 @@ import '../app/custom-sounds/client';
 import '../app/dolphin/client';
 import '../app/drupal/client';
 import '../app/emoji';
+import '../app/emitter/client';
 import '../app/emoji-custom/client';
 import '../app/emoji-emojione/client';
 import '../app/favico';

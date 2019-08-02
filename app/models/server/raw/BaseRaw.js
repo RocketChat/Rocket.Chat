@@ -3,6 +3,10 @@ export class BaseRaw {
 		this.col = col;
 	}
 
+	find(...args) {
+		return this.col.find(...args);
+	}
+
 	findOneById(_id, options) {
 		return this.findOne({ _id }, options);
 	}

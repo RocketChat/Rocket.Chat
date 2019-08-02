@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../app/settings';
 import { Users, Messages } from '../../../app/models';
 import { msgStream } from '../../../app/lib/server';
+import { NOTIFY_BY_ID } from '../../../app/emitter/server';
 
 import { MY_MESSAGE } from '.';
 
@@ -22,6 +23,7 @@ Meteor.startup(function() {
 					mention.name = user && user.name;
 				});
 			}
+			NOTIFY_BY_ID.message(record.rid, record);
 			msgStream.mymessage(MY_MESSAGE, record);
 			msgStream.emitWithoutBroadcast(record.rid, record);
 		}

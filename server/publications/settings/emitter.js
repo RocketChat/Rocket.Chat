@@ -1,6 +1,7 @@
 import { Settings } from '../../../app/models';
 import { Notifications } from '../../../app/notifications';
 import { hasPermission } from '../../../app/authorization';
+import { NOTIFY_ALL } from '../../../app/emitter/server';
 
 Settings.on('change', ({ clientAction, id, data, diff }) => {
 	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
@@ -18,6 +19,7 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 			};
 
 			if (setting.public === true) {
+				NOTIFY_ALL.setting(value);
 				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
 			}
 			Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);
@@ -29,6 +31,7 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 
 			if (setting && setting.public === true) {
 				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
+				NOTIFY_ALL.setting({ _id: id });
 			}
 			Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });
 			break;
