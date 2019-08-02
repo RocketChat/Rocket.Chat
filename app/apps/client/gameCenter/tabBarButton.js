@@ -1,7 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+
 import { TabBar } from '../../../ui-utils/client';
 import { APIClient } from '../../../utils';
 
-(async function() {
+Meteor.startup(async function() {
 	const { games } = await APIClient.get('apps/games');
 
 	if (games.length > 0) {
@@ -14,4 +16,4 @@ import { APIClient } from '../../../utils';
 			order: -1,
 		});
 	}
-}());
+});
