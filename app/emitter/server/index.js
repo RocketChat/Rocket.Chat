@@ -10,28 +10,28 @@ const NOTIFY_ALL = new EventEmitter();
 const NOTIFY_BY_ID = new EventEmitter();
 
 const NOTIFY_ALL_PUBLIC = {
-	setting: (data) => NOTIFY_ALL.emit(CONSTANTS.STREAM, SERIALIZE.setting([CONSTANTS.OP.SETTING, data])),
-	permission: (data) => NOTIFY_ALL.emit(CONSTANTS.STREAM, SERIALIZE.permission([CONSTANTS.OP.PERMISSION, data])),
+	setting: (data) => NOTIFY_ALL.emit(CONSTANTS.STREAM, CONSTANTS.OP.SETTING + SERIALIZE.setting(data)),
+	permission: (data) => NOTIFY_ALL.emit(CONSTANTS.STREAM, CONSTANTS.OP.PERMISSION + SERIALIZE.permission(data)),
 };
 
 const NOTIFY_BY_ID_PUBLIC = {
 	subscription(uid, data) {
-		NOTIFY_BY_ID.emit(uid, SERIALIZE.subscription([CONSTANTS.OP.SUBSCRIPTION, data]));
+		NOTIFY_BY_ID.emit(uid, CONSTANTS.OP.SUBSCRIPTION + SERIALIZE.subscription(data));
 	},
 	room(uid, data) {
-		NOTIFY_BY_ID.emit(uid, SERIALIZE.room([CONSTANTS.OP.ROOM, data]));
+		NOTIFY_BY_ID.emit(uid, CONSTANTS.OP.ROOM + SERIALIZE.room(data));
 	},
 	message(uid, data) {
-		NOTIFY_BY_ID.emit(uid, SERIALIZE.message([CONSTANTS.OP.MESSAGE, data]));
+		NOTIFY_BY_ID.emit(uid, CONSTANTS.OP.MESSAGE + SERIALIZE.message(data));
 	},
 	typing(rid, uid) {
-		NOTIFY_BY_ID.emit(rid, SERIALIZE.typing([CONSTANTS.OP.TYPING, uid]));
+		NOTIFY_BY_ID.emit(rid, CONSTANTS.OP.TYPING + SERIALIZE.typing(uid));
 	},
 	recordingAudio(rid, uid) {
-		NOTIFY_BY_ID.emit(rid, SERIALIZE.typing([CONSTANTS.OP.RECORDING_AUDIO, uid]));
+		NOTIFY_BY_ID.emit(rid, CONSTANTS.OP.RECORDING_AUDIO + SERIALIZE.typing(uid));
 	},
 	recordingVideo(rid, uid) {
-		NOTIFY_BY_ID.emit(rid, SERIALIZE.typing([CONSTANTS.OP.RECORDING_VIDEO, uid]));
+		NOTIFY_BY_ID.emit(rid, CONSTANTS.OP.RECORDING_VIDEO + SERIALIZE.typing(uid));
 	},
 };
 
