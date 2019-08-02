@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -11,6 +12,32 @@ import { Roles } from '../../../models';
 import { hasAllPermission } from '../hasPermission';
 import { modal } from '../../../ui-utils/client/lib/modal';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
+import { APIClient } from '../../../utils/client';
+import { call } from '../../../ui-utils/client';
+
+const PAGE_SIZE = 50;
+
+const loadUsers = async (instance) => {
+	const offset = instance.state.get('offset');
+
+	const rid = instance.searchRoom.get();
+
+	const params = {
+		role: FlowRouter.getParam('name'),
+		offset,
+		count: PAGE_SIZE,
+		...rid && { roomId: rid },
+	};
+
+	instance.state.set('loading', true);
+	const { users } = await APIClient.v1.get('roles.getUsersInRole', params);
+
+	instance.usersInRole.set(instance.usersInRole.curValue.concat(users));
+	instance.state.set({
+		loading: false,
+		hasMore: users.length === PAGE_SIZE,
+	});
+};
 
 Template.permissionsRole.helpers({
 	role() {
@@ -46,19 +73,16 @@ Template.permissionsRole.helpers({
 	},
 
 	hasUsers() {
-		return Template.instance().usersInRole.get() && Template.instance().usersInRole.get().count() > 0;
+		return Template.instance().usersInRole.get().length > 0;
 	},
 
 	hasMore() {
-		const instance = Template.instance();
-		return instance.limit && instance.limit.get() <= instance.usersInRole.get().count();
+		return Template.instance().state.get('hasMore');
 	},
 
 	isLoading() {
 		const instance = Template.instance();
-		if (!instance.ready || !instance.ready.get()) {
-			return 'btn-loading';
-		}
+		return (!instance.subscription.ready() || instance.state.get('loading')) && 'btn-loading';
 	},
 
 	searchRoom() {
@@ -100,7 +124,7 @@ Template.permissionsRole.helpers({
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
 					filter: {
-						exceptions: instance.usersInRole.get() && instance.usersInRole.get().fetch(),
+						exceptions: instance.usersInRole.get(),
 					},
 					selector(match) {
 						return {
@@ -127,19 +151,15 @@ Template.permissionsRole.events({
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
 			html: false,
-		}, () => {
-			Meteor.call('authorization:removeUserFromRole', FlowRouter.getParam('name'), this.username, instance.searchRoom.get(), function(error/* , result*/) {
-				if (error) {
-					return handleError(error);
-				}
-
-				modal.open({
-					title: t('Removed'),
-					text: t('User_removed'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
+		}, async () => {
+			await call('authorization:removeUserFromRole', FlowRouter.getParam('name'), this.username, instance.searchRoom.get());
+			instance.usersInRole.set(instance.usersInRole.curValue.filter((user) => user.username !== this.username));
+			modal.open({
+				title: t('Removed'),
+				text: t('User_removed'),
+				type: 'success',
+				timer: 1000,
+				showConfirmButton: false,
 			});
 		});
 	},
@@ -176,7 +196,7 @@ Template.permissionsRole.events({
 		});
 	},
 
-	'submit #form-users'(e, instance) {
+	async 'submit #form-users'(e, instance) {
 		e.preventDefault();
 		if (e.currentTarget.elements.username.value.trim() === '') {
 			return toastr.error(t('Please_fill_a_username'));
@@ -184,15 +204,18 @@ Template.permissionsRole.events({
 		const oldBtnValue = e.currentTarget.elements.add.value;
 		e.currentTarget.elements.add.value = t('Saving');
 
-		Meteor.call('authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements.username.value, instance.searchRoom.get(), (error/* , result*/) => {
-			e.currentTarget.elements.add.value = oldBtnValue;
-			if (error) {
-				return handleError(error);
-			}
-			instance.subscribe('usersInRole', FlowRouter.getParam('name'), instance.searchRoom.get());
+		try {
+			await call('authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements.username.value, instance.searchRoom.get());
+			instance.usersInRole.set([]);
+			instance.state.set({
+				offset: 0,
+				cache: Date.now(),
+			});
 			toastr.success(t('User_added'));
 			e.currentTarget.reset();
-		});
+		} finally {
+			e.currentTarget.elements.add.value = oldBtnValue;
+		}
 	},
 
 	'submit #form-search-room'(e) {
@@ -215,9 +238,7 @@ Template.permissionsRole.events({
 	},
 
 	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
+		t.state.set('offset', t.state.get('offset') + PAGE_SIZE);
 	},
 
 	'autocompleteselect input[name=room]'(event, template, doc) {
@@ -225,33 +246,32 @@ Template.permissionsRole.events({
 	},
 });
 
-Template.permissionsRole.onCreated(function() {
+Template.permissionsRole.onCreated(async function() {
+	this.state = new ReactiveDict({
+		offset: 0,
+		loading: false,
+		hasMore: true,
+		cache: 0,
+	});
 	this.searchRoom = new ReactiveVar();
 	this.searchUsername = new ReactiveVar();
-	this.usersInRole = new ReactiveVar();
-	this.limit = new ReactiveVar(50);
-	this.ready = new ReactiveVar(true);
-	this.subscribe('roles', FlowRouter.getParam('name'));
+	this.usersInRole = new ReactiveVar([]);
 
-	this.autorun(() => {
-		if (this.searchRoom.get()) {
-			this.subscribe('roomSubscriptionsByRole', this.searchRoom.get(), FlowRouter.getParam('name'));
-		}
-
-		const limit = this.limit.get();
-
-		const subscription = this.subscribe('usersInRole', FlowRouter.getParam('name'), this.searchRoom.get(), limit);
-		this.ready.set(subscription.ready());
-
-		this.usersInRole.set(Roles.findUsersInRole(FlowRouter.getParam('name'), this.searchRoom.get(), {
-			sort: {
-				username: 1,
-			},
-		}));
-	});
+	this.subscription = this.subscribe('roles', FlowRouter.getParam('name'));
 });
 
-Template.permissionsRole.onRendered(() => {
+Template.permissionsRole.onRendered(function() {
+	this.autorun(() => {
+		this.searchRoom.get();
+		this.usersInRole.set([]);
+		this.state.set({ offset: 0 });
+	});
+
+	this.autorun(() => {
+		this.state.get('cache');
+		loadUsers(this);
+	});
+
 	Tracker.afterFlush(() => {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();

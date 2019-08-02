@@ -1,32 +1,27 @@
-import { Meteor } from 'meteor/meteor';
-
 import { Base } from './_Base';
-
-import { Users } from '..';
+import { Users } from '../raw';
 
 class FederationPeersModel extends Base {
 	constructor() {
 		super('federation_peers');
+
+		this.tryEnsureIndex({ active: 1, isRemote: 1 });
 	}
 
-	refreshPeers() {
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+	async refreshPeers(localIdentifier) {
+		const peers = await Users.getDistinctFederationPeers();
 
-		const users = Users.find({ federation: { $exists: true } }, { fields: { federation: 1 } }).fetch();
-
-		const peers = [...new Set(users.map((u) => u.federation.peer))];
-
-		for (const peer of peers) {
-			findAndModify({ peer }, [], {
+		peers.forEach((peer) =>
+			this.update({ peer }, {
 				$setOnInsert: {
+					isRemote: localIdentifier !== peer,
 					active: false,
 					peer,
 					last_seen_at: null,
 					last_failure_at: null,
 				},
-			}, { upsert: true });
-		}
+			}, { upsert: true })
+		);
 
 		this.remove({ peer: { $nin: peers } });
 	}
@@ -47,6 +42,18 @@ class FederationPeersModel extends Base {
 
 			this.update({ peer }, { $set: updateQuery });
 		}
+	}
+
+	findActiveRemote() {
+		return this.find({ active: true, isRemote: true });
+	}
+
+	findNotActiveRemote() {
+		return this.find({ active: false, isRemote: true });
+	}
+
+	findRemote() {
+		return this.find({ isRemote: true });
 	}
 }
 
