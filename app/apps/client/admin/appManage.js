@@ -334,7 +334,7 @@ Template.appManage.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { id, state } = instance;
+		const { appId, state } = instance;
 
 		if (state.get('isSaving')) {
 			return;
@@ -345,14 +345,14 @@ Template.appManage.events({
 		const settings = state.get('settings');
 
 		try {
-			const toSave = Object.entries(settings)
+			const toSave = Object.values(settings)
 				.filter(({ hasChanged }) => hasChanged);
 
 			if (!toSave.length) {
 				return;
 			}
 
-			const updated = await Apps.setAppSettings(id, toSave);
+			const updated = await Apps.setAppSettings(appId, toSave);
 			updated.forEach(({ id, value }) => {
 				settings[id].value = value;
 				settings[id].oldValue = value;

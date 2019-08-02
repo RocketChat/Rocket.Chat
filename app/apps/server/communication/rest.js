@@ -73,7 +73,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
+						result = HTTP.get(`${ baseUrl }/v1/apps`, {
 							headers,
 						});
 					} catch (e) {
