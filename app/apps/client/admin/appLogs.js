@@ -96,8 +96,8 @@ Template.appLogs.events({
 		$(e.currentTarget).find('.button-down').removeClass('arrow-up');
 	},
 
-	'click .js-cancel': (e, t) => {
-		FlowRouter.go('app-manage', { appId: t.app.get().id }, { version: FlowRouter.getQueryParam('version') });
+	'click .js-cancel': () => {
+		FlowRouter.go('apps');
 	},
 
 	'click .js-refresh': (e, t) => {
