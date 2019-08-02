@@ -63,7 +63,7 @@ Meteor.startup(function() {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred', 'threads'],
+		context: ['starred', 'threads', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {

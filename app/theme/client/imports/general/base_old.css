@@ -4951,6 +4951,12 @@ rc-old select,
 	}
 }
 
+.rc-old .load-more {
+	position: relative;
+
+	height: 2rem;
+}
+
 .rc-old .flex-tab {
 	&__content {
 		display: flex;

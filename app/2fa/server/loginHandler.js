@@ -36,4 +36,4 @@ callbacks.add('onValidateLogin', (login) => {
 			throw new Meteor.Error('totp-invalid', 'TOTP Invalid');
 		}
 	}
-});
+}, callbacks.priority.MEDIUM, '2fa');
