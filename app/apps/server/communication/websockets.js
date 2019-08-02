@@ -32,37 +32,6 @@ export class AppServerListener {
 		this.engineStreamer.on(AppEvents.COMMAND_REMOVED, this.onCommandRemoved.bind(this));
 	}
 
-	initialize() {
-		// this.observer = this.orch.getModel().find().observe({
-		// 	added: (record) => this.handleAdded(record),
-		// 	changed: (newRecord, oldRecord) => this.handleChanged(newRecord, oldRecord),
-		// 	removed: (record) => this.handleRemoved(record),
-		// });
-	}
-
-	terminate() {
-		this.observer.stop();
-		this.observer = null;
-	}
-
-	async handleAdded(record) {
-		this.onAppAdded(record.id);
-	}
-
-	async handleChanged(newRecord, oldRecord) {
-		if (newRecord.status !== oldRecord.status) {
-			return this.onAppStatusUpdated({ appId: newRecord.id, status: newRecord.status });
-		}
-
-		if (newRecord.info.version !== oldRecord.info.version) {
-			return this.onAppUpdated(newRecord.id);
-		}
-	}
-
-	async handleRemoved(record) {
-		return this.onAppRemoved(record.id);
-	}
-
 	async onAppAdded(appId) {
 		await this.orch.getManager().loadOne(appId);
 		this.clientStreamer.emit(AppEvents.APP_ADDED, appId);
@@ -147,14 +116,6 @@ export class AppServerNotifier {
 
 		this.received = new Map();
 		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.received);
-	}
-
-	initializeListener() {
-		this.listener.initialize();
-	}
-
-	terminateListener() {
-		this.listener.terminate();
 	}
 
 	async appAdded(appId) {
