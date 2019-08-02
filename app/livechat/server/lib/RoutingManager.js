@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings';
-import { createLivechatSubscription, dispatchAgentDelegated } from './Helper';
+import { createLivechatSubscription, dispatchAgentDelegated, forwardRoomToAgent, forwardRoomToDepartment } from './Helper';
 import { Livechat } from './Livechat';
 import { callbacks } from '../../../callbacks';
 import { Rooms, Messages, Subscriptions, Users } from '../../../models';
@@ -33,10 +33,6 @@ export const RoutingManager = {
 
 	async delegateInquiry(inquiry, agent) {
 		// return Room Object
-		if (!agent) {
-			agent = this.getMethod().delegateAgent(agent, inquiry);
-		}
-
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
 			agent = await this.getMethod().getNextAgent(department);
@@ -45,6 +41,7 @@ export const RoutingManager = {
 		if (!agent) {
 			return Rooms.findOneById(rid);
 		}
+
 		const room = this.takeInquiry(inquiry, agent);
 		return room;
 	},
@@ -69,6 +66,31 @@ export const RoutingManager = {
 		return inquiry;
 	},
 
+	unassignAgent(inquiry, departmentId) {
+		const { _id, rid, department } = inquiry;
+		const room = Rooms.findOneById(rid);
+		const { servedBy } = room;
+
+		if (!servedBy) {
+			return false;
+		}
+
+		Subscriptions.removeByRoomId(rid);
+		Rooms.removeAgentByRoomId(rid);
+		LivechatInquiry.queueInquiry(_id);
+
+		if (departmentId && departmentId !== department) {
+			Rooms.changeDepartmentIdByRoomId(rid, departmentId);
+			LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
+		}
+
+		this.getMethod().delegateAgent(null, inquiry);
+		Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
+		dispatchAgentDelegated(rid, null);
+
+		return true;
+	},
+
 	async takeInquiry(inquiry, agent) {
 		// return Room Object
 		check(agent, Match.ObjectIncluding({
@@ -82,10 +104,9 @@ export const RoutingManager = {
 			status: String,
 		}));
 
-		const { _id, rid, status } = inquiry;
+		const { _id, rid } = inquiry;
 		const room = Rooms.findOneById(rid);
-
-		if (status !== 'queued') {
+		if (room && room.servedBy && room.servedBy._id === agent.agentId) {
 			return room;
 		}
 
@@ -102,52 +123,15 @@ export const RoutingManager = {
 		return Rooms.findOneById(rid);
 	},
 
-	transferRoom(room, guest, transferData) {
+	async transferRoom(room, guest, transferData) {
 		const { userId, departmentId } = transferData;
-		const { _id: rid, servedBy } = room;
-		let agent;
 
 		if (userId) {
-			const user = Users.findOneOnlineAgentById(userId);
-			if (!user) {
-				return false;
-			}
-
-			const { _id: agentId, username } = user;
-			agent = Object.assign({}, { agentId, username });
-		} else {
-			agent = this.getMethod().getNextAgent(departmentId);
-		}
-
-		if (!agent) {
-			return Livechat.returnRoomAsInquiry(rid, departmentId);
+			return forwardRoomToAgent(room, userId);
 		}
 
 		if (departmentId) {
-			Rooms.changeDepartmentIdByRoomId(rid, departmentId);
-		}
-
-		if (agent && servedBy && agent.agentId !== servedBy._id) {
-			Subscriptions.removeByRoomIdAndUserId(rid, servedBy._id);
-			Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
-
-			const inquiry = LivechatInquiry.findOneByRoomId(rid);
-			if (!inquiry) {
-				throw new Meteor.Error('error-transfer-inquiry');
-			}
-
-			this.assignAgent(inquiry, agent);
-
-			Messages.createUserJoinWithRoomIdAndUser(rid, { _id: agent.agentId, username: agent.username });
-
-			const guestData = {
-				token: guest.token,
-				department: transferData.departmentId,
-			};
-
-			Livechat.setDepartmentForGuest(guestData);
-
-			return true;
+			return forwardRoomToDepartment(room, guest, departmentId);
 		}
 
 		return false;

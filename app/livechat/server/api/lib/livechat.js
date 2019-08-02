@@ -65,7 +65,7 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
-export async function getRoom({ guest, rid, roomInfo, agent }, callback) {
+export async function getRoom({ guest, rid, roomInfo, agent }) {
 	const token = guest && guest.token;
 
 	const message = {
@@ -76,13 +76,8 @@ export async function getRoom({ guest, rid, roomInfo, agent }, callback) {
 		ts: new Date(),
 	};
 
-	try {
-		const room = await Livechat.getRoom(guest, message, roomInfo, agent);
-		callback && callback(null, room);
-	} catch (error) {
-		console.log('passanaod da');
-		throw new Error(error);
-	}
+	const room = await Livechat.getRoom(guest, message, roomInfo, agent);
+	return room;
 }
 
 export function findAgent(agentId) {

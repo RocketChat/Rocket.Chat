@@ -33,7 +33,7 @@ API.v1.addRoute('livechat/room', {
 			}
 
 			const rid = this.queryParams.rid || Random.id();
-			const room = Meteor.wrapAsync(getRoom)({ guest, rid, agent });
+			const room = Promise.await(getRoom({ guest, rid, agent }));
 			return API.v1.success(room);
 		} catch (e) {
 			return API.v1.failure(e);

@@ -36,9 +36,13 @@ class GuestPool {
 	delegateAgent(agent, inquiry) {
 		const { department, rid, v } = inquiry;
 		const allAgents = Livechat.getAgents(department);
+
 		if (allAgents.count() === 0) {
 			throw new Meteor.Error('no-agent-available', 'Sorry, no available agents.');
 		}
+
+		// remove agent from room in case the rooms is being transferred or returned to the Queue
+		Rooms.removeAgentByRoomId(rid);
 
 		const agentIds = allAgents.map((agent) => (department ? agent.agentId : agent._id));
 		LivechatInquiry.queueInquiryWithAgents(inquiry._id, agentIds);

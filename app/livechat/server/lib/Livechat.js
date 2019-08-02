@@ -433,7 +433,7 @@ export const Livechat = {
 		}
 	},
 
-	transfer(room, guest, transferData) {
+	async transfer(room, guest, transferData) {
 		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
@@ -452,51 +452,13 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
-		const agentIds = [];
-		// get the agents of the department
-		if (departmentId) {
-			const agents = Livechat.getAgents(departmentId);
-			if (!agents || agents.count() === 0) {
-				return false;
-			}
-
-			agents.forEach((agent) => {
-				agentIds.push(agent.agentId);
-			});
-
-			Rooms.changeDepartmentIdByRoomId(room._id, departmentId);
-		}
-
-		// delete agent and room subscription
-		Subscriptions.removeByRoomId(rid);
-
-		// remove agent from room
-		Rooms.removeAgentByRoomId(rid);
-
 		// find inquiry corresponding to room
 		const inquiry = LivechatInquiry.findOne({ rid });
 		if (!inquiry) {
 			return false;
 		}
 
-		let openInq;
-		// mark inquiry as open
-		if (agentIds.length === 0) {
-			openInq = LivechatInquiry.queueInquiry(inquiry._id);
-		} else {
-			openInq = LivechatInquiry.queueInquiryWithAgents(inquiry._id, agentIds);
-		}
-
-		if (openInq) {
-			Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: room.servedBy._id, username: room.servedBy.username });
-
-			Livechat.stream.emit(rid, {
-				type: 'agentData',
-				data: null,
-			});
-		}
-
-		return openInq;
+		return RoutingManager.unassignAgent(inquiry, departmentId);
 	},
 
 	sendRequest(postData, callback, trying = 1) {
