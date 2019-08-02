@@ -3,7 +3,7 @@ import { APIClient } from '../../../utils';
 
 (async function() {
 	const { games } = await APIClient.get('apps/games');
-	// TODO Need to filter the games enabled by the admin only
+
 	if (games.length > 0) {
 		TabBar.addButton({
 			groups: ['channel', 'group', 'direct'],

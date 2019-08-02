@@ -72,8 +72,22 @@ class AppServerOrchestrator {
 		return this._manager;
 	}
 
-	getGames() {
-		return this._manager.externalComponentManager.providedComponents;
+	getEnabledGames() {
+		const apps = this._manager.get().map((prl) => {
+			const info = prl.getInfo();
+			info.status = prl.getStatus();
+			return info;
+		});
+		const activatedApps = apps.filter(
+			({ status }) => status === 'manually_enabled'
+		).map(({ id }) => id);
+		const { externalComponentManager: { providedComponents } } = this._manager;
+		Array.from(providedComponents.keys()).forEach((id) => {
+			if (!activatedApps.includes(id)) {
+				providedComponents.delete(id);
+			}
+		});
+		return providedComponents;
 	}
 
 	isEnabled() {
