@@ -3,7 +3,6 @@ import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings';
 import { createLivechatSubscription, dispatchAgentDelegated, forwardRoomToAgent, forwardRoomToDepartment } from './Helper';
-import { Livechat } from './Livechat';
 import { callbacks } from '../../../callbacks';
 import { Rooms, Messages, Subscriptions, Users } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
