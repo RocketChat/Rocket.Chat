@@ -14,6 +14,7 @@ import { adminEmail, preferences, password, adminUsername } from '../../data/use
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createUser, login } from '../../data/users.helper.js';
 
 describe('[Users]', function() {
 	this.retries(0);
@@ -1325,6 +1326,24 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+
+		it('should delete user own account when the SHA256 hash is in upper case', (done) => {
+			createUser().then((user) => {
+				login(user.username, password).then((createdUserCredentials) => {
+					request.post(api('users.deleteOwnAccount'))
+						.set(createdUserCredentials)
+						.send({
+							password: crypto.createHash('sha256').update(password, 'utf8').digest('hex').toUpperCase(),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
+			});
 		});
 	});
 

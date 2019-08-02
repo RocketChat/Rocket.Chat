@@ -31,6 +31,10 @@ Template.oauthApp.helpers({
 				if (data) {
 					data.authorization_url = Meteor.absoluteUrl('oauth/authorize');
 					data.access_token_url = Meteor.absoluteUrl('oauth/token');
+					if (Array.isArray(data.redirectUri)) {
+						data.redirectUri = data.redirectUri.join('\n');
+					}
+
 					Template.instance().record.set(data);
 					return data;
 				}
