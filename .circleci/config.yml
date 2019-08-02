@@ -144,7 +144,7 @@ jobs:
       - run:
           name: Build Rocket.Chat
           environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=3072
+            TOOL_NODE_FLAGS: --max_old_space_size=3572
           command: |
             if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == 'develop' ]]; then
               meteor reset;
@@ -154,7 +154,7 @@ jobs:
             if [[ -z $CIRCLE_PR_NUMBER ]]; then
               meteor build --server-only --directory /tmp/build-test
             else
-              export METEOR_PROFILE=1000
+              # export METEOR_PROFILE=1000
               meteor build --server-only --debug --directory /tmp/build-test
             fi;
 
