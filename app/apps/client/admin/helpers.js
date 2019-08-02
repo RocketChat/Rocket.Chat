@@ -139,6 +139,7 @@ const promptSubscribedAppUninstall = () => new Promise((resolve) => {
 		showCancelButton: true,
 		confirmButtonText: t('Apps_Marketplace_Modify_App_Subscription'),
 		cancelButtonText: t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway'),
+		cancelButtonColor: '#DD6B55',
 		closeOnConfirm: true,
 		html: false,
 	}, resolve, () => resolve(false));
@@ -200,6 +201,13 @@ export const triggerAppPopoverMenu = (app, currentTarget, instance) => {
 				}
 				return;
 			}
+
+			try {
+				await Apps.uninstallApp(app.id);
+			} catch (error) {
+				handleAPIError(error);
+			}
+			return;
 		}
 
 		if (!await promptAppUninstall()) {
@@ -356,16 +364,16 @@ export const appStatusSpanProps = ({
 
 export const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
 
-export const formatPricingPlan = (pricingPlan) => {
-	const perUser = pricingPlan.isPerSeat && pricingPlan.tiers && pricingPlan.tiers.length;
+export const formatPricingPlan = ({ strategy, price, tiers }) => {
+	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
-		pricingPlan.strategy,
-		perUser && 'perUser',
+		strategy,
+		perUnit && 'perUser',
 	].filter(Boolean).join('_');
 
 	return t(pricingPlanTranslationString, {
-		price: formatPrice(pricingPlan.price),
+		price: formatPrice(price),
 	});
 };
