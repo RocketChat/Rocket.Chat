@@ -33362,6 +33362,74 @@
           ]
         }
       ]
+    },
+    "1.3.0-rc.4": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15080",
+          "title": "Regression: Improve apps bridges for HA setup",
+          "userLogin": "d-gubert",
+          "milestone": "1.3.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15075",
+          "title": "Regression: displaying errors for apps not installed from Marketplace",
+          "userLogin": "tassoevan",
+          "milestone": "1.3.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15076",
+          "title": "Regression: Marketplace app pricing plan description",
+          "userLogin": "tassoevan",
+          "milestone": "1.3.0",
+          "contributors": [
+            "tassoevan",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15077",
+          "title": "Regression: uninstall subscribed app modal",
+          "userLogin": "tassoevan",
+          "milestone": "1.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15045",
+          "title": "Regression: Apps and Marketplace UI issues",
+          "userLogin": "tassoevan",
+          "milestone": "1.3.0",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "geekgonecrazy",
+            "graywolf336",
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }
