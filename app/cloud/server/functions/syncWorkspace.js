@@ -17,14 +17,12 @@ export function syncWorkspace(reconnectCheck = false) {
 	const stats = statistics.get();
 
 	const address = settings.get('Site_Url');
+	const siteName = settings.get('Site_Name');
 
 	const info = {
 		uniqueId: stats.uniqueId,
 		address,
-		contactName: stats.wizard.contactName,
-		contactEmail: stats.wizard.contactEmail,
-		accountName: stats.wizard.organizationName,
-		siteName: stats.wizard.siteName,
+		siteName,
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
