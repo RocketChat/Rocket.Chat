@@ -310,3 +310,17 @@ Accounts.validateNewUser(function(user) {
 
 	return true;
 });
+
+export const MAX_RESUME_LOGIN_TOKENS = 50;
+
+Accounts.onLogin(async ({ user }) => {
+	if (user && user.services && user.services.resume && user.services.resume.loginTokens) {
+		if (user.services.resume.loginTokens.length >= MAX_RESUME_LOGIN_TOKENS) {
+			const { tokens } = await Users.findAllResumeTokensByUserId(user._id);
+			if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
+				const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
+				Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
+			}
+		}
+	}
+});
