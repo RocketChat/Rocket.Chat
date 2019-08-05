@@ -1,7 +1,7 @@
 accounts-base@1.4.4
 accounts-facebook@1.3.2
 accounts-github@1.4.2
-accounts-google@1.3.2
+accounts-google@1.3.3
 accounts-meteor-developer@1.4.2
 accounts-oauth@1.1.16
 accounts-password@1.5.1
@@ -9,9 +9,9 @@ accounts-twitter@1.4.2
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
 autoupdate@1.6.0
-babel-compiler@7.3.4
-babel-runtime@1.3.0
-base64@1.0.11
+babel-compiler@7.4.0-beta182.16
+babel-runtime@1.4.0-beta182.16
+base64@1.0.12
 binary-heap@1.0.11
 blaze@2.3.3
 blaze-html-templates@1.1.2
@@ -34,10 +34,10 @@ deps@1.0.12
 diff-sequence@1.1.1
 dispatch:run-as-user@1.1.1
 dynamic-import@0.5.1
-ecmascript@0.12.7
+ecmascript@0.13.0-beta182.16
 ecmascript-runtime@0.7.0
-ecmascript-runtime-client@0.8.0
-ecmascript-runtime-server@0.7.1
+ecmascript-runtime-client@0.9.0-beta182.16
+ecmascript-runtime-server@0.8.0-beta182.16
 edgee:slingshot@0.7.1
 ejson@1.1.0
 email@1.2.3
@@ -92,9 +92,9 @@ mizzao:timesync@0.3.4
 mobile-experience@1.0.5
 mobile-status-bar@1.0.14
 modern-browsers@0.1.4
-modules@0.13.0
-modules-runtime@0.10.3
-mongo@1.6.2
+modules@0.14.0-beta182.16
+modules-runtime@0.11.0-beta182.16
+mongo@1.7.0-beta182.16
 mongo-decimal@0.1.1
 mongo-dev-server@1.1.0
 mongo-id@1.0.7
@@ -104,7 +104,7 @@ mystor:device-detection@0.2.0
 nimble:restivus@0.8.12
 nooitaf:colors@1.1.2_1
 npm-bcrypt@0.9.3
-npm-mongo@3.1.2
+npm-mongo@3.2.0-beta182.16
 oauth@1.2.8
 oauth1@1.2.2
 oauth2@1.2.1
