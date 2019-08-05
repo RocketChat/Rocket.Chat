@@ -1,7 +1,4 @@
-import stream from 'stream';
-
 import { Meteor } from 'meteor/meteor';
-import Future from 'fibers/future';
 import { createClient } from 'webdav';
 
 import { settings } from '../../../settings';
@@ -10,10 +7,10 @@ import { WebdavAccounts } from '../../../models';
 
 Meteor.methods({
 	async uploadFileToWebdav(accountId, fileData, name) {
-		const uploadFolder = 'Rocket.Chat Uploads/';
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'uploadFileToWebdav' });
 		}
+
 		if (!settings.get('Webdav_Integration_Enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'uploadFileToWebdav' });
 		}
@@ -23,47 +20,29 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'uploadFileToWebdav' });
 		}
 
-		const cred = getWebdavCredentials(account);
-		const client = createClient(account.server_url, cred);
+		const uploadFolder = 'Rocket.Chat Uploads/';
+		const buffer = new Buffer(fileData);
 
-		const future = new Future();
-
-		// create buffer stream from file data
-		let bufferStream = new stream.PassThrough();
-		if (fileData) {
-			bufferStream.end(fileData);
-		} else {
-			bufferStream = null;
-		}
-
-		// create a write stream on remote webdav server
-		const writeStream = client.createWriteStream(`${ uploadFolder }/${ name }`);
-		writeStream.on('end', function() {
-			future.return({ success: true });
-		});
-		writeStream.on('error', function() {
-			future.return({ success: false, message: 'FileUpload_Error' });
-		});
-
-		await client.stat(uploadFolder).then(function() {
-			bufferStream.pipe(writeStream);
-		}).catch(function(err) {
-			if (err.status === 404) {
-				client.createDirectory(uploadFolder).then(function() {
-					bufferStream.pipe(writeStream);
-				}).catch(function() {
-					if (err.status === 404) {
-						future.return({ success: false, message: 'webdav-server-not-found' });
-					} else {
-						future.return({ success: false, message: 'FileUpload_Error' });
-					}
-				});
-			} else if (err.status === 401) {
-				future.return({ success: false, message: 'error-invalid-account' });
-			} else {
-				future.return({ success: false, message: 'FileUpload_Error' });
+		try {
+			const cred = getWebdavCredentials(account);
+			const client = createClient(account.server_url, cred);
+			await client.createDirectory(uploadFolder).catch(() => {});
+			await client.putFileContents(`${ uploadFolder }/${ name }`, buffer, { overwrite: false });
+			return { success: true };
+		} catch (error) {
+			if (error.response) {
+				const { status } = error.response;
+				if (status === 404) {
+					return { success: false, message: 'webdav-server-not-found' };
+				}
+				if (status === 401) {
+					return { success: false, message: 'error-invalid-account' };
+				}
+				if (status === 412) {
+					return { success: false, message: 'Duplicate_file_name_found' };
+				}
 			}
-		});
-		return future.wait();
+			return { success: false, message: 'FileUpload_Error' };
+		}
 	},
 });

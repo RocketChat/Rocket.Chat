@@ -24,8 +24,8 @@ Template.addWebdavAccount.events({
 		}
 		instance.loading.set(true);
 		try {
-			await call('addWebdavAccount', formData);
-			toastr.success(t('webdav-account-saved'));
+			const response = await call('addWebdavAccount', formData).catch((error) => { console.log(error); });
+			if (response) { toastr.success(t('webdav-account-saved')); }
 		} finally {
 			instance.loading.set(false);
 			modal.close();

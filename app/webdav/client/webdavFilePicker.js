@@ -206,7 +206,7 @@ Template.webdavFilePicker.events({
 		const { accountId } = instance.data;
 		instance.isLoading.set(true);
 		const file = this;
-		const response = await call('getFileFromWebdav', accountId, file);
+		const response = await call('getFileFromWebdav', accountId, file).catch((error) => { console.log(error); });
 		instance.isLoading.set(false);
 		if (!response.success) {
 			modal.close();

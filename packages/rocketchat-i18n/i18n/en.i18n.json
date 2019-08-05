@@ -1130,6 +1130,7 @@
   "Duplicate_archived_private_group_name": "An archived Private Group with name '%s' exists",
   "Duplicate_channel_name": "A Channel with name '%s' exists",
   "Duplicated_Email_address_will_be_ignored": "Duplicated email address will be ignored.",
+  "Duplicate_file_name_found": "Duplicate file name found.",
   "Duplicate_private_group_name": "A Private Group with name '%s' exists",
   "Duration": "Duration",
   "E2E Encryption": "E2E Encryption",

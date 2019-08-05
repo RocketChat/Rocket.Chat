@@ -85,16 +85,12 @@ Meteor.methods({
 			await client.stat('/');
 			WebdavAccounts.upsert({
 				user_id: userId,
+				server_url: data.serverURL,
 				name: data.name,
 			}, {
 				$set: accountData,
 			});
 		} catch (error) {
-			if (error.code === 11000) {
-				throw new Meteor.Error('duplicated-account', {
-					method: 'addWebdavAccount',
-				});
-			}
 			throw new Meteor.Error('could-not-access-webdav', {
 				method: 'addWebdavAccount',
 			});
