@@ -112,6 +112,7 @@
   "Accounts_OAuth_Gitlab": "OAuth aktiveret",
   "Accounts_OAuth_Gitlab_callback_url": "Tilbagekalds-url for GitLab",
   "Accounts_OAuth_Gitlab_id": "GitLab-id",
+  "Accounts_OAuth_Gitlab_identity_path": "Identitetssti",
   "Accounts_OAuth_Gitlab_secret": "Klienthemmelighed",
   "Accounts_OAuth_Google": "Google-login",
   "Accounts_OAuth_Google_callback_url": "Tilbagekalds-url for Google",

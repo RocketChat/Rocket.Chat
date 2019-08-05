@@ -103,6 +103,7 @@
   "Accounts_OAuth_Gitlab": "Đã cho phép đăng nhập qua OAuth",
   "Accounts_OAuth_Gitlab_callback_url": "URL callback GitLab",
   "Accounts_OAuth_Gitlab_id": "Id GitLab",
+  "Accounts_OAuth_Gitlab_identity_path": "Đường dẫn xác thực (Identity Path)",
   "Accounts_OAuth_Gitlab_secret": "Client Secret",
   "Accounts_OAuth_Google": "Đăng nhập Google",
   "Accounts_OAuth_Google_callback_url": "URL callback của Google",
