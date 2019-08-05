@@ -209,6 +209,7 @@ export class CachedCollection extends EventEmitter {
 
 		this.collection._collection._docs._map = fromEntries(data.records.map((record) => [record._id, record]));
 		this.updatedAt = data.updatedAt;
+
 		_.each(this.collection._collection.queries, (query) => this.collection._collection._recomputeResults(query));
 	}
 
@@ -302,7 +303,7 @@ export class CachedCollection extends EventEmitter {
 	}
 
 	async sync() {
-		if (Meteor.connection._outstandingMethodBlocks.length !== 0) {
+		if (this.updatedAt.valueOf() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
 			return false;
 		}
 
@@ -354,6 +355,7 @@ export class CachedCollection extends EventEmitter {
 			this.onSyncData(action, { _id, ...record });
 		}
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
+
 		return true;
 	}
 
@@ -368,14 +370,14 @@ export class CachedCollection extends EventEmitter {
 			this.ready.set(true);
 		}
 
-		if (!this.listenChangesForLoggedUsersOnly) {
+		if (!this.userRelated) {
 			CachedCollectionManager.onReconnect(() => {
 				this.trySync();
 			});
 			return this.setupListener();
 		}
 
-		CachedCollectionManager.on('login', async () => {
+		CachedCollectionManager.onLogin(async () => {
 			await this.setupListener();
 			this.trySync();
 		});
