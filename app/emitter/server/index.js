@@ -4,9 +4,10 @@ import { Meteor } from 'meteor/meteor';
 
 import CONSTANTS from '../constants';
 import { subscribeRooms } from './subscribeRooms';
-import SERIALIZE from './serializer';
+import SERIALIZE from '../serializer';
 
 const NOTIFY_ALL = new EventEmitter();
+export const INTERNALS = new EventEmitter();
 const NOTIFY_BY_ID = new EventEmitter();
 
 const NOTIFY_ALL_PUBLIC = {
@@ -50,11 +51,27 @@ Meteor.publish(CONSTANTS.STREAM, function() { // TODO maybe allow to ignore some
 	subscribeRooms(uid).toArray().then((rooms) => {
 		rooms.forEach(({ rid }) => NOTIFY_BY_ID.on(rid, sendMessage));
 
+		const userEvent = (clientAction, { rid }) => {
+			switch (clientAction) {
+				case 'inserted':
+					rooms.push({ rid });
+					NOTIFY_BY_ID.on(rid, sendMessage);
+					break;
+
+				case 'removed':
+					NOTIFY_BY_ID.removeListener(rid, sendMessage);
+					break;
+			}
+		};
+
 		user.onStop(() => {
 			NOTIFY_ALL.removeListener(CONSTANTS.STREAM, sendMessage);
 			NOTIFY_BY_ID.removeListener(uid, sendMessage);
+			INTERNALS.removeListener(uid, userEvent);
 			rooms.forEach(({ rid }) => NOTIFY_BY_ID.removeListener(rid, sendMessage));
 		});
+
+		INTERNALS.on(uid, userEvent);
 		user.ready();
 	});
 });
