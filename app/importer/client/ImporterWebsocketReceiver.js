@@ -1,18 +1,20 @@
 import { Meteor } from 'meteor/meteor';
-
-import { CachedCollectionManager } from '../../ui-cached-collection';
+import { Tracker } from 'meteor/tracker';
 
 class ImporterWebsocketReceiverDef {
 	constructor() {
 		this.streamer = new Meteor.Streamer('importers');
 
 		this.callbacks = [];
-		CachedCollectionManager.onLogin(() => {
-			this.streamer.on('progress', this.progressUpdated.bind(this));
+		Tracker.autorun(() => {
+			if (!Meteor.userId()) {
+				return;
+			}
+			this.streamer.on('progress', this.progressUpdated);
 		});
 	}
 
-	progressUpdated(progress) {
+	progressUpdated = (progress) => {
 		this.callbacks.forEach((c) => c(progress));
 	}
 

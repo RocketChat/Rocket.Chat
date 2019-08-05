@@ -13,11 +13,11 @@ import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
 
 import { call } from '..';
 
+import { CONSTANTS, events } from '../../../emitter/client';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
@@ -323,26 +323,43 @@ Meteor.startup(() => {
 	});
 });
 
-Tracker.autorun(function() {
-	if (Meteor.userId()) {
-		return Notifications.onUser('message', function(msg) {
-			msg.u = msg.u || { username: 'rocket.cat' };
-			msg.private = true;
+const handleMessage = function(msg) {
+	msg.u = msg.u || { username: 'rocket.cat' };
+	msg.private = true;
 
-			return ChatMessage.upsert({ _id: msg._id }, msg);
-		});
+	return ChatMessage.upsert({ _id: msg._id }, msg);
+};
+
+const handleSubscription = (sub) => {
+	const ignored =	sub && sub.ignored ? { $nin: sub.ignored } : { $exists: true };
+
+	ChatMessage.update(
+		{ rid: sub.rid, ignored },
+		{ $unset: { ignored: true } },
+		{ multi: true }
+	);
+	if (sub && sub.ignored) {
+		ChatMessage.update(
+			{
+				rid: sub.rid,
+				t: { $ne: 'command' },
+				'u._id': { $in: sub.ignored },
+			},
+			{ $set: { ignored: true } },
+			{ multi: true }
+		);
 	}
+};
+
+Tracker.autorun(function() {
+	if (!Meteor.userId()) {
+		Notifications.unUser('message', handleMessage);
+		events.removeListener(CONSTANTS.OP.SUBSCRIPTION, handleSubscription);
+		return;
+	}
+
+	Notifications.onUser('message', handleMessage);
+	events.on(CONSTANTS.OP.SUBSCRIPTION, handleSubscription);
 });
 
 callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
-
-CachedCollectionManager.onLogin(() => {
-	Notifications.onUser('subscriptions-changed', (action, sub) => {
-		const ignored = sub && sub.ignored ? { $nin: sub.ignored } : { $exists: true };
-
-		ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true });
-		if (sub && sub.ignored) {
-			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in: sub.ignored } }, { $set: { ignored: true } }, { multi: true });
-		}
-	});
-});

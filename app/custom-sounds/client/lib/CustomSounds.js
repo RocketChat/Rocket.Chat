@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
-
-import { CachedCollectionManager } from '../../../ui-cached-collection';
 
 class CustomSoundsClass {
 	constructor() {
@@ -61,11 +60,13 @@ class CustomSoundsClass {
 export const CustomSounds = new CustomSoundsClass();
 
 Meteor.startup(() =>
-	CachedCollectionManager.onLogin(() => {
-		Meteor.call('listCustomSounds', (error, result) => {
-			for (const sound of result) {
-				CustomSounds.add(sound);
-			}
-		});
+	Tracker.autorun(() => {
+		if (Meteor.userId()) {
+			Meteor.call('listCustomSounds', (error, result) => {
+				for (const sound of result) {
+					CustomSounds.add(sound);
+				}
+			});
+		}
 	})
 );

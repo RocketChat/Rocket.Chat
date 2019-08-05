@@ -229,7 +229,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 		}
 		return `${ m2 }<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ unicode }${ ns.fileExtension }"/>`;
 	});
-
+	ns.convertShortName = convertShortName;
 	ns.shortnameToImage = function(str) {
 		// replace regular shortnames first
 		str = str.replace(ns.regShortNames, convertShortName);

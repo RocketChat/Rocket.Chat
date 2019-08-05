@@ -5,5 +5,5 @@ export function emojioneRender(message) {
 }
 
 export function emojioneRenderFromShort(message) {
-	return emojione.shortnameToImage(message);
+	return emojione.convertShortName(message);
 }

@@ -7,7 +7,6 @@ import { Subscriptions, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
 
 let userLanguage = 'en';
 let username = '';
@@ -122,7 +121,9 @@ export const AutoTranslate = {
 };
 
 Meteor.startup(function() {
-	CachedCollectionManager.onLogin(() => {
-		AutoTranslate.init();
+	Tracker.autorun(() => {
+		if (Meteor.userId()) {
+			AutoTranslate.init();
+		}
 	});
 });

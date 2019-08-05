@@ -34,7 +34,13 @@ const createPickerEmojis = (instance) => {
 	const categories = instance.categoriesList;
 	const actualTone = instance.tone;
 
-	categories.forEach((category) => emojiListByCategory.set(category.key, createEmojiList(category.key, actualTone)));
+	emojiListByCategory.set(
+		Object.fromEntries(
+			categories.map(
+				(category) => [category.key,
+					createEmojiList(category.key, actualTone)]
+			))
+	);
 };
 
 function getEmojisBySearchTerm(searchTerm) {

@@ -156,10 +156,10 @@ Template.main.helpers({
 	},
 	logged() {
 		if (Meteor.userId() != null || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
-			$('html').addClass('noscroll').removeClass('scroll');
+			// $('html').addClass('noscroll').removeClass('scroll');
 			return true;
 		}
-		$('html').addClass('scroll').removeClass('noscroll');
+		// $('html').addClass('scroll').removeClass('noscroll');
 		return false;
 	},
 	useIframe() {
@@ -235,14 +235,17 @@ Template.main.events({
 
 Template.main.onRendered(function() {
 	$('#initial-page-loading').remove();
-
-	return Tracker.autorun(function() {
+	Tracker.autorun(function() {
 		const userId = Meteor.userId();
 		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');
-
 		if ((!userId && Show_Setup_Wizard === 'pending') || (userId && hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress')) {
 			FlowRouter.go('setup-wizard');
 		}
+	});
+
+	Tracker.autorun(function() {
+		const userId = Meteor.userId();
+
 		if (getUserPreference(userId, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return tooltip.hide();

@@ -1,5 +1,5 @@
 import { Notifications } from '../../../app/notifications';
-import { NOTIFY_BY_ID } from '../../../app/emitter/server';
+import { NOTIFY_BY_ID, INTERNALS } from '../../../app/emitter/server';
 import { Subscriptions } from '../../../app/models';
 
 import { fields } from '.';
@@ -19,6 +19,7 @@ Subscriptions.on('change', ({ clientAction, id, data }) => {
 
 	Notifications.streamUser.__emit(data.u._id, clientAction, data);
 
+	INTERNALS.emit(data.u._id, clientAction, data);
 	NOTIFY_BY_ID.subscription(data.u._id, data);
 
 	Notifications.notifyUserInThisInstance(

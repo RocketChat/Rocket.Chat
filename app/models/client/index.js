@@ -18,7 +18,7 @@ import { ChatMessage } from './models/ChatMessage';
 import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
-import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
+import { ChatPermissions } from './models/ChatPermissions';
 import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
 import CustomUserStatus from './models/CustomUserStatus';
@@ -46,7 +46,6 @@ export {
 	RoomRoles,
 	UserAndRoom,
 	UserRoles,
-	AuthzCachedCollection,
 	ChatPermissions,
 	ChatMessage,
 	ChatSubscription,

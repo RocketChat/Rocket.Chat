@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
 import { APIClient } from '../../utils';
 import { AdminBox } from '../../ui-utils';
-import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { handleI18nResources } from './i18n';
 
@@ -175,11 +175,13 @@ class AppClientOrchestrator {
 export const Apps = new AppClientOrchestrator();
 
 Meteor.startup(() => {
-	CachedCollectionManager.onLogin(() => {
+	Tracker.autorun(function() {
+		if (!Meteor.userId()) {
+			return;
+		}
 		Meteor.call('apps/is-enabled', (error, isEnabled) => {
 			if (error) {
-				Apps.handleError(error);
-				return;
+				return Apps.handleError(error);
 			}
 
 			Apps.load(isEnabled);

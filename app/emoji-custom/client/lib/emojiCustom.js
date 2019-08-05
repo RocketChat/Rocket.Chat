@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
+import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { isSetNotNull } from './function-isSet';
 import { RoomManager, call } from '../../../ui-utils';
 import { emoji, EmojiPicker } from '../../../emoji';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
 
 export const getEmojiUrlFromName = function(name, extension) {
 	Session.get;
@@ -162,23 +162,24 @@ emoji.packages.emojiCustom = {
 	renderPicker: customRender,
 };
 
-Meteor.startup(() =>
-	CachedCollectionManager.onLogin(async () => {
-		const emojis = await call('listEmojiCustom');
+Meteor.startup(() => Tracker.autorun(async () => {
+	if (!Meteor.userId()) {
+		return;
+	}
+	const emojis = await call('listEmojiCustom');
 
-		emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
-		for (const currentEmoji of emojis) {
-			emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
-			emoji.packages.emojiCustom.list.push(`:${ currentEmoji.name }:`);
-			emoji.list[`:${ currentEmoji.name }:`] = currentEmoji;
-			emoji.list[`:${ currentEmoji.name }:`].emojiPackage = 'emojiCustom';
-			for (const alias of currentEmoji.aliases) {
-				emoji.packages.emojiCustom.list.push(`:${ alias }:`);
-				emoji.list[`:${ alias }:`] = {
-					emojiPackage: 'emojiCustom',
-					aliasOf: currentEmoji.name,
-				};
-			}
+	emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
+	for (const currentEmoji of emojis) {
+		emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
+		emoji.packages.emojiCustom.list.push(`:${ currentEmoji.name }:`);
+		emoji.list[`:${ currentEmoji.name }:`] = currentEmoji;
+		emoji.list[`:${ currentEmoji.name }:`].emojiPackage = 'emojiCustom';
+		for (const alias of currentEmoji.aliases) {
+			emoji.packages.emojiCustom.list.push(`:${ alias }:`);
+			emoji.list[`:${ alias }:`] = {
+				emojiPackage: 'emojiCustom',
+				aliasOf: currentEmoji.name,
+			};
 		}
-	})
-);
+	}
+}));

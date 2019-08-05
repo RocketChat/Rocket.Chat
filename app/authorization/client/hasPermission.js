@@ -44,10 +44,6 @@ function _hasPermission(permissions, scope, strategy, userId) {
 		return false;
 	}
 
-	if (!Models.AuthzCachedCollection.ready.get()) {
-		return false;
-	}
-
 	permissions = [].concat(permissions);
 	return strategy(permissions, scope, userId);
 }

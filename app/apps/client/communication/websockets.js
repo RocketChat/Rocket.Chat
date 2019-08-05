@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import EventEmitter from 'wolfy87-eventemitter';
 
 import { slashCommands, APIClient } from '../../../utils';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -22,8 +22,10 @@ export class AppWebsocketReceiver extends EventEmitter {
 
 		this.streamer = new Meteor.Streamer('apps');
 
-		CachedCollectionManager.onLogin(() => {
-			this.listenStreamerEvents();
+		Tracker.autorun(() => {
+			if (Meteor.userId()) {
+				this.listenStreamerEvents();
+			}
 		});
 	}
 
