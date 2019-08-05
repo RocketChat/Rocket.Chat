@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Users } from '../../../../models';
@@ -30,7 +29,7 @@ API.v1.addRoute('livechat/config', {
 				agent = room && room.servedBy && Users.getAgentInfo(room.servedBy._id);
 			}
 
-			const extraConfig = room && Meteor.wrapAsync(getExtraConfigInfo)(room);
+			const extraConfig = room && Promise.await(getExtraConfigInfo(room));
 			Object.assign(config, { online: status, guest, room, agent, ...extraConfig });
 
 			return API.v1.success({ config });

@@ -21,8 +21,7 @@ Template.livechatTriggerAction.helpers({
 	},
 	disableGetNextAgent() {
 		const config = Template.instance().routingConfig.get();
-		const { enableTriggerAction } = config;
-		return !enableTriggerAction;
+		return !config.enableTriggerAction;
 	},
 });
 

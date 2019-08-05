@@ -35,8 +35,7 @@ Template.livechatDepartmentForm.helpers({
 		return department.showOnOfflineForm === value || (department.showOnOfflineForm === undefined && value === true);
 	},
 	customFieldsTemplate() {
-		const template = getCustomFormTemplate('livechatDepartmentForm');
-		return template && template.customTemplateName;
+		return getCustomFormTemplate('livechatDepartmentForm');
 	},
 	data() {
 		return { id: FlowRouter.getParam('_id') };
@@ -83,9 +82,10 @@ Template.livechatDepartmentForm.events({
 		// get custom form fields
 		const customFields = [];
 		instance.$('.customFormField').each((i, el) => {
-			const name = instance.$(el).attr('name');
+			const elField = instance.$(el);
+			const name = elField.attr('name');
 			customFields.push(name);
-			departmentData[name] = instance.$(el).val();
+			departmentData[name] = elField.val();
 		});
 
 		const departmentAgents = [];

@@ -26,8 +26,8 @@ if (Meteor.isServer) {
 			return this.findOne({ _id: inquiryId });
 		}
 
-		findOneByRoomId(rid) {
-			return this.findOne({ rid });
+		findOneByRoomId(rid, options) {
+			return this.findOne({ rid }, options);
 		}
 
 		getNextInquiryQueued(department) {
@@ -143,7 +143,7 @@ if (Meteor.isServer) {
 			return this.update(query, update);
 		}
 
-		async getCurrentSortedQueue({ _id, department }) {
+		async getCurrentSortedQueueAsync({ _id, department }) {
 			const collectionObj = this.model.rawCollection();
 			const aggregate = [
 				{
@@ -152,13 +152,46 @@ if (Meteor.isServer) {
 						...department && { department },
 					},
 				},
-				{ $sort: { ts: 1 } },
-				{ $group: { _id: 1, inquiry: { $push: { _id: '$_id', rid: '$rid', name: '$name', ts: '$ts', status: '$status', department: '$department' } } } },
-				{ $unwind: { path: '$inquiry', includeArrayIndex: 'position' } },
-				{ $project: { _id: '$inquiry._id', rid: '$inquiry.rid', name: '$inquiry.name', ts: '$inquiry.ts', status: '$inquiry.status', department: '$inquiry.department', position: 1 } },
+				{
+					$sort: {
+						ts: 1,
+					},
+				},
+				{
+					$group: {
+						_id: 1,
+						inquiry: {
+							$push: {
+								_id: '$_id',
+								rid: '$rid',
+								name: '$name',
+								ts: '$ts',
+								status: '$status',
+								department: '$department',
+							},
+						},
+					},
+				},
+				{
+					$unwind: {
+						path: '$inquiry',
+						includeArrayIndex: 'position',
+					},
+				},
+				{
+					$project: {
+						_id: '$inquiry._id',
+						rid: '$inquiry.rid',
+						name: '$inquiry.name',
+						ts: '$inquiry.ts',
+						status: '$inquiry.status',
+						department: '$inquiry.department',
+						position: 1,
+					},
+				},
 			];
 
-			// To get the current room position in the queue, we need to apply the $match after the $project
+			// To get the current room position in the queue, we need to apply the next $match after the $project
 			if (_id) {
 				aggregate.push({ $match: { _id } });
 			}

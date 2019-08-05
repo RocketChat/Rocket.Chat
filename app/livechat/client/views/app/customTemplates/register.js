@@ -1,12 +1,5 @@
-export const customFormTemplate = [];
+export const customFormTemplate = new Map();
 
-export const addCustomFormTemplate = (form, customTemplateName) => {
-	customFormTemplate.push(
-		{
-			form,
-			customTemplateName,
-		},
-	);
-};
+export const addCustomFormTemplate = (form, customTemplateName) => customFormTemplate.set(form, customTemplateName);
 
-export const getCustomFormTemplate = (form) => customFormTemplate.find((template) => template.form === form);
+export const getCustomFormTemplate = (form) => customFormTemplate.get(form);

@@ -143,8 +143,7 @@ Template.visitorInfo.helpers({
 
 	canReturnQueue() {
 		const config = Template.instance().routingConfig.get();
-		const { returnQueue } = config;
-		return returnQueue;
+		return config.returnQueue;
 	},
 
 	showDetail() {

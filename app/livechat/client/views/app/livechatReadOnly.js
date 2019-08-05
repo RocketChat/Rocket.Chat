@@ -21,8 +21,7 @@ Template.livechatReadOnly.helpers({
 
 	showPreview() {
 		const config = Template.instance().routingConfig.get();
-		const { previewRoom } = config;
-		return previewRoom;
+		return config.previewRoom;
 	},
 
 });

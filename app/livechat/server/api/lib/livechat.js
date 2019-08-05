@@ -76,8 +76,7 @@ export async function getRoom({ guest, rid, roomInfo, agent }) {
 		ts: new Date(),
 	};
 
-	const room = await Livechat.getRoom(guest, message, roomInfo, agent);
-	return room;
+	return Livechat.getRoom(guest, message, roomInfo, agent);
 }
 
 export function findAgent(agentId) {
@@ -143,7 +142,6 @@ export function settings() {
 	};
 }
 
-export async function getExtraConfigInfo(room, callback) {
-	const extraConfig = await callbacks.run('livechat.onLoadConfigApi', room);
-	callback && callback(null, extraConfig);
+export async function getExtraConfigInfo(room) {
+	return callbacks.run('livechat.onLoadConfigApi', room);
 }

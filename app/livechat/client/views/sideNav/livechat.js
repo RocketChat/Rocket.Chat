@@ -71,9 +71,7 @@ Template.livechat.helpers({
 
 	showIncomingQueue() {
 		const config = Template.instance().routingConfig.get();
-		const { showQueue } = config;
-
-		return showQueue;
+		return config.showQueue;
 	},
 
 	available() {
@@ -92,8 +90,7 @@ Template.livechat.helpers({
 
 	showQueueLink() {
 		const config = Template.instance().routingConfig.get();
-		const { showQueue } = config;
-		if (!showQueue) {
+		if (!config.showQueue) {
 			return false;
 		}
 
