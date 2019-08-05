@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
