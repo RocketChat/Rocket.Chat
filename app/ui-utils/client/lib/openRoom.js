@@ -82,7 +82,7 @@ export const openRoom = function(type, name) {
 			return;
 		}
 
-		const roomDom = RoomManager.getDomOfRoom(type + name, room._id);
+		const roomDom = RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate);
 		const mainNode = replaceCenterDomBy(roomDom);
 
 		if (mainNode) {

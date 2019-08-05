@@ -73,6 +73,13 @@ export const readMessage = new class extends EventEmitter {
 			return;
 		}
 
+		// If no messages exist on the screen, don't mark the unread as read
+		const message = $('.message');
+		if (message.length <= 0) {
+			if (this.debug) { console.log('readMessage -> readNow canceled, no messages found on screen for rid:', rid); }
+			return;
+		}
+
 		// Only read messages if user saw the first unread message
 		const unreadMark = $('.message.first-unread');
 		if (unreadMark.length > 0) {

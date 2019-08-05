@@ -3,6 +3,10 @@
 
 	padding: 0.5rem 0;
 	align-items: center;
+
+	& .rc-button {
+		white-space: nowrap;
+	}
 }
 
 .discussion-reply-lm {
