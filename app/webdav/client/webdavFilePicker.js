@@ -5,27 +5,12 @@ import toastr from 'toastr';
 import { Session } from 'meteor/session';
 import { Handlebars } from 'meteor/ui';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { timeAgo } from '../../ui/client/views/app/helpers';
 import { modal, call } from '../../ui-utils';
 import { t } from '../../utils';
 import { fileUploadHandler } from '../../file-upload';
-
-Template.webdavFilePicker.rendered = async function() {
-	const { accountId } = this.data;
-	Session.set('webdavCurrentFolder', '/');
-	const response = await call('getWebdavFileList', accountId, '/');
-	if (!response.success) {
-		modal.close();
-		return toastr.error(t(response.message));
-	}
-	Session.set('webdavNodes', response.data);
-	this.isLoading.set(false);
-};
-
-Template.webdavFilePicker.destroyed = function() {
-	Session.set('webdavNodes', []);
-};
 
 function sortTable(data, sortBy, sortDirection) {
 	if (sortDirection === 'desc') {
@@ -40,21 +25,28 @@ function sortTable(data, sortBy, sortDirection) {
 	return data;
 }
 
-async function showWebdavFileList(directory) {
+async function showWebdavFileList() {
 	const instance = Template.instance();
-	const { sortDirection, sortBy } = instance;
 	const { accountId } = instance.data;
+
+	const directory = instance.state.get('webdavCurrentFolder');
 	instance.isLoading.set(true);
-	Session.set('webdavCurrentFolder', directory);
-	Session.set('webdavNodes', []);
-	const response = await call('getWebdavFileList', accountId, directory);
-	instance.isLoading.set(false);
-	if (!response.success) {
-		modal.close();
-		return toastr.error(t(response.message));
+	instance.state.set({
+		webdavNodes: [],
+	});
+	try {
+		const response = await call('getWebdavFileList', accountId, directory);
+		if (!response.success) {
+			modal.close();
+			toastr.error(t(response.message));
+		}
+
+		instance.state.set({ unfilteredWebdavNodes: response.data });
+		$('.js-webdav-search-input').val('');
+		instance.searchText.set('');
+	} finally {
+		instance.isLoading.set(false);
 	}
-	const data = sortTable(response.data, sortBy.get(), sortDirection.get());
-	Session.set('webdavNodes', data);
 }
 
 Template.webdavFilePicker.helpers({
@@ -99,6 +91,13 @@ Template.webdavFilePicker.helpers({
 	getSortBy() {
 		return Template.instance().sortBy.get();
 	},
+	getName(basename) {
+		const maxwidth = Template.instance().isListMode.get() ? 35 : 20;
+		if (basename.length < maxwidth) {
+			return basename;
+		}
+		return `${ basename.slice(0, maxwidth - 10) }\u2026${ basename.slice(-7) }`;
+	},
 	getSize() {
 		if (this.type === 'directory') { return ''; }
 		const bytes = this.size;
@@ -126,42 +125,54 @@ Template.webdavFilePicker.helpers({
 				sortBy.set(type);
 				sortDirection.set('asc');
 			}
-			const data = sortTable(Session.get('webdavNodes'), sortBy.get(), sortDirection.get());
-			Session.set('webdavNodes', data);
 		};
 	},
 	parentFolders() {
-		const currentFolder = Session.get('webdavCurrentFolder');
+		const currentFolder = Template.instance().state.get('webdavCurrentFolder');
 		return currentFolder ? currentFolder.split('/').filter((s) => s) : [];
 	},
 	webdavNodes() {
-		return Session.get('webdavNodes');
+		return Template.instance().state.get('webdavNodes');
 	},
 	webdavCurrentFolder() {
-		return Session.get('webdavCurrentFolder');
+		return Template.instance().state.get('webdavCurrentFolder');
 	},
 });
 
 Template.webdavFilePicker.events({
-	'click .listOrGridMode'() {
+	'click .js-list-grid-mode'() {
 		const instance = Template.instance();
 		instance.isListMode.set(!instance.isListMode.get());
 	},
-	'click .webdav-sort-direction'() {
-		const { sortDirection, sortBy } = Template.instance();
+	'click .js-webdav-sort-direction'() {
+		const { sortDirection } = Template.instance();
 		sortDirection.set(sortDirection.get() === 'asc' ? 'desc' : 'asc');
-		const data = sortTable(Session.get('webdavNodes'), sortBy.get(), sortDirection.get());
-		Session.set('webdavNodes', data);
 	},
-	'change #webdav-select-sort'() {
-		const { sortDirection, sortBy } = Template.instance();
-		const newSortBy = $('#webdav-select-sort').val();
+	'change .js-webdav-select-sort'() {
+		const { sortBy } = Template.instance();
+		const newSortBy = $('.js-webdav-select-sort').val();
 		sortBy.set(newSortBy);
-		const data = sortTable(Session.get('webdavNodes'), sortBy.get(), sortDirection.get());
-		Session.set('webdavNodes', data);
 	},
-	async 'click #webdav-go-back'() {
-		let currentFolder = Session.get('webdavCurrentFolder');
+	'click .js-webdav-search-icon'() {
+		$('.js-webdav-search-input').focus();
+	},
+	'submit .js-search-form'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+	},
+	'input .js-webdav-search-input': _.debounce((e, t) => {
+		t.searchText.set(e.currentTarget.value);
+	}, 200),
+	'blur .js-webdav-search-input'(e, t) {
+		_.delay(() => {
+			e.target.value = '';
+			t.searchText.set('');
+		}, 200);
+	},
+	async 'click .js-webdav-grid-back-icon'() {
+		const instance = Template.instance();
+
+		let currentFolder = instance.state.get('webdavCurrentFolder');
 		// determine parent directory to go back
 		let parentFolder = '/';
 		if (currentFolder && currentFolder !== '/') {
@@ -170,14 +181,16 @@ Template.webdavFilePicker.events({
 			}
 			parentFolder = currentFolder.substr(0, currentFolder.lastIndexOf('/') + 1);
 		}
-		showWebdavFileList(parentFolder);
+		instance.state.set('webdavCurrentFolder', parentFolder);
 	},
-	async 'click .webdav_directory'() {
-		showWebdavFileList(this.filename);
+	async 'click .js-webdav_directory'() {
+		const instance = Template.instance();
+		instance.state.set('webdavCurrentFolder', this.filename);
 	},
-	async 'click .webdav-breadcrumb-folder'(event) {
+	async 'click .js-webdav-breadcrumb-folder'(event) {
+		const instance = Template.instance();
 		const index = $(event.target).data('index');
-		const currentFolder = Session.get('webdavCurrentFolder');
+		const currentFolder = instance.state.get('webdavCurrentFolder');
 		const parentFolders = currentFolder.split('/').filter((s) => s);
 		// determine parent directory to go to
 		let targetFolder = '/';
@@ -185,9 +198,9 @@ Template.webdavFilePicker.events({
 			targetFolder += parentFolders[i];
 			targetFolder += '/';
 		}
-		showWebdavFileList(targetFolder);
+		instance.state.set('webdavCurrentFolder', targetFolder);
 	},
-	async 'click .webdav_file'() {
+	async 'click .js-webdav_file'() {
 		const roomId = Session.get('openedRoom');
 		const instance = Template.instance();
 		const { accountId } = instance.data;
@@ -276,13 +289,12 @@ Template.webdavFilePicker.events({
 						});
 					}
 
-					Session.set('uploading', uploading);
-					return;
+					return Session.set('uploading', uploading);
 				}
 
 				if (file) {
 					Meteor.call('sendFileMessage', roomId, storage, file, () => {
-						Meteor.setTimeout(() => {
+						setTimeout(() => {
 							const uploading = Session.get('uploading');
 							if (uploading !== null) {
 								const item = _.findWhere(uploading, {
@@ -298,9 +310,39 @@ Template.webdavFilePicker.events({
 	},
 });
 
+
+Template.webdavFilePicker.onRendered(async function() {
+	this.autorun(() => {
+		showWebdavFileList();
+	});
+
+	this.autorun(() => {
+		const { sortDirection, sortBy } = Template.instance();
+		const data = sortTable(this.state.get('webdavNodes'), sortBy.get(), sortDirection.get());
+		this.state.set('webdavNodes', data);
+	});
+
+	this.autorun(() => {
+		const loading = this.isLoading.get();
+		if (loading) {
+			return;
+		}
+		const input = this.searchText.get();
+		const regex = new RegExp(`\\b${ input }`, 'i');
+		const data = this.state.get('unfilteredWebdavNodes').filter(({ basename }) => basename.match(regex));
+		this.state.set('webdavNodes', data);
+	});
+});
+
 Template.webdavFilePicker.onCreated(function() {
+	this.state = new ReactiveDict({
+		webdavCurrentFolder: '/',
+		webdavNodes: [],
+		unfilteredWebdavNodes: [],
+	});
 	this.isLoading = new ReactiveVar(true);
 	this.isListMode = new ReactiveVar(true);
 	this.sortBy = new ReactiveVar('name');
 	this.sortDirection = new ReactiveVar('asc');
+	this.searchText = new ReactiveVar('');
 });

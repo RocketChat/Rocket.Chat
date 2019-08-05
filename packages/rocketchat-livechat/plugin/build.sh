@@ -3,7 +3,8 @@ export LIVECHAT_DIR="../../../public/livechat"
 export BUILD_DIR="../build"
 export BUNDLE_DIR="../build/bundle/programs/web.browser.legacy"
 export LIVECHAT_ASSETS_DIR="../../../private/livechat"
-export LATEST_LIVECHAT_VERSION="1.0.0"
+export LATEST_LIVECHAT_VERSION="1.1.0"
+export LIVECHAT_VERSION_DIR="1.0.0"
 
 cd packages/rocketchat-livechat/.app
 mkdir -p packages/tap-i18n
@@ -26,8 +27,8 @@ rm -rf $BUILD_DIR
 #NEW LIVECHAT#
 echo "Installing new Livechat..."
 cd $LIVECHAT_DIR
-mkdir -p $LATEST_LIVECHAT_VERSION
-cd $LATEST_LIVECHAT_VERSION
+mkdir -p $LIVECHAT_VERSION_DIR
+cd $LIVECHAT_VERSION_DIR
 
 curl -sOL "https://github.com/RocketChat/Rocket.Chat.Livechat/releases/download/v${LATEST_LIVECHAT_VERSION}/build.tar.gz"
 tar -xf build.tar.gz
@@ -38,4 +39,4 @@ rm build.tar.gz
 node -e 'fs.writeFileSync("index.html", fs.readFileSync("index.html").toString().replace("<!DOCTYPE", "<!doctype"));'
 
 cd $LIVECHAT_ASSETS_DIR
-cp ../../public/livechat/$LATEST_LIVECHAT_VERSION/index.html .
+cp ../../public/livechat/$LIVECHAT_VERSION_DIR/index.html .
