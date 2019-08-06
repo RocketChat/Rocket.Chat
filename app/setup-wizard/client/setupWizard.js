@@ -14,6 +14,8 @@ import { Users } from '../../models';
 import { t, handleError } from '../../utils';
 import { call } from '../../ui-utils';
 
+import './setupWizard.html';
+
 const cannotSetup = () => {
 	const showSetupWizard = settings.get('Show_Setup_Wizard');
 	if (!showSetupWizard) {

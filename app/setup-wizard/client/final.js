@@ -5,6 +5,7 @@ import { Template } from 'meteor/templating';
 import { settings } from '../../settings';
 import { Users } from '../../models';
 import { hasRole } from '../../authorization';
+import './final.html';
 
 Template.setupWizardFinal.onCreated(function() {
 	const isSetupWizardDone = localStorage.getItem('wizardFinal');
