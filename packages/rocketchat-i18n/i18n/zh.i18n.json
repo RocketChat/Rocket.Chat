@@ -1,3 +1,4 @@
+
 {
   "403": "禁止访问",
   "500": "内部服务器错误",
@@ -2092,6 +2093,15 @@
   "Meta_language": "语言",
   "Meta_msvalidate01": "微软网站验证",
   "Meta_robots": "机器人",
+  "meteor_status_connected": "已连线",
+  "meteor_status_connecting": "连线中...",
+  "meteor_status_failed": "无法与服务器连线",
+  "meteor_status_waiting": "等待与服务器连线,",
+  "meteor_status_offline": "离线模式",
+  "meteor_status_reconnect_in": "一分钟后再尝试...",
+  "meteor_status_reconnect_in_plural": "在__count__秒钟后再尝试...",
+  "meteor_status_try_now_waiting": "现在再试",
+  "meteor_status_try_now_offline": "重新连线",
   "Min_length_is": "最小长度是 ％s",
   "Minimum_balance": "最小余额",
   "minutes": "分钟",
