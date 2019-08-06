@@ -106,6 +106,7 @@
   "Accounts_OAuth_Gitlab": "أوث ممكن",
   "Accounts_OAuth_Gitlab_callback_url": "URL GitLab الاستدعاء",
   "Accounts_OAuth_Gitlab_id": "GitLab رقم",
+  "Accounts_OAuth_Gitlab_identity_path": "مسار الهوية",
   "Accounts_OAuth_Gitlab_secret": "سر العميل",
   "Accounts_OAuth_Google": "جوجل الدخول",
   "Accounts_OAuth_Google_callback_url": "عنوان البريد الإلكتروني الاستدعاء",

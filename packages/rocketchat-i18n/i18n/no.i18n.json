@@ -107,6 +107,7 @@
   "Accounts_OAuth_Gitlab": "OAuth aktivert",
   "Accounts_OAuth_Gitlab_callback_url": "GitLab tilbakeringingsadresse",
   "Accounts_OAuth_Gitlab_id": "GitLab ID",
+  "Accounts_OAuth_Gitlab_identity_path": "Identitetsvei",
   "Accounts_OAuth_Gitlab_secret": "Klientshemmelighet",
   "Accounts_OAuth_Google": "Google-innlogging",
   "Accounts_OAuth_Google_callback_url": "Google tilbakeringingsadresse",
