@@ -8,6 +8,7 @@ import { settings } from '../../settings';
 import { CachedCollection } from '../../ui-cached-collection';
 import { menu, SideNav, AdminBox, Layout } from '../../ui-utils/client';
 import { t } from '../../utils';
+import './adminFlex.html';
 
 Template.adminFlex.onCreated(function() {
 	this.isEmbedded = Layout.isEmbedded();

@@ -1,12 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import 'codemirror/lib/codemirror.css';
-import CodeMirror from 'codemirror/lib/codemirror.js';
+import './codeMirrorComponent.html';
 
 const CodeMirrors = {};
 
-Template.CodeMirror.rendered = function() {
+Template.CodeMirror.rendered = async function() {
+	await import('codemirror/lib/codemirror.css');
+	await import('./codeMirror');
+	const CodeMirror = await import('codemirror/lib/codemirror.js');
+
 	const options = this.data.options || { lineNumbers: true };
 	const textarea = this.find('textarea');
 	const editor = CodeMirror.fromTextArea(textarea, options);

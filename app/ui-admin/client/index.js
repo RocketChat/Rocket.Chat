@@ -1,5 +1,4 @@
 import './admin.html';
-import './adminFlex.html';
 import './adminInfo.html';
 import './rooms/adminRooms.html';
 import './rooms/adminRoomInfo.html';

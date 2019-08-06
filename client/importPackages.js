@@ -74,7 +74,6 @@ import '../app/tokenpass/client';
 import '../app/tooltip';
 import '../app/ui';
 import '../app/ui-account';
-import '../app/ui-admin/client';
 import '../app/ui-clean-history';
 import '../app/ui-flextab';
 import '../app/ui-login';

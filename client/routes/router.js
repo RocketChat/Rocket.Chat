@@ -9,6 +9,8 @@ import { Session } from 'meteor/session';
 
 import { KonchatNotification } from '../../app/ui';
 
+import './directory';
+
 Blaze.registerHelper('pathFor', function(path, kw) {
 	return FlowRouter.path(path, kw.hash);
 });
@@ -73,17 +75,6 @@ FlowRouter.route('/home', {
 			BlazeLayout.render('main', { center: 'home' });
 		}
 	},
-});
-
-FlowRouter.route('/directory', {
-	name: 'directory',
-
-	action() {
-		BlazeLayout.render('main', { center: 'directory' });
-	},
-	triggersExit: [function() {
-		$('.main-content').addClass('rc-old');
-	}],
 });
 
 FlowRouter.route('/account/:group?', {
@@ -161,22 +152,6 @@ FlowRouter.route('/register/:hash', {
 		// 			BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
 		// else
 		// 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
-	},
-});
-
-FlowRouter.route('/setup-wizard', {
-	name: 'setup-wizard',
-
-	action() {
-		BlazeLayout.render('setupWizard');
-	},
-});
-
-FlowRouter.route('/setup-wizard/final', {
-	name: 'setup-wizard-final',
-
-	action() {
-		BlazeLayout.render('setupWizardFinal');
 	},
 });
 
