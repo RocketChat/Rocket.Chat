@@ -52,7 +52,6 @@ konecty:user-presence
 
 deepwell:bootstrap-datepicker2
 dispatch:run-as-user
-francocatena:status
 jalik:ufs
 jalik:ufs-gridfs
 jparker:gravatar
