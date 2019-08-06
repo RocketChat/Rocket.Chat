@@ -463,6 +463,10 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findActive(options = {}) {
+		return this.find({ active: true }, options);
+	}
+
 	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
@@ -667,8 +671,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findRemote() {
-		return this.find({ isRemote: true });
+	findRemote(options = {}) {
+		return this.find({ isRemote: true }, options);
+	}
+
+	findActiveRemote(options = {}) {
+		return this.find({ active: true, isRemote: true }, options);
 	}
 
 	// UPDATE
@@ -1111,6 +1119,10 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	getActiveLocalUserCount() {
+		return this.findActive().count() - this.findActiveRemote().count();
 	}
 }
 

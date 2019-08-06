@@ -1,194 +1,129 @@
-import toastr from 'toastr';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../../settings';
-import { t, APIClient } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import { SideNav } from '../../../ui-utils/client';
-import { sortByColumn } from '../utils';
+import {
+	appButtonProps,
+	appStatusSpanProps,
+	checkCloudLogin,
+	handleAPIError,
+	promptSubscription,
+	triggerAppPopoverMenu,
+	warnStatusChange,
+} from './helpers';
 
-const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
-const enabled = ({ status }) => ENABLED_STATUS.includes(status);
+import './apps.html';
 
-const getInstalledApps = async (instance) => {
-	try {
-		const data = await APIClient.get('apps');
-		const apps = data.apps.map((app) => ({ latest: app }));
-
-		instance.apps.set(apps);
-	} catch (e) {
-		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-	}
-
-	instance.isLoading.set(false);
-	instance.ready.set(true);
-};
 
 Template.apps.onCreated(function() {
-	const instance = this;
-	this.ready = new ReactiveVar(false);
-	this.apps = new ReactiveVar([]);
-	this.categories = new ReactiveVar([]);
-	this.searchText = new ReactiveVar('');
-	this.searchSortBy = new ReactiveVar('name');
-	this.sortDirection = new ReactiveVar('asc');
-	this.limit = new ReactiveVar(0);
-	this.page = new ReactiveVar(0);
-	this.end = new ReactiveVar(false);
-	this.isLoading = new ReactiveVar(true);
+	this.state = new ReactiveDict({
+		apps: [], // TODO: maybe use another ReactiveDict here
+		isLoading: true,
+		searchText: '',
+		sortedColumn: 'name',
+		isAscendingOrder: true,
 
-	getInstalledApps(instance);
+		// TODO: to use these fields
+		page: 0,
+		itemsPerPage: 0,
+		wasEndReached: false,
+	});
 
-	try {
-		APIClient.get('apps?categories=true').then((data) => instance.categories.set(data));
-	} catch (e) {
-		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-	}
+	(async () => {
+		try {
+			const appsFromMarketplace = await Apps.getAppsFromMarketplace();
+			const installedApps = await Apps.getApps();
 
-	instance.onAppAdded = function _appOnAppAdded() {
-		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
+			const apps = installedApps.map((app) => {
+				const appFromMarketplace = appsFromMarketplace.find(({ id }) => id === app.id);
 
-		// fetch(`${ HOST }/v1/apps/${ appId }`).then((result) => {
-		// 	const installedApps = instance.installedApps.get();
+				if (!appFromMarketplace) {
+					return {
+						...app,
+						installed: true,
+					};
+				}
 
-		// 	installedApps.push({
-		// 		latest: result.app,
-		// 	});
-		// 	instance.installedApps.set(installedApps);
-		// });
+				return {
+					...app,
+					installed: true,
+					categories: appFromMarketplace.categories,
+					marketplaceVersion: appFromMarketplace.version,
+				};
+			});
+
+			this.state.set('apps', apps);
+		} catch (error) {
+			handleAPIError(error);
+		} finally {
+			this.state.set('isLoading', false);
+		}
+	})();
+
+	this.startAppWorking = (appId) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		app.working = true;
+		this.state.set('apps', apps);
 	};
 
-	instance.onAppRemoved = function _appOnAppRemoved(appId) {
-		const apps = instance.apps.get();
-
-		let index = -1;
-		apps.find((item, i) => {
-			if (item.id === appId) {
-				index = i;
-				return true;
-			}
-			return false;
-		});
-
-		apps.splice(index, 1);
-		instance.apps.set(apps);
+	this.stopAppWorking = (appId) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		delete app.working;
+		this.state.set('apps', apps);
 	};
 
-	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+	this.handleAppAddedOrUpdated = async (appId) => {
+		try {
+			const app = await Apps.getApp(appId);
+			const { categories, version: marketplaceVersion } = await Apps.getAppFromMarketplace(appId, app.version) || {};
+			const apps = [
+				...this.state.get('apps').filter(({ id }) => id !== appId),
+				{
+					...app,
+					installed: true,
+					categories,
+					marketplaceVersion,
+				},
+			];
+			this.state.set('apps', apps);
+		} catch (error) {
+			handleAPIError(error);
+		}
+	};
+
+	this.handleAppRemoved = (appId) => {
+		this.state.set('apps', this.state.get('apps').filter(({ id }) => id !== appId));
+	};
+
+	this.handleAppStatusChange = ({ appId, status }) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		if (!app) {
+			return;
+		}
+
+		app.status = status;
+		this.state.set('apps', apps);
+	};
+
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
+	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleAppStatusChange);
 });
 
 Template.apps.onDestroyed(function() {
-	const instance = this;
-
-	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
-});
-
-Template.apps.helpers({
-	isReady() {
-		if (Template.instance().ready != null) {
-			return Template.instance().ready.get();
-		}
-
-		return false;
-	},
-	apps() {
-		const instance = Template.instance();
-		const searchText = instance.searchText.get().toLowerCase();
-		const sortColumn = instance.searchSortBy.get();
-		const inverted = instance.sortDirection.get() === 'desc';
-		return sortByColumn(instance.apps.get().filter((app) => app.latest.name.toLowerCase().includes(searchText)), sortColumn, inverted);
-	},
-	categories() {
-		return Template.instance().categories.get();
-	},
-	appsDevelopmentMode() {
-		return settings.get('Apps_Framework_Development_Mode') === true;
-	},
-	parseStatus(status) {
-		return t(`App_status_${ status }`);
-	},
-	isActive(status) {
-		return enabled({ status });
-	},
-	sortIcon(key) {
-		const {
-			sortDirection,
-			searchSortBy,
-		} = Template.instance();
-
-		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
-	},
-	searchSortBy(key) {
-		return Template.instance().searchSortBy.get() === key;
-	},
-	isLoading() {
-		return Template.instance().isLoading.get();
-	},
-	onTableScroll() {
-		const instance = Template.instance();
-		if (instance.loading || instance.end.get()) {
-			return;
-		}
-		return function(currentTarget) {
-			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
-				return instance.page.set(instance.page.get() + 1);
-			}
-		};
-	},
-	onTableResize() {
-		const { limit } = Template.instance();
-
-		return function() {
-			limit.set(Math.ceil((this.$('.table-scroll').height() / 40) + 5));
-		};
-	},
-	onTableSort() {
-		const { end, page, sortDirection, searchSortBy } = Template.instance();
-		return function(type) {
-			end.set(false);
-			page.set(0);
-
-			if (searchSortBy.get() === type) {
-				sortDirection.set(sortDirection.get() === 'asc' ? 'desc' : 'asc');
-				return;
-			}
-
-			searchSortBy.set(type);
-			sortDirection.set('asc');
-		};
-	},
-	formatCategories(categories = []) {
-		return categories.join(', ');
-	},
-});
-
-Template.apps.events({
-	'click .manage'() {
-		const rl = this;
-
-		if (rl && rl.latest && rl.latest.id) {
-			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
-		}
-	},
-	'click [data-button="install_app"]'() {
-		FlowRouter.go('marketplace');
-	},
-	'click [data-button="upload_app"]'() {
-		FlowRouter.go('app-install');
-	},
-	'keyup .js-search'(e, t) {
-		t.searchText.set(e.currentTarget.value);
-	},
-	'submit .js-search-form'(e) {
-		e.preventDefault();
-		e.stopPropagation();
-	},
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleAppStatusChange);
 });
 
 Template.apps.onRendered(() => {
@@ -196,4 +131,154 @@ Template.apps.onRendered(() => {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
 	});
+});
+
+Template.apps.helpers({
+	isDevelopmentModeEnabled() {
+		return settings.get('Apps_Framework_Development_Mode') === true;
+	},
+	isLoading() {
+		return Template.instance().state.get('isLoading');
+	},
+	handleTableScroll() {
+		const { state } = Template.instance();
+		if (state.get('isLoading') || state.get('wasEndReached')) {
+			return;
+		}
+
+		return ({ offsetHeight, scrollTop, scrollHeight }) => {
+			const shouldGoToNextPage = offsetHeight + scrollTop >= scrollHeight - 100;
+			if (shouldGoToNextPage) {
+				return state.set('page', state.get('page') + 1);
+			}
+		};
+	},
+	handleTableResize() {
+		const { state } = Template.instance();
+
+		return function() {
+			const $table = this.$('.table-scroll');
+			state.set('itemsPerPage', Math.ceil(($table.height() / 40) + 5));
+		};
+	},
+	handleTableSort() {
+		const { state } = Template.instance();
+
+		return (sortedColumn) => {
+			state.set({
+				page: 0,
+				wasEndReached: false,
+			});
+
+			if (state.get('sortedColumn') === sortedColumn) {
+				state.set('isAscendingOrder', !state.get('isAscendingOrder'));
+				return;
+			}
+
+			state.set({
+				sortedColumn,
+				isAscendingOrder: true,
+			});
+		};
+	},
+	isSortingBy(column) {
+		return Template.instance().state.get('sortedColumn') === column;
+	},
+	sortIcon(column) {
+		const { state } = Template.instance();
+
+		return column === state.get('sortedColumn') && state.get('isAscendingOrder') ? 'sort-down' : 'sort-up';
+	},
+	apps() {
+		const { state } = Template.instance();
+		const apps = state.get('apps');
+		const searchText = state.get('searchText').toLocaleLowerCase();
+		const sortedColumn = state.get('sortedColumn');
+		const isAscendingOrder = state.get('isAscendingOrder');
+		const sortingFactor = isAscendingOrder ? 1 : -1;
+
+		return apps
+			.filter(({ name }) => name.toLocaleLowerCase().includes(searchText))
+			.sort(({ [sortedColumn]: a }, { [sortedColumn]: b }) => sortingFactor * String(a).localeCompare(String(b)));
+	},
+	appButtonProps,
+	appStatusSpanProps,
+});
+
+Template.apps.events({
+	'click .js-marketplace'() {
+		FlowRouter.go('marketplace');
+	},
+	'click .js-upload'() {
+		FlowRouter.go('app-install');
+	},
+	'submit .js-search-form'(event) {
+		event.stopPropagation();
+		return false;
+	},
+	'input .js-search'(event, instance) {
+		instance.state.set('searchText', event.currentTarget.value);
+	},
+	'click .js-manage'(event, instance) {
+		event.stopPropagation();
+		const { currentTarget } = event;
+		const {
+			id: appId,
+			version,
+		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
+		FlowRouter.go('app-manage', { appId }, { version });
+	},
+	async 'click .js-install, click .js-update'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (!await checkCloudLogin()) {
+			return;
+		}
+
+		const { currentTarget: button } = event;
+		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
+
+		try {
+			const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+			warnStatusChange(app.name, status);
+		} catch (error) {
+			handleAPIError(error);
+		} finally {
+			instance.stopAppWorking(app.id);
+		}
+	},
+	async 'click .js-purchase'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (!await checkCloudLogin()) {
+			return;
+		}
+
+		const { currentTarget: button } = event;
+		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
+
+		await promptSubscription(app, async () => {
+			try {
+				const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+				warnStatusChange(app.name, status);
+			} catch (error) {
+				handleAPIError(error);
+			} finally {
+				instance.stopAppWorking(app.id);
+			}
+		}, instance.stopAppWorking.bind(instance, app.id));
+	},
+	'click .js-menu'(event, instance) {
+		event.stopPropagation();
+		const { currentTarget } = event;
+
+		const app = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
+		triggerAppPopoverMenu(app, currentTarget, instance);
+	},
 });

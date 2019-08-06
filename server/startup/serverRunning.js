@@ -3,10 +3,12 @@ import path from 'path';
 
 import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 import { SystemLogger } from '../../app/logger';
 import { settings } from '../../app/settings';
 import { Info, getMongoInfo } from '../../app/utils';
+import { Roles, Users } from '../../app/models/server';
 
 Meteor.startup(function() {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
@@ -57,6 +59,44 @@ Meteor.startup(function() {
 			return process.exit(1);
 		}
 
-		return SystemLogger.startup_box(msg, 'SERVER RUNNING');
+		SystemLogger.startup_box(msg, 'SERVER RUNNING');
+
+		// Deprecation
+		if (!semver.satisfies(semver.coerce(mongoVersion), '>=3.4.0')) {
+			msg = [`YOUR CURRENT MONGODB VERSION (${ mongoVersion }) IS DEPRECATED.`, 'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 2.0.0 AND GREATER,', 'PLEASE UPGRADE MONGODB TO VERSION 3.4 OR GREATER'].join('\n');
+			SystemLogger.deprecation_box(msg, 'DEPRECATION');
+
+			const id = `mongodbDeprecation_${ mongoVersion.replace(/[^0-9]/g, '_') }`;
+			const title = 'MongoDB_Deprecated';
+			const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
+			const link = 'https://rocket.chat/docs/installation';
+
+			Roles.findUsersInRole('admin').forEach((adminUser) => {
+				if (Users.bannerExistsById(id)) {
+					return;
+				}
+
+				try {
+					Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
+
+					Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', {
+						msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(text, mongoVersion, adminUser.language) }\n${ link }`,
+						rid: [adminUser._id, 'rocket.cat'].sort().join(''),
+					}));
+				} catch (e) {
+					console.error(e);
+				}
+
+				Users.addBannerById(adminUser._id, {
+					id,
+					priority: 100,
+					title,
+					text,
+					textArguments: [mongoVersion],
+					modifiers: ['danger'],
+					link,
+				});
+			});
+		}
 	}, 100);
 });
