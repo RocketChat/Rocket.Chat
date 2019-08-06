@@ -2850,7 +2850,7 @@
   "This_room_has_been_unarchived_by__username_": "Ez a szoba már nem archivált által __username__",
   "thread": "téma",
   "Threads": "Témák",
-  "Thread_message": "A (z) * __ felhasználónév __ * üzenetéhez kommentált: _ __msg__ _",
+  "Thread_message": "A (z) * __username__ * üzenetéhez kommentált: _ __msg__ _",
   "This_week": "Ezen a héten",
   "Thursday": "csütörtök",
   "Time_in_seconds": "Az idő másodpercben",

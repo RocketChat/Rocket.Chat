@@ -313,7 +313,7 @@
   "API_Personal_Access_Tokens_To_REST_API": "Fitxes d'accés personal a l'API REST",
   "API_Personal_Access_Tokens_Remove_Modal": "Esteu segur que voleu eliminar aquesta fitxa d’accés personal?",
   "API_Personal_Access_Token_Generated": "Fitxa d’accés personal generada amb èxit",
-  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Si us plau, deseu la vostra fitxa atentament perquè ja no podreu veure-ho després. <br/>Fitxa: <strong>__token __ </strong><br/>El seu ID d'usuari: <strong>__userId __ </strong>",
+  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Si us plau, deseu la vostra fitxa atentament perquè ja no podreu veure-ho després. <br/>Fitxa: <strong>__token__ </strong><br/>El seu ID d'usuari: <strong>__userId__ </strong>",
   "API_Personal_Access_Tokens_Regenerate_Modal": "Si heu perdut o oblidat la vostra fitxa, podeu regenerar-la, però recordeu que totes les aplicacions que utilitzen aquesta fitxa s’hauran d’actualitzar",
   "API_Personal_Access_Tokens_Regenerate_It": "Regenerar fitxa",
   "API_Shield_Types": "Tipus d'escut",
