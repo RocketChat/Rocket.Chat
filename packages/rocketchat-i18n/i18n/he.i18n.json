@@ -72,6 +72,7 @@
   "Accounts_OAuth_Gitlab": "הזדהות OAuth משופעלת",
   "Accounts_OAuth_Gitlab_callback_url": "כתובת האתר Callback GitLab",
   "Accounts_OAuth_Gitlab_id": "מזהה GitLab",
+  "Accounts_OAuth_Gitlab_identity_path": "נתיב הזהות",
   "Accounts_OAuth_Gitlab_secret": "סיסמת קליינט",
   "Accounts_OAuth_Google": "כניסה לגוגל",
   "Accounts_OAuth_Google_callback_url": "כתובת האתר Callback Google",
