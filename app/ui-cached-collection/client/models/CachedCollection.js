@@ -45,15 +45,17 @@ class CachedCollectionManagerClass extends EventEmitter {
 
 		// Wait 1s to start or the code will run before the connection and
 		// on first connection the `reconnect` callbacks will run
+
 		Tracker.autorun(() => {
-			this.step = this.step || 0;
+			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DICONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
+			this.step = this.step || WAITING_FIRST_CONNECTION;
 			const { connected } = Meteor.status();
 			switch (this.step) {
-				case 0:
+				case WAITING_FIRST_CONNECTION:
 					return !connected || this.step++;
-				case 1:
+				case WAITING_FIRST_DICONNECTION:
 					return connected || this.step++;
-				case 2:
+				case LISTENING_RECONNECTIONS:
 					return connected && this.emit('reconnect');
 			}
 		});
@@ -154,13 +156,13 @@ export class CachedCollection extends EventEmitter {
 		this.log = debug(name) ? log : nullLog;
 
 		CachedCollectionManager.register(this);
-		if (userRelated === true) {
-			CachedCollectionManager.onLogin(() => {
-				this.init();
-			});
-		} else {
+		if (!userRelated) {
 			this.init();
+			return;
 		}
+		CachedCollectionManager.onLogin(() => {
+			this.init();
+		});
 	}
 
 	countQueries() {
@@ -178,20 +180,21 @@ export class CachedCollection extends EventEmitter {
 	async loadFromCache() {
 		const data = await localforageGetItem(this.name);
 		if (!data) {
-			return Promise.reject('empty');
+			return false;
 		}
 		if (data.version < this.version || data.token !== this.getToken()) {
-			return Promise.reject('version changed');
+			return false;
 		}
 		if (data.records.length <= 0) {
-			return Promise.reject('no records found');
+			return false;
 		}
 
 		if (new Date() - data.updatedAt >= 1000 * this.maxCacheTime) {
-			return Promise.reject('cache too old');
+			return false;
 		}
 
 		this.log(`${ data.records.length } records loaded from cache`);
+
 		data.records.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromCache-${ this.name }`, record);
 			// this.collection.direct.insert(record);
@@ -210,7 +213,9 @@ export class CachedCollection extends EventEmitter {
 		this.collection._collection._docs._map = fromEntries(data.records.map((record) => [record._id, record]));
 		this.updatedAt = data.updatedAt;
 
-		_.each(this.collection._collection.queries, (query) => this.collection._collection._recomputeResults(query));
+		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
+
+		return true;
 	}
 
 	async loadFromServer() {
@@ -360,16 +365,15 @@ export class CachedCollection extends EventEmitter {
 	}
 
 	async init() {
-		try {
-			this.ready.set(false);
-			await this.loadFromCache();
+		this.ready.set(false);
+
+		if (await this.loadFromCache()) {
 			this.trySync();
-		} catch (error) {
+		} else {
 			await this.loadFromServerAndPopulate();
-		} finally {
-			this.ready.set(true);
 		}
 
+		this.ready.set(true);
 		if (!this.userRelated) {
 			CachedCollectionManager.onReconnect(() => {
 				this.trySync();
