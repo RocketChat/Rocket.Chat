@@ -9,6 +9,7 @@ import * as Mailer from '../../app/mailer';
 import { settings } from '../../app/settings';
 import { callbacks } from '../../app/callbacks';
 import { Roles, Users, Settings } from '../../app/models';
+import { Users as UsersRaw } from '../../app/models/server/raw';
 import { addUserRoles } from '../../app/authorization';
 import { getAvatarSuggestionForUser } from '../../app/lib/server/functions';
 
@@ -311,16 +312,18 @@ Accounts.validateNewUser(function(user) {
 	return true;
 });
 
-export const MAX_RESUME_LOGIN_TOKENS = 50;
+export const MAX_RESUME_LOGIN_TOKENS = 2;
 
 Accounts.onLogin(async ({ user }) => {
-	if (user && user.services && user.services.resume && user.services.resume.loginTokens) {
-		if (user.services.resume.loginTokens.length >= MAX_RESUME_LOGIN_TOKENS) {
-			const { tokens } = await Users.findAllResumeTokensByUserId(user._id);
-			if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
-				const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
-				Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
-			}
-		}
+	if (user && user.services && user.services.resume && !user.services.resume.loginTokens) {
+		return;
+	}
+	if (user.services.resume.loginTokens.length < MAX_RESUME_LOGIN_TOKENS) {
+		return;
+	}
+	const { tokens } = (await UsersRaw.findAllResumeTokensByUserId(user._id))[0];
+	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
+		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
+		Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
 	}
 });

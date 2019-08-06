@@ -23,4 +23,30 @@ export class UsersRaw extends BaseRaw {
 	getDistinctFederationPeers() {
 		return this.col.distinct('federation.peer', { federation: { $exists: true } });
 	}
+
+	findAllResumeTokensByUserId(userId) {
+		return this.col.aggregate([
+			{
+				$match: {
+					_id: userId,
+				},
+			},
+			{
+				$project: {
+					tokens: {
+						$filter: {
+							input: '$services.resume.loginTokens',
+							as: 'token',
+							cond: {
+								$ne: ['$$token.type', 'personalAccessToken'],
+							},
+						},
+					},
+				},
+			},
+			{ $unwind: '$tokens' },
+			{ $sort: { 'tokens.when': 1 } },
+			{ $group: { _id: '$_id', tokens: { $push: '$tokens' } } },
+		]).toArray();
+	}
 }

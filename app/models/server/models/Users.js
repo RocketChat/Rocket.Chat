@@ -1125,32 +1125,6 @@ Find users to send a message by email if:
 		return this.findActive().count() - this.findActiveRemote().count();
 	}
 
-	async findAllResumeTokensByUserId(userId) {
-		return (await this.model.rawCollection().aggregate([
-			{
-				$match: {
-					_id: userId,
-				},
-			},
-			{
-				$project: {
-					tokens: {
-						$filter: {
-							input: '$services.resume.loginTokens',
-							as: 'token',
-							cond: {
-								$ne: ['$$token.type', 'personalAccessToken'],
-							},
-						},
-					},
-				},
-			},
-			{ $unwind: '$tokens' },
-			{ $sort: { 'tokens.when': 1 } },
-			{ $group: { _id: '$_id', tokens: { $push: '$tokens' } } },
-		]).toArray())[0];
-	}
-
 	removeOlderResumeTokensByUserId(userId, fromDate) {
 		this.update(userId, {
 			$pull: {
