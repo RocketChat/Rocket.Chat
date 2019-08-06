@@ -1,31 +1,30 @@
-import { Migrations } from '../../../app/migrations';
-import { Permissions } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Users, Settings, FederationPeers } from '../../../app/models/server';
 
 Migrations.add({
 	version: 148,
 	up() {
-		if (Permissions) {
-			const newPermission = Permissions.findOne('view-livechat-manager');
-			if (newPermission && newPermission.roles.length) {
-				Permissions.upsert({ _id: 'manage-livechat-managers' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'manage-livechat-agents' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'manage-livechat-departments' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-departments' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'transfer-livechat-guest' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'add-livechat-department-agents' }, { $set: { roles: newPermission.roles } });
-			}
-		}
-	},
+		const { value: localDomain } = Settings.findOne({ _id: 'FEDERATION_Domain' });
 
+		Users.update({
+			federation: { $exists: true }, 'federation.peer': { $ne: localDomain },
+		}, {
+			$set: { isRemote: true },
+		}, { multi: true });
+
+		FederationPeers.update({
+			peer: { $ne: localDomain },
+		}, {
+			$set: { isRemote: true },
+		}, { multi: true });
+
+		FederationPeers.update({
+			peer: localDomain,
+		}, {
+			$set: { isRemote: false },
+		}, { multi: true });
+	},
 	down() {
-		if (Permissions) {
-			// Revert permission
-			Permissions.remove({ _id: 'manage-livechat-managers' });
-			Permissions.remove({ _id: 'manage-livechat-agents' });
-			Permissions.remove({ _id: 'manage-livechat-departments' });
-			Permissions.remove({ _id: 'view-livechat-departments' });
-			Permissions.remove({ _id: 'transfer-livechat-guest' });
-			Permissions.remove({ _id: 'add-livechat-department-agents' });
-		}
+		// Down migration does not apply in this case
 	},
 });

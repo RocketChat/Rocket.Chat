@@ -302,13 +302,13 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByTypes(types, options) {
+	findByTypes(types, discussion = false, options = {}) {
 		const query = {
 			t: {
 				$in: types,
 			},
+			prid: { $exists: discussion },
 		};
-
 		return this.find(query, options);
 	}
 
@@ -361,10 +361,11 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, options) {
+	findByNameContaining(name, discussion = false, options = {}) {
 		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
 
 		const query = {
+			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
 				{
@@ -373,17 +374,17 @@ export class Rooms extends Base {
 				},
 			],
 		};
-
 		return this.find(query, options);
 	}
 
-	findByNameContainingAndTypes(name, types, options) {
+	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
 		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
 
 		const query = {
 			t: {
 				$in: types,
 			},
+			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
 				{
@@ -392,7 +393,6 @@ export class Rooms extends Base {
 				},
 			],
 		};
-
 		return this.find(query, options);
 	}
 
