@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { Blaze } from 'meteor/blaze';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
 import { roomTypes } from '../../../../utils/client';
