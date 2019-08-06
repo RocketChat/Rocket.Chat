@@ -15,6 +15,7 @@ import { t, handleError } from '../../utils';
 import { call } from '../../ui-utils';
 
 import './setupWizard.html';
+import '../../theme/client/imports/components/setup-wizard.css';
 
 const cannotSetup = () => {
 	const showSetupWizard = settings.get('Show_Setup_Wizard');

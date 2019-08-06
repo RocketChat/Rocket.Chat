@@ -18,7 +18,6 @@ import '../app/github-enterprise/client/github-enterprise-login-button.css';
 import '../app/gitlab/client/gitlab-login-button.css';
 import '../app/integrations/client/stylesheets/integrations.css';
 import '../app/katex/client/style.css';
-import '../app/livechat/client/stylesheets/livechat.less';
 import '../app/livestream/client/styles/liveStreamTab.css';
 import '../app/message-action/client/stylesheets/messageAction.css';
 import '../app/message-attachments/client/stylesheets/messageAttachments.css';

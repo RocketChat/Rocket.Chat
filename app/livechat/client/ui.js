@@ -2,6 +2,7 @@ import { settings } from '../../settings';
 import { hasAllPermission } from '../../authorization';
 import { AccountBox, TabBar, MessageTypes } from '../../ui-utils';
 
+
 AccountBox.addItem({
 	name: 'Livechat',
 	icon: 'livechat',
