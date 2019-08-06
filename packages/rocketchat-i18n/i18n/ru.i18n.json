@@ -1099,7 +1099,7 @@
   "Discussion_target_channel_description": "Выберите канал, который связан с тем, что вы хотите спросить",
   "Discussion_target_channel_prefix": "Вы создаете дискуссию в",
   "Discussion_target_channel": "Родительский канал или группа",
-  "discussion-created": "__сообщение__",
+  "discussion-created": "__message__",
   "Discussion_description": "Держите всех в курсе событий! Создавая дискуссии - будет создан субканал привязанный к основному каналу.",
   "Discussion_first_message_title": "Ваше сообщение",
   "Discussion_title": "Создать новую дискуссию",
