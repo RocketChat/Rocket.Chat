@@ -3,7 +3,7 @@ import path from 'path';
 
 import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SystemLogger } from '../../app/logger';
 import { settings } from '../../app/settings';
