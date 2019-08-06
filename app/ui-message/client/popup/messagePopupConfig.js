@@ -461,4 +461,3 @@ Template.messagePopupConfig.helpers({
 		};
 	},
 });
-
