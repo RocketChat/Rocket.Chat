@@ -5,7 +5,7 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Messages, Subscriptions, Users } from '../../../models';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';

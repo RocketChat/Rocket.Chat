@@ -55,7 +55,7 @@ export class Settings extends Base {
 		};
 
 		if (ids.length > 0) {
-			filter._id =				{ $in: ids };
+			filter._id = { $in: ids };
 		}
 
 		return this.find(filter, { fields: { _id: 1, value: 1 } });

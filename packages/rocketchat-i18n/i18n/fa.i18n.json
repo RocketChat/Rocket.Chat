@@ -111,6 +111,7 @@
   "Accounts_OAuth_Gitlab": "OAuth فعال است",
   "Accounts_OAuth_Gitlab_callback_url": "آدرس Callback گیت هاب",
   "Accounts_OAuth_Gitlab_id": "شناسه GitLab",
+  "Accounts_OAuth_Gitlab_identity_path": "مسیر هویت",
   "Accounts_OAuth_Gitlab_secret": "رمز مشتری",
   "Accounts_OAuth_Google": "صفحه لاگین گوگل",
   "Accounts_OAuth_Google_callback_url": "آدرس Callback گوگل",

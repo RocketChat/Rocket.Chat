@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -146,10 +146,12 @@ Template.adminRooms.onCreated(function() {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
 			query = { ...discussion && { prid: { $exists: true } }, $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
 		}
+		types = types.filter((type) => type !== 'dicussions');
 
-		if (types.filter((type) => type !== 'dicussions').length) {
-			query.t = { $in: types.filter((type) => type !== 'dicussions') };
+		if (types.length) {
+			query.t = { $in: types };
 		}
+
 		const limit = instance.limit && instance.limit.get();
 		return AdminChatRoom.find(query, { limit, sort: { default: -1, name: 1 } });
 	};
