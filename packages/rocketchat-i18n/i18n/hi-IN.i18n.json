@@ -111,6 +111,7 @@
   "Accounts_OAuth_Gitlab": "OAuth सक्षम",
   "Accounts_OAuth_Gitlab_callback_url": "GitLab कॉलबैक URL",
   "Accounts_OAuth_Gitlab_id": "Gitlab Id",
+  "Accounts_OAuth_Gitlab_identity_path": "पहचान पथ",
   "Accounts_OAuth_Gitlab_secret": "क्लाइंट Secret",
   "Accounts_OAuth_Google": "Google लॉगिन",
   "Accounts_OAuth_Google_callback_url": "Google कॉलबैक URL",

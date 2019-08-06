@@ -115,6 +115,7 @@
   "Accounts_OAuth_Gitlab": "OAuth Etkin",
   "Accounts_OAuth_Gitlab_callback_url": "GitLab Callback URL",
   "Accounts_OAuth_Gitlab_id": "GitLab Kimliği",
+  "Accounts_OAuth_Gitlab_identity_path": "Kimlik Yolu",
   "Accounts_OAuth_Gitlab_secret": "İstemci Gizli Kodu",
   "Accounts_OAuth_Google": "Google ile giriş",
   "Accounts_OAuth_Google_callback_url": "Google Callback URL",

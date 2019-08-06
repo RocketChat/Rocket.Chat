@@ -106,6 +106,7 @@
   "Accounts_OAuth_Gitlab": "OAuth ເປີດໃຊ້ວຽກ",
   "Accounts_OAuth_Gitlab_callback_url": "URL GitLab ໂທກັບ",
   "Accounts_OAuth_Gitlab_id": "Id GitLab",
+  "Accounts_OAuth_Gitlab_identity_path": "ເສັ້ນທາງກ້າວສູ່ເອກະລັກ",
   "Accounts_OAuth_Gitlab_secret": "ລັບລູກຄ້າ",
   "Accounts_OAuth_Google": "ກູໂກລະບົບ",
   "Accounts_OAuth_Google_callback_url": "URL ກູໂກໂທກັບ",
