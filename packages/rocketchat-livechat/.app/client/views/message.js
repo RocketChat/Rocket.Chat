@@ -1,7 +1,10 @@
 /* globals Livechat, t, tr, livechatAutolinker */
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
 import moment from 'moment';
-import visitor from '../../imports/client/visitor';
 import s from 'underscore.string';
+
+import visitor from '../../imports/client/visitor';
 
 Template.message.helpers({
 	own() {
@@ -40,7 +43,7 @@ Template.message.helpers({
 			case 'wm':
 				return t('Welcome', { user: this.u.username });
 			case 'livechat-close':
-				return (Livechat.conversationFinishedMessage) ? Livechat.conversationFinishedMessage : t('Conversation_finished');
+				return Livechat.conversationFinishedMessage ? Livechat.conversationFinishedMessage : t('Conversation_finished');
 			//  case 'rtc': return RocketChat.callbacks.run('renderRtcMessage', this);
 			default:
 				this.html = this.msg;

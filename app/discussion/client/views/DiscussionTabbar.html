@@ -1,0 +1,24 @@
+<template name="discussionsTabbar">
+	{{#if Template.subscriptionsReady}}
+		{{#unless hasMessages}}
+			<div class="list-view discussions-list flex-tab__header">
+					<h2>{{_ "No_discussions_yet"}}</h2>
+			</div>
+		{{/unless}}
+	{{/if}}
+	<div class="flex-tab__result discussions-list js-list">
+		<ul class="list clearfix">
+			{{# with messageContext}}
+				{{#each msg in messages}}
+					{{> nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings u=u}}
+				{{/each}}
+			{{/with}}
+		</ul>
+
+		{{#if hasMore}}
+			<div class="load-more">
+				{{> loading}}
+			</div>
+		{{/if}}
+	</div>
+</template>

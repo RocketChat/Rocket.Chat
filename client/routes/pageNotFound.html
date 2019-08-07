@@ -1,5 +1,9 @@
 <template name="pageNotFound">
-  <h1>{{_ "Error_404"}}</h1>
-  <h3>{{_ "Oops_page_not_found"}}</h3>
-  <p>{{_ "Sorry_page_you_requested_does_not_exists_or_was_deleted"}}</p>
+	<section class = "page-not-found-container content-background-color">
+		<span class = "error-404">404</span>
+		<span class = "page-not-found-message">{{_ "Oops_page_not_found"}}</span>
+		<span class = "page-not-found-description">{{_ "Sorry_page_you_requested_does_not_exists_or_was_deleted"}}</span>
+		<button class = "page-not-found-button page-not-found-button-previous rc-button rc-button--primary">{{_ "Return_to_previous_page"}}</button>
+		<button class = "page-not-found-button page-not-found-button-home rc-button rc-button--primary">{{_ "Return_to_home"}}</button>
+	</section>
 </template>

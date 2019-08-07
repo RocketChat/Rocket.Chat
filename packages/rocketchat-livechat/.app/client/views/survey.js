@@ -1,5 +1,8 @@
 /* globals */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import swal from 'sweetalert2';
+
 import visitor from '../../imports/client/visitor';
 
 Template.survey.events({

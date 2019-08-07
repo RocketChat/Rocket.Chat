@@ -1,5 +1,8 @@
-import visitor from '../../imports/client/visitor';
+import { Meteor } from 'meteor/meteor';
+import { TimeSync } from 'meteor/mizzao:timesync';
 import s from 'underscore.string';
+
+import visitor from '../../imports/client/visitor';
 
 Meteor.methods({
 	sendMessageLivechat(message) {

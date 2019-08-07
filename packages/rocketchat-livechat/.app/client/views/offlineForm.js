@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -9,14 +13,13 @@ Template.offlineForm.helpers({
 		return Template.instance().messageSent.get();
 	},
 	offlineMessage() {
-		return (!_.isEmpty(this.offlineMessage)) ? this.offlineMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2') : TAPi18n.__('We_are_not_online_right_now_please_leave_a_message');
+		return !_.isEmpty(this.offlineMessage) ? this.offlineMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2') : TAPi18n.__('We_are_not_online_right_now_please_leave_a_message');
 	},
 	offlineSuccessMessage() {
 		if (!_.isEmpty(this.offlineSuccessMessage)) {
 			return this.offlineSuccessMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
-		} else {
-			return TAPi18n.__('Thanks_We_ll_get_back_to_you_soon');
 		}
+		return TAPi18n.__('Thanks_We_ll_get_back_to_you_soon');
 	},
 });
 
@@ -44,10 +47,9 @@ Template.offlineForm.events({
 
 			if (error) {
 				return instance.showError(error.reason);
-			} else {
-				instance.messageSent.set(true);
-				parentCall('callback', ['offline-form-submit', data]);
 			}
+			instance.messageSent.set(true);
+			parentCall('callback', ['offline-form-submit', data]);
 		});
 	},
 });

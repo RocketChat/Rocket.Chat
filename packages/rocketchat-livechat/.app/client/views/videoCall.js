@@ -1,4 +1,6 @@
 /* globals LivechatVideoCall */
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 
 Template.videoCall.helpers({
 	visible() {

@@ -1,0 +1,59 @@
+.rc-datetime__left {
+	display: inline-block;
+
+	width: 52%;
+}
+
+.rc-datetime__right {
+	display: inline-block;
+
+	width: calc(48% - 0.3rem);
+}
+
+.rc-user-info__pruning {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+
+	transform: translate(-50%, calc(-50% - 2rem));
+}
+
+.pruning__header {
+	text-align: center;
+
+	font-weight: 900;
+}
+
+.pruning-wrapper {
+	text-align: center;
+
+	color: var(--rc-color-link-active);
+
+	&.prune__finished {
+		color: #12c212;
+	}
+
+	& .rc-icon--loading {
+		width: 16rem;
+		height: 16rem;
+		margin: 1rem 0;
+
+		animation: spin 2s linear infinite;
+	}
+
+	& .rc-icon--check {
+		font-size: 1rem;
+	}
+
+	& .pruning__text {
+		margin-top: -17rem;
+
+		font-size: 3.5em;
+
+		line-height: 16rem;
+	}
+
+	& .pruning__text-sub {
+		margin-top: calc(-8rem + 1.5em);
+	}
+}

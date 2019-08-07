@@ -1,13 +1,15 @@
 import { Template } from 'meteor/templating';
 
+import { settings } from '../../../app/settings';
+
 Template.message.helpers({
 	readReceipt() {
-		if (!RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
 		return {
-			readByEveryone: (!this.unread && 'read') || 'color-component-color',
+			readByEveryone: (!this.msg.unread && 'read') || 'color-component-color',
 		};
 	},
 });

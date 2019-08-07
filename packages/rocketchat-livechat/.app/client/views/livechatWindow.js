@@ -1,4 +1,10 @@
 /* globals Department, Livechat, LivechatVideoCall */
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import visitor from '../../imports/client/visitor';
 
 function showDepartments() {
@@ -25,7 +31,7 @@ Template.livechatWindow.helpers({
 		if (Session.get('triggered') || visitor.getId()) {
 			return false;
 		}
-		return (Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments()));
+		return Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments());
 	},
 	showSwitchDepartmentForm() {
 		return Livechat.showSwitchDepartmentForm;
@@ -59,8 +65,37 @@ Template.livechatWindow.helpers({
 });
 
 Template.livechatWindow.events({
+	'mousedown .title'({ target, clientX: x, clientY: y }) {
+		parentCall('startDragWindow', { x, y });
+
+		this.onDrag = ({ clientX: x, clientY: y }) => {
+			parentCall('dragWindow', {
+				x: x - target.getBoundingClientRect().left,
+				y: y - target.getBoundingClientRect().top,
+			});
+		};
+
+		this.onDragStop = () => {
+			parentCall('stopDragWindow');
+			window.removeEventListener('mousemove', this.onDrag);
+			window.removeEventListener('mousedown', this.onDragStop);
+			this.onDrag = null;
+			this.onDragStop = null;
+		};
+
+		window.addEventListener('mousemove', this.onDrag);
+		window.addEventListener('mouseup', this.onDragStop);
+	},
 	'click .title'() {
+		parentCall('restoreWindow');
+	},
+	'click .maximize'(e) {
 		parentCall('toggleWindow');
+		e.stopPropagation();
+	},
+	'click .minimize'(e) {
+		parentCall('toggleWindow');
+		e.stopPropagation();
 	},
 	'click .popout'(event) {
 		event.stopPropagation();
@@ -97,6 +132,22 @@ Template.livechatWindow.onCreated(function() {
 		});
 	};
 
+	const normalizeLanguageString = (languageString) => {
+		let [languageCode, countryCode] = languageString.split ? languageString.split(/[-_]/) : [];
+		if (!languageCode || languageCode.length !== 2) {
+			return 'en';
+		}
+		languageCode = languageCode.toLowerCase();
+
+		if (!countryCode || countryCode.length !== 2) {
+			countryCode = null;
+		} else {
+			countryCode = countryCode.toUpperCase();
+		}
+
+		return countryCode ? `${ languageCode }-${ countryCode }` : languageCode;
+	};
+
 	this.autorun(() => {
 		// get all needed live chat info for the user
 		Meteor.call('livechat:getInitialData', visitor.getToken(), Livechat.department, (err, result) => {
@@ -131,6 +182,8 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.registrationForm = result.registrationForm;
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
+			Livechat.registrationFormMessage = result.registrationFormMessage;
+			Livechat.connecting = !!(result.room && !result.agentData && result.showConnecting);
 
 			loadDepartments(result.departments);
 
@@ -166,7 +219,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.agent = result.agentData;
 			}
 
-			let language = result.language || defaultAppLanguage();
+			let language = normalizeLanguageString(result.language || defaultAppLanguage());
 
 			if (!availableLanguages[language]) {
 				language = language.split('-').shift();
@@ -174,8 +227,7 @@ Template.livechatWindow.onCreated(function() {
 
 			TAPi18n.setLanguage(language);
 
-			Triggers.setTriggers(result.triggers);
-			Triggers.init();
+			Triggers.init(result.triggers);
 
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 

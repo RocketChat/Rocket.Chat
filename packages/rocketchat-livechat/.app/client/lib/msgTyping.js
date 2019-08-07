@@ -1,6 +1,10 @@
 /* globals Notifications, Livechat */
-import visitor from '../../imports/client/visitor';
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
+
+import visitor from '../../imports/client/visitor';
 
 export const MsgTyping = (function() {
 	const timeout = 15000;
@@ -9,7 +13,7 @@ export const MsgTyping = (function() {
 	const renewTimeout = 10000;
 	const selfTyping = new ReactiveVar(false);
 	const usersTyping = {};
-	const dep = new Tracker.Dependency;
+	const dep = new Tracker.Dependency();
 	let oldRoom;
 
 	const addStream = function(room) {
@@ -60,14 +64,15 @@ export const MsgTyping = (function() {
 	const start = function(room) {
 		if (!renew) { return; }
 
-		setTimeout(() => renew = true, renewTimeout);
+		setTimeout(() => { renew = true; }, renewTimeout);
 
 		renew = false;
 		selfTyping.set(true);
 		const visitorData = visitor.getData();
 		Notifications.notifyRoom(room, 'typing', visitorData && visitorData.username, true, { token: visitor.getToken() });
 		clearTimeout(timeouts[room]);
-		return timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
+		timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
+		return timeouts[room];
 	};
 
 	const get = function(room) {

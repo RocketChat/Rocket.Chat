@@ -1,4 +1,9 @@
 /* globals Commands, Livechat, UserPresence */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Session } from 'meteor/session';
+
 const msgStream = new Meteor.Streamer('room-messages');
 
 export default {
@@ -55,6 +60,11 @@ export default {
 		return this.token.get();
 	},
 
+	getDepartment() {
+		const data = this.getData();
+		return data && data.department;
+	},
+
 	setToken(token) {
 		if (!token || token === this.token.get()) {
 			return;
@@ -66,7 +76,6 @@ export default {
 		this.token.set(token);
 
 		Meteor.call('livechat:loginByToken', token, (err, result) => {
-
 			if (!result) {
 				return;
 			}

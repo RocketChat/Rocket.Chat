@@ -1,10 +1,14 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
+import {
+	getCredentials,
+	api,
+	request,
+	credentials,
+	directMessage,
+	apiUsername,
+	apiEmail,
+} from '../../data/api-data.js';
+import { password, adminUsername } from '../../data/user.js';
 
-import { getCredentials, api, login, request, credentials, directMessage, log, apiUsername, apiEmail } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
 
 describe('[Direct Messages]', function() {
 	this.retries(0);
@@ -29,19 +33,130 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
-	it('/im.setTopic', (done) => {
-		request.post(api('im.setTopic'))
-			.set(credentials)
-			.send({
-				roomId: directMessage._id,
-				topic: 'a direct message with rocket.cat',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
+	describe('/im.setTopic', () => {
+		it('should set the topic of the DM with a string', (done) => {
+			request.post(api('im.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: directMessage._id,
+					topic: 'a direct message with rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', 'a direct message with rocket.cat');
+				})
+				.end(done);
+		});
+		it('should set the topic of DM with an empty string(remove the topic)', (done) => {
+			request.post(api('im.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: directMessage._id,
+					topic: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', '');
+				})
+				.end(done);
+		});
+	});
+
+	describe('Testing DM info', () => {
+		let testDM = {};
+		let dmMessage = {};
+		it('creating new DM...', (done) => {
+			request.post(api('im.create'))
+				.set(credentials)
+				.send({
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testDM = res.body.room;
+				})
+				.end(done);
+		});
+		it('sending a message...', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: testDM._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					dmMessage = res.body.message;
+				})
+				.end(done);
+		});
+		it('REACTing with last message', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: dmMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('STARring last message', (done) => {
+			request.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: dmMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('PINning last message', (done) => {
+			request.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: dmMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return all DM messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
+			request.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					roomId: testDM._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const { messages } = res.body;
+					const lastMessage = messages.filter((message) => message._id === dmMessage._id)[0];
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+				})
+				.end(done);
+		});
 	});
 
 	it('/im.history', (done) => {

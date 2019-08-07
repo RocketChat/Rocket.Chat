@@ -1,7 +1,10 @@
 /* globals MsgTyping, showError, Livechat */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
 import visitor from '../../imports/client/visitor';
 
 this.ChatMessages = class ChatMessages {
@@ -12,7 +15,6 @@ this.ChatMessages = class ChatMessages {
 		this.wrapper = $(node).find('.wrapper');
 		this.input = $(node).find('.input-message').get(0);
 		// this.bindEvents()
-		return;
 	}
 
 	resize() {
@@ -140,7 +142,7 @@ this.ChatMessages = class ChatMessages {
 			});
 		};
 
-		if (!visitor.getId()) {
+		if (!visitor.getId() || visitor.getDepartment() !== Livechat.department) {
 			const guest = {
 				token: visitor.getToken(),
 			};
@@ -256,18 +258,17 @@ this.ChatMessages = class ChatMessages {
 				event.preventDefault();
 				event.stopPropagation();
 				this.clearEditing();
-				return;
 			}
-		// else if k is 38 or k is 40 # Arrow Up or down
-		// 	if k is 38
-		// 		return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
-		// 		this.toPrevMessage()
-		// 	else
-		// 		return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
-		// 		this.toNextMessage()
+			// else if k is 38 or k is 40 # Arrow Up or down
+			// 	if k is 38
+			// 		return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
+			// 		this.toPrevMessage()
+			// 	else
+			// 		return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
+			// 		this.toNextMessage()
 
-		// 	event.preventDefault()
-		// 	event.stopPropagation()
+			// 	event.preventDefault()
+			// 	event.stopPropagation()
 
 		// ctrl (command) + shift + k -> clear room messages
 		} else if (k === 75 && ((navigator.platform.indexOf('Mac') !== -1 && event.metaKey && event.shiftKey) || (navigator.platform.indexOf('Mac') === -1 && event.ctrlKey && event.shiftKey))) {

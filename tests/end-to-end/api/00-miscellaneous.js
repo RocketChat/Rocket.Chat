@@ -1,10 +1,5 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
-import supertest from 'supertest';
 
 describe('miscellaneous', function() {
 	this.retries(0);
@@ -111,12 +106,43 @@ describe('miscellaneous', function() {
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
-				const allUserPreferencesKeys = ['enableAutoAway', 'idleTimeLimit', 'desktopNotificationDuration', 'audioNotifications',
-					'desktopNotifications', 'mobileNotifications', 'unreadAlert', 'useEmojis', 'convertAsciiEmoji', 'autoImageLoad',
-					'saveMobileBandwidth', 'collapseMediaByDefault', 'hideUsernames', 'hideRoles', 'hideFlexTab', 'hideAvatars',
-					'sidebarViewMode', 'sidebarHideAvatar', 'sidebarShowUnread', 'sidebarShowFavorites', 'sidebarGroupByType',
-					'sendOnEnter', 'messageViewMode', 'emailNotificationMode', 'roomCounterSidebar', 'newRoomNotification', 'newMessageNotification',
-					'muteFocusedConversations', 'notificationsSoundVolume'];
+				const allUserPreferencesKeys = [
+					'audioNotifications',
+					// 'language',
+					'newRoomNotification',
+					'newMessageNotification',
+					// 'clockMode',
+					'useEmojis',
+					'convertAsciiEmoji',
+					'saveMobileBandwidth',
+					'collapseMediaByDefault',
+					'autoImageLoad',
+					'emailNotificationMode',
+					'unreadAlert',
+					'notificationsSoundVolume',
+					'desktopNotifications',
+					'mobileNotifications',
+					'enableAutoAway',
+					// 'highlights',
+					'desktopNotificationDuration',
+					'messageViewMode',
+					'hideUsernames',
+					'hideRoles',
+					'hideAvatars',
+					'hideFlexTab',
+					'sendOnEnter',
+					'roomCounterSidebar',
+					'idleTimeLimit',
+					'sidebarShowFavorites',
+					'sidebarShowUnread',
+					// 'sidebarSortby',
+					'sidebarViewMode',
+					'sidebarHideAvatar',
+					'sidebarGroupByType',
+					'muteFocusedConversations',
+					'sidebarShowDiscussion',
+				];
+
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
 				expect(res.body).to.have.property('username', login.user);
@@ -218,9 +244,9 @@ describe('miscellaneous', function() {
 						text: testChannel.name,
 						type: 'channels',
 					}),
-					sort: JSON.stringify(({
+					sort: JSON.stringify({
 						name: 1,
-					})),
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -261,10 +287,10 @@ describe('miscellaneous', function() {
 						text: testChannel.name,
 						type: 'channels',
 					}),
-					sort: JSON.stringify(({
+					sort: JSON.stringify({
 						name: 1,
 						test: 1,
-					})),
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
