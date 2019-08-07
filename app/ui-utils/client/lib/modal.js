@@ -3,7 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-import { t, getUserPreference, handleError } from '../../../utils';
+import { handleError } from '../../../utils/client/lib/handleError';
+import { getUserPreference } from '../../../utils/lib/getUserPreference';
+import { t } from '../../../utils/lib/tapi18n';
 
 export const modal = {
 	renderedModal: null,

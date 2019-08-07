@@ -3,9 +3,12 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { t } from '../../utils/client';
 
+import './startup';
+
 FlowRouter.route('/admin/permissions', {
 	name: 'admin-permissions',
-	action(/* params*/) {
+	async action(/* params*/) {
+		await import('./views');
 		return BlazeLayout.render('main', {
 			center: 'permissions',
 			pageTitle: t('Permissions'),
@@ -15,7 +18,8 @@ FlowRouter.route('/admin/permissions', {
 
 FlowRouter.route('/admin/permissions/:name?/edit', {
 	name: 'admin-permissions-edit',
-	action(/* params*/) {
+	async action(/* params*/) {
+		await import('./views');
 		return BlazeLayout.render('main', {
 			center: 'pageContainer',
 			pageTitle: t('Role_Editing'),
@@ -26,7 +30,8 @@ FlowRouter.route('/admin/permissions/:name?/edit', {
 
 FlowRouter.route('/admin/permissions/new', {
 	name: 'admin-permissions-new',
-	action(/* params*/) {
+	async action(/* params*/) {
+		await import('./views');
 		return BlazeLayout.render('main', {
 			center: 'pageContainer',
 			pageTitle: t('Role_Editing'),

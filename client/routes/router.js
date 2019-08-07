@@ -77,20 +77,6 @@ FlowRouter.route('/home', {
 	},
 });
 
-FlowRouter.route('/account/:group?', {
-	name: 'account',
-
-	action(params) {
-		if (!params.group) {
-			params.group = 'Preferences';
-		}
-		params.group = s.capitalize(params.group, true);
-		BlazeLayout.render('main', { center: `account${ params.group }` });
-	},
-	triggersExit: [function() {
-		$('.main-content').addClass('rc-old');
-	}],
-});
 
 FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',

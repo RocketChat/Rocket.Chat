@@ -1,6 +1,7 @@
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -144,6 +145,7 @@ Template.body.onRendered(function() {
 });
 
 Template.main.onCreated(function() {
+	this.loadingaccountSecurity = new ReactiveVar(true);
 	tooltip.init();
 });
 
@@ -192,13 +194,14 @@ Template.main.helpers({
 		return user && user.requirePasswordChange === true;
 	},
 	require2faSetup() {
+		const instance = Template.instance();
 		const user = Meteor.user();
 
 		// User is already using 2fa
 		if (!user || (user.services.totp !== undefined && user.services.totp.enabled)) {
 			return false;
 		}
-
+		import('../../2fa/client').then(() => instance.loadingaccountSecurity.set(false));
 		const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
 		return mandatoryRole !== undefined;
 	},

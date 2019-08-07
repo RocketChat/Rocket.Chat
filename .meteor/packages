@@ -46,7 +46,6 @@ rocketchat:version
 
 konecty:change-case
 konecty:delayed-task
-konecty:mongo-counter
 konecty:multiple-instances-status
 konecty:user-presence
 
@@ -57,10 +56,8 @@ jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
-keepnox:perfect-scrollbar
 mizzao:autocomplete
 mizzao:timesync
-mrt:reactive-store
 mystor:device-detection
 nimble:restivus
 nooitaf:colors

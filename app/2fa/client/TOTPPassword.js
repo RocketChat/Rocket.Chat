@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
 
-import { modal } from '../../ui-utils';
-import { t } from '../../utils';
+import { modal } from '../../ui-utils/client/lib/modal';
+import { t } from '../../utils/lib/tapi18n';
 
 function reportError(error, callback) {
 	if (callback) {

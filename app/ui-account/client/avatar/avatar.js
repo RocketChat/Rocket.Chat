@@ -3,6 +3,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import './avatar.html';
 
 Template.avatar.helpers({
 	src() {

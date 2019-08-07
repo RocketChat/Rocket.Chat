@@ -1,3 +1,2 @@
-import './accountSecurity.html';
-import './accountSecurity';
+// import './accountSecurity';
 import './TOTPPassword';

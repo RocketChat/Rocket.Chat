@@ -1,9 +1,9 @@
-import emojione from 'emojione';
+import { toImage, shortnameToImage } from 'emojione';
 
 export function emojioneRender(message) {
-	return emojione.toImage(message);
+	return toImage(message);
 }
 
 export function emojioneRenderFromShort(message) {
-	return emojione.shortnameToImage(message);
+	return shortnameToImage(message);
 }

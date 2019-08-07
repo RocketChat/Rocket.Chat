@@ -4,7 +4,6 @@ import '../app/theme/client/main.css';
 import '../app/theme/client/vendor/photoswipe.css';
 import '../app/theme/client/vendor/fontello/css/fontello.css';
 import '../app/action-links/client/stylesheets/actionLinks.css';
-import '../app/authorization/client/stylesheets/permissions.css';
 import '../app/autotranslate/client/stylesheets/autotranslate.css';
 import '../app/channel-settings/client/stylesheets/channel-settings.css';
 import '../app/colors/client/style.css';

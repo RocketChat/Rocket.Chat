@@ -64,10 +64,8 @@ jquery@1.11.11
 juliancwirko:postcss@2.0.3
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.12.1
-keepnox:perfect-scrollbar@0.6.8
 konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
-konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
 konecty:user-presence@2.5.0
 launch-screen@1.1.1
@@ -99,7 +97,6 @@ mongo-decimal@0.1.0
 mongo-dev-server@1.1.0
 mongo-id@1.0.7
 mongo-livedata@1.0.12
-mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
 nimble:restivus@0.8.12
 nooitaf:colors@1.1.2_1
