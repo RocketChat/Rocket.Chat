@@ -304,6 +304,7 @@ describe('[Chat]', function() {
 					})
 					.end(done)
 			);
+
 			it('attachment.image_url', (done) =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
