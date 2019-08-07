@@ -28,6 +28,7 @@
 					height: 16px;
 					min-height: 16px;
 					margin: -0.2ex 0.15em 0.2ex;
+					pointer-events: none; /* to avoid title attribute to trigger a tooltip */
 				}
 			}
 
