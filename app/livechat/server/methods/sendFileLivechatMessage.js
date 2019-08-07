@@ -27,7 +27,7 @@ Meteor.methods({
 			msg: Match.Optional(String),
 		});
 
-		const fileUrl = `${ FileUpload.getPath() }${ file._id }/${ encodeURI(file.name) }`;
+		const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
 		const attachment = {
 			title: file.name,
