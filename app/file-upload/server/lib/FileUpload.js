@@ -39,6 +39,10 @@ settings.get('FileUpload_MaxFileSize', function(key, value) {
 export const FileUpload = {
 	handlers: {},
 
+	getPath() {
+		return '/file-upload/';
+	},
+
 	configureUploadsStore(store, name, options) {
 		const type = name.split(':').pop();
 		const stores = UploadFS.getStores();

@@ -7,6 +7,7 @@ import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
 import { isURL } from '../../../utils/lib/isURL';
+import { FileUpload } from '../../../file-upload/server';
 
 /**
  * IMPORTANT
@@ -20,7 +21,7 @@ import { isURL } from '../../../utils/lib/isURL';
 const ValidLinkParam = Match.Where((value) => {
 	check(value, String);
 
-	if (!isURL(value)) {
+	if (!isURL(value) && !value.startsWith(FileUpload.getPath())) {
 		throw new Error('Invalid href value provided');
 	}
 
@@ -63,7 +64,7 @@ const validateAttachmentsActions = (attachmentActions) => {
 		type: String,
 		text: String,
 		url: ValidLinkParam,
-		image_url: String,
+		image_url: ValidLinkParam,
 		is_webview: Boolean,
 		webview_height_ratio: String,
 		msg: String,
@@ -85,17 +86,17 @@ const validateAttachment = (attachment) => {
 		author_link: ValidLinkParam,
 		author_icon: ValidLinkParam,
 		title: String,
-		title_link: String,
+		title_link: ValidLinkParam,
 		title_link_download: Boolean,
 		image_dimensions: Object,
-		image_url: String,
+		image_url: ValidLinkParam,
 		image_preview: String,
 		image_type: String,
 		image_size: Number,
-		audio_url: String,
+		audio_url: ValidLinkParam,
 		audio_type: String,
 		audio_size: Number,
-		video_url: String,
+		video_url: ValidLinkParam,
 		video_type: String,
 		video_size: Number,
 		fields: [Match.Any],
