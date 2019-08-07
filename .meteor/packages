@@ -52,7 +52,6 @@ konecty:user-presence
 
 deepwell:bootstrap-datepicker2
 dispatch:run-as-user
-francocatena:status
 jalik:ufs
 jalik:ufs-gridfs
 jparker:gravatar
@@ -71,9 +70,8 @@ raix:handlebar-helpers
 rocketchat:push
 raix:ui-dropped-event
 todda00:friendly-slugs
-yasinuslu:blaze-meta
 
-tap:i18n
+rocketchat:tap-i18n
 underscore@1.0.10
 juliancwirko:postcss
 littledata:synced-cron
