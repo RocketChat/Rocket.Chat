@@ -36,9 +36,10 @@ async function showWebdavFileList() {
 	});
 	try {
 		const response = await call('getWebdavFileList', accountId, directory).catch((err) => console.log(err));
-		if (!response.success) {
+		if (!response || !response.success) {
+			instance.isLoading.set(false);
 			modal.close();
-			toastr.error(t(response.message));
+			return;
 		}
 
 		instance.state.set({ unfilteredWebdavNodes: response.data });
@@ -208,7 +209,7 @@ Template.webdavFilePicker.events({
 		const file = this;
 		const response = await call('getFileFromWebdav', accountId, file).catch((error) => { console.log(error); });
 		instance.isLoading.set(false);
-		if (!response.success) {
+		if (!response || !response.success) {
 			modal.close();
 			return toastr.error(t('Failed_to_get_webdav_file'));
 		}

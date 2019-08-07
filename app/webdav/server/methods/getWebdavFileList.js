@@ -26,7 +26,7 @@ Meteor.methods({
 			const data = await client.getDirectoryContents(path);
 			return { success: true, data };
 		} catch (error) {
-			return { success: false, message: 'could-not-access-webdav', error };
+			throw new Meteor.Error('could-not-access-webdav', { method: 'getWebdavFileList' });
 		}
 	},
 });

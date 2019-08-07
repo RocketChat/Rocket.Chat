@@ -26,7 +26,7 @@ Meteor.methods({
 			const data = new Uint8Array(fileContent);
 			return { success: true, data };
 		} catch (error) {
-			return { success: false, data: error };
+			throw new Meteor.Error('unable-to-get-file', { method: 'getFileFromWebdav' });
 		}
 	},
 });

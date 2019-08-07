@@ -50,9 +50,7 @@ Meteor.methods({
 			await client.stat('/');
 			WebdavAccounts.insert(accountData);
 		} catch (error) {
-			throw new Meteor.Error('could-not-access-webdav', {
-				method: 'addWebdavAccount',
-			});
+			throw new Meteor.Error('could-not-access-webdav', { method: 'addWebdavAccount' });
 		}
 		return true;
 	},
@@ -91,9 +89,7 @@ Meteor.methods({
 				$set: accountData,
 			});
 		} catch (error) {
-			throw new Meteor.Error('could-not-access-webdav', {
-				method: 'addWebdavAccount',
-			});
+			throw new Meteor.Error('could-not-access-webdav', { method: 'addWebdavAccount' });
 		}
 
 		return true;
