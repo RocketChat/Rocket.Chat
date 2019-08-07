@@ -12,18 +12,19 @@ import { SideNav, RocketChatTabBar, TabBar } from '../../../ui-utils';
 import { t, roomTypes } from '../../../utils';
 import { hasAllPermission } from '../../../authorization';
 import { ChannelSettings } from '../../../channel-settings';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
 	url() {
-		return roomTypes.getConfig(this.t).getAvatarPath(this);
+		return this.t === 'd' ? getAvatarURL({ username: `@${ this.usernames[0] }` }) : roomTypes.getConfig(this.t).getAvatarPath(this);
 	},
 	getIcon() {
 		return roomTypes.getIcon(this);
 	},
 	roomName() {
-		return roomTypes.getRoomName(this.t, this);
+		return this.t === 'd' ? this.usernames.join(' x ') : roomTypes.getRoomName(this.t, this);
 	},
 	searchText() {
 		const instance = Template.instance();
@@ -51,9 +52,6 @@ Template.adminRooms.helpers({
 	roomCount() {
 		const rooms = Template.instance().rooms();
 		return rooms && rooms.count();
-	},
-	name() {
-		return roomTypes.roomTypes[this.t].getDisplayName(this);
 	},
 	type() {
 		return TAPi18n.__(roomTypes.roomTypes[this.t].label);
