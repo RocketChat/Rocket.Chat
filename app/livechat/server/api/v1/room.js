@@ -5,6 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, Rooms } from '../../../../models';
+import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api';
 import { findGuest, findRoom, getRoom, settings, findAgent } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -36,6 +37,21 @@ API.v1.addRoute('livechat/room', {
 			const room = getRoom({ guest, rid, agent });
 
 			return API.v1.success(room);
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+});
+
+API.v1.addRoute('livechat/rooms', { authRequired: true }, {
+	get() {
+		try {
+			if (!hasPermission(this.userId, 'view-livechat-manager')) {
+				return API.v1.unauthorized();
+			}
+			const { offset, count } = this.getPaginationItems();
+			const { sort } = this.parseJsonQuery();
+			const { agents } = this.requestParams();
 		} catch (e) {
 			return API.v1.failure(e);
 		}
