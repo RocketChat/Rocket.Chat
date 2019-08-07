@@ -14,22 +14,6 @@ import './livechatAppearance.html';
 const LivechatAppearance = new Mongo.Collection('livechatAppearance');
 
 Template.livechatAppearance.helpers({
-	previewState() {
-		return Template.instance().previewState.get();
-	},
-	showOnline() {
-		return Template.instance().previewState.get().indexOf('offline') === -1;
-	},
-	showOfflineForm() {
-		const state = Template.instance().previewState.get();
-		return state === 'opened-offline' || state === 'closed-offline';
-	},
-	showOfflineSuccess() {
-		return Template.instance().previewState.get() === 'offline-success';
-	},
-	showOfflineUnavailable() {
-		return Template.instance().previewState.get() === 'offline-unavailable';
-	},
 	color() {
 		return Template.instance().color.get();
 	},
@@ -107,90 +91,10 @@ Template.livechatAppearance.helpers({
 	registrationFormMessage() {
 		return Template.instance().registrationFormMessage.get();
 	},
-	sampleColor() {
-		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
-			return Template.instance().colorOffline.get();
-		}
-		return Template.instance().color.get();
-	},
-	sampleTitle() {
-		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
-			return Template.instance().titleOffline.get();
-		}
-		return Template.instance().title.get();
-	},
-	sampleData() {
-		return {
-			messages: [
-				{
-					_id: Random.id(),
-					u: {
-						username: 'guest',
-					},
-					time: moment(this.ts).format('LT'),
-					date: moment(this.ts).format('LL'),
-					body: 'Hello',
-					sequential: null,
-				},
-				{
-					_id: Random.id(),
-					u: {
-						username: 'rocketchat-agent',
-					},
-					time: moment(this.ts).format('LT'),
-					date: moment(this.ts).format('LL'),
-					body: 'Hey, what can I help you with?',
-					sequential: null,
-				},
-				{
-					_id: Random.id(),
-					u: {
-						username: 'guest',
-					},
-					time: moment(this.ts).format('LT'),
-					date: moment(this.ts).format('LL'),
-					body: 'I\'m looking for informations about your product.',
-					sequential: null,
-				},
-				{
-					_id: Random.id(),
-					u: {
-						username: 'rocketchat-agent',
-					},
-					time: moment(this.ts).format('LT'),
-					date: moment(this.ts).format('LL'),
-					body: 'Our product is open source, you can do what you want with it! =D',
-					sequential: null,
-				},
-				{
-					_id: Random.id(),
-					u: {
-						username: 'guest',
-					},
-					time: moment(this.ts).format('LT'),
-					date: moment(this.ts).format('LL'),
-					body: 'Yay, thanks. That\'s awesome.',
-					sequential: null,
-				},
-				{
-					_id: Random.id(),
-					u: {
-						username: 'rocketchat-agent',
-					},
-					time: moment(this.ts).format('LT'),
-					date: moment(this.ts).format('LL'),
-					body: 'You\'re welcome.',
-					sequential: null,
-				},
-			],
-		};
-	},
 });
 
 Template.livechatAppearance.onCreated(function() {
 	this.subscribe('livechat:appearance');
-
-	this.previewState = new ReactiveVar('opened');
 
 	this.title = new ReactiveVar(null);
 	this.color = new ReactiveVar(null);
@@ -272,9 +176,6 @@ Template.livechatAppearance.onCreated(function() {
 });
 
 Template.livechatAppearance.events({
-	'change .preview-mode'(e, instance) {
-		instance.previewState.set(e.currentTarget.value);
-	},
 	'change .js-input-check'(e, instance) {
 		instance[e.currentTarget.name].set(e.currentTarget.checked);
 	},
