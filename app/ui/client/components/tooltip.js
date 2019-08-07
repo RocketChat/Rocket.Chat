@@ -76,9 +76,9 @@ export const tooltip = {
 
 		if (top < 0) {
 			top = sourcePos.top + $(this.source).outerHeight() + 5;
-			tip.addClass('bellow');
+			tip.addClass('below');
 		} else {
-			tip.removeClass('bellow');
+			tip.removeClass('below');
 		}
 
 		return tip

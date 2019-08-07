@@ -4,23 +4,23 @@
 
 	visibility: hidden;
 
-	max-width: 400px;
-	padding: 8px 10px;
+	max-width: 25rem;
+	padding: 0.5em 1em;
 
 	transition: opacity 0.3s ease;
 	text-align: center;
 
 	opacity: 0;
-	color: #ffffff;
-	border-radius: 5px;
-	background: #000000;
+	color: var(--tooltip-text-color);
+	border-radius: var(--tooltip-radius);
+	background: var(--tooltip-background);
 
-	font-size: 0.8rem;
+	font-size: var(--tooltip-text-size);
 
 	&.show {
 		visibility: visible;
 
-		opacity: 0.9;
+		opacity: 1;
 	}
 
 	& .tooltip-arrow {
@@ -30,19 +30,20 @@
 
 		width: 0;
 		height: 0;
-		margin-left: -5px;
+		margin-left: -6px;
 
-		border-top: 5px solid #000000;
-		border-right: 5px solid transparent;
-		border-left: 5px solid transparent;
+		border-width: 6px 6px 0;
+		border-style: solid;
+		border-color: var(--tooltip-background) transparent transparent transparent;
 	}
 
-	&.bellow {
+	&.below {
 		& .tooltip-arrow {
-			top: -5px;
+			top: -6px;
+
+			border-color: transparent transparent var(--tooltip-background)  transparent;
 
 			border-top: none;
-			border-bottom: 5px solid #000000;
 		}
 	}
 }
