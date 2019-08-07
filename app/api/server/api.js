@@ -127,6 +127,16 @@ export class APIClass extends Restivus {
 		};
 	}
 
+	internalError(msg) {
+		return {
+			statusCode: 500,
+			body: {
+				success: false,
+				error: msg || 'Internal error occured',
+			},
+		};
+	}
+
 	unauthorized(msg) {
 		return {
 			statusCode: 403,
