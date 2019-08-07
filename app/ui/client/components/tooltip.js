@@ -1,6 +1,9 @@
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
+import './tooltip.html';
+import './tooltip.css';
+
 export const tooltip = {
 	source: null,
 	initiated: false,
@@ -12,7 +15,7 @@ export const tooltip = {
 		}
 		this.initiated = true;
 
-		Blaze.render(Template.rocketchatTooltip, document.body);
+		Blaze.render(Template.tooltip, document.body);
 	},
 
 	showElement(element, source) {
