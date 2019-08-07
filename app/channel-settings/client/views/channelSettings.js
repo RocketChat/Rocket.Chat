@@ -224,6 +224,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				if (settings.get('UI_Allow_room_names_with_special_chars')) {
 					return room.fname || room.name;
 				}
+				if (room.prid) {
+					return room.fname;
+				}
 
 				return room.name;
 			},

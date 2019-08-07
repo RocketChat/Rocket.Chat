@@ -14,17 +14,18 @@ export const saveRoomName = function(rid, displayName, user, sendMessage = true)
 	if (displayName === room.name) {
 		return;
 	}
-
-	const slugifiedRoomName = getValidRoomName(displayName, rid);
-
-	const update = Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
-
+	const itsADiscussion = Boolean(room && room.prid);
+	let update;
+	if (itsADiscussion) {
+		update = Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
+	} else {
+		const slugifiedRoomName = getValidRoomName(displayName, rid);
+		update = Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
+	}
 	if (!update) {
 		return;
 	}
-
 	Integrations.updateRoomName(room.name, displayName);
-
 	if (sendMessage) {
 		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
 	}
