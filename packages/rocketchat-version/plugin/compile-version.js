@@ -6,6 +6,8 @@ import path from 'path';
 import Future from 'fibers/future';
 import async from 'async';
 
+const getAppsEngineVersion = (pkg) => pkg.dependencies['@rocket.chat/apps-engine'].replace(/^[^0-9]/, '').split('-')[0];
+
 class VersionCompiler {
 	processFilesForTarget(files) {
 		const future = new Future();
@@ -55,7 +57,7 @@ class VersionCompiler {
 						}
 
 						const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
-						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/[^0-9.]/g, '');
+						output.marketplaceApiVersion = getAppsEngineVersion(pkg);
 
 						output = `exports.Info = ${ JSON.stringify(output, null, 4) };`;
 						file.addJavaScript({
