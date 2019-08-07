@@ -370,6 +370,40 @@
 	}
 }
 
+.rc-games {
+	.rc-table-tr {
+		td:nth-child(even) {
+			.rc-table-title {
+				width: 200px;
+			}
+		}
+	}
+}
+
+.rc-game {
+	margin: -14px;
+}
+
+.rc-game.container {
+	position: relative;
+}
+
+.rc-game.close {
+	position: absolute;
+	top: -30px;
+	right: -25px;
+
+	cursor: pointer;
+
+	color: #e9ebee;
+
+	font-size: 20px;
+
+	&:hover {
+		color: white;
+	}
+}
+
 @keyframes play90 {
 	0% {
 		right: -798px;
