@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
