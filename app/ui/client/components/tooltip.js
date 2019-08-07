@@ -4,87 +4,91 @@ import { Blaze } from 'meteor/blaze';
 import './tooltip.html';
 import './tooltip.css';
 
+let initiated = false;
+
+const init = () => {
+	if (initiated) {
+		return;
+	}
+	initiated = true;
+
+	Blaze.render(Template.tooltip, document.body);
+};
+
+let source = null;
+let opened = false;
+let timeout = null;
+
+const placeTip = () => {
+	const arrowSize = 6;
+	const sourceWidth = $(source).outerWidth();
+	const sourceHeight = $(source).outerHeight();
+	let { left, top } = $(source).offset();
+
+	const tip = $('.tooltip');
+	const tipWidth = tip.outerWidth();
+	const tipHeight = tip.outerHeight();
+
+	left = left + (sourceWidth / 2) - (tipWidth / 2);
+
+	$('.tooltip-arrow', tip).css({
+		'margin-left': left < 0 ? `${ left - arrowSize }px` : '',
+	});
+
+	if (left < 0) {
+		left = 0;
+	}
+
+	top = top - tipHeight - arrowSize;
+
+	tip.toggleClass('below', top < 0);
+
+	if (top < 0) {
+		top = top + sourceHeight + arrowSize;
+	}
+
+	return tip.css({
+		left: `${ left }px`,
+		top: `${ top }px`,
+	});
+};
+
+const showElement = (element, sourceElement) => {
+	if (opened) {
+		return;
+	}
+
+	if (timeout) {
+		clearTimeout(timeout);
+	}
+
+	const elementClone = $(element).clone();
+
+	timeout = setTimeout(() => {
+		timeout = null;
+		source = sourceElement;
+
+		$('.tooltip .content').empty().append(elementClone.show());
+		placeTip().addClass('show');
+
+		opened = true;
+	}, 300);
+};
+
+const hide = () => {
+	if (timeout) {
+		clearTimeout(timeout);
+	}
+
+	if (opened) {
+		$('.tooltip').removeClass('show');
+		$('.tooltip .content').empty();
+		opened = false;
+	}
+};
+
 export const tooltip = {
-	source: null,
-	initiated: false,
-	opened: false,
-
-	init() {
-		if (this.initiated) {
-			return;
-		}
-		this.initiated = true;
-
-		Blaze.render(Template.tooltip, document.body);
-	},
-
-	showElement(element, source) {
-		if (this.opened) {
-			return;
-		}
-
-		if (this.timeout) {
-			clearTimeout(this.timeout);
-		}
-
-		this.timeout = setTimeout(() => {
-			this.timeout = null;
-			this.source = source;
-
-			$('.tooltip .content').empty().append($(element).clone().show());
-
-			this.setPosition().addClass('show');
-
-			this.opened = true;
-		}, 300);
-	},
-
-	hide() {
-		if (this.timeout) {
-			clearTimeout(this.timeout);
-		}
-
-		if (this.opened) {
-			$('.tooltip').removeClass('show');
-			$('.tooltip .content').empty();
-			this.opened = false;
-		}
-	},
-
-	setPosition() {
-		const sourcePos = $(this.source).offset();
-
-		const sourceWidth = $(this.source).outerWidth();
-
-		const tip = $('.tooltip');
-
-		let top = sourcePos.top - tip.outerHeight() - 5;
-		let { left } = sourcePos;
-
-		left = left + (sourceWidth / 2) - (tip.outerWidth() / 2);
-
-		if (left < 0) {
-			$('.tooltip .tooltip-arrow').css({
-				'margin-left': `${ left - 5 }px`,
-			});
-			left = 0;
-		} else {
-			$('.tooltip .tooltip-arrow').css({
-				'margin-left': '',
-			});
-		}
-
-		if (top < 0) {
-			top = sourcePos.top + $(this.source).outerHeight() + 5;
-			tip.addClass('below');
-		} else {
-			tip.removeClass('below');
-		}
-
-		return tip
-			.css({
-				top: `${ top }px`,
-				left: `${ left }px`,
-			});
-	},
+	init,
+	showElement,
+	hide,
 };
