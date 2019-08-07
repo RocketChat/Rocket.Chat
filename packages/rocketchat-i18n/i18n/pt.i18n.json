@@ -116,6 +116,7 @@
   "Accounts_OAuth_Gitlab": "OAuth Ativado",
   "Accounts_OAuth_Gitlab_callback_url": "URL de chamada de retorno  do Github",
   "Accounts_OAuth_Gitlab_id": "ID do GitLab",
+  "Accounts_OAuth_Gitlab_identity_path": "Caminho de Identidade",
   "Accounts_OAuth_Gitlab_secret": "Segredo",
   "Accounts_OAuth_Google": "Login do Google",
   "Accounts_OAuth_Google_callback_url": "URL de retorno do Google",

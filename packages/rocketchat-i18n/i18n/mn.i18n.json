@@ -106,6 +106,7 @@
   "Accounts_OAuth_Gitlab": "OAuth Enabled",
   "Accounts_OAuth_Gitlab_callback_url": "GitLab Callback URL",
   "Accounts_OAuth_Gitlab_id": "GitLab Id",
+  "Accounts_OAuth_Gitlab_identity_path": "Identity Path",
   "Accounts_OAuth_Gitlab_secret": "Үйлчлүүлэгчийн нууц",
   "Accounts_OAuth_Google": "Google Нэвтрэх",
   "Accounts_OAuth_Google_callback_url": "Google Callback URL",
