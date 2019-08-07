@@ -396,6 +396,7 @@ class Administration extends Page {
 	}
 
 	getUserFromList(user) {
+		browser.element('.user-info').waitForVisible(5000);
 		const element = browser.element(`td=${ user }`);
 		element.waitForVisible(5000);
 		return element;
