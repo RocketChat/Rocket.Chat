@@ -1,4 +1,30 @@
 
+# 1.3.1
+`2019-08-08  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Custom emoji table scroll ([#15119](https://github.com/RocketChat/Rocket.Chat/pull/15119))
+- Direct Message names not visible on Admin panel ([#15114](https://github.com/RocketChat/Rocket.Chat/pull/15114))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix custom auth ([#15141](https://github.com/RocketChat/Rocket.Chat/pull/15141))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+
 # 1.3.0
 `2019-08-02  ·  9 🎉  ·  6 🚀  ·  31 🐛  ·  31 🔍  ·  29 👩‍💻👨‍💻`
 
@@ -134,6 +160,14 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 
+# 1.2.4
+`2019-08-08`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
 # 1.2.2
 `2019-07-29`
 
@@ -247,6 +281,14 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 1.1.5
+`2019-08-08`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
 
 # 1.1.4
 `2019-07-29`
@@ -492,6 +534,25 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 1.0.5
+`2019-08-08  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix custom auth ([#15141](https://github.com/RocketChat/Rocket.Chat/pull/15141))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 
 # 1.0.4
 `2019-07-29  ·  1 🐛  ·  1 👩‍💻👨‍💻`
