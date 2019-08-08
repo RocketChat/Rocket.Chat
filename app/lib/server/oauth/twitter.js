@@ -37,10 +37,9 @@ registerAccessTokenService('twitter', function(options) {
 		appId: String,
 		accessTokenSecret: String,
 		expiresIn: Match.Integer,
-		identity: Match.Maybe(Object),
 	}));
 
-	const identity = options.identity || getIdentity(options.accessToken, options.appId, options.appSecret, options.accessTokenSecret);
+	const identity = getIdentity(options.accessToken, options.appId, options.appSecret, options.accessTokenSecret);
 
 	const serviceData = {
 		accessToken: options.accessToken,
