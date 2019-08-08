@@ -20,7 +20,6 @@ Meteor.methods({
 			if (!hasPermission(Meteor.userId(), 'edit-privileged-setting')
 				&& !hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])) {
 				settingsNotAllowed.push(_id);
-				return;
 			}
 			const setting = Settings.db.findOneById(_id);
 
