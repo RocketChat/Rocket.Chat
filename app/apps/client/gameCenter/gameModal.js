@@ -1,7 +1,7 @@
+import axios from 'axios';
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 
-import { APIClient } from '../../../utils';
 import { modal } from '../../../ui-utils';
 import { randomString } from '../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
@@ -27,13 +27,17 @@ Template.GameModal.onCreated(function() {
 
 		if (sessionStarts) {
 			console.log(sessionId);
-			APIClient.post(sessionStarts, {
+			axios.post(sessionStarts, {
 				event: 'sessionStarts',
 				sessionId,
 				player: {
 					userId: _id,
 					username,
 					avatarUrl,
+				},
+			}, {
+				headers: {
+					'Content-Type': 'application/json',
 				},
 			});
 		}
@@ -50,13 +54,17 @@ Template.GameModal.onDestroyed(function() {
 
 		if (sessionEnds) {
 			console.log(sessionId);
-			APIClient.post(sessionEnds, {
+			axios.post(sessionEnds, {
 				event: 'sessionEnds',
 				sessionId,
 				player: {
 					userId: _id,
 					username,
 					avatarUrl,
+				},
+			}, {
+				headers: {
+					'Content-Type': 'application/json',
 				},
 			});
 		}
