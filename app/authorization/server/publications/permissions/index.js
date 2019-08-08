@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import Permissions from '../../../../models/server/models/Permissions';
-import './emitter';
+import Settings from '../../../../models/server/models/Settings';
+import { Notifications } from '../../../../notifications/server';
 
 Meteor.methods({
 	'permissions/get'(updatedAt) {
@@ -19,4 +20,27 @@ Meteor.methods({
 
 		return records;
 	},
+});
+
+Permissions.on('change', ({ clientAction, id, data }) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			data = data || Permissions.findOneById(id);
+			break;
+
+		case 'removed':
+			data = { _id: id };
+			break;
+	}
+
+	if (data.level && data.level === 'setting') {
+		// if the permission changes, the effect on the visible settings depends on the role affected.
+		// The selected-settings-based consumers have to react accordingly and either add or remove the
+		// setting from the user's collection
+		const setting = Settings.findOneById(data.settingId);
+		Notifications.notifyLoggedInThisInstance('private-settings-changed', 'auth', setting);
+	}
+
+	Notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
 });
