@@ -40,7 +40,6 @@ tracker@1.2.0
 
 #rocketchat:google-natural-language
 rocketchat:streamer
-rocketchat:version
 
 konecty:change-case
 konecty:delayed-task
