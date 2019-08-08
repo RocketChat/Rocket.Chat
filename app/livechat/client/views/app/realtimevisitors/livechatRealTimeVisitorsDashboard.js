@@ -26,7 +26,7 @@ const initChart = {
 			document.getElementById('lc-status-chart'),
 			'Status',
 			chartContexts['lc-status-chart'],
-			['Chatting', 'Closed', 'Not Started'], [0, 0, 0]);
+			['Chatting', 'Not Started', 'Closed'], [0, 0, 0]);
 	},
 };
 
@@ -50,13 +50,13 @@ const updateChatsChart = () => {
 	};
 	const chats = {
 		chatting: LivechatLocation.find({ chatStatus: 'Chatting', createdAt }).count(),
-		closed: LivechatLocation.find({ chatStatus: 'Closed', createdAt }).count(),
 		notStarted: LivechatLocation.find({ chatStatus: 'Not Started', createdAt }).count(),
+		closed: LivechatLocation.find({ chatStatus: 'Closed', createdAt }).count(),
 	};
 
 	updateChartData('lc-status-chart', 'Chatting', [chats.chatting]);
-	updateChartData('lc-status-chart', 'Closed', [chats.closed]);
 	updateChartData('lc-status-chart', 'Not Started', [chats.notStarted]);
+	updateChartData('lc-status-chart', 'Closed', [chats.closed]);
 };
 
 const updateSessionOverviews = () => {

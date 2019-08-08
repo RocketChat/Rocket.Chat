@@ -253,20 +253,20 @@ export const getSessionOverviewData = (dbCursor) => {
 		}
 
 		if (data.location) {
-			const { countryName } = data.location;
-			mostCountryVisitors.set(countryName, mostCountryVisitors.has(countryName) ? mostCountryVisitors.get(countryName) + 1 : 1);
+			const { countryName, city } = data.location;
+			mostCountryVisitors.set(`${ countryName }, ${ city }`, mostCountryVisitors.has(`${ countryName }, ${ city }`) ? mostCountryVisitors.get(`${ countryName }, ${ city }`) + 1 : 1);
 		}
 	});
 
-	let avg = parseFloat(timeDuration / totalCompletedChat).toFixed(2);
+	const avg = parseFloat(timeDuration / totalCompletedChat).toFixed(2);
 	const avgTimeDuration = moment.duration(Number(avg));
-	const avgTime = convertTimeAvg(avgTimeDuration);
+	let avgTime = convertTimeAvg(avgTimeDuration);
 	const MaxVisitorsFrom = getKeyHavingMaxValue(mostCountryVisitors, '-');
 	if (moment.isDuration(busiestTime)) {
 		busiestTime = busiestTime.humanize();
 	}
-	if (isNaN(avg)) {
-		avg = '-';
+	if (isNaN(avgTimeDuration)) {
+		avgTime = '-';
 	}
 	return [{
 		title: 'Online_Visitors',

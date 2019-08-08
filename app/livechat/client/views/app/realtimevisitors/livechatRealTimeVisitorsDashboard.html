@@ -16,8 +16,8 @@
             <div class="lc-analytics-ov-col">
               {{#each this}}
               <div class="lc-analytics-ov-case">
-                <span class="value">{{value}}</span>
                 <span class="title">{{_ title}}</span>
+                <span class="value">{{value}}</span>
               </div>
               {{/each}}
             </div>
@@ -25,6 +25,7 @@
           </div>
         </div>
       </div>
+      <br><br>
       <fieldset>
         <form class="form-inline" method="post">
           <div class="form-group">
@@ -55,29 +56,30 @@
           <div class="form-group">
             <button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
           </div>
+          <br><br>
           <div>
+            <div class="form-group lc-time">
+              {{#if showLeftNavButton}}
+              <button class="lc-timerange-prev">
+                <i class="icon-left-circled"></i>
+              </button>
+              {{/if}}
+              <button class="rc-tooltip rc-tooltip--down js-button lc-time-picker-btn">
+                {{#with timerange}}
+                <span class="lc-time-from">{{from}}</span>
+                <span class="fade">{{_ "to" }}</span>
+                <span class="lc-time-to">{{to}}</span>
+                {{/with}}
+              </button>
+              {{#if showRightNavButton}}
+              <button class="lc-timerange-next">
+                <i class="icon-right-circled"></i>
+              </button>
+              {{/if}}
+            </div>
             <p align="right">{{_ "Total_visitors"}} : {{totalVisitors}}</p>
           </div>
           <br>
-          <div class="form-group lc-time">
-            {{#if showLeftNavButton}}
-            <button class="lc-timerange-prev">
-              <i class="icon-left-circled"></i>
-            </button>
-            {{/if}}
-            <button class="rc-tooltip rc-tooltip--down js-button lc-time-picker-btn">
-              {{#with timerange}}
-              <span class="lc-time-from">{{from}}</span>
-              <span class="fade">{{_ "to" }}</span>
-              <span class="lc-time-to">{{to}}</span>
-              {{/with}}
-            </button>
-            {{#if showRightNavButton}}
-            <button class="lc-timerange-next">
-              <i class="icon-right-circled"></i>
-            </button>
-            {{/if}}
-          </div>
         </form>
       </fieldset>
       <div class="rc-table-content">
