@@ -1940,6 +1940,8 @@
   "manage-oauth-apps_description": "Berechtigung, OAuth-Anwendungen verwalten",
   "manage-own-integrations": "Eigene Integrationen verwalten",
   "manage-own-integrations_description": "Berechtigung, das Benutzer eigene Integrationen oder Webhooks erstellen und verwalten",
+  "manage-selected-settings": "Ausgewählte Einstellungen zu ändern",
+  "manage-selected-settings_description": "Berechtigung, einzelne speziell zugewiesene Einstellungen zu ändern",
   "manage-sounds": "Töne verwalten",
   "manage-sounds_description": "Berechtigung, Töne zu verwalten",
   "Manage_Apps": "Apps verwalten",

@@ -1968,6 +1968,8 @@
   "manage-oauth-apps_description": "Permission to manage the server Oauth apps",
   "manage-own-integrations": "Manage Own Integrations",
   "manage-own-integrations_description": "Permition to allow users to create and edit their own integration or webhooks",
+  "manage-selected-settings": "Change some settings",
+  "manage-selected-settings_description": "Permission to change settings which are explicitly granted to be changed",
   "manage-sounds": "Manage Sounds",
   "manage-sounds_description": "Permission to manage the server sounds",
   "manage-user-status": "Manage User Status",

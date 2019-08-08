@@ -21,13 +21,13 @@ export class PrivateSettingsCachedCollection extends CachedCollection {
 		Notifications[eventType || this.eventType](eventName || this.eventName, async (t, record) => {
 			this.log('record received', t, record);
 			if (t === 'auth') {
-				if (! (hasAllPermission([`change-setting-${ record._id }`, 'manage-selected-settings'])
-					|| hasAtLeastOnePermission('view-privileged-setting', 'edit-privileged-setting'))) {
-					this.collection.remove(record._id);
-					RoomManager.close(record.t + record.name);
-				} else {
+				if (hasAtLeastOnePermission('view-privileged-setting', 'edit-privileged-setting')
+					|| hasAllPermission([`change-setting-${ record._id }`, 'manage-selected-settings'])) {
 					delete record.$loki;
 					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
+				} else {
+					this.collection.remove(record._id);
+					RoomManager.close(record.t + record.name);
 				}
 
 				this.save();
