@@ -34,6 +34,8 @@ Permissions.on('change', ({ clientAction, id, data }) => {
 			break;
 	}
 
+	Notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
+
 	if (data.level && data.level === 'setting') {
 		// if the permission changes, the effect on the visible settings depends on the role affected.
 		// The selected-settings-based consumers have to react accordingly and either add or remove the
@@ -41,6 +43,4 @@ Permissions.on('change', ({ clientAction, id, data }) => {
 		const setting = Settings.findOneById(data.settingId);
 		Notifications.notifyLoggedInThisInstance('private-settings-changed', 'auth', setting);
 	}
-
-	Notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
 });
