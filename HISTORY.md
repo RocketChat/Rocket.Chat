@@ -1,4 +1,23 @@
 
+# 1.0.5
+`2019-08-08  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix custom auth ([#15141](https://github.com/RocketChat/Rocket.Chat/pull/15141))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+
 # 1.0.4
 `2019-07-29  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
