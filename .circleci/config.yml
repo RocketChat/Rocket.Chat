@@ -69,7 +69,6 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/node:8.15-stretch
-      - image: mongo:3.2
 
     steps:
       - checkout
@@ -124,22 +123,22 @@ jobs:
           command: |
             meteor npm run lint
 
-      - run:
-          name: Unit Test
-          command: |
-            MONGO_URL=mongodb://localhost:27017 meteor npm run testunit
+      # - run:
+      #     name: Unit Test
+      #     command: |
+      #       MONGO_URL=mongodb://localhost:27017 meteor npm run testunit
 
       - restore_cache:
           keys:
             - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
-      - restore_cache:
-          keys:
-            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
+      # - restore_cache:
+      #     keys:
+      #       - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
 
-      - restore_cache:
-          keys:
-            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
+      # - restore_cache:
+      #     keys:
+      #       - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
 
       - run:
           name: Build Rocket.Chat
@@ -177,15 +176,15 @@ jobs:
           paths:
             - ./.meteor/local
 
-      - save_cache:
-          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/node_modules
+      # - save_cache:
+      #     key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
+      #     paths:
+      #       - ./packages/rocketchat-livechat/app/node_modules
 
-      - save_cache:
-          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/.meteor/local
+      # - save_cache:
+      #     key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
+      #     paths:
+      #       - ./packages/rocketchat-livechat/app/.meteor/local
 
       - save_cache:
           key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
