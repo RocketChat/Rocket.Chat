@@ -211,7 +211,7 @@ export class CachedCollection extends EventEmitter {
 		});
 
 		this.collection._collection._docs._map = fromEntries(data.records.map((record) => [record._id, record]));
-		this.updatedAt = data.updatedAt;
+		this.updatedAt = data.updatedAt || this.updatedAt;
 
 		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
 
@@ -290,7 +290,8 @@ export class CachedCollection extends EventEmitter {
 				}
 				this.collection.remove(record._id);
 			} else {
-				this.collection.direct.upsert({ _id: record._id }, _.omit(record, '_id'));
+				const { _id, ...recordData } = record;
+				this.collection.direct.upsert({ _id }, recordData);
 			}
 			this.save();
 		});
@@ -345,19 +346,20 @@ export class CachedCollection extends EventEmitter {
 			return 0;
 		});
 
-		for (const { _id, ...record } of changes) {
+		for (const record of changes) {
 			const action = record._deletedAt ? 'removed' : 'changed';
 			callbacks.run(`cachedCollection-sync-${ this.name }`, record, action);
 			const actionTime = record._deletedAt || record._updatedAt;
+			const { _id, ...recordData } = record;
 			if (record._deletedAt) {
 				this.collection.direct.remove({ _id });
 			} else {
-				this.collection.direct.upsert({ _id }, record);
+				this.collection.direct.upsert({ _id }, recordData);
 			}
 			if (actionTime > this.updatedAt) {
 				this.updatedAt = record._updatedAt;
 			}
-			this.onSyncData(action, { _id, ...record });
+			this.onSyncData(action, record);
 		}
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 
@@ -374,16 +376,17 @@ export class CachedCollection extends EventEmitter {
 		}
 
 		this.ready.set(true);
+
+		CachedCollectionManager.onReconnect(() => {
+			this.trySync();
+		});
+
 		if (!this.userRelated) {
-			CachedCollectionManager.onReconnect(() => {
-				this.trySync();
-			});
 			return this.setupListener();
 		}
 
 		CachedCollectionManager.onLogin(async () => {
-			await this.setupListener();
-			this.trySync();
+			this.setupListener();
 		});
 	}
 }
