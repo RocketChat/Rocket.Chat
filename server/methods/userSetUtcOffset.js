@@ -12,8 +12,6 @@ Meteor.methods({
 			return;
 		}
 
-		this.unblock();
-
 		return Users.setUtcOffset(this.userId, utcOffset);
 	},
 });

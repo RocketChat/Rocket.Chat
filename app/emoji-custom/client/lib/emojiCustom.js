@@ -45,7 +45,7 @@ export const deleteEmojiCustom = function(emojiData) {
 			}
 		}
 	}
-	EmojiPicker.updateRecent();
+	EmojiPicker.updateRecent('rocket');
 };
 
 export const updateEmojiCustom = function(emojiData) {
@@ -121,41 +121,45 @@ export const updateEmojiCustom = function(emojiData) {
 		}
 	}
 
-	EmojiPicker.updateRecent();
+	EmojiPicker.updateRecent('rocket');
+};
+
+const customRender = (html) => {
+	const emojisMatchGroup = emoji.packages.emojiCustom.list.map(RegExp.escape).join('|');
+	if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
+		emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
+		emoji.packages.emojiCustom._regexp = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ emojisMatchGroup })`, 'gi');
+	}
+
+	html = html.replace(emoji.packages.emojiCustom._regexp, (shortname) => {
+		if ((typeof shortname === 'undefined') || (shortname === '') || (emoji.packages.emojiCustom.list.indexOf(shortname) === -1)) {
+			return shortname;
+		}
+
+		let emojiAlias = shortname.replace(/:/g, '');
+
+		let dataCheck = emoji.list[shortname];
+		if (dataCheck.hasOwnProperty('aliasOf')) {
+			emojiAlias = dataCheck.aliasOf;
+			dataCheck = emoji.list[`:${ emojiAlias }:`];
+		}
+
+		return `<span class="emoji" style="background-image:url(${ getEmojiUrlFromName(emojiAlias, dataCheck.extension) });" data-emoji="${ emojiAlias }" title="${ shortname }">${ shortname }</span>`;
+	});
+
+	return html;
 };
 
 emoji.packages.emojiCustom = {
-	emojiCategories: { rocket: 'Custom' },
+	emojiCategories: [{ key: 'rocket', i18n: 'Custom' }],
+	categoryIndex: 1,
 	toneList: {},
 	list: [],
 	_regexpSignature: null,
 	_regexp: null,
 
-	render(html) {
-		const emojisMatchGroup = emoji.packages.emojiCustom.list.map(RegExp.escape).join('|');
-		if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
-			emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
-			emoji.packages.emojiCustom._regexp = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ emojisMatchGroup })`, 'gi');
-		}
-
-		html = html.replace(emoji.packages.emojiCustom._regexp, (shortname) => {
-			if ((typeof shortname === 'undefined') || (shortname === '') || (emoji.packages.emojiCustom.list.indexOf(shortname) === -1)) {
-				return shortname;
-			}
-
-			let emojiAlias = shortname.replace(/:/g, '');
-
-			let dataCheck = emoji.list[shortname];
-			if (dataCheck.hasOwnProperty('aliasOf')) {
-				emojiAlias = dataCheck.aliasOf;
-				dataCheck = emoji.list[`:${ emojiAlias }:`];
-			}
-
-			return `<span class="emoji" style="background-image:url(${ getEmojiUrlFromName(emojiAlias, dataCheck.extension) });" data-emoji="${ emojiAlias }" title="${ shortname }">${ shortname }</span>`;
-		});
-
-		return html;
-	},
+	render: customRender,
+	renderPicker: customRender,
 };
 
 Meteor.startup(() =>

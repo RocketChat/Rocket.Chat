@@ -98,6 +98,20 @@
 				</div>
 			</div>
 
+			<div class="rc-form-group rc-form-group--small">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "StatusMessage"}}</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon icon='edit' }}
+							</div>
+							<input name="name" type="text" maxlength="120" class="rc-input__element rc-input__element--small" id="status" autocomplete="off" value="{{user.statusText}}"/>
+						</div>
+					</label>
+				</div>
+			</div>
+
 
 			{{#if hasPermission 'edit-other-user-password'}}
 			<div class="rc-form-group rc-form-group--small rc-form-group--inline">

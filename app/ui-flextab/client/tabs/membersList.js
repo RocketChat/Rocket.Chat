@@ -34,6 +34,7 @@ Template.membersList.helpers({
 		const roomUsers = Template.instance().users.get();
 		const room = ChatRoom.findOne(this.rid);
 		const roomMuted = (room != null ? room.muted : undefined) || [];
+		const roomUnmuted = (room != null ? room.unmuted : undefined) || [];
 		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
 		let totalOnline = 0;
 		let users = roomUsers;
@@ -66,10 +67,12 @@ Template.membersList.helpers({
 				}
 			}
 
+			const muted = (room.ro && !roomUnmuted.includes(user.username)) || roomMuted.includes(user.username);
+
 			return {
 				user,
 				status: onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline',
-				muted: Array.from(roomMuted).includes(user.username),
+				muted,
 				utcOffset,
 			};
 		});

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
 import { Livechat } from './Livechat';
@@ -65,6 +65,12 @@ export const QueueMethods = {
 			desktopNotifications: 'all',
 			mobilePushNotifications: 'all',
 			emailNotifications: 'all',
+			v: {
+				_id: guest._id,
+				username: guest.username,
+				token: message.token,
+				status: guest.status,
+			},
 		};
 
 		if (guest.department) {

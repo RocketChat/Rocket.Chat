@@ -364,6 +364,10 @@ class Administration extends Page {
 
 	get accountsRealNameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowRealNameChange"]'); }
 
+	get accountsUserStatusMessageChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUserStatusMessageChange"]'); }
+
+	get accountsUserStatusMessageChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUserStatusMessageChange"]'); }
+
 	get accountsUsernameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUsernameChange"]'); }
 
 	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUsernameChange"]'); }
@@ -381,6 +385,7 @@ class Administration extends Page {
 	}
 
 	getUserFromList(user) {
+		browser.element('.user-info').waitForVisible(5000);
 		const element = browser.element(`td=${ user }`);
 		element.waitForVisible(5000);
 		return element;

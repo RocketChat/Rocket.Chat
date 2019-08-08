@@ -7,11 +7,11 @@ import { Tracker } from 'meteor/tracker';
 import { ChatMessages } from '../../../ui';
 import { normalizeThreadMessage, call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
 import { lazyloadtick } from '../../../lazy-load';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents } from '../../../ui/client/views/app/room';
-import { upsert } from '../upsert';
 import './thread.html';
 
 const sort = { ts: 1 };
@@ -139,11 +139,13 @@ Template.thread.onRendered(function() {
 		});
 	});
 
+
 	this.autorun(() => {
 		const jump = this.state.get('jump');
 		const loading = this.state.get('loading');
 
-		if (jump && loading === false) {
+		if (jump && this.lastJump !== jump && loading === false) {
+			this.lastJump = jump;
 			this.find('.js-scroll-thread').style.scrollBehavior = 'smooth';
 			this.state.set('jump', null);
 			Tracker.afterFlush(() => {
@@ -179,7 +181,7 @@ Template.thread.onCreated(async function() {
 
 		const messages = await call('getThreadMessages', { tmid });
 
-		upsert(this.Threads, messages);
+		upsertMessageBulk({ msgs: messages }, this.Threads);
 
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);

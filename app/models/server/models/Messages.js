@@ -31,6 +31,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+		// livechat
+		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {
@@ -737,7 +739,7 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-		Rooms.incMsgCountById(room._id, 1);
+		Rooms.incMsgCountById(roomId, 1);
 		return record;
 	}
 

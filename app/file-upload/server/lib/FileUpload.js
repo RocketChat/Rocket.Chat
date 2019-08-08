@@ -8,10 +8,10 @@ import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
 import Avatars from '../../../models/server/models/Avatars';
@@ -38,6 +38,10 @@ settings.get('FileUpload_MaxFileSize', function(key, value) {
 
 export const FileUpload = {
 	handlers: {},
+
+	getPath(path = '') {
+		return `/file-upload/${ path }`;
+	},
 
 	configureUploadsStore(store, name, options) {
 		const type = name.split(':').pop();

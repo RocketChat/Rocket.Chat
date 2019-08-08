@@ -53,6 +53,7 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Cert',
 			multiline: true,
+			secret: true,
 		});
 		settings.add(`SAML_Custom_${ name }_public_cert`, '', {
 			type: 'string',
@@ -67,6 +68,7 @@ Meteor.methods({
 			section: name,
 			multiline: true,
 			i18nLabel: 'SAML_Custom_Private_Key',
+			secret: true,
 		});
 		settings.add(`SAML_Custom_${ name }_button_label_text`, '', {
 			type: 'string',
@@ -120,6 +122,12 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Logout_Behaviour',
 		});
+		settings.add(`SAML_Custom_${ name }_custom_authn_context`, 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Authn_Context',
+		});
 	},
 });
 
@@ -147,6 +155,7 @@ const getSamlConfigs = function(service) {
 		mailOverwrite: settings.get(`${ service.key }_mail_overwrite`),
 		issuer: settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: settings.get(`${ service.key }_logout_behaviour`),
+		customAuthnContext: settings.get(`${ service.key }_custom_authn_context`),
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
@@ -191,6 +200,7 @@ const configureSamlService = function(samlConfigs) {
 		cert: samlConfigs.secret.cert,
 		privateCert,
 		privateKey,
+		customAuthnContext: samlConfigs.customAuthnContext,
 	};
 };
 

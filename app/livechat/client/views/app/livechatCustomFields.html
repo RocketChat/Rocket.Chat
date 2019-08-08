@@ -1,20 +1,26 @@
 <template name="livechatCustomFields">
 	{{#requiresPermission 'view-livechat-manager'}}
-		<div class="list">
-			<table>
+		<div class="rc-table-content">
+			{{#table fixed='true'}}
 				<thead>
 					<tr>
-						<th width="25%">{{_ "Field"}}</th>
-						<th width="25%">{{_ "Label"}}</th>
-						<th width="25%">{{_ "Scope"}}</th>
-						<th width="25%">{{_ "Visibility"}}</th>
-						<th>{{_ "Delete"}}</th>
+						<th><div class="table-fake-th">{{_ "Field"}}</div></th>
+						<th width="25%"><div class="table-fake-th">{{_ "Label"}}</div></th>
+						<th width="25%"><div class="table-fake-th">{{_ "Scope"}}</div></th>
+						<th width="25%"><div class="table-fake-th">{{_ "Visibility"}}</div></th>
+						<th width="40px">&nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>
 					{{#each customFields}}
 						<tr class="custom-field-info row-link" data-id="{{_id}}">
-							<td>{{_id}}</td>
+							<td>
+								<div class="rc-table-wrapper">
+									<div class="rc-table-info">
+										<span class="rc-table-title">{{_id}}</span>
+									</div>
+								</div>
+							</td>
 							<td>{{label}}</td>
 							<td>{{scope}}</td>
 							<td>{{visibility}}</td>
@@ -22,8 +28,10 @@
 						</tr>
 					{{/each}}
 				</tbody>
-			</table>
+			{{/table}}
 		</div>
-		<a href="{{pathFor 'livechat-customfield-new'}}" class="button primary">{{_ "New_Custom_Field"}}</a>
+		<div class="rc-button__group">
+			<a href="{{pathFor 'livechat-customfield-new'}}" class="rc-button rc-button--primary">{{_ "New_Custom_Field"}}</a>
+		</div>
 	{{/requiresPermission}}
 </template>
