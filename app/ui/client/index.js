@@ -57,6 +57,7 @@ import './components/header/headerRoom.html';
 import './components/header/headerRoom';
 import './components/contextualBar.html';
 import './components/contextualBar';
+import './components/tooltip';
 
 export { ChatMessages } from './lib/chatMessages';
 export { fileUpload } from './lib/fileUpload';
