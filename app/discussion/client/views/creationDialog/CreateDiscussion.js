@@ -29,7 +29,7 @@ Template.CreateDiscussion.helpers({
 	},
 	createIsDisabled() {
 		const { parentChannel, discussionName } = Template.instance();
-		return parentChannel.get() && discussionName.get() ? '' : 'disabled';
+		return parentChannel.get() && discussionName.get().trim() ? '' : 'disabled';
 	},
 	parentChannel() {
 		const instance = Template.instance();
