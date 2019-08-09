@@ -106,6 +106,7 @@
   "Accounts_OAuth_Gitlab": "OAuth е активиран",
   "Accounts_OAuth_Gitlab_callback_url": "URL адрес за обратно извикване на GitLab",
   "Accounts_OAuth_Gitlab_id": "Идентификатор на GitLab",
+  "Accounts_OAuth_Gitlab_identity_path": "Път на идентичността",
   "Accounts_OAuth_Gitlab_secret": "Клиентска тайна",
   "Accounts_OAuth_Google": "Влизане с Google профил",
   "Accounts_OAuth_Google_callback_url": "URL адрес за обратно обаждане в Google",
