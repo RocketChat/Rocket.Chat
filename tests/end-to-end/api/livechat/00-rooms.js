@@ -4,7 +4,6 @@ import { updatePermission, updateSetting } from '../../../data/permissions.helpe
 
 describe('LIVECHAT - rooms', function() {
 	this.retries(0);
-	let room;
 
 	before((done) => getCredentials(done));
 
@@ -13,7 +12,6 @@ describe('LIVECHAT - rooms', function() {
 			createAgent()
 				.then(() => createVisitor())
 				.then((visitor) => createLivechatRoom(visitor.token))
-				.then((createdRoom) => { room = createdRoom; })
 				.then(done);
 		});
 	});
@@ -115,8 +113,6 @@ describe('LIVECHAT - rooms', function() {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-					const expectedRoom = res.body.rooms.find((returnedRoom) => returnedRoom._id === room._id);
-					expect(expectedRoom._id).to.be.equal(room._id);
 				})
 				.end(done);
 		});
