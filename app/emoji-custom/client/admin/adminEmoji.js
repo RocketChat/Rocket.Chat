@@ -48,7 +48,7 @@ Template.adminEmoji.helpers({
 			if ((currentTarget.offsetHeight + currentTarget.scrollTop) < (currentTarget.scrollHeight - 100)) {
 				return;
 			}
-			if (Template.instance().limit.get() > Template.instance().customemoji().length) {
+			if (instance.limit.get() > instance.customemoji().length) {
 				return false;
 			}
 			instance.limit.set(instance.limit.get() + 50);
