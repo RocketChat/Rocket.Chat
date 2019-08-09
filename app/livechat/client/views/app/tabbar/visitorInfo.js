@@ -13,7 +13,7 @@ import { modal } from '../../../../../ui-utils';
 import { ChatRoom, Rooms, Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
-import { hasPermission } from '../../../../../authorization';
+import { hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import './visitorInfo.html';
@@ -166,7 +166,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canSeeButtons() {
-		if (hasPermission(Meteor.userId(), 'close-others-livechat-room') || hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
+		if (hasAtLeastOnePermission(['close-others-livechat-room', 'transfer-livechat-guest'])) {
 			return true;
 		}
 
@@ -174,7 +174,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canEditRoom() {
-		if (hasPermission(Meteor.userId(), 'save-others-livechat-room-info')) {
+		if (hasAllPermission('save-others-livechat-room-info')) {
 			return true;
 		}
 
@@ -182,7 +182,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canCloseRoom() {
-		if (hasPermission(Meteor.userId(), 'close-others-livechat-room')) {
+		if (hasAllPermission('close-others-livechat-room')) {
 			return true;
 		}
 
@@ -190,7 +190,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canForwardGuest() {
-		if (hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
+		if (hasAllPermission('transfer-livechat-guest')) {
 			return true;
 		}
 
