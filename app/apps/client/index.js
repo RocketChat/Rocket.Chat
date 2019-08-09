@@ -17,6 +17,6 @@ import './gameCenter/gameModal.html';
 import './gameCenter/gameModal';
 import './gameCenter/gameCenter';
 
-import './gameCenter/apiHandler';
+import './extrernalComponent';
 
 export { Apps } from './orchestrator';

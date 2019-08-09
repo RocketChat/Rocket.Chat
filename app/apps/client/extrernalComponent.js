@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 
 Meteor.startup(function() {
 	window.addEventListener('message', async ({ data, source }) => {
