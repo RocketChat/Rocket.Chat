@@ -146,7 +146,6 @@ Meteor.startup(function() {
 					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
 				],
 				i18nLabel: 'Jitsi_Application_ID',
-				public: true,
 			});
 
 			this.add('Jitsi_Application_Secret', '', {
@@ -156,7 +155,6 @@ Meteor.startup(function() {
 					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
 				],
 				i18nLabel: 'Jitsi_Application_Secret',
-				public: true,
 			});
 
 			this.add('Jitsi_Limit_Token_To_Room', true, {
