@@ -2,13 +2,13 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
-import { logger } from './logger';
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+import { SystemLogger } from '../../logger/server';
+import { settings } from '../../settings';
 
 /**
  * DeepL translation service provider class representation.
@@ -26,7 +26,11 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
-		// this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
+		this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
+		// Get the service provide API key.
+		settings.get('AutoTranslate_DeepLAPIKey', (key, value) => {
+			this.apiKey = value;
+		});
 	}
 
 	/**
@@ -56,6 +60,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 
 	/**
 	 * Returns supported languages for translation by the active service provider.
+	 * Deepl does not provide an endpoint yet to retrieve the supported languages.
+	 * So each supported languages are explicitly maintained.
 	 * @private implements super abstract method.
 	 * @param {string} target
 	 * @returns {object} code : value pair
@@ -65,8 +71,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 			if (this.supportedLanguages[target]) {
 				return this.supportedLanguages[target];
 			}
-			// eslint-disable-next-line no-return-assign
-			return this.supportedLanguages[target] = [
+			this.supportedLanguages[target] = [
 				{
 					language: 'en',
 					name: TAPi18n.__('Language_English', { lng: target }),
@@ -104,6 +109,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 					name: TAPi18n.__('Language_Russian', { lng: target }),
 				},
 			];
+
+			return this.supportedLanguages[target];
 		}
 	}
 
@@ -143,7 +150,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
 			} catch (e) {
-				logger.deepl.error('Error translating message', e);
+				SystemLogger.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -156,7 +163,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAtachment(attachment, targetLanguages) {
+	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
 		const query = `text=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
@@ -178,7 +185,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					}
 				}
 			} catch (e) {
-				logger.deepl.error('Error translating message attachment', e);
+				SystemLogger.error('Error translating message attachment', e);
 			}
 		});
 		return translations;
