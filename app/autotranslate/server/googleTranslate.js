@@ -25,7 +25,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		this.name = 'google-translate';
 		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
 		// Get the service provide API key.
-		settings.get('AutoTranslate_DeepLAPIKey', (key, value) => {
+		settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
 			this.apiKey = value;
 		});
 	}
