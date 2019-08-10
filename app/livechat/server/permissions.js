@@ -30,5 +30,15 @@ Meteor.startup(() => {
 		Permissions.createOrUpdate('manage-livechat-departments', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('view-livechat-departments', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('add-livechat-department-agents', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-current-chats', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-analytics', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-real-time-monitoring', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-triggers', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-customfields', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-installation', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-appearance', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-webhooks', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-facebook', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-officeHours', ['livechat-manager', 'admin']);
 	}
 });
