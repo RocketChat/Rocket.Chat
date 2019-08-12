@@ -379,9 +379,7 @@ class Administration extends Page {
 
 	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUsernameChange"]'); }
 
-	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .button.expand'); }
-
-	get buttonFirstSectionExpand() { return browser.element('.section:nth-of-type(1) .button.expand'); }
+	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .rc-button.rc-button--nude'); }
 
 	checkUserList(user) {
 		const element = browser.element(`td=adminCreated${ user }`);

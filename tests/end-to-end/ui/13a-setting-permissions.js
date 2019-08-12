@@ -7,10 +7,7 @@ import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
 
 function openAdminView() {
-	sideNav.sidebarMenu.click();
-	sideNav.admin.waitForVisible(5000);
-	sideNav.admin.click();
-	admin.flexNavContent.waitForVisible(5000);
+	admin.open('admin/Layout');
 }
 
 function logoutRocketchat() {
@@ -18,6 +15,7 @@ function logoutRocketchat() {
 	sideNav.sidebarUserMenu.click();
 	sideNav.logout.waitForVisible(5000);
 	sideNav.logout.click();
+	browser.pause(2000); // figured that subsequent actions (new clicks) seem to prevent the logout
 }
 
 describe('[Rocket.Chat Settings based permissions]', function() {
@@ -35,7 +33,6 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			openAdminView();
 			admin.permissionsLink.waitForVisible(5000);
 			admin.permissionsLink.click();
-			admin.rolesSettingPermissionsButton.click();
 		});
 
 		it('Set permission for user to manage settings', function(done) {
@@ -49,7 +46,8 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		it('Set Permission for user to change titlepage title', function(done) {
-			admin.rolesPermissionGrid.waitForVisible(5000);
+			admin.rolesSettingPermissionsButton.click();
+			admin.rolesPermissionGrid.waitForVisible(10000);
 			if (!admin.rolesSettingLayoutTitle.isSelected()) {
 				admin.rolesSettingLayoutTitle.click();
 			}
@@ -78,17 +76,27 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 		it('Change titlepage title is allowed', function(done) {
 			admin.layoutLink.waitForVisible(10000);
 			admin.layoutLink.click();
-			admin.buttonFirstSectionExpand.waitForVisible(5000);
-			admin.buttonFirstSectionExpand.click();
 			admin.generalLayoutTitle.waitForVisible(5000);
 			admin.generalLayoutTitle.setValue(newTitle);
 			browser.pause(2000);
 			admin.buttonSave.click();
 			done();
 		});
+
+		after(() => {
+			sideNav.preferencesClose.waitForVisible(5000);
+			sideNav.preferencesClose.click();
+			logoutRocketchat();
+		});
 	});
 
 	describe('Verify settings change and cleanup', function() {
+		before(() => {
+			console.log('Switching back to Admin');
+			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+			openAdminView();
+		});
+
 		it('New settings value visible for admin as well', function(done) {
 			admin.layoutLink.waitForVisible(10000);
 			admin.layoutLink.click();
@@ -99,13 +107,6 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			browser.pause(2000);
 			admin.buttonSave.click();
 			done();
-		});
-
-		before(() => {
-			sideNav.preferencesClose.waitForVisible(5000);
-			sideNav.preferencesClose.click();
-			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-			openAdminView();
 		});
 
 		it('Cleanup permissions', function(done) {
