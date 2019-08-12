@@ -55,7 +55,7 @@ export class Settings extends Base {
 		};
 
 		if (ids.length > 0) {
-			filter._id =				{ $in: ids };
+			filter._id = { $in: ids };
 		}
 
 		return this.find(filter, { fields: { _id: 1, value: 1 } });
@@ -185,6 +185,24 @@ export class Settings extends Base {
 		};
 
 		return this.remove(query);
+	}
+
+	// RENAME SETTING
+	renameSetting(oldId, newId) {
+		const oldSetting = this.findById(oldId).fetch()[0];
+		if (oldSetting) {
+			this.removeById(oldSetting._id);
+			// there has been some problem with upsert() when changing the complete doc, so decide explicitly for insert or update
+			let newSetting = this.findById(newId).fetch()[0];
+			if (newSetting) {
+				this.updateValueById(newId, oldSetting.value);
+			} else {
+				newSetting = oldSetting;
+				newSetting._id = newId;
+				delete newSetting.$loki;
+				this.insert(newSetting);
+			}
+		}
 	}
 }
 
