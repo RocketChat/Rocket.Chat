@@ -69,7 +69,7 @@
   "Accounts_EmailVerification_Description": "ត្រូវប្រាកដថាអ្នកមានការកំណត់ SMTP ត្រឹមត្រូវដើម្បីប្រើលក្ខណៈពិសេសនេះ។",
   "Accounts_Enrollment_Email_Subject_Default": "សូមស្វាគមន៍មកកាន់ _Site_Name_",
   "Accounts_Enrollment_Email": "អ៊ីម៉ែលចុះឈ្មោះ។",
-  "Accounts_Enrollment_Email_Description": "អ្នកអាចប្រើកន្លែងដាក់ខាងក្រោម: <br/><ul><li>[ឈ្មោះ], [គោត្តនាម], [នាម] សម្រាប់ឈ្មោះពេញនាមនាមត្រកូលឬនាមត្រកូលរបស់អ្នកប្រើរៀង ៗ ខ្លួន </li> <li>[អ៊ីមែល] សម្រាប់អ៊ីមែលរបស់អ្នកប្រើ. </li><li> [Site_Name] និង [Site_URL] សម្រាប់ឈ្មោះកម្មវិធីនិង URL រៀងៗខ្លួន។ </li></ul>",
+  "Accounts_Enrollment_Email_Description": "អ្នកអាចប្រើកន្លែងដាក់ខាងក្រោម: <br/><ul><li>[name], [fname], [lname] សម្រាប់ឈ្មោះពេញនាមនាមត្រកូលឬនាមត្រកូលរបស់អ្នកប្រើរៀង ៗ ខ្លួន </li> <li>[email] សម្រាប់អ៊ីមែលរបស់អ្នកប្រើ. </li><li> [Site_Name] និង [Site_URL] សម្រាប់ឈ្មោះកម្មវិធីនិង URL រៀងៗខ្លួន។ </li></ul>",
   "Accounts_ForgetUserSessionOnWindowClose": "បំភ្លេចសម័យអ្នកប្រើនៅលើបង្អួចបិទ",
   "Accounts_Iframe_api_method": "វិធីសាស្រ្ត API",
   "Accounts_Iframe_api_url": "តំណភ្ជាប់ API",
