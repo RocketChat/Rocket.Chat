@@ -235,7 +235,7 @@ export const getSessionOverviewData = (dbCursor) => {
 	let totalOnline = 0;
 	let totalCompletedChat = 0;
 	let timeDuration = 0;
-	let busiestTime = 0;
+	const busiestTimeCount = new Map();
 	const mostCountryVisitors = new Map();
 	dbCursor.forEach(function(data) {
 		if (data.status === 'online') {
@@ -246,10 +246,11 @@ export const getSessionOverviewData = (dbCursor) => {
 			totalCompletedChat++;
 			const offlineTime = moment(data.offlineTime);
 			timeDuration += offlineTime.diff(data.createdAt);
+		}
 
-			if (offlineTime.diff(data.createdAt) > busiestTime) {
-				busiestTime = moment.duration(offlineTime.diff(data.createdAt));
-			}
+		if (data.chatStartTime) {
+			const dayHour = moment(data.chatStartTime).format('H');
+			busiestTimeCount.set(dayHour, busiestTimeCount.has(dayHour) ? busiestTimeCount.get(dayHour) + 1 : 1);
 		}
 
 		if (data.location) {
@@ -260,23 +261,17 @@ export const getSessionOverviewData = (dbCursor) => {
 
 	const avg = parseFloat(timeDuration / totalCompletedChat).toFixed(2);
 	const avgTimeDuration = moment.duration(Number(avg));
-	let avgTime = convertTimeAvg(avgTimeDuration);
 	const MaxVisitorsFrom = getKeyHavingMaxValue(mostCountryVisitors, '-');
-	if (moment.isDuration(busiestTime)) {
-		busiestTime = busiestTime.humanize();
-	}
-	if (isNaN(avgTimeDuration)) {
-		avgTime = '-';
-	}
+	const busiestHour = getKeyHavingMaxValue(busiestTimeCount, -1);
 	return [{
 		title: 'Online_Visitors',
 		value: totalOnline,
 	}, {
 		title: 'Avg_time_on_site',
-		value: avgTime,
+		value: isNaN(avgTimeDuration) ? '-' : convertTimeAvg(avgTimeDuration),
 	}, {
-		title: 'Busiest_chat_time',
-		value: busiestTime,
+		title: 'Busiest_time',
+		value: busiestHour > 0 ? `${ moment(busiestHour, ['H']).format('hA') }-${ moment((parseInt(busiestHour) + 1) % 24, ['H']).format('hA') }` : '-',
 	}, {
 		title: 'Most_visitors_from',
 		value: MaxVisitorsFrom,

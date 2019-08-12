@@ -31,6 +31,14 @@
               </div>
             </div>
           </div>
+          <div class="map-container">
+            <h4>{{_ "Visitor_Location"}}</h4>
+            {{#unless geolocationError}}
+            <img src="{{mapOptions}}">
+            {{else}}
+            Geolocation failed: {{geolocationError}}
+            {{/unless}}
+          </div>
         </div>
       {{/with}}
     </div>
