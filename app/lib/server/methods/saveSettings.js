@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission, hasAllPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
+import { getSettingPermissionId } from '../../../authorization/lib';
 
 Meteor.methods({
 	saveSettings(params = []) {
@@ -18,7 +19,7 @@ Meteor.methods({
 			// Verify the _id passed in is a string.
 			check(_id, String);
 			if (!hasPermission(Meteor.userId(), 'edit-privileged-setting')
-				&& !hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])) {
+				&& !hasAllPermission(Meteor.userId(), ['manage-selected-settings', getSettingPermissionId(_id)])) {
 				settingsNotAllowed.push(_id);
 			}
 			const setting = Settings.db.findOneById(_id);

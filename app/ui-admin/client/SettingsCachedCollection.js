@@ -20,7 +20,7 @@ export class PrivateSettingsCachedCollection extends CachedCollection {
 		// private settings also need to listen to a change of authorizations for the setting-based authorizations
 		Notifications[eventType || this.eventType](eventName || this.eventName, async (t, record) => {
 			this.log('record received', t, record);
-			if (t === 'auth') {
+			if (t === 'auth') { // TODO remove that
 				if (hasAtLeastOnePermission('view-privileged-setting', 'edit-privileged-setting')
 					|| hasAllPermission([`change-setting-${ record._id }`, 'manage-selected-settings'])) {
 					delete record.$loki;

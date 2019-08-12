@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Roles, Permissions, Settings } from '../../models';
 import { settings } from '../../settings/server';
+import { getSettingPermissionId } from '../lib';
 
 Meteor.startup(function() {
 	// Note:
@@ -106,12 +107,6 @@ Meteor.startup(function() {
 		Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true, mandatory2fa: false } });
 	}
 
-
-	// setting-based permissions
-	const getSettingPermissionId = function(settingId) {
-		return `change-setting-${ settingId }`;
-	};
-
 	const getPreviousPermissions = function(settingId) {
 		const previousSettingPermissions = {};
 
@@ -126,6 +121,7 @@ Meteor.startup(function() {
 			});
 		return previousSettingPermissions;
 	};
+
 	const createSettingPermission = function(setting, previousSettingPermissions) {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission = {
