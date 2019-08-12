@@ -1,5 +1,7 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
@@ -17,57 +19,148 @@ const whereNotSetting = {
 };
 
 Template.permissions.helpers({
+	tabsData() {
+		const {
+			state,
+		} = Template.instance();
+
+		const permissionsTab = {
+			label: t('Permissons'),
+			value: 'permissons',
+			condition() {
+				return true;
+			},
+		};
+
+		const settingsTab = {
+			label: t('Settings'),
+			value: 'settings',
+			condition() {
+				return true;
+			},
+		};
+
+		const tabs = [permissionsTab];
+
+		const settingsPermissions = hasAllPermission('access-setting-permissions');
+
+		if (settingsPermissions) {
+			tabs.push(settingsTab);
+		}
+		switch (settingsPermissions && state.get('tab')) {
+			case 'settings':
+				settingsTab.active = true;
+				break;
+			case 'permissions':
+				permissionsTab.active = true;
+				break;
+			default:
+				permissionsTab.active = true;
+		}
+
+
+		return {
+			tabs,
+			onChange(value) {
+				state.set({
+					tab: value,
+					size: 50,
+				});
+			},
+		};
+	},
 	roles() {
 		return Roles.find();
 	},
 
 	permissions() {
-		return ChatPermissions.find(whereNotSetting, // the $where seems to have no effect - filtered as workaround after fetch()
+		const { state } = Template.instance();
+		const limit = state.get('size');
+		const filter = new RegExp(s.escapeRegExp(state.get('filter')), 'i');
+
+		return ChatPermissions.find(
+			{
+				...whereNotSetting,
+				$or: [{ _id: filter }],
+			}, // the $where seems to have no effect - filtered as workaround after fetch()
 			{
 				sort: {
 					_id: 1,
 				},
-			});
+				limit,
+			}
+		);
 	},
 
 	settingPermissions() {
-		return ChatPermissions.find({
-			level: 'setting',
-			group: { $exists: true },
-		},
-		{
-			sort: { // sorting seems not to be copied from the publication, we need to request it explicitly in find()
-				group: 1,
-				section: 1,
+		const { state } = Template.instance();
+		const limit = state.get('size');
+		const filter = new RegExp(s.escapeRegExp(state.get('filter')), 'i');
+		return ChatPermissions.find(
+			{
+				$or: [
+					{ _id: filter },
+				],
+				level: 'setting',
+				group: { $exists: true },
 			},
-		}); // group permissions are assigned implicitly,  we can hide them. $exists: {group:false} not supported by Minimongo
+			{
+				limit,
+				sort: {
+					// sorting seems not to be copied from the publication, we need to request it explicitly in find()
+					group: 1,
+					section: 1,
+				},
+			}
+		); // group permissions are assigned implicitly,  we can hide them. $exists: {group:false} not supported by Minimongo
 	},
 
 	hasPermission() {
 		return hasAllPermission('access-permissions');
 	},
 
-	hasSettingPermission() {
-		return hasAllPermission('access-setting-permissions');
-	},
-
 	hasNoPermission() {
-		return !hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']);
+		return !hasAtLeastOnePermission([
+			'access-permissions',
+			'access-setting-permissions',
+		]);
+	},
+	filter() {
+		return Template.instance().state.get('filter');
 	},
 
-	settingPermissionsToggled() {
-		return Template.instance().settingPermissionsToggled.get();
+	tab() {
+		return Template.instance().state.get('tab');
 	},
 });
 
 Template.permissions.events({
-	'click .js-toggle-setting-permissions'(event, instance) {
-		instance.settingPermissionsToggled.set(!instance.settingPermissionsToggled.get());
+	'keyup #permissions-filter'(e, t) {
+		e.stopPropagation();
+		e.preventDefault();
+		t.state.set('filter', e.currentTarget.value);
 	},
+	'scroll .content': _.throttle(({ currentTarget }, i) => {
+		if (
+			currentTarget.offsetHeight + currentTarget.scrollTop
+			>= currentTarget.scrollHeight - 100
+		) {
+			return i.state.set('size', i.state.get('size') + 50);
+		}
+	}, 300),
 });
 
 Template.permissions.onCreated(function() {
-	this.settingPermissionsToggled = new ReactiveVar(false);
+	this.state = new ReactiveDict({
+		filter: '',
+		tab: '',
+		size: 50,
+	});
+
+	this.autorun(() => {
+		this.state.get('filter');
+		this.state.set('size', 50);
+	});
 });
 
 Template.permissionsTable.helpers({

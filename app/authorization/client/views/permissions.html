@@ -1,7 +1,7 @@
 <template name="permissionsTable">
 		<div class="content">
 			<table class="permission-grid secondary-background-color">
-	
+
 				<thead class="content-background-color">
 					<tr>
 						<th class=" role-name permission-name border-component-color"></th>
@@ -29,48 +29,50 @@
 						<td class="permission-checkbox border-component-color">
 							<input type="checkbox" name="perm[{{role._id}}][{{permission._id}}]" class="role-permission" value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}" data-permission="{{permission._id}}">
 						</td>
+						{{else}}
+						<tr class="table-no-click">
+							<td>{{_ "No_results_found_for"}} {{filter}}</td>
+						</tr>
 						{{/each}}
 					</tr>
 					{{/each}}
 				</tbody>
 			</table>
 		</div>
-	</template>
-	<template name="permissions">
-		<div class="page-container permissions-manager">
-			<section class="permissions-manager page-container page-home page-static page-list">
-				{{#if hasPermission}}
-					{{# header sectionName=pageTitle}}
-					{{#if hasSettingPermission}}
-						<div class="rc-header__section-button">
-							<button class="rc-button--small rc-button--secondary js-toggle-setting-permissions"><span>
-								{{#if settingPermissionsToggled }}
-									{{_ "Display_chat_permissions"}}
-								{{else}}
-									{{_ "Display_setting_permissions"}}
-								{{/if}}
-								</span>
-							</button>
+</template>
+<template name="permissions">
+	<div class="page-container permissions-manager">
+		<section class="permissions-manager page-container page-home page-static page-list">
+			{{#if hasPermission}}
+				{{# header sectionName=pageTitle}}
+				<div class="rc-header__section-button">
+					<a href="{{pathFor"admin-permissions-new"}}"
+						class="rc-button rc-button--primary new-role">{{_ "New_role"}}</a>
+				</div>
+				{{/header}}
+				<form class="search-form" role="form">
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
 						</div>
-					{{/if}}
-					<div class="rc-header__section-button">
-						<a href="{{pathFor"admin-permissions-new"}}"
-							class="rc-button rc-button--primary new-role">{{_ "New_role"}}</a>
+						<input id="permissions-filter" type="text" class="rc-input__element" placeholder="{{_ " Search "}}" autofocus dir="auto">
 					</div>
-					{{/header}}
-					{{#if settingPermissionsToggled }}
-						{{> permissionsTable permissions=settingPermissions allRoles=roles collection='Setting'}}
-					{{else}}
-						{{> permissionsTable permissions=permissions allRoles=roles collection='Chat'}}
+				</form>
+
+				{{>tabs tabs=tabsData}}
+				{{#if $eq tab 'settings'}}
+					{{> permissionsTable query=filter permissions=settingPermissions allRoles=roles collection='Setting'}}
+				{{else}}
+					{{> permissionsTable query=filter permissions=permissions allRoles=roles collection='Chat'}}
+				{{/if}}
+			{{/if}}
+			{{#if hasNoPermission}}
+				<div class="content">
+					{{#if i18nPageTitle}} {{> header sectionName=i18nPageTitle}} {{else}} {{> header sectionName=pageTitle}}
 					{{/if}}
-				{{/if}}
-				{{#if hasNoPermission}}
-					<div class="content">
-						{{#if i18nPageTitle}} {{> header sectionName=i18nPageTitle}} {{else}} {{> header sectionName=pageTitle}}
-						{{/if}}
-						{{_ "Not_authorized"}}
-					</div>
-				{{/if}}
-			</section>
-		</div>
-	</template>
+					{{_ "Not_authorized"}}
+				</div>
+			{{/if}}
+		</section>
+	</div>
+</template>
