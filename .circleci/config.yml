@@ -261,6 +261,8 @@ jobs:
             export PATH=~/.local/bin:$PATH
             export CIRCLE_TAG=${CIRCLE_TAG:=}
 
+            aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
+
             source .circleci/setartname.sh
             source .circleci/setdeploydir.sh
             bash .circleci/setupsig.sh
