@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { getUserPreference } from '../../utils';
-import { isIE } from '../../ui-utils/client/lib/isIE';
+import { isIE11 } from '../../ui-utils/client/lib/isIE11';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../lib/rocketchat';
 
@@ -35,7 +35,7 @@ Tracker.autorun(() => {
 
 			let hasText = false;
 
-			if (!isIE()) {
+			if (!isIE11()) {
 				const filter = (node) => {
 					if (node.nodeType === Node.ELEMENT_NODE && (
 						node.classList.contains('emojione')
