@@ -23,7 +23,7 @@ const parseNotEscaped = function(msg, message) {
 		return token;
 	};
 
-	const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+	const schemes = (settings.get('Markdown_SupportSchemesForLink') || '').split(',').join('|');
 
 	if (settings.get('Markdown_Headers')) {
 		// Support # Text for h1

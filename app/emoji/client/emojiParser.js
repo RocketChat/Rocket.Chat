@@ -32,25 +32,32 @@ Tracker.autorun(() => {
 
 			const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
 
+			const filter = (node) => {
+				if (node.nodeType === Node.ELEMENT_NODE && (
+					node.classList.contains('emojione')
+						|| node.classList.contains('emoji')
+				)) {
+					return NodeFilter.FILTER_REJECT;
+				}
+				return NodeFilter.FILTER_ACCEPT;
+			};
+
+			// const filter = {
+			// 	acceptNode: file ,
+			// };
 			const walker = document.createTreeWalker(
 				checkEmojiOnly,
 				NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-				{
-					acceptNode: (node) => {
-						if (node.nodeType === Node.ELEMENT_NODE && (
-							node.classList.contains('emojione')
-							|| node.classList.contains('emoji')
-						)) {
-							return NodeFilter.FILTER_REJECT;
-						}
-						return NodeFilter.FILTER_ACCEPT;
-					},
-				},
+				null,
+				false
 			);
 
 			let hasText = false;
 
 			while (walker.nextNode()) {
+				if (filter(walker.currentNode) === NodeFilter.FILTER_REJECT) {
+					continue;
+				}
 				if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
 					hasText = true;
 					break;
