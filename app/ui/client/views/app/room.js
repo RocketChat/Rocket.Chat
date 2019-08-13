@@ -956,6 +956,18 @@ Template.room.events({
 		const { msg: { drid } } = messageArgs(this);
 		FlowRouter.goToRoomById(drid);
 	},
+	'click a[download]': (event) => {
+		const a = event.currentTarget;
+		if (!a.href.startsWith('blob:')) {
+			event.preventDefault();
+			fetch(event.currentTarget.href)
+				.then((response) => response.blob())
+				.then((blob) => {
+					a.href = URL.createObjectURL(blob);
+					a.click();
+				});
+		}
+	},
 });
 
 
