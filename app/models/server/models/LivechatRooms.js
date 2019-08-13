@@ -80,12 +80,10 @@ export class LivechatRooms extends Base {
 			}
 		}
 
-		if (tags != null) {
-			if (!_.isEmpty(s.trim(tags))) {
-				setData.tags = s.trim(tags).split(',').map((tag) => s.trim(tag));
-			} else {
-				unsetData.tags = 1;
-			}
+		if (Array.isArray(tags) && tags.length > 0) {
+			setData.tags = tags;
+		} else {
+			unsetData.tags = 1;
 		}
 
 		const update = {};

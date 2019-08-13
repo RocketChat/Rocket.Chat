@@ -22,7 +22,7 @@ Meteor.methods({
 		check(roomData, Match.ObjectIncluding({
 			_id: String,
 			topic: Match.Optional(String),
-			tags: Match.Optional(String),
+			tags: Match.Optional([String]),
 		}));
 
 		const room = LivechatRooms.findOneById(roomData._id, { t: 1, servedBy: 1 });

@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import moment from 'moment';
-import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -8,9 +7,8 @@ import { Template } from 'meteor/templating';
 import { modal, call } from '../../../../ui-utils';
 import { t } from '../../../../utils/client';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
+import { LivechatRoom } from '../../collections/LivechatRoom';
 import './livechatCurrentChats.html';
-
-const LivechatRoom = new Mongo.Collection('livechatRoom');
 
 Template.livechatCurrentChats.helpers({
 	hasMore() {

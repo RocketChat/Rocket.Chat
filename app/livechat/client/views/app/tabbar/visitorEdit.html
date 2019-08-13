@@ -3,27 +3,30 @@
 		<form class="edit-form" autocomplete="off">
 			{{#with visitor}}
 				<h3>{{username}}</h3>
-				<div class="rc-input">
+				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ "Name"}}</div>
-						<div class="rc-input__wrapper">
-							<input class="rc-input__element" type="text" name="name" autocomplete="off" value="{{name}}">
-						</div>
+							<div class="rc-input__title">{{_ "Name"}}</div>
+							<div class="rc-input__wrapper">
+								<input name="name" type="text" class="rc-input__element rc-input__element--small" autocomplete="off" value="{{name}}"/>
+							</div>
 					</label>
 				</div>
-				<div class="rc-input">
+				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Email"}}</div>
 						<div class="rc-input__wrapper">
-							<input class="rc-input__element" type="text" name="email" autocomplete="off" value="{{email}}">
+							<div class="rc-input__icon">
+								{{> icon icon='mail' }}
+							</div>
+							<input class="rc-input__element rc-input__element--small" type="text" name="email" autocomplete="off" value="{{email}}">
 						</div>
 					</label>
 				</div>
-				<div class="rc-input">
+				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Phone"}}</div>
 						<div class="rc-input__wrapper">
-							<input class="rc-input__element" type="text" name="phone" autocomplete="off" value="{{phone}}">
+							<input class="rc-input__element rc-input__element--small" type="text" name="phone" autocomplete="off" value="{{phone}}">
 						</div>
 					</label>
 				</div>
@@ -31,21 +34,34 @@
 
 			{{#with room}}
 				<h3>{{_ "Conversation" }}</h3>
-				<div class="rc-input">
+				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Topic"}}</div>
 						<div class="rc-input__wrapper">
-							<input class="rc-input__element" type="text" name="topic" autocomplete="off" value="{{topic}}">
+							<input class="rc-input__element rc-input__element--small" type="text" name="topic" autocomplete="off" value="{{topic}}">
 						</div>
 					</label>
 				</div>
-				<div class="rc-input">
-					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ "Tags"}}</div>
-						<div class="rc-input__wrapper">
-							<input class="rc-input__element" type="text" name="tags" autocomplete="off" value="{{tags}}">
-						</div>
-					</label>
+				<div class="rc-form-group rc-form-group--small rc-form-group--inline">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Tags"}}</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+									{{> icon icon='edit' }}
+								</div>
+								<input class="rc-input__element rc-input__element--small" type="text" name="tags" autocomplete="off">
+							</div>
+						</label>
+					</div>
+					<button id="addTag" class="rc-button rc-button--small rc-button--primary rc-form-item-inline"><i class="icon-plus"></i></button>
+				</div>
+				<div class="rc-form-group rc-form-group--small">
+					<ul id="tags" class="chip-container current-room-tags">
+						{{#each tags}}
+						<li class="remove-tag" title="{{this}}"><i class="icon icon-cancel-circled"></i>{{this}}</li>
+						{{/each}}
+					</ul>
 				</div>
 			{{/with}}
 			<div class="rc-user-info__flex rc-user-info__row">

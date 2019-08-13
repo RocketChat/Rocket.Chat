@@ -14,6 +14,7 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	}
 
 	check(filter, {
+		_id: Match.Maybe(String), // room id to filter
 		name: Match.Maybe(String), // room name to filter
 		agent: Match.Maybe(String), // agent _id who is serving
 		status: Match.Maybe(String), // either 'opened' or 'closed'
@@ -53,7 +54,9 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (filter.department) {
 		query.departmentId = filter.department;
 	}
-
+	if (filter._id) {
+		query._id = filter._id;
+	}
 	const self = this;
 
 	const handle = LivechatRooms.findLivechat(query, offset, limit).observeChanges({

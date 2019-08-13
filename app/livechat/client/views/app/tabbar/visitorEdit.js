@@ -3,9 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
-import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
+import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorEdit.html';
 
 Template.visitorEdit.helpers({
@@ -31,22 +31,29 @@ Template.visitorEdit.helpers({
 		}
 	},
 
-	joinTags() {
-		return this.tags && this.tags.join(', ');
+	tags() {
+		return Template.instance().tags.get();
 	},
+
 });
 
 Template.visitorEdit.onCreated(function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
+	this.tags = new ReactiveVar([]);
 
 	this.autorun(() => {
 		this.visitor.set(LivechatVisitor.findOne({ _id: Template.currentData().visitorId }));
 	});
 
 	this.autorun(() => {
-		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
+		const room = LivechatRoom.findOne({ _id: Template.currentData().roomId });
+
+		this.room.set(room);
+		this.tags.set((room && room.tags) || []);
 	});
+
+	this.subscribe('livechat:rooms', { _id: Template.currentData().roomId });
 });
 
 Template.visitorEdit.events({
@@ -60,7 +67,7 @@ Template.visitorEdit.events({
 		userData.phone = event.currentTarget.elements.phone.value;
 
 		roomData.topic = event.currentTarget.elements.topic.value;
-		roomData.tags = event.currentTarget.elements.tags.value;
+		roomData.tags = instance.tags.get();
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
@@ -69,6 +76,27 @@ Template.visitorEdit.events({
 				toastr.success(t('Saved'));
 			}
 		});
+	},
+
+	'click .remove-tag'(e, t) {
+		e.stopPropagation();
+		e.preventDefault();
+		let tags = t.tags.get();
+		tags = tags.filter((el) => el !== this.valueOf());
+		t.tags.set(tags);
+	},
+
+	'click #addTag'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+		const $tagInput = instance.$('[name="tags"]');
+		const tags = [...instance.tags.get()];
+		const tagVal = $tagInput.val();
+		if (tagVal !== '' && tags.indexOf(tagVal) === -1) {
+			tags.push($tagInput.val());
+			instance.tags.set(tags);
+			$tagInput.val('');
+		}
 	},
 
 	'click .save'() {
