@@ -8,18 +8,12 @@ import { settings } from '../../../settings';
 import '../../ufs/GoogleStorage/server.js';
 
 const get = function(file, req, res) {
-	const download = typeof req.query.download !== 'undefined';
+	const forceDownload = typeof req.query.download !== 'undefined';
 
-	this.store.getRedirectURL(file, download, (err, fileUrl) => {
+	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
 		if (err) {
 			return console.error(err);
 		}
-
-		if (!fileUrl) {
-			return res.end();
-		}
-
-		const forceDownload = typeof req.query.download !== 'undefined';
 
 		if (!fileUrl) {
 			return res.end();
