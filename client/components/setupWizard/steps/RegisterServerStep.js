@@ -4,17 +4,13 @@ import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { Icon } from '../../basic/Icon';
-import { useSetupWizardStepsState } from '../StepsState';
-import { Step } from '../Step';
-import { StepHeader } from '../StepHeader';
-import { StepContent } from '../StepContent';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
+import { Step } from '../Step';
+import { StepContent } from '../StepContent';
+import { StepHeader } from '../StepHeader';
+import { useSetupWizardStepsState } from '../StepsState';
 import { batchSetSettings } from '../functions';
-
-const Text = (props) => <p className='SetupWizard__RegisterServerStep-text' {...props} />;
-
-const Content = (props) => <div className='SetupWizard__RegisterServerStep-content' {...props} />;
 
 const RadioButton = ({ label, ...props }) =>
 	<div className='SetupWizard__RegisterServerStep-radioButton'>
@@ -109,9 +105,9 @@ export function RegisterServerStep({ step, title }) {
 		<StepHeader number={step} title={title} />
 
 		<StepContent>
-			<Text>{t('Register_Server_Info')}</Text>
+			<p className='SetupWizard__RegisterServerStep-text'>{t('Register_Server_Info')}</p>
 
-			<Content>
+			<div className='SetupWizard__RegisterServerStep-content'>
 				<Option
 					label={t('Register_Server_Registered')}
 					name='registerServer'
@@ -156,7 +152,7 @@ export function RegisterServerStep({ step, title }) {
 						<Item icon='circle'>{t('Register_Server_Standalone_Own_Certificates')}</Item>
 					</Items>
 				</Option>
-			</Content>
+			</div>
 		</StepContent>
 
 		<Pager disabled={commiting} onBackClick={handleBackClick} onContinueClick={handleContinueClick} />

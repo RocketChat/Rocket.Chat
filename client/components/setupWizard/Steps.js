@@ -8,10 +8,6 @@ import { Epilogue } from './Epilogue';
 import { SideBar } from './SideBar';
 import { useSetupWizardStepsState, finalStep } from './StepsState';
 
-const Container = (props) => <section className='SetupWizard__Steps' {...props} />;
-
-const Wrapper = (props) => <div className='SetupWizard__Steps-wrapper' {...props} />;
-
 export function Steps() {
 	const { currentStep } = useSetupWizardStepsState();
 	const t = useTranslation();
@@ -41,13 +37,13 @@ export function Steps() {
 				},
 			]}
 		/>
-		<Container>
-			<Wrapper>
+		<section className='SetupWizard__Steps'>
+			<div className='SetupWizard__Steps-wrapper'>
 				<AdminUserInformationStep step={1} title={t('Admin_Info')} />
 				<SettingsBasedStep step={2} title={t('Organization_Info')} />
 				<SettingsBasedStep step={3} title={t('Server_Info')} />
 				<RegisterServerStep step={4} title={t('Register_Server')} />
-			</Wrapper>
-		</Container>
+			</div>
+		</section>
 	</>;
 }
