@@ -42,22 +42,18 @@ Tracker.autorun(() => {
 				return NodeFilter.FILTER_ACCEPT;
 			};
 
-			// const filter = {
-			// 	acceptNode: file ,
-			// };
 			const walker = document.createTreeWalker(
 				checkEmojiOnly,
 				NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-				null,
-				false
+				filter
 			);
 
 			let hasText = false;
 
 			while (walker.nextNode()) {
-				if (filter(walker.currentNode) === NodeFilter.FILTER_REJECT) {
-					continue;
-				}
+				// if (filter(walker.currentNode) === NodeFilter.FILTER_REJECT) {
+				// 	continue;
+				// }
 				if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
 					hasText = true;
 					break;
