@@ -1,5 +1,5 @@
 import { RoutingManager } from '../RoutingManager';
-import { Users } from '../../../../models';
+import { Users } from '../../../../models/server/raw';
 
 /* Load Balancing Queuing method:
 	*

@@ -30,7 +30,7 @@ API.v1.addRoute('livechat/config', {
 			}
 
 			const extraConfig = room && Promise.await(getExtraConfigInfo(room));
-			Object.assign(config, { online: status, guest, room, agent, ...extraConfig });
+			Object.assign(config, { online: status, guest, room, agent }, extraConfig);
 
 			return API.v1.success({ config });
 		} catch (e) {

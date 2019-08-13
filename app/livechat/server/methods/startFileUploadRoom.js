@@ -5,7 +5,7 @@ import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	async 'livechat:startFileUploadRoom'(roomId, token) {
+	'livechat:startFileUploadRoom'(roomId, token) {
 		const guest = LivechatVisitors.getVisitorByToken(token);
 
 		const message = {
@@ -16,7 +16,6 @@ Meteor.methods({
 			token: guest.token,
 		};
 
-		const room = await Livechat.getRoom(guest, message);
-		return room;
+		return Livechat.getRoom(guest, message);
 	},
 });

@@ -284,28 +284,6 @@ export class Rooms extends Base {
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
-	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
-		const collectionObj = this.model.rawCollection();
-		const aggregate = [
-			{
-				$match: {
-					t: 'l',
-					closedAt: { $exists: true },
-					metrics: { $exists: true },
-					'metrics.chatDuration': { $exists: true },
-					...department && { departmentId: department },
-				},
-			},
-			{ $sort: { closedAt: -1 } },
-			{ $limit: numberMostRecentChats },
-			{ $group: { _id: null, chats: { $sum: 1 }, sumChatDuration: { $sum: '$metrics.chatDuration' } } },
-			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
-		];
-
-		const [statistic] = await collectionObj.aggregate(aggregate).toArray();
-		return statistic;
-	}
-
 	closeByRoomId(roomId, closeInfo) {
 		return this.update({
 			_id: roomId,
