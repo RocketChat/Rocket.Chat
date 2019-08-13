@@ -10,7 +10,7 @@ import { useReactiveValue } from '../../hooks/useReactiveValue';
 export function StateChecker({ children }) {
 	const setupWizardState = useSetting('Show_Setup_Wizard');
 	const userId = useUserId();
-	const user = useReactiveValue(() => Users.findOne(userId, { fields: { status: true } }));
+	const user = useReactiveValue(() => Users.findOne(userId, { fields: { status: true } }), [userId]);
 
 	const [renderAllowed, allowRender] = useState(false);
 

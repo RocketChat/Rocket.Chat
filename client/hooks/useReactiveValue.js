@@ -6,7 +6,8 @@ export const useReactiveValue = (getValue, deps = []) => {
 
 	useEffect(() => {
 		const computation = Tracker.autorun(() => {
-			setValue(getValue);
+			const newValue = getValue();
+			setValue(() => newValue);
 		});
 
 		return () => {
