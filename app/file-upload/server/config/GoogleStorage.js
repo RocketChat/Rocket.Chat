@@ -8,7 +8,9 @@ import { settings } from '../../../settings';
 import '../../ufs/GoogleStorage/server.js';
 
 const get = function(file, req, res) {
-	this.store.getRedirectURL(file, (err, fileUrl) => {
+	const download = typeof req.query.download !== 'undefined';
+
+	this.store.getRedirectURL(file, download, (err, fileUrl) => {
 		if (err) {
 			console.error(err);
 		}
@@ -32,7 +34,7 @@ const get = function(file, req, res) {
 };
 
 const copy = function(file, out) {
-	this.store.getRedirectURL(file, (err, fileUrl) => {
+	this.store.getRedirectURL(file, false, (err, fileUrl) => {
 		if (err) {
 			console.error(err);
 		}

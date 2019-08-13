@@ -8,7 +8,8 @@ import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
 
 const get = function(file, req, res) {
-	const fileUrl = this.store.getRedirectURL(file);
+	const download = typeof req.query.download !== 'undefined';
+	const fileUrl = this.store.getRedirectURL(file, download);
 
 	if (fileUrl) {
 		const storeType = file.store.split(':').pop();
