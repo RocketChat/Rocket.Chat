@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { getUserPreference } from '../../utils';
+import { isIE } from '../../ui-utils/client/lib/isIE';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../lib/rocketchat';
 
@@ -32,47 +33,43 @@ Tracker.autorun(() => {
 
 			const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
 
-			const filter = (node) => {
-				if (node.nodeType === Node.ELEMENT_NODE && (
-					node.classList.contains('emojione')
-						|| node.classList.contains('emoji')
-				)) {
-					return NodeFilter.FILTER_REJECT;
-				}
-				return NodeFilter.FILTER_ACCEPT;
-			};
-
-			// const filter = {
-			// 	acceptNode: file ,
-			// };
-			const walker = document.createTreeWalker(
-				checkEmojiOnly,
-				NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-				null,
-				false
-			);
-
 			let hasText = false;
 
-			while (walker.nextNode()) {
-				if (filter(walker.currentNode) === NodeFilter.FILTER_REJECT) {
-					continue;
+			if (!isIE()) {
+				const filter = (node) => {
+					if (node.nodeType === Node.ELEMENT_NODE && (
+						node.classList.contains('emojione')
+							|| node.classList.contains('emoji')
+					)) {
+						return NodeFilter.FILTER_REJECT;
+					}
+					return NodeFilter.FILTER_ACCEPT;
+				};
+
+				const walker = document.createTreeWalker(
+					checkEmojiOnly,
+					NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+					filter
+				);
+
+
+				while (walker.nextNode()) {
+					if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
+						hasText = true;
+						break;
+					}
 				}
-				if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
-					hasText = true;
-					break;
+				const emojiOnly = emojis.length && !hasText;
+
+				if (emojiOnly) {
+					for (let i = 0, len = emojis.length; i < len; i++) {
+						const { classList } = emojis[i];
+						classList.add('big');
+					}
+					html = checkEmojiOnly.innerHTML;
 				}
 			}
 
-			const emojiOnly = emojis.length && !hasText;
-
-			if (emojiOnly) {
-				for (let i = 0, len = emojis.length; i < len; i++) {
-					const { classList } = emojis[i];
-					classList.add('big');
-				}
-				html = checkEmojiOnly.innerHTML;
-			}
 
 			// apostrophe (') back to &#39;
 			html = html.replace(/\'/g, '&#39;');
