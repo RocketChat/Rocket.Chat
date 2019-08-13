@@ -3,8 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
+import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 
 import { KonchatNotification } from '../../app/ui';
@@ -14,6 +16,26 @@ Blaze.registerHelper('pathFor', function(path, kw) {
 });
 
 BlazeLayout.setRoot('body');
+
+const createTemplateForComponent = (
+	component,
+	props = {},
+	// eslint-disable-next-line new-cap
+	renderContainerView = (childView) => HTML.DIV({}, childView)
+) => {
+	const name = component.displayName || component.name;
+
+	if (!name) {
+		throw new Error('the component must have a name');
+	}
+
+	Template[name] = new Blaze.Template(() =>
+		// eslint-disable-next-line new-cap
+		renderContainerView(Blaze.With({ component, ...props }, () => Template.React.constructView()))
+	);
+
+	return name;
+};
 
 FlowRouter.subscriptions = function() {
 	Tracker.autorun(() => {
@@ -166,9 +188,9 @@ FlowRouter.route('/register/:hash', {
 
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
-
-	action() {
-		BlazeLayout.render('setupWizard');
+	action: async () => {
+		const { SetupWizard } = await import('../components/setupWizard/SetupWizard');
+		BlazeLayout.render(createTemplateForComponent(SetupWizard));
 	},
 });
 
