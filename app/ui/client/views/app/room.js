@@ -2,6 +2,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
@@ -392,11 +393,11 @@ Template.room.helpers({
 	},
 
 	unreadData() {
-		const data =			{ count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
+		const data = { count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
 
 		const room = RoomManager.getOpenedRoomByRid(this._id);
 		if (room) {
-			data.since = room.unreadSince ? room.unreadSince.get() : undefined;
+			data.since = room.unreadSince.get();
 		}
 
 		return data;
@@ -710,13 +711,11 @@ Template.room.events({
 		const { _id } = t.data;
 		const room = RoomHistoryManager.getRoom(_id);
 		let message = room && room.firstUnread.get();
-		if (message) {
-			RoomHistoryManager.getSurroundingMessages(message, 50);
-		} else {
+		if (!message) {
 			const subscription = Subscriptions.findOne({ rid: _id });
 			message = ChatMessage.find({ rid: _id, ts: { $gt: subscription != null ? subscription.ls : undefined } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
-			RoomHistoryManager.getSurroundingMessages(message, 50);
 		}
+		RoomHistoryManager.getSurroundingMessages(message, 50);
 	},
 
 	'click .toggle-favorite'(event) {
@@ -976,9 +975,11 @@ Template.room.onCreated(function() {
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid });
 		this.subscription.set(subscription);
-		this.state.set('subscribed', !!subscription);
-		this.state.set('autoTranslate', subscription && subscription.autoTranslate);
-		this.state.set('autoTranslateLanguage', subscription && subscription.autoTranslateLanguage);
+		this.state.set({
+			subscribed: !!subscription,
+			autoTranslate: subscription && subscription.autoTranslate,
+			autoTranslateLanguage: subscription && subscription.autoTranslateLanguage,
+		});
 	});
 
 	this.room = Rooms.findOne({ _id: rid });
@@ -1135,8 +1136,6 @@ Template.room.onRendered(function() {
 
 	template.checkIfScrollIsAtBottom = function() {
 		template.atBottom = template.isAtBottom(100);
-		readMessage.enable();
-		readMessage.read();
 	};
 
 	template.sendToBottomIfNecessary = function() {
@@ -1164,15 +1163,18 @@ Template.room.onRendered(function() {
 		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced());
 	window.addEventListener('resize', template.onWindowResize);
 
-	wrapper.addEventListener('mousewheel', function() {
-		template.atBottom = false;
-		Meteor.defer(() => template.checkIfScrollIsAtBottom());
-	});
+	const wheelHandler = (() => {
+		const fn = _.throttle(function() {
+			template.checkIfScrollIsAtBottom();
+		}, 50);
+		return (...args) => {
+			template.atBottom = false;
+			fn(...args);
+		};
+	})();
+	wrapper.addEventListener('mousewheel', wheelHandler);
 
-	wrapper.addEventListener('wheel', function() {
-		template.atBottom = false;
-		Meteor.defer(() => template.checkIfScrollIsAtBottom());
-	});
+	wrapper.addEventListener('wheel', wheelHandler);
 
 	wrapper.addEventListener('touchstart', () => { template.atBottom = false; });
 
@@ -1182,10 +1184,7 @@ Template.room.onRendered(function() {
 		setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
-	wrapper.addEventListener('scroll', function() {
-		template.atBottom = false;
-		template.checkIfScrollIsAtBottom();
-	});
+	wrapper.addEventListener('scroll', wheelHandler);
 
 	$('.flex-tab-bar').on('click', (/* e, t*/) =>
 		setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
@@ -1209,28 +1208,38 @@ Template.room.onRendered(function() {
 		}
 	};
 
-	const updateUnreadCount = _.throttle(function() {
-		const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
+	const updateUnreadCount = _.throttle(() => {
+		Tracker.afterFlush(() => {
+			const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
-		if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
-			return template.unreadCount.set(0);
-		}
+			if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
+				return template.unreadCount.set(0);
+			}
 
-		const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
-		if (!lastMessage) {
-			return template.unreadCount.set(0);
-		}
+			const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
+			if (!lastMessage) {
+				return template.unreadCount.set(0);
+			}
 
-		const subscription = Subscriptions.findOne({ rid: template.data._id }, { reactive: false });
-		const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
-		template.unreadCount.set(count);
+			const subscription = Subscriptions.findOne({ rid: template.data._id }, { reactive: false });
+			const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
+
+			template.unreadCount.set(count);
+		});
 	}, 300);
+
+	this.autorun((c) => {
+		const count = template.unreadCount.get();
+		if (!c.firstRun && count === 0) {
+			readMessage.read();
+		}
+	});
 
 	readMessage.on(template.data._id, () => {
 		template.unreadCount.set(0);
 	});
 
-	wrapper.addEventListener('scroll', () => updateUnreadCount());
+	wrapper.addEventListener('scroll', updateUnreadCount);
 	// salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date());
 

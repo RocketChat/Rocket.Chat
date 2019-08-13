@@ -23,18 +23,13 @@ export const readMessage = new class extends EventEmitter {
 	constructor() {
 		super();
 		this.debug = false;
-		this.read = _.debounce((force) => this.readNow(force), 1000);
-		this.canReadMessage = false;
+		this.read = _.debounce((force) => this.readNow(force), 2000);
+		this.enable();
 	}
 
 	readNow(force) {
-		if (force == null) { force = false; }
 		if (this.debug) { console.log('--------------'); }
 		if (this.debug) { console.log('readMessage -> readNow init process force:', force); }
-
-		const self = this;
-
-		self.refreshUnreadMark();
 
 		if ((force !== true) && (this.canReadMessage === false)) {
 			if (this.debug) { console.log('readMessage -> readNow canceled by canReadMessage: false'); }
@@ -51,7 +46,7 @@ export const readMessage = new class extends EventEmitter {
 			if (this.debug) { console.log('readMessage -> readNow via force rid:', rid); }
 			return Meteor.call('readMessages', rid, () => {
 				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-				this.refreshUnreadMark();
+				this.refreshUnreadMark(rid);
 				return this.emit(rid);
 			});
 		}
@@ -90,7 +85,7 @@ export const readMessage = new class extends EventEmitter {
 		if (this.debug) { console.log('readMessage -> readNow rid:', rid); }
 		Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-			this.refreshUnreadMark();
+			this.refreshUnreadMark(rid);
 			return this.emit(rid);
 		});
 	}
@@ -108,7 +103,6 @@ export const readMessage = new class extends EventEmitter {
 	}
 
 	refreshUnreadMark(rid, force) {
-		if (rid == null) { rid = Session.get('openedRoom'); }
 		if (rid == null) {
 			return;
 		}
@@ -145,7 +139,7 @@ export const readMessage = new class extends EventEmitter {
 		});
 
 		if ((lastReadRecord == null) && (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() === 0)) {
-			lastReadRecord =				{ ts: new Date(0) };
+			lastReadRecord = { ts: new Date(0) };
 		}
 
 		if ((lastReadRecord != null) || (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() > 0)) {
@@ -171,8 +165,9 @@ export const readMessage = new class extends EventEmitter {
 
 			if (firstUnreadRecord != null) {
 				room.unreadFirstId = firstUnreadRecord._id;
-				$(room.dom).find(`.message.first-unread:not(#${ firstUnreadRecord._id })`).removeClass('first-unread');
-				$(room.dom).find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
+				const roomDom = $(room.dom);
+				roomDom.find(`.message.first-unread:not(#${ firstUnreadRecord._id })`).removeClass('first-unread');
+				roomDom.find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
 			}
 		}
 	}
@@ -180,29 +175,22 @@ export const readMessage = new class extends EventEmitter {
 
 
 Meteor.startup(function() {
-	$(window).on('blur', () => readMessage.disable());
-
-	$(window).on('focus', () => {
-		readMessage.enable();
-		return readMessage.read();
-	});
-
-	$(window).on('click', () => {
-		readMessage.enable();
-		return readMessage.read();
-	});
-
-	$(window).on('touchend', () => {
-		readMessage.enable();
-		return readMessage.read();
-	});
-
-	$(window).on('keyup', (e) => {
-		const key = e.which;
-		if (key === 27) {
+	$(window)
+		.on('blur', () => readMessage.disable())
+		.on('focus', () => {
 			readMessage.enable();
-			readMessage.readNow(true);
-			return $('.message.first-unread').removeClass('first-unread');
-		}
-	});
+			return readMessage.read();
+		})
+		.on('touchend', () => {
+			readMessage.enable();
+			return readMessage.read();
+		})
+		.on('keyup', (e) => {
+			const key = e.which;
+			if (key === 27) {
+				readMessage.enable();
+				readMessage.readNow(true);
+				return $('.message.first-unread').removeClass('first-unread');
+			}
+		});
 });
