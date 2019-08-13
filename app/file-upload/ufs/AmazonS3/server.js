@@ -51,6 +51,7 @@ export class AmazonS3Store extends UploadFS.Store {
 			const params = {
 				Key: this.getPath(file),
 				Expires: classOptions.URLExpiryTimeSpan,
+				ResponseContentDisposition: `attachment; filename="${ encodeURI(file.name) }"`,
 			};
 
 			return s3.getSignedUrl('getObject', params);
