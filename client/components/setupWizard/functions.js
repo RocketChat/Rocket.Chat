@@ -3,13 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../app/settings/lib/settings';
 
 const withPromisifiedReturn = (f) => (...args) => new Promise((resolve, reject) => {
-	f(...args, (error) => {
+	f(...args, (error, ...returnedValues) => {
 		if (error) {
 			reject(error);
 			return;
 		}
 
-		resolve();
+		resolve(returnedValues);
 	});
 });
 
