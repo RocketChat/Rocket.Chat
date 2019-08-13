@@ -12,24 +12,27 @@ const get = function(file, req, res) {
 
 	this.store.getRedirectURL(file, download, (err, fileUrl) => {
 		if (err) {
-			console.error(err);
+			return console.error(err);
 		}
 
-		if (fileUrl) {
-			const storeType = file.store.split(':').pop();
-			if (settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
-				const request = /^https:/.test(fileUrl) ? https : http;
-				request.get(fileUrl, (fileRes) => fileRes.pipe(res));
-			} else {
-				res.removeHeader('Content-Length');
-				res.removeHeader('Cache-Control');
-				res.setHeader('Location', fileUrl);
-				res.writeHead(302);
-				res.end();
-			}
-		} else {
-			res.end();
+		if (!fileUrl) {
+			return res.end();
 		}
+
+		const forceDownload = typeof req.query.download !== 'undefined';
+
+		if (!fileUrl) {
+			return res.end();
+		}
+
+		const storeType = file.store.split(':').pop();
+		if (settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
+			const request = /^https:/.test(fileUrl) ? https : http;
+
+			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
+		}
+
+		return FileUpload.redirectToFile(fileUrl, req, res);
 	});
 };
 
