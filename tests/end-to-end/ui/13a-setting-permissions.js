@@ -46,8 +46,8 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		it('Set Permission for user to change titlepage title', function(done) {
-			admin.rolesSettingPermissionsButton.click();
-			admin.rolesPermissionGrid.waitForVisible(10000);
+			admin.rolesSettingsTab.click();
+			admin.rolesSettingsFindInput.setValue('Layout');
 			if (!admin.rolesSettingLayoutTitle.isSelected()) {
 				admin.rolesSettingLayoutTitle.click();
 			}
@@ -117,8 +117,8 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			admin.rolesManageSettingsPermissions.click();
 			admin.rolesManageSettingsPermissions.isSelected().should.equal(false);
 
-			admin.rolesSettingPermissionsButton.click();
-
+			admin.rolesSettingsTab.click();
+			admin.rolesSettingsFindInput.setValue('Layout');
 			admin.rolesSettingLayoutTitle.click();
 			admin.rolesSettingLayoutTitle.isSelected().should.equal(false);
 			done();
