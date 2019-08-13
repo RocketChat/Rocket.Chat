@@ -53,7 +53,6 @@ Template.GameModal.onDestroyed(function() {
 		const { sessionEnds = null } = options.webhooks;
 
 		if (sessionEnds) {
-			console.log(sessionId);
 			axios.post(sessionEnds, {
 				event: 'sessionEnds',
 				sessionId,
