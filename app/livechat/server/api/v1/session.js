@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 import { API } from '../../../../api';
 import { Livechat } from '../../lib/Livechat';
 
-API.v1.addRoute('livechat/updateVisitCount/:token', {
+API.v1.addRoute('livechat/session.updateVisitCount/:token', {
 	post() {
 		check(this.urlParams, {
 			token: String,
@@ -13,7 +13,7 @@ API.v1.addRoute('livechat/updateVisitCount/:token', {
 	},
 });
 
-API.v1.addRoute('livechat/userLocation/:token', {
+API.v1.addRoute('livechat/session.userLocation/:token', {
 	get() {
 		check(this.urlParams, {
 			token: String,
@@ -23,7 +23,7 @@ API.v1.addRoute('livechat/userLocation/:token', {
 	},
 });
 
-API.v1.addRoute('livechat/addLocationData', {
+API.v1.addRoute('livechat/session.addLocationData', {
 	post() {
 		check(this.bodyParams, {
 			token: String,
@@ -46,7 +46,7 @@ API.v1.addRoute('livechat/addLocationData', {
 	},
 });
 
-API.v1.addRoute('livechat/updateVisitorSessionOnRegister', {
+API.v1.addRoute('livechat/session.updateVisitorSessionOnRegister', {
 	post() {
 		check(this.bodyParams, {
 			visitor: Match.ObjectIncluding({
@@ -70,7 +70,7 @@ API.v1.addRoute('livechat/updateVisitorSessionOnRegister', {
 	},
 });
 
-API.v1.addRoute('livechat/updateSessionStatus', {
+API.v1.addRoute('livechat/session.updateSessionStatus', {
 	post() {
 		try {
 			check(this.bodyParams, {
