@@ -67,10 +67,9 @@ Template.GameCenter.events({
 		event.stopPropagation();
 		modal.open({
 			title: t('Invite You Friends to Join'),
-			content: 'invitePlayers',
+			content: 'InvitePlayers',
 			showCancelButton: false,
-			confirmButtonColor: '#1D74F5',
-			closeOnConfirm: true,
+			showConfirmButton: false,
 			html: false,
 		});
 	},
