@@ -256,8 +256,6 @@ export class AppsRestApi {
 			get() {
 				const games = orchestrator.getEnabledGames();
 
-				console.log(games);
-
 				return API.v1.success({ games: Array.from(games.values()) });
 			},
 		});

@@ -6,6 +6,8 @@ import { modal } from '../../../ui-utils';
 import { randomString } from '../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
+import './gameModal.html';
+
 const SESSION_ID_LENGTH = 80;
 let sessionId;
 
@@ -26,7 +28,6 @@ Template.GameModal.onCreated(function() {
 		const { sessionStarts = null } = options.webhooks;
 
 		if (sessionStarts) {
-			console.log(sessionId);
 			axios.post(sessionStarts, {
 				event: 'sessionStarts',
 				sessionId,
@@ -53,7 +54,6 @@ Template.GameModal.onDestroyed(function() {
 		const { sessionEnds = null } = options.webhooks;
 
 		if (sessionEnds) {
-			console.log(sessionId);
 			axios.post(sessionEnds, {
 				event: 'sessionEnds',
 				sessionId,

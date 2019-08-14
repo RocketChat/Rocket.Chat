@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../ui-utils';
-import { APIClient } from '../../../utils';
+import { APIClient, t } from '../../../utils';
 
 const getactivatedGames = async (instance) => {
 	try {
@@ -61,6 +61,17 @@ Template.GameCenter.events({
 			data: this,
 			template: 'GameModal',
 			type: 'rc-game',
+		});
+	},
+	'click .js-invite'(event) {
+		event.stopPropagation();
+		modal.open({
+			title: t('Invite You Friends to Join'),
+			content: 'InvitePlayers',
+			data: this,
+			showCancelButton: false,
+			showConfirmButton: false,
+			html: false,
 		});
 	},
 });

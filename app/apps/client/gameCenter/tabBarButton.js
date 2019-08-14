@@ -3,6 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { TabBar } from '../../../ui-utils/client';
 import { APIClient } from '../../../utils';
 
+import './gameCenter.html';
+
 Meteor.startup(async function() {
 	const { games } = await APIClient.get('apps/games');
 

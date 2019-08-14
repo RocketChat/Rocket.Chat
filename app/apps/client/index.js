@@ -12,10 +12,9 @@ import './admin/appWhatIsIt';
 import './routes';
 
 import './gameCenter/tabBarButton';
-import './gameCenter/gameCenter.html';
-import './gameCenter/gameModal.html';
 import './gameCenter/gameModal';
 import './gameCenter/gameCenter';
+import './gameCenter/invitePlayers';
 
 import './extrernalComponent';
 
