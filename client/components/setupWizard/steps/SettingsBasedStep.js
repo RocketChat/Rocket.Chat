@@ -62,7 +62,9 @@ export function SettingsBasedStep({ step, title }) {
 		goToPreviousStep();
 	};
 
-	const handleContinueClick = async () => {
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+
 		setCommiting(true);
 
 		try {
@@ -76,7 +78,7 @@ export function SettingsBasedStep({ step, title }) {
 		}
 	};
 
-	return <Step active={active} working={commiting}>
+	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
 		<StepContent>
@@ -88,6 +90,7 @@ export function SettingsBasedStep({ step, title }) {
 						title={t(i18nLabel)}
 						name={_id}
 						value={value}
+						focused={i === 0 && active}
 						onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
 					/>}
 
@@ -99,6 +102,7 @@ export function SettingsBasedStep({ step, title }) {
 						placeholder={t('Select_an_option')}
 						options={values.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))}
 						value={value}
+						focused={i === 0 && active}
 						onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
 					/>}
 
@@ -112,6 +116,7 @@ export function SettingsBasedStep({ step, title }) {
 							.map(([key, { name }]) => ({ label: name, value: key }))
 							.sort((a, b) => a.key - b.key)}
 						value={value}
+						focused={i === 0 && active}
 						onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
 					/>}
 				</Fragment>
@@ -121,7 +126,6 @@ export function SettingsBasedStep({ step, title }) {
 		<Pager
 			disabled={commiting}
 			onBackClick={currentStep > 2 && handleBackClick}
-			onContinueClick={handleContinueClick}
 		/>
 	</Step>;
 }

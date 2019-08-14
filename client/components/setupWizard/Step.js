@@ -3,7 +3,7 @@ import React from 'react';
 import './Step.css';
 
 export const Step = ({ active, working = false, ...props }) =>
-	<fieldset
+	<form
 		className={[
 			'SetupWizard__Step',
 			active && 'SetupWizard__Step--active',

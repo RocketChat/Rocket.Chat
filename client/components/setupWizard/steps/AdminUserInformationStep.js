@@ -75,7 +75,9 @@ export function AdminUserInformationStep({ step, title }) {
 
 	const t = useTranslation();
 
-	const handleContinueClick = async () => {
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+
 		const canRegisterAdminUser = validate();
 
 		if (!canRegisterAdminUser) {
@@ -101,7 +103,7 @@ export function AdminUserInformationStep({ step, title }) {
 		}
 	};
 
-	return <Step active={active} working={commiting}>
+	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
 		<StepContent>
@@ -111,6 +113,7 @@ export function AdminUserInformationStep({ step, title }) {
 				icon='user'
 				placeholder={t('Type_your_name')}
 				value={name}
+				focused={active}
 				onChange={({ currentTarget: { value } }) => setName(value)}
 				error={!isNameValid}
 			/>
@@ -143,6 +146,6 @@ export function AdminUserInformationStep({ step, title }) {
 			/>
 		</StepContent>
 
-		<Pager disabled={commiting} onContinueClick={isContinueEnabled && handleContinueClick} />
+		<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />
 	</Step>;
 }

@@ -65,7 +65,9 @@ export function RegisterServerStep({ step, title }) {
 		goToPreviousStep();
 	};
 
-	const handleContinueClick = async () => {
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+
 		setComitting(true);
 
 		try {
@@ -101,7 +103,7 @@ export function RegisterServerStep({ step, title }) {
 		}
 	};
 
-	return <Step active={active} working={commiting}>
+	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
 		<StepContent>
@@ -155,6 +157,6 @@ export function RegisterServerStep({ step, title }) {
 			</div>
 		</StepContent>
 
-		<Pager disabled={commiting} onBackClick={handleBackClick} onContinueClick={handleContinueClick} />
+		<Pager disabled={commiting} onBackClick={handleBackClick} />
 	</Step>;
 }
