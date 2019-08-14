@@ -68,21 +68,21 @@ steps:
   depends_on:
     - Npm install
 
-- name: Docker
-  image: plugins/docker
-  volumes:
-  - name: build
-    path: /tmp/build-test
-  settings:
-    repo: rocketchat/caixa.rocket.chat
-    dockerfile: .docker/Dockerfile
-    context: /tmp/build-test
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-  depends_on:
-    - Meteor build
+# - name: Docker
+#   image: plugins/docker
+#   volumes:
+#   - name: build
+#     path: /tmp/build-test
+#   settings:
+#     repo: rocketchat/caixa.rocket.chat
+#     dockerfile: .docker/Dockerfile
+#     context: /tmp/build-test
+#     username:
+#       from_secret: docker_username
+#     password:
+#       from_secret: docker_password
+#   depends_on:
+#     - Meteor build
 
 volumes:
 - name: meteor
