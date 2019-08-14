@@ -68,6 +68,7 @@ Template.GameCenter.events({
 		modal.open({
 			title: t('Invite You Friends to Join'),
 			content: 'InvitePlayers',
+			data: this,
 			showCancelButton: false,
 			showConfirmButton: false,
 			html: false,

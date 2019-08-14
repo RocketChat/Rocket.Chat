@@ -4,7 +4,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { Blaze } from 'meteor/blaze';
 
+import { roomTypes } from '../../../utils/client';
 import { ChatRoom } from '../../../models/client';
+import { randomString } from '../utils';
+import { call } from '../../../ui-utils/client';
 
 import './invitePlayers.html';
 
@@ -59,6 +62,28 @@ Template.InvitePlayers.helpers({
 	},
 	nameSuggestion() {
 		return Template.instance().discussionName.get();
+	},
+});
+
+Template.InvitePlayers.events({
+	'submit #invite-players, click .js-confirm'(e, instance) {
+		const { data: { name } } = instance;
+		const { _id: userId } = Meteor.user();
+		const users = instance.selectedUsers.get().map(({ username }) => username);
+		const privateGroupName = `${ name.replace(/\ /, '-') }-${ randomString(10) }`;
+
+		Meteor.runAsUser(userId, async () => {
+			try {
+				const result = await call('createPrivateGroup', privateGroupName, users);
+				roomTypes.openRouteLink(result.t, result);
+				Meteor.call('sendMessage', {
+					rid: result.rid,
+					msg: `@here Let's play the game ${ name } together!`,
+				});
+			} catch (e) {
+				console.warn(e);
+			}
+		});
 	},
 });
 
