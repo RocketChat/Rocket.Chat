@@ -118,3 +118,4 @@ import '../app/reactions/server';
 import '../app/livechat/server';
 
 import '../app/assistify/ai/server';
+import '../app/assistify/configuration/server';
