@@ -19,9 +19,10 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ open: 1 }, { sparse: true });
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ ts: 1 });
-
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
+		// Livechat - statistics
+		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {

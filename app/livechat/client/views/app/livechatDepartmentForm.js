@@ -9,6 +9,7 @@ import { t, handleError } from '../../../../utils';
 import { AgentUsers } from '../../collections/AgentUsers';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';
+import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatDepartmentForm.html';
 
 Template.livechatDepartmentForm.helpers({
@@ -32,6 +33,12 @@ Template.livechatDepartmentForm.helpers({
 	showOnOfflineForm(value) {
 		const department = Template.instance().department.get();
 		return department.showOnOfflineForm === value || (department.showOnOfflineForm === undefined && value === true);
+	},
+	customFieldsTemplate() {
+		return getCustomFormTemplate('livechatDepartmentForm');
+	},
+	data() {
+		return { id: FlowRouter.getParam('_id') };
 	},
 });
 
@@ -72,6 +79,15 @@ Template.livechatDepartmentForm.events({
 			email: email.trim(),
 		};
 
+		// get custom form fields
+		const customFields = [];
+		instance.$('.customFormField').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			customFields.push(name);
+			departmentData[name] = elField.val();
+		});
+
 		const departmentAgents = [];
 
 		instance.selectedAgents.get().forEach((agent) => {
@@ -81,7 +97,7 @@ Template.livechatDepartmentForm.events({
 			departmentAgents.push(agent);
 		});
 
-		Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, function(error/* , result*/) {
+		Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, customFields, function(error/* , result*/) {
 			$btn.html(oldBtnValue);
 			if (error) {
 				return handleError(error);

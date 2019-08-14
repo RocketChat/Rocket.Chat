@@ -371,16 +371,16 @@ Meteor.startup(function() {
 			{ key: 'External', i18nLabel: 'External_Service' },
 			{ key: 'Least_Amount', i18nLabel: 'Least_Amount' },
 			{ key: 'Guest_Pool', i18nLabel: 'Guest_Pool' },
+			{ key: 'Load_Balancing', i18nLabel: 'Load_Balancing' },
 		],
 	});
 
-	settings.add('Livechat_guest_pool_with_no_agents', false, {
+	settings.add('Livechat_accept_chats_with_no_agents', false, {
 		type: 'boolean',
 		group: 'Livechat',
 		section: 'Routing',
 		i18nLabel: 'Accept_with_no_online_agents',
 		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
 	});
 
 	settings.add('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0, {

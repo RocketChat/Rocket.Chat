@@ -17,7 +17,7 @@ Meteor.publish('livechat:inquiry', function(_id) {
 	const limit = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed');
 	const filter = {
 		agents: this.userId,
-		status: 'open',
+		status: 'queued',
 		..._id && { _id },
 	};
 

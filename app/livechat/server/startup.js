@@ -7,6 +7,8 @@ import { hasPermission, addRoomAccessValidator } from '../../authorization';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { LivechatInquiry } from '../lib/LivechatInquiry';
+import { RoutingManager } from './lib/RoutingManager';
+import { createLivechatQueueView } from './lib/Helper';
 
 Meteor.startup(() => {
 	roomTypes.setRoomFind('l', (_id) => Rooms.findOneLivechatById(_id));
@@ -23,7 +25,8 @@ Meteor.startup(() => {
 	});
 
 	addRoomAccessValidator(function(room, user) {
-		if (settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
+		const { previewRoom } = RoutingManager.getConfig();
+		if (!previewRoom) {
 			return;
 		}
 
@@ -32,7 +35,7 @@ Meteor.startup(() => {
 		}
 
 		const inquiry = LivechatInquiry.findOne({ agents: user._id, rid: room._id }, { fields: { status: 1 } });
-		return inquiry && inquiry.status === 'open';
+		return inquiry && inquiry.status === 'queued';
 	});
 
 	callbacks.add('beforeLeaveRoom', function(user, room) {
@@ -43,4 +46,6 @@ Meteor.startup(() => {
 			lng: user.language || settings.get('Language') || 'en',
 		}));
 	}, callbacks.priority.LOW, 'cant-leave-room');
+
+	createLivechatQueueView();
 });

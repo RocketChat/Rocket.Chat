@@ -28,18 +28,10 @@ export class LivechatDepartment extends Base {
 		return this.find(query, options);
 	}
 
-	createOrUpdateDepartment(_id, { enabled, name, description, showOnRegistration, email, showOnOfflineForm }, agents) {
+	createOrUpdateDepartment(_id, data = {}, agents) {
 		agents = [].concat(agents);
 
-		const record = {
-			enabled,
-			name,
-			description,
-			numAgents: agents.length,
-			showOnRegistration,
-			showOnOfflineForm,
-			email,
-		};
+		const record = Object.assign(data, { numAgents: agents.length });
 
 		if (_id) {
 			this.update({ _id }, { $set: record });
