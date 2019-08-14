@@ -172,6 +172,8 @@ button {
 		pointer-events: none;
 
 		background: var(--rc-color-error);
+		animation-name: unread;
+		animation-duration: 0.2s;
 	}
 
 	&::after {
@@ -197,9 +199,21 @@ button {
 		font-size: 10px;
 
 		line-height: 10px;
+
+		animation-name: unread;
+		animation-duration: 0.2s;
 	}
 }
 
+@keyframes unread {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 100%;
+	}
+}
 .message.new-day.first-unread {
 	&::after {
 		border-color: var(--rc-color-error);

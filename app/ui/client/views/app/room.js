@@ -393,7 +393,7 @@ Template.room.helpers({
 	},
 
 	unreadData() {
-		const data = { count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
+		const data = { count: Template.instance().state.get('count') };
 
 		const room = RoomManager.getOpenedRoomByRid(this._id);
 		if (room) {
@@ -982,8 +982,6 @@ Template.room.onCreated(function() {
 		});
 	});
 
-	this.room = Rooms.findOne({ _id: rid });
-
 	this.showUsersOffline = new ReactiveVar(false);
 	this.atBottom = !FlowRouter.getQueryParam('msg');
 	this.unreadCount = new ReactiveVar(0);
@@ -1186,9 +1184,6 @@ Template.room.onRendered(function() {
 
 	wrapper.addEventListener('scroll', wheelHandler);
 
-	$('.flex-tab-bar').on('click', (/* e, t*/) =>
-		setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
-	);
 	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
 	const rtl = $('html').hasClass('rtl');
@@ -1213,31 +1208,50 @@ Template.room.onRendered(function() {
 			const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
 			if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
-				return template.unreadCount.set(0);
+				return this.unreadCount.set(0);
 			}
 
 			const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
 			if (!lastMessage) {
-				return template.unreadCount.set(0);
+				return this.unreadCount.set(0);
 			}
 
-			const subscription = Subscriptions.findOne({ rid: template.data._id }, { reactive: false });
-			const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
-
-			template.unreadCount.set(count);
+			this.state.set('lastMessage', lastMessage.ts);
 		});
 	}, 300);
 
-	this.autorun((c) => {
-		const count = template.unreadCount.get();
-		if (!c.firstRun && count === 0) {
-			readMessage.read();
-		}
+	this.autorun(() => {
+		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
+		readMessage.read();
+		return (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
 	});
 
-	readMessage.on(template.data._id, () => {
-		template.unreadCount.set(0);
+	this.autorun(() => {
+		const lastMessage = this.state.get('lastMessage');
+
+		const subscription = Subscriptions.findOne({ rid }, { fields: { ls: 1 } });
+		const count = ChatMessage.find({ rid, ts: { $lte: lastMessage, $gt: subscription && subscription.ls } }).count();
+
+		this.unreadCount.set(count);
 	});
+
+
+	this.autorun(() => {
+		const count = RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() + this.unreadCount.get();
+		this.state.set('count', count);
+	});
+
+
+	this.autorun(() => {
+		Rooms.findOne(rid);
+		const count = this.state.get('count');
+		if (count === 0) {
+			return readMessage.read();
+		}
+		readMessage.refreshUnreadMark(rid);
+	});
+
+	readMessage.on(template.data._id, () => this.unreadCount.set(0));
 
 	wrapper.addEventListener('scroll', updateUnreadCount);
 	// salva a data da renderização para exibir alertas de novas mensagens
@@ -1284,4 +1298,5 @@ callbacks.add('enter-room', (sub) => {
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
 	}
+	readMessage.refreshUnreadMark(sub.rid);
 });

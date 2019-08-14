@@ -170,7 +170,7 @@ export const RoomHistoryManager = new class {
 			}
 
 			room.isLoading.set(false);
-			readMessage.refreshUnreadMark(rid, true);
+			readMessage.refreshUnreadMark(rid);
 			return RoomManager.updateMentionsMarksOfRoom(typeName);
 		});
 	}
@@ -274,7 +274,7 @@ export const RoomHistoryManager = new class {
 				}
 			}
 
-			readMessage.refreshUnreadMark(message.rid, true);
+			readMessage.refreshUnreadMark(message.rid);
 			RoomManager.updateMentionsMarksOfRoom(typeName);
 
 			Tracker.afterFlush(() => {
