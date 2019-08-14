@@ -71,7 +71,6 @@ import '../app/slider';
 import '../app/spotify/client';
 import '../app/theme/client';
 import '../app/tokenpass/client';
-import '../app/tooltip';
 import '../app/ui';
 import '../app/ui-account';
 import '../app/ui-admin/client';

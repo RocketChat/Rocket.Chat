@@ -4,7 +4,7 @@ import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';

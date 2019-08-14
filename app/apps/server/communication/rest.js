@@ -73,7 +73,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
+						result = HTTP.get(`${ baseUrl }/v1/apps`, {
 							headers,
 						});
 					} catch (e) {
@@ -292,6 +292,20 @@ export class AppsRestApi {
 			},
 		});
 
+		const handleError = (message, e) => {
+			orchestrator.getRocketChatLogger().error(message, e.response.data);
+
+			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+				return API.v1.internalError();
+			}
+
+			if (e.response.statusCode === 404) {
+				return API.v1.notFound();
+			}
+
+			return API.v1.failure();
+		};
+
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				if (this.queryParams.marketplace && this.queryParams.version) {
@@ -309,8 +323,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', e.response.data);
-						return API.v1.internalError();
+						return handleError('Error getting the App information from the Marketplace:', e);
 					}
 
 					if (!result || result.statusCode !== 200 || result.data.length === 0) {
@@ -336,8 +349,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', e.response.data);
-						return API.v1.internalError();
+						return handleError('Error getting the App update info from the Marketplace:', e);
 					}
 
 					if (result.statusCode !== 200 || result.data.length === 0) {
