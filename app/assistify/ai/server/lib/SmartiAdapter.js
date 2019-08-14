@@ -122,7 +122,14 @@ export class SmartiAdapter {
 				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(message._id));
 				notifyClientsSmartiDirty(message.rid, conversationId);
 				// autosync: If a room was not in sync, but the new message could be synced, try to sync the room again
+
+				/*
+				Remove autosync after a message is sent due to negative side effects:
+				In the course of marking a messages synced, an update on a message is performed.
+				This makes the UI load the updated message.
+				Depending on the message count resynced, this can have a severe impact on client performance
 				Meteor.defer(() => SmartiAdapter._tryResync(message.rid, false));
+				*/
 			} else {
 				// if the message could not be synced this time, re-synch the complete room next time
 				Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
