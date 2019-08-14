@@ -406,6 +406,7 @@
 
 .rc-icon.game-center__invite-players-icon.game-center__invite-players-icon--plus {
 	font-size: 18px;
+
 	&:hover {
 		color: #1d74f5;
 	}
