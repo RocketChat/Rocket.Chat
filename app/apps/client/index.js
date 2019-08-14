@@ -18,6 +18,4 @@ import './gameCenter/invitePlayers';
 
 import './extrernalComponent';
 
-import './extrernalComponent';
-
 export { Apps } from './orchestrator';
