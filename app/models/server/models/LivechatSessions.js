@@ -123,6 +123,20 @@ export class LivechatSessions extends Base {
 
 		return this.update(query, update);
 	}
+
+	updateSentimentByToken(token, sentimentScore) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$set: {
+				sentimentScore,
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
 
 export default new LivechatSessions();

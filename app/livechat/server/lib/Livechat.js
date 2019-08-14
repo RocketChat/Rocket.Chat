@@ -9,6 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
+import Sentiment from 'sentiment';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -313,6 +314,23 @@ export const Livechat = {
 		}
 
 		if (room.v) {
+			// Add sentiment analysis on all messages here
+			const sentiment = new Sentiment();
+			let sentimentScore = 0;
+			let messageCount = 0;
+			// Find All messsages for room
+			const messages = Messages.findByRoomId(room._id).map((data) => data);
+			if (messages && messages.length > 0) {
+				messages.forEach((val) => {
+					if (!val.t) {
+						messageCount++;
+						const result = sentiment.analyze(val.msg);
+						sentimentScore += result.comparative;
+					}
+				});
+				LivechatSessions.updateSentimentByToken(room.v.token, sentimentScore / messageCount);
+			}
+
 			// Set chat Status of livechat session
 			LivechatSessions.updateChatStatusOnRoomCloseOrDeleteByToken(room.v.token, 'Closed');
 		}

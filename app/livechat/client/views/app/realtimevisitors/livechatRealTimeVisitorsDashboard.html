@@ -89,7 +89,7 @@
             <th width="15%">
               <div class="table-fake-th">{{_ "Visitor Info"}}</div>
             </th>
-            <th width="10%">
+            <th width="5%">
               <div class="table-fake-th">{{_ "Status"}}</div>
             </th>
             <th width="25%">
@@ -104,14 +104,17 @@
             <th width="15%">
               <div class="table-fake-th">{{_ "Session Started"}}</div>
             </th>
-            <th width="15%">
+            <th width="10%">
               <div class="table-fake-th">{{_ "Time on Site"}}</div>
             </th>
-            <th width="10%">
+            <th width="7%">
               <div class="table-fake-th">{{_ "Chat Status"}}</div>
             </th>
-            <th width="10%">
+            <th width="7%">
               <div class="table-fake-th">{{_ "Agent Info"}}</div>
+            </th>
+            <th width="6%">
+              <div class="table-fake-th">{{_ "Sentiment Score"}}</div>
             </th>
           </tr>
         </thead>
@@ -155,6 +158,13 @@
             <td>
               {{#if servedBy}}
                 {{servedBy.username}}
+              {{else}}
+                {{_ "No Info"}}
+              {{/if}}
+            </td>
+            <td>
+              {{#if sentimentScore}}
+                {{sentimentScore}}
               {{else}}
                 {{_ "No Info"}}
               {{/if}}
