@@ -28,18 +28,18 @@
 .SetupWizard__RegisterServerStep-radioButtonInput {
 	position: absolute;
 
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
 
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
 
-  white-space: nowrap;
+	white-space: nowrap;
 
-  border: 0;
-  clip-path: inset(50%);
+	border: 0;
+	clip-path: inset(50%);
 }
 
 .SetupWizard__RegisterServerStep-radioButtonFake {
@@ -121,18 +121,18 @@
 .SetupWizard__RegisterServerStep-checkBoxInput {
 	position: absolute;
 
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
 
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
 
-  white-space: nowrap;
+	white-space: nowrap;
 
-  border: 0;
-  clip-path: inset(50%);
+	border: 0;
+	clip-path: inset(50%);
 }
 
 .SetupWizard__RegisterServerStep-checkBoxFake {

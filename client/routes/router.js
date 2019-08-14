@@ -29,7 +29,7 @@ const createTemplateForComponent = (
 		throw new Error('the component must have a name');
 	}
 
-	Template[name] = new Blaze.Template(() =>
+	Template[name] = new Blaze.Template(name, () =>
 		// eslint-disable-next-line new-cap
 		renderContainerView(Blaze.With({ component, ...props }, () => Template.React.constructView()))
 	);

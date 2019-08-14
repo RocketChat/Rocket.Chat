@@ -40,9 +40,6 @@
 	line-height: 1rem;
 }
 
-.SetupWizard__SideBar-content {
-}
-
 .SetupWizard__SideBar-title {
 	margin-bottom: 1rem;
 
@@ -109,6 +106,7 @@
 		height: 2rem;
 
 		content: '';
+
 		background-color: var(--color-dark-10);
 	}
 
