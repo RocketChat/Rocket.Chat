@@ -169,11 +169,12 @@ button {
 
 		content: "";
 
+		animation-name: unread;
+		animation-duration: 0.2s;
+
 		pointer-events: none;
 
 		background: var(--rc-color-error);
-		animation-name: unread;
-		animation-duration: 0.2s;
 	}
 
 	&::after {
@@ -186,6 +187,9 @@ button {
 		padding-bottom: 2px;
 
 		content: attr(data-unread-text);
+
+		animation-name: unread;
+		animation-duration: 0.2s;
 		text-align: right;
 		text-transform: lowercase;
 
@@ -199,9 +203,6 @@ button {
 		font-size: 10px;
 
 		line-height: 10px;
-
-		animation-name: unread;
-		animation-duration: 0.2s;
 	}
 }
 
@@ -214,6 +215,7 @@ button {
 		opacity: 100%;
 	}
 }
+
 .message.new-day.first-unread {
 	&::after {
 		border-color: var(--rc-color-error);
@@ -223,11 +225,11 @@ button {
 		&::before {
 			display: none;
 		}
-
-		&::after {
-			top: -26px;
-		}
 	}
+}
+
+&::after {
+	top: -26px;
 }
 
 .hidden {
