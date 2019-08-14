@@ -1,4 +1,33 @@
 
+# 1.3.2
+`2019-08-13  ·  3 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Attachment download button behavior ([#15172](https://github.com/RocketChat/Rocket.Chat/pull/15172))
+- Messages search scroll ([#15175](https://github.com/RocketChat/Rocket.Chat/pull/15175))
+- IE11 -  callback createTreeWalker doesnt accept acceptNode ([#15157](https://github.com/RocketChat/Rocket.Chat/pull/15157))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Update latest Livechat widget version to 1.1.4 ([#15173](https://github.com/RocketChat/Rocket.Chat/pull/15173))
+- Update latest Livechat widget version(1.1.3) ([#15154](https://github.com/RocketChat/Rocket.Chat/pull/15154))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 1.3.1
 `2019-08-08  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
@@ -12,18 +41,10 @@
 - Custom emoji table scroll ([#15119](https://github.com/RocketChat/Rocket.Chat/pull/15119))
 - Direct Message names not visible on Admin panel ([#15114](https://github.com/RocketChat/Rocket.Chat/pull/15114))
 
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Fix custom auth ([#15141](https://github.com/RocketChat/Rocket.Chat/pull/15141))
-
-</details>
-
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@ggazzo](https://github.com/ggazzo)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 
 # 1.3.0
 `2019-08-02  ·  9 🎉  ·  6 🚀  ·  31 🐛  ·  31 🔍  ·  29 👩‍💻👨‍💻`
