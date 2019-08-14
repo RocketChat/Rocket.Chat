@@ -42,18 +42,28 @@
 						</div>
 					</label>
 				</div>
+
 				<div class="rc-form-group rc-form-group--small rc-form-group--inline">
-					<div class="rc-input">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{_ "Tags"}}</div>
-							<div class="rc-input__wrapper">
-								<div class="rc-input__icon">
-									{{> icon icon='edit' }}
+					{{#if hasAvailableTags}}
+						<select id="tagInput" class="rc-input rc-form-item-inline rc-input--small">
+							<option value="placeholder">{{_ "Select_tag"}}</option>
+							{{#each availableTags}}
+							<option value="{{_id}}">{{this}}</option>
+							{{/each}}
+						</select>
+					{{else}}
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "Tags"}}</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon icon='edit' }}
+									</div>
+									<input id="tagInput" class="rc-input__element rc-input__element--small" type="text" name="tags" autocomplete="off">
 								</div>
-								<input class="rc-input__element rc-input__element--small" type="text" name="tags" autocomplete="off">
-							</div>
-						</label>
-					</div>
+							</label>
+						</div>
+					{{/if}}
 					<button id="addTag" class="rc-button rc-button--small rc-button--primary rc-form-item-inline"><i class="icon-plus"></i></button>
 				</div>
 				<div class="rc-form-group rc-form-group--small">

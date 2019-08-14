@@ -35,12 +35,27 @@ Template.visitorEdit.helpers({
 		return Template.instance().tags.get();
 	},
 
+	availableTags() {
+		return Template.instance().availableTags.get();
+	},
+
+	hasAvailableTags() {
+		const tags = Template.instance().availableTags.get();
+		return tags && tags.length > 0;
+	}
+});
+
+Template.visitorEdit.onRendered(function() {
+	Meteor.call('livechat:getTagsList', (err, tagsList) => {
+		this.availableTags.set(tagsList);
+	});
 });
 
 Template.visitorEdit.onCreated(function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
 	this.tags = new ReactiveVar([]);
+	this.availableTags = new ReactiveVar([]);
 
 	this.autorun(() => {
 		this.visitor.set(LivechatVisitor.findOne({ _id: Template.currentData().visitorId }));
@@ -89,13 +104,14 @@ Template.visitorEdit.events({
 	'click #addTag'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
-		const $tagInput = instance.$('[name="tags"]');
 		const tags = [...instance.tags.get()];
-		const tagVal = $tagInput.val();
+		const tagVal = $('#tagInput').val();
 		if (tagVal !== '' && tags.indexOf(tagVal) === -1) {
-			tags.push($tagInput.val());
+			tags.push(tagVal);
 			instance.tags.set(tags);
-			$tagInput.val('');
+			if (!$('#tagInput').is('select')) {
+				$('#tagInput').val('');
+			}
 		}
 	},
 
