@@ -36,11 +36,6 @@ export function StateChecker({ children }) {
 			return;
 		}
 
-		const initialPageLoadingElement = document.getElementById('initial-page-loading');
-		if (initialPageLoadingElement) {
-			initialPageLoadingElement.remove();
-		}
-
 		allowRender(true);
 	}, [setupWizardState, userId, user]);
 

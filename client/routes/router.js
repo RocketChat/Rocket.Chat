@@ -187,7 +187,8 @@ FlowRouter.route('/setup-wizard/:step?', {
 });
 
 FlowRouter.notFound = {
-	action() {
-		BlazeLayout.render('pageNotFound');
+	action: async () => {
+		const { PageNotFound } = await import('../components/pageNotFound/PageNotFound');
+		BlazeLayout.render(createTemplateForComponent(PageNotFound));
 	},
 };
