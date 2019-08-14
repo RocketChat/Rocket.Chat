@@ -4,7 +4,7 @@
 
 	margin: 0 -0.5rem 2rem;
 
-	& .rc-button {
+	& > button {
 		margin: 0 0.5rem;
 	}
 }

@@ -1,8 +1,8 @@
 import React from 'react';
+import { Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSetting } from '../../hooks/useSetting';
-import { Button } from '../basic/Button';
 import { setSetting } from './functions';
 import './Epilogue.css';
 
@@ -24,7 +24,7 @@ export function Epilogue() {
 			<h1 className='SetupWizard__Epilogue-title'>{t('Your_workspace_is_ready')}</h1>
 			<span className='SetupWizard__Epilogue-linkLabel'>{t('Your_server_link')}</span>
 			<span className='SetupWizard__Epilogue-link'>{siteUrl}</span>
-			<Button primary onClick={handleClick}>
+			<Button type='button' primary onClick={handleClick}>
 				{t('Go_to_your_workspace')}
 			</Button>
 		</main>
