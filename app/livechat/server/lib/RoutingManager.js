@@ -115,9 +115,9 @@ export const RoutingManager = {
 		}
 
 		LivechatInquiry.takeInquiry(_id);
-		inquiry = this.assignAgent(inquiry, agent);
+		const inq = this.assignAgent(inquiry, agent);
 
-		callbacks.run('livechat.afterTakeInquiry', inquiry);
+		callbacks.run('livechat.afterTakeInquiry', inq);
 
 		return Rooms.findOneById(rid);
 	},

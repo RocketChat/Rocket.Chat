@@ -65,7 +65,7 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
-export async function getRoom({ guest, rid, roomInfo, agent }) {
+export function getRoom({ guest, rid, roomInfo, agent }) {
 	const token = guest && guest.token;
 
 	const message = {

@@ -137,8 +137,8 @@ Template.visitorInfo.helpers({
 
 	roomOpen() {
 		const room = ChatRoom.findOne({ _id: this.rid });
-
-		return room.open && (hasRole(Meteor.userId(), 'livechat-manager') || (room.servedBy && room.servedBy._id === Meteor.userId()));
+		const uid = Meteor.userId();
+		return room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
 	},
 
 	canReturnQueue() {
