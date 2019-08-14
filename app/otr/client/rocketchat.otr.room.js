@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
 import toastr from 'toastr';

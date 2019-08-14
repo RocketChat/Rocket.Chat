@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
@@ -138,18 +138,22 @@ export class ChatMessages {
 
 	toPrevMessage() {
 		const { element } = this.editing;
-		if (element) {
-			let previous;
-			for (previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
-				if (previous.matches('.own:not(.system)')) {
-					break;
-				}
-			}
-
-			previous ? this.edit(previous, false) : this.clearEditing();
-		} else {
-			this.edit(this.wrapper.querySelector('.own:not(.system):last-child'), false);
+		if (!element) {
+			const messages = Array.from(this.wrapper.querySelectorAll('.own:not(.system)'));
+			const message = messages.pop();
+			return message && this.edit(message, false);
 		}
+
+		for (
+			let previous = element.previousElementSibling;
+			previous;
+			previous = previous.previousElementSibling
+		) {
+			if (previous.matches('.own:not(.system)')) {
+				return this.edit(previous, false);
+			}
+		}
+		this.clearEditing();
 	}
 
 	toNextMessage() {

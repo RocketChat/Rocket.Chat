@@ -32,5 +32,5 @@ Package.onUse(function(api) {
 		}
 	});
 
-	api.use('tap:i18n@1.8.2');
+	api.use('rocketchat:tap-i18n@1.9.1');
 });
