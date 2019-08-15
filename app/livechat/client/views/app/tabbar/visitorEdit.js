@@ -94,7 +94,6 @@ Template.visitorEdit.onCreated(function() {
 		});
 		this.agentDepartments.set(departments);
 	});
-
 });
 
 Template.visitorEdit.events({
