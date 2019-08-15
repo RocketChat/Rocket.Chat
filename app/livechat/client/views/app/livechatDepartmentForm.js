@@ -183,9 +183,10 @@ Template.livechatDepartmentForm.onCreated(function() {
 			if (department) {
 				this.department.set(department);
 
-				this.subscribe('livechat:departmentAgents', department._id, () => {
+				const { _id: departmentId } = department;
+				this.subscribe('livechat:departmentAgents', { departmentId }, () => {
 					const newSelectedAgents = [];
-					LivechatDepartmentAgents.find({ departmentId: department._id }).forEach((agent) => {
+					LivechatDepartmentAgents.find({ departmentId }).forEach((agent) => {
 						newSelectedAgents.push(agent);
 					});
 					this.selectedAgents.set(newSelectedAgents);

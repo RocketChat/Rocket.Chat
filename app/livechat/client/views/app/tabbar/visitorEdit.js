@@ -4,8 +4,10 @@ import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 import { t } from '../../../../../utils';
+import { hasRole } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import { LivechatRoom } from '../../../collections/LivechatRoom';
+import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
+import { Rooms } from '../../../../../models';
 import './visitorEdit.html';
 
 Template.visitorEdit.helpers({
@@ -35,19 +37,33 @@ Template.visitorEdit.helpers({
 		return Template.instance().tags.get();
 	},
 
-	availableTags() {
-		return Template.instance().availableTags.get();
+	availableUserTags() {
+		return Template.instance().availableUserTags.get();
 	},
 
 	hasAvailableTags() {
 		const tags = Template.instance().availableTags.get();
 		return tags && tags.length > 0;
-	}
+	},
+
+	canRemoveTag(availableUserTags, tag) {
+		return hasRole(Meteor.userId(), ['admin', 'livechat-manager']) || (Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1));
+	},
 });
 
 Template.visitorEdit.onRendered(function() {
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {
 		this.availableTags.set(tagsList);
+
+		const uid = Meteor.userId();
+		const agentDepartments = this.agentDepartments.get();
+		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
+		const tags = this.availableTags.get() || [];
+		const availableTags = tags
+			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
+			.map(({ name }) => name);
+
+		this.availableUserTags.set(availableTags);
 	});
 });
 
@@ -56,19 +72,29 @@ Template.visitorEdit.onCreated(function() {
 	this.room = new ReactiveVar();
 	this.tags = new ReactiveVar([]);
 	this.availableTags = new ReactiveVar([]);
+	this.agentDepartments = new ReactiveVar([]);
+	this.availableUserTags = new ReactiveVar([]);
 
 	this.autorun(() => {
 		this.visitor.set(LivechatVisitor.findOne({ _id: Template.currentData().visitorId }));
 	});
 
 	this.autorun(() => {
-		const room = LivechatRoom.findOne({ _id: Template.currentData().roomId });
+		const room = Rooms.findOne({ _id: Template.currentData().roomId });
 
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 	});
 
-	this.subscribe('livechat:rooms', { _id: Template.currentData().roomId });
+	const uid = Meteor.userId();
+	this.subscribe('livechat:departmentAgents', { agentId: uid }, () => {
+		const departments = [];
+		LivechatDepartmentAgents.find({ agentId: uid }).forEach((dept) => {
+			departments.push(dept.departmentId);
+		});
+		this.agentDepartments.set(departments);
+	});
+
 });
 
 Template.visitorEdit.events({
@@ -94,24 +120,53 @@ Template.visitorEdit.events({
 	},
 
 	'click .remove-tag'(e, t) {
+		const tag = this.valueOf();
+		const availableTags = t.availableTags.get();
+		const hasAvailableTags = availableTags && availableTags.length > 0;
+		const availableUserTags = t.availableUserTags.get();
+		if (!hasRole(Meteor.userId(), ['admin', 'livechat-manager']) && hasAvailableTags && (!availableUserTags || availableUserTags.indexOf(tag) === -1)) {
+			return;
+		}
 		e.stopPropagation();
 		e.preventDefault();
 		let tags = t.tags.get();
-		tags = tags.filter((el) => el !== this.valueOf());
+		tags = tags.filter((el) => el !== tag);
 		t.tags.set(tags);
 	},
 
 	'click #addTag'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
+
+		if ($('#tagSelect').find(':selected').is(':disabled')) {
+			return;
+		}
+
 		const tags = [...instance.tags.get()];
-		const tagVal = $('#tagInput').val();
-		if (tagVal !== '' && tags.indexOf(tagVal) === -1) {
+		const tagVal = $('#tagSelect').val();
+		if (tagVal === '' || tags.indexOf(tagVal) > -1) {
+			return;
+		}
+
+		tags.push(tagVal);
+		instance.tags.set(tags);
+		$('#tagSelect').val('placeholder');
+	},
+
+	'keydown #tagInput'(e, instance) {
+		if (e.which === 13) {
+			e.stopPropagation();
+			e.preventDefault();
+
+			const tags = [...instance.tags.get()];
+			const tagVal = $('#tagInput').val();
+			if (tagVal === '' || tags.indexOf(tagVal) > -1) {
+				return;
+			}
+
 			tags.push(tagVal);
 			instance.tags.set(tags);
-			if (!$('#tagInput').is('select')) {
-				$('#tagInput').val('');
-			}
+			$('#tagInput').val('');
 		}
 	},
 

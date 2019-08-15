@@ -16,7 +16,6 @@ import { t, handleError, roomTypes } from '../../../../../utils';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
-import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorInfo.html';
 
 const isSubscribedToRoom = () => {
@@ -296,7 +295,7 @@ Template.visitorInfo.onCreated(function() {
 
 	if (rid) {
 		this.autorun(() => {
-			const room = LivechatRoom.findOne({ _id: rid });
+			const room = Rooms.findOne({ _id: rid });
 			this.room.set(room);
 			this.visitorId.set(room && room.v && room.v._id);
 			this.departmentId.set(room && room.departmentId);
@@ -305,7 +304,6 @@ Template.visitorInfo.onCreated(function() {
 
 		this.subscribe('livechat:visitorInfo', { rid });
 		this.subscribe('livechat:departments', { _id: this.departmentId.get() });
-		this.subscribe('livechat:rooms', { _id: rid });
 	}
 
 	this.autorun(() => {
