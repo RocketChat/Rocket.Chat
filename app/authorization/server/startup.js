@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Roles, Permissions, Settings } from '../../models';
 import { settings } from '../../settings/server';
-import { getSettingPermissionId } from '../lib';
+import { getSettingPermissionId, CONSTANTS } from '../lib';
 
 Meteor.startup(function() {
 	// Note:
@@ -110,7 +110,7 @@ Meteor.startup(function() {
 	const getPreviousPermissions = function(settingId) {
 		const previousSettingPermissions = {};
 
-		const selector = { level: 'setting' };
+		const selector = { level: CONSTANTS.SETTINGS_LEVEL };
 		if (settingId) {
 			selector.settingId = settingId;
 		}
@@ -126,7 +126,7 @@ Meteor.startup(function() {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission = {
 			_id: permissionId,
-			level: 'setting',
+			level: CONSTANTS.SETTINGS_LEVEL,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			group: setting.group,

@@ -13,10 +13,7 @@ import { hasAtLeastOnePermission } from '..';
 
 import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
-
-const whereNotSetting = {
-	level: { $ne: 'setting' },
-};
+import { CONSTANTS } from '../../lib';
 
 Template.permissions.helpers({
 	tabsData() {
@@ -80,9 +77,9 @@ Template.permissions.helpers({
 
 		return ChatPermissions.find(
 			{
-				...whereNotSetting,
-				$or: [{ _id: filter }],
-			}, // the $where seems to have no effect - filtered as workaround after fetch()
+				level: { $ne: CONSTANTS.SETTINGS_LEVEL },
+				_id: filter,
+			},
 			{
 				sort: {
 					_id: 1,
@@ -98,10 +95,8 @@ Template.permissions.helpers({
 		const filter = new RegExp(s.escapeRegExp(state.get('filter')), 'i');
 		return ChatPermissions.find(
 			{
-				$or: [
-					{ _id: filter },
-				],
-				level: 'setting',
+				_id: filter,
+				level: CONSTANTS.SETTINGS_LEVEL,
 				group: { $exists: true },
 			},
 			{
@@ -169,7 +164,7 @@ Template.permissionsTable.helpers({
 	},
 
 	permissionName(permission) {
-		if (permission.level === 'setting') {
+		if (permission.level === CONSTANTS.SETTINGS_LEVEL) {
 			let path = '';
 			if (permission.group) {
 				path = `${ t(permission.group) } > `;

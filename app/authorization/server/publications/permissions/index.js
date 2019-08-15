@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import Permissions from '../../../../models/server/models/Permissions';
 import Settings from '../../../../models/server/models/Settings';
 import { Notifications } from '../../../../notifications/server';
+import { CONSTANTS } from '../../../lib';
 
 Meteor.methods({
 	'permissions/get'(updatedAt) {
@@ -36,7 +37,7 @@ Permissions.on('change', ({ clientAction, id, data }) => {
 
 	Notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
 
-	if (data.level && data.level === 'setting') {
+	if (data.level && data.level === CONSTANTS.SETTINGS_LEVEL) {
 		// if the permission changes, the effect on the visible settings depends on the role affected.
 		// The selected-settings-based consumers have to react accordingly and either add or remove the
 		// setting from the user's collection
