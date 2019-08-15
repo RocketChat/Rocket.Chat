@@ -87,7 +87,11 @@ class Administration extends Page {
 
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
 
-	get rolesSettingPermissionsButton() { return browser.element('button.js-toggle-setting-permissions'); }
+	get rolesSettingsFindInput() { return browser.element('input#permissions-filter'); }
+
+	get rolesSettingsTab() { return browser.element('button[data-value="settings"]'); }
+
+	get rolesPermissionsTab() { return browser.element('button[data-value="permissions"]'); }
 
 	// permissions grids checkboxes
 
