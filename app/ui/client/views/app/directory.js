@@ -33,7 +33,8 @@ function directorySearch(config, cb) {
 					// If there is no email address (probably only rocket.cat) show the username)
 					email: (result.emails && result.emails[0] && result.emails[0].address) || result.username,
 					createdAt: timeAgo(result.createdAt, t),
-					domain: result.federation && result.federation.peer,
+					domain: result.federation && result.federation.domain,
+					isRemote: result.isRemote,
 				};
 			}
 			return null;

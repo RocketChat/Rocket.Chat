@@ -1,269 +1,150 @@
+import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 
 import { Base } from './_Base';
 
-const getPeerDomains = (peers, options) => {
-	const { domains, skipDomains } = options;
+export const eventTypes = {
+	GENESIS: 'genesis',
 
-	let peerDomains = domains || peers.filter((p) => skipDomains.indexOf(p.domain) === -1);
-
-	console.log(skipDomains);
-
-	if (skipDomains) {
-		peerDomains = peerDomains.filter((p) => skipDomains.indexOf(p.domain) === -1);
-	}
-
-	return peerDomains;
+	// Room
+	ROOM_ADD_USER: 'room_add_user',
+	ROOM_MESSAGE: 'room_message',
+	ROOM_EDIT_MESSAGE: 'room_edit_message',
+	ROOM_SET_MESSAGE_REACTION: 'room_set_message_reaction',
+	ROOM_UNSET_MESSAGE_REACTION: 'room_unset_message_reaction',
+	ROOM_DELETE_MESSAGE: 'room_delete_message',
+	ROOM_DELETE: 'room_delete',
 };
 
-//
-// We should create a time to live index in this table to remove fulfilled events
-//
-class FederationEventsModel extends Base {
-	constructor() {
-		super('federation_events');
+export const contextDefinitions = {
+	ROOM: {
+		type: 'room',
+		isRoom(event) {
+			return !!event.context.roomId;
+		},
+		contextQuery(roomId) {
+			return { roomId };
+		},
+	},
 
-		this.tryEnsureIndex({ ts: 1 }, { partialFilterExpression: { t: 'png' }, expireAfterSeconds: 60 * 15 });
-	}
-
-	// Sometimes events errored but the error is final
-	setEventAsErrored(e, error, fulfilled = false) {
-		this.update({ _id: e._id }, {
-			$set: {
-				fulfilled,
-				lastAttemptAt: new Date(),
-				error,
-			},
-		});
-	}
-
-	setEventAsFullfilled(e) {
-		this.update({ _id: e._id }, {
-			$set: { fulfilled: true },
-			$unset: { error: 1 },
-		});
-	}
-
-	createEvent(type, payload, peer, options) {
-		const record = {
-			t: type,
-			ts: new Date(),
-			fulfilled: false,
-			payload,
-			peer,
-			options,
-		};
-
-		record._id = this.insert(record);
-
-		Meteor.defer(() => {
-			this.emit('createEvent', record);
-		});
-
-		return record;
-	}
-
-	createEventForPeers(type, payload, peers, options = {}) {
-		const records = [];
-
-		for (const peer of peers) {
-			const record = this.createEvent(type, payload, peer, options);
-
-			records.push(record);
+	defineType(event) {
+		if (this.ROOM.isRoom(event)) {
+			return this.ROOM.type;
 		}
 
-		return records;
+		return 'undefined';
+	},
+};
+
+export class FederationEventsModel extends Base {
+	constructor(nameOrModel) {
+		super(nameOrModel);
+
+		this.tryEnsureIndex({ hasChildren: 1 }, { sparse: true });
 	}
 
-	// Create a `ping(png)` event
-	ping(peers) {
-		return this.createEventForPeers('png', {}, peers, { retry: { total: 1 } });
+	getEventHash(contextQuery, event) {
+		return SHA256(`${ event.origin }${ JSON.stringify(contextQuery) }${ event.parentIds.join(',') }${ event.type }${ event.timestamp }${ JSON.stringify(event.data) }`);
 	}
 
-	// Create a `directRoomCreated(drc)` event
-	directRoomCreated(federatedRoom, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
+	async createEvent(origin, contextQuery, type, data) {
+		let previousEventsIds = [];
 
-		const payload = {
-			room: federatedRoom.getRoom(),
-			owner: federatedRoom.getOwner(),
-			users: federatedRoom.getUsers(),
+		// If it is not a GENESIS event, we need to get the previous events
+		if (type !== eventTypes.GENESIS) {
+			const previousEvents = await this.model
+				.rawCollection()
+				.find({ context: contextQuery, hasChildren: false })
+				.toArray();
+
+			if (!previousEvents) {
+				throw new Error('Could not create event, the context does not exist');
+			}
+
+			previousEventsIds = previousEvents.map((e) => e._id);
+		}
+
+		const event = {
+			origin,
+			context: contextQuery,
+			parentIds: previousEventsIds || [],
+			type,
+			timestamp: new Date(),
+			data,
+			hasChildren: false,
 		};
 
-		return this.createEventForPeers('drc', payload, peers);
+		event._id = this.getEventHash(contextQuery, event);
+
+		this.insert(event);
+
+		// Clear the "hasChildren" of those events
+		await this.update({ _id: { $in: previousEventsIds } }, { $unset: { hasChildren: '' } }, { multi: 1 });
+
+		Meteor.defer(() => {
+			this.emit('eventCreated', event);
+		});
+
+		return event;
 	}
 
-	// Create a `roomCreated(roc)` event
-	roomCreated(federatedRoom, options = {}) {
-		console.log(federatedRoom, federatedRoom.getPeers());
+	async createGenesisEvent(origin, contextQuery, data) {
+		return this.createEvent(origin, contextQuery, eventTypes.GENESIS, data);
+	}
 
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
+	async addEvent(contextQuery, event) {
+		// Check if the event does not exit
+		const existingEvent = this.findOne({ _id: event._id });
 
-		const payload = {
-			room: federatedRoom.getRoom(),
-			owner: federatedRoom.getOwner(),
-			users: federatedRoom.getUsers(),
+		// If it does not, we insert it, checking for the parents
+		if (!existingEvent) {
+			// Check if we have the parents
+			const parents = await this.model.rawCollection().find({ context: contextQuery, _id: { $in: event.parentIds } }, { _id: 1 }).toArray();
+			const parentIds = parents.map(({ _id }) => _id);
+
+			// This means that we do not have the parents of the event we are adding
+			if (parentIds.length !== event.parentIds.length) {
+				const { origin } = event;
+
+				// Get the latest events for that context and origin
+				const latestEvents = await this.model.rawCollection().find({ context: contextQuery, origin }, { _id: 1 }).toArray();
+				const latestEventIds = latestEvents.map(({ _id }) => _id);
+
+				return {
+					success: false,
+					reason: 'missingParents',
+					missingParentIds: event.parentIds.filter(({ _id }) => parentIds.indexOf(_id) === -1),
+					latestEventIds,
+				};
+			}
+
+			// Clear the "hasChildren" of the parent events
+			await this.update({ _id: { $in: parentIds } }, { $unset: { hasChildren: '' } }, { multi: 1 });
+
+			this.insert(event);
+		}
+
+		return {
+			success: true,
 		};
-
-		return this.createEventForPeers('roc', payload, peers);
 	}
 
-	// Create a `userJoined(usj)` event
-	userJoined(federatedRoom, federatedUser, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
+	async getEventById(contextQuery, eventId) {
+		const event = await this.model
+			.rawCollection()
+			.findOne({ context: contextQuery, _id: eventId });
 
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			user: federatedUser.getUser(),
+		return {
+			success: !!event,
+			event,
 		};
-
-		return this.createEventForPeers('usj', payload, peers);
 	}
 
-	// Create a `userAdded(usa)` event
-	userAdded(federatedRoom, federatedUser, federatedInviter, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			federated_inviter_id: federatedInviter.getFederationId(),
-			user: federatedUser.getUser(),
-		};
-
-		return this.createEventForPeers('usa', payload, peers);
+	async getLatestEvents(contextQuery, fromTimestamp) {
+		return this.model.rawCollection().find({ context: contextQuery, timestamp: { $gt: new Date(fromTimestamp) } }).toArray();
 	}
 
-	// Create a `userLeft(usl)` event
-	userLeft(federatedRoom, federatedUser, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			federated_user_id: federatedUser.getFederationId(),
-		};
-
-		return this.createEventForPeers('usl', payload, peers);
-	}
-
-	// Create a `userRemoved(usr)` event
-	userRemoved(federatedRoom, federatedUser, federatedRemovedByUser, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			federated_user_id: federatedUser.getFederationId(),
-			federated_removed_by_user_id: federatedRemovedByUser.getFederationId(),
-		};
-
-		return this.createEventForPeers('usr', payload, peers);
-	}
-
-	// Create a `userMuted(usm)` event
-	userMuted(federatedRoom, federatedUser, federatedMutedByUser, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			federated_user_id: federatedUser.getFederationId(),
-			federated_muted_by_user_id: federatedMutedByUser.getFederationId(),
-		};
-
-		return this.createEventForPeers('usm', payload, peers);
-	}
-
-	// Create a `userUnmuted(usu)` event
-	userUnmuted(federatedRoom, federatedUser, federatedUnmutedByUser, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			federated_user_id: federatedUser.getFederationId(),
-			federated_unmuted_by_user_id: federatedUnmutedByUser.getFederationId(),
-		};
-
-		return this.createEventForPeers('usu', payload, peers);
-	}
-
-	// Create a `messageCreated(msc)` event
-	messageCreated(federatedRoom, federatedMessage, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			message: federatedMessage.getMessage(),
-		};
-
-		return this.createEventForPeers('msc', payload, peers);
-	}
-
-	// Create a `messageUpdated(msu)` event
-	messageUpdated(federatedRoom, federatedMessage, federatedUser, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			message: federatedMessage.getMessage(),
-			federated_user_id: federatedUser.getFederationId(),
-		};
-
-		return this.createEventForPeers('msu', payload, peers);
-	}
-
-	// Create a `deleteMessage(msd)` event
-	messageDeleted(federatedRoom, federatedMessage, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_message_id: federatedMessage.getFederationId(),
-		};
-
-		return this.createEventForPeers('msd', payload, peers);
-	}
-
-	// Create a `messagesRead(msr)` event
-	messagesRead(federatedRoom, federatedUser, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			federated_user_id: federatedUser.getFederationId(),
-		};
-
-		return this.createEventForPeers('msr', payload, peers);
-	}
-
-	// Create a `messagesSetReaction(mrs)` event
-	messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			federated_message_id: federatedMessage.getFederationId(),
-			federated_user_id: federatedUser.getFederationId(),
-			reaction,
-			shouldReact,
-		};
-
-		return this.createEventForPeers('mrs', payload, peers);
-	}
-
-	// Create a `messagesUnsetReaction(mru)` event
-	messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
-		const peers = getPeerDomains(federatedRoom.getPeers(), options);
-
-		const payload = {
-			federated_room_id: federatedRoom.getFederationId(),
-			federated_message_id: federatedMessage.getFederationId(),
-			federated_user_id: federatedUser.getFederationId(),
-			reaction,
-			shouldReact,
-		};
-
-		return this.createEventForPeers('mru', payload, peers);
-	}
-
-	// Get all unfulfilled events
-	getUnfulfilled() {
-		return this.find({ fulfilled: false }, { sort: { ts: 1 } }).fetch();
+	async removeContextEvents(contextQuery) {
+		return this.model.rawCollection().remove({ context: contextQuery });
 	}
 }
-
-export const FederationEvents = new FederationEventsModel();
