@@ -30,7 +30,7 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 			const { rooms, total } = findRooms({
 				agents,
 				departmentId,
-				open: open === undefined ? undefined : open === 'true',
+				open: open && open === 'true',
 				createdAt,
 				closedAt,
 				tags,
