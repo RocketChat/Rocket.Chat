@@ -105,6 +105,7 @@ Template.livechatCurrentChats.events({
 				name: field.label,
 				action: () => {
 					filters.push({
+						_id: field._id,
 						name: field._id,
 						label: field.label,
 					});
