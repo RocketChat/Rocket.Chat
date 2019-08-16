@@ -70,7 +70,7 @@ Template.InvitePlayers.events({
 		const { data: { name } } = instance;
 		const { _id: userId } = Meteor.user();
 		const users = instance.selectedUsers.get().map(({ username }) => username);
-		const privateGroupName = `${ name.replace(/\ /, '-') }-${ randomString(10) }`;
+		const privateGroupName = `${ name.replace(/\s/g, '-') }-${ randomString(10) }`;
 
 		Meteor.runAsUser(userId, async () => {
 			try {
