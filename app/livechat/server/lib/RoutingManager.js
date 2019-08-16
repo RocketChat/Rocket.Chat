@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings';
 import { createLivechatSubscription, dispatchAgentDelegated, forwardRoomToAgent, forwardRoomToDepartment } from './Helper';
 import { callbacks } from '../../../callbacks';
-import { Rooms, Messages, Subscriptions, Users } from '../../../models';
+import { LivechatRooms, Messages, Subscriptions, Users } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 export const RoutingManager = {
@@ -38,7 +38,7 @@ export const RoutingManager = {
 		}
 
 		if (!agent) {
-			return Rooms.findOneById(rid);
+			return LivechatRooms.findOneById(rid);
 		}
 
 		const room = this.takeInquiry(inquiry, agent);
@@ -56,8 +56,8 @@ export const RoutingManager = {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
-		Rooms.changeAgentByRoomId(rid, agent);
-		Rooms.incUsersCountById(rid);
+		LivechatRooms.changeAgentByRoomId(rid, agent);
+		LivechatRooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
@@ -67,7 +67,7 @@ export const RoutingManager = {
 
 	unassignAgent(inquiry, departmentId) {
 		const { _id, rid, department } = inquiry;
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 		const { servedBy } = room;
 
 		if (!servedBy) {
@@ -75,11 +75,11 @@ export const RoutingManager = {
 		}
 
 		Subscriptions.removeByRoomId(rid);
-		Rooms.removeAgentByRoomId(rid);
+		LivechatRooms.removeAgentByRoomId(rid);
 		LivechatInquiry.queueInquiry(_id);
 
 		if (departmentId && departmentId !== department) {
-			Rooms.changeDepartmentIdByRoomId(rid, departmentId);
+			LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
 			LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
 		}
 
@@ -104,7 +104,7 @@ export const RoutingManager = {
 		}));
 
 		const { _id, rid } = inquiry;
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 		if (room && room.servedBy && room.servedBy._id === agent.agentId) {
 			return room;
 		}
@@ -119,7 +119,7 @@ export const RoutingManager = {
 
 		callbacks.run('livechat.afterTakeInquiry', inq);
 
-		return Rooms.findOneById(rid);
+		return LivechatRooms.findOneById(rid);
 	},
 
 	async transferRoom(room, guest, transferData) {

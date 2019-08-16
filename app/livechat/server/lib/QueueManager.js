@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Rooms } from '../../../models';
+import { LivechatRooms } from '../../../models';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { callbacks } from '../../../callbacks';
@@ -36,7 +36,7 @@ export const QueueManager = {
 			throw new Meteor.Error(e);
 		}
 
-		Rooms.updateLivechatRoomCount();
+		LivechatRooms.updateRoomCount();
 
 		if (!agent) {
 			agent = RoutingManager.getMethod().delegateAgent(agent, inquiry);
@@ -47,12 +47,14 @@ export const QueueManager = {
 			return room;
 		}
 
+		callbacks.runAsync('livechat.newRoom', room);
+
 		return RoutingManager.delegateInquiry(inquiry, agent);
 	},
 
 	init(rid, name, guest, message, roomInfo) {
 		return Promise.all([
-			Rooms.findOne(createLivechatRoom(rid, name, guest, roomInfo)),
+			LivechatRooms.findOne(createLivechatRoom(rid, name, guest, roomInfo)),
 			LivechatInquiry.findOne(createLivechatInquiry(rid, name, guest, message)),
 		]);
 	},
