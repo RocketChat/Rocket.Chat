@@ -79,7 +79,6 @@ Template.livechatDepartmentForm.events({
 			email: email.trim(),
 		};
 
-		// get custom form fields
 		instance.$('.customFormField').each((i, el) => {
 			const elField = instance.$(el);
 			const name = elField.attr('name');

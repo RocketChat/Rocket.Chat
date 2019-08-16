@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 import { Livechat } from './Livechat';
 

@@ -90,7 +90,7 @@ Template.livechat.helpers({
 
 	showQueueLink() {
 		const config = Template.instance().routingConfig.get();
-		if (!config.showQueue) {
+		if (!config.showQueueLink) {
 			return false;
 		}
 

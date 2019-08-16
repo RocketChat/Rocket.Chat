@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { createLivechatSubscription, dispatchAgentDelegated, forwardRoomToAgent, forwardRoomToDepartment } from './Helper';
-import { callbacks } from '../../../callbacks';
-import { Rooms, Messages, Subscriptions, Users } from '../../../models';
+import { callbacks } from '../../../callbacks/server';
+import { Rooms, Messages, Subscriptions, Users } from '../../../models/server';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 export const RoutingManager = {

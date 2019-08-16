@@ -12,6 +12,7 @@ class LoadBalancing {
 			previewRoom: false,
 			showConnecting: false,
 			showQueue: false,
+			showQueueLink: false,
 			returnQueue: false,
 			enableTriggerAction: true,
 			autoAssignAgent: true,
