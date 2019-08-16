@@ -652,7 +652,7 @@ export const Livechat = {
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
 		Object.keys(departmentData).forEach((field) => {
-			if (!Object.keys(defaultValidations).some((v) => v === field)) {
+			if (!defaultValidations.hasOwnProperty(field)) {
 				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
 			}
 		});
