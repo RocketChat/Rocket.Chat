@@ -80,11 +80,9 @@ Template.livechatDepartmentForm.events({
 		};
 
 		// get custom form fields
-		const customFields = [];
 		instance.$('.customFormField').each((i, el) => {
 			const elField = instance.$(el);
 			const name = elField.attr('name');
-			customFields.push(name);
 			departmentData[name] = elField.val();
 		});
 
@@ -97,7 +95,7 @@ Template.livechatDepartmentForm.events({
 			departmentAgents.push(agent);
 		});
 
-		Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, customFields, function(error/* , result*/) {
+		Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, function(error/* , result*/) {
 			$btn.html(oldBtnValue);
 			if (error) {
 				return handleError(error);

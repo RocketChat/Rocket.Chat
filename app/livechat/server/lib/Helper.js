@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
 
-import { Messages, Rooms, Subscriptions, Users } from '../../../models';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';

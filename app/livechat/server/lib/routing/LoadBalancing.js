@@ -19,15 +19,12 @@ class LoadBalancing {
 	}
 
 	async getNextAgent(department) {
-		let agent;
-
 		const nextAgent = await Users.getNextLeastBusyAgent(department);
-		if (nextAgent) {
-			const { agentId, username } = nextAgent;
-			agent = Object.assign({}, { agentId, username });
+		if (!nextAgent) {
+			return;
 		}
-
-		return agent;
+		const { agentId, username } = nextAgent;
+		return { agentId, username };
 	}
 
 	delegateAgent(agent) {

@@ -15,15 +15,15 @@ export const RoutingManager = {
 		this.methodName = name;
 	},
 
-	registerMethod(name, method) {
-		this.methods[name] = method;
+	registerMethod(name, Method) {
+		this.methods[name] = new Method();
 	},
 
 	getMethod() {
 		if (!this.methods[this.methodName]) {
 			throw new Meteor.Error('error-routing-method-not-available');
 		}
-		return new this.methods[this.methodName]();
+		return this.methods[this.methodName];
 	},
 
 	getConfig() {

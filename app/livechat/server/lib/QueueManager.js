@@ -30,14 +30,11 @@ export const QueueManager = {
 		let room;
 		let inquiry;
 
-		await this.init(rid, name, guest, message, roomInfo)
-			.then((values) => {
-				room = values[0];
-				inquiry = values[1];
-			})
-			.catch((error) => {
-				throw new Meteor.Error(error);
-			});
+		try {
+			[room, inquiry] = await this.init(rid, name, guest, message, roomInfo);
+		} catch (e) {
+			throw new Meteor.Error(e);
+		}
 
 		Rooms.updateLivechatRoomCount();
 
@@ -50,8 +47,7 @@ export const QueueManager = {
 			return room;
 		}
 
-		room = await RoutingManager.delegateInquiry(inquiry, agent);
-		return room;
+		return RoutingManager.delegateInquiry(inquiry, agent);
 	},
 
 	init(rid, name, guest, message, roomInfo) {

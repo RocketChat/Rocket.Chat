@@ -1,5 +1,5 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings, Rooms } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Settings, Rooms } from '../../../app/models/server';
 import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 
@@ -17,8 +17,7 @@ Migrations.add({
 
 			Settings.remove({ _id });
 
-			const newSetting = Object.assign(oldSetting, { _id: 'Livechat_accept_chats_with_no_agents' });
-			Settings.insert(newSetting);
+			Settings.upsert({ _id: 'Livechat_accept_chats_with_no_agents' }, oldSetting);
 		}
 
 		// Create Livechat inquiries for each open Livechat room
