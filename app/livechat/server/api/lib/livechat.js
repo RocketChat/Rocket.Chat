@@ -187,12 +187,12 @@ export function findRooms({
 		query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: customFields[key] }));
 	}
 	return {
-		rooms: Rooms.find(query, {
+		rooms: LivechatRooms.find(query, {
 			sort: options.sort || { ts: 1 },
 			skip: options.offset,
 			limit: options.count,
 			fields: options.fields,
 		}).fetch(),
-		total: Rooms.find(query).count(),
+		total: LivechatRooms.find(query).count(),
 	};
 }
