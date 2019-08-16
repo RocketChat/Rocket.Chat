@@ -372,10 +372,8 @@
 
 .rc-games {
 	.rc-table-tr {
-		td:nth-child(even) {
-			.rc-table-title {
-				width: 160px;
-			}
+		.rc-table-title {
+			width: 135px;
 		}
 	}
 }
