@@ -47,10 +47,11 @@ export class AmazonS3Store extends UploadFS.Store {
 			}
 		};
 
-		this.getRedirectURL = function(file) {
+		this.getRedirectURL = function(file, forceDownload = false) {
 			const params = {
 				Key: this.getPath(file),
 				Expires: classOptions.URLExpiryTimeSpan,
+				ResponseContentDisposition: `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(file.name) }"`,
 			};
 
 			return s3.getSignedUrl('getObject', params);
@@ -140,7 +141,6 @@ export class AmazonS3Store extends UploadFS.Store {
 				Key: this.getPath(file),
 				Body: writeStream,
 				ContentType: file.type,
-				ContentDisposition: `inline; filename="${ encodeURI(file.name) }"`,
 
 			}, (error) => {
 				if (error) {
