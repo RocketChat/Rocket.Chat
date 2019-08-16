@@ -3,13 +3,14 @@
 		<fieldset>
 			<form class="form-inline" method="post">
 				<div class="form-group">
-					<div>
-						<label>{{_ "Guest"}}</label>
-					</div>
-					<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Guest"}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
+						</div>
+					</label>
 				</div>
 				<div class="form-group">
-					<label>{{_ "Served By"}}</label>
 					{{> livechatAutocompleteUser
 						onClickTag=onClickTagAgent
 						list=selectedAgents
@@ -25,57 +26,68 @@
 						noMatchTemplate="userSearchEmpty"
 						templateItem="popupList_item_default"
 						modifier=agentModifier
+						showLabel=true
 					}}
 				</div>
 				<div class="form-group">
-					<label>{{_ "Status"}}</label>
-					<div class="rc-select">
-						<select class="rc-select__element" name="status">
-							<option class="rc-select__option" value="">{{_ "All"}}</option>
-							<option class="rc-select__option" value="opened">{{_ "Opened"}}</option>
-							<option class="rc-select__option" value="closed">{{_ "Closed"}}</option>
-						</select>
-						{{> icon block="rc-select__arrow" icon="arrow-down" }}
-					</div>
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Status"}}</div>
+						<div class="rc-select">
+							<select class="rc-select__element" name="status">
+								<option class="rc-select__option" value="">{{_ "All"}}</option>
+								<option class="rc-select__option" value="opened">{{_ "Opened"}}</option>
+								<option class="rc-select__option" value="closed">{{_ "Closed"}}</option>
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						</div>
+					</label>
 				</div>
 				<div class="form-group">
-					<label>{{_ "Department"}}</label>
-					<div class="rc-select">
-						<select class="rc-select__element" name="department">
-							<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
-							{{#each departments}}
-								<option class="rc-select__option" value="{{_id}}">{{name}}</option>
-							{{/each}}
-						</select>
-						{{> icon block="rc-select__arrow" icon="arrow-down" }}
-					</div>
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Department"}}</div>
+						<div class="rc-select">
+							<select class="rc-select__element" name="department">
+								<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
+								{{#each departments}}
+									<option class="rc-select__option" value="{{_id}}">{{name}}</option>
+								{{/each}}
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						</div>
+					</label>
 				</div>
 				<div class="form-group input-daterange">
-					<div>
-						<label>{{_ "From"}}</label>
-					</div>
-						<input autocomplete="off" type="text" placeholder="{{_ "Date_From"}}" class="rc-input__element" id="from" name="from" >
-					<div>
-						<label>{{_ "To"}}</label>
-					</div>
-					<input autocomplete="off" type="text" placeholder="{{_ "Date_to"}}" class="rc-input__element" id="to" name="to">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "From"}}</div>
+						<div class="rc-input__wrapper">
+							<input autocomplete="off" type="text" placeholder="{{_ "Date_From"}}" class="rc-input__element" id="from" name="from" >
+						</div>
+					</label>
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "To"}}</div>
+						<div class="rc-input__wrapper">
+							<input autocomplete="off" type="text" placeholder="{{_ "Date_to"}}" class="rc-input__element" id="to" name="to">
+						</div>
+					</label>
 				</div>
 				{{#each customFilters}}
 					<div class="form-group">
-						<div>
-							<label>{{label}}</label>
-						</div>
-						<input autocomplete="off" type="text" placeholder="{{label}}" class="rc-input__element" name="custom-field-{{name}}">
-						<a href="#remove" class="remove-livechat-custom-filter" data-name="{{name}}"><i class="icon-trash"></i></a>
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{label}}</div>
+							<div class="rc-input__wrapper">
+								<input autocomplete="off" type="text" placeholder="{{label}}" class="rc-input__element" name="custom-field-{{name}}">
+								<a href="#remove" class="remove-livechat-custom-filter" data-name="{{name}}"><i class="icon-trash"></i></a>
+							</div>
+						</label>
 					</div>
 				{{/each}}
 				{{#each tagFilters}}
 					<div class="form-group">
-						<div>
-							<label>{{_ "Tags"}}</label>
-						</div>
-						{{> livechatRoomTagSelector}}
-						<a href="#remove" class="remove-livechat-tags-filter" data-id="{{tagId}}"><i class="icon-trash"></i></a>
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Tags"}}</div>
+							{{> livechatRoomTagSelector}}
+							<a href="#remove" class="remove-livechat-tags-filter" data-id="{{tagId}}"><i class="icon-trash"></i></a>
+						</label>
 					</div>
 				{{/each}}
 				<div class="form-group">
