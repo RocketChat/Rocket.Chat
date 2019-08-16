@@ -12,7 +12,7 @@ rm -rf $LIVECHAT_ASSETS_DIR
 mkdir $LIVECHAT_ASSETS_DIR
 
 #NEW LIVECHAT#
-echo "Installing new Livechat..."
+echo "Installing Livechat ${LATEST_LIVECHAT_VERSION}..."
 cd $LIVECHAT_DIR
 
 cp -a $ROOT/node_modules/\@rocket.chat/livechat/build/. ./
