@@ -289,8 +289,34 @@ Template.room.helpers({
 			},
 		};
 		if (Template.instance().room.t === 'n') {
-			const query = {
+			let query = {
 				$or: Template.instance().followingUsers.get(),
+				_hidden: { $ne: true },
+				...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
+			};
+			const msg = ChatMessage.find(query, { sort: { rid: 1, 'u._id': 1, ts: -1 }, fields: { _id: 1, 'u._id': 1, ts: 1, rid: 1 } }).fetch();
+			const msgIndex = [];
+			for (let i = 0; i < msg.length - 1; i++) {
+				if (msg[i].rid === msg[i + 1].rid) {
+					if (msg[i]['u._id'] === msg[i + 1]['u._id']) {
+						if ((msg[i].ts - msg[i + 1].ts) > 20e3) {
+							const temp = new Object();
+							temp._id = msg[i]._id;
+							msgIndex.push(temp);
+						}
+					} else {
+						const temp = new Object();
+						temp._id = msg[i]._id;
+						msgIndex.push(temp);
+					}
+				} else {
+					const temp = new Object();
+					temp._id = msg[i]._id;
+					msgIndex.push(temp);
+				}
+			}
+			query = {
+				$or: msgIndex,
 				_hidden: { $ne: true },
 				...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
 			};
