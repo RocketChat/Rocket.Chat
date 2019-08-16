@@ -6,13 +6,10 @@ import './emitter';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
-		const records = Settings.findNotHiddenPublic().fetch();
-
 		if (updatedAt instanceof Date) {
+			const records = Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch();
 			return {
-				update: records.filter(function(record) {
-					return record._updatedAt > updatedAt;
-				}),
+				update: records,
 				remove: Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
 						$ne: true,
@@ -26,7 +23,7 @@ Meteor.methods({
 				}).fetch(),
 			};
 		}
-		return records;
+		return Settings.findNotHiddenPublic().fetch();
 	},
 	'private-settings/get'(updatedAfter) {
 		if (!Meteor.userId()) {
