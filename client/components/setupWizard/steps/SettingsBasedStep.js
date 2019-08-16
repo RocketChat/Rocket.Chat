@@ -1,10 +1,10 @@
+import { Input } from '@rocket.chat/fuselage';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { Fragment, useEffect, useReducer, useState } from 'react';
 
 import { handleError } from '../../../../app/utils/client';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { Input } from '../../basic/Input';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
 import { useSetupWizardStepsState } from '../StepsState';
@@ -12,6 +12,7 @@ import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
 import { batchSetSettings } from '../functions';
+import { useFocus } from '../../../hooks/useFocus';
 
 const useFields = () => {
 	const reset = 'RESET';
@@ -78,6 +79,8 @@ export function SettingsBasedStep({ step, title }) {
 		}
 	};
 
+	const autoFocusRef = useFocus(active);
+
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
@@ -87,38 +90,43 @@ export function SettingsBasedStep({ step, title }) {
 					{type === 'string'
 					&& <Input
 						type='text'
-						title={t(i18nLabel)}
+						label={t(i18nLabel)}
 						name={_id}
+						ref={i === 0 ? autoFocusRef : null}
 						value={value}
-						focused={i === 0 && active}
 						onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
 					/>}
 
 					{type === 'select'
 					&& <Input
 						type='select'
-						title={t(i18nLabel)}
+						label={t(i18nLabel)}
 						name={_id}
 						placeholder={t('Select_an_option')}
-						options={values.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))}
+						ref={i === 0 ? autoFocusRef : null}
 						value={value}
-						focused={i === 0 && active}
 						onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-					/>}
+					>
+						{values
+							.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
+							.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
+					</Input>}
 
 					{type === 'language'
 					&& <Input
 						type='select'
-						title={t(i18nLabel)}
+						label={t(i18nLabel)}
 						name={_id}
 						placeholder={t('Default')}
-						options={Object.entries(languages)
-							.map(([key, { name }]) => ({ label: name, value: key }))
-							.sort((a, b) => a.key - b.key)}
+						ref={i === 0 ? autoFocusRef : null}
 						value={value}
-						focused={i === 0 && active}
 						onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-					/>}
+					>
+						{Object.entries(languages)
+							.map(([key, { name }]) => ({ label: name, value: key }))
+							.sort((a, b) => a.key - b.key)
+							.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
+					</Input>}
 				</Fragment>
 			)}
 		</StepContent>

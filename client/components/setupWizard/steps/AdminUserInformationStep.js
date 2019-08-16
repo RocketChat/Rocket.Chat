@@ -1,3 +1,4 @@
+import { Input } from '@rocket.chat/fuselage';
 import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
@@ -7,13 +8,13 @@ import { handleError } from '../../../../app/utils/client';
 import { callbacks } from '../../../../app/callbacks/client';
 import { useSetting } from '../../../hooks/useSetting';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { Input } from '../../basic/Input';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
 import { loginWithPassword } from '../functions';
+import { useFocus } from '../../../hooks/useFocus';
 
 const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
 	await call('registerUser', { name, username, email, pass: password });
@@ -75,6 +76,8 @@ export function AdminUserInformationStep({ step, title }) {
 
 	const t = useTranslation();
 
+	const autoFocusRef = useFocus(active);
+
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
@@ -108,18 +111,18 @@ export function AdminUserInformationStep({ step, title }) {
 
 		<StepContent>
 			<Input
-				title={t('Name')}
+				ref={autoFocusRef}
 				type='text'
+				label={t('Name')}
 				icon='user'
 				placeholder={t('Type_your_name')}
 				value={name}
-				focused={active}
 				onChange={({ currentTarget: { value } }) => setName(value)}
 				error={!isNameValid}
 			/>
 			<Input
-				title={t('Username')}
 				type='text'
+				label={t('Username')}
 				icon='at'
 				placeholder={t('Type_your_username')}
 				value={username}
@@ -127,8 +130,8 @@ export function AdminUserInformationStep({ step, title }) {
 				error={!isUsernameValid && t('Invalid_username')}
 			/>
 			<Input
-				title={t('Organization_Email')}
 				type='email'
+				label={t('Organization_Email')}
 				icon='mail'
 				placeholder={t('Type_your_email')}
 				value={email}
@@ -136,8 +139,8 @@ export function AdminUserInformationStep({ step, title }) {
 				error={!isEmailValid && t('Invalid_email')}
 			/>
 			<Input
-				title={t('Password')}
 				type='password'
+				label={t('Password')}
 				icon='key'
 				placeholder={t('Type_your_password')}
 				value={password}
