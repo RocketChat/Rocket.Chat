@@ -5,7 +5,7 @@ import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:removeDepartment'(_id) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'manage-livechat-managers')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeDepartment' });
 		}
 

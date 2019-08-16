@@ -7,7 +7,7 @@ import { Template } from 'meteor/templating';
 import { ChatSubscription, Users } from '../../../../models';
 import { KonchatNotification } from '../../../../ui';
 import { settings } from '../../../../settings';
-import { hasRole } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import './livechat.html';
@@ -93,8 +93,7 @@ Template.livechat.helpers({
 		if (!config.showQueue) {
 			return false;
 		}
-
-		return hasRole(Meteor.userId(), 'livechat-manager') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));
+		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));
 	},
 
 	activeLivechatQueue() {
