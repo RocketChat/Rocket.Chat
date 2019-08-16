@@ -20,22 +20,7 @@ Template.livechatFlex.helpers({
 	},
 	sidebarItems() {
 		const items = sidebarItems.get();
-		const newItems = [];
-
-		for (const item of items) {
-			if (item.permission) {
-				if (!hasPermission(item.permission)) {
-					continue;
-				}
-			}
-
-			newItems.push({
-				title: item.title,
-				slug: item.slug,
-			});
-		}
-
-		return newItems;
+		return items.filter((item) => !item.permission || hasPermission(item.permission));
 	},
 });
 
