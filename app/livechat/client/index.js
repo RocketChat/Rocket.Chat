@@ -24,6 +24,7 @@ import './views/app/livechatTriggers';
 import './views/app/livechatTriggersForm';
 import './views/app/livechatManagers';
 import './views/app/livechatNotSubscribed.html';
+import './views/app/livechatRoomTagSelector.html';
 import './views/app/integrations/livechatIntegrationWebhook';
 import './views/app/integrations/livechatIntegrationFacebook';
 import './views/app/tabbar/externalSearch';

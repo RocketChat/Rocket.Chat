@@ -3,9 +3,13 @@
 		<fieldset>
 			<form class="form-inline" method="post">
 				<div class="form-group">
+					<div>
+						<label>{{_ "Guest"}}</label>
+					</div>
 					<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
 				</div>
 				<div class="form-group">
+					<label>{{_ "Served By"}}</label>
 					{{> livechatAutocompleteUser
 						onClickTag=onClickTagAgent
 						list=selectedAgents
@@ -24,6 +28,7 @@
 					}}
 				</div>
 				<div class="form-group">
+					<label>{{_ "Status"}}</label>
 					<div class="rc-select">
 						<select class="rc-select__element" name="status">
 							<option class="rc-select__option" value="">{{_ "All"}}</option>
@@ -34,6 +39,7 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label>{{_ "Department"}}</label>
 					<div class="rc-select">
 						<select class="rc-select__element" name="department">
 							<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
@@ -45,8 +51,35 @@
 					</div>
 				</div>
 				<div class="form-group input-daterange">
-					<input autocomplete="off" type="text" placeholder="{{_ "Date_From"}}" class="rc-input__element" id="from" name="from" >
+					<div>
+						<label>{{_ "From"}}</label>
+					</div>
+						<input autocomplete="off" type="text" placeholder="{{_ "Date_From"}}" class="rc-input__element" id="from" name="from" >
+					<div>
+						<label>{{_ "To"}}</label>
+					</div>
 					<input autocomplete="off" type="text" placeholder="{{_ "Date_to"}}" class="rc-input__element" id="to" name="to">
+				</div>
+				{{#each customFilters}}
+					<div class="form-group">
+						<div>
+							<label>{{label}}</label>
+						</div>
+						<input autocomplete="off" type="text" placeholder="{{label}}" class="rc-input__element" name="custom-field-{{name}}">
+						<a href="#remove" class="remove-livechat-custom-filter" data-name="{{name}}"><i class="icon-trash"></i></a>
+					</div>
+				{{/each}}
+				{{#if showTagFilter}}
+					<div class="form-group">
+						<div>
+							<label>{{_ "Tags"}}</label>
+						</div>
+						{{> livechatRoomTagSelector}}
+						<a href="#remove" class="remove-livechat-tags-filter"><i class="icon-trash"></i></a>
+					</div>
+				{{/if}}
+				<div class="form-group">
+					<button class="rc-button rc-button--secondary add-filter-button">{{> icon icon="plus" }}</button>
 				</div>
 				<div class="form-group">
 					<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>

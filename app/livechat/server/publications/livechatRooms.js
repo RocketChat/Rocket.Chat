@@ -21,6 +21,8 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		from: Match.Maybe(Date),
 		to: Match.Maybe(Date),
 		department: Match.Maybe(String), // room department
+		customFields: Match.Maybe(Object),
+		tags: Match.Maybe(String),
 	});
 
 	const query = {};
@@ -57,6 +59,17 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (filter._id) {
 		query._id = filter._id;
 	}
+	if (filter.customFields) {
+		for (const key in filter.customFields) {
+			if (filter.customFields[key]) {
+				query[`livechatData.${ key }`] = new RegExp(filter.customFields[key], 'i');
+			}
+		}
+	}
+	if (filter.tags) {
+		query.tags = new RegExp(filter.tags, 'i');
+	}
+
 	const self = this;
 
 	const handle = LivechatRooms.findLivechat(query, offset, limit).observeChanges({

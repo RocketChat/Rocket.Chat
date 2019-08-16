@@ -3,8 +3,9 @@ import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
 
-import { modal, call } from '../../../../ui-utils';
+import { modal, call, popover } from '../../../../ui-utils';
 import { t } from '../../../../utils/client';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatRoom } from '../../collections/LivechatRoom';
@@ -53,6 +54,12 @@ Template.livechatCurrentChats.helpers({
 	departments() {
 		return LivechatDepartment.find({}, { sort: { name: 1 } });
 	},
+	customFilters() {
+		return Template.instance().customFilters.get();
+	},
+	showTagFilter() {
+		return Template.instance().showTagFilter.get();
+	},
 });
 
 Template.livechatCurrentChats.events({
@@ -62,14 +69,100 @@ Template.livechatCurrentChats.events({
 	'click .js-load-more'(event, instance) {
 		instance.limit.set(instance.limit.get() + 20);
 	},
+	'click .add-filter-button'(event, instance) {
+		event.preventDefault();
+
+		const customFields = instance.customFields.get();
+		const filters = instance.customFilters.get();
+		const options = [];
+
+		if (!instance.showTagFilter.get()) {
+			options.push({
+				name: t('Tags'),
+				action: () => {
+					instance.showTagFilter.set(true);
+				},
+			});
+		}
+
+		for (const field of customFields) {
+			if (field.visibility !== 'visible') {
+				continue;
+			}
+			if (field.scope !== 'room') {
+				continue;
+			}
+
+			if (filters.find((filter) => filter.name === field._id)) {
+				continue;
+			}
+
+			options.push({
+				name: field.label,
+				action: () => {
+					filters.push({
+						type: 'custom-field',
+						name: field._id,
+						label: field.label,
+					});
+					instance.customFilters.set(filters);
+				},
+			});
+		}
+
+		const config = {
+			popoverClass: 'livechat-current-chats-add-filter',
+			columns: [
+				{
+					groups: [
+						{
+							items: options,
+						},
+					],
+				},
+			],
+			currentTarget: event.currentTarget,
+			offsetVertical: event.currentTarget.clientHeight,
+		};
+
+		popover.open(config);
+	},
+	'click .remove-livechat-tags-filter'(event, instance) {
+		event.preventDefault();
+		instance.showTagFilter.set(false);
+	},
+	'click .remove-livechat-custom-filter'(event, instance) {
+		event.preventDefault();
+		const fieldName = event.currentTarget.dataset.name;
+
+		const filters = instance.customFilters.get();
+		const index = filters.findIndex((filter) => filter.name === fieldName);
+
+		if (index >= 0) {
+			filters.splice(index, 1);
+		}
+
+		instance.customFilters.set(filters);
+	},
 	'submit form'(event, instance) {
 		event.preventDefault();
 
 		const filter = {};
 		$(':input', event.currentTarget).each(function() {
-			if (this.name) {
-				filter[this.name] = $(this).val();
+			if (!this.name) {
+				return;
 			}
+
+			if (this.name.startsWith('custom-field-')) {
+				if (!filter.customFields) {
+					filter.customFields = {};
+				}
+
+				filter.customFields[this.name.replace('custom-field-', '')] = $(this).val();
+				return;
+			}
+
+			filter[this.name] = $(this).val();
 		});
 
 		if (!_.isEmpty(filter.from)) {
@@ -133,6 +226,9 @@ Template.livechatCurrentChats.onCreated(function() {
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
 	this.selectedAgents = new ReactiveVar([]);
+	this.customFilters = new ReactiveVar([]);
+	this.customFields = new ReactiveVar([]);
+	this.showTagFilter = new ReactiveVar(false);
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
@@ -147,6 +243,12 @@ Template.livechatCurrentChats.onCreated(function() {
 	});
 
 	this.subscribe('livechat:departments');
+
+	Meteor.call('livechat:getCustomFields', (err, customFields) => {
+		if (customFields) {
+			this.customFields.set(customFields);
+		}
+	});
 });
 
 Template.livechatCurrentChats.onRendered(function() {
