@@ -95,8 +95,10 @@
 								<div class="form-group">
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "Tags"}}</div>
-										{{> livechatRoomTagSelector}}
-										<a href="#remove" class="remove-livechat-tags-filter" data-id="{{tagId}}"><i class="icon-trash"></i></a>
+										<span class="livechat-current-chats-tag-filter-wrapper">
+											{{> livechatRoomTagSelector}}
+											<a href="#remove" class="remove-livechat-tags-filter" data-id="{{tagId}}"><i class="icon-trash"></i></a>
+										</span>
 									</label>
 								</div>
 							{{/each}}
