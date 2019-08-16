@@ -1,3 +1,10 @@
+# Assistify 0.9.11
+
+This release fixes a severe bug 🐛 with respect to frontend performance:
+In large rooms, new messages triggered the loading of many previous messages which in turn increased memory, made the scolling jump and led the UI non-responsive in the worst case to to a re-calculation of mention marks.
+
+Now, messages are not re-synced implicitly to Smarti anymore, removing the trigger for the message reloading.
+
 # Assistify 0.9.10
 
 This Release bumps Rocket.Chat to 1.1.3
