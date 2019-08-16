@@ -69,15 +69,15 @@
 						<a href="#remove" class="remove-livechat-custom-filter" data-name="{{name}}"><i class="icon-trash"></i></a>
 					</div>
 				{{/each}}
-				{{#if showTagFilter}}
+				{{#each tagFilters}}
 					<div class="form-group">
 						<div>
 							<label>{{_ "Tags"}}</label>
 						</div>
 						{{> livechatRoomTagSelector}}
-						<a href="#remove" class="remove-livechat-tags-filter"><i class="icon-trash"></i></a>
+						<a href="#remove" class="remove-livechat-tags-filter" data-id="{{tagId}}"><i class="icon-trash"></i></a>
 					</div>
-				{{/if}}
+				{{/each}}
 				<div class="form-group">
 					<button class="rc-button rc-button--secondary add-filter-button">{{> icon icon="plus" }}</button>
 				</div>
