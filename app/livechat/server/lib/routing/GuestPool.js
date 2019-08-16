@@ -1,12 +1,11 @@
-// import { settings } from '../../../settings';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Livechat } from '../Livechat';
 import { RoutingManager } from '../RoutingManager';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
-import { sendNotification } from '../../../../lib';
-import { Rooms } from '../../../../models';
+import { sendNotification } from '../../../../lib/server';
+import { Rooms } from '../../../../models/server';
 
 /* Guest Pool Queuing Method:
 	*
@@ -23,6 +22,7 @@ class GuestPool {
 			previewRoom: true,
 			showConnecting: true,
 			showQueue: true,
+			showQueueLink: false,
 			returnQueue: true,
 			enableTriggerAction: false,
 			autoAssignAgent: false,

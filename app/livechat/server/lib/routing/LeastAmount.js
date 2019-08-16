@@ -1,5 +1,5 @@
 import { RoutingManager } from '../RoutingManager';
-import { LivechatDepartmentAgents, Users } from '../../../../models';
+import { LivechatDepartmentAgents, Users } from '../../../../models/server';
 
 /* Least Amount Queuing method:
 	*
@@ -12,6 +12,7 @@ class LeastAmount {
 			previewRoom: false,
 			showConnecting: false,
 			showQueue: false,
+			showQueueLink: true,
 			returnQueue: false,
 			enableTriggerAction: true,
 			autoAssignAgent: true,

@@ -105,7 +105,6 @@ Template.livechatDepartmentForm.events({
 		const oldBtnValue = $btn.html();
 		$btn.html(t('Saving'));
 
-		// get custom form fields
 		instance.$('.customFormField').each((i, el) => {
 			const elField = instance.$(el);
 			const name = elField.attr('name');
