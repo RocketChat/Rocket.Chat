@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { getFullUserData } from '../../app/lib';
+import { getFullUserData } from '../../app/lib/server/functions';
 
 Meteor.publish('fullUserData', function(filter, limit) {
 	if (!this.userId) {

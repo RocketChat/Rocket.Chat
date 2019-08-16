@@ -92,19 +92,26 @@ Meteor.startup(function() {
 		}
 	}
 
+
+	const PERMISSION_LEVELS = {
+		ADMIN: 100,
+		USER: 10,
+		MIN: 0,
+	};
+
 	const defaultRoles = [
-		{ name: 'admin',     scope: 'Users',         description: 'Admin' },
+		{ name: 'admin',     scope: 'Users',         description: 'Admin',    level: PERMISSION_LEVELS.ADMIN },
 		{ name: 'moderator', scope: 'Subscriptions', description: 'Moderator' },
 		{ name: 'leader',    scope: 'Subscriptions', description: 'Leader' },
 		{ name: 'owner',     scope: 'Subscriptions', description: 'Owner' },
-		{ name: 'user',      scope: 'Users',         description: '' },
-		{ name: 'bot',       scope: 'Users',         description: '' },
-		{ name: 'guest',     scope: 'Users',         description: '' },
-		{ name: 'anonymous', scope: 'Users',         description: '' },
+		{ name: 'user',      scope: 'Users',         description: '',         level: PERMISSION_LEVELS.USER },
+		{ name: 'bot',       scope: 'Users',         description: '',         level: PERMISSION_LEVELS.USER },
+		{ name: 'guest',     scope: 'Users',         description: '',         level: PERMISSION_LEVELS.MIN },
+		{ name: 'anonymous', scope: 'Users',         description: '',         level: PERMISSION_LEVELS.MIN },
 	];
 
-	for (const role of defaultRoles) {
-		Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true, mandatory2fa: false } });
+	for (const { name, ...role } of defaultRoles) {
+		Roles.upsert({ _id: role.name }, { $setOnInsert: { ...role, protected: true, mandatory2fa: false } });
 	}
 
 	const getPreviousPermissions = function(settingId) {

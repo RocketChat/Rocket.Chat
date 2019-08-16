@@ -5,7 +5,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
-import { Roles } from '../../../models';
+import { Roles, Users } from '../../../models';
 import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
 
@@ -13,6 +13,7 @@ import { hasAtLeastOnePermission } from '..';
 
 import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
+import { call } from '../../../ui-utils/client';
 import { CONSTANTS } from '../../lib';
 
 Template.permissions.helpers({
@@ -67,7 +68,10 @@ Template.permissions.helpers({
 		};
 	},
 	roles() {
-		return Roles.find();
+		const userLevel = Template.instance().state.get('userLevel');
+		return Roles.find({
+			$or: [{ level: { $lte: userLevel } }, { level: { $exists: false } }],
+		});
 	},
 
 	permissions() {
@@ -147,9 +151,16 @@ Template.permissions.events({
 
 Template.permissions.onCreated(function() {
 	this.state = new ReactiveDict({
+		userLevel: 0,
 		filter: '',
 		tab: '',
 		size: 50,
+	});
+
+	this.autorun(() => {
+		const { roles } = Users.findOne(Meteor.userId(), { fields: { roles: 1 } });
+		const level = Roles.find({ _id: { $in: roles } }).fetch().reduce((currentLevel, { level }) => (currentLevel > level ? currentLevel : level), 0);
+		this.state.set('userLevel', level);
 	});
 
 	this.autorun(() => {
@@ -185,6 +196,8 @@ Template.permissionsTable.helpers({
 
 Template.permissionsTable.events({
 	'click .role-permission'(e) {
+		e.preventDefault();
+
 		const permissionId = e.currentTarget.getAttribute('data-permission');
 		const role = e.currentTarget.getAttribute('data-role');
 
@@ -192,7 +205,7 @@ Template.permissionsTable.events({
 
 		const action = ~permission.roles.indexOf(role) ? 'authorization:removeRoleFromPermission' : 'authorization:addPermissionToRole';
 
-		return Meteor.call(action, permission, role);
+		call(action, permission, role);
 	},
 });
 

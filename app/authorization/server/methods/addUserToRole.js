@@ -5,10 +5,12 @@ import { Users, Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Notifications } from '../../../notifications/server';
 import { hasPermission } from '../functions/hasPermission';
+import { getUserLevelUser, getUserLevelById } from '../functions/getUserLevel';
 
 Meteor.methods({
 	'authorization:addUserToRole'(roleName, username, scope) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:addUserToRole',
 				action: 'Accessing_permissions',
@@ -21,7 +23,7 @@ Meteor.methods({
 			});
 		}
 
-		if (roleName === 'admin' && !hasPermission(Meteor.userId(), 'assign-admin-role')) {
+		if (roleName === 'admin' && !hasPermission(uid, 'assign-admin-role')) { // TODO should a non admin user add user role?
 			throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 				method: 'authorization:addUserToRole',
 				action: 'Assign_admin',
@@ -31,14 +33,26 @@ Meteor.methods({
 		const user = Users.findOneByUsernameIgnoringCase(username, {
 			fields: {
 				_id: 1,
+				roles: 1,
 			},
 		});
 
-		if (!user || !user._id) {
+		if (!user) {
 			throw new Meteor.Error('error-user-not-found', 'User not found', {
 				method: 'authorization:addUserToRole',
 			});
 		}
+
+		const editorUserLevel = getUserLevelById(uid);
+		const editedUserLevel = getUserLevelUser(user);
+
+		if (editorUserLevel < editedUserLevel) {
+			throw new Meteor.Error('error-action-not-allowed', 'You cant change higher users', {
+				method: 'authorization:removeUserFromRole',
+				action: 'Accessing_permissions',
+			});
+		}
+
 
 		// verify if user can be added to given scope
 		if (scope && !Roles.canAddUserToRole(user._id, roleName, scope)) {

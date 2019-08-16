@@ -5,10 +5,12 @@ import { Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Notifications } from '../../../notifications/server';
 import { hasPermission } from '../functions/hasPermission';
+import { getUserLevelUser, getUserLevelById } from '../functions/getUserLevel';
 
 Meteor.methods({
 	'authorization:removeUserFromRole'(roleName, username, scope) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
 				method: 'authorization:removeUserFromRole',
 				action: 'Accessing_permissions',
@@ -21,6 +23,7 @@ Meteor.methods({
 			});
 		}
 
+
 		const user = Meteor.users.findOne({
 			username,
 		}, {
@@ -30,14 +33,31 @@ Meteor.methods({
 			},
 		});
 
-		if (!user || !user._id) {
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'authorization:removeUserFromRole',
 			});
 		}
 
+		const editorUserLevel = getUserLevelById(uid);
+		const editedUserLevel = getUserLevelUser(user);
+
+		if (editorUserLevel < editedUserLevel) {
+			throw new Meteor.Error('error-action-not-allowed', 'You cant change higher users', {
+				method: 'authorization:removeUserFromRole',
+				action: 'Accessing_permissions',
+			});
+		}
+
 		// prevent removing last user from admin role
 		if (roleName === 'admin') {
+			if (!hasPermission(uid, 'assign-admin-role')) { // TODO only admins should be able to manage admins
+				throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
+					method: 'authorization:addUserToRole',
+					action: 'Assign_admin',
+				});
+			}
+
 			const adminCount = Meteor.users.find({
 				roles: {
 					$in: ['admin'],

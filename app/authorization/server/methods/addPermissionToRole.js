@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Permissions } from '../../../models/server';
 import { hasPermission } from '../functions/hasPermission';
+import { getUserLevelById, getLevelByRole } from '../functions/getUserLevel';
 import { CONSTANTS } from '../../lib';
 
 Meteor.methods({
@@ -13,6 +14,15 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'Adding permission is not allowed', {
 				method: 'authorization:addPermissionToRole',
 				action: 'Adding_permission',
+			});
+		}
+
+		const userLevel = getUserLevelById(uid);
+		const roleLevel = getLevelByRole(role);
+
+		if (userLevel < roleLevel) {
+			throw new Meteor.Error('error-not-allowed', 'Adding permission for this role is not allowed', {
+				method: 'authorization:addPermissionToRole',
 			});
 		}
 		// for setting-based-permissions, authorize the group access as well

@@ -6,6 +6,7 @@ import { Gravatar } from 'meteor/jparker:gravatar';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
+import { getUserLevelById, getLevelByRoles } from '../../../authorization/server/functions/getUserLevel';
 import { settings } from '../../../settings';
 import PasswordPolicy from '../lib/PasswordPolicyClass';
 import { validateEmailDomain } from '../lib';
@@ -109,11 +110,28 @@ function validateUserData(userId, userData) {
 function validateUserEditing(userId, userData) {
 	const editingMyself = userData._id && userId === userData._id;
 
+
 	const canEditOtherUserInfo = hasPermission(userId, 'edit-other-user-info');
 	const canEditOtherUserPassword = hasPermission(userId, 'edit-other-user-password');
 
+	const editingUserLevel = getUserLevelById(userId);
+	const userCanEditByLevel = editingMyself || editingUserLevel >= getUserLevelById(userData._id);
+
+	if (!userCanEditByLevel) {
+		throw new Meteor.Error('error-not-allowed', 'You cant change higher users', {
+			method: 'insertOrUpdateUser',
+		});
+	}
+
 	if (userData.roles && !hasPermission(userId, 'assign-roles')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assign roles is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Assign_role',
+		});
+	}
+
+	if (userData.roles && getLevelByRoles(userData.roles) > editingUserLevel) {
+		throw new Meteor.Error('error-action-not-allowed', 'You cant change higher users', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_role',
 		});
@@ -275,6 +293,7 @@ export const saveUser = function(userId, userData) {
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;
 	}
+
 	if (userData.settings) {
 		updateUser.$set.settings = { preferences: userData.settings.preferences };
 	}

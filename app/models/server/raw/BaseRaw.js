@@ -7,6 +7,10 @@ export class BaseRaw {
 		return this.findOne({ _id }, options);
 	}
 
+	find(...args) {
+		return this.col.find(...args);
+	}
+
 	findOne(...args) {
 		return this.col.findOne(...args);
 	}

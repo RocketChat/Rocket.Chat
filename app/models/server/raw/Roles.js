@@ -3,6 +3,11 @@ import { BaseRaw } from './BaseRaw';
 import * as Models from './index';
 
 export class RolesRaw extends BaseRaw {
+	async getLevel(ids) {
+		const roles = await this.find({ _id: { $in: ids } }, { projection: { level: 1 } }).toArray();
+		return roles.reduce((currentLevel, { level }) => (currentLevel > level ? currentLevel : level), 0); // 0 === MINIMUN LEVEL
+	}
+
 	async isUserInRoles(userId, roles, scope) {
 		roles = [].concat(roles);
 

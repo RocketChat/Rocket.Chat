@@ -1,6 +1,10 @@
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
+	getRoles(_id) {
+		return this.col.findOne({ _id }, { projection: { roles: 1 } });
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -8,7 +12,7 @@ export class UsersRaw extends BaseRaw {
 			roles: { $in: roles },
 		};
 
-		return this.find(query, options);
+		return this.col.find(query, options);
 	}
 
 	isUserInRole(userId, roleName) {
