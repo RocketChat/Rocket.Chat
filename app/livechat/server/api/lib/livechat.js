@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
-import { callbacks } from '../../../../callbacks';
+import { callbacks } from '../../../../callbacks/server';
 
 export function online() {
 	return Livechat.online();

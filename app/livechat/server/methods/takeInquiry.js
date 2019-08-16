@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { RoutingManager } from '../lib/RoutingManager';
 

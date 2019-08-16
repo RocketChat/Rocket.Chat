@@ -616,7 +616,7 @@ export const Livechat = {
 
 	setUserStatusLivechat(userId, status) {
 		const user = Users.setLivechatStatus(userId, status);
-		Meteor.defer(() => { callbacks.run('livechat.setUserStatusLivechat', { userId, status }); });
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	},
 
@@ -638,10 +638,10 @@ export const Livechat = {
 		Rooms.removeByVisitorToken(token);
 	},
 
-	saveDepartment(_id, departmentData, departmentAgents, customFields = []) {
+	saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
 
-		const validationFields = {
+		const defaultValidations = {
 			enabled: Boolean,
 			name: String,
 			description: Match.Optional(String),
@@ -650,11 +650,14 @@ export const Livechat = {
 			showOnOfflineForm: Boolean,
 		};
 
-		customFields.forEach((field) => {
-			validationFields[field] = Match.OneOf(String, Match.Integer, Boolean);
+		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
+		Object.keys(departmentData).forEach((field) => {
+			if (!Object.keys(defaultValidations).some((v) => v === field)) {
+				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
+			}
 		});
 
-		check(departmentData, validationFields);
+		check(departmentData, defaultValidations);
 
 		check(departmentAgents, [
 			Match.ObjectIncluding({
