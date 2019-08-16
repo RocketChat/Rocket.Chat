@@ -2978,7 +2978,6 @@
   "Today": "今日",
   "To_additional_emails": "追加のメールへ",
   "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Webサイトへ Rocket.Chat ライブチャットを導入するには、あなたのサイトの <strong>&lt;/body&gt;</strong> タグの前に、このコードをコピー &amp; ペーストしてください。",
-  "To_install_the_new_version_of_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Webサイトへ<strong>新しいバージョン</strong>のRocket.Chat ライブチャットを導入するには、あなたのサイトの最後の <strong>&lt;/body&gt;</strong> タグの前に、このコードをコピー &amp; ペーストしてください。",
   "to_see_more_details_on_how_to_integrate": "統合する方法の詳細を確認してください。",
   "To_users": "宛先ユーザー",
   "Toggle_original_translated": "元に戻す/翻訳済み",
