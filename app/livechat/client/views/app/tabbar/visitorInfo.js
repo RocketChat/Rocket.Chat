@@ -163,10 +163,6 @@ Template.visitorInfo.helpers({
 		}
 	},
 
-	isSubscribedToRoom() {
-		return isSubscribedToRoom();
-	},
-
 	canSeeButtons() {
 		if (hasAtLeastOnePermission(['close-others-livechat-room', 'transfer-livechat-guest'])) {
 			return true;

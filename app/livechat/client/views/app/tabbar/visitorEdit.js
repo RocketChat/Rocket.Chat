@@ -87,7 +87,7 @@ Template.visitorEdit.onCreated(function() {
 	});
 
 	const uid = Meteor.userId();
-	this.subscribe('livechat:departmentAgents', { agentId: uid }, () => {
+	this.subscribe('livechat:departmentAgents', null, uid, () => {
 		const departments = [];
 		LivechatDepartmentAgents.find({ agentId: uid }).forEach((dept) => {
 			departments.push(dept.departmentId);
