@@ -95,9 +95,8 @@ Template.livechatDepartments.onCreated(function() {
 	this.ready = new ReactiveVar(true);
 
 	this.autorun(function() {
-		const filter = instance.filter.get();
 		const limit = instance.limit.get();
-		const subscription = instance.subscribe('livechat:departments', filter, limit);
+		const subscription = instance.subscribe('livechat:departments', null, limit);
 		instance.ready.set(subscription.ready());
 	});
 	this.departments = function() {

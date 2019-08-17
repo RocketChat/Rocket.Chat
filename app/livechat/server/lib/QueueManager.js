@@ -27,14 +27,8 @@ export const QueueManager = {
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
-		let room;
-		let inquiry;
-
-		try {
-			[room, inquiry] = await this.init(rid, name, guest, message, roomInfo);
-		} catch (e) {
-			throw new Meteor.Error(e);
-		}
+		const room = LivechatRooms.findOne(createLivechatRoom(rid, name, guest, roomInfo));
+		let inquiry = LivechatInquiry.findOne(createLivechatInquiry(rid, name, guest, message));
 
 		LivechatRooms.updateRoomCount();
 
