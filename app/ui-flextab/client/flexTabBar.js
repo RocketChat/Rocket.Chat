@@ -8,6 +8,7 @@ import _ from 'underscore';
 import { hasAllPermission } from '../../authorization';
 import { popover, TabBar, Layout } from '../../ui-utils';
 import { t } from '../../utils';
+import { settings } from '../../settings';
 
 const commonHelpers = {
 	title() {
@@ -53,6 +54,9 @@ const filterButtons = (button, anonymous, rid) => {
 		return false;
 	}
 	if (button.id === 'addUsers' && !canShowAddUsersButton(rid)) {
+		return false;
+	}
+	if (button.id === 'thread' && !settings.get('Threads_enabled')) {
 		return false;
 	}
 	return true;
@@ -145,6 +149,10 @@ Template.flexTabBar.events({
 
 		$flexTab.attr('template', this.template);
 
+		t.tabBar.setData({
+			label: this.i18nTitle,
+			icon: this.icon,
+		});
 		t.tabBar.open(this.id);
 	},
 

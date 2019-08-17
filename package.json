@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "1.4.0-develop",
+	"version": "2.0.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -93,6 +93,7 @@
 	"devDependencies": {
 		"@octokit/rest": "^16.1.0",
 		"@rocket.chat/eslint-config": "^0.3.0",
+		"@rocket.chat/livechat": "^1.1.4",
 		"acorn": "^6.0.7",
 		"autoprefixer": "^9.4.1",
 		"babel-eslint": "^10.0.1",
@@ -182,6 +183,7 @@
 		"ip-range-check": "^0.0.2",
 		"jquery": "^3.3.1",
 		"jschardet": "^1.6.0",
+		"jsrsasign": "^8.0.12",
 		"juice": "^5.2.0",
 		"katex": "^0.9.0",
 		"ldap-escape": "^2.0.1",

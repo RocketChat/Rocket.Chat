@@ -365,7 +365,7 @@ export class CustomOAuth {
 			}
 
 			if (serviceData.username) {
-				const user = Users.findOneByUsernameIgnoringCase(serviceData.username);
+				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceName);
 				if (!user) {
 					return;
 				}
@@ -430,10 +430,9 @@ export class CustomOAuth {
 			check(options, Match.ObjectIncluding({
 				accessToken: String,
 				expiresIn: Match.Integer,
-				identity: Match.Maybe(Object),
 			}));
 
-			const identity = options.identity || self.getIdentity(options.accessToken);
+			const identity = self.getIdentity(options.accessToken);
 
 			const serviceData = {
 				accessToken: options.accessToken,
