@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Settings, Rooms } from '../../../app/models/server';
+import { Settings, LivechatRooms } from '../../../app/models/server';
 import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 
@@ -21,7 +21,7 @@ Migrations.add({
 		}
 
 		// Create Livechat inquiries for each open Livechat room
-		Rooms.findLivechat({ open: true }).forEach((room) => {
+		LivechatRooms.findLivechat({ open: true }).forEach((room) => {
 			const inquiry = LivechatInquiry.findOneByRoomId(room._id);
 			if (!inquiry) {
 				try {
@@ -36,13 +36,13 @@ Migrations.add({
 		// There was a bug when closing livechat Rooms from the Widget side, the `ts` field was missing
 		// when passing the Room object through the Livechat.closeRoom method
 		// The `chatDuration` metric will be used to estimate the wait time in the new waiting queue feature
-		Rooms.find({
+		LivechatRooms.find({
 			t: 'l',
 			closedAt: { $exists: true },
 			metrics: { $exists: true },
 			'metrics.chatDuration': NaN,
 		}).forEach((room) => {
-			Rooms.update(
+			LivechatRooms.update(
 				room._id,
 				{
 					$set: {
