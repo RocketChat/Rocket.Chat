@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings/server';
 import { createLivechatSubscription, dispatchAgentDelegated, forwardRoomToAgent, forwardRoomToDepartment } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Messages, Subscriptions, Users } from '../../../models/server';
+import { Rooms, LivechatRooms, Messages, Subscriptions, Users } from '../../../models/server';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 export const RoutingManager = {
@@ -57,7 +57,7 @@ export const RoutingManager = {
 		}
 
 		LivechatRooms.changeAgentByRoomId(rid, agent);
-		LivechatRooms.incUsersCountById(rid);
+		Rooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
