@@ -16,6 +16,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import {
 	Users,
+	Rooms,
 	LivechatRooms,
 	Messages,
 	Subscriptions,
@@ -506,7 +507,7 @@ export const Livechat = {
 			Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
 			Subscriptions.insert(subscriptionData);
-			LivechatRooms.incUsersCountById(room._id);
+			Rooms.incUsersCountById(room._id);
 
 			Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
 			Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });

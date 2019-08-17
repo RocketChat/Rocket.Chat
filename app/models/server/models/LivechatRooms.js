@@ -46,18 +46,6 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	incUsersCountById(_id, inc = 1) {
-		const query = { _id };
-
-		const update = {
-			$inc: {
-				usersCount: inc,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	updateDataByToken(token, key, value, overwrite = true) {
 		const query = {
 			'v.token': token,

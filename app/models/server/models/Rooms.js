@@ -620,6 +620,18 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	incUsersCountById(_id, inc = 1) {
+		const query = { _id };
+
+		const update = {
+			$inc: {
+				usersCount: inc,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	incUsersCountByIds(ids, inc = 1) {
 		const query = {
 			_id: {

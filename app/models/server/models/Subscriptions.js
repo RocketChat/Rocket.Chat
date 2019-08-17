@@ -4,7 +4,6 @@ import _ from 'underscore';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
-import LivechatRooms from './LivechatRooms';
 import Users from './Users';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 
@@ -1236,7 +1235,7 @@ export class Subscriptions extends Base {
 
 		const result = this.insert(subscription);
 
-		LivechatRooms.incUsersCountById(room._id);
+		Rooms.incUsersCountById(room._id);
 
 		return result;
 	}
@@ -1267,7 +1266,7 @@ export class Subscriptions extends Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			LivechatRooms.incUsersCountById(roomId, - result);
+			Rooms.incUsersCountById(roomId, - result);
 		}
 
 		return result;
@@ -1282,7 +1281,7 @@ export class Subscriptions extends Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			LivechatRooms.incUsersCountById(roomId, - result);
+			Rooms.incUsersCountById(roomId, - result);
 		}
 
 		return result;
