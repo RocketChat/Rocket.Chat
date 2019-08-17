@@ -46,19 +46,6 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountById(_id, inc) {
-		if (inc == null) { inc = 1; }
-		const query = { _id };
-
-		const update = {
-			$inc: {
-				msgs: inc,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	updateDataByToken(token, key, value, overwrite = true) {
 		const query = {
 			'v.token': token,
