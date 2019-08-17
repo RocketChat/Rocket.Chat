@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { createLivechatSubscription, dispatchAgentDelegated, forwardRoomToAgent, forwardRoomToDepartment } from './Helper';
 import { callbacks } from '../../../callbacks';
 import { LivechatRooms, Messages, Subscriptions, Users } from '../../../models';

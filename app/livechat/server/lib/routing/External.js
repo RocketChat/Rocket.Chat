@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
-import { settings } from '../../../../settings';
+import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
-import { Users } from '../../../../models';
+import { Users } from '../../../../models/server';
 
 class ExternalQueue {
 	constructor() {
@@ -11,7 +11,8 @@ class ExternalQueue {
 			previewRoom: false,
 			showConnecting: false,
 			showQueue: false,
-			returnQueue: true,
+			showQueueLink: false,
+			returnQueue: false,
 			enableTriggerAction: true,
 			autoAssignAgent: true,
 		};

@@ -90,7 +90,7 @@ Template.livechat.helpers({
 
 	showQueueLink() {
 		const config = Template.instance().routingConfig.get();
-		if (!config.showQueue) {
+		if (!config.showQueueLink) {
 			return false;
 		}
 		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));

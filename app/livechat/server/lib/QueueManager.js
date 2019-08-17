@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { LivechatRooms } from '../../../models';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 import { Livechat } from './Livechat';
 
@@ -27,14 +27,8 @@ export const QueueManager = {
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
-		let room;
-		let inquiry;
-
-		try {
-			[room, inquiry] = await this.init(rid, name, guest, message, roomInfo);
-		} catch (e) {
-			throw new Meteor.Error(e);
-		}
+		const room = Rooms.findOne(createLivechatRoom(rid, name, guest, roomInfo));
+		let inquiry = LivechatInquiry.findOne(createLivechatInquiry(rid, name, guest, message));
 
 		LivechatRooms.updateRoomCount();
 
