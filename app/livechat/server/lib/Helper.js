@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
 
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Messages, Rooms, LivechatRooms, Subscriptions, Users } from '../../../models/server';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
@@ -216,7 +216,7 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 	if (oldServedBy && (!servedBy || oldServedBy._id !== servedBy._id)) {
 		Subscriptions.removeByRoomIdAndUserId(rid, oldServedBy._id);
 		Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: oldServedBy._id, username: oldServedBy.username });
-		Rooms.changeDepartmentIdByRoomId(rid, departmentId);
+		LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
 		LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
 		// Update the visitor's department
 		const { token } = guest;
