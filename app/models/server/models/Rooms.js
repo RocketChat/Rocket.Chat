@@ -587,6 +587,19 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	incMsgCountById(_id, inc) {
+		if (inc == null) { inc = 1; }
+		const query = { _id };
+
+		const update = {
+			$inc: {
+				msgs: inc,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
 		if (inc == null) { inc = 1; }
 		const query = { _id };
@@ -603,18 +616,6 @@ export class Rooms extends Base {
 		if (lastMessage) {
 			update.$set.lastMessage = lastMessage;
 		}
-
-		return this.update(query, update);
-	}
-
-	incUsersCountById(_id, inc = 1) {
-		const query = { _id };
-
-		const update = {
-			$inc: {
-				usersCount: inc,
-			},
-		};
 
 		return this.update(query, update);
 	}
