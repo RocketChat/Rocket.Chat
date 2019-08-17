@@ -507,7 +507,7 @@ export const Livechat = {
 			Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
 			Subscriptions.insert(subscriptionData);
-			Rooms.incUsersCountById(room._id);
+			LivechatRooms.incUsersCountById(room._id);
 
 			Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
 			Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });

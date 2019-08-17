@@ -57,7 +57,7 @@ Meteor.methods({
 		};
 
 		Subscriptions.insert(subscriptionData);
-		Rooms.incUsersCountById(inquiry.rid);
+		LivechatRooms.incUsersCountById(inquiry.rid);
 
 		// update room
 		const room = LivechatRooms.findOneById(inquiry.rid);
