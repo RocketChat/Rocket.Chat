@@ -108,9 +108,9 @@ if (Meteor.isServer) {
 			});
 		}
 
-		changeDepartmentIdByRoomId(inquiryId, department) {
+		changeDepartmentIdByRoomId(rid, department) {
 			const query = {
-				_id: inquiryId,
+				rid,
 			};
 			const update = {
 				$set: {
