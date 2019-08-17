@@ -16,7 +16,6 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import {
 	Users,
-	Rooms,
 	LivechatRooms,
 	Messages,
 	Subscriptions,
