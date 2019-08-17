@@ -133,14 +133,6 @@ jobs:
           keys:
             - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
-      - restore_cache:
-          keys:
-            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-
-      - restore_cache:
-          keys:
-            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
-
       - run:
           name: Build Rocket.Chat
           environment:
@@ -176,16 +168,6 @@ jobs:
           key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
           paths:
             - ./.meteor/local
-
-      - save_cache:
-          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/node_modules
-
-      - save_cache:
-          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/.meteor/local
 
       - save_cache:
           key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
@@ -399,15 +381,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
-
-      - restore_cache:
-          keys:
-            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-
-      - restore_cache:
-          keys:
-            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }
 
       - run:
           name: Build Rocket.Chat
@@ -532,4 +506,3 @@ workflows:
               ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-
