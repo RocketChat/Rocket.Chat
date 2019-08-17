@@ -81,6 +81,8 @@ export const RoutingManager = {
 		if (departmentId && departmentId !== department) {
 			Rooms.changeDepartmentIdByRoomId(rid, departmentId);
 			LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
+			// Fake the department to delegate the inquiry;
+			inquiry.department = departmentId;
 		}
 
 		this.getMethod().delegateAgent(null, inquiry);
