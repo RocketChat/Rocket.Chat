@@ -32,13 +32,23 @@ export class LivechatSessions extends Base {
 		const sessionInfo = this.findOne(query);
 		if (status === 'online') {
 			const { chatStart } = sessionInfo;
-			if (!chatStart) {
+			if (!chatStart && chatStatus !== 'Not Started') {
 				update = {
 					$set: {
 						status,
 						chatStatus,
 						chatStartTime: new Date(),
 						chatStart: true,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			} else if (chatStatus === 'Not Started') {
+				update = {
+					$set: {
+						status,
+						chatStatus,
 					},
 					$unset: {
 						offlineTime: '',
@@ -87,7 +97,9 @@ export class LivechatSessions extends Base {
 			},
 		};
 
-		return this.update(query, update);
+		this.update(query, update);
+
+		return this.findOne(query);
 	}
 
 	findOneVisitorLocationByToken(token) {

@@ -141,7 +141,13 @@
             <td>
               {{status}}
             </td>
-            <td>{{location.city}}, {{location.countryName}}</td>
+            <td>
+              {{#if location}}
+                {{location.city}}, {{location.countryName}}
+              {{else}}
+                {{_ "User denied location"}}
+              {{/if}}
+            </td>
             <td>{{count}}</td>
             <td>
               <i class="{{osIcon}}"></i><i class="{{browserIcon}}"></i>

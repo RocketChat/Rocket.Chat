@@ -27,11 +27,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-room-is-not-closed', 'Room is not closed', {
 				method: 'livechat:removeRoom',
 			});
-    }
-    
-    if (room.v) {
-      LivechatSessions.updateChatStatusOnRoomCloseOrDeleteByToken(room.v.token, 'Not Started');
-    }
+		}
+
+		if (room.v) {
+			LivechatSessions.updateChatStatusOnRoomCloseOrDeleteByToken(room.v.token, 'Not Started');
+		}
 
 		Messages.removeByRoomId(rid);
 		Subscriptions.removeByRoomId(rid);

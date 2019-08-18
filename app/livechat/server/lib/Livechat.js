@@ -900,7 +900,7 @@ export const Livechat = {
 	},
 
 	updateVisitorCount(token) {
-		return LivechatSessions.findOneVisitorByTokenAndUpdateCount(token);
+		return LivechatSessions.findOneVisitorByTokenAndUpdateCount(token).count;
 	},
 
 	getVisitorLocation(token) {

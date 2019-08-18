@@ -5,68 +5,88 @@ import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/session.updateVisitCount/:token', {
 	post() {
-		check(this.urlParams, {
-			token: String,
-		});
+		try {
+			check(this.urlParams, {
+				token: String,
+			});
 
-		return Livechat.updateVisitorCount(this.urlParams.token);
+			const updatedCount = Livechat.updateVisitorCount(this.urlParams.token);
+			return API.v1.success({ updatedCount });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
 	},
 });
 
-API.v1.addRoute('livechat/session.userLocation/:token', {
+API.v1.addRoute('livechat/session.visitorInfo/:token', {
 	get() {
-		check(this.urlParams, {
-			token: String,
-		});
+		try {
+			check(this.urlParams, {
+				token: String,
+			});
 
-		return Livechat.getVisitorLocation(this.urlParams.token);
+			const visitorInfo = Livechat.getVisitorLocation(this.urlParams.token);
+			return API.v1.success(visitorInfo);
+		} catch (e) {
+			return API.v1.failure(e);
+		}
 	},
 });
 
 API.v1.addRoute('livechat/session.addLocationData', {
 	post() {
-		check(this.bodyParams, {
-			token: String,
-			location: Match.ObjectIncluding({
-				city: String,
-				countryCode: String,
-				countryName: String,
-				latitude: Number,
-				longitude: Number,
-			}),
-			deviceInfo: Match.ObjectIncluding({
-				os: String,
-				osVersion: Number,
-				browserName: String,
-				browserVersion: Number,
-			}),
-		});
+		try {
+			check(this.bodyParams, {
+				token: String,
+				location: Match.Maybe(Match.ObjectIncluding({
+					city: String,
+					countryCode: String,
+					countryName: String,
+					latitude: Number,
+					longitude: Number,
+				})),
+				deviceInfo: Match.ObjectIncluding({
+					os: String,
+					osVersion: Number,
+					browserName: String,
+					browserVersion: Number,
+				}),
+			});
 
-		return Livechat.updateVisitorLocation(this.bodyParams);
+			Livechat.updateVisitorLocation(this.bodyParams);
+			return API.v1.success();
+		} catch (e) {
+			return API.v1.failure(e);
+		}
 	},
 });
 
 API.v1.addRoute('livechat/session.updateVisitorSessionOnRegister', {
 	post() {
-		check(this.bodyParams, {
-			visitor: Match.ObjectIncluding({
-				token: String,
-				name: Match.Maybe(String),
-				email: Match.Maybe(String),
-				department: Match.Maybe(String),
-				phone: Match.Maybe(String),
-				username: Match.Maybe(String),
-				customFields: Match.Maybe([
-					Match.ObjectIncluding({
-						key: String,
-						value: String,
-						overwrite: Boolean,
-					}),
-				]),
-			}),
-		});
+		try {
+			check(this.bodyParams, {
+				visitor: Match.ObjectIncluding({
+					token: String,
+					name: Match.Maybe(String),
+					email: Match.Maybe(String),
+					department: Match.Maybe(String),
+					phone: Match.Maybe(String),
+					username: Match.Maybe(String),
+					customFields: Match.Maybe([
+						Match.ObjectIncluding({
+							key: String,
+							value: String,
+							overwrite: Boolean,
+						}),
+					]),
+				}),
+			});
 
-		return Livechat.updateVisitorSession(this.bodyParams.visitor);
+			Livechat.updateVisitorSession(this.bodyParams.visitor);
+			return API.v1.success();
+		} catch (e) {
+			return API.v1.failure(e);
+		}
 	},
 });
 
