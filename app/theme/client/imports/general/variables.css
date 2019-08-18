@@ -258,6 +258,7 @@
 	--rooms-list-title-text-size: 0.75rem;
 	--rooms-list-empty-text-color: var(--color-gray);
 	--rooms-list-empty-text-size: 0.75rem;
+	--rooms-list-status-text-color: var(--color-dark-light);
 	--rooms-list-padding: var(--sidebar-default-padding);
 	--rooms-list-small-padding: var(--sidebar-small-default-padding);
 

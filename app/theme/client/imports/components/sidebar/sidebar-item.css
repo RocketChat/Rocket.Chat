@@ -255,6 +255,12 @@
 		align-items: center;
 	}
 
+	&__status {
+		color: var(--rooms-list-status-text-color);
+
+		font-weight: lighter;
+	}
+
 	&__me {
 		text-transform: lowercase;
 	}
