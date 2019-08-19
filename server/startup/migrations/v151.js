@@ -2,7 +2,7 @@ import { Migrations } from '../../../app/migrations';
 import { Permissions } from '../../../app/models';
 
 Migrations.add({
-	version: 150,
+	version: 151,
 	up() {
 		if (Permissions) {
 			const newPermission = Permissions.findOne('view-livechat-manager');
