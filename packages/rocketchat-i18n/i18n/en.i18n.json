@@ -1401,6 +1401,7 @@
   "FileUpload_MediaTypeWhiteListDescription": "Comma-separated list of media types. Leave it blank for accepting all media types.",
   "FileUpload_ProtectFiles": "Protect Uploaded Files",
   "FileUpload_ProtectFilesDescription": "Only authenticated users will have access",
+  "FileUpload_RotateImagesDescription": "Rotate images on upload, may cause image quality loss",
   "FileUpload_S3_Acl": "Acl",
   "FileUpload_S3_AWSAccessKeyId": "Access Key",
   "FileUpload_S3_AWSSecretAccessKey": "Secret Key",
