@@ -92,7 +92,6 @@ oauth2
 raix:eventemitter
 routepolicy
 sha
-swydo:graphql
 templating
 webapp
 webapp-hashing

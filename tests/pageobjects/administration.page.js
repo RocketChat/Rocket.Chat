@@ -117,19 +117,19 @@ class Administration extends Page {
 	// settings
 	get buttonSave() { return browser.element('button.save'); }
 
-	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(4) .expand'); }
+	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(3) .expand'); }
 
-	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(5) .expand'); }
+	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(4) .expand'); }
 
-	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(6) .expand'); }
+	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(5) .expand'); }
 
-	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(7) .expand'); }
+	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(6) .expand'); }
 
-	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(8) .expand'); }
+	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(7) .expand'); }
 
-	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(9) .expand'); }
+	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(8) .expand'); }
 
-	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(10) .expand'); }
+	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(9) .expand'); }
 
 	get generalSiteUrl() { return browser.element('[name="Site_Url"]'); }
 
