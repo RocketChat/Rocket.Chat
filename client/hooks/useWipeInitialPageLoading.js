@@ -4,9 +4,11 @@ export const useWipeInitialPageLoading = () => {
 	useLayoutEffect(() => {
 		const initialPageLoadingElement = document.getElementById('initial-page-loading');
 
-		if (initialPageLoadingElement) {
-			initialPageLoadingElement.style.display = 'none';
+		if (!initialPageLoadingElement) {
+			return;
 		}
+
+		initialPageLoadingElement.style.display = 'none';
 
 		return () => {
 			initialPageLoadingElement.style.display = 'flex';

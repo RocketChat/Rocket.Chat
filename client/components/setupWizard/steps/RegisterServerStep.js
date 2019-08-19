@@ -12,8 +12,9 @@ import { StepContent } from '../StepContent';
 import { StepHeader } from '../StepHeader';
 import { useSetupWizardStepsState } from '../StepsState';
 import { batchSetSettings } from '../functions';
+import { useFocus } from '../../../hooks/useFocus';
 
-const Option = ({ children, label, selected, disabled, ...props }) =>
+const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) =>
 	<label
 		className={[
 			'SetupWizard__RegisterServerStep-option',
@@ -21,9 +22,10 @@ const Option = ({ children, label, selected, disabled, ...props }) =>
 			disabled && 'SetupWizard__RegisterServerStep-option--disabled',
 		].filter(Boolean).join(' ')}
 	>
-		<RadioButton label={label} checked={selected} disabled={disabled} {...props} />
+		<RadioButton ref={ref} label={label} checked={selected} disabled={disabled} {...props} />
 		{children}
-	</label>;
+	</label>
+);
 
 const Items = (props) => <ul className='SetupWizard__RegisterServerStep-items' {...props} />;
 
@@ -88,6 +90,8 @@ export function RegisterServerStep({ step, title }) {
 		}
 	};
 
+	const autoFocusRef = useFocus(active);
+
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
@@ -96,6 +100,7 @@ export function RegisterServerStep({ step, title }) {
 
 			<div className='SetupWizard__RegisterServerStep-content'>
 				<Option
+					ref={autoFocusRef}
 					label={t('Register_Server_Registered')}
 					name='registerServer'
 					value='true'
