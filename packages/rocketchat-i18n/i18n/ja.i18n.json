@@ -1727,6 +1727,7 @@
   "Jitsi_Chrome_Extension": "Chromeの拡張機能同上",
   "Jitsi_Enabled_TokenAuth": "JWT認証を有効にする",
   "Jitsi_Application_ID": "アプリケーションID（iss）",
+  "Jitsi_Application_Secret": "アプリケーション シークレットキー",
   "Jitsi_Enable_Channels": "チャンネルで有効にします",
   "Jitsi_Limit_Token_To_Room": "トークンをJitsi Roomに制限する",
   "Job_Title": "職名",
