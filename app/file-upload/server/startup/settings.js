@@ -27,7 +27,7 @@ settings.addGroup('FileUpload', function() {
 	this.add('FileUpload_RotateImages', true, {
 		type: 'boolean',
 		public: true,
-		i18nDescription: 'FileUpload_RotateImagesDescription'
+		i18nDescription: 'FileUpload_RotateImagesDescription',
 	});
 
 	this.add('FileUpload_Storage_Type', 'GridFS', {
