@@ -1,36 +1,23 @@
+# set -x
 export NODE_ENV="production"
-export LIVECHAT_DIR="../../../public/livechat"
-export BUILD_DIR="../build"
-export BUNDLE_DIR="../build/bundle/programs/web.browser.legacy"
-export LIVECHAT_ASSETS_DIR="../../../private/livechat"
-export LATEST_LIVECHAT_VERSION="1.1.3"
+export LIVECHAT_DIR="./public/livechat"
+export LIVECHAT_ASSETS_DIR="./private/livechat"
 
-cd packages/rocketchat-livechat/.app
-meteor npm install --production
-
-meteor build --headless --directory $BUILD_DIR
+ROOT=$(pwd)
 
 rm -rf $LIVECHAT_DIR
 mkdir -p $LIVECHAT_DIR
-cp $BUNDLE_DIR/*.css $LIVECHAT_DIR/livechat.css
-cp $BUNDLE_DIR/*.js $LIVECHAT_DIR/livechat.js
 
 rm -rf $LIVECHAT_ASSETS_DIR
 mkdir $LIVECHAT_ASSETS_DIR
-
-cp $BUNDLE_DIR/head.html $LIVECHAT_ASSETS_DIR/head.html
-rm -rf $BUILD_DIR
 
 #NEW LIVECHAT#
 echo "Installing Livechat ${LATEST_LIVECHAT_VERSION}..."
 cd $LIVECHAT_DIR
 
-curl -sOL "https://github.com/RocketChat/Rocket.Chat.Livechat/releases/download/v${LATEST_LIVECHAT_VERSION}/build.tar.gz"
-tar -xf build.tar.gz
-rm build.tar.gz
-
+cp -a $ROOT/node_modules/\@rocket.chat/livechat/build/. ./
 # change to lowercase so all injected junk from rocket.chat is not sent: https://github.com/meteorhacks/meteor-inject-initial/blob/master/lib/inject-core.js#L10
 # this is not harmful since doctype is case-insesitive: https://www.w3.org/TR/html5/syntax.html#the-doctype
 node -e 'fs.writeFileSync("index.html", fs.readFileSync("index.html").toString().replace("<!DOCTYPE", "<!doctype"));'
-
-cp index.html ../../private/livechat
+cd $ROOT/$LIVECHAT_ASSETS_DIR
+cp ../../public/livechat/index.html .
