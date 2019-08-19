@@ -244,8 +244,10 @@ export const FileUpload = {
 			};
 
 			const reorientation = (cb) => {
-				if (!metadata.orientation) {
-					return cb();
+				if (!metadata.orientation
+					|| metadata.orientation == 1
+					|| RocketChat.settings.get('FileUpload_RotateImages') !== true) {
+						return cb();
 				}
 				s.rotate()
 					.toFile(`${ tmpFile }.tmp`)
