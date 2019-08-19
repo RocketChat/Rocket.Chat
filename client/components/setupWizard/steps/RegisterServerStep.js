@@ -1,3 +1,4 @@
+import { CheckBox, RadioButton } from '@rocket.chat/fuselage';
 import React, { useState } from 'react';
 
 import { call } from '../../../../app/ui-utils/client';
@@ -11,22 +12,6 @@ import { StepContent } from '../StepContent';
 import { StepHeader } from '../StepHeader';
 import { useSetupWizardStepsState } from '../StepsState';
 import { batchSetSettings } from '../functions';
-
-const RadioButton = ({ label, ...props }) =>
-	<div className='SetupWizard__RegisterServerStep-radioButton'>
-		<input type='radio' className='SetupWizard__RegisterServerStep-radioButtonInput' {...props} />
-		<span className='SetupWizard__RegisterServerStep-radioButtonFake' />
-		<span className='SetupWizard__RegisterServerStep-radioButtonLabel'>{label}</span>
-	</div>;
-
-const CheckBox = ({ label, ...props }) =>
-	<label className='SetupWizard__RegisterServerStep-checkBox'>
-		<input type='checkbox' className='SetupWizard__RegisterServerStep-checkBoxInput' {...props} />
-		<span className='SetupWizard__RegisterServerStep-checkBoxFake'>
-			<Icon icon='check' />
-		</span>
-		<span className='SetupWizard__RegisterServerStep-checkBoxLabel'>{label}</span>
-	</label>;
 
 const Option = ({ children, label, selected, disabled, ...props }) =>
 	<label

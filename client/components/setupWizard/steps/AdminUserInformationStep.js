@@ -1,4 +1,4 @@
-import { Input } from '@rocket.chat/fuselage';
+import { Input, InputGroup } from '@rocket.chat/fuselage';
 import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
@@ -110,43 +110,45 @@ export function AdminUserInformationStep({ step, title }) {
 		<StepHeader number={step} title={title} />
 
 		<StepContent>
-			<Input
-				ref={autoFocusRef}
-				type='text'
-				label={t('Name')}
-				icon='user'
-				placeholder={t('Type_your_name')}
-				value={name}
-				onChange={({ currentTarget: { value } }) => setName(value)}
-				error={!isNameValid}
-			/>
-			<Input
-				type='text'
-				label={t('Username')}
-				icon='at'
-				placeholder={t('Type_your_username')}
-				value={username}
-				onChange={({ currentTarget: { value } }) => setUsername(value)}
-				error={!isUsernameValid && t('Invalid_username')}
-			/>
-			<Input
-				type='email'
-				label={t('Organization_Email')}
-				icon='mail'
-				placeholder={t('Type_your_email')}
-				value={email}
-				onChange={({ currentTarget: { value } }) => setEmail(value)}
-				error={!isEmailValid && t('Invalid_email')}
-			/>
-			<Input
-				type='password'
-				label={t('Password')}
-				icon='key'
-				placeholder={t('Type_your_password')}
-				value={password}
-				onChange={({ currentTarget: { value } }) => setPassword(value)}
-				error={!isPasswordValid}
-			/>
+			<InputGroup>
+				<Input
+					ref={autoFocusRef}
+					type='text'
+					label={t('Name')}
+					icon='user'
+					placeholder={t('Type_your_name')}
+					value={name}
+					onChange={({ currentTarget: { value } }) => setName(value)}
+					error={!isNameValid}
+				/>
+				<Input
+					type='text'
+					label={t('Username')}
+					icon='at'
+					placeholder={t('Type_your_username')}
+					value={username}
+					onChange={({ currentTarget: { value } }) => setUsername(value)}
+					error={!isUsernameValid && t('Invalid_username')}
+				/>
+				<Input
+					type='email'
+					label={t('Organization_Email')}
+					icon='mail'
+					placeholder={t('Type_your_email')}
+					value={email}
+					onChange={({ currentTarget: { value } }) => setEmail(value)}
+					error={!isEmailValid && t('Invalid_email')}
+				/>
+				<Input
+					type='password'
+					label={t('Password')}
+					icon='key'
+					placeholder={t('Type_your_password')}
+					value={password}
+					onChange={({ currentTarget: { value } }) => setPassword(value)}
+					error={!isPasswordValid}
+				/>
+			</InputGroup>
 		</StepContent>
 
 		<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />
