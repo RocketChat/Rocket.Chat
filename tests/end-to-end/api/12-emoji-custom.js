@@ -59,12 +59,15 @@ describe('[EmojiCustom]', function() {
 
 	describe('[/emoji-custom.update]', () => {
 		before((done) => {
-			request.get(api('emoji-custom'))
+			request.get(api('emoji-custom.list'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('emojis').and.to.be.a('array');
-					createdCustomEmoji = res.body.emojis.find((emoji) => emoji.name === customEmojiName);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.not.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+
+					createdCustomEmoji = res.body.emojis.update.find((emoji) => emoji.name === customEmojiName);
 				})
 				.end(done);
 		});
