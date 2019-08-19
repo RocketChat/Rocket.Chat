@@ -92,6 +92,7 @@
   "Accounts_OAuth_Custom_Access_Token_Param": "Param Name for access token",
   "Accounts_OAuth_Custom_Scope": "Scope",
   "Accounts_OAuth_Custom_Secret": "Secret",
+  "Accounts_OAuth_Custom_Show_Button_On_Login_Page": "Show Button on Login Page",
   "Accounts_OAuth_Custom_Token_Path": "Token Path",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Sent Via",
   "Accounts_OAuth_Custom_Username_Field": "Username field",
