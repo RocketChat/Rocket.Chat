@@ -3,9 +3,9 @@ import { adminEmail, adminPassword } from '../data/user';
 
 
 class SetupWizard extends Page {
-	get nextButton() { return browser.element('.SetupWizard .Pager .rc-button.rc-button--primary'); }
+	get nextButton() { return browser.element('.SetupWizard .SetupWizard__continue'); }
 
-	get goToWorkspace() { return browser.element('.SetupWizard .SetupWizard__Epilogue .rc-button'); }
+	get goToWorkspace() { return browser.element('.SetupWizard .SetupWizard__Epilogue__goToWorkspace'); }
 
 	get organizationType() { return browser.element('select[name="Organization_Type"]'); }
 

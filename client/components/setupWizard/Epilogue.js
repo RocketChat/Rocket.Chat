@@ -24,7 +24,7 @@ export function Epilogue() {
 			<h1 className='SetupWizard__Epilogue-title'>{t('Your_workspace_is_ready')}</h1>
 			<span className='SetupWizard__Epilogue-linkLabel'>{t('Your_server_link')}</span>
 			<span className='SetupWizard__Epilogue-link'>{siteUrl}</span>
-			<Button type='button' primary onClick={handleClick}>
+			<Button type='button' primary onClick={handleClick} className='SetupWizard__Epilogue__goToWorkspace'>
 				{t('Go_to_your_workspace')}
 			</Button>
 		</main>
