@@ -1,37 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-
 import { Migrations } from '../../../app/migrations/server';
-import { Users } from '../../../app/models/server';
-import { MAX_RESUME_LOGIN_TOKENS } from '../../lib/accounts';
+import { Settings } from '../../../app/models/server';
 
 Migrations.add({
 	version: 150,
-	async up() {
-		await Users.model.rawCollection().aggregate([
-			{
-				$project: {
-					tokens: {
-						$filter: {
-							input: '$services.resume.loginTokens',
-							as: 'token',
-							cond: {
-								$ne: ['$$token.type', 'personalAccessToken'],
-							},
-						},
-					},
-				},
-			},
-			{ $unwind: '$tokens' },
-			{ $group: { _id: '$_id', tokens: { $push: '$tokens' } } },
-			{
-				$project: {
-					sizeOfTokens: { $size: '$tokens' }, tokens: '$tokens' },
-			},
-			{ $match: { sizeOfTokens: { $gt: MAX_RESUME_LOGIN_TOKENS } } },
-			{ $sort: { 'tokens.when': 1 } },
-		]).forEach(Meteor.bindEnvironment((user) => {
-			const oldestDate = user.tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
-			Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
-		}));
+	up() {
+		const settings = [
+			'Graphql_CORS',
+			'Graphql_Enabled',
+			'Graphql_Subscription_Port',
+		];
+
+		Settings.remove({ _id: { $in: settings } });
+	},
+	down() {
+		// Down migration does not apply in this case
 	},
 });
