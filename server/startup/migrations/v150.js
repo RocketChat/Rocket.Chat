@@ -1,14 +1,18 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server';
 
 Migrations.add({
 	version: 150,
 	up() {
-		const setting = Settings.findOne({ _id: 'Layout_Sidenav_Footer' });
-		if (setting && setting.value) {
-			if (setting.value === '<a href="/home"><img src="assets/logo"/></a>') {
-				Settings.update({ _id: 'Layout_Sidenav_Footer' }, { $set: { value: '<a href="/home"><img src="assets/logo.png"/></a>' } });
-			}
-		}
+		const settings = [
+			'Graphql_CORS',
+			'Graphql_Enabled',
+			'Graphql_Subscription_Port',
+		];
+
+		Settings.remove({ _id: { $in: settings } });
+	},
+	down() {
+		// Down migration does not apply in this case
 	},
 });

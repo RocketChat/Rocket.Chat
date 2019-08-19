@@ -46,7 +46,7 @@ Template.DefaultSearchResultTemplate.onRendered(function() {
 		const result = this.data.result.get();
 		if (result && this.hasMore.get()) {
 			Tracker.afterFlush(() => {
-				if (list.scrollHeight <= list.offsetHeight) {
+				if (list.scrollHeight < list.offsetHeight) {
 					this.data.payload.limit = (this.data.payload.limit || this.pageSize) + this.pageSize;
 					this.data.search();
 				}

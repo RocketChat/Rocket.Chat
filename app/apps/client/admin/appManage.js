@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
+import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
@@ -95,6 +95,10 @@ const attachMarketplaceInformation = async (appId, version, _app) => {
 
 		attachBundlesApps(bundledIn, _app);
 	} catch (error) {
+		if (error.xhr && error.xhr.status === 404) {
+			return;
+		}
+
 		handleAPIError(error);
 	}
 };
@@ -330,7 +334,7 @@ Template.appManage.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { id, state } = instance;
+		const { appId, state } = instance;
 
 		if (state.get('isSaving')) {
 			return;
@@ -341,14 +345,14 @@ Template.appManage.events({
 		const settings = state.get('settings');
 
 		try {
-			const toSave = Object.entries(settings)
+			const toSave = Object.values(settings)
 				.filter(({ hasChanged }) => hasChanged);
 
 			if (!toSave.length) {
 				return;
 			}
 
-			const updated = await Apps.setAppSettings(id, toSave);
+			const updated = await Apps.setAppSettings(appId, toSave);
 			updated.forEach(({ id, value }) => {
 				settings[id].value = value;
 				settings[id].oldValue = value;

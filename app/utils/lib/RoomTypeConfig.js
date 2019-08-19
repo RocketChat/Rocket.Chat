@@ -150,15 +150,6 @@ export class RoomTypeConfig {
 		return this._route;
 	}
 
-	/**
-	 * Gets the room's name to display in the UI.
-	 *
-	 * @param {object} room
-	 */
-	getDisplayName(room) {
-		return room.name;
-	}
-
 	allowRoomSettingChange(/* room, setting */) {
 		return true;
 	}
