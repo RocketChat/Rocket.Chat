@@ -1,28 +1,25 @@
 .SetupWizard__Steps {
 	flex: 1 1 auto;
+
+	height: 100vh;
+	padding: 1rem;
 }
 
 .SetupWizard__Steps-wrapper {
-	display: flex;
-	overflow-y: auto;
+	overflow: auto;
 
-	width: calc(100% - 1rem);
-	height: calc(100% - 2rem);
-	margin: 1rem 1rem 1rem 0;
+	width: 100%;
+	height: 100%;
+	padding: 1rem 3rem;
 
 	border-radius: 2px;
 	background-color: var(--color-white);
 	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 	justify-content: center;
-
-	.rtl & {
-		margin: 1rem 0 1rem 1rem;
-	}
 }
 
 @media (width <= 760px) {
-	.SetupWizard__Steps-wrapper {
-		width: 100%;
-		margin: 0;
+	.SetupWizard__Steps {
+		padding: 0;
 	}
 }

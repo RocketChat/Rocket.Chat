@@ -15,7 +15,7 @@ export function SideBar({ steps = [] }) {
 			<span className='SetupWizard__SideBar-headerTag'>{t('Setup_Wizard')}</span>
 		</header>
 
-		<div className='.SetupWizard__SideBar-content'>
+		<div className='SetupWizard__SideBar-content'>
 			<h2 className='SetupWizard__SideBar-title'>{t('Setup_Wizard')}</h2>
 			<p className='SetupWizard__SideBar-text'>{t('Setup_Wizard_Info')}</p>
 

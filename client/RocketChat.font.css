@@ -1,14 +1,14 @@
 @font-face {
-  font-family: 'RocketChat';
-  font-style: normal;
-  font-weight: 400;
-  font-display: auto;
+	font-family: 'RocketChat';
+	font-weight: 400;
+	font-style: normal;
+	font-display: auto;
 
-  src: url('/fonts/RocketChat.eot');
-  src:
-    url('/fonts/RocketChat.eot?#iefix') format('embedded-opentype'),
-    url('/fonts/RocketChat.woff2') format('woff2'),
-    url('/fonts/RocketChat.woff') format('woff'),
-    url('/fonts/RocketChat.ttf') format('truetype'),
-    url('/fonts/RocketChat.svg#RocketChat') format('svg');
+	src: url('/fonts/RocketChat.eot');
+	src:
+		url('/fonts/RocketChat.eot?#iefix') format('embedded-opentype'),
+		url('/fonts/RocketChat.woff2') format('woff2'),
+		url('/fonts/RocketChat.woff') format('woff'),
+		url('/fonts/RocketChat.ttf') format('truetype'),
+		url('/fonts/RocketChat.svg#RocketChat') format('svg');
 }
