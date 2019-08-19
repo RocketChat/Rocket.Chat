@@ -376,6 +376,16 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByUsernameAndServiceNameIgnoringCase(username, serviceName, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+
+		return this.findOne(query, options);
+	}
+
 	findOneByUsername(username, options) {
 		const query = { username };
 
@@ -1119,6 +1129,10 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	getActiveLocalUserCount() {
+		return this.findActive().count() - this.findActiveRemote().count();
 	}
 }
 
