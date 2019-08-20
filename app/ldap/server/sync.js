@@ -17,10 +17,8 @@ import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/
 
 
 const logger = new Logger('LDAPSync', {});
-let ldap = new LDAP();
 
-
-export function isUserInLDAPGroup(ldapUser, user, ldapGroup) {
+export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 	const syncUserRolesFilter = settings.get('LDAP_Sync_User_Data_Groups_Filter').trim();
 	const syncUserRolesBaseDN = settings.get('LDAP_Sync_User_Data_Groups_BaseDN').trim();
 
@@ -202,7 +200,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 		return userData;
 	}
 }
-export function mapLdapGroupsToUserRoles(ldapUser, user) {
+export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 	const syncUserRoles = settings.get('LDAP_Sync_User_Data_Groups');
 	const syncUserRolesAutoRemove = settings.get('LDAP_Sync_User_Data_Groups_AutoRemove');
 	const syncUserRolesFieldMap = settings.get('LDAP_Sync_User_Data_GroupsMap').trim();
@@ -229,7 +227,7 @@ export function mapLdapGroupsToUserRoles(ldapUser, user) {
 
 		logger.debug(`User role exists for mapping ${ roleName } -> ${ ldapField }`);
 
-		if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
+		if (isUserInLDAPGroup(ldap, ldapUser, user, ldapField)) {
 			userRoles.push(roleName);
 			return;
 		}
@@ -265,7 +263,7 @@ export function createRoomForSync(channel) {
 	return room;
 }
 
-export function mapLDAPGroupsToChannels(ldapUser, user) {
+export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 	const syncUserRoles = settings.get('LDAP_Sync_User_Data_Groups');
 	const syncUserRolesAutoChannels = settings.get('LDAP_Sync_User_Data_Groups_AutoChannels');
 	const syncUserRolesEnforceAutoChannels = settings.get('LDAP_Sync_User_Data_Groups_Enforce_AutoChannels');
@@ -294,7 +292,7 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 			if (!room) {
 				room = createRoomForSync(channel);
 			}
-			if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
+			if (isUserInLDAPGroup(ldap, ldapUser, user, ldapField)) {
 				userChannels.push(room._id);
 			} else if (syncUserRolesEnforceAutoChannels) {
 				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
@@ -308,7 +306,7 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 	return userChannels;
 }
 
-export function syncUserData(user, ldapUser) {
+export function syncUserData(user, ldapUser, ldap) {
 	logger.info('Syncing user data');
 	logger.debug('user', { email: user.email, _id: user._id });
 	logger.debug('ldapUser', ldapUser.object);
@@ -317,11 +315,11 @@ export function syncUserData(user, ldapUser) {
 
 	// Returns a list of Rocket.Chat Groups a user should belong
 	// to if their LDAP group matches the LDAP_Sync_User_Data_GroupsMap
-	const userRoles = mapLdapGroupsToUserRoles(ldapUser, user);
+	const userRoles = mapLdapGroupsToUserRoles(ldap, ldapUser, user);
 
 	// Returns a list of Rocket.Chat Channels a user should belong
 	// to if their LDAP group matches the LDAP_Sync_User_Data_Groups_AutoChannelsMap
-	const userChannels = mapLDAPGroupsToChannels(ldapUser, user);
+	const userChannels = mapLDAPGroupsToChannels(ldap, ldapUser, user);
 
 	if (user && user._id && userData) {
 		logger.debug('setting', JSON.stringify(userData, null, 2));
@@ -391,7 +389,7 @@ export function syncUserData(user, ldapUser) {
 	}
 }
 
-export function addLdapUser(ldapUser, username, password) {
+export function addLdapUser(ldapUser, username, password, ldap) {
 	const uniqueId = getLdapUserUniqueID(ldapUser);
 
 	const userObject = {};
@@ -431,21 +429,24 @@ export function addLdapUser(ldapUser, username, password) {
 		return error;
 	}
 
-	syncUserData(userObject, ldapUser);
+	syncUserData(userObject, ldapUser, ldap);
 
 	return {
 		userId: userObject._id,
 	};
 }
 
-export function importNewUsers() {
+export function importNewUsers(ldap) {
 	if (settings.get('LDAP_Enable') !== true) {
 		logger.error('Can\'t run LDAP Import, LDAP is disabled');
 		return;
 	}
 
-	if (!ldap.connected) {
+	if (!ldap) {
 		ldap = new LDAP();
+	}
+
+	if (!ldap.connected) {
 		ldap.connectSync();
 	}
 
@@ -483,12 +484,12 @@ export function importNewUsers() {
 
 				user = Meteor.users.findOne(userQuery);
 				if (user) {
-					syncUserData(user, ldapUser);
+					syncUserData(user, ldapUser, ldap);
 				}
 			}
 
 			if (!user) {
-				addLdapUser(ldapUser, username);
+				addLdapUser(ldapUser, username, undefined, ldap);
 			}
 
 			if (count % 100 === 0) {
@@ -509,11 +510,10 @@ function sync() {
 		return;
 	}
 
+	const ldap = new LDAP();
+
 	try {
-		if (!ldap.connected) {
-			ldap = new LDAP();
-			ldap.connectSync();
-		}
+		ldap.connectSync();
 
 		let users;
 		if (settings.get('LDAP_Background_Sync_Keep_Existant_Users_Updated') === true) {
@@ -521,7 +521,7 @@ function sync() {
 		}
 
 		if (settings.get('LDAP_Background_Sync_Import_New_Users') === true) {
-			importNewUsers();
+			importNewUsers(ldap);
 		}
 
 		if (settings.get('LDAP_Background_Sync_Keep_Existant_Users_Updated') === true) {
@@ -535,7 +535,7 @@ function sync() {
 				}
 
 				if (ldapUser) {
-					syncUserData(user, ldapUser);
+					syncUserData(user, ldapUser, ldap);
 				} else {
 					logger.info('Can\'t sync user', user.username);
 				}
