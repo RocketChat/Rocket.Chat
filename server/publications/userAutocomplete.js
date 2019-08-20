@@ -1,16 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { hasPermission } from '../../app/authorization';
 import { Users } from '../../app/models';
 
 Meteor.publish('userAutocomplete', function(selector) {
-	if (!this.userId) {
+	const uid = this.userId;
+	if (!uid) {
 		return this.ready();
 	}
 
 	if (!_.isObject(selector)) {
 		return this.ready();
 	}
+
+	if (!hasPermission(uid, 'view-outside-room')) {
+		return this.ready();
+	}
+
 
 	const options = {
 		fields: {
