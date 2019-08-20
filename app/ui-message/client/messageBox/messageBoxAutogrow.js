@@ -34,7 +34,7 @@ export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElem
 			return true;
 		}
 
-		const shadowText =			text.replace(/</g, '&lt;')
+		const shadowText = text.replace(/</g, '&lt;')
 			.replace(/>/g, '&gt;')
 			.replace(/&/g, '&amp;')
 			.replace(/\n$/, '<br/>&nbsp;')
@@ -56,7 +56,7 @@ export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElem
 
 		lastHeight = height;
 
-		const overflow = height === maxHeight ? 'hidden' : '';
+		const overflow = height < maxHeight ? 'hidden' : '';
 
 		if (height < maxHeight) {
 			textLenght = text.length;

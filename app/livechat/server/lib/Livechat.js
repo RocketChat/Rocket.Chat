@@ -3,7 +3,7 @@ import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -14,7 +14,18 @@ import { QueueMethods } from './QueueMethods';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
+import {
+	Users,
+	Rooms,
+	Messages,
+	Subscriptions,
+	Settings,
+	LivechatDepartmentAgents,
+	LivechatDepartment,
+	LivechatCustomField,
+	LivechatVisitors,
+	LivechatOfficeHour,
+} from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
@@ -927,6 +938,22 @@ export const Livechat = {
 				status,
 			});
 		});
+	},
+
+	allowAgentChangeServiceStatus(statusLivechat) {
+		if (!settings.get('Livechat_enable_office_hours')) {
+			return true;
+		}
+
+		if (settings.get('Livechat_allow_online_agents_outside_office_hours')) {
+			return true;
+		}
+
+		if (statusLivechat !== 'available') {
+			return true;
+		}
+
+		return LivechatOfficeHour.isNowWithinHours();
 	},
 };
 

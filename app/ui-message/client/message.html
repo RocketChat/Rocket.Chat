@@ -27,6 +27,7 @@
 			<div class="message-body-wrapper">
 				<div class="title border-component-color color-info-font-color">
 					<button type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="1">{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}</button>
+					<span class="info border-component-color color-info-font-color"></span>
 					{{#each role in roleTags}}
 						<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
 					{{/each}}

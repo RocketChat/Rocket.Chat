@@ -1,7 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -13,6 +13,7 @@ import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import FullUser from '../../../models/client/models/FullUser';
 import { getActions } from './userActions';
+
 import './userInfo.html';
 
 const shownActionsCount = 2;
@@ -82,7 +83,17 @@ Template.userInfo.helpers({
 	userStatus() {
 		const user = Template.instance().user.get();
 		const userStatus = Session.get(`user_${ user.username }_status`);
-		return userStatus;
+		return userStatus || TAPi18n.__('offline');
+	},
+
+	userStatusText() {
+		if (s.trim(this.statusText)) {
+			return this.statusText;
+		}
+
+		const user = Template.instance().user.get();
+		const userStatus = Session.get(`user_${ user.username }_status`);
+		return userStatus || TAPi18n.__('offline');
 	},
 
 	email() {
