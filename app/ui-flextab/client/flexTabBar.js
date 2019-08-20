@@ -149,6 +149,10 @@ Template.flexTabBar.events({
 
 		$flexTab.attr('template', this.template);
 
+		t.tabBar.setData({
+			label: this.i18nTitle,
+			icon: this.icon,
+		});
 		t.tabBar.open(this.id);
 	},
 
