@@ -212,39 +212,46 @@ export function mapLdapGroupsToUserRoles(ldapUser, user) {
 			_updatedAt: 0,
 		},
 	}).fetch();
-	const userRoles = [];
-	if (syncUserRoles && syncUserRolesFieldMap) {
-		const fieldMap = JSON.parse(syncUserRolesFieldMap);
-		_.map(fieldMap, function(userField, ldapField) {
-			const [roleName] = userField.split(/\.(.+)/);
-			if (!_.find(roles, (el) => el._id === roleName)) {
-				logger.debug(`User Role doesn't exist: ${ roleName }`);
-			} else {
-				logger.debug(`User role exists for mapping ${ roleName } -> ${ ldapField }`);
 
-				if (!isUserInLDAPGroup(ldapUser, user, ldapField)) {
-					if (syncUserRolesAutoRemove) {
-						const del = Roles.removeUserRoles(user._id, roleName);
-						if (settings.get('UI_DisplayRoles') && del) {
-							Notifications.notifyLogged('roles-change', {
-								type: 'removed',
-								_id: roleName,
-								u: {
-									_id: user._id,
-									username: user.username,
-								},
-							});
-						}
-					}
-				} else {
-					userRoles.push(roleName);
-				}
-			}
-		});
+	if (!syncUserRoles || !syncUserRolesFieldMap) {
+		return [];
 	}
-	if (_.size(userRoles)) {
-		return userRoles;
-	}
+
+	const userRoles = [];
+
+	const fieldMap = JSON.parse(syncUserRolesFieldMap);
+	_.map(fieldMap, function(userField, ldapField) {
+		const [roleName] = userField.split(/\.(.+)/);
+		if (!_.find(roles, (el) => el._id === roleName)) {
+			logger.debug(`User Role doesn't exist: ${ roleName }`);
+			return;
+		}
+
+		logger.debug(`User role exists for mapping ${ roleName } -> ${ ldapField }`);
+
+		if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
+			userRoles.push(roleName);
+			return;
+		}
+
+		if (!syncUserRolesAutoRemove) {
+			return;
+		}
+
+		const del = Roles.removeUserRoles(user._id, roleName);
+		if (settings.get('UI_DisplayRoles') && del) {
+			Notifications.notifyLogged('roles-change', {
+				type: 'removed',
+				_id: roleName,
+				u: {
+					_id: user._id,
+					username: user.username,
+				},
+			});
+		}
+	});
+
+	return userRoles;
 }
 export function createRoomForSync(channel) {
 	logger.info(`Channel '${ channel }' doesn't exist, creating it.`);
@@ -257,6 +264,7 @@ export function createRoomForSync(channel) {
 	room._id = room.rid;
 	return room;
 }
+
 export function mapLDAPGroupsToChannels(ldapUser, user) {
 	const syncUserRoles = settings.get('LDAP_Sync_User_Data_Groups');
 	const syncUserRolesAutoChannels = settings.get('LDAP_Sync_User_Data_Groups_AutoChannels');
@@ -264,45 +272,42 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 	const syncUserRolesChannelFieldMap = settings.get('LDAP_Sync_User_Data_Groups_AutoChannelsMap').trim();
 
 	const userChannels = [];
-	if (syncUserRoles && syncUserRolesAutoChannels && syncUserRolesChannelFieldMap) {
-		const fieldMap = JSON.parse(syncUserRolesChannelFieldMap);
+	if (!syncUserRoles || !syncUserRolesAutoChannels || !syncUserRolesChannelFieldMap) {
+		return [];
+	}
 
-		_.map(fieldMap, function(channels, ldapField) {
-			if (typeof channels === 'object') {
-				_.each(channels, function(channel) {
-					let room = Rooms.findOneByName(channel);
-					if (!room) {
-						room = createRoomForSync(channel);
-					}
-					if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
-						userChannels.push(room._id);
-					}	else if (syncUserRolesEnforceAutoChannels) {
-						const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-						if (subscription) {
-							removeUserFromRoom(room._id, user);
-						}
-					}
-				});
-			} else {
-				let room = Rooms.findOneByName(channels);
-				if (!room) {
-					room = createRoomForSync(channels);
-				}
-				if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
-					userChannels.push(room._id);
-				}	else if (syncUserRolesEnforceAutoChannels) {
-					const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-					if (subscription) {
-						removeUserFromRoom(room._id, user);
-					}
+	let fieldMap;
+	try {
+		fieldMap = JSON.parse(syncUserRolesChannelFieldMap);
+	} catch (err) {
+		logger.error(`Unexpected error : ${ err.message }`);
+		return [];
+	}
+
+	_.map(fieldMap, function(channels, ldapField) {
+		if (!Array.isArray(channels)) {
+			channels = [channels];
+		}
+
+		_.each(channels, function(channel) {
+			let room = Rooms.findOneByName(channel);
+			if (!room) {
+				room = createRoomForSync(channel);
+			}
+			if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
+				userChannels.push(room._id);
+			} else if (syncUserRolesEnforceAutoChannels) {
+				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+				if (subscription) {
+					removeUserFromRoom(room._id, user);
 				}
 			}
 		});
-	}
-	if (_.size(userChannels)) {
-		return userChannels;
-	}
+	});
+
+	return userChannels;
 }
+
 export function syncUserData(user, ldapUser) {
 	logger.info('Syncing user data');
 	logger.debug('user', { email: user.email, _id: user._id });
