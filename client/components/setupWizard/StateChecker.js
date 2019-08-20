@@ -24,7 +24,7 @@ export function StateChecker({ children }) {
 		}
 
 		const isComplete = setupWizardState === 'completed';
-		const noUserLoggedInAndIsNotPending = !user && setupWizardState !== 'pending';
+		const noUserLoggedInAndIsNotPending = !renderAllowed && !user && setupWizardState !== 'pending';
 		const userIsLoggedInButIsNotAdmin = !!user && !hasRole(user._id, 'admin');
 
 		const mustRedirect = isComplete || noUserLoggedInAndIsNotPending || userIsLoggedInButIsNotAdmin;

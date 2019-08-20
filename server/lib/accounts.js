@@ -225,9 +225,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		} else {
 			roles.push('admin');
 			if (settings.get('Show_Setup_Wizard') === 'pending') {
-				setImmediate(() => {
-					Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-				});
+				Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 			}
 		}
 	}
