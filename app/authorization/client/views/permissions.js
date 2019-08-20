@@ -102,12 +102,11 @@ Template.permissions.helpers({
 			{
 				limit,
 				sort: {
-					// sorting seems not to be copied from the publication, we need to request it explicitly in find()
 					group: 1,
 					section: 1,
 				},
 			}
-		); // group permissions are assigned implicitly,  we can hide them. $exists: {group:false} not supported by Minimongo
+		);
 	},
 
 	hasPermission() {
