@@ -32,4 +32,4 @@ import './v1/users';
 import './v1/video-conference';
 import './v1/autotranslate';
 
-export { API } from './api';
+export { API, APIClass, defaultRateLimiterOptions } from './api';
