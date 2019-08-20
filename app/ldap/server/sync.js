@@ -341,7 +341,7 @@ export function syncUserData(user, ldapUser) {
 			const add = Roles.addUserRoles(user._id, roleName);
 			if (settings.get('UI_DisplayRoles') && add) {
 				Notifications.notifyLogged('roles-change', {
-					type: 'removed',
+					type: 'added',
 					_id: roleName,
 					u: {
 						_id: user._id,
