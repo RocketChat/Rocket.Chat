@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 import { Federation } from '../index';
 import { Users } from '../../../models/server';
 
@@ -18,7 +20,8 @@ const denormalizeUser = (resource) => {
 const denormalizeAllUsers = (resources) => resources.map(denormalizeUser);
 
 const normalizeUser = (resource) => {
-	resource = { ...resource };
+	// Get only what we need, non-sensitive data
+	resource = _.pick(resource, '_id', 'username', 'type', 'emails', 'name', 'federation', 'createdAt', '_updatedAt');
 
 	const email = resource.emails[0].address;
 
@@ -26,6 +29,7 @@ const normalizeUser = (resource) => {
 		address: `${ resource._id }@${ Federation.domain }`,
 	}];
 
+	resource.active = true;
 	resource.roles = ['user'];
 	resource.status = 'online';
 	resource.username = resource.username.indexOf('@') === -1 ? `${ resource.username }@${ Federation.domain }` : resource.username;

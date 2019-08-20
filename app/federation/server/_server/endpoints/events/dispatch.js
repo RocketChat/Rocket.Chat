@@ -97,6 +97,21 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 					break;
 
 				//
+				// ROOM_REMOVE_USER
+				//
+				case eventTypes.ROOM_REMOVE_USER:
+					eventResult = await FederationRoomEvents.addEvent(event.context, event);
+
+					// If the event was successfully added, handle the event locally
+					if (eventResult.success) {
+						const { data: { user } } = event;
+
+						// Remove the user's subscription
+						Subscriptions.removeByRoomIdAndUserId(event.context.roomId, user._id);
+					}
+					break;
+
+				//
 				// ROOM_MESSAGE
 				//
 				case eventTypes.ROOM_MESSAGE:

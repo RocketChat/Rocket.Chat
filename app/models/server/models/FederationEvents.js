@@ -8,6 +8,7 @@ export const eventTypes = {
 
 	// Room
 	ROOM_ADD_USER: 'room_add_user',
+	ROOM_REMOVE_USER: 'room_remove_user',
 	ROOM_MESSAGE: 'room_message',
 	ROOM_EDIT_MESSAGE: 'room_edit_message',
 	ROOM_SET_MESSAGE_REACTION: 'room_set_message_reaction',
@@ -57,7 +58,7 @@ export class FederationEventsModel extends Base {
 				.find({ context: contextQuery, hasChildren: false })
 				.toArray();
 
-			if (!previousEvents) {
+			if (!previousEvents.length) {
 				throw new Error('Could not create event, the context does not exist');
 			}
 
@@ -89,6 +90,15 @@ export class FederationEventsModel extends Base {
 	}
 
 	async createGenesisEvent(origin, contextQuery, data) {
+		// Check if genesis event already exists, if so, do not create
+		const genesisEvent = await this.model
+			.rawCollection()
+			.findOne({ context: contextQuery, type: eventTypes.GENESIS });
+
+		if (genesisEvent) {
+			throw new Error(`A GENESIS event for this context query already exists: ${ JSON.stringify(contextQuery, null, 2) }`);
+		}
+
 		return this.createEvent(origin, contextQuery, eventTypes.GENESIS, data);
 	}
 

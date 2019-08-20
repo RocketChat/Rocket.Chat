@@ -4,12 +4,15 @@ import { logger } from '../logger';
 import { Federation } from '../federation';
 
 // Callbacks
+import './callbacks/afterAddedToRoom';
 import './callbacks/afterCreateDirectRoom';
+import './callbacks/afterCreateRoom';
 import './callbacks/afterDeleteMessage';
-import './callbacks/afterDeleteRoom';
 import './callbacks/afterSaveMessage';
 import './callbacks/afterSetReaction';
 import './callbacks/afterUnsetReaction';
+import './callbacks/beforeDeleteRoom';
+import './callbacks/beforeRemoveFromRoom';
 
 class Client {
 	searchUsers(query) {

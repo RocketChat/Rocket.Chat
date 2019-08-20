@@ -4,20 +4,15 @@ import { FederationRoomEvents, Rooms } from '../../../../models/server';
 import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
 import { Federation } from '../../federation';
+import getFederatedRoomData from './helpers/getFederatedRoomData';
 
 async function afterSetReaction(message, { user, reaction }) {
 	const room = Rooms.findOneById(message.rid);
 
-	logger.client.debug(`afterSetReaction => message=${ JSON.stringify(_.pick(message, '_id', 'msg'), null, 2) } room=${ JSON.stringify(_.pick(room, '_id'), null, 2) } user=${ JSON.stringify(_.pick(user, 'username'), null, 2) } reaction=${ reaction }`);
-
-	// Currently, only direct rooms
-	if (room.t !== 'd') { return; }
-
-	// Check if there is a federated user on this room
-	const hasFederatedUser = room.usernames.find((u) => u.indexOf('@') !== -1);
-
 	// If there are not federated users on this room, ignore it
-	if (!hasFederatedUser) { return; }
+	if (!getFederatedRoomData(room).hasFederatedUser) { return; }
+
+	logger.client.debug(`afterSetReaction => message=${ JSON.stringify(_.pick(message, '_id', 'msg'), null, 2) } room=${ JSON.stringify(_.pick(room, '_id'), null, 2) } user=${ JSON.stringify(_.pick(user, 'username'), null, 2) } reaction=${ reaction }`);
 
 	// Create the event
 	const event = await FederationRoomEvents.createSetMessageReactionEvent(Federation.domain, room._id, message._id, user.username, reaction);

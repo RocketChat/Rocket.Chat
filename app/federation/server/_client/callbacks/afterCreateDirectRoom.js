@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
-import { FederationRoomEvents, Subscriptions, Users } from '../../../../models/server';
+import { FederationRoomEvents, Subscriptions } from '../../../../models/server';
 import { Federation } from '../../federation';
 import { normalizers } from '../../normalizers';
 import { deleteRoom } from '../../../../lib/server/functions';
@@ -33,7 +33,7 @@ async function afterCreateDirectRoom(room, extras) {
 		//
 
 		// Add the source user to the room
-		const sourceUser = Users.findOne({ username: room.usernames[0] });
+		const sourceUser = extras.from;
 		const normalizedSourceUser = normalizers.normalizeUser(sourceUser);
 
 		const sourceSubscription = Subscriptions.findOne({ rid: normalizedRoom._id, 'u._id': normalizedSourceUser._id });
@@ -47,7 +47,7 @@ async function afterCreateDirectRoom(room, extras) {
 		//
 
 		// Add the target user to the room
-		const targetUser = Users.findOne({ username: room.usernames[1] });
+		const targetUser = extras.to;
 		const normalizedTargetUser = normalizers.normalizeUser(targetUser);
 
 		const targetSubscription = Subscriptions.findOne({ rid: normalizedRoom._id, 'u._id': normalizedTargetUser._id });

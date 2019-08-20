@@ -2,21 +2,15 @@ import { FederationRoomEvents, Rooms } from '../../../../models/server';
 import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
 import { Federation } from '../../federation';
-
+import getFederatedRoomData from './helpers/getFederatedRoomData';
 
 async function afterDeleteMessage(message) {
 	const room = Rooms.findOneById(message.rid);
 
-	logger.client.debug(`afterDeleteMessage => message=${ JSON.stringify(message, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
-
-	// Currently, only direct rooms
-	if (room.t !== 'd') { return; }
-
-	// Check if there is a federated user on this room
-	const hasFederatedUser = room.usernames.find((u) => u.indexOf('@') !== -1);
-
 	// If there are not federated users on this room, ignore it
-	if (!hasFederatedUser) { return; }
+	if (!getFederatedRoomData(room).hasFederatedUser) { return; }
+
+	logger.client.debug(`afterDeleteMessage => message=${ JSON.stringify(message, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
 	// Create the delete message event
 	const event = await FederationRoomEvents.createDeleteMessageEvent(Federation.domain, room._id, message._id);
