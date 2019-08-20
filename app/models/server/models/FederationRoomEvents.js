@@ -19,8 +19,8 @@ class FederationRoomEventsModel extends FederationEventsModel {
 		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_ADD_USER, { user, subscription });
 	}
 
-	async createRemoveUserEvent(origin, roomId, user) {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_REMOVE_USER, { roomId, user });
+	async createRemoveUserEvent(origin, roomId, user, domainsAfterRemoval) {
+		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_REMOVE_USER, { roomId, user, domainsAfterRemoval });
 	}
 
 	async createMessageEvent(origin, roomId, message) {

@@ -57,6 +57,29 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 					break;
 
 				//
+				// ROOM_DELETE
+				//
+				case eventTypes.ROOM_DELETE:
+					eventResult = await FederationRoomEvents.addEvent(event.context, event);
+
+					// If the event was successfully added, handle the event locally
+					if (eventResult.success) {
+						const { data: { roomId } } = event;
+
+						// Check if room exists
+						const persistedRoom = Rooms.findOne({ _id: roomId });
+
+						if (persistedRoom) {
+							// Delete the room
+							deleteRoom(roomId);
+						}
+
+						// Remove all room events
+						await FederationRoomEvents.removeRoomEvents(roomId);
+					}
+					break;
+
+				//
 				// ROOM_ADD_USER
 				//
 				case eventTypes.ROOM_ADD_USER:
@@ -104,10 +127,13 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 
 					// If the event was successfully added, handle the event locally
 					if (eventResult.success) {
-						const { data: { roomId, user } } = event;
+						const { data: { roomId, user, domainsAfterRemoval } } = event;
 
 						// Remove the user's subscription
 						Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+
+						// Update the room's federation property
+						Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
 					}
 					break;
 
@@ -160,6 +186,24 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 							// Update the message
 							Messages.update({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
 						}
+					}
+					break;
+
+				//
+				// ROOM_DELETE_MESSAGE
+				//
+				case eventTypes.ROOM_DELETE_MESSAGE:
+					eventResult = await FederationRoomEvents.addEvent(event.context, event);
+
+					// If the event was successfully added, handle the event locally
+					if (eventResult.success) {
+						const { data: { roomId, messageId } } = event;
+
+						// Remove the message
+						Messages.removeById(messageId);
+
+						// Notify the room
+						Notifications.notifyRoom(roomId, 'deleteMessage', { _id: messageId });
 					}
 					break;
 
@@ -238,47 +282,6 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 							// Otherwise, update the property
 							Messages.update({ _id: messageId }, { $set: { [`reactions.${ reaction }`]: reactionObj } });
 						}
-					}
-					break;
-
-				//
-				// ROOM_DELETE_MESSAGE
-				//
-				case eventTypes.ROOM_DELETE_MESSAGE:
-					eventResult = await FederationRoomEvents.addEvent(event.context, event);
-
-					// If the event was successfully added, handle the event locally
-					if (eventResult.success) {
-						const { data: { roomId, messageId } } = event;
-
-						// Remove the message
-						Messages.removeById(messageId);
-
-						// Notify the room
-						Notifications.notifyRoom(roomId, 'deleteMessage', { _id: messageId });
-					}
-					break;
-
-				//
-				// ROOM_DELETE
-				//
-				case eventTypes.ROOM_DELETE:
-					eventResult = await FederationRoomEvents.addEvent(event.context, event);
-
-					// If the event was successfully added, handle the event locally
-					if (eventResult.success) {
-						const { data: { roomId } } = event;
-
-						// Check if room exists
-						const persistedRoom = Rooms.findOne({ _id: roomId });
-
-						if (persistedRoom) {
-							// Delete the room
-							deleteRoom(roomId);
-						}
-
-						// Remove all room events
-						await FederationRoomEvents.removeRoomEvents(roomId);
 					}
 					break;
 
