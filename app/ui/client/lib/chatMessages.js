@@ -267,8 +267,7 @@ export class ChatMessages {
 		}
 
 		if (msg) {
-			readMessage.enable();
-			readMessage.readNow();
+			readMessage.readNow(true);
 			$('.message.first-unread').removeClass('first-unread');
 
 			const message = await promises.run('onClientBeforeSendMessage', {
