@@ -2730,6 +2730,7 @@
   "Should_exists_a_user_with_this_username": "The user must already exist.",
   "Show_Setup_Wizard": "Show Setup Wizard",
   "Show_agent_email": "Show agent email",
+  "Show_agent_info": "Show agent information",
   "Show_all": "Show All",
   "Show_Avatars": "Show Avatars",
   "Show_counter": "Show counter",
