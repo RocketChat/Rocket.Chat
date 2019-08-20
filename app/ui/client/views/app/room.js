@@ -1165,9 +1165,9 @@ Template.room.onRendered(function() {
 		const fn = _.throttle(function() {
 			template.checkIfScrollIsAtBottom();
 		}, 50);
-		return (...args) => {
+		return () => {
 			template.atBottom = false;
-			fn(...args);
+			fn();
 		};
 	})();
 	wrapper.addEventListener('mousewheel', wheelHandler);
