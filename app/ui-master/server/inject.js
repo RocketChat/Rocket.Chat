@@ -171,13 +171,12 @@ settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
 		Inject.rawModHtml(key, (html) => {
 			const script = `
 <script>
-	window.addEventListener("load", function() {
-		if(window.localStorage) {
+	window.addEventListener('load', function() {
+		if (window.localStorage) {
 			Object.keys(window.localStorage).forEach(function(key) {
-				var value = window.localStorage[key]
-				window.sessionStorage.setItem(key, value);
-			})
-			localStorage.clear();
+				window.sessionStorage.setItem(key, window.localStorage.getItem(key));
+			});
+			window.localStorage.clear();
 			Meteor._localStorage = window.sessionStorage;
 		}
 	});
