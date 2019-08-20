@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
-import { Users } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
+import { settings } from '../../../settings';
+import { Users } from '../../../models';
 import { userScopes } from '../oauthScopes';
 
 export function finishOAuthAuthorization(code, state) {

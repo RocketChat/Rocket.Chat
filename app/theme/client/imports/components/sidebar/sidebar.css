@@ -75,7 +75,7 @@
 
 	.sidebar:not(.sidebar-light) {
 		user-select: none;
-		transform: translate3d(calc(var(--sidebar-width) * -1), 0, 0);
+		transform: translate3d(-100%, 0, 0);
 		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 		touch-action: pan-y;
 		-webkit-user-drag: none;

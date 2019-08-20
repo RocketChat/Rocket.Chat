@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Rooms, LivechatVisitors, LivechatCustomField } from '../../../models';
 
 Meteor.methods({
@@ -7,10 +8,9 @@ Meteor.methods({
 		if (customField) {
 			if (customField.scope === 'room') {
 				return Rooms.updateLivechatDataByToken(token, key, value, overwrite);
-			} else {
-				// Save in user
-				return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 			}
+			// Save in user
+			return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 		}
 
 		return true;

@@ -19,7 +19,7 @@ export class OEmbedCache extends Base {
 		const record = {
 			_id,
 			data,
-			updatedAt: new Date,
+			updatedAt: new Date(),
 		};
 		record._id = this.insert(record);
 		return record;

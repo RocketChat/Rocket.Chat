@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+
+import { hasAtLeastOnePermission } from './hasPermission';
 import { CachedCollectionManager } from '../../ui-cached-collection';
-import { hasAllPermission } from './hasPermission';
 import { AdminBox } from '../../ui-utils/client/lib/AdminBox';
 
 Meteor.startup(() => {
-
 	CachedCollectionManager.onLogin(() => Meteor.subscribe('roles'));
 
 	AdminBox.addOption({
@@ -12,7 +12,7 @@ Meteor.startup(() => {
 		i18nLabel: 'Permissions',
 		icon: 'lock',
 		permissionGranted() {
-			return hasAllPermission('access-permissions');
+			return hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']);
 		},
 	});
 });

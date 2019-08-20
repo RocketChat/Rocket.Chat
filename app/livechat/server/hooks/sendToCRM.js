@@ -6,9 +6,8 @@ import { Livechat } from '../lib/Livechat';
 const msgNavType = 'livechat_navigation_history';
 
 const crmEnabled = () => {
-	const secretToken = settings.get('Livechat_secret_token');
 	const webhookUrl = settings.get('Livechat_webhookUrl');
-	return secretToken !== '' && secretToken !== undefined && webhookUrl !== '' && webhookUrl !== undefined;
+	return webhookUrl !== '' && webhookUrl !== undefined;
 };
 
 const sendMessageType = (msgType) => {

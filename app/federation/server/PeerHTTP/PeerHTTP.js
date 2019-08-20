@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
+import { skipRetryOnSpecificError, delay } from './utils';
 import { logger } from '../logger';
+
 import { Federation } from '..';
 
-import { skipRetryOnSpecificError, delay } from './utils';
 
 export class PeerHTTP {
 	constructor() {

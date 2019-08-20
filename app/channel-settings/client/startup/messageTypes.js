@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { MessageTypes } from '../../../ui-utils';
 import { t } from '../../../utils';
-import s from 'underscore.string';
 
 Meteor.startup(function() {
 	MessageTypes.registerType({

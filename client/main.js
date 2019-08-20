@@ -1,3 +1,5 @@
+import 'url-polyfill';
+
 import './importsCss';
 import './importPackages';
 import '../imports/startup/client';

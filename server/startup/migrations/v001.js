@@ -16,9 +16,8 @@ Migrations.add({
 			const username = generateUsernameSuggestion(user);
 			if (username && username.trim() !== '') {
 				return Users.setUsername(user._id, username);
-			} else {
-				return console.log('User without username', JSON.stringify(user, null, ' '));
 			}
+			return console.log('User without username', JSON.stringify(user, null, ' '));
 		});
 	},
 });

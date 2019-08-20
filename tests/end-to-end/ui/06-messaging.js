@@ -1,8 +1,6 @@
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import Global from '../../pageobjects/global';
-
-// test data imports
 import { username, email, password } from '../../data/user.js';
 import { publicChannelName, privateChannelName } from '../../data/channel.js';
 import { targetUser, imgURL } from '../../data/interactions.js';

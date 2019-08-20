@@ -1,342 +1,150 @@
-import toastr from 'toastr';
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '../../../settings';
-import { t, APIClient } from '../../../utils';
-import { modal } from '../../../ui-utils';
+
+import { SideNav, call } from '../../../ui-utils/client';
+import { t } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
-import { SideNav } from '../../../ui-utils/client';
+import {
+	appButtonProps,
+	appStatusSpanProps,
+	checkCloudLogin,
+	formatPrice,
+	formatPricingPlan,
+	handleAPIError,
+	promptSubscription,
+	triggerAppPopoverMenu,
+	warnStatusChange,
+} from './helpers';
 
-const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
-const enabled = ({ status }) => ENABLED_STATUS.includes(status);
+import './marketplace.html';
 
-const sortByColumn = (array, column, inverted) =>
-	array.sort((a, b) => {
-		if (a.latest[column] < b.latest[column] && !inverted) {
-			return -1;
-		}
-		return 1;
+
+Template.marketplace.onCreated(function() {
+	this.state = new ReactiveDict({
+		isLoggedInCloud: true,
+		apps: [], // TODO: maybe use another ReactiveDict here
+		isLoading: true,
+		searchText: '',
+		sortedColumn: 'name',
+		isAscendingOrder: true,
+
+		// TODO: to use these fields
+		page: 0,
+		itemsPerPage: 0,
+		wasEndReached: false,
 	});
 
-const tagAlreadyInstalledApps = (installedApps, apps) => {
-	const installedIds = installedApps.map((app) => app.latest.id);
+	(async () => {
+		try {
+			this.state.set('isLoggedInCloud', await call('cloud:checkUserLoggedIn'));
+		} catch (error) {
+			handleAPIError(error);
+		}
 
-	const tagged = apps.map((app) =>
-		({
-			price: app.price,
-			isPurchased: app.isPurchased,
-			latest: {
-				...app.latest,
-				_installed: installedIds.includes(app.latest.id),
-			},
-		})
-	);
+		try {
+			const appsFromMarketplace = await Apps.getAppsFromMarketplace();
+			const installedApps = await Apps.getApps();
 
-	return tagged;
-};
+			const apps = appsFromMarketplace.map((app) => {
+				const installedApp = installedApps.find(({ id }) => id === app.id);
 
-const getApps = async (instance) => {
-	instance.isLoading.set(true);
+				if (!installedApp) {
+					return {
+						...app,
+						status: undefined,
+						marketplaceVersion: app.version,
+					};
+				}
 
-	try {
-		const data = await APIClient.get('apps?marketplace=true');
-		const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
+				return {
+					...app,
+					installed: true,
+					status: installedApp.status,
+					version: installedApp.version,
+					marketplaceVersion: app.version,
+				};
+			});
 
-		instance.apps.set(tagged);
-	} catch (e) {
-		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-	}
+			this.state.set('apps', apps);
+		} catch (error) {
+			handleAPIError(error);
+		} finally {
+			this.state.set('isLoading', false);
+		}
+	})();
 
-	instance.isLoading.set(false);
-	instance.ready.set(true);
-};
+	this.startAppWorking = (appId) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		app.working = true;
+		this.state.set('apps', apps);
+	};
 
-const getInstalledApps = async (instance) => {
-	try {
-		const data = await APIClient.get('apps');
-		const apps = data.apps.map((app) => ({ latest: app }));
-		instance.installedApps.set(apps);
-	} catch (e) {
-		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-	}
-};
+	this.stopAppWorking = (appId) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		delete app.working;
+		this.state.set('apps', apps);
+	};
 
-const getCloudLoggedIn = async (instance) => {
-	Meteor.call('cloud:checkUserLoggedIn', (error, result) => {
-		if (error) {
-			console.warn(error);
+	this.handleAppAddedOrUpdated = async (appId) => {
+		try {
+			const { status, version } = await Apps.getApp(appId);
+			const app = await Apps.getAppFromMarketplace(appId, version);
+			const apps = [
+				...this.state.get('apps').filter(({ id }) => id !== appId),
+				{
+					...app,
+					installed: true,
+					status,
+					version,
+					marketplaceVersion: app.version,
+				},
+			];
+			this.state.set('apps', apps);
+		} catch (error) {
+			handleAPIError(error);
+		}
+	};
+
+	this.handleAppRemoved = (appId) => {
+		const apps = this.state.get('apps').map((app) => {
+			if (app.id === appId) {
+				delete app.installed;
+				delete app.status;
+				app.version = app.marketplaceVersion;
+			}
+
+			return app;
+		});
+		this.state.set('apps', apps);
+	};
+
+	this.handleAppStatusChange = ({ appId, status }) => {
+		const apps = this.state.get('apps');
+		const app = apps.find(({ id }) => id === appId);
+		if (!app) {
 			return;
 		}
 
-		instance.cloudLoggedIn.set(result);
-	});
-};
-
-Template.marketplace.onCreated(function() {
-	const instance = this;
-	this.ready = new ReactiveVar(false);
-	this.apps = new ReactiveVar([]);
-	this.installedApps = new ReactiveVar([]);
-	this.categories = new ReactiveVar([]);
-	this.searchText = new ReactiveVar('');
-	this.searchSortBy = new ReactiveVar('name');
-	this.sortDirection = new ReactiveVar('asc');
-	this.limit = new ReactiveVar(0);
-	this.page = new ReactiveVar(0);
-	this.end = new ReactiveVar(false);
-	this.isLoading = new ReactiveVar(true);
-	this.cloudLoggedIn = new ReactiveVar(false);
-
-	getInstalledApps(instance);
-	getApps(instance);
-
-	try {
-		APIClient.get('apps?categories=true').then((data) => instance.categories.set(data));
-	} catch (e) {
-		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-	}
-
-	instance.onAppAdded = function _appOnAppAdded() {
-		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
-
-		// fetch(`${ HOST }/v1/apps/${ appId }`).then((result) => {
-		// 	const installedApps = instance.installedApps.get();
-
-		// 	installedApps.push({
-		// 		latest: result.app,
-		// 	});
-		// 	instance.installedApps.set(installedApps);
-		// });
+		app.status = status;
+		this.state.set('apps', apps);
 	};
 
-	getCloudLoggedIn(instance);
-
-	instance.onAppRemoved = function _appOnAppRemoved(appId) {
-		const apps = instance.apps.get();
-
-		let index = -1;
-		apps.find((item, i) => {
-			if (item.id === appId) {
-				index = i;
-				return true;
-			}
-			return false;
-		});
-
-		apps.splice(index, 1);
-		instance.apps.set(apps);
-	};
-
-	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
+	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleAppStatusChange);
 });
 
 Template.marketplace.onDestroyed(function() {
-	const instance = this;
-
-	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
-});
-
-Template.marketplace.helpers({
-	isReady() {
-		if (Template.instance().ready != null) {
-			return Template.instance().ready.get();
-		}
-
-		return false;
-	},
-	apps() {
-		const instance = Template.instance();
-		const searchText = instance.searchText.get().toLowerCase();
-		const sortColumn = instance.searchSortBy.get();
-		const inverted = instance.sortDirection.get() === 'desc';
-		return sortByColumn(instance.apps.get().filter((app) => app.latest.name.toLowerCase().includes(searchText)), sortColumn, inverted);
-	},
-	categories() {
-		return Template.instance().categories.get();
-	},
-	appsDevelopmentMode() {
-		return settings.get('Apps_Framework_Development_Mode') === true;
-	},
-	cloudLoggedIn() {
-		return Template.instance().cloudLoggedIn.get();
-	},
-	parseStatus(status) {
-		return t(`App_status_${ status }`);
-	},
-	isActive(status) {
-		return enabled({ status });
-	},
-	sortIcon(key) {
-		const {
-			sortDirection,
-			searchSortBy,
-		} = Template.instance();
-
-		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
-	},
-	searchSortBy(key) {
-		return Template.instance().searchSortBy.get() === key;
-	},
-	isLoading() {
-		return Template.instance().isLoading.get();
-	},
-	onTableScroll() {
-		const instance = Template.instance();
-		if (instance.loading || instance.end.get()) {
-			return;
-		}
-		return function(currentTarget) {
-			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
-				return instance.page.set(instance.page.get() + 1);
-			}
-		};
-	},
-	onTableResize() {
-		const { limit } = Template.instance();
-
-		return function() {
-			limit.set(Math.ceil((this.$('.table-scroll').height() / 40) + 5));
-		};
-	},
-	onTableSort() {
-		const { end, page, sortDirection, searchSortBy } = Template.instance();
-		return function(type) {
-			end.set(false);
-			page.set(0);
-
-			if (searchSortBy.get() === type) {
-				sortDirection.set(sortDirection.get() === 'asc' ? 'desc' : 'asc');
-				return;
-			}
-
-			searchSortBy.set(type);
-			sortDirection.set('asc');
-		};
-	},
-	renderDownloadButton(latest) {
-		return latest._installed === false;
-	},
-	formatPrice(price) {
-		return `$${ Number.parseFloat(price).toFixed(2) }`;
-	},
-	formatCategories(categories = []) {
-		return categories.join(', ');
-	},
-});
-
-Template.marketplace.events({
-	'click .manage'() {
-		const rl = this;
-
-		if (rl && rl.latest && rl.latest.id) {
-			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
-		}
-	},
-	'click [data-button="install"]'() {
-		FlowRouter.go('/admin/app/install');
-	},
-	'click [data-button="login"]'() {
-		FlowRouter.go('/admin/cloud');
-	},
-	'click .js-install'(e, template) {
-		e.stopPropagation();
-		const elm = e.currentTarget.parentElement;
-
-		elm.classList.add('loading');
-
-		APIClient.post('apps/', {
-			appId: this.latest.id,
-			marketplace: true,
-			version: this.latest.version,
-		})
-			.then(async () => {
-				await Promise.all([
-					getInstalledApps(template),
-					getApps(template),
-				]);
-				elm.classList.remove('loading');
-			})
-			.catch((e) => {
-				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-				elm.classList.remove('loading');
-			});
-	},
-	'click .js-purchase'(e, template) {
-		e.stopPropagation();
-
-		const rl = this;
-
-		if (!template.cloudLoggedIn.get()) {
-			modal.open({
-				title: t('Apps_Marketplace_Login_Required_Title'),
-				text: t('Apps_Marketplace_Login_Required_Description'),
-				type: 'info',
-				showCancelButton: true,
-				confirmButtonColor: '#DD6B55',
-				confirmButtonText: t('Login'),
-				cancelButtonText: t('Cancel'),
-				closeOnConfirm: true,
-				html: false,
-			}, function(confirmed) {
-				if (confirmed) {
-					FlowRouter.go('/admin/cloud');
-				}
-				return;
-			});
-			return;
-		}
-
-		// play animation
-		const elm = e.currentTarget.parentElement;
-
-		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.latest.id }`)
-			.then((data) => {
-				modal.open({
-					allowOutsideClick: false,
-					data,
-					template: 'iframeModal',
-				}, () => {
-					elm.classList.add('loading');
-					APIClient.post('apps/', {
-						appId: this.latest.id,
-						marketplace: true,
-						version: this.latest.version,
-					})
-						.then(async () => {
-							await Promise.all([
-								getInstalledApps(template),
-								getApps(template),
-							]);
-							elm.classList.remove('loading');
-						})
-						.catch((e) => {
-							toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-							elm.classList.remove('loading');
-						});
-				});
-			})
-			.catch((e) => {
-				const errMsg = (e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message;
-				toastr.error(errMsg);
-
-				if (errMsg === 'Unauthorized') {
-					getCloudLoggedIn(template);
-				}
-			});
-	},
-	'keyup .js-search'(e, t) {
-		t.searchText.set(e.currentTarget.value);
-	},
-	'submit .js-search-form'(e) {
-		e.preventDefault();
-		e.stopPropagation();
-	},
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, this.handleAppAddedOrUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleAppRemoved);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleAppStatusChange);
 });
 
 Template.marketplace.onRendered(() => {
@@ -344,4 +152,182 @@ Template.marketplace.onRendered(() => {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
 	});
+});
+
+Template.marketplace.helpers({
+	isLoggedInCloud() {
+		return Template.instance().state.get('isLoggedInCloud');
+	},
+	isLoading() {
+		return Template.instance().state.get('isLoading');
+	},
+	handleTableScroll() {
+		const { state } = Template.instance();
+		if (state.get('isLoading') || state.get('wasEndReached')) {
+			return;
+		}
+
+		return ({ offsetHeight, scrollTop, scrollHeight }) => {
+			const shouldGoToNextPage = offsetHeight + scrollTop >= scrollHeight - 100;
+			if (shouldGoToNextPage) {
+				return state.set('page', state.get('page') + 1);
+			}
+		};
+	},
+	handleTableResize() {
+		const { state } = Template.instance();
+
+		return function() {
+			const $table = this.$('.table-scroll');
+			state.set('itemsPerPage', Math.ceil(($table.height() / 40) + 5));
+		};
+	},
+	handleTableSort() {
+		const { state } = Template.instance();
+
+		return (sortedColumn) => {
+			state.set({
+				page: 0,
+				wasEndReached: false,
+			});
+
+			if (state.get('sortedColumn') === sortedColumn) {
+				state.set('isAscendingOrder', !state.get('isAscendingOrder'));
+				return;
+			}
+
+			state.set({
+				sortedColumn,
+				isAscendingOrder: true,
+			});
+		};
+	},
+	isSortingBy(column) {
+		return Template.instance().state.get('sortedColumn') === column;
+	},
+	sortIcon(column) {
+		const { state } = Template.instance();
+
+		return column === state.get('sortedColumn') && state.get('isAscendingOrder') ? 'sort-down' : 'sort-up';
+	},
+	apps() {
+		const { state } = Template.instance();
+		const apps = state.get('apps');
+		const searchText = state.get('searchText').toLocaleLowerCase();
+		const sortedColumn = state.get('sortedColumn');
+		const isAscendingOrder = state.get('isAscendingOrder');
+		const sortingFactor = isAscendingOrder ? 1 : -1;
+
+		return apps
+			.filter(({ name }) => name.toLocaleLowerCase().includes(searchText))
+			.sort(({ [sortedColumn]: a }, { [sortedColumn]: b }) => sortingFactor * String(a).localeCompare(String(b)));
+	},
+	purchaseTypeDisplay({ purchaseType, price }) {
+		if (purchaseType === 'subscription') {
+			return t('Subscription');
+		}
+
+		if (price > 0) {
+			return t('Paid');
+		}
+
+		return t('Free');
+	},
+	priceDisplay({ purchaseType, pricingPlans, price }) {
+		if (purchaseType === 'subscription') {
+			if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
+				return '-';
+			}
+
+			return formatPricingPlan(pricingPlans[0]);
+		}
+
+		if (price > 0) {
+			return formatPrice(price);
+		}
+
+		return '-';
+	},
+	appButtonProps,
+	appStatusSpanProps,
+});
+
+Template.marketplace.events({
+	'click .js-cloud-login'() {
+		FlowRouter.go('cloud-config');
+	},
+	'submit .js-search-form'(event) {
+		event.stopPropagation();
+		return false;
+	},
+	'keyup .js-search'(event, instance) {
+		instance.state.set('searchText', event.currentTarget.value);
+	},
+	'click .js-open'(event, instance) {
+		event.stopPropagation();
+		const { currentTarget } = event;
+		const {
+			id: appId,
+			version,
+			marketplaceVersion,
+		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
+		FlowRouter.go('marketplace-app', { appId }, { version: version || marketplaceVersion });
+	},
+	async 'click .js-install, click .js-update'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const isLoggedInCloud = await checkCloudLogin();
+		instance.state.set('isLoggedInCloud', isLoggedInCloud);
+		if (!isLoggedInCloud) {
+			return;
+		}
+
+		const { currentTarget: button } = event;
+		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
+
+		try {
+			const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+			warnStatusChange(app.name, status);
+		} catch (error) {
+			handleAPIError(error);
+		} finally {
+			instance.stopAppWorking(app.id);
+		}
+	},
+	async 'click .js-purchase'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const isLoggedInCloud = await checkCloudLogin();
+		instance.state.set('isLoggedInCloud', isLoggedInCloud);
+		if (!isLoggedInCloud) {
+			return;
+		}
+
+		const { currentTarget: button } = event;
+		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
+
+		await promptSubscription(app, async () => {
+			try {
+				const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+				warnStatusChange(app.name, status);
+			} catch (error) {
+				handleAPIError(error);
+			} finally {
+				instance.stopAppWorking(app.id);
+			}
+		}, instance.stopAppWorking.bind(instance, app.id));
+	},
+	'click .js-menu'(event, instance) {
+		event.stopPropagation();
+		const { currentTarget } = event;
+
+		const app = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
+		triggerAppPopoverMenu(app, currentTarget, instance);
+	},
 });

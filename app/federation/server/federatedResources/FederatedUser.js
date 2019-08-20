@@ -1,6 +1,6 @@
+import { FederatedResource } from './FederatedResource';
 import { Users } from '../../../models';
 
-import { FederatedResource } from './FederatedResource';
 
 export class FederatedUser extends FederatedResource {
 	constructor(localPeerIdentifier, user) {
@@ -66,6 +66,9 @@ export class FederatedUser extends FederatedResource {
 		if (federation.peer === localPeerIdentifier || user.username === 'rocket.cat') {
 			localUser.username = user.username.split('@')[0];
 			localUser.name = user.name.split('@')[0];
+		}
+		if (federation.peer !== localPeerIdentifier) {
+			localUser.isRemote = true;
 		}
 
 		return localUser;

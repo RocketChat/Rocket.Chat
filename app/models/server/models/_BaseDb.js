@@ -1,19 +1,21 @@
+import { EventEmitter } from 'events';
+
 import { Match } from 'meteor/check';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
-import { EventEmitter } from 'events';
 
 const baseName = 'rocketchat_';
 
 const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
 	trash._ensureIndex({ collection: 1 });
-	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
+	trash._ensureIndex(
+		{ _deletedAt: 1 },
+		{ expireAfterSeconds: 60 * 60 * 24 * 30 }
+	);
 } catch (e) {
 	console.log(e);
 }
-
-const isOplogEnabled = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
 
 export class BaseDb extends EventEmitter {
 	constructor(model, baseModel) {
@@ -33,24 +35,38 @@ export class BaseDb extends EventEmitter {
 
 		this.wrapModel();
 
-		let alreadyListeningToOplog = false;
 		// When someone start listening for changes we start oplog if available
-		this.on('newListener', (event/* , listener*/) => {
-			if (event === 'change' && alreadyListeningToOplog === false) {
-				alreadyListeningToOplog = true;
-				if (isOplogEnabled) {
-					const query = {
-						collection: this.collectionName,
-					};
-
-					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
-					// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
-					if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-						MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
-					}
-				}
+		const handleListener = (event /* , listener*/) => {
+			if (event !== 'change') {
+				return;
 			}
-		});
+
+			this.removeListener('newListener', handleListener);
+
+			const query = {
+				collection: this.collectionName,
+			};
+
+			if (!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle) {
+				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
+				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
+				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
+				3. Start your instance with OPLOG configuration: export MONGO_OPLOG_URL=mongodb://localhost:27017/local MONGO_URL=mongodb://localhost:27017/meteor node main.js
+				`);
+			}
+
+			MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(
+				query,
+				this.processOplogRecord.bind(this)
+			);
+			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
+			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
+				MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(
+					Number.MAX_SAFE_INTEGER
+				);
+			}
+		};
+		this.on('newListener', handleListener);
 
 		this.tryEnsureIndex({ _updatedAt: 1 });
 	}
@@ -60,7 +76,6 @@ export class BaseDb extends EventEmitter {
 	}
 
 	setUpdatedAt(record = {}) {
-
 		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
 		// setUpdatedAt(record = {}, checkQuery = false, query) {
 		// if (checkQuery === true) {
@@ -71,9 +86,9 @@ export class BaseDb extends EventEmitter {
 
 		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
 			record.$set = record.$set || {};
-			record.$set._updatedAt = new Date;
+			record.$set._updatedAt = new Date();
 		} else {
-			record._updatedAt = new Date;
+			record._updatedAt = new Date();
 		}
 
 		return record;
@@ -129,7 +144,12 @@ export class BaseDb extends EventEmitter {
 	}
 
 	updateHasPositionalOperator(update) {
-		return Object.keys(update).some((key) => key.includes('.$') || (Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])));
+		return Object.keys(update).some(
+			(key) =>
+				key.includes('.$')
+				|| (Match.test(update[key], Object)
+					&& this.updateHasPositionalOperator(update[key]))
+		);
 	}
 
 	processOplogRecord(action) {
@@ -190,7 +210,6 @@ export class BaseDb extends EventEmitter {
 				id: action.id,
 				oplog: true,
 			});
-			return;
 		}
 	}
 
@@ -223,7 +242,7 @@ export class BaseDb extends EventEmitter {
 		for (const record of records) {
 			ids.push(record._id);
 
-			record._deletedAt = new Date;
+			record._deletedAt = new Date();
 			record.__collection__ = this.name;
 
 			trash.upsert({ _id: record._id }, _.omit(record, '_id'));
@@ -244,9 +263,8 @@ export class BaseDb extends EventEmitter {
 
 			this.upsert(...args);
 			return _id;
-		} else {
-			return this.insert(...args);
 		}
+		return this.insert(...args);
 	}
 
 	allow(...args) {

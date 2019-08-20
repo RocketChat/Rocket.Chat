@@ -1,4 +1,3 @@
-export { CustomSounds } from './lib/CustomSounds';
 import './notifications/deleteCustomSound';
 import './notifications/updateCustomSound';
 import './admin/adminSoundEdit.html';
@@ -11,3 +10,5 @@ import './admin/soundInfo.html';
 import './admin/soundInfo';
 import './admin/route';
 import './admin/startup';
+
+export { CustomSounds } from './lib/CustomSounds';

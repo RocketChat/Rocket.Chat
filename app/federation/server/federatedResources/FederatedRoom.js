@@ -1,8 +1,8 @@
+import { FederatedResource } from './FederatedResource';
+import { FederatedUser } from './FederatedUser';
 import { createRoom } from '../../../lib';
 import { Rooms, Subscriptions, Users } from '../../../models';
 
-import { FederatedResource } from './FederatedResource';
-import { FederatedUser } from './FederatedUser';
 
 export class FederatedRoom extends FederatedResource {
 	constructor(localPeerIdentifier, room, extras = {}) {

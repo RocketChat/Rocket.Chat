@@ -1,8 +1,10 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
-import { Settings } from '../../../models';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
+import { settings } from '../../../settings';
+import { Settings } from '../../../models';
+import { callbacks } from '../../../callbacks';
+
 
 export function getWorkspaceLicense() {
 	const token = getWorkspaceAccessToken();
@@ -37,6 +39,8 @@ export function getWorkspaceLicense() {
 	}
 
 	Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
+
+	callbacks.run('workspaceLicenseChanged', remoteLicense.license);
 
 	return { updated: true, license: remoteLicense.license };
 }

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { createClient } from 'webdav';
+
 import { settings } from '../../../settings';
 import { WebdavAccounts } from '../../../models';
-import { createClient } from 'webdav';
 
 Meteor.methods({
 	async addWebdavAccount(formData) {
-
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -50,6 +50,5 @@ Meteor.methods({
 		} catch (error) {
 			return { success: false, message: error.code === 11000 ? 'duplicated-account' : 'unknown-write-error', error };
 		}
-
 	},
 });

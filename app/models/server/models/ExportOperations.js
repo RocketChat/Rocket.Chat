@@ -1,5 +1,6 @@
-import { Base } from './_Base';
 import _ from 'underscore';
+
+import { Base } from './_Base';
 
 export class ExportOperations extends Base {
 	constructor() {
@@ -22,7 +23,7 @@ export class ExportOperations extends Base {
 			fullExport,
 		};
 
-		options.sort = { createdAt : -1 };
+		options.sort = { createdAt: -1 };
 		return this.findOne(query, options);
 	}
 
@@ -40,6 +41,15 @@ export class ExportOperations extends Base {
 	findAllPending(options) {
 		const query = {
 			status: { $nin: ['completed'] },
+		};
+
+		return this.find(query, options);
+	}
+
+	findAllPendingBeforeMyRequest(requestDay, options) {
+		const query = {
+			status: { $nin: ['completed'] },
+			createdAt: { $lt: requestDay },
 		};
 
 		return this.find(query, options);
@@ -63,7 +73,7 @@ export class ExportOperations extends Base {
 	// INSERT
 	create(data) {
 		const exportOperation = {
-			createdAt: new Date,
+			createdAt: new Date(),
 		};
 
 		_.extend(exportOperation, data);

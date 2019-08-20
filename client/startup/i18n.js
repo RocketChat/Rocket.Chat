@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import moment from 'moment';
+
 import { isRtl } from '../../app/utils';
 import { settings } from '../../app/settings';
 import { Users } from '../../app/models';
-import moment from 'moment';
 
 const currentLanguage = new ReactiveVar();
 
@@ -17,7 +18,7 @@ Meteor.startup(() => {
 
 	const filterLanguage = (language) => {
 		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
-		const regex = /([a-z]{2})-([a-z]{2})/;
+		const regex = /([a-z]{2,3})-([a-z]{2,4})/;
 		const matches = regex.exec(language);
 		if (matches) {
 			return `${ matches[1] }-${ matches[2].toUpperCase() }`;
@@ -58,7 +59,12 @@ Meteor.startup(() => {
 
 		document.documentElement.classList[isRtl(language) ? 'add' : 'remove']('rtl');
 		TAPi18n.setLanguage(language);
-		loadMomentLocale(language).then((locale) => moment.locale(locale), (error) => console.error(error));
+		loadMomentLocale(language)
+			.then((locale) => moment.locale(locale))
+			.catch((error) => {
+				moment.locale('en');
+				console.error('Error loading moment locale:', error);
+			});
 	};
 
 	const setLanguage = (language) => {

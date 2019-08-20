@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '../../settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+
+import { settings } from '../../settings';
 import { CustomOAuth } from '../../custom-oauth';
 import { callbacks } from '../../callbacks';
 import { Settings } from '../../models';
@@ -56,7 +57,7 @@ if (Meteor.isServer) {
 		ServiceConfiguration.configurations.upsert({ service: 'dolphin' }, { $set: data });
 	}
 
-	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH);
+	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
 } else {
 	Meteor.startup(() =>
 		Tracker.autorun(function() {

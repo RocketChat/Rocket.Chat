@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { settings } from '../../app/settings';
 import { hasPermission } from '../../app/authorization';
 import { Users, Rooms, Subscriptions } from '../../app/models';
 import { getDefaultSubscriptionPref } from '../../app/utils';
 import { RateLimiter } from '../../app/lib';
 import { callbacks } from '../../app/callbacks';
-
 import { Federation } from '../../app/federation/server';
 
 Meteor.methods({
@@ -39,7 +39,7 @@ Meteor.methods({
 			});
 		}
 
-		let to = Users.findOneByUsername(username);
+		let to = Users.findOneByUsernameIgnoringCase(username);
 
 		if (!to && username.indexOf('@') !== -1) {
 			// If the username does have an `@`, but does not exist locally, we create it first

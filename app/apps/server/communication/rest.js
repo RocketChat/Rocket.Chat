@@ -1,11 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { API } from '../../../api/server';
 import Busboy from 'busboy';
 
+import { API } from '../../../api/server';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
+import { Settings, Users } from '../../../models/server';
+import { Apps } from '../orchestrator';
+
+const getDefaultHeaders = () => ({
+	'X-Apps-Engine-Version': Info.marketplaceApiVersion,
+});
+
+const purchaseTypes = new Set(['buy', 'subscription']);
 
 export class AppsRestApi {
 	constructor(orch, manager) {
@@ -57,17 +65,24 @@ export class AppsRestApi {
 
 				// Gets the Apps from the marketplace
 				if (this.queryParams.marketplace) {
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
-						headers,
-					});
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/apps`, {
+							headers,
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the Apps:', e.response.data);
+						return API.v1.internalError();
+					}
 
-					if (result.statusCode !== 200) {
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the Apps:', result.data);
 						return API.v1.failure();
 					}
 
@@ -75,32 +90,51 @@ export class AppsRestApi {
 				}
 
 				if (this.queryParams.categories) {
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const result = HTTP.get(`${ baseUrl }/v1/categories`, {
-						headers,
-					});
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/categories`, {
+							headers,
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
+						return API.v1.internalError();
+					}
 
-					if (result.statusCode !== 200) {
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', result.data);
 						return API.v1.failure();
 					}
 
 					return API.v1.success(result.data);
 				}
 
-				if (this.queryParams.buildBuyUrl && this.queryParams.appId) {
+				if (this.queryParams.buildExternalUrl && this.queryParams.appId) {
 					const workspaceId = settings.get('Cloud_Workspace_Id');
+
+					if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
+						return API.v1.failure({ error: 'Invalid purchase type' });
+					}
 
 					const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 					if (!token) {
 						return API.v1.failure({ error: 'Unauthorized' });
 					}
 
-					return API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }&token=${ token }` });
+					const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
+
+					const seats = Users.getActiveLocalUserCount();
+
+					return API.v1.success({
+						url: `${ baseUrl }/apps/${ this.queryParams.appId }/${
+							this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
+						}?workspaceId=${ workspaceId }&token=${ token }&seats=${ seats }`,
+					});
 				}
 
 				const apps = manager.get().map((prl) => {
@@ -115,39 +149,72 @@ export class AppsRestApi {
 			},
 			post() {
 				let buff;
+				let marketplaceInfo;
 
 				if (this.bodyParams.url) {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Installation from url is disabled.' });
 					}
 
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'binary' } });
+					let result;
+					try {
+						result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: null } });
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
+						return API.v1.internalError();
+					}
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'binary');
+					buff = result.content;
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = {};
-					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
+					const headers = getDefaultHeaders();
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
-						headers,
-						npmRequestOptions: { encoding: 'binary' },
+					const downloadPromise = new Promise((resolve, reject) => {
+						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
+
+						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
+							headers,
+							npmRequestOptions: { encoding: null },
+						}, (error, result) => {
+							if (error) { reject(error); }
+
+							resolve(result);
+						});
 					});
 
-					if (result.statusCode !== 200) {
-						return API.v1.failure();
-					}
+					const marketplacePromise = new Promise((resolve, reject) => {
+						const token = getWorkspaceAccessToken();
 
-					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
-						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
-					}
+						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }?appVersion=${ this.bodyParams.version }`, {
+							headers: {
+								Authorization: `Bearer ${ token }`,
+								...headers,
+							},
+						}, (error, result) => {
+							if (error) { reject(error); }
 
-					buff = Buffer.from(result.content, 'binary');
+							resolve(result);
+						});
+					});
+
+
+					try {
+						const [downloadResult, marketplaceResult] = Promise.await(Promise.all([downloadPromise, marketplacePromise]));
+
+						if (!downloadResult.headers['content-type'] || downloadResult.headers['content-type'] !== 'application/zip') {
+							throw new Error('Invalid url. It doesn\'t exist or is not "application/zip".');
+						}
+
+						buff = downloadResult.content;
+						marketplaceInfo = marketplaceResult.data[0];
+					} catch (err) {
+						return API.v1.failure(err.message);
+					}
 				} else {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
@@ -160,20 +227,27 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff.toString('base64'), false));
+				const aff = Promise.await(manager.add(buff.toString('base64'), true, marketplaceInfo));
 				const info = aff.getAppInfo();
 
-				// If there are compiler errors, there won't be an App to get the status of
-				if (aff.getApp()) {
-					info.status = aff.getApp().getStatus();
-				} else {
-					info.status = 'compiler_error';
+				if (aff.hasStorageError()) {
+					return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
 				}
+
+				if (aff.getCompilerErrors().length) {
+					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
+				}
+
+				if (aff.getLicenseValidationResult().hasErrors) {
+					return API.v1.failure({ status: 'license_error', messages: aff.getLicenseValidationResult().getErrors() });
+				}
+
+				info.status = aff.getApp().getStatus();
 
 				return API.v1.success({
 					app: info,
 					implemented: aff.getImplementedInferfaces(),
-					compilerErrors: aff.getCompilerErrors(),
+					licenseValidation: aff.getLicenseValidationResult(),
 				});
 			},
 		});
@@ -189,22 +263,71 @@ export class AppsRestApi {
 			},
 		});
 
+		this.api.addRoute('bundles/:id/apps', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+			get() {
+				const baseUrl = orchestrator.getMarketplaceUrl();
+
+				const headers = {};
+				const token = getWorkspaceAccessToken();
+				if (token) {
+					headers.Authorization = `Bearer ${ token }`;
+				}
+
+				let result;
+				try {
+					result = HTTP.get(`${ baseUrl }/v1/bundles/${ this.urlParams.id }/apps`, {
+						headers,
+					});
+				} catch (e) {
+					orchestrator.getRocketChatLogger().error('Error getting the Bundle\'s Apps from the Marketplace:', e.response.data);
+					return API.v1.internalError();
+				}
+
+				if (!result || result.statusCode !== 200 || result.data.length === 0) {
+					orchestrator.getRocketChatLogger().error('Error getting the Bundle\'s Apps from the Marketplace:', result.data);
+					return API.v1.failure();
+				}
+
+				return API.v1.success({ apps: result.data });
+			},
+		});
+
+		const handleError = (message, e) => {
+			orchestrator.getRocketChatLogger().error(message, e.response.data);
+
+			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+				return API.v1.internalError();
+			}
+
+			if (e.response.statusCode === 404) {
+				return API.v1.notFound();
+			}
+
+			return API.v1.failure();
+		};
+
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				if (this.queryParams.marketplace && this.queryParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = {};
+					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }?appVersion=${ this.queryParams.version }`, {
-						headers,
-					});
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }?appVersion=${ this.queryParams.version }`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Error getting the App information from the Marketplace:', e);
+					}
 
-					if (result.statusCode !== 200 || result.data.length === 0) {
+					if (!result || result.statusCode !== 200 || result.data.length === 0) {
+						orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', result.data);
 						return API.v1.failure();
 					}
 
@@ -214,17 +337,23 @@ export class AppsRestApi {
 				if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ Info.marketplaceApiVersion }`, {
-						headers,
-					});
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ Info.marketplaceApiVersion }`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Error getting the App update info from the Marketplace:', e);
+					}
 
 					if (result.statusCode !== 200 || result.data.length === 0) {
+						orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', result.data);
 						return API.v1.failure();
 					}
 
@@ -235,16 +364,19 @@ export class AppsRestApi {
 
 				if (prl) {
 					const info = prl.getInfo();
-					info.status = prl.getStatus();
 
-					return API.v1.success({ app: info });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return API.v1.success({
+						app: {
+							...info,
+							status: prl.getStatus(),
+							licenseValidation: prl.getLatestLicenseValidationResult(),
+						},
+					});
 				}
+
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
-				// TODO: Verify permissions
-
 				let buff;
 
 				if (this.bodyParams.url) {
@@ -252,28 +384,35 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
 					}
 
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'binary' } });
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: null } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'binary');
+					buff = result.content;
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = {};
+					const headers = getDefaultHeaders();
 					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
-						headers,
-						npmRequestOptions: { encoding: 'binary' },
-					});
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+							headers,
+							npmRequestOptions: { encoding: null },
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
+						return API.v1.internalError();
+					}
 
 					if (result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', result.data);
 						return API.v1.failure();
 					}
 
@@ -281,7 +420,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'binary');
+					buff = result.content;
 				} else {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
@@ -320,9 +459,41 @@ export class AppsRestApi {
 					info.status = prl.getStatus();
 
 					return API.v1.success({ app: info });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+			},
+		});
+
+		this.api.addRoute(':id/sync', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+			post() {
+				const baseUrl = orchestrator.getMarketplaceUrl();
+
+				const headers = getDefaultHeaders();
+				const token = getWorkspaceAccessToken();
+				if (token) {
+					headers.Authorization = `Bearer ${ token }`;
+				}
+
+				const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
+
+				let result;
+				try {
+					result = HTTP.get(`${ baseUrl }/v1/workspaces/${ workspaceIdSetting.value }/apps/${ this.urlParams.id }`, {
+						headers,
+					});
+				} catch (e) {
+					orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', e.response.data);
+					return API.v1.internalError();
+				}
+
+				if (result.statusCode !== 200) {
+					orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', result.data);
+					return API.v1.failure();
+				}
+
+				Promise.await(Apps.updateAppsMarketplaceInfo([result.data]));
+
+				return API.v1.success({ app: result.data });
 			},
 		});
 
@@ -334,9 +505,8 @@ export class AppsRestApi {
 					const info = prl.getInfo();
 
 					return API.v1.success({ iconFileContent: info.iconFileContent });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -348,9 +518,8 @@ export class AppsRestApi {
 					const languages = prl.getStorageItem().languageContent || {};
 
 					return API.v1.success({ languages });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -364,7 +533,7 @@ export class AppsRestApi {
 
 					const ourQuery = Object.assign({}, query, { appId: prl.getID() });
 					const options = {
-						sort: sort ? sort : { _updatedAt: -1 },
+						sort: sort || { _updatedAt: -1 },
 						skip: offset,
 						limit: count,
 						fields,
@@ -373,9 +542,8 @@ export class AppsRestApi {
 					const logs = Promise.await(orchestrator.getLogStorage().find(ourQuery, options));
 
 					return API.v1.success({ logs });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -393,9 +561,8 @@ export class AppsRestApi {
 					});
 
 					return API.v1.success({ settings });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
 				if (!this.bodyParams || !this.bodyParams.settings) {
@@ -432,11 +599,10 @@ export class AppsRestApi {
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
 						return API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
-					} else if (e.message.includes('No App found')) {
+					} if (e.message.includes('No App found')) {
 						return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
-					} else {
-						return API.v1.failure(e.message);
 					}
+					return API.v1.failure(e.message);
 				}
 			},
 			post() {
@@ -451,11 +617,10 @@ export class AppsRestApi {
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
 						return API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
-					} else if (e.message.includes('No App found')) {
+					} if (e.message.includes('No App found')) {
 						return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
-					} else {
-						return API.v1.failure(e.message);
 					}
+					return API.v1.failure(e.message);
 				}
 			},
 		});
@@ -468,9 +633,8 @@ export class AppsRestApi {
 					return API.v1.success({
 						apis: manager.apiManager.listApis(this.urlParams.id),
 					});
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
@@ -480,9 +644,8 @@ export class AppsRestApi {
 
 				if (prl) {
 					return API.v1.success({ status: prl.getStatus() });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
 				if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
@@ -491,13 +654,13 @@ export class AppsRestApi {
 
 				const prl = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
-
-					return API.v1.success({ status: result.getStatus() });
-				} else {
+				if (!prl) {
 					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+
+				const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
+
+				return API.v1.success({ status: result.getStatus() });
 			},
 		});
 	}

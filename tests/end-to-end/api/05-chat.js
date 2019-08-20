@@ -17,7 +17,6 @@ describe('[Chat]', function() {
 	before((done) => getCredentials(done));
 
 	describe('/chat.postMessage', () => {
-
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
 			request.post(api('chat.postMessage'))
 				.set(credentials)
@@ -74,7 +73,6 @@ describe('[Chat]', function() {
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
-
 			it('attachment.message_link', (done) =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
@@ -185,6 +183,206 @@ describe('[Chat]', function() {
 					})
 					.end(done)
 			);
+
+			it('message.avatar', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'javascript:alert("xss")',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							actions: [
+								{
+									type: 'button',
+									text: 'Text',
+									url: 'https://youtube.com',
+								},
+							],
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.action.image_url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							actions: [
+								{
+									type: 'button',
+									text: 'Text',
+									url: 'http://res.guggy.com/logo_128.png',
+									image_url: 'javascript:alert("xss")',
+								},
+							],
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.thumb_url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							thumb_url: 'javascript:alert("xss")',
+							title_link: 'http://res.guggy.com/logo_128.png',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.author_icon', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							author_icon: 'javascript:alert("xss")',
+							title_link: 'http://res.guggy.com/logo_128.png',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.image_url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							image_url: 'javascript:alert("xss")',
+							title_link: 'http://res.guggy.com/logo_128.png',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+			it('attachment.audio_url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							audio_url: 'javascript:alert("xss")',
+							title_link: 'http://res.guggy.com/logo_128.png',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+			it('attachment.video_url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							video_url: 'javascript:alert("xss")',
+							title_link: 'http://res.guggy.com/logo_128.png',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
 		});
 
 		it('should throw an error when the properties (attachments.fields.title, attachments.fields.value) are with the wrong type', (done) => {
@@ -273,7 +471,6 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
 	});
 
 	describe('/chat.getMessage', () => {
@@ -294,7 +491,6 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.sendMessage', () => {
-
 		it('should throw an error when the required param \'rid\' is not sent', (done) => {
 			request.post(api('chat.sendMessage'))
 				.set(credentials)
@@ -316,7 +512,6 @@ describe('[Chat]', function() {
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
-
 			it('attachment.message_link', (done) =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
@@ -553,7 +748,6 @@ describe('[Chat]', function() {
 					.end(done);
 			});
 		});
-
 	});
 
 	describe('/chat.update', () => {

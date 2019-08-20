@@ -1,6 +1,7 @@
+import _ from 'underscore';
+
 import { Migrations } from '../../../app/migrations';
 import { Users, Subscriptions } from '../../../app/models';
-import _ from 'underscore';
 
 Migrations.add({
 	version: 60,

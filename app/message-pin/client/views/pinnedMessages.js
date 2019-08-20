@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { PinnedMessage } from '../lib/PinnedMessage';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 

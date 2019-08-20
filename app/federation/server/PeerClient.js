@@ -1,12 +1,14 @@
 import qs from 'querystring';
+
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
-import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
 
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
 import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
+import { callbacks } from '../../callbacks/server';
+import { settings } from '../../settings/server';
+import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models/server';
+
 import { Federation } from '.';
 
 export class PeerClient {
@@ -230,9 +232,7 @@ export class PeerClient {
 		// Should we use queues in here?
 		const events = FederationEvents.getUnfulfilled();
 
-		for (const e of events) {
-			this.propagateEvent(e);
-		}
+		events.forEach((e) => this.propagateEvent(e));
 	}
 
 	// #####
@@ -364,8 +364,8 @@ export class PeerClient {
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room or user who joined are federated
-		if ((!userWhoJoined.federation || userWhoJoined.federation.peer === localPeerDomain) &&
-			!FederatedRoom.isFederated(localPeerDomain, room)) {
+		if ((!userWhoJoined.federation || userWhoJoined.federation.peer === localPeerDomain)
+			&& !FederatedRoom.isFederated(localPeerDomain, room)) {
 			return users;
 		}
 

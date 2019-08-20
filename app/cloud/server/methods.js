@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from '../../authorization';
-import { Settings } from '../../models';
+
 
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { connectWorkspace } from './functions/connectWorkspace';
@@ -12,6 +11,8 @@ import { disconnectWorkspace } from './functions/disconnectWorkspace';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
 import { userLogout } from './functions/userLogout';
+import { Settings } from '../../models';
+import { hasPermission } from '../../authorization';
 
 Meteor.methods({
 	'cloud:checkRegisterStatus'() {
