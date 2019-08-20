@@ -20,6 +20,7 @@ if (Meteor.isServer) {
 			this.tryEnsureIndex({ ts: 1 }); // timestamp
 			this.tryEnsureIndex({ agents: 1 }); // Id's of the agents who can see the inquiry (handle departments)
 			this.tryEnsureIndex({ status: 1 }); // 'open', 'taken'
+			this.tryEnsureIndex({ department: 1 });
 		}
 
 		findOneById(inquiryId) {

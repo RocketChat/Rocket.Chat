@@ -3,10 +3,11 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { roomTypes } from '../../utils';
 import { LivechatRooms } from '../../models';
-import { hasPermission, addRoomAccessValidator } from '../../authorization';
+import { hasPermission, hasRole, addRoomAccessValidator } from '../../authorization';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { LivechatInquiry } from '../lib/LivechatInquiry';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../models/server';
 
 Meteor.startup(() => {
 	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
@@ -31,7 +32,18 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const inquiry = LivechatInquiry.findOne({ agents: user._id, rid: room._id }, { fields: { status: 1 } });
+		let departmentIds;
+		if (!hasRole(user._id, 'livechat-manager')) {
+			const departmentAgents = LivechatDepartmentAgents.findByAgentId(user._id).fetch().map((d) => d.departmentId);
+			departmentIds = LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true }).fetch().map((d) => d._id);
+		}
+
+		const filter = {
+			rid: room._id,
+			...departmentIds && { department: { $in: departmentIds } },
+		};
+
+		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });
 		return inquiry && inquiry.status === 'open';
 	});
 

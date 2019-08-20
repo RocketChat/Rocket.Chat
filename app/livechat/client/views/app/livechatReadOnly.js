@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -42,7 +41,7 @@ Template.livechatReadOnly.onCreated(function() {
 	this.inquiry = new ReactiveVar();
 
 	this.autorun(() => {
-		const inquiry = LivechatInquiry.findOne({ agents: Meteor.userId(), status: 'open', rid: this.rid });
+		const inquiry = LivechatInquiry.findOne({ status: 'open', rid: this.rid });
 		this.inquiry.set(inquiry);
 
 		if (inquiry) {
