@@ -45,6 +45,7 @@ export class FederationEventsModel extends Base {
 		super(nameOrModel);
 
 		this.tryEnsureIndex({ hasChildren: 1 }, { sparse: true });
+		this.tryEnsureIndex({ timestamp: 1 });
 	}
 
 	getEventHash(contextQuery, event) {

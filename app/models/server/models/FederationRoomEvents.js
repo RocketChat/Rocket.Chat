@@ -5,6 +5,8 @@ const { type, contextQuery } = contextDefinitions.ROOM;
 class FederationRoomEventsModel extends FederationEventsModel {
 	constructor() {
 		super('federation_room_events');
+
+		this.tryEnsureIndex({ 'context.roomId': 1 });
 	}
 
 	async createGenesisEvent(origin, room) {
