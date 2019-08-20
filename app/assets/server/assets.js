@@ -490,6 +490,10 @@ WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res,
 
 	const format = req.url.replace(/.*\.([a-z]+)$/, '$1');
 
+	if (assets[params.asset] && Array.isArray(assets[params.asset].constraints.extensions) && !assets[params.asset].constraints.extensions.includes(format)) {
+		res.writeHead(403);
+		return res.end();
+	}
 	if (!file) {
 		const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
 		if (defaultUrl) {

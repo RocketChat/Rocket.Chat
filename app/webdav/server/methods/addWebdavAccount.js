@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { createClient } from 'webdav';
 
 import { settings } from '../../../settings';
 import { WebdavAccounts } from '../../../models';
+import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 Meteor.methods({
 	async addWebdavAccount(formData) {
@@ -23,18 +23,16 @@ Meteor.methods({
 			pass: String,
 		}));
 
-		const client = createClient(
+		const client = new WebdavClientAdapter(
 			formData.serverURL,
-			{
-				username: formData.username,
-				password: formData.pass,
-			}
+			formData.username,
+			formData.pass,
 		);
 
 		try {
 			await client.stat('/');
 		} catch (error) {
-			return { success: false, message: 'could-not-access-webdav', error };
+			return { success: false, message: 'could-not-access-webdav' };
 		}
 
 		const accountData = {
@@ -48,7 +46,7 @@ Meteor.methods({
 			WebdavAccounts.insert(accountData);
 			return { success: true, message: 'webdav-account-saved' };
 		} catch (error) {
-			return { success: false, message: error.code === 11000 ? 'duplicated-account' : 'unknown-write-error', error };
+			return { success: false, message: error.code === 11000 ? 'duplicated-account' : 'unknown-write-error' };
 		}
 	},
 });

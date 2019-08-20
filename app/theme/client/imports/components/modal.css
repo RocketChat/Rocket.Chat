@@ -58,7 +58,7 @@
 	&__header {
 		display: flex;
 		flex-direction: row;
-		flex: 0 0;
+		flex: 0 0 auto;
 
 		margin-bottom: -16px;
 		padding: 16px;
@@ -133,7 +133,7 @@
 	&__footer {
 		display: flex;
 
-		flex: 0 0;
+		flex: 0 0 auto;
 
 		padding: 16px;
 
