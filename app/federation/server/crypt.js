@@ -35,6 +35,10 @@ class Crypt {
 	}
 
 	encrypt(data, peerKey) {
+		if (!data) {
+			return data;
+		}
+
 		// Encrypt with the peer's public key
 		data = FederationKeys.loadKey(peerKey, 'public').encrypt(data);
 

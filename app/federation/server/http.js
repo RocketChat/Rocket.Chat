@@ -38,12 +38,12 @@ class HTTP {
 	request(method, url, body, headers, peerKey = null) {
 		let data = null;
 
-		if (method === 'POST' || method === 'PUT') {
+		if ((method === 'POST' || method === 'PUT') && body) {
 			data = EJSON.toJSONValue(body);
-		}
 
-		if (peerKey) {
-			data = Federation.crypt.encrypt(data, peerKey);
+			if (peerKey) {
+				data = Federation.crypt.encrypt(data, peerKey);
+			}
 		}
 
 		logger.http.debug(`[${ method }] ${ url }`);

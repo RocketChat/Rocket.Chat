@@ -28,15 +28,22 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 				break;
 		}
 
-		// Get the oldest event from the latestEventIds
-		const oldestEvent = EventsModel.findOne({ _id: { $in: latestEventIds } }, { $sort: { timestamp: 1 } });
+		let missingEvents = [];
 
-		if (!oldestEvent) {
-			return;
+		if (latestEventIds.length) {
+			// Get the oldest event from the latestEventIds
+			const oldestEvent = EventsModel.findOne({ _id: { $in: latestEventIds } }, { $sort: { timestamp: 1 } });
+
+			if (!oldestEvent) {
+				return;
+			}
+
+			// Get all the missing events on this context, after the oldest one
+			missingEvents = EventsModel.find({ _id: { $nin: latestEventIds }, context: contextQuery, timestamp: { $gte: oldestEvent.timestamp } }, { sort: { timestamp: 1 } }).fetch();
+		} else {
+			// If there are no latest events, send all of them
+			missingEvents = EventsModel.find({ context: contextQuery }, { sort: { timestamp: 1 } }).fetch();
 		}
-
-		// Get all the missing events on this context, after the oldest one
-		const missingEvents = EventsModel.find({ _id: { $nin: latestEventIds }, context: contextQuery, timestamp: { $gte: oldestEvent.timestamp } }, { sort: { timestamp: 1 } }).fetch();
 
 		// Dispatch all the events, on the same request
 		Federation.client.dispatchEvents([fromDomain], missingEvents);
