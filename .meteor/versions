@@ -62,7 +62,6 @@ jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
 jparker:gravatar@0.5.1
 jquery@1.11.11
-juliancwirko:postcss@2.0.3
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.12.1
 keepnox:perfect-scrollbar@0.6.8
@@ -84,7 +83,6 @@ meteor-base@1.4.0
 meteor-developer-oauth@1.2.1
 meteorhacks:inject-initial@1.0.4
 meteorspark:util@0.2.0
-minifier-css@1.4.2
 minifier-js@2.4.1
 minimongo@1.4.5
 mizzao:autocomplete@0.5.1
@@ -144,7 +142,6 @@ templating@1.3.2
 templating-compiler@1.3.3
 templating-runtime@1.3.2
 templating-tools@1.1.2
-tmeasday:check-npm-versions@0.3.2
 todda00:friendly-slugs@0.6.0
 tracker@1.2.0
 twitter-oauth@1.2.0
