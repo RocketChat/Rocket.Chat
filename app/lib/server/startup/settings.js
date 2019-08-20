@@ -2755,7 +2755,6 @@ settings.addGroup('Rate Limiter', function() {
 settings.addGroup('Alexa', function() {
 	this.add('Register_Alexa_Enable_Server', false, {
 		type: 'boolean',
-		public: true,
 	});
 	this.add('Register_Alexa_Enable_Server_Proxy_URL', '', {
 		type: 'string',

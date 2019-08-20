@@ -5,7 +5,6 @@ import { settings } from '../../app/settings';
 
 Meteor.methods({
 	registerAlexaUser(serverurl, servername, userid, token) {
-		this.unblock();
 		const apiUrl = settings.get('Register_Alexa_Enable_Server_Proxy_URL');
 		const body = { serverurl, servername, userid, token };
 		try {
