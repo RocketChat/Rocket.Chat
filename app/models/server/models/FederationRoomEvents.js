@@ -11,12 +11,16 @@ class FederationRoomEventsModel extends FederationEventsModel {
 		return super.createGenesisEvent(origin, contextQuery(room._id), { contextType: type, room });
 	}
 
+	async createDeleteRoomEvent(origin, roomId) {
+		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_DELETE, { roomId });
+	}
+
 	async createAddUserEvent(origin, roomId, user, subscription) {
 		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_ADD_USER, { user, subscription });
 	}
 
 	async createRemoveUserEvent(origin, roomId, user) {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_REMOVE_USER, { user });
+		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_REMOVE_USER, { roomId, user });
 	}
 
 	async createMessageEvent(origin, roomId, message) {
@@ -33,6 +37,10 @@ class FederationRoomEventsModel extends FederationEventsModel {
 		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_EDIT_MESSAGE, { message });
 	}
 
+	async createDeleteMessageEvent(origin, roomId, messageId) {
+		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_DELETE_MESSAGE, { roomId, messageId });
+	}
+
 	async createSetMessageReactionEvent(origin, roomId, messageId, username, reaction) {
 		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_SET_MESSAGE_REACTION, { roomId, messageId, username, reaction });
 	}
@@ -41,12 +49,12 @@ class FederationRoomEventsModel extends FederationEventsModel {
 		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_UNSET_MESSAGE_REACTION, { roomId, messageId, username, reaction });
 	}
 
-	async createDeleteMessageEvent(origin, roomId, messageId) {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_DELETE_MESSAGE, { roomId, messageId });
+	async createMuteUserEvent(origin, roomId, user) {
+		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_MUTE_USER, { roomId, user });
 	}
 
-	async createDeleteRoomEvent(origin, roomId) {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_DELETE, { roomId });
+	async createUnmuteUserEvent(origin, roomId, user) {
+		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_UNMUTE_USER, { roomId, user });
 	}
 
 	async removeRoomEvents(roomId) {

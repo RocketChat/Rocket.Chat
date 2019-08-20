@@ -19,6 +19,24 @@ const denormalizeRoom = (resource) => {
 		const [username, userDomain] = resource.u.username.split('@');
 
 		resource.u.username = userDomain === Federation.domain ? username : resource.u.username;
+
+		// Denormalize muted users
+		if (resource.muted) {
+			resource.muted = resource.muted.map((u) => {
+				const [username, domain] = u.split('@');
+
+				return domain === Federation.domain ? username : u;
+			});
+		}
+
+		// Denormalize unmuted users
+		if (resource.unmuted) {
+			resource.unmuted = resource.unmuted.map((u) => {
+				const [username, domain] = u.split('@');
+
+				return domain === Federation.unmuted ? username : u;
+			});
+		}
 	}
 
 	return resource;
@@ -36,6 +54,9 @@ const normalizeRoom = (resource, users) => {
 		// Get the domains of the usernames
 		domains = resource.usernames.map((u) => u.split('@')[1]);
 	} else {
+		// Ensure private
+		resource.t = 'p';
+
 		// Normalize room name
 		resource.name = resource.name.indexOf('@') === -1 ? `${ resource.name }@${ Federation.domain }` : resource.name;
 
@@ -44,6 +65,16 @@ const normalizeRoom = (resource, users) => {
 
 		// Normalize the username
 		resource.u.username = resource.u.username.indexOf('@') === -1 ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
+
+		// Normalize the muted users
+		if (resource.muted) {
+			resource.muted = resource.muted.map((u) => (u.indexOf('@') === -1 ? `${ u }@${ Federation.domain }` : u));
+		}
+
+		// Normalize the unmuted users
+		if (resource.unmuted) {
+			resource.unmuted = resource.unmuted.map((u) => (u.indexOf('@') === -1 ? `${ u }@${ Federation.domain }` : u));
+		}
 	}
 
 	// Federation

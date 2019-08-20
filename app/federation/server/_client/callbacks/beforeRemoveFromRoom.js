@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../callbacks';
-import { FederationRoomEvents, Subscriptions } from '../../../../models/server';
+import { FederationRoomEvents } from '../../../../models/server';
 import getFederatedRoomData from './helpers/getFederatedRoomData';
 import { logger } from '../../logger';
 import { normalizers } from '../../normalizers';

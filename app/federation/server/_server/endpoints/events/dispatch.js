@@ -104,10 +104,10 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 
 					// If the event was successfully added, handle the event locally
 					if (eventResult.success) {
-						const { data: { user } } = event;
+						const { data: { roomId, user } } = event;
 
 						// Remove the user's subscription
-						Subscriptions.removeByRoomIdAndUserId(event.context.roomId, user._id);
+						Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 					}
 					break;
 
@@ -279,6 +279,42 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 
 						// Remove all room events
 						await FederationRoomEvents.removeRoomEvents(roomId);
+					}
+					break;
+
+				//
+				// ROOM_MUTE_USER
+				//
+				case eventTypes.ROOM_MUTE_USER:
+					eventResult = await FederationRoomEvents.addEvent(event.context, event);
+
+					// If the event was successfully added, handle the event locally
+					if (eventResult.success) {
+						const { data: { roomId, user } } = event;
+
+						// Denormalize user
+						const denormalizedUser = normalizers.denormalizeUser(user);
+
+						// Mute user
+						Rooms.muteUsernameByRoomId(roomId, denormalizedUser.username);
+					}
+					break;
+
+				//
+				// ROOM_UNMUTE_USER
+				//
+				case eventTypes.ROOM_UNMUTE_USER:
+					eventResult = await FederationRoomEvents.addEvent(event.context, event);
+
+					// If the event was successfully added, handle the event locally
+					if (eventResult.success) {
+						const { data: { roomId, user } } = event;
+
+						// Denormalize user
+						const denormalizedUser = normalizers.denormalizeUser(user);
+
+						// Mute user
+						Rooms.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
 					}
 					break;
 
