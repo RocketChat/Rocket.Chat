@@ -38,6 +38,7 @@ export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 		logger.debug(`${ user.username } is in ${ ldapGroup } group.`);
 		return true;
 	}
+
 	return false;
 }
 
@@ -205,13 +206,17 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 	const syncUserRolesAutoRemove = settings.get('LDAP_Sync_User_Data_Groups_AutoRemove');
 	const syncUserRolesFieldMap = settings.get('LDAP_Sync_User_Data_GroupsMap').trim();
 
+	if (!syncUserRoles || !syncUserRolesFieldMap) {
+		return [];
+	}
+
 	const roles = Roles.find({}, {
 		fields: {
 			_updatedAt: 0,
 		},
 	}).fetch();
 
-	if (!syncUserRoles || !syncUserRolesFieldMap) {
+	if (!roles) {
 		return [];
 	}
 
@@ -223,24 +228,34 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 		logger.error(`Unexpected error : ${ err.message }`);
 		return [];
 	}
+	if (!fieldMap) {
+		return [];
+	}
 
 	const userRoles = [];
-	_.map(fieldMap, function(userField, ldapField) {
+
+	for (const ldapField in fieldMap) {
+		if (!fieldMap.hasOwnProperty(ldapField)) {
+			continue;
+		}
+
+		const userField = fieldMap[ldapField];
+
 		const [roleName] = userField.split(/\.(.+)/);
 		if (!_.find(roles, (el) => el._id === roleName)) {
 			logger.debug(`User Role doesn't exist: ${ roleName }`);
-			return;
+			continue;
 		}
 
-		logger.debug(`User role exists for mapping ${ roleName } -> ${ ldapField }`);
+		logger.debug(`User role exists for mapping ${ ldapField } -> ${ roleName }`);
 
 		if (isUserInLDAPGroup(ldap, ldapUser, user, ldapField)) {
 			userRoles.push(roleName);
-			return;
+			continue;
 		}
 
 		if (!syncUserRolesAutoRemove) {
-			return;
+			continue;
 		}
 
 		const del = Roles.removeUserRoles(user._id, roleName);
@@ -254,7 +269,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 				},
 			});
 		}
-	});
+	}
 
 	return userRoles;
 }
@@ -286,6 +301,10 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 		fieldMap = JSON.parse(syncUserRolesChannelFieldMap);
 	} catch (err) {
 		logger.error(`Unexpected error : ${ err.message }`);
+		return [];
+	}
+
+	if (!fieldMap) {
 		return [];
 	}
 
