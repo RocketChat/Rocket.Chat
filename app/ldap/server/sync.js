@@ -215,9 +215,16 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 		return [];
 	}
 
-	const userRoles = [];
+	let fieldMap;
 
-	const fieldMap = JSON.parse(syncUserRolesFieldMap);
+	try {
+		fieldMap = JSON.parse(syncUserRolesFieldMap);
+	} catch (err) {
+		logger.error(`Unexpected error : ${ err.message }`);
+		return [];
+	}
+
+	const userRoles = [];
 	_.map(fieldMap, function(userField, ldapField) {
 		const [roleName] = userField.split(/\.(.+)/);
 		if (!_.find(roles, (el) => el._id === roleName)) {
