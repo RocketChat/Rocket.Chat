@@ -3,7 +3,7 @@ import { adminEmail, adminPassword } from '../data/user';
 
 
 class SetupWizard extends Page {
-	get nextButton() { return browser.element('.SetupWizard .SetupWizard__continue'); }
+	get nextButton() { return browser.element('.SetupWizard .SetupWizard__Step--active .SetupWizard__continue'); }
 
 	get goToWorkspace() { return browser.element('.SetupWizard .SetupWizard__Epilogue__goToWorkspace'); }
 
