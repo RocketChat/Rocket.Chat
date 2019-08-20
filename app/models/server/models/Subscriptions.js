@@ -807,8 +807,8 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateFnameByRoomId(roomId, fname) {
-		const query = { rid: roomId };
+	updateFnameByRoomId(rid, fname) {
+		const query = { rid };
 
 		const update = {
 			$set: {
