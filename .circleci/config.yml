@@ -69,7 +69,7 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/node:8.11-stretch
-      - image: mongo:3.2
+      - image: mongo:3.4
 
     steps:
       - checkout
@@ -133,14 +133,6 @@ jobs:
           keys:
             - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
-      - restore_cache:
-          keys:
-            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-
-      - restore_cache:
-          keys:
-            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
-
       - run:
           name: Build Rocket.Chat
           environment:
@@ -178,16 +170,6 @@ jobs:
             - ./.meteor/local
 
       - save_cache:
-          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/node_modules
-
-      - save_cache:
-          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/.meteor/local
-
-      - save_cache:
           key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
           paths:
             - ~/.meteor
@@ -201,13 +183,6 @@ jobs:
       - store_artifacts:
           path: /tmp/build
 
-
-  test-with-oplog-mongo-3-2:
-    <<: *test-with-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.2
-        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
   test-with-oplog-mongo-3-4:
     <<: *test-with-oplog
@@ -260,6 +235,8 @@ jobs:
 
             export PATH=~/.local/bin:$PATH
             export CIRCLE_TAG=${CIRCLE_TAG:=}
+
+            aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
 
             source .circleci/setartname.sh
             source .circleci/setdeploydir.sh
@@ -397,15 +374,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
-
-      - restore_cache:
-          keys:
-            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-
-      - restore_cache:
-          keys:
-            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }
 
       - run:
           name: Build Rocket.Chat
@@ -470,13 +439,13 @@ workflows:
           filters:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-2: &test-mongo
+      - test-with-oplog-mongo-3-4: &test-mongo
           requires:
             - build
           filters:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-4: &test-mongo-no-pr
+      - test-with-oplog-mongo-3-6: &test-mongo-no-pr
           requires:
             - build
           filters:
@@ -484,11 +453,9 @@ workflows:
               only: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-6: *test-mongo-no-pr
       - test-with-oplog-mongo-4-0: *test-mongo
       - deploy:
           requires:
-            - test-with-oplog-mongo-3-2
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
@@ -530,4 +497,3 @@ workflows:
               ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-
