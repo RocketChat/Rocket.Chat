@@ -32,12 +32,12 @@ import { emoji } from '../../../emoji/client';
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
 		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-		value ? localStorage.setItem(key, value) : localStorage.removeItem(key);
+		value ? Meteor._localStorage.setItem(key, value) : Meteor._localStorage.removeItem(key);
 	}, 1000),
 
 	restoreValue: ({ rid, tmid }) => {
 		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-		return localStorage.getItem(key);
+		return Meteor._localStorage.getItem(key);
 	},
 
 	restore: ({ rid, tmid }, input) => {
@@ -57,9 +57,9 @@ const messageBoxState = {
 	},
 
 	purgeAll: () => {
-		Object.keys(localStorage)
+		Object.keys(Meteor._localStorage)
 			.filter((key) => key.indexOf('messagebox_') === 0)
-			.forEach((key) => localStorage.removeItem(key));
+			.forEach((key) => Meteor._localStorage.removeItem(key));
 	},
 };
 

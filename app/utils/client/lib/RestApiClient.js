@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 export const APIClient = {
@@ -49,8 +50,8 @@ export const APIClient = {
 				url: `${ document.baseURI }api/${ endpoint }${ query }`,
 				headers: {
 					'Content-Type': 'application/json',
-					'X-User-Id': localStorage[Accounts.USER_ID_KEY],
-					'X-Auth-Token': localStorage[Accounts.LOGIN_TOKEN_KEY],
+					'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
+					'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
 				},
 				data: JSON.stringify(body),
 				success: function _rlGetSuccess(result) {
@@ -76,8 +77,8 @@ export const APIClient = {
 			jQuery.ajax({
 				url: `${ document.baseURI }api/${ endpoint }${ query }`,
 				headers: {
-					'X-User-Id': localStorage[Accounts.USER_ID_KEY],
-					'X-Auth-Token': localStorage[Accounts.LOGIN_TOKEN_KEY],
+					'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
+					'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
 				},
 				data: formData,
 				processData: false,
