@@ -40,7 +40,7 @@ Meteor.startup(() => {
 
 		const filter = {
 			rid: room._id,
-			...departmentIds && { department: { $in: departmentIds } },
+			...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } },
 		};
 
 		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });
