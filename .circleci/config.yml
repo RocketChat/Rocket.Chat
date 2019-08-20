@@ -149,7 +149,7 @@ jobs:
               meteor reset;
             fi
 
-            meteor build --server-only --directory /tmp/build-test
+            for i in $(seq 1 3); do meteor build --server-only --directory /tmp/build-test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
             #export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
             #if [[ -z $CIRCLE_PR_NUMBER ]]; then
