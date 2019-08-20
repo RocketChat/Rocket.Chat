@@ -13,7 +13,11 @@ Meteor.methods({
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter((record) => record._updatedAt > updatedAt),
-				remove: Permissions.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				remove: Permissions.trashFindDeletedAfter(
+					updatedAt,
+					{},
+					{ fields: { _id: 1, _deletedAt: 1 } }
+				).fetch(),
 			};
 		}
 
