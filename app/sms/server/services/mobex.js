@@ -16,8 +16,6 @@ class Mobex {
 	parse(data) {
 		let numMedia = 0;
 
-		console.log('Mobex parse: ', data);
-
 		const returnData = {
 			from: data.from,
 			to: data.to,
