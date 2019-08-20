@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
 import { API } from '../../../../../api/server';
@@ -5,7 +6,7 @@ import { Federation } from '../../../federation';
 import { logger } from '../../../logger';
 import { contextDefinitions, eventTypes } from '../../../../../models/server/models/FederationEvents';
 import {
-	FederationRoomEvents,
+	FederationRoomEvents, FederationServers,
 	Messages,
 	Rooms,
 	Subscriptions,
@@ -14,6 +15,7 @@ import {
 import { normalizers } from '../../../normalizers';
 import { deleteRoom } from '../../../../../lib/server/functions';
 import { Notifications } from '../../../../../notifications/server';
+import { FileUpload } from '../../../../../file-upload';
 
 API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 	async post() {
@@ -81,23 +83,23 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 				// ROOM_DELETE
 				//
 				case eventTypes.ROOM_DELETE:
-					eventResult = await FederationRoomEvents.addEvent(event.context, event);
+					const { data: { roomId } } = event;
 
-					// If the event was successfully added, handle the event locally
-					if (eventResult.success) {
-						const { data: { roomId } } = event;
+					// Check if room exists
+					const persistedRoom = Rooms.findOne({ _id: roomId });
 
-						// Check if room exists
-						const persistedRoom = Rooms.findOne({ _id: roomId });
-
-						if (persistedRoom) {
-							// Delete the room
-							deleteRoom(roomId);
-						}
-
-						// Remove all room events
-						await FederationRoomEvents.removeRoomEvents(roomId);
+					if (persistedRoom) {
+						// Delete the room
+						deleteRoom(roomId);
 					}
+
+					// Remove all room events
+					await FederationRoomEvents.removeRoomEvents(roomId);
+
+					eventResult = {
+						success: true,
+					};
+
 					break;
 
 				//
@@ -138,6 +140,9 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 							Subscriptions.insert(denormalizedSubscription);
 						}
 
+						// Refresh the servers list
+						FederationServers.refreshServers();
+
 						// Update the room's federation property
 						Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
 					}
@@ -155,6 +160,9 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 
 						// Remove the user's subscription
 						Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+
+						// Refresh the servers list
+						FederationServers.refreshServers();
 
 						// Update the room's federation property
 						Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
@@ -183,6 +191,37 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 
 							// Denormalize user
 							const denormalizedMessage = normalizers.denormalizeMessage(message);
+
+							// Is there a file?
+							if (denormalizedMessage.file) {
+								const fileStore = FileUpload.getStore('Uploads');
+
+								const { federation: { origin } } = denormalizedMessage;
+
+								const { upload, buffer } = Federation.client.getUpload(origin, denormalizedMessage.file._id);
+
+								const oldUploadId = upload._id;
+
+								// Normalize upload
+								delete upload._id;
+								upload.rid = denormalizedMessage.rid;
+								upload.userId = denormalizedMessage.u._id;
+								upload.federation = {
+									_id: denormalizedMessage.file._id,
+									origin,
+								};
+
+								Meteor.runAsUser(upload.userId, () => Meteor.wrapAsync(fileStore.insert.bind(fileStore))(upload, buffer));
+
+								// Update the message's file
+								denormalizedMessage.file._id = upload._id;
+
+								// Update the message's attachments
+								for (const attachment of denormalizedMessage.attachments) {
+									attachment.title_link = attachment.title_link.replace(oldUploadId, upload._id);
+									attachment.image_url = attachment.image_url.replace(oldUploadId, upload._id);
+								}
+							}
 
 							// Create the message
 							Messages.insert(denormalizedMessage);

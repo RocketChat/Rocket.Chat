@@ -36,7 +36,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 			//
 
 			// Get the users domains
-			const domainsAfterAdd = users.map((u) => u.federation.domain);
+			const domainsAfterAdd = users.map((u) => u.federation.origin);
 
 			//
 			// Create the user add event

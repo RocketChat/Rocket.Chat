@@ -18,7 +18,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 	try {
 		// Get the domains after removal
-		const domainsAfterRemoval = users.map((u) => u.federation.domain);
+		const domainsAfterRemoval = users.map((u) => u.federation.origin);
 
 		//
 		// Normalize the room's federation status
@@ -27,7 +27,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		usersBeforeRemoval.push(removedUser);
 
 		// Get the users domains
-		const domainsBeforeRemoval = usersBeforeRemoval.map((u) => u.federation.domain);
+		const domainsBeforeRemoval = usersBeforeRemoval.map((u) => u.federation.origin);
 
 		//
 		// Create the user remove event

@@ -21,7 +21,7 @@ const denormalizeAllUsers = (resources) => resources.map(denormalizeUser);
 
 const normalizeUser = (resource) => {
 	// Get only what we need, non-sensitive data
-	resource = _.pick(resource, '_id', 'username', 'type', 'emails', 'name', 'federation', 'createdAt', '_updatedAt');
+	resource = _.pick(resource, '_id', 'username', 'type', 'emails', 'name', 'federation', 'isRemote', 'createdAt', '_updatedAt');
 
 	const email = resource.emails[0].address;
 
@@ -36,14 +36,16 @@ const normalizeUser = (resource) => {
 
 	// Federation
 	resource.federation = resource.federation || {
-		domain: Federation.domain,
+		origin: Federation.domain,
 		originalInfo: {
 			email,
 		},
 	};
 
+	resource.isRemote = resource.federation.origin !== Federation.domain;
+
 	// Persist the normalization
-	Users.update({ _id: resource._id }, { $set: { federation: resource.federation } });
+	Users.update({ _id: resource._id }, { $set: { isRemote: resource.isRemote, federation: resource.federation } });
 
 	return resource;
 };

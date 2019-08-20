@@ -84,6 +84,12 @@ class Client {
 
 		Federation.http.requestToPeer('POST', domain, uri, { fromDomain, contextType, contextQuery, latestEventIds });
 	}
+
+	getUpload(domain, fileId) {
+		const { data: { upload, buffer } } = Federation.http.requestToPeer('GET', domain, `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
+
+		return { upload, buffer: Buffer.from(buffer) };
+	}
 }
 
 export const client = new Client();

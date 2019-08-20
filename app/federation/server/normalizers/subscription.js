@@ -25,7 +25,7 @@ const normalizeSubscription = (resource) => {
 
 	// Federation
 	resource.federation = resource.federation || {
-		origin: resource.federation ? resource.federation.origin : Federation.domain, // The origin of this resource, where it was created
+		origin: Federation.domain, // The origin of this resource, where it was created
 	};
 
 	return resource;

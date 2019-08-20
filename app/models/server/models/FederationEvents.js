@@ -62,9 +62,9 @@ export class FederationEventsModel extends Base {
 				.find({ context: contextQuery, hasChildren: false })
 				.toArray();
 
-			if (!previousEvents.length) {
-				throw new Error('Could not create event, the context does not exist');
-			}
+			// if (!previousEvents.length) {
+			// 	throw new Error('Could not create event, the context does not exist');
+			// }
 
 			previousEventsIds = previousEvents.map((e) => e._id);
 		}
@@ -81,7 +81,7 @@ export class FederationEventsModel extends Base {
 
 		event._id = this.getEventHash(contextQuery, event);
 
-		this.insert(event);
+		// this.insert(event);
 
 		// Clear the "hasChildren" of those events
 		await this.update({ _id: { $in: previousEventsIds } }, { $unset: { hasChildren: '' } }, { multi: 1 });

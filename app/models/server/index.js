@@ -39,7 +39,7 @@ export { AppsModel } from './models/apps-model';
 export { FederationDNSCache } from './models/FederationDNSCache';
 export { FederationRoomEvents } from './models/FederationRoomEvents';
 export { FederationKeys } from './models/FederationKeys';
-export { FederationPeers } from './models/FederationPeers';
+export { FederationServers } from './models/FederationServers';
 
 export {
 	Base,

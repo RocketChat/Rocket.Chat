@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../models';
+import { FederationServers, Users } from '../../../models';
 
 import { Federation } from '..';
 
@@ -21,8 +21,8 @@ export function addUser(query) {
 		// Create the local user
 		userId = Users.create(user);
 
-		// // Refresh the peers list
-		// FederationPeers.refreshPeers();
+		// Refresh the servers list
+		FederationServers.refreshServers();
 	} catch (err) {
 		// This might get called twice by the createDirectMessage method
 		// so we need to handle the situation accordingly

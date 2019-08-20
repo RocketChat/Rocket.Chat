@@ -61,7 +61,7 @@ const normalizeRoom = (resource, users) => {
 		resource.name = resource.name.indexOf('@') === -1 ? `${ resource.name }@${ Federation.domain }` : resource.name;
 
 		// Get the users domains
-		domains = users.map((u) => u.federation.domain);
+		domains = users.map((u) => u.federation.origin);
 
 		// Normalize the username
 		resource.u.username = resource.u.username.indexOf('@') === -1 ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
@@ -79,7 +79,7 @@ const normalizeRoom = (resource, users) => {
 
 	// Federation
 	resource.federation = resource.federation || {
-		origin: resource.federation ? resource.federation.origin : Federation.domain, // The origin of this resource, where it was created
+		origin: Federation.domain, // The origin of this resource, where it was created
 		domains, // The domains where this room exist (or will exist)
 	};
 
