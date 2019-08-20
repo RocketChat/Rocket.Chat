@@ -7,7 +7,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import mem from 'mem';
 
-import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
+import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 
 import _ from 'underscore';
 
@@ -97,7 +97,6 @@ export const openRoom = function(type, name) {
 		fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
 		Session.set('editRoomTitle', false);
-		setTimeout(() => readMessage.readNow(), 2000);
 		// KonchatNotification.removeRoomNotification(params._id)
 		// update user's room subscription
 		const sub = ChatSubscription.findOne({ rid: room._id });

@@ -39,6 +39,10 @@ settings.get('FileUpload_MaxFileSize', function(key, value) {
 export const FileUpload = {
 	handlers: {},
 
+	getPath(path = '') {
+		return `/file-upload/${ path }`;
+	},
+
 	configureUploadsStore(store, name, options) {
 		const type = name.split(':').pop();
 		const stores = UploadFS.getStores();
@@ -370,6 +374,20 @@ export const FileUpload = {
 		}
 
 		return false;
+	},
+
+	redirectToFile(fileUrl, req, res) {
+		res.removeHeader('Content-Length');
+		res.removeHeader('Cache-Control');
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
+		res.end();
+	},
+
+	proxyFile(fileName, fileUrl, forceDownload, request, req, res) {
+		res.setHeader('Content-Disposition', `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(fileName) }"`);
+
+		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 	},
 };
 
