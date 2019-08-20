@@ -1,23 +1,24 @@
 import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
 import getFederatedRoomData from './helpers/getFederatedRoomData';
+import getFederatedUserData from './helpers/getFederatedUserData';
 import { FederationRoomEvents, Subscriptions } from '../../../../models/server';
 import { Federation } from '../../federation';
 import { normalizers } from '../../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
 
 async function afterAddedToRoom(involvedUsers, room) {
-	const { user } = involvedUsers;
+	const { user: addedUser } = involvedUsers;
 
 	// If there are not federated users on this room, ignore it
 	const { hasFederatedUser, users, subscriptions } = getFederatedRoomData(room);
 
-	if (!hasFederatedUser) { return; }
+	if (!hasFederatedUser && !getFederatedUserData(addedUser).isFederated) { return; }
 
 	logger.client.debug(`afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
 	// Load the subscription
-	const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(room._id, user._id));
+	const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id));
 
 	try {
 		//
@@ -31,16 +32,23 @@ async function afterAddedToRoom(involvedUsers, room) {
 			await doAfterCreateRoom(room, users, subscriptions);
 		} else {
 			//
+			// Normalize the room's federation status
+			//
+
+			// Get the users domains
+			const domainsAfterAdd = users.map((u) => u.federation.domain);
+
+			//
 			// Create the user add event
 			//
 
-			const normalizedSourceUser = normalizers.normalizeUser(user);
+			const normalizedSourceUser = normalizers.normalizeUser(addedUser);
 			const normalizedSourceSubscription = normalizers.normalizeSubscription(subscription);
 
-			const addUserEvent = await FederationRoomEvents.createAddUserEvent(Federation.domain, room._id, normalizedSourceUser, normalizedSourceSubscription);
+			const addUserEvent = await FederationRoomEvents.createAddUserEvent(Federation.domain, room._id, normalizedSourceUser, normalizedSourceSubscription, domainsAfterAdd);
 
 			// Dispatch the events
-			Federation.client.dispatchEvent(room.federation.domains, addUserEvent);
+			Federation.client.dispatchEvent(domainsAfterAdd, addUserEvent);
 		}
 	} catch (err) {
 		// Remove the user subscription from the room

@@ -14,7 +14,7 @@ import './callbacks/afterSetReaction';
 import './callbacks/afterUnmuteUser';
 import './callbacks/afterUnsetReaction';
 import './callbacks/beforeDeleteRoom';
-import './callbacks/beforeRemoveFromRoom';
+import './callbacks/afterRemoveFromRoom';
 
 class Client {
 	searchUsers(query) {

@@ -87,7 +87,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 
 					// If the event was successfully added, handle the event locally
 					if (eventResult.success) {
-						const { data: { user, subscription } } = event;
+						const { data: { roomId, user, subscription, domainsAfterAdd } } = event;
 
 						// Check if user exists
 						const persistedUser = Users.findOne({ _id: user._id });
@@ -116,6 +116,9 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 							// Create the subscription
 							Subscriptions.insert(denormalizedSubscription);
 						}
+
+						// Update the room's federation property
+						Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
 					}
 					break;
 
