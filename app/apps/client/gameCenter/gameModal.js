@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../ui-utils';
 import { randomString } from '../utils';
@@ -11,6 +12,8 @@ import './gameModal.html';
 const SESSION_ID_LENGTH = 80;
 let sessionId;
 
+Template.GameModal.currentExternalComponent = new ReactiveVar();
+
 Template.GameModal.events({
 	'click .rc-game.close'() {
 		modal.cancel();
@@ -18,10 +21,12 @@ Template.GameModal.events({
 });
 
 Template.GameModal.onCreated(function() {
-	const { data: { options } } = Template.instance();
+	const { data } = Template.instance();
+	const { options } = data;
 	const { username, _id } = Meteor.user();
 	const avatarUrl = `${ document.baseURI }${ getUserAvatarURL(username) }`;
 
+	Template.GameModal.currentExternalComponent = data;
 	sessionId = randomString(SESSION_ID_LENGTH);
 
 	if (options.webhooks) {
@@ -49,6 +54,8 @@ Template.GameModal.onDestroyed(function() {
 	const { data: { options } } = Template.instance();
 	const { username, _id } = Meteor.user();
 	const avatarUrl = `${ document.baseURI }${ getUserAvatarURL(username) }`;
+
+	Template.GameModal.currentExternalComponent = null;
 
 	if (options.webhooks) {
 		const { sessionEnds = null } = options.webhooks;
