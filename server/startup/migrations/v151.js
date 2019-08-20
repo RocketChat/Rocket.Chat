@@ -1,66 +1,14 @@
-import { Migrations } from '../../../app/migrations/server';
-import { Settings, Rooms } from '../../../app/models/server';
-import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
-import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
 
 Migrations.add({
 	version: 151,
 	up() {
-		const oldSetting = Settings.findOne({ _id: 'Livechat_guest_pool_with_no_agents' });
-		if (oldSetting) {
-			const { _id } = oldSetting;
-
-			delete oldSetting._id;
-			delete oldSetting.enableQuery;
-			delete oldSetting.ts;
-			delete oldSetting._updatedAt;
-
-			Settings.remove({ _id });
-
-			Settings.upsert({ _id: 'Livechat_accept_chats_with_no_agents' }, oldSetting);
-		}
-
-		// Create Livechat inquiries for each open Livechat room
-		Rooms.findLivechat({ open: true }).forEach((room) => {
-			const inquiry = LivechatInquiry.findOneByRoomId(room._id);
-			if (!inquiry) {
-				try {
-					const { _id, fname, v } = room;
-					createLivechatInquiry(_id, fname, v, { msg: '' }, 'taken');
-				} catch (error) {
-					console.error(error);
-				}
+		const setting = Settings.findOne({ _id: 'Layout_Sidenav_Footer' });
+		if (setting && setting.value) {
+			if (setting.value === '<a href="/home"><img src="assets/logo"/></a>') {
+				Settings.update({ _id: 'Layout_Sidenav_Footer' }, { $set: { value: '<a href="/home"><img src="assets/logo.png"/></a>' } });
 			}
-		});
-
-		// There was a bug when closing livechat Rooms from the Widget side, the `ts` field was missing
-		// when passing the Room object through the Livechat.closeRoom method
-		// The `chatDuration` metric will be used to estimate the wait time in the new waiting queue feature
-		Rooms.find({
-			t: 'l',
-			closedAt: { $exists: true },
-			metrics: { $exists: true },
-			'metrics.chatDuration': NaN,
-		}).forEach((room) => {
-			Rooms.update(
-				room._id,
-				{
-					$set: {
-						'metrics.chatDuration': (room.closedAt - room.ts) / 1000,
-					},
-				}
-			);
-		});
-
-		// Change the status of the current open inquiries from "open" to "queued"
-		LivechatInquiry.update(
-			{ status: 'open' },
-			{
-				$set: {
-					status: 'queued',
-				},
-			},
-			{ multi: true }
-		);
+		}
 	},
 });
