@@ -51,7 +51,10 @@ const setFieldValue = function(settingId, value, type, editor) {
 
 Template.admin.onCreated(function() {
 	if (settings.cachedCollectionPrivate == null) {
-		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
+		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection({
+			name: 'private-settings',
+			eventType: 'onLogged',
+		});
 		settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
 		settings.cachedCollectionPrivate.init();
 	}

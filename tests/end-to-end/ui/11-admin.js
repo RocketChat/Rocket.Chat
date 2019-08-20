@@ -19,6 +19,7 @@ describe('[Administration]', () => {
 
 	describe('[Admin View]', () => {
 		before(() => {
+			sideNav.sidebarMenu.waitForVisible(5000);
 			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
