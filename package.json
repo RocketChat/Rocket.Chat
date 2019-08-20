@@ -230,6 +230,7 @@
 		"underscore.string": "^3.3.5",
 		"url-polyfill": "^1.1.5",
 		"uuid": "^3.3.2",
+		"vis": "^4.21.0",
 		"webdav": "^2.0.0",
 		"wolfy87-eventemitter": "^5.2.5",
 		"xml-crypto": "^1.0.2",
