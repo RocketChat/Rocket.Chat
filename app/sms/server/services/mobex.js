@@ -54,14 +54,6 @@ class Mobex {
 	}
 
 	send(fromNumber, toNumber, message, username = null, password = null, address = null) {
-		console.log('Mobex send fromNumber', fromNumber);
-		console.log('Mobex send toNumber', toNumber);
-		console.log('Mobex send message', message);
-		console.log('Mobex send username', username);
-		console.log('Mobex send address', address);
-		console.log('Mobex send password', password);
-		console.log('Mobex send from', this.from);
-
 		let currentFrom = this.from;
 		let currentUsername = this.username;
 		let currentAddress = this.address;
@@ -78,8 +70,6 @@ class Mobex {
 			currentAddress = address;
 		}
 
-		console.log('Mobex send currentFrom', currentFrom);
-
 		const strippedTo = toNumber.replace(/\D/g, '');
 		const result = {
 			isSuccess: false,
@@ -89,12 +79,10 @@ class Mobex {
 		try {
 			const response = HTTP.call('GET', `${ currentAddress }/send?username=${ currentUsername }&password=${ currentPassword }&to=${ strippedTo }&from=${ currentFrom }&content=${ message }`);
 			if (response.statusCode === 200) {
-				console.log('SMS Mobex response: ', response.content);
 				result.resultMsg = response.content;
 				result.isSuccess = true;
 			} else {
 				result.resultMsg = `Could not able to send SMS. Code:  ${ response.statusCode }`;
-				console.log('SMS Mobex response: ', response.statusCode);
 			}
 		} catch (e) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${ e }`;
@@ -105,19 +93,10 @@ class Mobex {
 	}
 
 	async sendBatch(fromNumber, toNumbersArr, message) {
-		console.log('Mobex send fromNumber', fromNumber);
-		console.log('Mobex send toNumbersArr', toNumbersArr);
-		console.log('Mobex send message', message);
-		console.log('Mobex send username', this.username);
-		console.log('Mobex send rest address', this.restAddress);
-		console.log('Mobex send password', this.password);
-		console.log('Mobex send from', this.from);
-
 		let currentFrom = this.from;
 		if (fromNumber) {
 			currentFrom = fromNumber;
 		}
-		console.log('Mobex send currentFrom', currentFrom);
 
 		const result = {
 			isSuccess: false,
@@ -159,7 +138,6 @@ class Mobex {
 	}
 
 	response(/* message */) {
-		console.log('Mobex response called');
 		return {
 			headers: {
 				'Content-Type': 'text/xml',
@@ -169,7 +147,6 @@ class Mobex {
 	}
 
 	error(error) {
-		console.error('Mobex error called', error);
 		let message = '';
 		if (error.reason) {
 			message = `<Message>${ error.reason }</Message>`;
