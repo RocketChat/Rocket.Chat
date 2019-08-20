@@ -1,10 +1,11 @@
 import { SHA256 } from 'meteor/sha';
-import { Meteor } from 'meteor/meteor';
 
 import { Base } from './_Base';
 
 export const eventTypes = {
+	// Global
 	GENESIS: 'genesis',
+	PING: 'ping',
 
 	// Room
 	ROOM_DELETE: 'room_delete',
@@ -83,10 +84,6 @@ export class FederationEventsModel extends Base {
 
 		// Clear the "hasChildren" of those events
 		await this.update({ _id: { $in: previousEventsIds } }, { $unset: { hasChildren: '' } }, { multi: 1 });
-
-		Meteor.defer(() => {
-			this.emit('eventCreated', event);
-		});
 
 		return event;
 	}

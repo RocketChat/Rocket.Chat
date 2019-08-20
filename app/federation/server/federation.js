@@ -14,6 +14,9 @@ import { client } from './_client';
 import { server } from './_server';
 import { crypt } from './crypt';
 import { FederationKeys } from '../../models/server';
+import { updateStatus, updateEnabled } from './settingsUpdater';
+
+import './methods/testSetup';
 
 // Export Federation object
 export const Federation = {
@@ -34,7 +37,6 @@ Federation.methods = {
 	addUser,
 	loadContextEvents,
 	searchUsers,
-	// ping,
 };
 
 // Create key pair if needed
@@ -45,7 +47,11 @@ if (!FederationKeys.getPublicKey()) {
 const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	const _enabled = settings.get('FEDERATION_Enabled');
 
-	if (!_enabled) { return; }
+	if (!_enabled) {
+		updateStatus('Disabled');
+
+		return;
+	}
 
 	Federation.domain = settings.get('FEDERATION_Domain').replace('@', '');
 	Federation.discoveryMethod = settings.get('FEDERATION_Discovery_Method');
@@ -53,6 +59,20 @@ const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	// Get the key pair
 	Federation.privateKey = FederationKeys.getPrivateKey();
 	Federation.publicKey = FederationKeys.getPublicKey();
+
+	if (Federation.discoveryMethod === 'hub') {
+		// Register with hub
+		try {
+			Federation.dns.registerWithHub(Federation.domain, settings.get('Site_Url'), FederationKeys.getPublicKeyString());
+		} catch (err) {
+			// Disable federation
+			updateEnabled(false);
+
+			updateStatus('Could not register with Hub');
+		}
+	} else {
+		updateStatus('Enabled');
+	}
 }), 150);
 
 function enableOrDisable() {
@@ -66,3 +86,4 @@ function enableOrDisable() {
 // Add settings listeners
 settings.get('FEDERATION_Enabled', enableOrDisable);
 settings.get('FEDERATION_Domain', updateSettings);
+settings.get('FEDERATION_Discovery_Method', updateSettings);

@@ -5,7 +5,7 @@ import { Federation } from '../../federation';
 import { normalizers } from '../../normalizers';
 import { deleteRoom } from '../../../../lib/server/functions';
 
-async function doAfterCreateRoom(room, users, subscriptions) {
+async function run(room, users, subscriptions) {
 	//
 	// Genesis
 	//
@@ -67,7 +67,7 @@ async function afterCreateRoom(roomOwner, room) {
 	logger.client.debug(`afterCreateRoom => roomOwner=${ JSON.stringify(roomOwner, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
 	try {
-		await doAfterCreateRoom(room, users, subscriptions);
+		await run(room, users, subscriptions);
 	} catch (err) {
 		Promise.await(deleteRoom(room._id));
 
@@ -77,6 +77,6 @@ async function afterCreateRoom(roomOwner, room) {
 	return room;
 }
 
-module.exports.doAfterCreateRoom = doAfterCreateRoom;
+export const doAfterCreateRoom = run;
 
 callbacks.add('afterCreateRoom', (roomOwner, room) => Promise.await(afterCreateRoom(roomOwner, room)), callbacks.priority.LOW, 'federation-after-create-room');

@@ -14,6 +14,7 @@ import {
 import { normalizers } from '../../../normalizers';
 import { deleteRoom } from '../../../../../lib/server/functions';
 import { Notifications } from '../../../../../notifications/server';
+import { pingListener } from '../../../methods/testSetup';
 
 API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 	async post() {
@@ -38,6 +39,15 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 			let eventResult;
 
 			switch (event.type) {
+				//
+				// PING
+				//
+				case eventTypes.PING:
+					eventResult = {
+						success: true,
+					};
+					break;
+
 				//
 				// GENESIS
 				//

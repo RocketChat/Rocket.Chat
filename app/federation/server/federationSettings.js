@@ -15,6 +15,12 @@ Meteor.startup(function() {
 			public: true,
 		});
 
+		this.add('FEDERATION_Status', 'Disabled', {
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'FEDERATION_Status',
+		});
+
 		this.add('FEDERATION_Domain', '', {
 			type: 'string',
 			i18nLabel: 'FEDERATION_Domain',
