@@ -47,6 +47,10 @@ class E2E {
 		});
 	}
 
+	get store() {
+		return Meteor._localStorage;
+	}
+
 	isEnabled() {
 		return this.enabled.get();
 	}
@@ -104,8 +108,8 @@ class E2E {
 		}
 
 		this.started = true;
-		let public_key = localStorage.getItem('public_key');
-		let private_key = localStorage.getItem('private_key');
+		let public_key = this.store.getItem('public_key');
+		let private_key = this.store.getItem('private_key');
 
 		await this.loadKeysFromDB();
 
@@ -143,12 +147,12 @@ class E2E {
 		// TODO: Split in 2 methods to persist keys
 		if (!this.db_public_key || !this.db_private_key) {
 			await call('e2e.setUserPublicAndPivateKeys', {
-				public_key: localStorage.getItem('public_key'),
-				private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), this.createRandomPassword()),
+				public_key: this.store.getItem('public_key'),
+				private_key: await this.encodePrivateKey(this.store.getItem('private_key'), this.createRandomPassword()),
 			});
 		}
 
-		const randomPassword = localStorage.getItem('e2e.randomPassword');
+		const randomPassword = this.store.getItem('e2e.randomPassword');
 		if (randomPassword) {
 			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text', {
 				postProcess: 'sprintf',
@@ -174,7 +178,7 @@ class E2E {
 						if (!confirm) {
 							return;
 						}
-						localStorage.removeItem('e2e.randomPassword');
+						this.store.removeItem('e2e.randomPassword');
 						this.closeAlert();
 					});
 				},
@@ -196,8 +200,8 @@ class E2E {
 			alerts.close();
 		}
 
-		localStorage.removeItem('public_key');
-		localStorage.removeItem('private_key');
+		this.store.removeItem('public_key');
+		this.store.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = null;
 		this.enabled.set(false);
@@ -233,12 +237,12 @@ class E2E {
 
 	async changePassword(newPassword) {
 		await call('e2e.setUserPublicAndPivateKeys', {
-			public_key: localStorage.getItem('public_key'),
-			private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), newPassword),
+			public_key: this.store.getItem('public_key'),
+			private_key: await this.encodePrivateKey(this.store.getItem('private_key'), newPassword),
 		});
 
-		if (localStorage.getItem('e2e.randomPassword')) {
-			localStorage.setItem('e2e.randomPassword', newPassword);
+		if (this.store.getItem('e2e.randomPassword')) {
+			this.store.setItem('e2e.randomPassword', newPassword);
 		}
 	}
 
@@ -254,12 +258,12 @@ class E2E {
 	}
 
 	async loadKeys({ public_key, private_key }) {
-		localStorage.setItem('public_key', public_key);
+		this.store.setItem('public_key', public_key);
 
 		try {
 			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
 
-			localStorage.setItem('private_key', private_key);
+			this.store.setItem('private_key', private_key);
 		} catch (error) {
 			return console.error('E2E -> Error importing private key: ', error);
 		}
@@ -278,7 +282,7 @@ class E2E {
 		try {
 			const publicKey = await exportJWKKey(key.publicKey);
 
-			localStorage.setItem('public_key', JSON.stringify(publicKey));
+			this.store.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			return console.error('E2E -> Error exporting public key: ', error);
 		}
@@ -286,7 +290,7 @@ class E2E {
 		try {
 			const privateKey = await exportJWKKey(key.privateKey);
 
-			localStorage.setItem('private_key', JSON.stringify(privateKey));
+			this.store.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
 			return console.error('E2E -> Error exporting private key: ', error);
 		}
@@ -300,7 +304,7 @@ class E2E {
 
 	createRandomPassword() {
 		const randomPassword = `${ Random.id(3) }-${ Random.id(3) }-${ Random.id(3) }`.toLowerCase();
-		localStorage.setItem('e2e.randomPassword', randomPassword);
+		this.store.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}
 
