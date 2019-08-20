@@ -289,7 +289,7 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 			channels = [channels];
 		}
 
-		_.each(channels, function(channel) {
+		for (const channel of channels) {
 			let room = Rooms.findOneByName(channel);
 			if (!room) {
 				room = createRoomForSync(channel);
@@ -302,7 +302,7 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 					removeUserFromRoom(room._id, user);
 				}
 			}
-		});
+		}
 	});
 
 	return userChannels;
@@ -342,7 +342,7 @@ export function syncUserData(user, ldapUser) {
 	}
 
 	if (settings.get('LDAP_Sync_User_Data_Groups') === true) {
-		_.each(userRoles, function(roleName) {
+		for (const roleName of userRoles) {
 			const add = Roles.addUserRoles(user._id, roleName);
 			if (settings.get('UI_DisplayRoles') && add) {
 				Notifications.notifyLogged('roles-change', {
@@ -355,14 +355,14 @@ export function syncUserData(user, ldapUser) {
 				});
 			}
 			logger.info('Synced user group', roleName, 'from LDAP for', user.username);
-		});
+		}
 	}
 
 	if (settings.get('LDAP_Sync_User_Data_Groups_AutoChannels') === true) {
-		_.each(userChannels, function(userChannel) {
+		for (const userChannel of userChannels) {
 			addUserToRoom(userChannel, user);
 			logger.info('Synced user channel', userChannel, 'from LDAP for', user.username);
-		});
+		}
 	}
 
 	if (user && user._id && settings.get('LDAP_Sync_User_Avatar') === true) {
