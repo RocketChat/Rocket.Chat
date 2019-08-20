@@ -225,11 +225,11 @@ button {
 		&::before {
 			display: none;
 		}
-	}
-}
 
-&::after {
-	top: -26px;
+		&::after {
+			top: -26px;
+		}
+	}
 }
 
 .hidden {
