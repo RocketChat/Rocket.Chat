@@ -1,4 +1,5 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { MessageTypes } from './MessageTypes';
@@ -14,8 +15,8 @@ export const Message = {
 				// Render message
 				return;
 			} if (messageType.message) {
-				if (!language && typeof localStorage !== 'undefined') {
-					language = localStorage.getItem('userLanguage');
+				if (!language) {
+					language = Meteor._localStorage.getItem('userLanguage');
 				}
 				const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
 				return TAPi18n.__(messageType.message, data, language);

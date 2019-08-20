@@ -112,11 +112,11 @@ Template.setupWizard.onCreated(async function() {
 	this.wizardSettings = new ReactiveVar([]);
 	this.allowStandaloneServer = new ReactiveVar(false);
 
-	if (localStorage.getItem('wizardFinal')) {
+	if (Meteor._localStorage.getItem('wizardFinal')) {
 		return FlowRouter.go('setup-wizard-final');
 	}
 
-	const jsonString = localStorage.getItem('wizard');
+	const jsonString = Meteor._localStorage.getItem('wizard');
 	const state = (jsonString && JSON.parse(jsonString)) || statusDefault;
 	this.state.set(state);
 
@@ -132,7 +132,7 @@ Template.setupWizard.onCreated(async function() {
 	this.autorun(() => {
 		const state = this.state.all();
 		state['registration-pass'] = '';
-		localStorage.setItem('wizard', JSON.stringify(state));
+		Meteor._localStorage.setItem('wizard', JSON.stringify(state));
 	});
 
 	this.autorun(async (c) => {
@@ -196,8 +196,8 @@ Template.setupWizard.events({
 			}
 			case 4: {
 				persistSettings(t.state.all(), () => {
-					localStorage.removeItem('wizard');
-					localStorage.setItem('wizardFinal', true);
+					Meteor._localStorage.removeItem('wizard');
+					Meteor._localStorage.setItem('wizardFinal', true);
 
 					if (t.state.get('registerServer')) {
 						Meteor.call('cloud:registerWorkspace', (error) => {
