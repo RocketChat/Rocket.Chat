@@ -169,19 +169,22 @@ export class APIClass extends Restivus {
 	}
 
 	enforceRateLimit(objectForRateLimitMatch, request, response) {
-		if (this.shouldVerifyRateLimit(objectForRateLimitMatch.route)) {
-			rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
-			const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
-			const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-			response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
-			response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
-			response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
-			if (!attemptResult.allowed) {
-				throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ timeToResetAttempsInSeconds } seconds before trying this endpoint again.`, {
-					timeToReset: attemptResult.timeToReset,
-					seconds: timeToResetAttempsInSeconds,
-				});
-			}
+		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route)) {
+			return;
+		}
+
+		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
+		const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
+		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
+		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
+		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
+
+		if (!attemptResult.allowed) {
+			throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ timeToResetAttempsInSeconds } seconds before trying this endpoint again.`, {
+				timeToReset: attemptResult.timeToReset,
+				seconds: timeToResetAttempsInSeconds,
+			});
 		}
 	}
 
