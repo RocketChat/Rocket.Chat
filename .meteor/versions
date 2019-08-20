@@ -120,7 +120,6 @@ raix:handlebar-helpers@0.2.5
 raix:ui-dropped-event@0.0.7
 random@1.1.0
 rate-limit@1.0.9
-react-template-helper@0.2.11
 reactive-dict@1.2.1
 reactive-var@1.0.11
 reload@1.2.0

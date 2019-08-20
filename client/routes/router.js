@@ -17,22 +17,38 @@ Blaze.registerHelper('pathFor', function(path, kw) {
 
 BlazeLayout.setRoot('body');
 
-const createTemplateForComponent = (
+const createTemplateForComponent = async (
 	component,
 	props = {},
 	// eslint-disable-next-line new-cap
-	renderContainerView = (childView) => HTML.DIV({}, childView)
+	renderContainerView = () => HTML.DIV()
 ) => {
+	const React = await import('react');
+	const ReactDOM = await import('react-dom');
+
 	const name = component.displayName || component.name;
 
 	if (!name) {
 		throw new Error('the component must have a name');
 	}
 
-	Template[name] = new Blaze.Template(name, () =>
-		// eslint-disable-next-line new-cap
-		renderContainerView(Blaze.With({ component, ...props }, () => Template.React.constructView()))
-	);
+	Template[name] = new Blaze.Template(name, renderContainerView);
+
+	Template[name].onRendered(() => {
+		Template.instance().autorun((computation) => {
+			if (computation.firstRun) {
+				Template.instance().container = Template.instance().firstNode;
+			}
+
+			ReactDOM.render(React.createElement(component, props), Template.instance().firstNode);
+		});
+	});
+
+	Template[name].onDestroyed(() => {
+		if (Template.instance().container) {
+			ReactDOM.unmountComponentAtNode(Template.instance().container);
+		}
+	});
 
 	return name;
 };
@@ -182,13 +198,13 @@ FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: async () => {
 		const { SetupWizard } = await import('../components/setupWizard/SetupWizard');
-		BlazeLayout.render(createTemplateForComponent(SetupWizard));
+		BlazeLayout.render(await createTemplateForComponent(SetupWizard));
 	},
 });
 
 FlowRouter.notFound = {
 	action: async () => {
 		const { PageNotFound } = await import('../components/pageNotFound/PageNotFound');
-		BlazeLayout.render(createTemplateForComponent(PageNotFound));
+		BlazeLayout.render(await createTemplateForComponent(PageNotFound));
 	},
 };
