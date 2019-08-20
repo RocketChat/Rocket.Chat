@@ -22,7 +22,7 @@ import { ChatSubscription, ChatMessage } from '../../../models';
 export const readMessage = new class extends EventEmitter {
 	constructor() {
 		super();
-		this.debug = true;
+		this.debug = false;
 		this.read = _.debounce((force) => this.readNow(force), 2000);
 		this.enable();
 	}
