@@ -7,7 +7,7 @@ import { logger } from './logger';
 import { Federation } from '.';
 
 const dnsResolveSRV = Meteor.wrapAsync(dnsResolver.resolveSrv);
-// const dnsResolveTXT = Meteor.wrapAsync(dnsResolver.resolveTxt);
+const dnsResolveTXT = Meteor.wrapAsync(dnsResolver.resolveTxt);
 
 class DNS {
 	search(peerDomain) {
@@ -45,9 +45,16 @@ class DNS {
 			throw Federation.errors.peerNotFoundUsingDNS('dns.search');
 		}
 
+		// Get the public key from the TXT record
+		const publicKeyTxtRecords = dnsResolveTXT(`rocketchat-public-key.${ peerDomain }`);
+
+		// Join the TXT record, that might be split
+		const publicKey = publicKeyTxtRecords[0].join('');
+
 		return {
-			peerDomain,
 			url: `${ protocol }://${ srvEntry.name }:${ srvEntry.port }`,
+			peerDomain,
+			publicKey,
 		};
 	}
 }

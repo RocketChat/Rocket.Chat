@@ -31,9 +31,23 @@ Meteor.startup(function() {
 			i18nDescription: 'FEDERATION_Public_Key_Description',
 		});
 
-		// this.add('FEDERATION_Test_Setup', 'FEDERATION_Test_Setup', {
-		// 	type: 'action',
-		// 	actionText: 'FEDERATION_Test_Setup',
-		// });
+		this.add('FEDERATION_Discovery_Method', 'dns', {
+			type: 'select',
+			values: [{
+				key: 'dns',
+				i18nLabel: 'DNS',
+			}, {
+				key: 'hub',
+				i18nLabel: 'Hub',
+			}],
+			i18nLabel: 'FEDERATION_Discovery_Method',
+			i18nDescription: 'FEDERATION_Discovery_Method_Description',
+			public: true,
+		});
+
+		this.add('FEDERATION_Test_Setup', 'FEDERATION_Test_Setup', {
+			type: 'action',
+			actionText: 'FEDERATION_Test_Setup',
+		});
 	});
 });

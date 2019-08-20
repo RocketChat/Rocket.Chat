@@ -11,7 +11,11 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 			return API.v1.failure('Not found');
 		}
 
-		const { fromDomain, contextType, contextQuery, latestEventIds } = EJSON.fromJSONValue(this.bodyParams);
+		//
+		// Decrypt the payload if needed
+		const payload = Federation.crypt.decryptIfNeeded(this.request, this.bodyParams);
+
+		const { fromDomain, contextType, contextQuery, latestEventIds } = EJSON.fromJSONValue(payload);
 
 		logger.server.debug(`federation.events.requestFromLatest => contextType=${ contextType } contextQuery=${ JSON.stringify(contextQuery, null, 2) } latestEventIds=${ latestEventIds.join(', ') }`);
 

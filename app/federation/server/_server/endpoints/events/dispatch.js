@@ -4,7 +4,13 @@ import { API } from '../../../../../api/server';
 import { Federation } from '../../../federation';
 import { logger } from '../../../logger';
 import { contextDefinitions, eventTypes } from '../../../../../models/server/models/FederationEvents';
-import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../../../models/server';
+import {
+	FederationRoomEvents,
+	Messages,
+	Rooms,
+	Subscriptions,
+	Users,
+} from '../../../../../models/server';
 import { normalizers } from '../../../normalizers';
 import { deleteRoom } from '../../../../../lib/server/functions';
 import { Notifications } from '../../../../../notifications/server';
@@ -15,7 +21,13 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 			return API.v1.failure('Not found');
 		}
 
-		const { events } = EJSON.fromJSONValue(this.bodyParams);
+		//
+		// Decrypt the payload if needed
+		const payload = Federation.crypt.decryptIfNeeded(this.request, this.bodyParams);
+
+		//
+		// Convert from EJSON
+		const { events } = EJSON.fromJSONValue(payload);
 
 		logger.server.debug(`federation.events.dispatch => events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
 
