@@ -9,6 +9,7 @@ import { t, handleError } from '../../../../utils';
 import { AgentUsers } from '../../collections/AgentUsers';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';
+import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatDepartmentForm.html';
 
 Template.livechatDepartmentForm.helpers({
@@ -32,6 +33,12 @@ Template.livechatDepartmentForm.helpers({
 	showOnOfflineForm(value) {
 		const department = Template.instance().department.get();
 		return department.showOnOfflineForm === value || (department.showOnOfflineForm === undefined && value === true);
+	},
+	customFieldsTemplate() {
+		return getCustomFormTemplate('livechatDepartmentForm');
+	},
+	data() {
+		return { id: FlowRouter.getParam('_id') };
 	},
 });
 
@@ -71,6 +78,12 @@ Template.livechatDepartmentForm.events({
 			showOnOfflineForm: showOnOfflineForm === '1',
 			email: email.trim(),
 		};
+
+		instance.$('.customFormField').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			departmentData[name] = elField.val();
+		});
 
 		const departmentAgents = [];
 
