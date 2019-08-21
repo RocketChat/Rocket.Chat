@@ -103,7 +103,7 @@ API.v1.addRoute('livechat/room.transfer', {
 			// update visited page history to not expire
 			Messages.keepHistoryForToken(token);
 
-			if (!Livechat.transfer(room, guest, { roomId: rid, departmentId: department })) {
+			if (!Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferedBy: guest._id })) {
 				return API.v1.failure();
 			}
 

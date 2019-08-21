@@ -454,6 +454,19 @@ export class LivechatRooms extends Base {
 
 		return this.remove(query);
 	}
+
+	updateTransferHistoryByRoomId(roomId, transfer) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$addToSet: {
+				transferHistory: transfer,
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
 
 export default new LivechatRooms(Rooms.model, true);

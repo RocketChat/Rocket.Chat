@@ -28,6 +28,7 @@ Meteor.methods({
 		}
 
 		const guest = LivechatVisitors.findOneById(room.v && room.v._id);
+		transferData.transferedBy = Meteor.userId();
 
 		return Livechat.transfer(room, guest, transferData);
 	},

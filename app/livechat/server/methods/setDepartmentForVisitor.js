@@ -23,6 +23,7 @@ Meteor.methods({
 		const transferData = {
 			roomId,
 			departmentId,
+			transferedBy: visitor._id,
 		};
 
 		return Livechat.transfer(room, visitor, transferData);

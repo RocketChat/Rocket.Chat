@@ -433,8 +433,33 @@ export const Livechat = {
 		}
 	},
 
+	saveTransferHistory(room, transferData) {
+		const transferedToDepartment = Boolean(transferData.departmentId);
+		const transferedToAgent = Boolean(transferData.userId);
+		const transfer = {
+			transferedBy: transferData.transferedBy,
+			ts: new Date(),
+		};
+		if (transferedToDepartment) {
+			transfer.scope = 'department';
+			transfer.previousDepartment = room.departmentId;
+			transfer.nextDepartment = transferData.departmentId;
+		}
+		if (transferedToAgent) {
+			transfer.scope = 'agent';
+			transfer.previousAgent = room.servedBy && room.servedBy._id;
+			transfer.nextAgent = transferData.userId;
+		}
+		LivechatRooms.updateTransferHistoryByRoomId(room._id, transfer);
+	},
+
 	async transfer(room, guest, transferData) {
-		return RoutingManager.transferRoom(room, guest, transferData);
+		const result = await RoutingManager.transferRoom(room, guest, transferData);
+		if (!result) {
+			return false;
+		}
+		this.saveTransferHistory(room, transferData);
+		return true;
 	},
 
 	returnRoomAsInquiry(rid, departmentId) {
