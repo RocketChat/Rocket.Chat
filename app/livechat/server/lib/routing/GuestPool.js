@@ -5,7 +5,7 @@ import { Livechat } from '../Livechat';
 import { RoutingManager } from '../RoutingManager';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import { sendNotification } from '../../../../lib/server';
-import { Rooms } from '../../../../models/server';
+import { LivechatRooms } from '../../../../models/server';
 
 /* Guest Pool Queuing Method:
 	*
@@ -42,7 +42,7 @@ class GuestPool {
 		}
 
 		// remove agent from room in case the rooms is being transferred or returned to the Queue
-		Rooms.removeAgentByRoomId(rid);
+		LivechatRooms.removeAgentByRoomId(rid);
 
 		const agentIds = allAgents.map((agent) => (department ? agent.agentId : agent._id));
 		LivechatInquiry.queueInquiryWithAgents(inquiry._id, agentIds);
@@ -51,7 +51,7 @@ class GuestPool {
 		const onlineAgents = Livechat.getOnlineAgents(department);
 		const { message } = inquiry;
 
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 
 		onlineAgents.forEach((agent) => {
 			const { _id, active, emails, language, status, statusConnection, username } = agent;

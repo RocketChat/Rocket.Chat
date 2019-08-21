@@ -17,7 +17,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import {
 	Users,
-	Rooms,
+	LivechatRooms,
 	Messages,
 	Subscriptions,
 	Settings,
@@ -80,7 +80,7 @@ export const Livechat = {
 	},
 
 	async getRoom(guest, message, roomInfo, agent) {
-		let room = Rooms.findOneById(message.rid);
+		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
 
 		if (room && !room.open) {
@@ -294,7 +294,7 @@ export const Livechat = {
 			};
 		}
 
-		Rooms.closeByRoomId(room._id, closeData);
+		LivechatRooms.closeByRoomId(room._id, closeData);
 		LivechatInquiry.closeByRoomId(room._id, closeData);
 
 		const message = {
@@ -304,7 +304,7 @@ export const Livechat = {
 		};
 
 		// Retreive the closed room
-		room = Rooms.findOneByIdOrName(room._id);
+		room = LivechatRooms.findOneByIdOrName(room._id);
 
 		sendMessage(user, message, room);
 
@@ -332,7 +332,7 @@ export const Livechat = {
 		}
 
 		if (customField.scope === 'room') {
-			return Rooms.updateLivechatDataByToken(token, key, value, overwrite);
+			return LivechatRooms.updateDataByToken(token, key, value, overwrite);
 		}
 		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 	},
@@ -379,7 +379,7 @@ export const Livechat = {
 	},
 
 	saveRoomInfo(roomData, guestData) {
-		if ((roomData.topic != null || roomData.tags != null) && !Rooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
+		if ((roomData.topic != null || roomData.tags != null) && !LivechatRooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
 			return false;
 		}
 
@@ -388,19 +388,19 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return LivechatRooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
 	closeOpenChats(userId, comment) {
 		const user = Users.findOneById(userId);
-		Rooms.findOpenByAgent(userId).forEach((room) => {
+		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			this.closeRoom({ user, room, comment });
 		});
 	},
 
 	forwardOpenChats(userId) {
-		Rooms.findOpenByAgent(userId).forEach((room) => {
+		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = LivechatVisitors.findOneById(room.v._id);
 			this.transfer(room, guest, { departmentId: guest.department });
 		});
@@ -438,7 +438,7 @@ export const Livechat = {
 	},
 
 	returnRoomAsInquiry(rid, departmentId) {
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:returnRoomAsInquiry' });
 		}
@@ -629,13 +629,30 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		Rooms.findByVisitorToken(token).forEach((room) => {
+		LivechatRooms.findByVisitorToken(token).forEach((room) => {
 			Messages.removeFilesByRoomId(room._id);
 			Messages.removeByRoomId(room._id);
 		});
 
 		Subscriptions.removeByVisitorToken(token);
-		Rooms.removeByVisitorToken(token);
+		LivechatRooms.removeByVisitorToken(token);
+	},
+
+	saveDepartmentAgents(_id, departmentAgents) {
+		check(_id, String);
+		check(departmentAgents, [
+			Match.ObjectIncluding({
+				agentId: String,
+				username: String,
+			}),
+		]);
+
+		const department = LivechatDepartment.findOneById(_id);
+		if (!department) {
+			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
+		}
+
+		return LivechatDepartment.createOrUpdateDepartment(_id, department, departmentAgents);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -707,7 +724,7 @@ export const Livechat = {
 		check(rid, String);
 		check(email, String);
 
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
@@ -763,7 +780,7 @@ export const Livechat = {
 
 	notifyGuestStatusChanged(token, status) {
 		LivechatInquiry.updateVisitorStatus(token, status);
-		Rooms.updateVisitorStatus(token, status);
+		LivechatRooms.updateVisitorStatus(token, status);
 	},
 
 	sendOfflineMessage(data = {}) {
@@ -817,7 +834,7 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
-		Rooms.findOpenByAgent(userId).forEach((room) => {
+		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',
 				status,
@@ -845,7 +862,7 @@ export const Livechat = {
 Livechat.stream = new Meteor.Streamer('livechat-room');
 
 Livechat.stream.allowRead((roomId, extraData) => {
-	const room = Rooms.findOneById(roomId);
+	const room = LivechatRooms.findOneById(roomId);
 
 	if (!room) {
 		console.warn(`Invalid eventName: "${ roomId }"`);

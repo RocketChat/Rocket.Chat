@@ -19,6 +19,7 @@ if (Meteor.isServer) {
 			this.tryEnsureIndex({ message: 1 }); // message sent by the client
 			this.tryEnsureIndex({ ts: 1 }); // timestamp
 			this.tryEnsureIndex({ agents: 1 }); // Id's of the agents who can see the inquiry (handle departments)
+			this.tryEnsureIndex({ department: 1 });
 			this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
 		}
 

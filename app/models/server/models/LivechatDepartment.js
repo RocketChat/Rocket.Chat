@@ -6,8 +6,8 @@ import LivechatDepartmentAgents from './LivechatDepartmentAgents';
  * Livechat Department model
  */
 export class LivechatDepartment extends Base {
-	constructor() {
-		super('livechat_department');
+	constructor(modelOrName) {
+		super(modelOrName || 'livechat_department');
 
 		this.tryEnsureIndex({
 			numAgents: 1,
@@ -87,4 +87,5 @@ export class LivechatDepartment extends Base {
 		return this.findOne(query, options);
 	}
 }
+
 export default new LivechatDepartment();

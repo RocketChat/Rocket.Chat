@@ -1,10 +1,10 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Settings, Rooms } from '../../../app/models/server';
+import { Settings, LivechatRooms, Rooms } from '../../../app/models/server';
 import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 
 Migrations.add({
-	version: 152,
+	version: 153,
 	up() {
 		const oldSetting = Settings.findOne({ _id: 'Livechat_guest_pool_with_no_agents' });
 		if (oldSetting) {
@@ -21,7 +21,7 @@ Migrations.add({
 		}
 
 		// Create Livechat inquiries for each open Livechat room
-		Rooms.findLivechat({ open: true }).forEach((room) => {
+		LivechatRooms.findLivechat({ open: true }).forEach((room) => {
 			const inquiry = LivechatInquiry.findOneByRoomId(room._id);
 			if (!inquiry) {
 				try {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Rooms } from '../../../models/server';
+import { LivechatRooms } from '../../../models/server';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { callbacks } from '../../../callbacks/server';
@@ -27,10 +27,10 @@ export const QueueManager = {
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
-		const room = Rooms.findOne(createLivechatRoom(rid, name, guest, roomInfo));
+		const room = LivechatRooms.findOne(createLivechatRoom(rid, name, guest, roomInfo));
 		let inquiry = LivechatInquiry.findOne(createLivechatInquiry(rid, name, guest, message));
 
-		Rooms.updateLivechatRoomCount();
+		LivechatRooms.updateRoomCount();
 
 		if (!agent) {
 			agent = RoutingManager.getMethod().delegateAgent(agent, inquiry);
