@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 
-import { APIClient } from '../../utils';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { APIClient } from '../../../utils';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 
 Meteor.startup(function() {
@@ -41,6 +42,12 @@ Meteor.startup(function() {
 						avatarUrl: `${ baseUrl }${ getUserAvatarURL(username) }`,
 						status,
 					}));
+
+					const { appId } = Template.GameModal.currentExternalComponent;
+					Meteor.call('externalComponentStorage:setItem', appId, 'Hi', { name: 'Great!' });
+					const result = await Meteor.call('externalComponentStorage:getItem', appId, 'Hi');
+					console.log(result);
+
 					source.postMessage({
 						rcEmbeddedSDK: {
 							action,

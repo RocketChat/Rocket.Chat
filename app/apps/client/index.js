@@ -16,6 +16,6 @@ import './gameCenter/gameModal';
 import './gameCenter/gameCenter';
 import './gameCenter/invitePlayers';
 
-import './extrernalComponent';
+import './externalComponent';
 
 export { Apps } from './orchestrator';
