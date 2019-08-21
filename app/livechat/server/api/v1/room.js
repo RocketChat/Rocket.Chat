@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings as rcSettings } from '../../../../settings';
-import { Messages, Rooms } from '../../../../models';
+import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api';
 import { findGuest, findRoom, getRoom, settings, findAgent } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -155,7 +155,7 @@ API.v1.addRoute('livechat/room.survey', {
 				throw new Meteor.Error('invalid-data');
 			}
 
-			if (!Rooms.updateSurveyFeedbackById(room._id, updateData)) {
+			if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
 				return API.v1.failure();
 			}
 

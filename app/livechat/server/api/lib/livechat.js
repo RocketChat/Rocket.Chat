@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
+import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 
@@ -41,10 +41,10 @@ export function findRoom(token, rid) {
 	};
 
 	if (!rid) {
-		return Rooms.findLivechatByVisitorToken(token, fields);
+		return LivechatRooms.findOneByVisitorToken(token, fields);
 	}
 
-	return Rooms.findLivechatByIdAndVisitorToken(rid, token, fields);
+	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
 export function findOpenRoom(token, departmentId) {
@@ -57,7 +57,7 @@ export function findOpenRoom(token, departmentId) {
 	};
 
 	let room;
-	const rooms = departmentId ? Rooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(token, options).fetch();
+	const rooms = departmentId ? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : LivechatRooms.findOpenByVisitorToken(token, options).fetch();
 	if (rooms && rooms.length > 0) {
 		room = rooms[0];
 	}
@@ -191,12 +191,12 @@ export function findRooms({
 		query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: customFields[key] }));
 	}
 	return {
-		rooms: Rooms.find(query, {
+		rooms: LivechatRooms.find(query, {
 			sort: options.sort || { ts: 1 },
 			skip: options.offset,
 			limit: options.count,
 			fields: options.fields,
 		}).fetch(),
-		total: Rooms.find(query).count(),
+		total: LivechatRooms.find(query).count(),
 	};
 }
