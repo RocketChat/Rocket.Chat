@@ -12,7 +12,7 @@ const currentLanguage = new ReactiveVar();
 
 Meteor.startup(() => {
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
-	currentLanguage.set(localStorage.getItem('userLanguage'));
+	currentLanguage.set(Meteor._localStorage.getItem('userLanguage'));
 
 	const availableLanguages = TAPi18n.getLanguages();
 
@@ -70,7 +70,7 @@ Meteor.startup(() => {
 	const setLanguage = (language) => {
 		const lang = filterLanguage(language);
 		currentLanguage.set(lang);
-		localStorage.setItem('userLanguage', lang);
+		Meteor._localStorage.setItem('userLanguage', lang);
 	};
 	window.setLanguage = setLanguage;
 

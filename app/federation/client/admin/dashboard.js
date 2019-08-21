@@ -21,7 +21,6 @@ const updateOverviewData = () => {
 			console.log(error);
 
 			return;
-			// return handleError(error);
 		}
 
 		const { data } = result;
@@ -30,32 +29,31 @@ const updateOverviewData = () => {
 	});
 };
 
-const updatePeerStatuses = () => {
-	Meteor.call('federation:getPeerStatuses', (error, result) => {
+const updateServers = () => {
+	Meteor.call('federation:getServers', (error, result) => {
 		if (error) {
 			console.log(error);
 
 			return;
-			// return handleError(error);
 		}
 
 		const { data } = result;
 
-		templateInstance.federationPeerStatuses.set(data);
+		templateInstance.federationPeers.set(data);
 	});
 };
 
 const updateData = () => {
 	updateOverviewData();
-	updatePeerStatuses();
+	updateServers();
 };
 
 Template.dashboard.helpers({
 	federationOverviewData() {
 		return templateInstance.federationOverviewData.get();
 	},
-	federationPeerStatuses() {
-		return templateInstance.federationPeerStatuses.get();
+	federationPeers() {
+		return templateInstance.federationPeers.get();
 	},
 });
 
@@ -64,7 +62,7 @@ Template.dashboard.onCreated(function() {
 	templateInstance = Template.instance();
 
 	this.federationOverviewData = new ReactiveVar();
-	this.federationPeerStatuses = new ReactiveVar();
+	this.federationPeers = new ReactiveVar();
 });
 
 Template.dashboard.onRendered(() => {

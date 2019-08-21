@@ -30,6 +30,7 @@ import './methods/getAvatarSuggestion';
 import './methods/getRoomById';
 import './methods/getRoomIdByNameOrId';
 import './methods/getRoomNameById';
+import './methods/getSetupWizardParameters';
 import './methods/getTotalChannels';
 import './methods/getUsersOfRoom';
 import './methods/hideRoom';
