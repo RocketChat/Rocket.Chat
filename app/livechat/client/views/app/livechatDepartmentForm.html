@@ -44,10 +44,15 @@
 									<label><input type="radio" name="showOnOfflineForm" value="0" checked="{{showOnOfflineForm false}}" /> {{_ "No"}}</label>
 								</div>
 							</div>
-								{{#requiresPermission 'add-livechat-department-agents'}}
-									<hr />
-								{{else}}
-								{{/requiresPermission}}
+
+							{{#if customFieldsTemplate}}
+								{{> Template.dynamic template=customFieldsTemplate data=data }}
+							{{/if}}
+
+							{{#requiresPermission 'add-livechat-department-agents'}}
+								<hr />
+							{{else}}
+							{{/requiresPermission}}
 						{{else}}
 							<legend>{{department.name}}</legend>
 						{{/requiresPermission}}

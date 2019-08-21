@@ -13,7 +13,7 @@ import { modal } from '../../../../../ui-utils';
 import { Rooms, Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
+import { hasRole, hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import './visitorInfo.html';
@@ -148,11 +148,13 @@ Template.visitorInfo.helpers({
 
 	roomOpen() {
 		const room = Template.instance().room.get();
-		return room && room.open;
+		const uid = Meteor.userId();
+		return room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
 	},
 
-	guestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	canReturnQueue() {
+		const config = Template.instance().routingConfig.get();
+		return config.returnQueue;
 	},
 
 	showDetail() {
@@ -280,6 +282,7 @@ Template.visitorInfo.onCreated(function() {
 	this.departmentId = new ReactiveVar(null);
 	this.tags = new ReactiveVar(null);
 	this.room = new ReactiveVar(null);
+	this.routingConfig = new ReactiveVar({});
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -288,6 +291,11 @@ Template.visitorInfo.onCreated(function() {
 	});
 
 	const { rid } = Template.currentData();
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
+		}
+	});
 
 	if (rid) {
 		this.autorun(() => {

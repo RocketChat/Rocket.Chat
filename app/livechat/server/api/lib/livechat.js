@@ -4,11 +4,10 @@ import _ from 'underscore';
 
 import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
-import { settings as rcSettings } from '../../../../settings';
+import { callbacks } from '../../../../callbacks/server';
 
 export function online() {
-	const onlineAgents = Livechat.getOnlineAgents();
-	return (onlineAgents && onlineAgents.count() > 0) || rcSettings.get('Livechat_guest_pool_with_no_agents');
+	return Livechat.online();
 }
 
 export function findTriggers() {
@@ -38,6 +37,7 @@ export function findRoom(token, rid) {
 		servedBy: 1,
 		open: 1,
 		v: 1,
+		ts: 1,
 	};
 
 	if (!rid) {
@@ -140,6 +140,10 @@ export function settings() {
 			emojis,
 		},
 	};
+}
+
+export async function getExtraConfigInfo(room) {
+	return callbacks.run('livechat.onLoadConfigApi', room);
 }
 
 export function findRooms({

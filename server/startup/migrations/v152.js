@@ -1,51 +1,37 @@
-import { Migrations } from '../../../app/migrations';
-import { Permissions } from '../../../app/models';
+import { Meteor } from 'meteor/meteor';
+
+import { Migrations } from '../../../app/migrations/server';
+import { Users } from '../../../app/models/server';
+import { MAX_RESUME_LOGIN_TOKENS } from '../../lib/accounts';
 
 Migrations.add({
 	version: 152,
-	up() {
-		if (Permissions) {
-			const newPermission = Permissions.findOne('view-livechat-manager');
-			if (newPermission && newPermission.roles.length) {
-				Permissions.upsert({ _id: 'manage-livechat-managers' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'manage-livechat-agents' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'manage-livechat-departments' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-departments' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'transfer-livechat-guest' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'add-livechat-department-agents' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-current-chats' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-analytics' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-real-time-monitoring' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-triggers' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-customfields' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-installation' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-appearance' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-webhooks' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-facebook' }, { $set: { roles: newPermission.roles } });
-				Permissions.upsert({ _id: 'view-livechat-officeHours' }, { $set: { roles: newPermission.roles } });
-			}
-		}
-	},
-
-	down() {
-		if (Permissions) {
-			// Revert permission
-			Permissions.remove({ _id: 'manage-livechat-managers' });
-			Permissions.remove({ _id: 'manage-livechat-agents' });
-			Permissions.remove({ _id: 'manage-livechat-departments' });
-			Permissions.remove({ _id: 'view-livechat-departments' });
-			Permissions.remove({ _id: 'transfer-livechat-guest' });
-			Permissions.remove({ _id: 'add-livechat-department-agents' });
-			Permissions.remove({ _id: 'view-livechat-current-chats' });
-			Permissions.remove({ _id: 'view-livechat-analytics' });
-			Permissions.remove({ _id: 'view-livechat-real-time-monitoring' });
-			Permissions.remove({ _id: 'view-livechat-triggers' });
-			Permissions.remove({ _id: 'view-livechat-customfields' });
-			Permissions.remove({ _id: 'view-livechat-installation' });
-			Permissions.remove({ _id: 'view-livechat-appearance' });
-			Permissions.remove({ _id: 'view-livechat-webhooks' });
-			Permissions.remove({ _id: 'view-livechat-facebook' });
-			Permissions.remove({ _id: 'view-livechat-officeHours' });
-		}
+	async up() {
+		await Users.model.rawCollection().aggregate([
+			{
+				$project: {
+					tokens: {
+						$filter: {
+							input: '$services.resume.loginTokens',
+							as: 'token',
+							cond: {
+								$ne: ['$$token.type', 'personalAccessToken'],
+							},
+						},
+					},
+				},
+			},
+			{ $unwind: '$tokens' },
+			{ $group: { _id: '$_id', tokens: { $push: '$tokens' } } },
+			{
+				$project: {
+					sizeOfTokens: { $size: '$tokens' }, tokens: '$tokens' },
+			},
+			{ $match: { sizeOfTokens: { $gt: MAX_RESUME_LOGIN_TOKENS } } },
+			{ $sort: { 'tokens.when': 1 } },
+		]).forEach(Meteor.bindEnvironment((user) => {
+			const oldestDate = user.tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
+			Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
+		}));
 	},
 });

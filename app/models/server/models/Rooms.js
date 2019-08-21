@@ -15,9 +15,10 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ ts: 1 });
-
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
+		// Livechat - statistics
+		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {

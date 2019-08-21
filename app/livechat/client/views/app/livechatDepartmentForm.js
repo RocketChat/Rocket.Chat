@@ -10,6 +10,7 @@ import { hasPermission } from '../../../../authorization';
 import { AgentUsers } from '../../collections/AgentUsers';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';
+import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatDepartmentForm.html';
 
 Template.livechatDepartmentForm.helpers({
@@ -54,6 +55,12 @@ Template.livechatDepartmentForm.helpers({
 			}],
 		};
 	},
+	customFieldsTemplate() {
+		return getCustomFormTemplate('livechatDepartmentForm');
+	},
+	data() {
+		return { id: FlowRouter.getParam('_id') };
+	},
 });
 
 Template.livechatDepartmentForm.events({
@@ -97,6 +104,12 @@ Template.livechatDepartmentForm.events({
 
 		const oldBtnValue = $btn.html();
 		$btn.html(t('Saving'));
+
+		instance.$('.customFormField').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			departmentData[name] = elField.val();
+		});
 
 		const departmentAgents = [];
 		instance.selectedAgents.get().forEach((agent) => {

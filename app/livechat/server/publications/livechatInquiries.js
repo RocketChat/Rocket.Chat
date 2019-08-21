@@ -23,7 +23,7 @@ Meteor.publish('livechat:inquiry', function(_id) {
 	}
 
 	const filter = {
-		status: 'open',
+		status: 'queued',
 		..._id && { _id },
 		...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } },
 	};

@@ -52,7 +52,7 @@ Template.livechat.helpers({
 
 	inquiries() {
 		const inqs = LivechatInquiry.find({
-			status: 'open',
+			status: 'queued',
 		}, {
 			sort: {
 				ts: 1,
@@ -67,8 +67,9 @@ Template.livechat.helpers({
 		return inqs;
 	},
 
-	guestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	showIncomingQueue() {
+		const config = Template.instance().routingConfig.get();
+		return config.showQueue;
 	},
 
 	available() {
@@ -86,7 +87,8 @@ Template.livechat.helpers({
 	},
 
 	showQueueLink() {
-		if (settings.get('Livechat_Routing_Method') !== 'Least_Amount') {
+		const config = Template.instance().routingConfig.get();
+		if (!config.showQueueLink) {
 			return false;
 		}
 		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));
@@ -112,6 +114,13 @@ Template.livechat.events({
 
 Template.livechat.onCreated(function() {
 	this.statusLivechat = new ReactiveVar();
+	this.routingConfig = new ReactiveVar({});
+
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
+		}
+	});
 
 	this.autorun(() => {
 		if (Meteor.userId()) {
