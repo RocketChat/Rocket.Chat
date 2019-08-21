@@ -137,12 +137,13 @@ Template.visitorInfo.helpers({
 
 	roomOpen() {
 		const room = ChatRoom.findOne({ _id: this.rid });
-
-		return room.open;
+		const uid = Meteor.userId();
+		return room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
 	},
 
-	guestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	canReturnQueue() {
+		const config = Template.instance().routingConfig.get();
+		return config.returnQueue;
 	},
 
 	showDetail() {
@@ -249,10 +250,17 @@ Template.visitorInfo.onCreated(function() {
 	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
 	this.departmentId = new ReactiveVar(null);
+	this.routingConfig = new ReactiveVar({});
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
 			this.customFields.set(customFields);
+		}
+	});
+
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
 		}
 	});
 

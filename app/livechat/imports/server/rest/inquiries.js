@@ -14,7 +14,7 @@ API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 		const { department } = this.requestParams();
-		const ourQuery = Object.assign({}, { status: 'open' });
+		const ourQuery = Object.assign({}, { status: 'queued' });
 		if (department) {
 			const departmentFromDB = LivechatDepartment.findOneByIdOrName(department);
 			if (departmentFromDB) {
