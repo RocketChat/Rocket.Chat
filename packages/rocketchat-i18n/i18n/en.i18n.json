@@ -1843,7 +1843,7 @@
   "LDAP_Find_User_After_Login": "Find user after login",
   "LDAP_Find_User_After_Login_Description": "Will perform a search of the user's DN after bind to ensure the bind was successful preventing login with empty passwords when allowed by the AD configuration.",
   "LDAP_Group_Filter_Enable": "Enable LDAP User Group Filter",
-  "LDAP_Group_Filter_Enable_Description": "Restrict access to users in a LDAP group<br/>Useful for OpenLDAP servers without overlays that not permit *memberOf* filter",
+  "LDAP_Group_Filter_Enable_Description": "Restrict access to users in a LDAP group<br/>Useful for allowing OpenLDAP servers without a *memberOf* filter to restrict access by groups",
   "LDAP_Group_Filter_Group_Id_Attribute": "Group ID Attribute",
   "LDAP_Group_Filter_Group_Id_Attribute_Description": "E.g. *OpenLDAP:*cn",
   "LDAP_Group_Filter_Group_Member_Attribute": "Group Member Attribute",
