@@ -217,14 +217,19 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			nameID: loginResult.profile.nameID,
 		};
 
+		const updateData = {
+			// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
+			'services.saml': samlLogin,
+		};
+
+		if (Accounts.saml.settings.immutableProperty !== 'EMail') {
+			updateData.emails = emails;
+		}
+
 		Meteor.users.update({
 			_id: user._id,
 		}, {
-			$set: {
-				// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
-				'services.saml': samlLogin,
-				emails,
-			},
+			$set: updateData,
 		});
 
 		if (username) {
