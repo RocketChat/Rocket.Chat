@@ -140,6 +140,16 @@ jobs:
       #     keys:
       #       - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
 
+      # To reduce memory need during actual build, build the packages solely first
+      - run:
+          name: Build Rocket.Chat packages
+          environment:
+            TOOL_NODE_FLAGS: --max_old_space_size=4096
+          command: |
+            mv app ..
+            meteor build --server-only --directory /tmp/build-test
+            mv ../app .
+
       - run:
           name: Build Rocket.Chat
           environment:
