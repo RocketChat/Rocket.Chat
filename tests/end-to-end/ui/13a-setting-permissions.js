@@ -18,7 +18,7 @@ function logoutRocketchat() {
 	browser.pause(2000); // figured that subsequent actions (new clicks) seem to prevent the logout
 }
 
-describe('[Rocket.Chat Settings based permissions]', function() {
+describe.skip('[Rocket.Chat Settings based permissions]', function() {
 	const newTitle = 'Testtitle';
 
 	describe('Give User Permissions', function() {
