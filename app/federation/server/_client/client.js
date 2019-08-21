@@ -4,17 +4,17 @@ import { logger } from '../logger';
 import { Federation } from '../federation';
 
 // Callbacks
-import './callbacks/afterAddedToRoom';
-import './callbacks/afterCreateDirectRoom';
-import './callbacks/afterCreateRoom';
-import './callbacks/afterDeleteMessage';
-import './callbacks/afterMuteUser';
-import './callbacks/afterSaveMessage';
-import './callbacks/afterSetReaction';
-import './callbacks/afterUnmuteUser';
-import './callbacks/afterUnsetReaction';
-import './callbacks/beforeDeleteRoom';
-import './callbacks/afterRemoveFromRoom';
+// import './callbacks/afterAddedToRoom';
+// import './callbacks/afterCreateDirectRoom';
+// import './callbacks/afterCreateRoom';
+// import './callbacks/afterDeleteMessage';
+// import './callbacks/afterMuteUser';
+// import './callbacks/afterSaveMessage';
+// import './callbacks/afterSetReaction';
+// import './callbacks/afterUnmuteUser';
+// import './callbacks/afterUnsetReaction';
+// import './callbacks/beforeDeleteRoom';
+// import './callbacks/afterRemoveFromRoom';
 
 class Client {
 	searchUsers(query) {
