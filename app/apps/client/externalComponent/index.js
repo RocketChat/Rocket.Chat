@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 
 import { APIClient } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
-
+import { setItem, getItem, getAll, clear, removeItem } from './persistence';
 
 Meteor.startup(function() {
 	window.addEventListener('message', async ({ data, source }) => {
@@ -42,12 +42,6 @@ Meteor.startup(function() {
 						avatarUrl: `${ baseUrl }${ getUserAvatarURL(username) }`,
 						status,
 					}));
-
-					const { appId } = Template.GameModal.currentExternalComponent;
-					Meteor.call('externalComponentStorage:setItem', appId, 'Hi', { name: 'Great!' });
-					const result = await Meteor.call('externalComponentStorage:getItem', appId, 'Hi');
-					console.log(result);
-
 					source.postMessage({
 						rcEmbeddedSDK: {
 							action,
@@ -59,6 +53,88 @@ Meteor.startup(function() {
 							},
 						},
 					}, '*');
+					break;
+				case 'persistence.setItem':
+					try {
+						const { payload: { key, value } } = data.rcEmbeddedSDK;
+						const { appId } = Template.GameModal.currentExternalComponent;
+						setItem(appId, key, value);
+					} catch (err) {
+						console.warn(err);
+					}
+					source.postMessage({
+						rcEmbeddedSDK: {
+							action,
+							id,
+							payload: null,
+						},
+					}, '*');
+					break;
+				case 'persistence.removeItem':
+					try {
+						const { payload: { key } } = data.rcEmbeddedSDK;
+						const { appId } = Template.GameModal.currentExternalComponent;
+						removeItem(appId, key);
+					} catch (err) {
+						console.warn(err);
+					}
+					source.postMessage({
+						rcEmbeddedSDK: {
+							action,
+							id,
+							payload: null,
+						},
+					}, '*');
+					break;
+				case 'persistence.clear':
+					try {
+						const { appId } = Template.GameModal.currentExternalComponent;
+						clear(appId);
+					} catch (err) {
+						console.warn(err);
+					}
+					source.postMessage({
+						rcEmbeddedSDK: {
+							action,
+							id,
+							payload: null,
+						},
+					}, '*');
+					break;
+				case 'persistence.getItem':
+					try {
+						const { payload: { key } } = data.rcEmbeddedSDK;
+						const { appId } = Template.GameModal.currentExternalComponent;
+						const value = await getItem(appId, key);
+						source.postMessage({
+							rcEmbeddedSDK: {
+								action,
+								id,
+								payload: {
+									value,
+								},
+							},
+						}, '*');
+					} catch (err) {
+						console.warn(err);
+					}
+					break;
+				case 'persistence.getAll':
+					try {
+						const { appId } = Template.GameModal.currentExternalComponent;
+						const allItems = await getAll(appId);
+						source.postMessage({
+							rcEmbeddedSDK: {
+								action,
+								id,
+								payload: {
+									allItems,
+								},
+							},
+						}, '*');
+					} catch (err) {
+						console.warn(err);
+					}
 					break;
 				default:
 					break;
