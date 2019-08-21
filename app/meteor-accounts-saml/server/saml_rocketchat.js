@@ -160,6 +160,18 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
 		});
+		settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
+			type: 'select',
+			values: [
+				{ key: 'better', i18nLabel: 'SAML_Custom_Authn_Context_Comparison_Better' },
+				{ key: 'exact', i18nLabel: 'SAML_Custom_Authn_Context_Comparison_Exact' },
+				{ key: 'maximum', i18nLabel: 'SAML_Custom_Authn_Context_Comparison_Maximum' },
+				{ key: 'minimum', i18nLabel: 'SAML_Custom_Authn_Context_Comparison_Minimum' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
+		});
 	},
 });
 
@@ -192,6 +204,7 @@ const getSamlConfigs = function(service) {
 		issuer: settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: settings.get(`${ service.key }_logout_behaviour`),
 		customAuthnContext: settings.get(`${ service.key }_custom_authn_context`),
+		authnContextComparison: settings.get(`${ service.key }_authn_context_comparison`),
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
@@ -241,6 +254,7 @@ const configureSamlService = function(samlConfigs) {
 		privateCert,
 		privateKey,
 		customAuthnContext: samlConfigs.customAuthnContext,
+		authnContextComparison: samlConfigs.authnContextComparison,
 	};
 };
 
