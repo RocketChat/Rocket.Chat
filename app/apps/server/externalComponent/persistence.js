@@ -23,9 +23,11 @@ Meteor.methods({
 			return;
 		}
 
-		console.log(Apps.getPersistenceModel().find({ appId }));
+		const allItems = Apps.getPersistenceModel().find({ appId }).fetch();
+
+		return allItems.map(({ key, value }) => ({ key, value }));
 	},
-	async 'externalComponentStorage:setItem'(appId, key, value) {
+	'externalComponentStorage:setItem'(appId, key, value) {
 		if (!appId) {
 			console.log('invalid appId!');
 			return;
@@ -35,9 +37,9 @@ Meteor.methods({
 			throw new Error('The key must be an string.');
 		}
 
-		return Apps.getPersistenceModel().upsert({ appId, key }, { appId, key, value });
+		Apps.getPersistenceModel().upsert({ appId, key }, { appId, key, value });
 	},
-	async 'externalComponentStorage:removeItem'(appId, key) {
+	'externalComponentStorage:removeItem'(appId, key) {
 		if (!appId) {
 			console.log('invalid appId!');
 			return;
@@ -47,14 +49,14 @@ Meteor.methods({
 			throw new Error('The key must be an string.');
 		}
 
-		return Apps.getPersistenceModel().remove({ appId, key });
+		Apps.getPersistenceModel().remove({ appId, key });
 	},
-	async 'externalComponentStorage:clear'(appId) {
+	'externalComponentStorage:clear'(appId) {
 		if (!appId) {
 			console.log('invalid appId!');
 			return;
 		}
 
-		return Apps.getPersistenceModel().remove({ appId });
+		Apps.getPersistenceModel().remove({ appId });
 	},
 });
