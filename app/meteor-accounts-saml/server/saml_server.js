@@ -153,9 +153,11 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		// If eppn is not exist
 		if (!user) {
 			if (Accounts.saml.settings.immutableProperty === 'Username') {
-				user = Meteor.users.findOne({
-					username,
-				});
+				if (username) {
+					user = Meteor.users.findOne({
+						username,
+					});
+				}
 			} else {
 				user = Meteor.users.findOne({
 					'emails.address': emailRegex,
@@ -225,7 +227,9 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			},
 		});
 
-		_setUsername(user._id, username);
+		if (username) {
+			_setUsername(user._id, username);
+		}
 
 		// Overwrite fullname if needed
 		if (Accounts.saml.settings.nameOverwrite === true) {
