@@ -4,7 +4,7 @@ import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 
 Migrations.add({
-	version: 152,
+	version: 153,
 	up() {
 		const oldSetting = Settings.findOne({ _id: 'Livechat_guest_pool_with_no_agents' });
 		if (oldSetting) {
