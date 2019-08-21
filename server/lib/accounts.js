@@ -312,7 +312,7 @@ Accounts.validateNewUser(function(user) {
 	return true;
 });
 
-export const MAX_RESUME_LOGIN_TOKENS = 50;
+export const MAX_RESUME_LOGIN_TOKENS = parseInt(process.env.MAX_RESUME_LOGIN_TOKENS) || 50;
 
 Accounts.onLogin(async ({ user }) => {
 	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens) {
