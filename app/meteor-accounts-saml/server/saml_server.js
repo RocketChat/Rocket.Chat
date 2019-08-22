@@ -198,25 +198,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			user = Meteor.users.findOne(userId);
 
 			if (loginResult.profile.channels) {
-				_.each(loginResult.profile.channels.split(','), function(room_name) {
-					if (room_name) {
-						let room = Rooms.findOneByNameAndType(room_name, 'c');
-						if (!room) {
-							room = Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
-						}
-
-						if (!Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
-							Subscriptions.createWithRoomAndUser(room, user, {
-								ts: new Date(),
-								open: true,
-								alert: true,
-								unread: 1,
-								userMentions: 1,
-								groupMentions: 0,
-							});
-						}
-					}
-				});
+				const channels = loginResult.profile.channels.split(',');
+				Accounts.saml.subscribeToSAMLChannels(channels, user);
 			}
 		}
 
@@ -300,6 +283,35 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 	throw new Error('SAML Profile did not contain an email address');
 });
+
+Accounts.saml.subscribeToSAMLChannels = function(channels, user) {
+	try {
+		for (let roomName of channels) {
+			roomName = roomName.trim();
+			if (!roomName) {
+				continue;
+			}
+
+			let room = Rooms.findOneByNameAndType(roomName, 'c');
+			if (!room) {
+				room = Rooms.createWithIdTypeAndName(Random.id(), 'c', roomName);
+			}
+
+			if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
+				Subscriptions.createWithRoomAndUser(room, user, {
+					ts: new Date(),
+					open: true,
+					alert: true,
+					unread: 1,
+					userMentions: 1,
+					groupMentions: 0,
+				});
+			}
+		}
+	}	catch (err) {
+		console.error(err);
+	}
+};
 
 Accounts.saml.hasCredential = function(credentialToken) {
 	return CredentialTokens.findOneById(credentialToken) != null;
