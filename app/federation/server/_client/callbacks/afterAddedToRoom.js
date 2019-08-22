@@ -8,12 +8,12 @@ import { doAfterCreateRoom } from './afterCreateRoom';
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;
 
-	// If there are not federated users on this room, ignore it
-	const { users, subscriptions } = getFederatedRoomData(room);
-
 	if (!isFederated(room) && !isFederated(addedUser)) { return; }
 
 	logger.client.debug(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+
+	// If there are not federated users on this room, ignore it
+	const { users, subscriptions } = getFederatedRoomData(room);
 
 	// Load the subscription
 	const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id));
@@ -52,7 +52,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 		// Remove the user subscription from the room
 		Promise.await(Subscriptions.remove({ _id: subscription._id }));
 
-		logger.client.error(`afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } => Could not add user: ${ err }`);
+		logger.client.error(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } => Could not add user: ${ err }`);
 	}
 
 	return involvedUsers;

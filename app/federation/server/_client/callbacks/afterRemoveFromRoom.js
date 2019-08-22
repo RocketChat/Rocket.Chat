@@ -37,7 +37,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		// Dispatch the events
 		Federation.client.dispatchEvent(domainsBeforeRemoval, removeUserEvent);
 	} catch (err) {
-		logger.client.error(`afterRemoveFromRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } => Could not add user: ${ err }`);
+		logger.client.error(() => `afterRemoveFromRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } => Could not add user: ${ err }`);
 
 		throw err;
 	}

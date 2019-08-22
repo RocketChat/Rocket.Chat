@@ -4,7 +4,7 @@ import { Federation } from '../../federation';
 import { isFederated } from './helpers/federatedResources';
 
 async function beforeDeleteRoom(roomId) {
-	const room = Rooms.findOneById(roomId);
+	const room = Rooms.findOneById(roomId, { fields: { _id: 1, federation: 1 } });
 
 	// If room does not exist, skip
 	if (!room) { return; }
@@ -21,7 +21,7 @@ async function beforeDeleteRoom(roomId) {
 		// Dispatch event (async)
 		Federation.client.dispatchEvent(room.federation.domains, event);
 	} catch (err) {
-		logger.client.error(`beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) } => Could not remove room: ${ err }`);
+		logger.client.error(() => `beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) } => Could not remove room: ${ err }`);
 
 		throw err;
 	}
