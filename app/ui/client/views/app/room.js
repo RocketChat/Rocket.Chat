@@ -785,9 +785,10 @@ Template.room.events({
 		openProfileTabOrOpenDM(e, instance, username);
 	},
 
-	'click .jump-to-original-for-newsfeed' (e, instance) {
+	'click .jump-to-original-for-newsfeed'(e) {
 		e.preventDefault();
-		console.log(e.originalid);
+		const message = ChatMessage.find({ _id: e.target.getAttribute('data-originalid') }, { _id: 0, rid: 1 }).fetch();
+		FlowRouter.goToRoomById(message[0].rid);
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
