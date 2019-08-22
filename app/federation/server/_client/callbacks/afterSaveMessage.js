@@ -1,15 +1,14 @@
-import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
 import { FederationRoomEvents } from '../../../../models/server';
 import { Federation } from '../../federation';
 import { normalizers } from '../../normalizers';
-import getFederatedRoomData from './helpers/getFederatedRoomData';
+import { isFederated } from './helpers/federatedResources';
 
 async function afterSaveMessage(message, room) {
 	// If there are not federated users on this room, ignore it
-	if (!getFederatedRoomData(room).hasFederatedUser) { return; }
+	if (!isFederated(room)) { return; }
 
-	logger.client.debug(`afterSaveMessage => message=${ JSON.stringify(message, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	logger.client.debug(() => `afterSaveMessage => message=${ JSON.stringify(message, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
 	let event;
 
@@ -28,4 +27,8 @@ async function afterSaveMessage(message, room) {
 	return message;
 }
 
-callbacks.add('afterSaveMessage', (message, room) => Promise.await(afterSaveMessage(message, room)), callbacks.priority.LOW, 'federation-after-save-message');
+export const definition = {
+	hook: 'afterSaveMessage',
+	callback: (message, room) => Promise.await(afterSaveMessage(message, room)),
+	id: 'federation-after-save-message',
+};

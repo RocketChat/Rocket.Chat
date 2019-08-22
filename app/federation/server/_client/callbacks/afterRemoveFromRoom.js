@@ -1,7 +1,5 @@
-import { callbacks } from '../../../../callbacks';
 import { FederationRoomEvents } from '../../../../models/server';
-import getFederatedRoomData from './helpers/getFederatedRoomData';
-import getFederatedUserData from './helpers/getFederatedUserData';
+import { isFederated, getFederatedRoomData } from './helpers/federatedResources';
 import { logger } from '../../logger';
 import { normalizers } from '../../normalizers';
 import { Federation } from '../../federation';
@@ -9,12 +7,12 @@ import { Federation } from '../../federation';
 async function afterRemoveFromRoom(involvedUsers, room) {
 	const { removedUser } = involvedUsers;
 
-	const { hasFederatedUser, users } = getFederatedRoomData(room);
-
 	// If there are not federated users on this room, ignore it
-	if (!hasFederatedUser && !getFederatedUserData(removedUser).isFederated) { return; }
+	if (!isFederated(room) && !isFederated(removedUser)) { return; }
 
-	logger.client.debug(`afterRemoveFromRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	logger.client.debug(() => `afterRemoveFromRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+
+	const { users } = getFederatedRoomData(room);
 
 	try {
 		// Get the domains after removal
@@ -47,4 +45,8 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 	return involvedUsers;
 }
 
-callbacks.add('afterRemoveFromRoom', (roomOwner, room) => Promise.await(afterRemoveFromRoom(roomOwner, room)), callbacks.priority.LOW, 'federation-after-remove-from-room');
+export const definition = {
+	hook: 'afterRemoveFromRoom',
+	callback: (roomOwner, room) => Promise.await(afterRemoveFromRoom(roomOwner, room)),
+	id: 'federation-after-remove-from-room',
+};

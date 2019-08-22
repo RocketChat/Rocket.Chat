@@ -1,11 +1,10 @@
-import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
 import { FederationRoomEvents, Subscriptions, Users } from '../../../../models/server';
 import { Federation } from '../../federation';
 import { normalizers } from '../../normalizers';
 import { deleteRoom } from '../../../../lib/server/functions';
 
-async function run(room, users, subscriptions) {
+export async function doAfterCreateRoom(room, users, subscriptions) {
 	//
 	// Genesis
 	//
@@ -64,12 +63,12 @@ async function afterCreateRoom(roomOwner, room) {
 	// If there are not federated users on this room, ignore it
 	if (!hasFederatedUser) { return; }
 
-	logger.client.debug(`afterCreateRoom => roomOwner=${ JSON.stringify(roomOwner, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	logger.client.debug(() => `afterCreateRoom => roomOwner=${ JSON.stringify(roomOwner, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
 	try {
-		await run(room, users, subscriptions);
+		await doAfterCreateRoom(room, users, subscriptions);
 	} catch (err) {
-		Promise.await(deleteRoom(room._id));
+		deleteRoom(room._id);
 
 		logger.client.error(`afterCreateRoom => room=${ JSON.stringify(room, null, 2) } => Could not create federated room: ${ err }`);
 	}
@@ -77,6 +76,8 @@ async function afterCreateRoom(roomOwner, room) {
 	return room;
 }
 
-export const doAfterCreateRoom = run;
-
-callbacks.add('afterCreateRoom', (roomOwner, room) => Promise.await(afterCreateRoom(roomOwner, room)), callbacks.priority.LOW, 'federation-after-create-room');
+export const definition = {
+	hook: 'afterCreateRoom',
+	callback: (roomOwner, room) => Promise.await(afterCreateRoom(roomOwner, room)),
+	id: 'federation-after-create-room',
+};

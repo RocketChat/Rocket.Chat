@@ -1,6 +1,8 @@
 import { Subscriptions, Users } from '../../../../../models/server';
 
-module.exports = (room) => {
+export const isFederated = (resource) => !!resource.federation;
+
+export const getFederatedRoomData = (room) => {
 	let hasFederatedUser = false;
 
 	let users = null;
