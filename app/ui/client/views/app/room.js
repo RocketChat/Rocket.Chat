@@ -785,6 +785,11 @@ Template.room.events({
 		openProfileTabOrOpenDM(e, instance, username);
 	},
 
+	'click .jump-to-original-for-newsfeed' (e, instance) {
+		e.preventDefault();
+		console.log(e.originalid);
+	},
+
 	'scroll .wrapper': _.throttle(function(e, t) {
 		lazyloadtick();
 

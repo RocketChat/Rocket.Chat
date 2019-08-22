@@ -67,6 +67,9 @@
 					{{#if isIgnored}}
 						<span class="toggle-hidden icon-right-dir" data-message="{{msg._id}}"> {{_ "Message_Ignored"}} </span>
 					{{/if}}
+					{{#if isNewsfeed}}
+						<button type="button" class="user jump-to-original-for-newsfeed color-primary-font-color" data-originalid="{{msg._id}}" tabindex="1">{{_ "Jump"}}</button>
+					{{/if}}
 				</div>
 				<div class="body {{bodyClass}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 					{{#if isSnippet}}
