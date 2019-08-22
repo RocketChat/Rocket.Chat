@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../settings';
 import { Users } from '../../models';
 import { hasRole } from '../../authorization';
 
 Template.setupWizardFinal.onCreated(function() {
-	const isSetupWizardDone = localStorage.getItem('wizardFinal');
+	const isSetupWizardDone = Meteor._localStorage.getItem('wizardFinal');
 	if (isSetupWizardDone === null) {
 		FlowRouter.go('setup-wizard');
 	}
@@ -32,7 +33,6 @@ Template.setupWizardFinal.onCreated(function() {
 		const userIsLoggedButIsNotAdmin = userId && !hasRole(userId, 'admin');
 		if (isComplete || noUserLoggedInAndIsNotPending || userIsLoggedButIsNotAdmin) {
 			FlowRouter.go('home');
-			return;
 		}
 	});
 });
@@ -44,8 +44,8 @@ Template.setupWizardFinal.onRendered(function() {
 Template.setupWizardFinal.events({
 	'click .js-finish'() {
 		settings.set('Show_Setup_Wizard', 'completed', function() {
-			localStorage.removeItem('wizard');
-			localStorage.removeItem('wizardFinal');
+			Meteor._localStorage.removeItem('wizard');
+			Meteor._localStorage.removeItem('wizardFinal');
 			FlowRouter.go('home');
 		});
 	},

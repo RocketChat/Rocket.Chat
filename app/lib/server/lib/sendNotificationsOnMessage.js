@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Subscriptions } from '../../../models';
+import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
-import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
+import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
 import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
@@ -23,7 +24,6 @@ export const sendNotification = async ({
 	mentionIds,
 	disableAllMessageNotifications,
 }) => {
-
 	// don't notify the sender
 	if (subscription.u._id === sender._id) {
 		return;
@@ -34,6 +34,21 @@ export const sendNotification = async ({
 	// mute group notifications (@here and @all) if not directly mentioned as well
 	if (!hasMentionToUser && !hasReplyToThread && subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
 		return;
+	}
+
+	if (!subscription.receiver) {
+		subscription.receiver = [
+			Users.findOneById(subscription.u._id, {
+				fields: {
+					active: 1,
+					emails: 1,
+					language: 1,
+					status: 1,
+					statusConnection: 1,
+					username: 1,
+				},
+			}),
+		];
 	}
 
 	const [receiver] = subscription.receiver;
@@ -198,7 +213,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		disableNotifications: { $ne: true },
 		$or: [
 			{ 'userHighlights.0': { $exists: 1 } },
-			...(usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : []),
+			...usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : [],
 		],
 	};
 

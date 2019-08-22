@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { t } from '../../../utils';
 import toastr from 'toastr';
+
+import { t } from '../../../utils';
 
 Accounts.onEmailVerificationLink(function(token, done) {
 	Accounts.verifyEmail(token, function(error) {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { API } from '../api';
 
 API.v1.addRoute('uploadImportFile', { authRequired: true }, {
@@ -43,7 +44,7 @@ API.v1.addRoute('getImportFileData', { authRequired: true }, {
 API.v1.addRoute('getLatestImportOperations', { authRequired: true }, {
 	get() {
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('getLatestImportOperations'));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('getLatestImportOperations'); });
 
 		return API.v1.success(result);
 	},

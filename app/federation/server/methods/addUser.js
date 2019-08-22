@@ -1,45 +1,35 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from '../../../models';
 
-import { Federation } from '../';
-import { logger } from '../logger';
+import { FederationServers, Users } from '../../../models';
 
-export function addUser(identifier) {
+import { Federation } from '..';
+
+export function addUser(query) {
 	if (!Meteor.userId()) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'Federation.addUser' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addUser' });
 	}
 
-	if (!Federation.peerServer.enabled) {
-		throw new Meteor.Error('error-federation-disabled', 'Federation disabled', { method: 'Federation.addUser' });
+	const user = Federation.client.getUserByUsername(query);
+
+	if (!user) {
+		throw Federation.errors.userNotFound(query);
 	}
 
-	// Make sure the federated user still exists, and get the unique one, by email address
-	const [federatedUser] = Federation.peerClient.findUsers(identifier, { usernameOnly: true });
-
-	if (!federatedUser) {
-		throw new Meteor.Error('federation-invalid-user', 'There is no user to add.');
-	}
-
-	let user = null;
-
-	const localUser = federatedUser.getLocalUser();
-
-	localUser.name += `@${ federatedUser.user.federation.peer }`;
-
-	// Delete the _id
-	delete localUser._id;
+	let userId = user._id;
 
 	try {
 		// Create the local user
-		user = Users.create(localUser);
-	} catch (err) {
-		// If the user already exists, return the existing user
-		if (err.code === 11000) {
-			user = Users.findOne({ 'federation._id': localUser.federation._id });
-		}
+		userId = Users.create(user);
 
-		logger.error(err);
+		// Refresh the servers list
+		FederationServers.refreshServers();
+	} catch (err) {
+		// This might get called twice by the createDirectMessage method
+		// so we need to handle the situation accordingly
+		if (err.code !== 11000) {
+			throw err;
+		}
 	}
 
-	return user;
+	return Users.findOne({ _id: userId });
 }

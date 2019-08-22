@@ -3,15 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { t, roomTypes, handleError } from '../../../../utils';
-import { TabBar, fireGlobalEvent } from '../../../../ui-utils';
+import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
 import { settings } from '../../../../settings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
-import { call } from '../../../../ui-utils';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -22,6 +22,15 @@ const isDiscussion = ({ _id }) => {
 	return !!(room && room.prid);
 };
 
+const getUserStatus = (id) => {
+	const roomData = Session.get(`roomData${ id }`);
+	return roomTypes.getUserStatus(roomData.t, id);
+};
+
+const getUserStatusText = (id) => {
+	const roomData = Session.get(`roomData${ id }`);
+	return roomTypes.getUserStatusText(roomData.t, id);
+};
 
 Template.headerRoom.helpers({
 	back() {
@@ -79,19 +88,15 @@ Template.headerRoom.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData || !roomData.topic) { return ''; }
 
-		let roomTopic = Markdown.parse(roomData.topic);
+		let roomTopic = Markdown.parse(roomData.topic.replace(/\n/mg, ' '));
 
 		// &#39; to apostrophe (') for emojis such as :')
 		roomTopic = roomTopic.replace(/&#39;/g, '\'');
 
-		Object.keys(emoji.packages).forEach((emojiPackage) => {
-			roomTopic = emoji.packages[emojiPackage].render(roomTopic);
-		});
+		roomTopic = Object.keys(emoji.packages).reduce((topic, emojiPackage) => emoji.packages[emojiPackage].render(topic), roomTopic);
 
 		// apostrophe (') back to &#39;
-		roomTopic = roomTopic.replace(/\'/g, '&#39;');
-
-		return roomTopic;
+		return roomTopic.replace(/\'/g, '&#39;');
 	},
 
 	roomIcon() {
@@ -106,12 +111,30 @@ Template.headerRoom.helpers({
 	},
 	encryptionState() {
 		const room = ChatRoom.findOne(this._id);
-		return (room && room.encrypted) && 'encrypted';
+		return settings.get('E2E_Enable') && room && room.encrypted && 'encrypted';
 	},
 
 	userStatus() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		return roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
+		return getUserStatus(this._id) || 'offline';
+	},
+
+	userStatusText() {
+		const statusText = getUserStatusText(this._id);
+		if (statusText) {
+			return statusText;
+		}
+
+		const presence = getUserStatus(this._id);
+		if (presence) {
+			return t(presence);
+		}
+
+		const oldStatusText = Template.instance().userOldStatusText.get();
+		if (oldStatusText) {
+			return oldStatusText;
+		}
+
+		return t('offline');
 	},
 
 	showToggleFavorite() {
@@ -172,10 +195,39 @@ Template.headerRoom.events({
 	},
 });
 
+const loadUserStatusText = () => {
+	const instance = Template.instance();
+
+	if (!instance || !instance.data || !instance.data._id) {
+		return;
+	}
+
+	const id = instance.data._id;
+
+	if (Rooms.findOne(id).t !== 'd') {
+		return;
+	}
+
+	const userId = id.replace(Meteor.userId(), '');
+
+	// If the user is already on the local collection, the method call is not necessary
+	const found = Meteor.users.findOne(userId, { fields: { _id: 1 } });
+	if (found) {
+		return;
+	}
+
+	Meteor.call('getUserStatusText', userId, (error, result) => {
+		if (!error) {
+			instance.userOldStatusText.set(result);
+		}
+	});
+};
+
 Template.headerRoom.onCreated(function() {
 	this.currentChannel = (this.data && this.data._id && Rooms.findOne(this.data._id)) || undefined;
 
 	this.hasTokenpass = new ReactiveVar(false);
+	this.userOldStatusText = new ReactiveVar(null);
 
 	if (settings.get('API_Tokenpass_URL') !== '') {
 		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
@@ -184,4 +236,6 @@ Template.headerRoom.onCreated(function() {
 			}
 		});
 	}
+
+	loadUserStatusText();
 });

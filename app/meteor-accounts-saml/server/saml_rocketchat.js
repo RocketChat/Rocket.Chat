@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Logger } from '../../logger';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+
+import { Logger } from '../../logger';
 import { settings } from '../../settings';
 
 const logger = new Logger('steffo:meteor-accounts-saml', {
@@ -52,6 +53,7 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Cert',
 			multiline: true,
+			secret: true,
 		});
 		settings.add(`SAML_Custom_${ name }_public_cert`, '', {
 			type: 'string',
@@ -66,6 +68,7 @@ Meteor.methods({
 			section: name,
 			multiline: true,
 			i18nLabel: 'SAML_Custom_Private_Key',
+			secret: true,
 		});
 		settings.add(`SAML_Custom_${ name }_button_label_text`, '', {
 			type: 'string',
@@ -85,17 +88,61 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
 		});
+		settings.add(`SAML_Custom_${ name }_email_field`, 'email', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_EMail_Field',
+		});
+		settings.add(`SAML_Custom_${ name }_username_field`, 'username', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Username_Field',
+		});
 		settings.add(`SAML_Custom_${ name }_generate_username`, false, {
 			type: 'boolean',
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Generate_Username',
 		});
+		settings.add(`SAML_Custom_${ name }_username_normalize`, 'None', {
+			type: 'select',
+			values: [
+				{ key: 'None', i18nLabel: 'SAML_Custom_Username_Normalize_None' },
+				{ key: 'Lowercase', i18nLabel: 'SAML_Custom_Username_Normalize_Lowercase' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Username_Normalize',
+		});
+		settings.add(`SAML_Custom_${ name }_immutable_property`, 'EMail', {
+			type: 'select',
+			values: [
+				{ key: 'Username', i18nLabel: 'SAML_Custom_Immutable_Property_Username' },
+				{ key: 'EMail', i18nLabel: 'SAML_Custom_Immutable_Property_EMail' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Immutable_Property',
+		});
 		settings.add(`SAML_Custom_${ name }_debug`, false, {
 			type: 'boolean',
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Debug',
+		});
+		settings.add(`SAML_Custom_${ name }_name_overwrite`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_name_overwrite',
+		});
+		settings.add(`SAML_Custom_${ name }_mail_overwrite`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_mail_overwrite',
 		});
 		settings.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
 			type: 'select',
@@ -106,6 +153,12 @@ Meteor.methods({
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Logout_Behaviour',
+		});
+		settings.add(`SAML_Custom_${ name }_custom_authn_context`, 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Authn_Context',
 		});
 	},
 });
@@ -128,10 +181,17 @@ const getSamlConfigs = function(service) {
 		},
 		entryPoint: settings.get(`${ service.key }_entry_point`),
 		idpSLORedirectURL: settings.get(`${ service.key }_idp_slo_redirect_url`),
+		usernameField: settings.get(`${ service.key }_username_field`),
+		usernameNormalize: settings.get(`${ service.key }_username_normalize`),
+		emailField: settings.get(`${ service.key }_email_field`),
+		immutableProperty: settings.get(`${ service.key }_immutable_property`),
 		generateUsername: settings.get(`${ service.key }_generate_username`),
 		debug: settings.get(`${ service.key }_debug`),
+		nameOverwrite: settings.get(`${ service.key }_name_overwrite`),
+		mailOverwrite: settings.get(`${ service.key }_mail_overwrite`),
 		issuer: settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: settings.get(`${ service.key }_logout_behaviour`),
+		customAuthnContext: settings.get(`${ service.key }_custom_authn_context`),
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
@@ -147,7 +207,8 @@ const debounce = (fn, delay) => {
 		if (timer != null) {
 			Meteor.clearTimeout(timer);
 		}
-		return timer = Meteor.setTimeout(fn, delay);
+		timer = Meteor.setTimeout(fn, delay);
+		return timer;
 	};
 };
 const serviceName = 'saml';
@@ -163,6 +224,12 @@ const configureSamlService = function(samlConfigs) {
 	}
 	// TODO: the function configureSamlService is called many times and Accounts.saml.settings.generateUsername keeps just the last value
 	Accounts.saml.settings.generateUsername = samlConfigs.generateUsername;
+	Accounts.saml.settings.nameOverwrite = samlConfigs.nameOverwrite;
+	Accounts.saml.settings.mailOverwrite = samlConfigs.mailOverwrite;
+	Accounts.saml.settings.immutableProperty = samlConfigs.immutableProperty;
+	Accounts.saml.settings.emailField = samlConfigs.emailField;
+	Accounts.saml.settings.usernameField = samlConfigs.usernameField;
+	Accounts.saml.settings.usernameNormalize = samlConfigs.usernameNormalize;
 	Accounts.saml.settings.debug = samlConfigs.debug;
 
 	return {
@@ -173,6 +240,7 @@ const configureSamlService = function(samlConfigs) {
 		cert: samlConfigs.secret.cert,
 		privateCert,
 		privateKey,
+		customAuthnContext: samlConfigs.customAuthnContext,
 	};
 };
 

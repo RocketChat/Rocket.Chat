@@ -1,16 +1,21 @@
+import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { Messages, Subscriptions, Users } from '../../../models';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { EmojiPicker, emoji } from '../../../emoji';
 import { call } from '../../../ui-utils';
 import { t, getUserPreference, slashCommands } from '../../../utils';
-import _ from 'underscore';
+import { customMessagePopups } from './customMessagePopups';
+import './messagePopupConfig.html';
+import './messagePopupSlashCommand.html';
+import './messagePopupUser.html';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
@@ -174,6 +179,15 @@ Template.messagePopupConfig.onCreated(function() {
 });
 
 Template.messagePopupConfig.helpers({
+	customMessagePopups() {
+		return customMessagePopups.get();
+	},
+
+	getCustomConfig() {
+		const template = Template.instance();
+		return this.configGetter(template);
+	},
+
 	popupUserConfig() {
 		const template = Template.instance();
 		return {
@@ -194,12 +208,12 @@ Template.messagePopupConfig.helpers({
 					.find(
 						{
 							ts: { $exists: true },
-							...(filterRegex && {
+							...filterRegex && {
 								$or: [
 									{ username: filterRegex },
 									{ name: filterRegex },
 								],
-							}),
+							},
 						},
 						{
 							limit: 5,
@@ -218,12 +232,12 @@ Template.messagePopupConfig.helpers({
 									t: 'd',
 									$and: [
 										{
-											...(filterRegex && {
+											...filterRegex && {
 												$or: [
 													{ name: filterRegex },
 													{ fname: filterRegex },
 												],
-											}),
+											},
 										},
 										{
 											name: { $nin: usernamesAlreadyFetched },
@@ -266,12 +280,12 @@ Template.messagePopupConfig.helpers({
 						const newItems = Meteor.users.find({
 							$and: [
 								{
-									...(filterRegex && {
+									...filterRegex && {
 										$or: [
 											{ username: filterRegex },
 											{ name: filterRegex },
 										],
-									}),
+									},
 								},
 								{
 									username: {

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { Messages, Rooms, LivechatVisitors } from '../../../../models';
+
+import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api';
 import { loadMessageHistory } from '../../../../lib';
@@ -95,7 +96,6 @@ API.v1.addRoute('livechat/message/:_id', {
 			}
 
 			return API.v1.success({ message });
-
 		} catch (e) {
 			return API.v1.failure(e.error);
 		}
@@ -262,7 +262,7 @@ API.v1.addRoute('livechat/messages', { authRequired: true }, {
 		let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
 		let rid;
 		if (visitor) {
-			const rooms = Rooms.findOpenByVisitorToken(visitorToken).fetch();
+			const rooms = LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
 			if (rooms && rooms.length > 0) {
 				rid = rooms[0]._id;
 			} else {

@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+
 import { Base } from './_Base';
 
 export class Uploads extends Base {
@@ -104,9 +105,8 @@ export class Uploads extends Base {
 	deleteFile(fileId) {
 		if (this.model.direct && this.model.direct.remove != null) {
 			return this.model.direct.remove({ _id: fileId });
-		} else {
-			return this.remove({ _id: fileId });
 		}
+		return this.remove({ _id: fileId });
 	}
 }
 

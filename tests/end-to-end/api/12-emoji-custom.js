@@ -1,5 +1,6 @@
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { imgURL } from '../../data/interactions';
+
 const customEmojiName = `my-custom-emoji-${ Date.now() }`;
 let createdCustomEmoji;
 
@@ -7,28 +8,6 @@ describe('[EmojiCustom]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
-	// DEPRECATED
-	// Will be removed after v1.12.0
-	describe('[/emoji-custom]', () => {
-		it('should return emojis', (done) => {
-			request.get(api('emoji-custom'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('emojis').and.to.be.a('array');
-				})
-				.end(done);
-		});
-		it('should return emojis when use "query" query parameter', (done) => {
-			request.get(api('emoji-custom?query={"_updatedAt": {"$gt": { "$date": "2018-11-27T13:52:01Z" } }}'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('emojis').and.to.be.a('array');
-				})
-				.end(done);
-		});
-	});
 
 	describe('[/emoji-custom.create]', () => {
 		it('should create new custom emoji', (done) => {
@@ -80,12 +59,15 @@ describe('[EmojiCustom]', function() {
 
 	describe('[/emoji-custom.update]', () => {
 		before((done) => {
-			request.get(api('emoji-custom'))
+			request.get(api('emoji-custom.list'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('emojis').and.to.be.a('array');
-					createdCustomEmoji = res.body.emojis.find((emoji) => emoji.name === customEmojiName);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.not.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+
+					createdCustomEmoji = res.body.emojis.update.find((emoji) => emoji.name === customEmojiName);
 				})
 				.end(done);
 		});

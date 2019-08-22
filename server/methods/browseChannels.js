@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { hasPermission } from '../../app/authorization';
-import { Rooms, Users } from '../../app/models';
 import s from 'underscore.string';
 
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Users } from '../../app/models';
 import { Federation } from '../../app/federation/server';
+import { settings } from '../../app/settings/server';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -57,11 +58,13 @@ Meteor.methods({
 			limit,
 		};
 
+		const canViewAnonymous = settings.get('Accounts_AllowAnonymousRead') === true;
+
 		const user = Meteor.user();
 
 		if (type === 'channels') {
 			const sort = sortChannels(sortBy, sortDirection);
-			if (!hasPermission(user._id, 'view-c-room')) {
+			if ((!user && !canViewAnonymous) || (user && !hasPermission(user._id, 'view-c-room'))) {
 				return;
 			}
 
@@ -83,6 +86,11 @@ Meteor.methods({
 				total: result.count(), // count ignores the `skip` and `limit` options
 				results: result.fetch(),
 			};
+		}
+
+		// non-logged id user
+		if (!user) {
+			return;
 		}
 
 		// type === users
@@ -110,9 +118,9 @@ Meteor.methods({
 		if (workspace === 'all') {
 			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
 		} else if (workspace === 'external') {
-			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.domain);
 		} else {
-			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.domain);
 		}
 
 		const total = result.count(); // count ignores the `skip` and `limit` options
@@ -120,12 +128,10 @@ Meteor.methods({
 
 		// Try to find federated users, when appliable
 		if (Federation.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
-			const federatedUsers = Federation.methods.searchUsers(text);
+			const users = Federation.methods.searchUsers(text);
 
-			for (const federatedUser of federatedUsers) {
-				const { user } = federatedUser;
-
-				const exists = results.findIndex((e) => e.domain === user.federation.peer && e.username === user.username) !== -1;
+			for (const user of users) {
+				const exists = results.findIndex((e) => e._id === user._id) !== -1;
 
 				if (exists) { continue; }
 
@@ -133,9 +139,9 @@ Meteor.methods({
 				results.unshift({
 					username: user.username,
 					name: user.name,
-					createdAt: user.createdAt,
 					emails: user.emails,
 					federation: user.federation,
+					isRemote: true,
 				});
 			}
 		}

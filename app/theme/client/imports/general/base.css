@@ -89,7 +89,7 @@ button {
 
 	flex: 1 1 auto;
 
-	height: 1%;
+	height: 100%;
 
 	max-height: 100%;
 
@@ -160,6 +160,7 @@ button {
 .first-unread .body {
 	&::before {
 		position: absolute;
+		z-index: 1;
 		top: 0;
 		left: 0;
 
@@ -167,6 +168,9 @@ button {
 		height: 1px;
 
 		content: "";
+
+		animation-name: unread;
+		animation-duration: 0.2s;
 
 		pointer-events: none;
 
@@ -183,6 +187,9 @@ button {
 		padding-bottom: 2px;
 
 		content: attr(data-unread-text);
+
+		animation-name: unread;
+		animation-duration: 0.2s;
 		text-align: right;
 		text-transform: lowercase;
 
@@ -199,55 +206,32 @@ button {
 	}
 }
 
+@keyframes unread {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 100%;
+	}
+}
+
+.message.new-day.first-unread {
+	&::after {
+		border-color: var(--rc-color-error);
+	}
+
+	& .body {
+		&::before {
+			display: none;
+		}
+
+		&::after {
+			top: -26px;
+		}
+	}
+}
+
 .hidden {
 	display: none;
-}
-
-.loading-animation {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-
-	display: flex;
-
-	text-align: center;
-	align-items: center;
-	justify-content: center;
-}
-
-.loading-animation > .bounce {
-	display: inline-block;
-
-	width: 10px;
-	height: 10px;
-	margin: 2px;
-
-	animation: loading-bouncedelay 1.4s infinite ease-in-out both;
-
-	border-radius: 100%;
-	background-color: rgba(255, 255, 255, 0.6);
-}
-
-.loading-animation .bounce1 {
-	-webkit-animation-delay: -0.32s;
-	animation-delay: -0.32s;
-}
-
-.loading-animation .bounce2 {
-	-webkit-animation-delay: -0.16s;
-	animation-delay: -0.16s;
-}
-
-@keyframes loading-bouncedelay {
-	0%,
-	80%,
-	100% {
-		transform: scale(0);
-	}
-
-	40% {
-		transform: scale(1);
-	}
 }

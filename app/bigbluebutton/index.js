@@ -1,1 +1,1 @@
-export * from './server/bigbluebutton-api';
+export { default } from './server/bigbluebutton-api';

@@ -6,3 +6,5 @@ if (typeof mongoOptionStr !== 'undefined') {
 
 	Mongo.setConnectionOptions(mongoOptions);
 }
+
+process.env.HTTP_FORWARDED_COUNT = process.env.HTTP_FORWARDED_COUNT || '1';

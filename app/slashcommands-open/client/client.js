@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { slashCommands, roomTypes } from '../../utils';
 import { ChatSubscription, Subscriptions } from '../../models';
 
@@ -44,7 +45,6 @@ function Open(command, params /* , item*/) {
 		const subscription = Subscriptions.findOne(query);
 		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	});
-
 }
 
 slashCommands.add('open', Open, {

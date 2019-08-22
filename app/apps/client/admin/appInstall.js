@@ -10,7 +10,10 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
+
 import { APIClient } from '../../../utils';
+import { SideNav } from '../../../ui-utils/client';
 
 Template.appInstall.helpers({
 	appFile() {
@@ -134,4 +137,11 @@ Template.appInstall.events({
 
 		t.isInstalling.set(false);
 	},
+});
+
+Template.appInstall.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });
