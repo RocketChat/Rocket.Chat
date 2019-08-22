@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { modal } from '../../ui-utils';
-import { t } from '../../utils';
 import _ from 'underscore';
 import toastr from 'toastr';
+
+import { modal } from '../../ui-utils';
+import { t } from '../../utils';
 
 Template.addWebdavAccount.helpers({
 	btnAddNewServer() {
@@ -24,6 +25,8 @@ Template.addWebdavAccount.events({
 			return instance.loading.set(false);
 		}
 		Meteor.call('addWebdavAccount', formData, function(error, response) {
+			modal.close();
+			instance.loading.set(false);
 			if (error) {
 				return toastr.error(t(error.error));
 			}
@@ -31,8 +34,6 @@ Template.addWebdavAccount.events({
 				return toastr.error(t(response.message));
 			}
 			toastr.success(t(response.message));
-			instance.loading.set(false);
-			modal.close();
 		});
 	},
 });

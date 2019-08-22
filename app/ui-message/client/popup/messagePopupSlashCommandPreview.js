@@ -1,11 +1,12 @@
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { slashCommands } from '../../../utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { toolbarSearch } from '../../../ui-sidenav';
-import _ from 'underscore';
+import './messagePopupSlashCommandPreview.html';
 
 const keys = {
 	TAB: 9,
@@ -24,7 +25,7 @@ function getCursorPosition(input) {
 
 	if (input.selectionStart) {
 		return input.selectionStart;
-	} else if (document.selection) {
+	} if (document.selection) {
 		input.focus();
 		const sel = document.selection.createRange();
 		const selLen = document.selection.createRange().text.length;
@@ -51,7 +52,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 	template.fetchPreviews = _.debounce(function _previewFetcher(cmd, args) {
 		const command = cmd;
 		const params = args;
-		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid: Session.get('openedRoom') } }, function(err, preview) {
+		const { rid } = template.data;
+		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid } }, function(err, preview) {
 			if (err) {
 				return;
 			}
@@ -101,7 +103,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 			return;
 		}
 
-		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid: Session.get('openedRoom') } }, item, function(err) {
+		const { rid } = template.data;
+		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid } }, item, function(err) {
 			if (err) {
 				console.warn(err);
 			}
@@ -129,7 +132,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 		// Ensure the command they're typing actually exists
 		// And it provides a command preview
 		// And if it provides a permission to check, they have permission to run the command
-		if (!command || !command.providesPreview || (command.permission && !hasAtLeastOnePermission(command.permission, Session.get('openedRoom')))) {
+		const { rid } = template.data;
+		if (!command || !command.providesPreview || (command.permission && !hasAtLeastOnePermission(command.permission, rid))) {
 			template.open.set(false);
 			return;
 		}

@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import _ from 'underscore';
+
+import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
-import { settings as rcSettings } from '../../../../settings';
+import { callbacks } from '../../../../callbacks/server';
 
 export function online() {
-	const onlineAgents = Livechat.getOnlineAgents();
-	return (onlineAgents && onlineAgents.count() > 0) || rcSettings.get('Livechat_guest_pool_with_no_agents');
+	return Livechat.online();
 }
 
 export function findTriggers() {
@@ -37,13 +37,14 @@ export function findRoom(token, rid) {
 		servedBy: 1,
 		open: 1,
 		v: 1,
+		ts: 1,
 	};
 
 	if (!rid) {
-		return Rooms.findLivechatByVisitorToken(token, fields);
+		return LivechatRooms.findOneByVisitorToken(token, fields);
 	}
 
-	return Rooms.findLivechatByIdAndVisitorToken(rid, token, fields);
+	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
 export function findOpenRoom(token, departmentId) {
@@ -56,7 +57,7 @@ export function findOpenRoom(token, departmentId) {
 	};
 
 	let room;
-	const rooms = departmentId ? Rooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(token, options).fetch();
+	const rooms = departmentId ? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : LivechatRooms.findOpenByVisitorToken(token, options).fetch();
 	if (rooms && rooms.length > 0) {
 		room = rooms[0];
 	}
@@ -64,7 +65,7 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
-export function getRoom(guest, rid, roomInfo) {
+export function getRoom({ guest, rid, roomInfo, agent }) {
 	const token = guest && guest.token;
 
 	const message = {
@@ -75,18 +76,23 @@ export function getRoom(guest, rid, roomInfo) {
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo);
+	return Livechat.getRoom(guest, message, roomInfo, agent);
 }
 
 export function findAgent(agentId) {
 	return Users.getAgentInfo(agentId);
 }
 
+export function normalizeHttpHeaderData(headers = {}) {
+	const httpHeaders = Object.assign({}, headers);
+	return { httpHeaders };
+}
 export function settings() {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = findTriggers();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
+	const emojis = Meteor.call('listEmojiCustom');
 
 	return {
 		enabled: initSettings.Livechat_enabled,
@@ -131,8 +137,66 @@ export function settings() {
 		departments,
 		resources: {
 			sound,
+			emojis,
 		},
 	};
 }
 
+export async function getExtraConfigInfo(room) {
+	return callbacks.run('livechat.onLoadConfigApi', room);
+}
 
+export function findRooms({
+	agents,
+	departmentId,
+	open,
+	createdAt,
+	closedAt,
+	tags,
+	customFields,
+	options = {},
+}) {
+	const query = { t: 'l' };
+	if (agents) {
+		query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
+	}
+	if (departmentId) {
+		query.departmentId = departmentId;
+	}
+	if (open !== undefined) {
+		query.open = { $exists: open };
+	}
+	if (createdAt) {
+		query.ts = {};
+		if (createdAt.start) {
+			query.ts.$gte = new Date(createdAt.start);
+		}
+		if (createdAt.end) {
+			query.ts.$lte = new Date(createdAt.end);
+		}
+	}
+	if (closedAt) {
+		query.closedAt = {};
+		if (closedAt.start) {
+			query.closedAt.$gte = new Date(closedAt.start);
+		}
+		if (closedAt.end) {
+			query.closedAt.$lte = new Date(closedAt.end);
+		}
+	}
+	if (tags) {
+		query.tags = { $in: tags };
+	}
+	if (customFields) {
+		query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: customFields[key] }));
+	}
+	return {
+		rooms: LivechatRooms.find(query, {
+			sort: options.sort || { ts: 1 },
+			skip: options.offset,
+			limit: options.count,
+			fields: options.fields,
+		}).fetch(),
+		total: LivechatRooms.find(query).count(),
+	};
+}

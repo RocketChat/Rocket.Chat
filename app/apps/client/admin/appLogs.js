@@ -1,17 +1,19 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { APIClient } from '../../../utils';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 import hljs from 'highlight.js';
+
+import { APIClient } from '../../../utils';
+import { SideNav } from '../../../ui-utils/client';
 
 const loadData = (instance) => {
 	Promise.all([
 		APIClient.get(`apps/${ instance.id.get() }`),
 		APIClient.get(`apps/${ instance.id.get() }/logs`),
 	]).then((results) => {
-
 		instance.app.set(results[0].app);
 		instance.logs.set(results[1].logs);
 
@@ -70,7 +72,7 @@ Template.appLogs.helpers({
 
 		if (!data) {
 			return value;
-		} else if (typeof data === 'object') {
+		} if (typeof data === 'object') {
 			value = hljs.highlight('json', JSON.stringify(data, null, 2)).value;
 		} else {
 			value = hljs.highlight('json', data).value;
@@ -94,8 +96,8 @@ Template.appLogs.events({
 		$(e.currentTarget).find('.button-down').removeClass('arrow-up');
 	},
 
-	'click .js-cancel': (e, t) => {
-		FlowRouter.go('app-manage', { appId: t.app.get().id }, { version: FlowRouter.getQueryParam('version') });
+	'click .js-cancel': () => {
+		FlowRouter.go('apps');
 	},
 
 	'click .js-refresh': (e, t) => {
@@ -103,4 +105,11 @@ Template.appLogs.events({
 		t.logs.set([]);
 		loadData(t);
 	},
+});
+
+Template.appLogs.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+
 import { modal } from '../../../../ui-utils';
 import { t, handleError } from '../../../../utils';
 import { LivechatCustomField } from '../../collections/LivechatCustomField';
+import './livechatCustomFields.html';
 
 Template.livechatCustomFields.helpers({
 	customFields() {

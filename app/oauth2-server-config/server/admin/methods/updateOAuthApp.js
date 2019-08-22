@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { hasPermission } from '../../../../authorization';
 import { OAuthApps, Users } from '../../../../models';
-import _ from 'underscore';
+import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({
 	updateOAuthApp(applicationId, application) {
@@ -21,12 +23,19 @@ Meteor.methods({
 		if (currentApplication == null) {
 			throw new Meteor.Error('error-application-not-found', 'Application not found', { method: 'updateOAuthApp' });
 		}
+
+		const redirectUri = parseUriList(application.redirectUri);
+
+		if (redirectUri.length === 0) {
+			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', { method: 'updateOAuthApp' });
+		}
+
 		OAuthApps.update(applicationId, {
 			$set: {
 				name: application.name,
 				active: application.active,
-				redirectUri: application.redirectUri,
-				_updatedAt: new Date,
+				redirectUri,
+				_updatedAt: new Date(),
 				_updatedBy: Users.findOne(this.userId, {
 					fields: {
 						username: 1,

@@ -1,10 +1,11 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
-import { Settings } from '../../../models';
+
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
+import { Settings } from '../../../models';
+import { settings } from '../../../settings';
 
 export function connectWorkspace(token) {
 	const { connectToCloud } = retrieveRegistrationStatus();
@@ -32,6 +33,8 @@ export function connectWorkspace(token) {
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
 			console.error(`Failed to register with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
 		}
 
 		return false;
@@ -48,6 +51,7 @@ export function connectWorkspace(token) {
 	Settings.updateValueById('Cloud_Workspace_Client_Id', data.client_id);
 	Settings.updateValueById('Cloud_Workspace_Client_Secret', data.client_secret);
 	Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', data.client_secret_expires_at);
+	Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
 
 	// Now that we have the client id and secret, let's get the access token

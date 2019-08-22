@@ -113,6 +113,15 @@
 							<td class="border-component-color">{{statistics.process.nodeVersion}}</td>
 						</tr>
 						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Mongo_version"}}</th>
+							<td class="border-component-color">{{statistics.mongoVersion}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Mongo_storageEngine"}}</th>
+							<td class="border-component-color">{{statistics.mongoStorageEngine}}</td>
+						</tr>
+
+						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "OS_Uptime"}}</th>
 							<td class="border-component-color">{{humanReadableTime statistics.os.uptime}}</td>
 						</tr>
@@ -174,6 +183,10 @@
 							<td class="border-component-color">{{statistics.nonActiveUsers}}</td>
 						</tr>
 						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Connected_Users"}}</th>
+							<td class="border-component-color">{{statistics.totalConnectedUsers}}</td>
+						</tr>
+						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "Stats_Online_Users"}}</th>
 							<td class="border-component-color">{{statistics.onlineUsers}}</td>
 						</tr>
@@ -206,6 +219,14 @@
 							<td class="border-component-color">{{statistics.totalLivechat}}</td>
 						</tr>
 						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Total_Discussions"}}</th>
+							<td class="border-component-color">{{statistics.totalDiscussions}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Total_Threads"}}</th>
+							<td class="border-component-color">{{statistics.totalThreads}}</td>
+						</tr>
+						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages"}}</th>
 							<td class="border-component-color">{{statistics.totalMessages}}</td>
 						</tr>
@@ -233,7 +254,40 @@
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Uploads_Size"}}</th>
 							<td class="border-component-color">{{inGB statistics.uploadsTotalSize}}</td>
 						</tr>
-
+						{{#if statistics.apps}}
+							<tr class="admin-table-row">
+								<th class="content-background-color border-component-color">{{_ "Stats_Total_Installed_Apps"}}</th>
+								<td class="border-component-color">{{statistics.apps.totalInstalled}}</td>
+							</tr>
+							<tr class="admin-table-row">
+								<th class="content-background-color border-component-color">{{_ "Stats_Total_Active_Apps"}}</th>
+								<td class="border-component-color">{{statistics.apps.totalActive}}</td>
+							</tr>
+						{{/if}}
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Integrations"}}</th>
+							<td class="border-component-color">{{statistics.integrations.totalIntegrations}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Incoming_Integrations"}}</th>
+							<td class="border-component-color">{{statistics.integrations.totalIncoming}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Active_Incoming_Integrations"}}</th>
+							<td class="border-component-color">{{statistics.integrations.totalIncomingActive}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Outgoing_Integrations"}}</th>
+							<td class="border-component-color">{{statistics.integrations.totalOutgoing}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Active_Outgoing_Integrations"}}</th>
+							<td class="border-component-color">{{statistics.integrations.totalOutgoingActive}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Integrations_With_Script_Enabled"}}</th>
+							<td class="border-component-color">{{statistics.integrations.totalWithScriptEnabled}}</td>
+						</tr>
 					</table>
 
 					{{#if instances}}

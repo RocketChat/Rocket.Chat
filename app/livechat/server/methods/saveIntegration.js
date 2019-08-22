@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import s from 'underscore.string';
 
 Meteor.methods({
 	'livechat:saveIntegration'(values) {
@@ -32,7 +33,5 @@ Meteor.methods({
 		if (typeof values.Livechat_webhook_on_agent_message !== 'undefined') {
 			settings.updateById('Livechat_webhook_on_agent_message', !!values.Livechat_webhook_on_agent_message);
 		}
-
-		return;
 	},
 });

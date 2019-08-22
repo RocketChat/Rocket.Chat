@@ -262,7 +262,11 @@
 	&__join-button {
 		flex: 0;
 
-		margin: 0 0.25rem;
+		margin: -1rem 0.15rem;
+	}
+
+	&__take-it-button {
+		margin: 0 0.5rem;
 	}
 }
 

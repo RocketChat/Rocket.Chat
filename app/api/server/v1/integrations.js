@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { hasPermission } from '../../../authorization';
 import { IntegrationHistory, Integrations } from '../../../models';
 import { API } from '../api';
@@ -61,7 +62,7 @@ API.v1.addRoute('integrations.history', { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { 'integration._id': id });
 		const history = IntegrationHistory.find(ourQuery, {
-			sort: sort ? sort : { _updatedAt: -1 },
+			sort: sort || { _updatedAt: -1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -87,7 +88,7 @@ API.v1.addRoute('integrations.list', { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query);
 		const integrations = Integrations.find(ourQuery, {
-			sort: sort ? sort : { ts: -1 },
+			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
 			fields,

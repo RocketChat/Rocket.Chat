@@ -4,8 +4,8 @@ import { Settings } from '../../../app/models';
 Migrations.add({
 	version: 63,
 	up() {
-		const forward = Settings.findOne({ _id:'Livechat_forward_open_chats' });
-		const timeout = Settings.findOne({ _id:'Livechat_forward_open_chats_timeout' });
+		const forward = Settings.findOne({ _id: 'Livechat_forward_open_chats' });
+		const timeout = Settings.findOne({ _id: 'Livechat_forward_open_chats_timeout' });
 
 		if (forward && forward.value) {
 			Settings.upsert({ _id: 'Livechat_agent_leave_action' }, {

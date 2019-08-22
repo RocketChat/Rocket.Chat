@@ -6,7 +6,6 @@ Package.describe({
 });
 
 const additionalPackages = {
-	livechat: 'rocketchat-livechat/.app/i18n',
 };
 
 const fs = Npm.require('fs');
@@ -32,5 +31,5 @@ Package.onUse(function(api) {
 		}
 	});
 
-	api.use('tap:i18n@1.8.2');
+	api.use('rocketchat:tap-i18n@1.9.1');
 });

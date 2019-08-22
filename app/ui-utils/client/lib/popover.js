@@ -3,15 +3,14 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { isRtl, handleError } from '../../../utils';
-import { ChatSubscription } from '../../../models';
 import _ from 'underscore';
+
 import { hide, leave } from './ChannelActions';
-import { modal } from './modal';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
 import { RoomManager } from './RoomManager';
+import { ChatSubscription } from '../../../models/client';
+import { isRtl, handleError } from '../../../utils/client';
 
 export const popover = {
 	renderedPopover: null,
@@ -57,7 +56,6 @@ Template.popover.onRendered(function() {
 	const { activeElement } = this.data;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
-
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
@@ -177,42 +175,6 @@ Template.popover.events({
 			button.action.call(t.data.data, e, t.data.instance);
 			popover.close();
 			return false;
-		}
-
-		if (e.currentTarget.dataset.id === 'report-abuse') {
-			const message = t.data.data._arguments[1];
-			modal.open({
-				title: TAPi18n.__('Report_this_message_question_mark'),
-				text: message.msg,
-				inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
-				type: 'input',
-				showCancelButton: true,
-				confirmButtonColor: '#DD6B55',
-				confirmButtonText: TAPi18n.__('Report_exclamation_mark'),
-				cancelButtonText: TAPi18n.__('Cancel'),
-				closeOnConfirm: false,
-				html: false,
-			}, (inputValue) => {
-				if (inputValue === false) {
-					return false;
-				}
-
-				if (inputValue === '') {
-					modal.showInputError(TAPi18n.__('You_need_to_write_something'));
-					return false;
-				}
-
-				Meteor.call('reportMessage', message._id, inputValue);
-
-				modal.open({
-					title: TAPi18n.__('Report_sent'),
-					text: TAPi18n.__('Thank_you_exclamation_mark '),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
-			});
-			popover.close();
 		}
 	},
 	'click [data-type="sidebar-item"]'(e, instance) {

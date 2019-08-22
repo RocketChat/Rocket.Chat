@@ -4,17 +4,28 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { SideNav, RocketChatTabBar, TabBar } from '../../../ui-utils';
 import { t, roomTypes } from '../../../utils';
 import { hasAllPermission } from '../../../authorization';
 import { ChannelSettings } from '../../../channel-settings';
-import _ from 'underscore';
-import s from 'underscore.string';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
+	url() {
+		return this.t === 'd' ? getAvatarURL({ username: `@${ this.usernames[0] }` }) : roomTypes.getConfig(this.t).getAvatarPath(this);
+	},
+	getIcon() {
+		return roomTypes.getIcon(this);
+	},
+	roomName() {
+		return this.t === 'd' ? this.usernames.join(' x ') : roomTypes.getRoomName(this.t, this);
+	},
 	searchText() {
 		const instance = Template.instance();
 		return instance.filter && instance.filter.get();
@@ -42,18 +53,14 @@ Template.adminRooms.helpers({
 		const rooms = Template.instance().rooms();
 		return rooms && rooms.count();
 	},
-	name() {
-		return roomTypes.roomTypes[this.t].getDisplayName(this);
-	},
 	type() {
 		return TAPi18n.__(roomTypes.roomTypes[this.t].label);
 	},
 	'default'() {
 		if (this.default) {
 			return t('True');
-		} else {
-			return t('False');
 		}
+		return t('False');
 	},
 	flexData() {
 		return {
@@ -64,8 +71,8 @@ Template.adminRooms.helpers({
 		const instance = Template.instance();
 		return function(currentTarget) {
 			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
 			) {
 				return instance.limit.set(instance.limit.get() + 50);
 			}
@@ -110,11 +117,12 @@ Template.adminRooms.onCreated(function() {
 			return hasAllPermission('view-room-administration');
 		},
 	});
+	const allowedTypes = ['c', 'd', 'p'];
 	this.autorun(function() {
 		const filter = instance.filter.get();
 		let types = instance.types.get();
 		if (types.length === 0) {
-			types = ['c', 'd', 'p'];
+			types = allowedTypes;
 		}
 		const limit = instance.limit.get();
 		const subscription = instance.subscribe('adminRooms', filter, types, limit);
@@ -130,14 +138,18 @@ Template.adminRooms.onCreated(function() {
 			types = [];
 		}
 		let query = {};
+		const discussion = types.includes('dicussions');
 		filter = s.trim(filter);
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
+			query = { ...discussion && { prid: { $exists: true } }, $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
 		}
+		types = types.filter((type) => type !== 'dicussions');
+
 		if (types.length) {
 			query.t = { $in: types };
 		}
+
 		const limit = instance.limit && instance.limit.get();
 		return AdminChatRoom.find(query, { limit, sort: { default: -1, name: 1 } });
 	};

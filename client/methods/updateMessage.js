@@ -1,14 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { TimeSync } from 'meteor/mizzao:timesync';
+import _ from 'underscore';
+import moment from 'moment';
+import toastr from 'toastr';
+
 import { t } from '../../app/utils';
 import { ChatMessage } from '../../app/models';
 import { hasAtLeastOnePermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { callbacks } from '../../app/callbacks';
-import _ from 'underscore';
-import moment from 'moment';
-import toastr from 'toastr';
 
 Meteor.methods({
 	updateMessage(message) {
@@ -50,7 +51,6 @@ Meteor.methods({
 		}
 
 		Tracker.nonreactive(function() {
-
 			if (isNaN(TimeSync.serverOffset())) {
 				message.editedAt = new Date();
 			} else {
@@ -67,13 +67,13 @@ Meteor.methods({
 
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {
-					delete messageObject.$set.msg;
+					delete messageObject.msg;
 				}
 			}
 			ChatMessage.update({
 				_id: message._id,
 				'u._id': Meteor.userId(),
-			}, { $set : messageObject });
+			}, { $set: messageObject });
 		});
 	},
 });

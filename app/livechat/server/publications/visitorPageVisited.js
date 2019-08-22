@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
-import { Rooms, Messages } from '../../../models';
+import { LivechatRooms, Messages } from '../../../models';
 
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
-
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorPageVisited' }));
 	}
@@ -13,7 +13,7 @@ Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 	}
 
 	const self = this;
-	const room = Rooms.findOneById(roomId);
+	const room = LivechatRooms.findOneById(roomId);
 
 	if (room) {
 		const handle = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history').observeChanges({

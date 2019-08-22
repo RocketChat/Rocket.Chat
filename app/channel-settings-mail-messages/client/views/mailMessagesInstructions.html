@@ -36,9 +36,7 @@
 				</div>
 				{{#with config}}
 					{{#if autocomplete 'isShowing'}}
-						{{#if autocomplete 'isLoaded'}}
-							{{> popupList data=config items=items}}
-						{{/if}}
+						{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
 					{{/if}}
 				{{/with}}
 			</label>

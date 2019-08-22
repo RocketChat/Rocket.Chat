@@ -6,10 +6,6 @@ export class AppHttpBridge {
 	}
 
 	async call(info) {
-		if (typeof info.request.timeout !== 'number' || info.request.timeout > 500) {
-			info.request.timeout = 500;
-		}
-
 		if (!info.request.content && typeof info.request.data === 'object') {
 			info.request.content = JSON.stringify(info.request.data);
 		}

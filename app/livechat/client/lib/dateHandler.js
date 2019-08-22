@@ -1,5 +1,6 @@
-import { handleError } from '../../../utils';
 import moment from 'moment';
+
+import { handleError } from '../../../utils';
 
 
 /**
@@ -51,13 +52,12 @@ export const setDateRange = (value, from, to) => {
 			from: moment(from).format('MMM D YYYY'),
 			to: moment(to).format('MMM D YYYY'),
 		};
-	} else {
-		return {
-			value: 'this-week',
-			from: moment().startOf('week').format('MMM D YYYY'),
-			to: moment().endOf('week').format('MMM D YYYY'),
-		};
 	}
+	return {
+		value: 'this-week',
+		from: moment().startOf('week').format('MMM D YYYY'),
+		to: moment().endOf('week').format('MMM D YYYY'),
+	};
 };
 
 /**
@@ -76,11 +76,11 @@ export const updateDateRange = (currentDaterange, order) => {
 				return setDateRange('day',
 					moment(currentDaterange.from, 'MMM D YYYY').add(1, 'days').startOf('day'),
 					moment(currentDaterange.to, 'MMM D YYYY').add(1, 'days').startOf('day'));
-			} else {
-				return setDateRange('day',
-					moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'days').startOf('day'),
-					moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'days').startOf('day'));
 			}
+			return setDateRange('day',
+				moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'days').startOf('day'),
+				moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'days').startOf('day'));
+
 			// break;
 		case 'this-week':
 		case 'prev-week':
@@ -89,11 +89,11 @@ export const updateDateRange = (currentDaterange, order) => {
 				return setDateRange('week',
 					moment(currentDaterange.from, 'MMM D YYYY').add(1, 'weeks').startOf('week'),
 					moment(currentDaterange.to, 'MMM D YYYY').add(1, 'weeks').endOf('week'));
-			} else {
-				return setDateRange('week',
-					moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'weeks').startOf('week'),
-					moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'weeks').endOf('week'));
 			}
+			return setDateRange('week',
+				moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'weeks').startOf('week'),
+				moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'weeks').endOf('week'));
+
 			// break;
 		case 'this-month':
 		case 'prev-month':
@@ -102,11 +102,11 @@ export const updateDateRange = (currentDaterange, order) => {
 				return setDateRange('month',
 					moment(currentDaterange.from, 'MMM D YYYY').add(1, 'months').startOf('month'),
 					moment(currentDaterange.to, 'MMM D YYYY').add(1, 'months').endOf('month'));
-			} else {
-				return setDateRange('month',
-					moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'months').startOf('month'),
-					moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'months').endOf('month'));
 			}
+			return setDateRange('month',
+				moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'months').startOf('month'),
+				moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'months').endOf('month'));
+
 			// break;
 		case 'custom':
 			handleError({ details: { errorTitle: 'Navigation_didnot_work' }, error: 'You_have_selected_custom_dates' });

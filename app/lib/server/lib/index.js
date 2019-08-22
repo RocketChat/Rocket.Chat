@@ -5,6 +5,9 @@
 	for the *server* pieces of code which does include the shared
 	library files.
 */
+import './notifyUsersOnMessage';
+import './meteorFixes';
+
 export { sendNotification } from './sendNotificationsOnMessage';
 export { hostname } from '../../lib/startup/settingsOnLoadSiteUrl';
 export { passwordPolicy } from './passwordPolicy';
@@ -12,5 +15,3 @@ export { validateEmailDomain } from './validateEmailDomain';
 export { RateLimiterClass as RateLimiter } from './RateLimiter';
 export { processDirectEmail } from './processDirectEmail';
 export { msgStream } from './msgStream';
-
-import './notifyUsersOnMessage';

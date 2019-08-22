@@ -21,6 +21,8 @@
 						<label><input type="checkbox" name="room-type" value="c"> {{_ "Channels"}}</label>
 						<label><input type="checkbox" name="room-type" value="d"> {{_ "Direct_Messages"}}</label>
 						<label><input type="checkbox" name="room-type" value="p"> {{_ "Private_Groups"}}</label>
+						<label><input type="checkbox" name="room-type" value="l"> {{_ "Livechat"}}</label>
+						<label><input type="checkbox" name="room-type" value="dicussions"> {{_ "Discussions"}}</label>
 					</form>
 					<div class="results">
 						{{{_ "Showing_results" roomCount}}}
@@ -39,10 +41,10 @@
 							{{#each rooms}}
 								<tr>
 									<td width="30%"><div class="rc-table-wrapper">
-										<div class="rc-table-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-table-avatar">{{> avatar url=url roomIcon="true"}}</div>
 										<div class="rc-table-info">
 											<span class="rc-table-title">
-												{{>icon icon="hashtag" block="rc-table-icon"}} {{name}}
+												{{>icon icon=getIcon block="rc-table-icon"}} {{roomName}}
 											</span>
 										</div>
 									</div></td>

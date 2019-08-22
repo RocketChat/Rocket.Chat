@@ -5,14 +5,16 @@ import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../settings';
-import { SideNav, modal } from '../../ui-utils';
-import { t, handleError } from '../../utils';
-import { CachedCollection } from '../../ui-cached-collection';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
+import { settings } from '../../settings';
+import { SideNav, modal } from '../../ui-utils';
+import { t, handleError } from '../../utils';
+import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
+import { hasAtLeastOnePermission } from '../../authorization/client';
 
 const TempSettings = new Mongo.Collection(null);
 
@@ -49,10 +51,9 @@ const setFieldValue = function(settingId, value, type, editor) {
 
 Template.admin.onCreated(function() {
 	if (settings.cachedCollectionPrivate == null) {
-		settings.cachedCollectionPrivate = new CachedCollection({
+		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection({
 			name: 'private-settings',
 			eventType: 'onLogged',
-			useCache: false,
 		});
 		settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
 		settings.cachedCollectionPrivate.init();
@@ -91,6 +92,9 @@ Template.admin.onDestroyed(function() {
 });
 
 Template.admin.helpers({
+	hasSettingPermission() {
+		return hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
@@ -188,11 +192,10 @@ Template.admin.helpers({
 		});
 		if (found === enableQuery.length) {
 			return {};
-		} else {
-			return {
-				disabled: 'disabled',
-			};
 		}
+		return {
+			disabled: 'disabled',
+		};
 	},
 	isReadonly() {
 		if (this.readonly === true) {
@@ -346,7 +349,7 @@ Template.admin.helpers({
 	},
 	showResetButton() {
 		const setting = TempSettings.findOne({ _id: this._id }, { fields: { value: 1, packageValue: 1 } });
-		return this.type !== 'asset' && setting.value !== setting.packageValue && !this.blocked;
+		return !this.disableReset && !this.readonly && this.type !== 'asset' && setting.value !== setting.packageValue && !this.blocked;
 	},
 });
 
@@ -384,7 +387,8 @@ Template.admin.events({
 			changed: true,
 		};
 		const rcSettings = TempSettings.find(query, {
-			fields: { _id: 1, value: 1, packageValue: 1 } }).fetch();
+			fields: { _id: 1, value: 1, packageValue: 1 },
+		}).fetch();
 		rcSettings.forEach(function(setting) {
 			const oldSetting = settings.collectionPrivate.findOne({ _id: setting._id }, { fields: { value: 1, type: 1, editor: 1 } });
 			setFieldValue(setting._id, oldSetting.value, oldSetting.type, oldSetting.editor);
@@ -428,12 +432,23 @@ Template.admin.events({
 			return;
 		}
 
+		const failedSettings = [];
+
 		settings.batchSet(rcSettings, (err) => {
 			if (err) {
-				return handleError(err);
+				// Handle error for every settings failed.
+				err.details.settingIds.forEach((settingId) => {
+					const error = Object.assign({}, err);
+					failedSettings.push(settingId);
+					error.details.settingIds = settingId;
+					handleError(error);
+				});
 			}
-
-			TempSettings.update({ changed: true }, { $unset: { changed: 1 } });
+			settings.forEach((setting) => {
+				if (!failedSettings.includes(setting._id)) {
+					TempSettings.update({ _id: setting._id }, { $unset: { changed: 1 } });
+				}
+			});
 
 			if (rcSettings.some(({ _id }) => _id === 'Language')) {
 				const lng = Meteor.user().language
@@ -443,7 +458,6 @@ Template.admin.events({
 			}
 			toastr.success(TAPi18n.__('Settings_updated'));
 		});
-
 	},
 	'click .rc-header__section-button .refresh-clients'() {
 		Meteor.call('refreshClients', function() {
@@ -479,9 +493,8 @@ Template.admin.events({
 		return Meteor.call('refreshOAuthService', function(err) {
 			if (err) {
 				return handleError(err);
-			} else {
-				return toastr.success(TAPi18n.__('Done'));
 			}
+			return toastr.success(TAPi18n.__('Done'));
 		});
 	},
 	'click .remove-custom-oauth'() {
@@ -587,7 +600,7 @@ Template.admin.events({
 		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat(doc);
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[this.id];
-		TempSettings.update({ _id: this.id }, { $set: { value } });
+		TempSettings.update({ _id: this.id }, { $set: { value, changed: JSON.stringify(settings.collectionPrivate.findOne(this.id).value) !== JSON.stringify(value) } });
 		event.currentTarget.value = '';
 		event.currentTarget.focus();
 	},
@@ -603,6 +616,7 @@ Template.admin.events({
 		TempSettings.update({ _id: settingId }, {
 			$set: {
 				value,
+				changed: JSON.stringify(settings.collectionPrivate.findOne(settingId).value) !== JSON.stringify(value),
 			},
 		});
 	},

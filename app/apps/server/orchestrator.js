@@ -1,21 +1,22 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
-import { settings } from '../../settings';
+import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppRealStorage, AppRealLogsStorage } from './storage';
-import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { settings } from '../../settings';
+import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
+import { Logger } from '../../logger';
 
 export let Apps;
 
 class AppServerOrchestrator {
 	constructor() {
-		if (Permissions) {
-			Permissions.createOrUpdate('manage-apps', ['admin']);
-		}
+		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
+		Permissions.createOrUpdate('manage-apps', ['admin']);
 
-		this._inDebug = process.env.NODE_ENV !== 'production';
+		this._marketplaceUrl = 'https://marketplace.rocket.chat';
 
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
@@ -80,38 +81,55 @@ class AppServerOrchestrator {
 	}
 
 	isDebugging() {
-		return this._inDebug;
+		return settings.get('Apps_Framework_Development_Mode');
 	}
 
-	debugLog() {
-		if (this._inDebug) {
+	getRocketChatLogger() {
+		return this._rocketchatLogger;
+	}
+
+	debugLog(...args) {
+		if (this.isDebugging()) {
 			// eslint-disable-next-line
-			console.log(...arguments);
+			console.log(...args);
 		}
 	}
 
-	load() {
+	getMarketplaceUrl() {
+		return this._marketplaceUrl;
+	}
+
+	async load() {
 		// Don't try to load it again if it has
 		// already been loaded
 		if (this.isLoaded()) {
 			return;
 		}
 
-		this._manager.load()
+		return this._manager.load()
 			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${ affs.length } Apps!`))
 			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err));
 	}
 
-	unload() {
+	async unload() {
 		// Don't try to unload it if it's already been
 		// unlaoded or wasn't unloaded to start with
 		if (!this.isLoaded()) {
 			return;
 		}
 
-		this._manager.unload()
+		return this._manager.unload()
 			.then(() => console.log('Unloaded the Apps Framework.'))
 			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
+	}
+
+	async updateAppsMarketplaceInfo(apps = []) {
+		if (!this.isLoaded()) {
+			return;
+		}
+
+		return this._manager.updateAppsMarketplaceInfo(apps)
+			.then(() => this._manager.get());
 	}
 }
 
@@ -130,11 +148,6 @@ settings.addGroup('General', function() {
 			},
 			public: true,
 			hidden: false,
-		});
-
-		this.add('Apps_Framework_Marketplace_Url', 'https://marketplace.rocket.chat', {
-			type: 'string',
-			hidden: true,
 		});
 	});
 });

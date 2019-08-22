@@ -1,14 +1,34 @@
 import { Meteor } from 'meteor/meteor';
-import { EmojiCustom } from '../../../models';
-import { API } from '../api';
 import Busboy from 'busboy';
 
-API.v1.addRoute('emoji-custom', { authRequired: true }, {
+import { EmojiCustom } from '../../../models';
+import { API } from '../api';
+
+API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
-		const emojis = Meteor.call('listEmojiCustom', query);
+		const { updatedSince } = this.queryParams;
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+			return API.v1.success({
+				emojis: {
+					update: EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).fetch(),
+					remove: EmojiCustom.trashFindDeletedAfter(updatedSinceDate).fetch(),
+				},
+			});
+		}
 
-		return API.v1.success({ emojis });
+		return API.v1.success({
+			emojis: {
+				update: EmojiCustom.find(query).fetch(),
+				remove: [],
+			},
+		});
 	},
 });
 
@@ -83,7 +103,7 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 						if (!fields._id) {
 							return callback(new Meteor.Error('The required "_id" query param is missing.'));
 						}
-						const emojiToUpdate = EmojiCustom.findOneByID(fields._id);
+						const emojiToUpdate = EmojiCustom.findOneById(fields._id);
 						if (!emojiToUpdate) {
 							return callback(new Meteor.Error('Emoji not found.'));
 						}
@@ -102,7 +122,6 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 				}));
 				this.request.pipe(busboy);
 			})();
-
 		});
 	},
 });
