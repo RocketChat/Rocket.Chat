@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 import _ from 'underscore';
