@@ -1,7 +1,5 @@
 import { BaseRaw } from './BaseRaw';
 
-import { Users } from '..';
-
 export class UsersRaw extends BaseRaw {
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
