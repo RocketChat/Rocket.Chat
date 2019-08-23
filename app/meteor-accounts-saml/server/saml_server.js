@@ -106,6 +106,14 @@ Accounts.normalizeUsername = function(name) {
 };
 
 Accounts.registerLoginHandler(function(loginRequest) {
+	const _guessNameFromUsername = function(username) {
+		return username
+			.replace(/\W/g, ' ')
+			.replace(/\s(.)/g, function($1) { return $1.toUpperCase(); })
+			.replace(/^(.)/, function($1) { return $1.toLowerCase(); })
+			.replace(/^\w/, function($1) { return $1.toUpperCase(); });
+	};
+
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
@@ -186,6 +194,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			if (username) {
 				newUser.username = username;
 			}
+			newUser.name = newUser.name || _guessNameFromUsername(newUser.username); // Make sure every user has a name as well
 
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
