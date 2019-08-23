@@ -2,7 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings/server';
-import { createLivechatSubscription, dispatchAgentDelegated, forwardRoomToAgent, forwardRoomToDepartment } from './Helper';
+import { createLivechatSubscription,
+	dispatchAgentDelegated,
+	forwardRoomToAgent,
+	forwardRoomToDepartment,
+	removeAgentFromSubscription,
+} from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { LivechatRooms, Rooms, Messages, Subscriptions, Users } from '../../../models/server';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
@@ -68,15 +73,6 @@ export const RoutingManager = {
 	unassignAgent(inquiry, departmentId) {
 		const { _id, rid, department } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
-		const { servedBy } = room;
-
-		if (!servedBy) {
-			return false;
-		}
-
-		Subscriptions.removeByRoomId(rid);
-		LivechatRooms.removeAgentByRoomId(rid);
-		LivechatInquiry.queueInquiry(_id);
 
 		if (departmentId && departmentId !== department) {
 			LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
@@ -85,10 +81,15 @@ export const RoutingManager = {
 			inquiry.department = departmentId;
 		}
 
-		this.getMethod().delegateAgent(null, inquiry);
-		Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
-		dispatchAgentDelegated(rid, null);
+		const { servedBy } = room;
+		if (servedBy) {
+			removeAgentFromSubscription(rid, servedBy);
+			LivechatRooms.removeAgentByRoomId(rid);
+			dispatchAgentDelegated(rid, null);
+		}
 
+		LivechatInquiry.queueInquiry(_id);
+		this.getMethod().delegateAgent(null, inquiry);
 		return true;
 	},
 
@@ -126,7 +127,6 @@ export const RoutingManager = {
 
 	async transferRoom(room, guest, transferData) {
 		const { userId, departmentId } = transferData;
-
 		if (userId) {
 			return forwardRoomToAgent(room, userId);
 		}
