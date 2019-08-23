@@ -169,7 +169,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 (function(ns) {
 	ns.shortnameConversionMap = mem(ns.shortnameConversionMap);
 	ns.unicodeCharRegex = mem(ns.unicodeCharRegex);
-
+	ns.mapUnicodeToShort = mem(ns.mapUnicodeToShort);
 	const convertShortName = mem(function(shortname) {
 		// the fix is basically adding this .replace(/[+]/g, '\\$&')
 		if ((typeof shortname === 'undefined') || (shortname === '') || (ns.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1)) {

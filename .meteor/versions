@@ -63,7 +63,6 @@ jparker:gravatar@0.5.1
 jquery@1.11.11
 juliancwirko:postcss@2.0.3
 kadira:blaze-layout@2.3.0
-kadira:flow-router@2.12.1
 keepnox:perfect-scrollbar@0.6.8
 konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
@@ -111,6 +110,7 @@ oauth2@1.2.1
 observe-sequence@1.0.16
 ordered-dict@1.1.0
 ostrio:cookies@2.3.0
+ostrio:flow-router-extra@3.6.3
 pauli:accounts-linkedin@5.0.0
 pauli:linkedin-oauth@5.0.0
 promise@0.11.2

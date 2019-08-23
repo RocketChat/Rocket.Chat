@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import s from 'underscore.string';
 import katex from 'katex';
@@ -152,10 +153,6 @@ class Katex {
 	}
 
 	renderMessage = (message) => {
-		if (!this.isEnabled()) {
-			return message;
-		}
-
 		if (_.isString(message)) {
 			return this.render(message, this.renderLatex);
 		}
@@ -189,6 +186,12 @@ class Katex {
 
 const instance = new Katex();
 
-callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH - 1, 'katex');
+Tracker.autorun(() => {
+	if (instance.isEnabled()) {
+		return callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH - 1, 'katex');
+	}
+	return callbacks.remove('renderMessage', 'katex');
+});
+
 
 export default instance;

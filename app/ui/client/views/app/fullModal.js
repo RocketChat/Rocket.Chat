@@ -1,5 +1,5 @@
 // import { Blaze } from 'meteor/blaze';
-// import { FlowRouter } from 'meteor/kadira:flow-router';
+// import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 // import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 // import { Template } from 'meteor/templating';
 // let oldRoute = '';

@@ -56,7 +56,7 @@ jalik:ufs
 jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
-kadira:flow-router
+#kadira:flow-router
 keepnox:perfect-scrollbar
 mizzao:autocomplete
 mizzao:timesync
@@ -97,3 +97,4 @@ webapp
 webapp-hashing
 rocketchat:oauth2-server
 rocketchat:i18n
+ostrio:flow-router-extra

@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { Importers } from '..';
 
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 

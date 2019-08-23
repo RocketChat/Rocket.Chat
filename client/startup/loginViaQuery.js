@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 
 Meteor.startup(() => {
 	if (FlowRouter.getQueryParam('resumeToken')) {

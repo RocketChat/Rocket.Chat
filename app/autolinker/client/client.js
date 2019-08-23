@@ -1,9 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import s from 'underscore.string';
 import Autolinker from 'autolinker';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
+
+
+let autolinker;
 
 const createAutolinker = () => {
 	const regUrls = new RegExp(settings.get('AutoLinker_UrlsRegExp'));
@@ -41,11 +45,12 @@ const createAutolinker = () => {
 	});
 };
 
-const renderMessage = (message) => {
-	if (settings.get('AutoLinker') !== true) {
-		return message;
-	}
+Tracker.autorun(() => {
+	autolinker = createAutolinker();
+});
 
+
+const renderMessage = (message) => {
 	if (!s.trim(message.html)) {
 		return message;
 	}
@@ -58,18 +63,22 @@ const renderMessage = (message) => {
 	} else {
 		msgParts = [message.html];
 	}
-	const autolinker = createAutolinker();
 	message.html = msgParts
 		.map((msgPart) => {
 			if (regexTokens && regexTokens.test(msgPart)) {
 				return msgPart;
 			}
 
-			return autolinker.link(msgPart);
+			return autolinker ? autolinker.link(msgPart) : msgPart;
 		})
 		.join('');
 
 	return message;
 };
 
-callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'autolinker');
+Tracker.autorun(() => {
+	if (settings.get('AutoLinker')) {
+		return callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'autolinker');
+	}
+	callbacks.remove('renderMessage', 'autolinker');
+});

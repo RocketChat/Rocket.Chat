@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -202,9 +202,9 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
-FlowRouter.notFound = {
+FlowRouter.route('*', {
 	action: async () => {
 		const { PageNotFound } = await import('../components/pageNotFound/PageNotFound');
 		BlazeLayout.render(await createTemplateForComponent(PageNotFound));
 	},
-};
+});

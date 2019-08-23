@@ -1,5 +1,5 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import semver from 'semver';
 import toastr from 'toastr';
 

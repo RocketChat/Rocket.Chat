@@ -60,10 +60,6 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		sysMes: readOnly !== true,
 	});
 
-	if (type === 'd') {
-		room.usernames = members;
-	}
-
 	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));
 		if (prevent) {

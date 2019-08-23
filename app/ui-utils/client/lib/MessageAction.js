@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
