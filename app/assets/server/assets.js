@@ -488,7 +488,7 @@ WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res,
 
 	const file = assets[params.asset] && assets[params.asset].cache;
 
-	const format = req.url.replace(/.*\.([a-z]+)$/, '$1');
+	const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
 	if (assets[params.asset] && Array.isArray(assets[params.asset].constraints.extensions) && !assets[params.asset].constraints.extensions.includes(format)) {
 		res.writeHead(403);
