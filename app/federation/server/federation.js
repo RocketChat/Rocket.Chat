@@ -6,15 +6,14 @@ import { settings } from '../../settings';
 import { logger } from './logger';
 import * as errors from './errors';
 import { addUser } from './methods/addUser';
-import { loadContextEvents } from './methods/loadContextEvents';
 import { searchUsers } from './methods/searchUsers';
 import { dns } from './dns';
 import { http } from './http';
 import { client } from './_client';
-import { server } from './_server';
 import { crypt } from './crypt';
 import { FederationKeys } from '../../models/server';
 import { updateStatus, updateEnabled } from './settingsUpdater';
+import './_server';
 
 import './methods/testSetup';
 
@@ -28,14 +27,12 @@ export const Federation = {
 	client,
 	dns,
 	http,
-	server,
 	crypt,
 };
 
 // Add Federation methods
 Federation.methods = {
 	addUser,
-	loadContextEvents,
 	searchUsers,
 };
 
@@ -45,14 +42,6 @@ if (!FederationKeys.getPublicKey()) {
 }
 
 const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
-	const _enabled = settings.get('FEDERATION_Enabled');
-
-	if (!_enabled) {
-		updateStatus('Disabled');
-
-		return;
-	}
-
 	Federation.domain = settings.get('FEDERATION_Domain').replace('@', '');
 	Federation.discoveryMethod = settings.get('FEDERATION_Discovery_Method');
 
@@ -79,6 +68,16 @@ function enableOrDisable() {
 	Federation.enabled = settings.get('FEDERATION_Enabled');
 
 	logger.setup.info(`Federation is ${ Federation.enabled ? 'enabled' : 'disabled' }`);
+
+	if (Federation.enabled) {
+		updateSettings();
+
+		Federation.client.enableCallbacks();
+	} else {
+		updateStatus('Disabled');
+
+		Federation.client.disableCallbacks();
+	}
 
 	Federation.enabled && updateSettings();
 }
