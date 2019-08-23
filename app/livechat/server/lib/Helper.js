@@ -149,6 +149,11 @@ export const createLivechatQueueView = () => {
 	});
 };
 
+export const removeAgentFromSubscription = (rid, { _id, username }) => {
+	Subscriptions.removeByRoomIdAndUserId(rid, _id);
+	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
+};
+
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = agentId && Users.getAgentInfo(agentId);
 	Livechat.stream.emit(rid, {
@@ -209,7 +214,7 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	roomTaken = await RoutingManager.delegateInquiry(inquiry);
+	const roomTaken = await RoutingManager.delegateInquiry(inquiry);
 	if (!roomTaken) {
 		return false;
 	}
@@ -221,7 +226,7 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 
 	if (oldServedBy) {
 		removeAgentFromSubscription(rid, oldServedBy);
-	};
+	}
 
 	if (servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
@@ -234,9 +239,4 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 	Livechat.setDepartmentForGuest({ token, department: departmentId });
 
 	return true;
-};
-
-export const removeAgentFromSubscription = (rid, { _id, username }) => {
-	Subscriptions.removeByRoomIdAndUserId(rid, _id);
-	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 };
