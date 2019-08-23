@@ -9,7 +9,7 @@ import { createLivechatSubscription,
 	removeAgentFromSubscription,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Subscriptions, Users } from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users } from '../../../models/server';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 export const RoutingManager = {
