@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -186,6 +187,20 @@ Template.userInfo.helpers({
 		const user = Template.instance().user.get();
 		return settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	},
+
+	noOfFollowers() {
+		const followers = Template.instance().followers.get();
+		if (followers) {
+			return followers.length;
+		}
+	},
+
+	noOfFollowing() {
+		const following = Template.instance().following.get();
+		if (following) {
+			return following.length;
+		}
+	},
 });
 
 Template.userInfo.events({
@@ -236,8 +251,11 @@ Template.userInfo.events({
 
 Template.userInfo.onCreated(function() {
 	this.now = new ReactiveVar(moment());
-	this.user = new ReactiveVar();
+	this.user = new ReactiveVar('');
 	this.actions = new ReactiveVar();
+	this.followers = new ReactiveVar();
+	this.following = new ReactiveVar();
+
 
 	this.autorun(() => {
 		const user = this.user.get();
@@ -284,7 +302,7 @@ Template.userInfo.onCreated(function() {
 		return this.loadedUsername.set((user != null ? user.username : undefined) || (data != null ? data.username : undefined));
 	});
 
-	return this.autorun(() => {
+	this.autorun(() => {
 		let filter;
 		const data = Template.currentData();
 		if (data && data.username != null) {
@@ -295,6 +313,17 @@ Template.userInfo.onCreated(function() {
 		const user = FullUser.findOne(filter);
 
 		return this.user.set(user);
+	});
+	this.autorun(() => {
+		if (this.user.get()) {
+			Meteor.call('getFollowers', this.user.get().username, (err, result) => {
+				this.followers.set(result);
+			});
+
+			Meteor.call('getFollowing', this.user.get().username, (err, result) => {
+				this.following.set(result);
+			});
+		}
 	});
 });
 

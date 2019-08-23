@@ -38,6 +38,16 @@
 						</div>
 
 						<div class="rc-user-info-action">
+							<button class="js-action rc-user-info-action__item">
+								{{noOfFollowers}}
+								<span class = "rc-color-secondary">{{_ "Followers"}}</span>
+							</button>
+							<button class="js-action rc-user-info-action__item">
+								{{noOfFollowing}}
+								<span class = "rc-color-secondary">{{_ "Following"}}</span>
+							</button>
+						</div>
+						<div class="rc-user-info-action">
 							{{#each actions}}
 								<button class="js-action rc-user-info-action__item">
 									{{> icon block="rc-user-info-action__icon" icon=icon }}
