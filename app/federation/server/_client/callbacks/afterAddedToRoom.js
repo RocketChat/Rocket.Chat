@@ -1,7 +1,5 @@
-import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
-import getFederatedRoomData from './helpers/getFederatedRoomData';
-import getFederatedUserData from './helpers/getFederatedUserData';
+import { isFederated, getFederatedRoomData } from './helpers/federatedResources';
 import { FederationRoomEvents, Subscriptions } from '../../../../models/server';
 import { Federation } from '../../federation';
 import { normalizers } from '../../normalizers';
@@ -10,12 +8,12 @@ import { doAfterCreateRoom } from './afterCreateRoom';
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;
 
+	if (!isFederated(room) && !isFederated(addedUser)) { return; }
+
+	logger.client.debug(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+
 	// If there are not federated users on this room, ignore it
-	const { hasFederatedUser, users, subscriptions } = getFederatedRoomData(room);
-
-	if (!hasFederatedUser && !getFederatedUserData(addedUser).isFederated) { return; }
-
-	logger.client.debug(`afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	const { users, subscriptions } = getFederatedRoomData(room);
 
 	// Load the subscription
 	const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id));
@@ -54,10 +52,14 @@ async function afterAddedToRoom(involvedUsers, room) {
 		// Remove the user subscription from the room
 		Promise.await(Subscriptions.remove({ _id: subscription._id }));
 
-		logger.client.error(`afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } => Could not add user: ${ err }`);
+		logger.client.error(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } => Could not add user: ${ err }`);
 	}
 
 	return involvedUsers;
 }
 
-callbacks.add('afterAddedToRoom', (roomOwner, room) => Promise.await(afterAddedToRoom(roomOwner, room)), callbacks.priority.LOW, 'federation-after-added-to-room');
+export const definition = {
+	hook: 'afterAddedToRoom',
+	callback: (roomOwner, room) => Promise.await(afterAddedToRoom(roomOwner, room)),
+	id: 'federation-after-added-to-room',
+};

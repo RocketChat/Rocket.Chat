@@ -1,4 +1,3 @@
-import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
 import { FederationRoomEvents, Subscriptions } from '../../../../models/server';
 import { Federation } from '../../federation';
@@ -6,7 +5,7 @@ import { normalizers } from '../../normalizers';
 import { deleteRoom } from '../../../../lib/server/functions';
 
 async function afterCreateDirectRoom(room, extras) {
-	logger.client.debug(`afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } extras=${ JSON.stringify(extras, null, 2) }`);
+	logger.client.debug(() => `afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } extras=${ JSON.stringify(extras, null, 2) }`);
 
 	// If the room is federated, ignore
 	if (room.federation) { return; }
@@ -61,10 +60,14 @@ async function afterCreateDirectRoom(room, extras) {
 	} catch (err) {
 		Promise.await(deleteRoom(room._id));
 
-		logger.client.error(`afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } => Could not create federated room: ${ err }`);
+		logger.client.error(() => `afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } => Could not create federated room: ${ err }`);
 	}
 
 	return room;
 }
 
-callbacks.add('afterCreateDirectRoom', (room, extras) => Promise.await(afterCreateDirectRoom(room, extras)), callbacks.priority.LOW, 'federation-after-create-direct-room');
+export const definition = {
+	hook: 'afterCreateDirectRoom',
+	callback: (room, extras) => Promise.await(afterCreateDirectRoom(room, extras)),
+	id: 'federation-after-create-direct-room',
+};
