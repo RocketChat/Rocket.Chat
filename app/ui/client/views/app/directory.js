@@ -13,8 +13,6 @@ import './directory.css';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
-		console.log(result);
-
 		cb(result && result.results && result.results.length && result.results.map((result) => {
 			if (config.type === 'channels') {
 				return {
