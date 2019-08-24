@@ -1,10 +1,18 @@
 import { Migrations } from '../../../app/migrations/server';
-import { WebdavAccounts } from '../../../app/models';
+import { Settings } from '../../../app/models/server';
 
 Migrations.add({
 	version: 150,
 	up() {
-		WebdavAccounts.tryDropIndex({ user_id: 1, server_url: 1, username: 1, name: 1 });
-		console.log('Fixing WebdavAccounts { user_id: 1, server_url: 1, username: 1, name: 1 }');
+		const settings = [
+			'Graphql_CORS',
+			'Graphql_Enabled',
+			'Graphql_Subscription_Port',
+		];
+
+		Settings.remove({ _id: { $in: settings } });
+	},
+	down() {
+		// Down migration does not apply in this case
 	},
 });

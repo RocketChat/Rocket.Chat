@@ -1,9 +1,10 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 
-import { modal, call } from '../../ui-utils';
+import { modal } from '../../ui-utils';
 import { t } from '../../utils';
 
 Template.addWebdavAccount.helpers({
@@ -23,13 +24,17 @@ Template.addWebdavAccount.events({
 			return;
 		}
 		instance.loading.set(true);
-		try {
-			const response = await call('addWebdavAccount', formData).catch((error) => { console.log(error); });
-			if (response) { toastr.success(t('webdav-account-saved')); }
-		} finally {
-			instance.loading.set(false);
+		Meteor.call('addWebdavAccount', formData, function(error, response) {
 			modal.close();
-		}
+			instance.loading.set(false);
+			if (error) {
+				return toastr.error(t(error.error));
+			}
+			if (!response.success) {
+				return toastr.error(t(response.message));
+			}
+			toastr.success(t('webdav-account-saved'));
+		});
 	},
 });
 

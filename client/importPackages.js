@@ -55,7 +55,6 @@ import '../app/oembed/client';
 import '../app/otr/client';
 import '../app/push-notifications/client';
 import '../app/apps/client';
-import '../app/setup-wizard/client';
 import '../app/slackbridge/client';
 import '../app/slashcommands-archiveroom/client';
 import '../app/slashcommand-asciiarts/client';

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { createClient } from 'webdav';
 
 import { settings } from '../../../settings';
 import { getWebdavCredentials } from './getWebdavCredentials';
 import { WebdavAccounts } from '../../../models';
+import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 Meteor.methods({
 	async getWebdavFileList(accountId, path) {
@@ -22,7 +22,7 @@ Meteor.methods({
 
 		try {
 			const cred = getWebdavCredentials(account);
-			const client = createClient(account.server_url, cred);
+			const client = new WebdavClientAdapter(account.server_url, cred);
 			const data = await client.getDirectoryContents(path);
 			return { success: true, data };
 		} catch (error) {

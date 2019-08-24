@@ -335,7 +335,7 @@ export const appStatusSpanProps = ({
 		return {
 			type: 'failed',
 			icon: 'warning',
-			label: 'Failed',
+			label: status === AppStatus.INVALID_SETTINGS_DISABLED ? 'Config Needed' : 'Failed',
 		};
 	}
 

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { createClient } from 'webdav';
 
 import { settings } from '../../../settings';
 import { WebdavAccounts } from '../../../models';
+import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 Meteor.methods({
 	async addWebdavAccount(formData) {
@@ -31,7 +31,7 @@ Meteor.methods({
 		}
 
 		try {
-			const client = createClient(
+			const client = new WebdavClientAdapter(
 				formData.serverURL,
 				{
 					username: formData.username,
@@ -71,7 +71,10 @@ Meteor.methods({
 		}));
 
 		try {
-			const client = createClient(data.serverURL, { token: data.token });
+			const client = new WebdavClientAdapter(
+				data.serverURL,
+				{ token: data.token }
+			);
 
 			const accountData = {
 				user_id: userId,

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { createClient } from 'webdav';
 
 import { settings } from '../../../settings';
 import { getWebdavCredentials } from './getWebdavCredentials';
 import { WebdavAccounts } from '../../../models';
+import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 Meteor.methods({
 	async uploadFileToWebdav(accountId, fileData, name) {
@@ -25,7 +25,7 @@ Meteor.methods({
 
 		try {
 			const cred = getWebdavCredentials(account);
-			const client = createClient(account.server_url, cred);
+			const client = new WebdavClientAdapter(account.server_url, cred);
 			await client.createDirectory(uploadFolder).catch(() => {});
 			await client.putFileContents(`${ uploadFolder }/${ name }`, buffer, { overwrite: false });
 			return { success: true };
