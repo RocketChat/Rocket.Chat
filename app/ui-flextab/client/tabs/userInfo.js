@@ -27,7 +27,7 @@ const moreActions = function() {
 	);
 };
 
-const openFollowersListTab = (instance, username) => {
+const openFollowersListTab = (instance) => {
 	instance.tabBar.setTemplate('followersList');
 	instance.tabBar.open();
 };
@@ -252,15 +252,15 @@ Template.userInfo.events({
 	'click .js-back'(e, instance) {
 		return instance.clear();
 	},
-	'click .rc-user-followers'(e, instance){
+	'click .rc-user-followers'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
 		instance.clear();
-		const user = Template.instance().user.get();
-		openFollowersListTab(instance, user.username);
+		// const user = Template.instance().user.get();
+		openFollowersListTab(instance);
 	},
 
-	'click .rc-user-following'(){
+	'click .rc-user-following'() {
 
 	},
 });
