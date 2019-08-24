@@ -25,11 +25,30 @@ function sortTable(data, sortBy, sortDirection) {
 	return data;
 }
 
+async function showFilePreviews(accountId, nodes) {
+	if (!Array.isArray(nodes) || !nodes.length) { return; }
+	const promises = nodes.map((node, index) => {
+		if (node.type !== 'file') { return; }
+		return call('getWebdavFilePreview', accountId, node.filename)
+			.then((res) => {
+				const blob = new Blob([res.data], { type: 'image/png' });
+				const imgURL = URL.createObjectURL(blob);
+				nodes[index].preview = imgURL;
+			})
+			.catch((e) => e);
+	}).filter(Boolean);
+
+	return Promise.all(promises)
+		.then(() => nodes)
+		.catch((e) => e);
+}
+
 async function showWebdavFileList() {
 	const instance = Template.instance();
 	const { accountId } = instance.data;
 
 	const directory = instance.state.get('webdavCurrentFolder');
+	let unfilteredWebdavNodes;
 	instance.isLoading.set(true);
 	instance.state.set({
 		webdavNodes: [],
@@ -41,12 +60,16 @@ async function showWebdavFileList() {
 			modal.close();
 			return;
 		}
-
-		instance.state.set({ unfilteredWebdavNodes: response.data });
+		unfilteredWebdavNodes = response.data;
+		instance.state.set({ unfilteredWebdavNodes });
 		$('.js-webdav-search-input').val('');
 		instance.searchText.set('');
 	} finally {
 		instance.isLoading.set(false);
+		const nodesWithPreviews = await showFilePreviews(accountId, unfilteredWebdavNodes);
+		if (Array.isArray(nodesWithPreviews) && nodesWithPreviews.length) {
+			instance.state.set({ unfilteredWebdavNodes: nodesWithPreviews });
+		}
 	}
 }
 
@@ -79,6 +102,9 @@ Template.webdavFilePicker.helpers({
 			type = 'ppt';
 		}
 		return { icon, type, extension };
+	},
+	filePreview() {
+		return this.preview;
 	},
 	isLoading() {
 		return Template.instance().isLoading.get();

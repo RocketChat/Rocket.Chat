@@ -30,23 +30,23 @@ Meteor.methods({
 			});
 		}
 
-		const client = createClient(
-			formData.serverURL,
-			{
+		try {
+			const client = createClient(
+				formData.serverURL,
+				{
+					username: formData.username,
+					password: formData.pass,
+				}
+			);
+
+			const accountData = {
+				user_id: userId,
+				server_url: formData.serverURL,
 				username: formData.username,
 				password: formData.pass,
-			}
-		);
+				name: formData.name,
+			};
 
-		const accountData = {
-			user_id: userId,
-			server_url: formData.serverURL,
-			username: formData.username,
-			password: formData.pass,
-			name: formData.name,
-		};
-
-		try {
 			await client.stat('/');
 			WebdavAccounts.insert(accountData);
 		} catch (error) {
@@ -70,16 +70,16 @@ Meteor.methods({
 			serverURL: String,
 		}));
 
-		const client = createClient(data.serverURL, { token: data.token });
-
-		const accountData = {
-			user_id: userId,
-			server_url: data.serverURL,
-			token: data.token,
-			name: data.name,
-		};
-
 		try {
+			const client = createClient(data.serverURL, { token: data.token });
+
+			const accountData = {
+				user_id: userId,
+				server_url: data.serverURL,
+				token: data.token,
+				name: data.name,
+			};
+
 			await client.stat('/');
 			WebdavAccounts.upsert({
 				user_id: userId,
