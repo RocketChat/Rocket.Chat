@@ -204,6 +204,20 @@
 
 		& tr {
 			color: #444444;
+
+			.table-file-avatar {
+				overflow: hidden;
+
+				height: 15px;
+
+				.file-preview {
+					width: 15px;
+					height: 15px;
+					margin-left: 1px;
+
+					border-radius: 1px;
+				}
+			}
 		}
 
 		& .js-sort {
@@ -304,9 +318,20 @@
 			grid-template-columns: 190px 190px 190px;
 
 			.grid-file-avatar {
+				overflow: hidden;
+
+				height: 64px;
+
 				color: #5d5d5d;
 
 				font-size: 64px;
+
+				.file-preview {
+					width: 60px;
+					height: 60px;
+
+					border-radius: 2px;
+				}
 			}
 
 			.grid-item {
