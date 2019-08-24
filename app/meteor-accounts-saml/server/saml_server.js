@@ -193,8 +193,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			if (username) {
 				newUser.username = username;
+				newUser.name = newUser.name || _guessNameFromUsername(username);
 			}
-			newUser.name = newUser.name || _guessNameFromUsername(newUser.username); // Make sure every user has a name as well
 
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
