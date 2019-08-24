@@ -10,10 +10,14 @@ import { Settings, Users, Roles } from '../../models/server';
 
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
+	if (!apps) {
+		return;
+	}
+
 	const hasInvalidApps = !!apps.find((app) => app.getLatestLicenseValidationResult().hasErrors);
 
 	if (!hasInvalidApps) {
-		return apps;
+		return;
 	}
 
 	const id = 'someAppInInvalidState';
@@ -50,6 +54,10 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdmi
 });
 
 const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(function _notifyAdminsAboutRenewedApps(apps) {
+	if (!apps) {
+		return;
+	}
+
 	const renewedApps = apps.filter((app) => app.getStatus() === AppStatus.DISABLED && app.getPreviousStatus() === AppStatus.INVALID_LICENSE_DISABLED);
 
 	if (renewedApps.length === 0) {

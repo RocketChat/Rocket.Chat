@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { LivechatRooms } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { Livechat } from '../lib/Livechat';
 
@@ -22,11 +22,10 @@ Meteor.methods({
 		check(roomData, Match.ObjectIncluding({
 			_id: String,
 			topic: Match.Optional(String),
-			tags: Match.Optional(String),
+			tags: Match.Optional([String]),
 		}));
 
-		const room = Rooms.findOneById(roomData._id, { fields: { t: 1, servedBy: 1 } });
-
+		const room = LivechatRooms.findOneById(roomData._id, { t: 1, servedBy: 1 });
 		if (room == null || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:saveInfo' });
 		}
@@ -38,7 +37,7 @@ Meteor.methods({
 		const ret = Livechat.saveGuest(guestData) && Livechat.saveRoomInfo(roomData, guestData);
 
 		Meteor.defer(() => {
-			callbacks.run('livechat.saveInfo', Rooms.findOneById(roomData._id));
+			callbacks.run('livechat.saveInfo', LivechatRooms.findOneById(roomData._id));
 		});
 
 		return ret;

@@ -2,10 +2,10 @@ import stream from 'stream';
 
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
-import { createClient } from 'webdav';
 
 import { settings } from '../../../settings';
 import { WebdavAccounts } from '../../../models';
+import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 Meteor.methods({
 	async uploadFileToWebdav(accountId, fileData, name) {
@@ -21,12 +21,10 @@ Meteor.methods({
 		if (!account) {
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'uploadFileToWebdav' });
 		}
-		const client = createClient(
+		const client = new WebdavClientAdapter(
 			account.server_url,
-			{
-				username: account.username,
-				password: account.password,
-			}
+			account.username,
+			account.password,
 		);
 		const future = new Future();
 
@@ -50,17 +48,17 @@ Meteor.methods({
 		await client.stat(uploadFolder).then(function() {
 			bufferStream.pipe(writeStream);
 		}).catch(function(err) {
-			if (err.status === 404) {
+			if (err.message.toLowerCase() === 'not found') {
 				client.createDirectory(uploadFolder).then(function() {
 					bufferStream.pipe(writeStream);
 				}).catch(function() {
-					if (err.status === 404) {
+					if (err.message.toLowerCase() === 'not found') {
 						future.return({ success: false, message: 'webdav-server-not-found' });
 					} else {
 						future.return({ success: false, message: 'FileUpload_Error' });
 					}
 				});
-			} else if (err.status === 401) {
+			} else if (err.message.toLowerCase() === 'unauthorized') {
 				future.return({ success: false, message: 'error-invalid-account' });
 			} else {
 				future.return({ success: false, message: 'FileUpload_Error' });
