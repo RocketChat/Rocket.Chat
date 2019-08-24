@@ -31,7 +31,7 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (!userData._id && !hasPermission(userId, 'create-user')) {
+	if (!userData._id && !hasPermission(userId, 'create-user') && !userData.u) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Adding_user',
@@ -166,7 +166,9 @@ export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 
 	if (!userData._id) {
-		validateEmailDomain(userData.email);
+		if (userData.email) {
+			validateEmailDomain(userData.email);
+		}
 
 		// insert user
 		const createUser = {
@@ -176,6 +178,10 @@ export const saveUser = function(userId, userData) {
 		};
 		if (userData.email) {
 			createUser.email = userData.email;
+		}
+		if (userData.u) {
+			createUser.u = userData.u;
+			createUser.active = userData.active;
 		}
 
 		const _id = Accounts.createUser(createUser);
@@ -197,6 +203,10 @@ export const saveUser = function(userId, userData) {
 
 		if (typeof userData.verified === 'boolean') {
 			updateUser.$set['emails.0.verified'] = userData.verified;
+		}
+
+		if (typeof userData.description !== 'undefined') {
+			updateUser.$set.description = userData.description;
 		}
 
 		Meteor.users.update({ _id }, updateUser);
