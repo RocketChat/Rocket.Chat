@@ -33,6 +33,7 @@ Meteor.startup(() => {
 		Permissions.createOrUpdate('view-livechat-current-chats', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('view-livechat-analytics', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('view-livechat-real-time-monitoring', ['livechat-manager', 'admin']);
+		Permissions.createOrUpdate('view-livechat-real-time-visitors', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('view-livechat-triggers', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('view-livechat-customfields', ['livechat-manager', 'admin']);
 		Permissions.createOrUpdate('view-livechat-installation', ['livechat-manager', 'admin']);

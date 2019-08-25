@@ -808,7 +808,7 @@ export const Livechat = {
 	},
 
 	notifyGuestSessionStatusChanged(token, status) {
-		const room = Rooms.findByVisitorToken(token, { sort: { ts: -1 } }).map((data) => data)[0];
+		const room = LivechatRooms.findByVisitorToken(token, { sort: { ts: -1 } }).map((data) => data)[0];
 		let chatStatus;
 		if (room && room.open) {
 			chatStatus = 'Chatting';
