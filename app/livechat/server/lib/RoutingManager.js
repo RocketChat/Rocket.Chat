@@ -74,6 +74,10 @@ export const RoutingManager = {
 		const { _id, rid, department } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
 
+		if (!room || !room.open) {
+			return false;
+		}
+
 		if (departmentId && departmentId !== department) {
 			LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
 			LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
@@ -94,7 +98,6 @@ export const RoutingManager = {
 	},
 
 	async takeInquiry(inquiry, agent) {
-		// return Room Object
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
@@ -108,7 +111,11 @@ export const RoutingManager = {
 
 		const { _id, rid } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
-		if (room && room.servedBy && room.servedBy._id === agent.agentId) {
+		if (!room || !room.open) {
+			return room;
+		}
+
+		if (room.servedBy && room.servedBy._id === agent.agentId) {
 			return room;
 		}
 

@@ -163,6 +163,10 @@ export const dispatchAgentDelegated = (rid, agentId) => {
 };
 
 export const forwardRoomToAgent = async (room, agentId) => {
+	if (!room || !room.open) {
+		return false;
+	}
+
 	const user = Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		return false;
@@ -200,6 +204,10 @@ export const forwardRoomToAgent = async (room, agentId) => {
 };
 
 export const forwardRoomToDepartment = async (room, guest, departmentId) => {
+	if (!room || !room.open) {
+		return false;
+	}
+
 	const { _id: rid, servedBy: oldServedBy } = room;
 
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
