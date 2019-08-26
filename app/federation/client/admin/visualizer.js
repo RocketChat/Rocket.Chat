@@ -29,8 +29,6 @@ let latestEventTimestamp = moment().startOf('week');
 const loadContextEvents = () => {
 	Meteor.call('federation:loadContextEvents', latestEventTimestamp.toISOString(), (error, result) => {
 		if (error) {
-			console.log(error);
-
 			return;
 		}
 
