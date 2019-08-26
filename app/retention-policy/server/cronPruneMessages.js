@@ -9,15 +9,15 @@ let types = [];
 
 const oldest = new Date('0001-01-01T00:00:00Z');
 
-let lastPrune = oldest;
 
 const maxTimes = {
 	c: 0,
 	p: 0,
 	d: 0,
 };
-const toDays = 1000 * 60 * 60 * 24;
-const gracePeriod = 5000;
+
+const toDays = (d) => d * 1000 * 60 * 60 * 24;
+
 function job() {
 	const now = new Date();
 	const filesOnly = settings.get('RetentionPolicy_FilesOnly');
@@ -27,11 +27,11 @@ function job() {
 	// get all rooms with default values
 	types.forEach((type) => {
 		const maxAge = maxTimes[type] || 0;
-		const latest = new Date(now.getTime() - maxAge * toDays);
+		const latest = new Date(now.getTime() - toDays(maxAge));
 
 		Rooms.find({
 			t: type,
-			_updatedAt: { $gte: latest },
+			// _updatedAt: { $gte: latest },
 			$or: [
 				{ 'retention.enabled': { $eq: true } },
 				{ 'retention.enabled': { $exists: false } },
@@ -46,25 +46,25 @@ function job() {
 		'retention.enabled': { $eq: true },
 		'retention.overrideGlobal': { $eq: true },
 		'retention.maxAge': { $gte: 0 },
-		_updatedAt: { $gte: lastPrune },
+		// _updatedAt: { $gte: lastPrune },
 	}).forEach((room) => {
 		const { maxAge = 30, filesOnly, excludePinned } = room.retention;
-		const latest = new Date(now.getTime() - maxAge * toDays);
+		const latest = new Date(now.getTime() - toDays(maxAge));
 		cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned, ignoreDiscussion });
 	});
-	lastPrune = new Date(now.getTime() - gracePeriod);
+	// lastPrune = new Date(now.getTime() - getGrace(settings.get('RetentionPolicy_Precision')));
 }
 
 function getSchedule(precision) {
 	switch (precision) {
 		case '0':
-			return '0 */30 * * * *';
+			return '0 */30 * * * *'; // 30 minutes
 		case '1':
-			return '0 0 * * * *';
+			return '0 0 * * * *'; // hour
 		case '2':
-			return '0 0 */6 * * *';
+			return '0 0 */6 * * *'; // 6 hours
 		case '3':
-			return '0 0 0 * * *';
+			return '0 0 0 * * *'; // day
 	}
 }
 
@@ -83,27 +83,28 @@ function deployCron(precision) {
 
 function reloadPolicy() {
 	types = [];
+	// lastPrune = oldest;
 
-	if (settings.get('RetentionPolicy_Enabled')) {
-		if (settings.get('RetentionPolicy_AppliesToChannels')) {
-			types.push('c');
-		}
-
-		if (settings.get('RetentionPolicy_AppliesToGroups')) {
-			types.push('p');
-		}
-
-		if (settings.get('RetentionPolicy_AppliesToDMs')) {
-			types.push('d');
-		}
-
-		maxTimes.c = settings.get('RetentionPolicy_MaxAge_Channels');
-		maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
-		maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
-
-		return deployCron(settings.get('RetentionPolicy_Precision'));
+	if (!settings.get('RetentionPolicy_Enabled')) {
+		return SyncedCron.remove(pruneCronName);
 	}
-	return SyncedCron.remove(pruneCronName);
+	if (settings.get('RetentionPolicy_AppliesToChannels')) {
+		types.push('c');
+	}
+
+	if (settings.get('RetentionPolicy_AppliesToGroups')) {
+		types.push('p');
+	}
+
+	if (settings.get('RetentionPolicy_AppliesToDMs')) {
+		types.push('d');
+	}
+
+	maxTimes.c = settings.get('RetentionPolicy_MaxAge_Channels');
+	maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
+	maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
+
+	return deployCron(settings.get('RetentionPolicy_Precision'));
 }
 
 Meteor.startup(function() {
