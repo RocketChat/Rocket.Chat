@@ -26,8 +26,8 @@ API.v1.addRoute('livechat/session.visitorInfo/:token', {
 				token: String,
 			});
 
-			const visitorInfo = LivechatSessions.findOneByToken(this.urlParams.token);
-			return API.v1.success(visitorInfo);
+			const session = LivechatSessions.findOneByToken(this.urlParams.token);
+			return API.v1.success(session);
 		} catch (e) {
 			return API.v1.failure(e);
 		}
@@ -55,6 +55,10 @@ API.v1.addRoute('livechat/session.register', {
 			});
 
 			const { token, location, deviceInfo } = this.bodyParams;
+			const existingSession = LivechatSessions.findOne({ token });
+			if (existingSession) {
+				return API.v1.success({ existingSession });
+			}
 			const updatedSession = LivechatSessions.insert({
 				token,
 				location,
@@ -67,10 +71,8 @@ API.v1.addRoute('livechat/session.register', {
 			return API.v1.failure(e);
 		}
 	},
-});
 
-API.v1.addRoute('livechat/session.updateVisitorSessionOnRegister', {
-	post() {
+	put() {
 		try {
 			check(this.bodyParams, {
 				visitor: Match.ObjectIncluding({

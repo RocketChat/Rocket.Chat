@@ -331,7 +331,7 @@ export const Livechat = {
 		let sentimentScore = 0;
 		let messageCount = 0;
 		// Find All messsages sent by visitor for room
-		const messages = Messages.findByRoomId(room._id).map((data) => data).filter(({ token }) => token);
+		const messages = Messages.findByRoomId(room._id).fetch().filter(({ token }) => token);
 		if (messages && messages.length > 0) {
 			messages.forEach((val) => {
 				if (!val.t) {
@@ -393,6 +393,7 @@ export const Livechat = {
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 			'Livechat_location_permission',
+			'Livechat_Allow_collect_and_store_HTTP_header_informations',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});

@@ -110,6 +110,7 @@ export function settings() {
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			locationAccessPermission: initSettings.Livechat_location_permission,
+			storeHeaderInfoPermission: initSettings.Livechat_Allow_collect_and_store_HTTP_header_informations,
 		},
 		theme: {
 			title: initSettings.Livechat_title,

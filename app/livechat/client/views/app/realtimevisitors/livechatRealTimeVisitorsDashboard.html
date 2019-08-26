@@ -77,7 +77,7 @@
               </button>
               {{/if}}
             </div>
-            <p align="right">{{_ "Total_visitors"}} : {{totalVisitors}}</p>
+            <p align="right">{{_ "Total_visitors"}} : {{totalSessions}}</p>
           </div>
           <br>
         </form>
@@ -119,8 +119,8 @@
           </tr>
         </thead>
         <tbody>
-          {{#if visitors}}
-          {{#each visitors}}
+          {{#if sessions}}
+          {{#each sessions}}
           <tr class="rc-table-tr-livechat-session manage row-link" data-id="{{_id}}">
             <td>
               <div class="rc-table-wrapper">

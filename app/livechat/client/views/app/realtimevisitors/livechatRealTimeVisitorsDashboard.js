@@ -81,11 +81,11 @@ const chunkArray = (arr, chunkCount) => {	// split array into n almost equal arr
 };
 
 Template.livechatRealTimeVisitorsDashboard.helpers({
-	visitors() {
-		return Template.instance().users.get();
+	sessions() {
+		return Template.instance().sessions.get();
 	},
 	totalVisitors() {
-		return Template.instance().users.get().length;
+		return Template.instance().sessions.get().length;
 	},
 	flexData() {
 		return {
@@ -121,7 +121,7 @@ Template.livechatRealTimeVisitorsDashboard.helpers({
 				value: '-',
 			},
 			{
-				title: 'Busiest_chat_time',
+				title: 'Busiest_time_on_site',
 				value: '-',
 			}, {
 				title: 'Most_visitors_from',
@@ -206,7 +206,7 @@ Template.livechatRealTimeVisitorsDashboard.onCreated(function() {
 	this.ready = new ReactiveVar(false);
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
-	this.users = new ReactiveVar([]);
+	this.sessions = new ReactiveVar([]);
 	this.tabBar = new RocketChatTabBar();
 	this.tabBarData = new ReactiveVar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
@@ -224,9 +224,9 @@ Template.livechatRealTimeVisitorsDashboard.onCreated(function() {
 	this.autorun(() => {
 		const sub = this.subscribe('livechat:sessions', this.filter.get());
 		if (sub.ready()) {
-			const users = LivechatSession.find({}, { sort: { createdAt: -1 } }).map((data) => data);
-			if (users && users.length > 0) {
-				users.map((val) => {
+			const sessions = LivechatSession.find({}, { sort: { createdAt: -1 } }).map((data) => data);
+			if (sessions && sessions.length > 0) {
+				sessions.map((val) => {
 					const currentTime = moment();
 					val.sessionStarted = moment(val.createdAt).format('MMM Do hh:mm a');
 					if (val.offlineTime) {
@@ -255,7 +255,7 @@ Template.livechatRealTimeVisitorsDashboard.onCreated(function() {
 						val.pageInfo = pageInfo;
 					}
 
-					const room = LivechatRoom.find({ t: 'l', 'v.token': val.token }, { sort: { ts: -1 } }).map((data) => data)[0];
+					const room = LivechatRoom.findOne({ t: 'l', 'v.token': val.token }, { sort: { ts: -1 } });
 					if (room && room.servedBy) {
 						val.servedBy = room.servedBy;
 					}
@@ -277,7 +277,7 @@ Template.livechatRealTimeVisitorsDashboard.onCreated(function() {
 					return val;
 				});
 			}
-			this.users.set(users);
+			this.sessions.set(sessions);
 		}
 	});
 

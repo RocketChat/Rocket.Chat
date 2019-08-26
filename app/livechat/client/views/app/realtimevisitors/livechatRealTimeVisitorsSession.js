@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { settings } from '../../../../../settings';
 import { t } from '../../../../../utils';
-import './livechatRealTimeVisitorSession.html';
+import './livechatRealTimeVisitorsSession.html';
 
 
 Template.livechatRealTimeVisitorSession.helpers({
