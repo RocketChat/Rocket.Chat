@@ -7,86 +7,15 @@ import { Base } from './_Base';
 export class LivechatSessions extends Base {
 	constructor() {
 		super('livechat_sessions');
+
+		this.tryEnsureIndex({ token: 1 }, { unique: true });
 	}
 
-	findOneVisitorAndUpdateSession(visitorInfo) {
-		const query = {
-			token: visitorInfo.token,
-		};
-
-		delete visitorInfo.token;
-		const update = {
-			$set: {
-				visitorInfo,
-			},
-		};
-
+	updateStatusByToken(query, update) {
 		return this.update(query, update);
 	}
 
-	findOneVisitorByTokenAndUpdateStatus(token, status, chatStatus) {
-		const query = {
-			token,
-		};
-		let update;
-		const sessionInfo = this.findOne(query);
-		if (status === 'online') {
-			const { chatStart } = sessionInfo;
-			if (!chatStart && chatStatus !== 'Not Started') {
-				update = {
-					$set: {
-						status,
-						chatStatus,
-						chatStartTime: new Date(),
-						chatStart: true,
-					},
-					$unset: {
-						offlineTime: '',
-					},
-				};
-			} else if (chatStatus === 'Not Started') {
-				update = {
-					$set: {
-						status,
-						chatStatus,
-					},
-					$unset: {
-						offlineTime: '',
-					},
-				};
-			} else {
-				update = {
-					$set: {
-						status,
-						chatStatus,
-					},
-					$unset: {
-						offlineTime: '',
-					},
-				};
-			}
-		} else if (status === 'offline') {
-			update = {
-				$set: {
-					status,
-					chatStatus,
-					offlineTime: new Date(),
-					chatStart: false,
-				},
-			};
-		} else {
-			update = {
-				$set: {
-					status,
-					chatStatus,
-				},
-			};
-		}
-
-		return this.update(query, update);
-	}
-
-	findOneVisitorByTokenAndUpdateCount(token) {
+	updateSessionCount(token) {
 		const query = {
 			token,
 		};
@@ -102,7 +31,7 @@ export class LivechatSessions extends Base {
 		return this.findOne(query);
 	}
 
-	findOneVisitorLocationByToken(token) {
+	findOneByToken(token) {
 		const query = {
 			token,
 		};
@@ -110,19 +39,7 @@ export class LivechatSessions extends Base {
 		return this.findOne(query);
 	}
 
-	saveVisitorLocation(data = {}) {
-		const { token, location, deviceInfo } = data;
-
-		return this.insert({
-			token,
-			location,
-			deviceInfo,
-			createdAt: new Date(),
-			count: 1,
-		});
-	}
-
-	updateChatStatusOnRoomCloseOrDeleteByToken(token, status) {
+	updateChatStatusByToken(token, status) {
 		const query = {
 			token,
 		};

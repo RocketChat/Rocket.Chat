@@ -109,6 +109,7 @@ export function settings() {
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
+			locationAccessPermission: initSettings.Livechat_location_permission,
 		},
 		theme: {
 			title: initSettings.Livechat_title,

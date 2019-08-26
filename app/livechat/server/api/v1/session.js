@@ -2,16 +2,17 @@ import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../api';
 import { Livechat } from '../../lib/Livechat';
+import { LivechatSessions } from '../../../../models';
 
-API.v1.addRoute('livechat/session.updateVisitCount/:token', {
+API.v1.addRoute('livechat/session.incVisitCount/:token', {
 	post() {
 		try {
 			check(this.urlParams, {
 				token: String,
 			});
 
-			const updatedCount = Livechat.updateVisitorCount(this.urlParams.token);
-			return API.v1.success({ updatedCount });
+			const { count } = LivechatSessions.updateSessionCount(this.urlParams.token);
+			return API.v1.success({ count });
 		} catch (e) {
 			return API.v1.failure(e);
 		}
@@ -25,7 +26,7 @@ API.v1.addRoute('livechat/session.visitorInfo/:token', {
 				token: String,
 			});
 
-			const visitorInfo = Livechat.getVisitorLocation(this.urlParams.token);
+			const visitorInfo = LivechatSessions.findOneByToken(this.urlParams.token);
 			return API.v1.success(visitorInfo);
 		} catch (e) {
 			return API.v1.failure(e);
@@ -33,7 +34,7 @@ API.v1.addRoute('livechat/session.visitorInfo/:token', {
 	},
 });
 
-API.v1.addRoute('livechat/session.addLocationData', {
+API.v1.addRoute('livechat/session.register', {
 	post() {
 		try {
 			check(this.bodyParams, {
@@ -53,8 +54,15 @@ API.v1.addRoute('livechat/session.addLocationData', {
 				}),
 			});
 
-			Livechat.updateVisitorLocation(this.bodyParams);
-			return API.v1.success();
+			const { token, location, deviceInfo } = this.bodyParams;
+			const updatedSession = LivechatSessions.insert({
+				token,
+				location,
+				deviceInfo,
+				createdAt: new Date(),
+				count: 1,
+			});
+			return API.v1.success({ updatedSession });
 		} catch (e) {
 			return API.v1.failure(e);
 		}
@@ -82,7 +90,18 @@ API.v1.addRoute('livechat/session.updateVisitorSessionOnRegister', {
 				}),
 			});
 
-			Livechat.updateVisitorSession(this.bodyParams.visitor);
+			const visitorInfo = this.bodyParams.visitor;
+			const query = {
+				token: visitorInfo.token,
+			};
+
+			delete visitorInfo.token;
+			const update = {
+				$set: {
+					visitorInfo,
+				},
+			};
+			LivechatSessions.update(query, update);
 			return API.v1.success();
 		} catch (e) {
 			return API.v1.failure(e);
@@ -100,7 +119,7 @@ API.v1.addRoute('livechat/session.updateSessionStatus', {
 
 			const { token, status } = this.bodyParams;
 
-			Livechat.notifyGuestSessionStatusChanged(token, status);
+			Livechat.notifyGuestStatusChanged(token, status);
 
 			return API.v1.success({ token, status });
 		} catch (e) {

@@ -9,7 +9,7 @@ import { getSessionOverviewData } from '../../../lib/dataHandler';
 import { updateDateRange } from '../../../lib/dateHandler';
 import { setTimeRange } from '../../../lib/timeHandler';
 import { visitorNavigationHistory } from '../../../collections/LivechatVisitorNavigation';
-import { LivechatLocation } from '../../../collections/LivechatLocation';
+import { LivechatSession } from '../../../collections/LivechatSession';
 import { RocketChatTabBar, popover } from '../../../../../ui-utils';
 import { t } from '../../../../../utils';
 
@@ -49,9 +49,9 @@ const updateChatsChart = () => {
 		$lte: moment().endOf('day').toDate(),
 	};
 	const chats = {
-		chatting: LivechatLocation.find({ chatStatus: 'Chatting', createdAt }).count(),
-		notStarted: LivechatLocation.find({ chatStatus: 'Not Started', createdAt }).count(),
-		closed: LivechatLocation.find({ chatStatus: 'Closed', createdAt }).count(),
+		chatting: LivechatSession.find({ chatStatus: 'Chatting', createdAt }).count(),
+		notStarted: LivechatSession.find({ chatStatus: 'Not Started', createdAt }).count(),
+		closed: LivechatSession.find({ chatStatus: 'Closed', createdAt }).count(),
 	};
 
 	updateChartData('lc-status-chart', 'Chatting', [chats.chatting]);
@@ -64,7 +64,7 @@ const updateSessionOverviews = () => {
 		$gte: moment().startOf('day').toDate(),
 		$lte: moment().endOf('day').toDate(),
 	};
-	const data = getSessionOverviewData(LivechatLocation.find({ createdAt }));
+	const data = getSessionOverviewData(LivechatSession.find({ createdAt }));
 
 	templateInstance.sessionOverview.set(data);
 };
@@ -80,7 +80,7 @@ const chunkArray = (arr, chunkCount) => {	// split array into n almost equal arr
 	return chunks;
 };
 
-Template.livechatDashboard.helpers({
+Template.livechatRealTimeVisitorsDashboard.helpers({
 	visitors() {
 		return Template.instance().users.get();
 	},
@@ -133,10 +133,10 @@ Template.livechatDashboard.helpers({
 	},
 });
 
-Template.livechatDashboard.events({
+Template.livechatRealTimeVisitorsDashboard.events({
 	'click .row-link'(e, instance) {
 		instance.tabBarData.set(this);
-		instance.tabBar.setTemplate('visitorSession');
+		instance.tabBar.setTemplate('livechatRealTimeVisitorSession');
 		instance.tabBar.setData({ label: t('Session_Info'), icon: 'info-circled' });
 		instance.tabBar.open();
 	},
@@ -179,7 +179,7 @@ Template.livechatDashboard.events({
 	},
 });
 
-Template.livechatDashboard.onRendered(function() {
+Template.livechatRealTimeVisitorsDashboard.onRendered(function() {
 	chartContexts = {};
 	templateInstance = Template.instance();
 	initAllCharts();
@@ -202,7 +202,7 @@ Template.livechatDashboard.onRendered(function() {
 	});
 });
 
-Template.livechatDashboard.onCreated(function() {
+Template.livechatRealTimeVisitorsDashboard.onCreated(function() {
 	this.ready = new ReactiveVar(false);
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
@@ -222,9 +222,9 @@ Template.livechatDashboard.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const sub = this.subscribe('livechat:location', this.filter.get());
+		const sub = this.subscribe('livechat:sessions', this.filter.get());
 		if (sub.ready()) {
-			const users = LivechatLocation.find({}, { sort: { createdAt: -1 } }).map((data) => data);
+			const users = LivechatSession.find({}, { sort: { createdAt: -1 } }).map((data) => data);
 			if (users && users.length > 0) {
 				users.map((val) => {
 					const currentTime = moment();
@@ -288,7 +288,7 @@ Template.livechatDashboard.onCreated(function() {
 		updateSessionOverviews();
 	};
 
-	LivechatLocation.find().observeChanges({
+	LivechatSession.find().observeChanges({
 		changed(id, fields) {
 			updateSessionDashboard(fields);
 		},

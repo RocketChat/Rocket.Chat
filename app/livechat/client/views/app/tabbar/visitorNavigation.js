@@ -32,6 +32,6 @@ Template.visitorNavigation.onCreated(function() {
 	const currentData = Template.currentData();
 
 	if (currentData && currentData.rid) {
-		this.pageVisited = this.subscribe('livechat:visitorPageVisited', { rid: currentData.rid, token: '' });
+		this.pageVisited = this.subscribe('livechat:visitorPageVisited', { rid: currentData.rid });
 	}
 });

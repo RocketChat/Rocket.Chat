@@ -6,7 +6,7 @@ import { t } from '../../../../../utils';
 import './livechatRealTimeVisitorSession.html';
 
 
-Template.visitorSession.helpers({
+Template.livechatRealTimeVisitorSession.helpers({
 	user() {
 		return Template.instance().data;
 	},
@@ -15,17 +15,21 @@ Template.visitorSession.helpers({
 	},
 	geolocationError() {
 		const access = Template.instance().geolocation.get();
+		const { location } = Template.instance().data;
 		if (!access) {
 			return t('Livechat_session_geolocation');
 		}
+		if (!location) {
+			return t('Livechat_location_denied');
+		}
 	},
 	mapOptions() {
-		const { location: { latitude, longitude } } = Template.instance().data;
+		const { location: { latitude, longitude } = {} } = Template.instance().data;
 		return `https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ settings.get('MapView_GMapsAPIKey') }`;
 	},
 });
 
-Template.visitorSession.onCreated(function() {
+Template.livechatRealTimeVisitorSession.onCreated(function() {
 	this.geolocation = new ReactiveVar(true);
 	this.autorun(() => {
 		const isMapViewEnabled = settings.get('MapView_Enabled') === true;

@@ -314,25 +314,7 @@ export const Livechat = {
 		}
 
 		if (room.v) {
-			// Add sentiment analysis on all messages here
-			const sentiment = new Sentiment();
-			let sentimentScore = 0;
-			let messageCount = 0;
-			// Find All messsages for room
-			const messages = Messages.findByRoomId(room._id).map((data) => data);
-			if (messages && messages.length > 0) {
-				messages.forEach((val) => {
-					if (!val.t) {
-						messageCount++;
-						const result = sentiment.analyze(val.msg);
-						sentimentScore += result.comparative;
-					}
-				});
-				LivechatSessions.updateSentimentByToken(room.v.token, sentimentScore / messageCount);
-			}
-
-			// Set chat Status of livechat session
-			LivechatSessions.updateChatStatusOnRoomCloseOrDeleteByToken(room.v.token, 'Closed');
+			this.addSentimentAnalysis(room);
 		}
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
 
@@ -341,6 +323,28 @@ export const Livechat = {
 		});
 
 		return true;
+	},
+
+	addSentimentAnalysis(room) {
+		// Add sentiment analysis on all messages here
+		const sentiment = new Sentiment();
+		let sentimentScore = 0;
+		let messageCount = 0;
+		// Find All messsages sent by visitor for room
+		const messages = Messages.findByRoomId(room._id).map((data) => data).filter(({ token }) => token);
+		if (messages && messages.length > 0) {
+			messages.forEach((val) => {
+				if (!val.t) {
+					messageCount++;
+					const result = sentiment.analyze(val.msg);
+					sentimentScore += result.comparative;
+				}
+			});
+			LivechatSessions.updateSentimentByToken(room.v.token, sentimentScore / messageCount);
+		}
+
+		// Set chat Status of livechat session
+		LivechatSessions.updateChatStatusByToken(room.v.token, 'Closed');
 	},
 
 	setCustomFields({ token, key, value, overwrite } = {}) {
@@ -388,6 +392,7 @@ export const Livechat = {
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
+			'Livechat_location_permission',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
@@ -805,9 +810,6 @@ export const Livechat = {
 	notifyGuestStatusChanged(token, status) {
 		LivechatInquiry.updateVisitorStatus(token, status);
 		LivechatRooms.updateVisitorStatus(token, status);
-	},
-
-	notifyGuestSessionStatusChanged(token, status) {
 		const room = LivechatRooms.findByVisitorToken(token, { sort: { ts: -1 } }).map((data) => data)[0];
 		let chatStatus;
 		if (room && room.open) {
@@ -817,7 +819,64 @@ export const Livechat = {
 		} else {
 			chatStatus = 'Not Started';
 		}
-		LivechatSessions.findOneVisitorByTokenAndUpdateStatus(token, status, chatStatus);
+		const query = {
+			token,
+		};
+		let update;
+		const sessionInfo = LivechatSessions.findOne(query);
+		if (status === 'online') {
+			const { chatStart } = sessionInfo;
+			if (!chatStart && chatStatus !== 'Not Started') {
+				update = {
+					$set: {
+						status,
+						chatStatus,
+						chatStartTime: new Date(),
+						chatStart: true,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			} else if (chatStatus === 'Not Started') {
+				update = {
+					$set: {
+						status,
+						chatStatus,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			} else {
+				update = {
+					$set: {
+						status,
+						chatStatus,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			}
+		} else if (status === 'offline') {
+			update = {
+				$set: {
+					status,
+					chatStatus,
+					offlineTime: new Date(),
+					chatStart: false,
+				},
+			};
+		} else {
+			update = {
+				$set: {
+					status,
+					chatStatus,
+				},
+			};
+		}
+		LivechatSessions.updateStatusByToken(query, update);
 	},
 
 	sendOfflineMessage(data = {}) {
@@ -893,22 +952,6 @@ export const Livechat = {
 		}
 
 		return LivechatOfficeHour.isNowWithinHours();
-	},
-
-	updateVisitorSession(visitor = {}) {
-		return LivechatSessions.findOneVisitorAndUpdateSession(visitor);
-	},
-
-	updateVisitorCount(token) {
-		return LivechatSessions.findOneVisitorByTokenAndUpdateCount(token).count;
-	},
-
-	getVisitorLocation(token) {
-		return LivechatSessions.findOneVisitorLocationByToken(token);
-	},
-
-	updateVisitorLocation(data = {}) {
-		return LivechatSessions.saveVisitorLocation(data);
 	},
 };
 

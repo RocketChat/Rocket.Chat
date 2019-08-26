@@ -1,4 +1,4 @@
-<template name="livechatDashboard">
+<template name="livechatRealTimeVisitorsDashboard">
   {{#requiresPermission 'view-livechat-manager'}}
   <div class="main-content-flex">
     <section class="flex-tab-main-content">
@@ -121,7 +121,7 @@
         <tbody>
           {{#if visitors}}
           {{#each visitors}}
-          <tr class="rc-table-tr manage row-link" data-id="{{_id}}">
+          <tr class="rc-table-tr-livechat-session manage row-link" data-id="{{_id}}">
             <td>
               <div class="rc-table-wrapper">
                 {{#if visitorInfo}}

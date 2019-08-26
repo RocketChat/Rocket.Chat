@@ -5,13 +5,13 @@ import moment from 'moment';
 import { hasPermission } from '../../../authorization';
 import { LivechatSessions } from '../../../models';
 
-Meteor.publish('livechat:location', function(filter = {}) {
+Meteor.publish('livechat:sessions', function(filter = {}) {
 	if (!this.userId) {
-		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:location' }));
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:sessions' }));
 	}
 
 	if (!hasPermission(this.userId, 'view-livechat-manager')) {
-		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:location' }));
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:sessions' }));
 	}
 
 	check(filter, {
@@ -28,7 +28,7 @@ Meteor.publish('livechat:location', function(filter = {}) {
 	const { fromTime, toTime, valueTime } = filter;
 
 	if (!(moment(fromTime).isValid() && moment(toTime).isValid())) {
-		return this.error(new Meteor.Error('error-invalid-time', 'Invalid Time', { publish: 'livechat:location' }));
+		return this.error(new Meteor.Error('error-invalid-time', 'Invalid Time', { publish: 'livechat:sessions' }));
 	}
 
 	const query = {};
@@ -70,13 +70,13 @@ Meteor.publish('livechat:location', function(filter = {}) {
 	const self = this;
 	const handle = LivechatSessions.find(query).observeChanges({
 		added(id, fields) {
-			self.added('livechatLocation', id, fields);
+			self.added('livechatSession', id, fields);
 		},
 		changed(id, fields) {
-			self.changed('livechatLocation', id, fields);
+			self.changed('livechatSession', id, fields);
 		},
 		removed(id) {
-			self.removed('livechatLocation', id);
+			self.removed('livechatSession', id);
 		},
 	});
 

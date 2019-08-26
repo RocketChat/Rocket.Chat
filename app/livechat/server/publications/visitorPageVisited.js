@@ -15,7 +15,7 @@ Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId, token }) {
 	const self = this;
 	const room = LivechatRooms.findOneById(roomId);
 
-	if (room && token === '') {
+	if (room && !token) {
 		const handle = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history').observeChanges({
 			added(id, fields) {
 				self.added('visitor_navigation_history', id, fields);

@@ -30,7 +30,7 @@ Meteor.methods({
 		}
 
 		if (room.v) {
-			LivechatSessions.updateChatStatusOnRoomCloseOrDeleteByToken(room.v.token, 'Not Started');
+			LivechatSessions.updateChatStatusByToken(room.v.token, 'Not Started');
 		}
 
 		Messages.removeByRoomId(rid);

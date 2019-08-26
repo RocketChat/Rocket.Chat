@@ -78,6 +78,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Offline_success_message',
 	});
 
+	settings.add('Livechat_location_permission', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_livechat_location_permission' });
 	settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
 	settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
 
