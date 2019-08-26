@@ -9,6 +9,7 @@ import { Info } from '../../../utils';
 import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
+import { oplogEvents } from '../../../models/server/oplogEvents';
 
 client.collectDefaultMetrics();
 
@@ -56,6 +57,18 @@ metrics.version = new client.Gauge({ name: 'rocketchat_version', labelNames: ['v
 metrics.migration = new client.Gauge({ name: 'rocketchat_migration', help: 'migration versoin' });
 metrics.instanceCount = new client.Gauge({ name: 'rocketchat_instance_count', help: 'instances running' });
 metrics.oplogEnabled = new client.Gauge({ name: 'rocketchat_oplog_enabled', labelNames: ['enabled'], help: 'oplog enabled' });
+metrics.oplog = new client.Counter({
+	name: 'rocketchat_oplog',
+	help: 'summary of oplog operations',
+	labelNames: ['collection', 'op'],
+});
+
+oplogEvents.on('record', ({ collection, op }) => {
+	metrics.oplog.inc({
+		collection,
+		op,
+	});
+});
 
 // User statistics
 metrics.totalUsers = new client.Gauge({ name: 'rocketchat_users_total', help: 'total of users' });

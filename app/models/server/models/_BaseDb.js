@@ -4,6 +4,8 @@ import { Match } from 'meteor/check';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 
+import { oplogEvents } from '../oplogEvents';
+
 const baseName = 'rocketchat_';
 
 const trash = new Mongo.Collection(`${ baseName }_trash`);
@@ -161,10 +163,19 @@ export class BaseDb extends EventEmitter {
 				data: action.op.o,
 				oplog: true,
 			});
+
+			oplogEvents.emit('record', {
+				collection: this.collectionName,
+				op: 'insert',
+			});
 			return;
 		}
 
 		if (action.op.op === 'u') {
+			oplogEvents.emit('record', {
+				collection: this.collectionName,
+				op: 'update',
+			});
 			if (!action.op.o.$set && !action.op.o.$unset) {
 				this.emit('change', {
 					action: 'update',
@@ -209,6 +220,10 @@ export class BaseDb extends EventEmitter {
 				clientAction: 'removed',
 				id: action.id,
 				oplog: true,
+			});
+			oplogEvents.emit('record', {
+				collection: this.collectionName,
+				op: 'remove',
 			});
 		}
 	}
