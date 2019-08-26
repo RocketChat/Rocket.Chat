@@ -1,0 +1,135 @@
+<template name="adminImportHistory">
+	<section class="page-container page-home page-static page-settings">
+		{{> header sectionName="Recent_Import_History"  ullpage="true"}}
+		<div class="content">
+			{{#unless isAdmin}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				{{#if isPreparing}}
+					{{> loading}}
+				{{else}}
+					<button class="rc-button rc-button--primary import-list">{{_ "Back"}}</button>
+
+					{{#each history}}
+						<div class="section">
+							<!-- <h1>{{ name }}</h1> -->
+							<div class="section-content">
+								<h1>{{ statusMessage}}</h1>
+
+								<span style="font-weight: 600;">{{_ "Import_Type"}}:</span>
+								<span>{{ type}} [{{ importerKey}}]</span>
+								<br/>
+
+								<span style="font-weight: 600;">{{_ "Last_Updated"}}:</span>
+								<span>{{ lastUpdated}}</span>
+								<br/>
+
+								{{#if messagesstatus}}
+									<span style="font-weight: 600;">{{_ "Current_File"}}:</span>
+									<span>{{ messagesstatus}}</span>
+									<br/>
+								{{/if}}
+
+								{{#if hasCounters}}
+									<span style="font-weight: 600;">{{_ "Counters"}}:</span>
+									<br/>
+
+									<span>{{_ "Users"}}:</span>
+									<span>{{ userCount}}</span>
+									<br/>
+									<span>{{_ "Channels"}}:</span>
+									<span>{{ channelCount}}</span>
+									<br/>
+									<span>{{_ "Messages"}}:</span>
+									<span>{{ messageCount}}</span>
+									<br/>
+									<span>{{_ "Total"}}:</span>
+									<span>{{ totalCount}}</span>
+									<br/>
+
+									<br/>
+								{{/if}}
+
+								{{#if hasErrors}}
+									<h2>{{_ "Errors_and_Warnings"}}:</h2>
+									<br/>
+
+									{{#if fileData.users}}
+										{{#each fileData.users}}
+											{{#if is_email_taken}}
+												<span style="color: red;">{{_ "Email_already_exists"}}:</span>
+												<span>{{ email}}</span>
+												<br/>
+											{{/if}}
+
+											{{#if error}}
+												<span>{{ email}}:</span>
+												<span style="color: red;">{{ formatedError}}</span>
+												<br/>
+											{{/if}}
+
+										{{/each}}
+									{{/if}}
+
+									{{#if errors}}
+										<br/>
+										<br/>
+										<h3>{{_ "Not_Imported_Messages_Title"}}</h3>
+										<br/>
+										{{#each errors}}
+											<br/>
+											{{#if msg}}
+												{{#if msg.id}}
+													<span style="font-weight: 600;">{{_ "Message_Id"}}:</span>
+													<span>{{ msg.id}}</span>
+													<br/>
+												{{/if}}
+												{{#if msg.userId}}
+													<span style="font-weight: 600;">{{_ "Message_UserId"}}:</span>
+													<span>{{ msg.userId}}</span>
+													<br/>
+												{{/if}}
+												{{#if msg.ts}}
+													<span style="font-weight: 600;">{{_ "Message_Time"}}:</span>
+													<span>{{ messageTime}}</span>
+													<br/>
+												{{/if}}
+<!-- 												{{#if msg.text}}
+													<span style="font-weight: 600;">{{_ "Message"}}:</span>
+													<span>{{ msg.text}}</span>
+													<br/>
+												{{/if}} -->
+											{{/if}}
+											{{#if error}}
+												{{#if error.error}}
+													<span style="font-weight: 500;">{{_ "Error"}}:</span>
+													<span style="color: red;">{{ error.error}}:</span>
+													<br/>
+												{{/if}}
+												{{#if error.message}}
+													<span style="font-weight: 500;">{{_ "Message"}}:</span>
+													<span style="color: red;">{{ error.message}}:</span>
+													<br/>
+												{{/if}}
+												{{#if error.details}}
+													{{#if error.details.method}}
+														<span style="font-weight: 500;">{{_ "Method"}}:</span>
+														<span style="color: red;">{{ error.details.method}}:</span>
+														<br/>
+													{{/if}}
+												{{/if}}
+											{{/if}}
+										{{/each}}
+									{{/if}}
+
+									<br/>
+								{{/if}}
+
+							</div>
+						</div>
+					{{/each}}
+				{{/if}}
+			{{/unless}}
+		</div>
+	</section>
+</template>

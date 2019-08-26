@@ -1,0 +1,136 @@
+<template name="mailMessagesInstructions">
+	<main class="rc-user-info__scroll">
+		{{#if selectedMessages}}
+			<div class="mail-messages__instructions mail-messages__instructions--selected">
+				<div class="mail-messages__instructions-wrapper">
+					{{> icon block="mail-messages__instructions-icon rc-icon--default-size" icon="checkmark-circled"}}
+					<div class="mail-messages__instructions-text">
+							<span class="mail-messages__instructions-text-selected">{{selectedMessages.length}} Messages selected</span>
+							<span>Click here to clear the selection</span>
+					</div>
+				</div>
+			</div>
+		{{else}}
+			<div class="mail-messages__instructions">
+				<div class="mail-messages__instructions-wrapper">
+					{{> icon block="mail-messages__instructions-icon rc-icon--default-size" icon="hand-pointer"}}
+					<div class="mail-messages__instructions-text">
+							{{_ "Click_the_messages_you_would_like_to_send_by_email"}}
+					</div>
+				</div>
+			</div>
+		{{/if}}
+		<div class="rc-input rc-input--usernames">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "To_users"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg rc-icon--default-size" icon="at"}}
+					</div>
+					<div class="rc-tags">
+						{{#each user in selectedUsers}}
+							{{> tag user}}
+						{{/each}}
+						<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
+					</div>
+				</div>
+				{{#with config}}
+					{{#if autocomplete 'isShowing'}}
+						{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
+					{{/if}}
+				{{/with}}
+			</label>
+		</div>
+		<div class="rc-input rc-input--emails">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "To_additional_emails"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg rc-icon--default-size" icon="mail"}}
+					</div>
+					<div class="rc-tags">
+						{{#each selectedEmails}}
+							{{> tag .}}
+						{{/each}}
+						<input type="text" class="rc-tags__input" placeholder="{{_ "Email_Placeholder_any"}}" name="emails" autocomplete="off"/>
+					</div>
+				</div>
+			</label>
+		</div>
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Subject"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg rc-icon--default-size" icon="edit"}}
+					</div>
+					<input type="text" class="rc-input__element" value="{{_ "Mail_Messages_Subject" roomName}}" name="subject" autocomplete="off"/>
+				</div>
+			</label>
+		</div>
+
+		{{#if errorMessage}}
+			<div class="mail-messages__instructions mail-messages__instructions--warning">
+				<div class="mail-messages__instructions-wrapper">
+					<div class="mail-messages__instructions-text">{{errorMessage}}</div>
+				</div>
+			</div>
+		{{/if}}
+	</main>
+	<div class="rc-user-info__flex rc-user-info__row">
+		<button class="rc-button rc-button--outline js-cancel" title="{{_ 'Cancel'}}">{{_ 'Cancel'}}</button>
+		<button class="rc-button rc-button--primary js-send" title="{{_ 'Send'}}">{{_ 'Send'}}</button>
+	</div>
+	{{#if false}}
+	<div class="content">
+		<div class="list-view mail-message">
+			<p>{{_ "Mail_Messages_Instructions"}}</p>
+			<form>
+				<fieldset>
+					<div class="input-line double-col">
+						<label>{{_ "From"}}</label>
+						<div>{{name}}</div>
+						<div>{{email}}</div>
+					</div>
+					<div class="input-line double-col">
+						<label>{{_ "To_users"}}</label>
+						<div>
+							{{> inputAutocomplete settings=autocompleteSettings id="to_users" name="to_users" class="search" autocomplete="off"}}
+							<ul class="selected-users">
+								{{#each selectedUsers}}
+									<li>{{.}} <i class="icon-cancel remove-to-user"></i></li>
+								{{/each}}
+							</ul>
+						</div>
+					</div>
+					<div class="input-line double-col">
+						<label>{{_ "Additional_emails"}}</label>
+						<div>
+							<input type="text" name="to_emails" value=""  class="rc-input__element"/>
+						</div>
+					</div>
+					<div class="input-line double-col">
+						<label>{{_ "Subject"}}</label>
+						<div>
+							<input type="text" name="subject" class="rc-input__element" value="{{_ "Mail_Messages_Subject" roomName}}" />
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			<div class="error error-missing-to alert error-color error-background error-border" style="display: none">
+				{{_ "Mail_Message_Missing_to"}}
+			</div>
+			<div class="error error-invalid-emails alert error-color error-background error-border" style="display: none">
+				{{_ "Mail_Message_Invalid_emails" erroredEmails}}
+			</div>
+			<div class="error error-select alert error-color error-background error-border" style="display: none">
+				{{{_ "Mail_Message_No_messages_selected_select_all"}}}
+			</div>
+			<p style="margin-top: 30px">
+				<button class="rc-button rc-button--outline cancel">{{_ 'Cancel'}}</button>
+				<button class="rc-button rc-button--primary send">{{_ 'Send'}}</button>
+			</p>
+		</div>
+	</div>
+	{{/if}}
+</template>

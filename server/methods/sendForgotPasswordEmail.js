@@ -2,7 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
-import * as Mailer from 'meteor/rocketchat:mailer';
+
+import * as Mailer from '../../app/mailer';
+import { Users } from '../../app/models';
+import { settings } from '../../app/settings';
 
 let template = '';
 
@@ -18,7 +21,7 @@ Meteor.methods({
 
 		let email = to.trim();
 
-		const user = RocketChat.models.Users.findOneByEmailAddress(email);
+		const user = Users.findOneByEmailAddress(email);
 
 		if (!user) {
 			return false;
@@ -27,7 +30,7 @@ Meteor.methods({
 		const regex = new RegExp(`^${ s.escapeRegExp(email) }$`, 'i');
 		email = (user.emails || []).map((item) => item.address).find((userEmail) => regex.test(userEmail));
 
-		const subject = Mailer.replace(RocketChat.settings.get('Forgot_Password_Email_Subject') || '', {
+		const subject = Mailer.replace(settings.get('Forgot_Password_Email_Subject') || '', {
 			name: user.name,
 			email,
 		});
@@ -37,10 +40,9 @@ Meteor.methods({
 			email,
 		});
 
-		Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;
+		Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
 
 		try {
-
 			Accounts.emailTemplates.resetPassword.subject = function(/* userModel*/) {
 				return subject; // TODO check a better way to do this
 			};

@@ -3,6 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 
+import { settings } from '../../../app/settings';
+
 import './readReceipts.css';
 import './readReceipts.html';
 
@@ -11,7 +13,7 @@ Template.readReceipts.helpers({
 		return Template.instance().readReceipts.get();
 	},
 	displayName() {
-		return (RocketChat.settings.get('UI_Use_Real_Name') && this.user.name) || this.user.username;
+		return (settings.get('UI_Use_Real_Name') && this.user.name) || this.user.username;
 	},
 	time() {
 		return moment(this.ts).format('L LTS');
@@ -32,6 +34,7 @@ Template.readReceipts.onRendered(function readReceiptsOnRendered() {
 		if (!error) {
 			this.readReceipts.set(result);
 		}
+
 		this.loading.set(false);
 	});
 });
