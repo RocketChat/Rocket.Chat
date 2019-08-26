@@ -174,7 +174,6 @@ if (Meteor.isServer) {
 		removeByRoomId(rid) {
 			return this.remove({ rid });
 		}
-
 	}
 
 	LivechatInquiry = new LivechatInquiryClass();
