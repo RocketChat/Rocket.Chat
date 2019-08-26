@@ -294,8 +294,9 @@ export const Livechat = {
 			};
 		}
 
-		LivechatRooms.closeByRoomId(room._id, closeData);
-		LivechatInquiry.closeByRoomId(room._id, closeData);
+		const { _id: rid, servedBy } = room;
+		LivechatRooms.closeByRoomId(rid, closeData);
+		LivechatInquiry.removeByRoomId(rid);
 
 		const message = {
 			t: 'livechat-close',
@@ -304,14 +305,14 @@ export const Livechat = {
 		};
 
 		// Retreive the closed room
-		room = LivechatRooms.findOneByIdOrName(room._id);
+		room = LivechatRooms.findOneByIdOrName(rid);
 
 		sendMessage(user, message, room);
 
-		if (room.servedBy) {
-			Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
+		if (servedBy) {
+			Subscriptions.hideByRoomIdAndUserId(rid, servedBy._id);
 		}
-		Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
+		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.closeRoom', room);

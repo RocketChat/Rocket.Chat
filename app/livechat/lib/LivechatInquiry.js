@@ -56,23 +56,6 @@ if (Meteor.isServer) {
 		}
 
 		/*
-		* mark the inquiry as closed
-		*/
-		closeByRoomId(roomId, closeInfo) {
-			return this.update({
-				rid: roomId,
-			}, {
-				$set: {
-					status: 'closed',
-					closer: closeInfo.closer,
-					closedBy: closeInfo.closedBy,
-					closedAt: closeInfo.closedAt,
-					'metrics.chatDuration': closeInfo.chatDuration,
-				},
-			});
-		}
-
-		/*
 		* mark inquiry as open
 		*/
 		openInquiry(inquiryId) {
@@ -184,6 +167,14 @@ if (Meteor.isServer) {
 
 			return collectionObj.aggregate(aggregate).toArray();
 		}
+
+		/*
+		* remove the inquiry by roomId
+		*/
+		removeByRoomId(rid) {
+			return this.remove({ rid });
+		}
+
 	}
 
 	LivechatInquiry = new LivechatInquiryClass();
