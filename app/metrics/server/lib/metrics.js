@@ -63,13 +63,6 @@ metrics.oplog = new client.Counter({
 	labelNames: ['collection', 'op'],
 });
 
-oplogEvents.on('record', ({ collection, op }) => {
-	metrics.oplog.inc({
-		collection,
-		op,
-	});
-});
-
 // User statistics
 metrics.totalUsers = new client.Gauge({ name: 'rocketchat_users_total', help: 'total of users' });
 metrics.activeUsers = new client.Gauge({ name: 'rocketchat_users_active', help: 'total of active users' });
@@ -170,24 +163,33 @@ app.use('/', (req, res) => {
 
 const server = http.createServer(app);
 
+const oplogMetric = ({ collection, op }) => {
+	metrics.oplog.inc({
+		collection,
+		op,
+	});
+};
+
 let timer;
 const updatePrometheusConfig = async () => {
 	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
 	const enabled = settings.get('Prometheus_Enabled');
-	if (port == null || enabled == null) {
+
+	if (!port || !enabled) {
+		server.close();
+		Meteor.clearInterval(timer);
+		oplogEvents.removeListener('record', oplogMetric);
 		return;
 	}
 
-	if (enabled === true) {
-		server.listen({
-			port,
-			host: process.env.BIND_IP || '0.0.0.0',
-		});
-		timer = Meteor.setInterval(setPrometheusData, 5000);
-	} else {
-		server.close();
-		Meteor.clearInterval(timer);
-	}
+	server.listen({
+		port,
+		host: process.env.BIND_IP || '0.0.0.0',
+	});
+
+	timer = Meteor.setInterval(setPrometheusData, 5000);
+
+	oplogEvents.on('record', oplogMetric);
 };
 
 Meteor.startup(async () => {
