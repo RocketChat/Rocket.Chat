@@ -15,26 +15,12 @@ Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId, token }) {
 	const self = this;
 	const room = LivechatRooms.findOneById(roomId);
 
-	if (room && !token) {
-		const handle = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history').observeChanges({
-			added(id, fields) {
-				self.added('visitor_navigation_history', id, fields);
-			},
-			changed(id, fields) {
-				self.changed('visitor_navigation_history', id, fields);
-			},
-			removed(id) {
-				self.removed('visitor_navigation_history', id);
-			},
-		});
-
-		self.ready();
-
-		self.onStop(function() {
-			handle.stop();
-		});
-	} else if (roomId === '' && token !== '') {
-		const handle = Messages.findByTokenAndType(token, 'livechat_navigation_history').observeChanges({
+	if (room || token) {
+		const filter = {
+			...roomId && { rid: roomId },
+			...token && { token },
+		};
+		const handle = Messages.findByRoomIdOrTokenAndType(filter, 'livechat_navigation_history').observeChanges({
 			added(id, fields) {
 				self.added('visitor_navigation_history', id, fields);
 			},

@@ -452,7 +452,6 @@ export const Livechat = {
 				// keep history of unregistered visitors for 1 month
 				const keepHistoryMiliseconds = 2592000000;
 				extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
-				return Messages.createNavigationHistoryWithTokenMessageAndUser(`${ pageTitle } - ${ pageUrl }`, user, extraData);
 			}
 
 			if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
@@ -811,7 +810,7 @@ export const Livechat = {
 	notifyGuestStatusChanged(token, status) {
 		LivechatInquiry.updateVisitorStatus(token, status);
 		LivechatRooms.updateVisitorStatus(token, status);
-		const room = LivechatRooms.findByVisitorToken(token, { sort: { ts: -1 } }).map((data) => data)[0];
+		const room = LivechatRooms.findOne({ t: 'l', 'v.token': token }, { sort: { ts: -1 } });
 		let chatStatus;
 		if (room && room.open) {
 			chatStatus = 'Chatting';

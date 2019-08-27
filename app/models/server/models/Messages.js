@@ -474,14 +474,23 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findByTokenAndType(token, type, options) {
-		const query = {
-			token,
-			t: type,
-		};
+	findByRoomIdOrTokenAndType(filter, type, options) {
+		const { rid, token } = filter;
+		let query;
+		if (rid) {
+			query = {
+				rid,
+				t: type,
+			};
+		}
+		if (token) {
+			query = {
+				'navigation.token': token,
+				t: type,
+			};
+		}
 
 		if (options == null) { options = {}; }
-
 		return this.find(query, options);
 	}
 
@@ -765,30 +774,6 @@ export class Messages extends Base {
 			rid: roomId,
 			ts: new Date(),
 			token: extraData.navigation.token,
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-			groupable: false,
-		};
-
-		if (settings.get('Message_Read_Receipt_Enabled')) {
-			record.unread = true;
-		}
-
-		_.extend(record, extraData);
-
-		record._id = this.insertOrUpsert(record);
-		return record;
-	}
-
-	createNavigationHistoryWithTokenMessageAndUser(message, user, extraData) {
-		const type = 'livechat_navigation_history';
-		const record = {
-			t: type,
-			token: extraData.navigation.token,
-			ts: new Date(),
 			msg: message,
 			u: {
 				_id: user._id,
