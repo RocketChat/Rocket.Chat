@@ -1,5 +1,5 @@
-import { Federation } from '../index';
-import { getNameAndDomain, isFullyQualified } from './helpers/federatedResources';
+import { getNameAndDomain, isFullyQualified } from '../functions/helpers';
+import { getFederationDomain } from '../lib/getFederationDomain';
 
 const denormalizeMessage = (originalResource) => {
 	const resource = { ...originalResource };
@@ -7,7 +7,7 @@ const denormalizeMessage = (originalResource) => {
 	const [username, domain] = getNameAndDomain(resource.u.username);
 
 	// Denormalize username
-	resource.u.username = domain === Federation.domain ? username : resource.u.username;
+	resource.u.username = domain === getFederationDomain() ? username : resource.u.username;
 
 	// Denormalize mentions
 	for (const mention of resource.mentions) {
@@ -16,7 +16,7 @@ const denormalizeMessage = (originalResource) => {
 
 		const [username, domain] = getNameAndDomain(mention.username);
 
-		if (domain === Federation.domain) {
+		if (domain === getFederationDomain()) {
 			const originalUsername = mention.username;
 
 			mention.username = username;
@@ -32,7 +32,7 @@ const denormalizeMessage = (originalResource) => {
 
 		const [username, domain] = getNameAndDomain(channel.name);
 
-		if (domain === Federation.domain) {
+		if (domain === getFederationDomain()) {
 			const originalUsername = channel.name;
 
 			channel.name = username;
@@ -49,11 +49,11 @@ const denormalizeAllMessages = (resources) => resources.map(denormalizeMessage);
 const normalizeMessage = (originalResource) => {
 	const resource = { ...originalResource };
 
-	resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
+	resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ getFederationDomain() }` : resource.u.username;
 
 	// Federation
 	resource.federation = resource.federation || {
-		origin: Federation.domain, // The origin of this resource, where it was created
+		origin: getFederationDomain(), // The origin of this resource, where it was created
 	};
 
 	// Normalize mentions
@@ -64,7 +64,7 @@ const normalizeMessage = (originalResource) => {
 		if (!isFullyQualified(mention.username)) {
 			const originalUsername = mention.username;
 
-			mention.username = `${ mention.username }@${ Federation.domain }`;
+			mention.username = `${ mention.username }@${ getFederationDomain() }`;
 
 			resource.msg = resource.msg.split(originalUsername).join(mention.username);
 		}
@@ -75,7 +75,7 @@ const normalizeMessage = (originalResource) => {
 		if (!isFullyQualified(channel.name)) {
 			const originalUsername = channel.name;
 
-			channel.name = `${ channel.name }@${ Federation.domain }`;
+			channel.name = `${ channel.name }@${ getFederationDomain() }`;
 
 			resource.msg = resource.msg.split(originalUsername).join(channel.name);
 		}
