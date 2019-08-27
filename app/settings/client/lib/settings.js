@@ -13,8 +13,6 @@ settings.cachedCollection = new CachedCollection({
 
 settings.collection = settings.cachedCollection.collection;
 
-settings.cachedCollection.init();
-
 settings.dict = new ReactiveDict('settings');
 
 settings.get = function(_id) {

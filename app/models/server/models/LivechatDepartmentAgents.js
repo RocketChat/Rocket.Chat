@@ -9,10 +9,17 @@ import Users from './Users';
 export class LivechatDepartmentAgents extends Base {
 	constructor() {
 		super('livechat_department_agents');
+
+		this.tryEnsureIndex({ departmentId: 1 });
+		this.tryEnsureIndex({ agentId: 1 });
 	}
 
 	findByDepartmentId(departmentId) {
 		return this.find({ departmentId });
+	}
+
+	findByAgentId(agentId) {
+		return this.find({ agentId });
 	}
 
 	saveAgent(agent) {

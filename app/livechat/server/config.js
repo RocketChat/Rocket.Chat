@@ -381,13 +381,12 @@ Meteor.startup(function() {
 		],
 	});
 
-	settings.add('Livechat_guest_pool_with_no_agents', false, {
+	settings.add('Livechat_accept_chats_with_no_agents', false, {
 		type: 'boolean',
 		group: 'Livechat',
 		section: 'Routing',
 		i18nLabel: 'Accept_with_no_online_agents',
 		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
 	});
 
 	settings.add('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0, {

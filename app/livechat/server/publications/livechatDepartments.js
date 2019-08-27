@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission } from '../../../authorization';
 import { LivechatDepartment } from '../../../models';
 
-Meteor.publish('livechat:departments', function(_id) {
+Meteor.publish('livechat:departments', function(_id, limit = 50) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:agents' }));
 	}
@@ -12,8 +12,9 @@ Meteor.publish('livechat:departments', function(_id) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:agents' }));
 	}
 
-	if (_id !== undefined) {
+	if (_id) {
 		return LivechatDepartment.findByDepartmentId(_id);
 	}
-	return LivechatDepartment.find();
+
+	return LivechatDepartment.find({}, { limit });
 });
