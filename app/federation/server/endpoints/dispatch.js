@@ -28,7 +28,13 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 
 		//
 		// Decrypt the payload if needed
-		const payload = decryptIfNeeded(this.request, this.bodyParams);
+		let payload;
+
+		try {
+			payload = decryptIfNeeded(this.request, this.bodyParams);
+		} catch (err) {
+			return API.v1.failure('Could not decrypt payload');
+		}
 
 		//
 		// Convert from EJSON
