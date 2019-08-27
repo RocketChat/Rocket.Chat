@@ -22,6 +22,12 @@ export const defaultRateLimiterOptions = {
 
 export let API = {};
 
+const getRequestIP = (req) =>
+	req.headers['x-forwarded-for']
+	|| (req.connection && req.connection.remoteAddress)
+	|| (req.socket && req.socket.remoteAddress)
+	|| (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+
 export class APIClass extends Restivus {
 	constructor(properties) {
 		super(properties);
@@ -289,7 +295,7 @@ export class APIClass extends Restivus {
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-					const requestIp = this.request.headers['x-forwarded-for'] || this.request.connection.remoteAddress || this.request.socket.remoteAddress || this.request.connection.socket.remoteAddress;
+					const requestIp = getRequestIP(this.request);
 					const objectForRateLimitMatch = {
 						IPAddr: requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
