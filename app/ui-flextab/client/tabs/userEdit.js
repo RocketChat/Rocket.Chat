@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
@@ -182,6 +182,7 @@ Template.userEdit.onCreated(function() {
 		const userData = { _id: this.user != null ? this.user._id : undefined };
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
+		userData.statusText = s.trim(this.$('#status').val());
 		userData.email = s.trim(this.$('#email').val());
 		userData.verified = this.$('#verified:checked').length > 0;
 		userData.password = s.trim(this.$('#password').val());

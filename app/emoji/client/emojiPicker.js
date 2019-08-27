@@ -9,11 +9,11 @@ import { emoji } from '../lib/rocketchat';
 
 const emojiListByCategory = new ReactiveDict('emojiList');
 
-const getEmojiElement = (emoji, image) => `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
+const getEmojiElement = (emoji, image) => image && `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
 
 const createEmojiList = (category, actualTone) => {
 	const html = Object.values(emoji.packages).map((emojiPackage) => {
-		if (!emojiPackage.emojisByCategory[category]) {
+		if (!emojiPackage.emojisByCategory || !emojiPackage.emojisByCategory[category]) {
 			return;
 		}
 

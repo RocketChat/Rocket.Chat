@@ -1,19 +1,21 @@
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 
-import { FederationEvents, FederationPeers, Users } from '../../../models';
+import { FederationServers, FederationRoomEvents, Users } from '../../../models/server';
 
-import { Federation } from '..';
+export function getStatistics() {
+	const numberOfEvents = FederationRoomEvents.find().count();
+	const numberOfFederatedUsers = Users.findRemote().count();
+	const numberOfServers = FederationServers.find().count();
+
+	return { numberOfEvents, numberOfFederatedUsers, numberOfServers };
+}
 
 export function federationGetOverviewData() {
 	if (!Meteor.userId()) {
 		throw new Meteor.Error('not-authorized');
 	}
 
-	const numberOfEvents = FederationEvents.find({ t: { $ne: 'png' } }).count();
-	const numberOfFederatedUsers = Users.find({ federation: { $exists: true }, 'federation.peer': { $ne: Federation.localIdentifier } }).count();
-	const numberOfActivePeers = FederationPeers.find({ active: true, peer: { $ne: Federation.localIdentifier } }).count();
-	const numberOfInactivePeers = FederationPeers.find({ active: false, peer: { $ne: Federation.localIdentifier } }).count();
+	const { numberOfEvents, numberOfFederatedUsers, numberOfServers } = getStatistics();
 
 	return {
 		data: [{
@@ -23,48 +25,25 @@ export function federationGetOverviewData() {
 			title: 'Number_of_federated_users',
 			value: numberOfFederatedUsers,
 		}, {
-			title: 'Number_of_active_peers',
-			value: numberOfActivePeers,
-		}, {
-			title: 'Number_of_inactive_peers',
-			value: numberOfInactivePeers,
+			title: 'Number_of_federated_servers',
+			value: numberOfServers,
 		}],
 	};
 }
 
-export function federationGetPeerStatuses() {
+export function federationGetServers() {
 	if (!Meteor.userId()) {
 		throw new Meteor.Error('not-authorized');
 	}
 
-	const peers = FederationPeers.find({ peer: { $ne: Federation.localIdentifier } }).fetch();
-
-	const peerStatuses = [];
-
-	const stabilityLimit = moment().subtract(5, 'days');
-
-	for (const { peer, active, last_seen_at: lastSeenAt, last_failure_at: lastFailureAt } of peers) {
-		let status = 'failing';
-
-		if (active && lastFailureAt && moment(lastFailureAt).isAfter(stabilityLimit)) {
-			status = 'unstable';
-		} else if (active) {
-			status = 'stable';
-		}
-
-		peerStatuses.push({
-			peer,
-			status,
-			statusAt: active ? lastSeenAt : lastFailureAt,
-		});
-	}
+	const servers = FederationServers.find().fetch();
 
 	return {
-		data: peerStatuses,
+		data: servers,
 	};
 }
 
 Meteor.methods({
 	'federation:getOverviewData': federationGetOverviewData,
-	'federation:getPeerStatuses': federationGetPeerStatuses,
+	'federation:getServers': federationGetServers,
 });
