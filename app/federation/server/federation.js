@@ -13,7 +13,6 @@ import { client } from './_client';
 import { crypt } from './crypt';
 import { FederationKeys } from '../../models/server';
 import { updateStatus, updateEnabled } from './settingsUpdater';
-import './_server';
 
 import './methods/testSetup';
 
