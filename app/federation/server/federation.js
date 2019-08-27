@@ -71,12 +71,8 @@ function enableOrDisable() {
 
 	if (Federation.enabled) {
 		updateSettings();
-
-		Federation.client.enableCallbacks();
 	} else {
 		updateStatus('Disabled');
-
-		Federation.client.disableCallbacks();
 	}
 
 	Federation.enabled && updateSettings();
