@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
+import { Users, LivechatRooms, LivechatSessions, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 
@@ -28,6 +28,10 @@ export function findGuest(token) {
 			department: 1,
 		},
 	});
+}
+
+export function findSession(token) {
+	return LivechatSessions.findOneByToken(token);
 }
 
 export function findRoom(token, rid) {
