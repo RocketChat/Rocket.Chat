@@ -5,9 +5,9 @@ import s from 'underscore.string';
 import { hasPermission } from '../../app/authorization';
 import { Rooms, Users } from '../../app/models';
 import { settings } from '../../app/settings/server';
-import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
-import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
-import { federationSearchUsers } from '../../app/federation/server/handler';
+// import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
+// import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
+// import { federationSearchUsers } from '../../app/federation/server/handler';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -119,32 +119,33 @@ Meteor.methods({
 		let result;
 		if (workspace === 'all') {
 			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
-		} else if (workspace === 'external') {
-			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
+		// } else if (workspace === 'external') {
+		// 	result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
 		} else {
-			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
+			// result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
+			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
 		}
 
 		const total = result.count(); // count ignores the `skip` and `limit` options
 		const results = result.fetch();
 
 		// Try to find federated users, when appliable
-		if (isFederationEnabled() && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
-			const users = federationSearchUsers(text);
+		// if (isFederationEnabled() && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
+		// 	const users = federationSearchUsers(text);
 
-			for (const user of users) {
-				if (results.find((e) => e._id === user._id)) { continue; }
+		// 	for (const user of users) {
+		// 		if (results.find((e) => e._id === user._id)) { continue; }
 
-				// Add the federated user to the results
-				results.unshift({
-					username: user.username,
-					name: user.name,
-					emails: user.emails,
-					federation: user.federation,
-					isRemote: true,
-				});
-			}
-		}
+		// 		// Add the federated user to the results
+		// 		results.unshift({
+		// 			username: user.username,
+		// 			name: user.name,
+		// 			emails: user.emails,
+		// 			federation: user.federation,
+		// 			isRemote: true,
+		// 		});
+		// 	}
+		// }
 
 		return {
 			total,

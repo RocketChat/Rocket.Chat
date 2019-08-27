@@ -7,7 +7,7 @@ import { Users, Rooms, Subscriptions } from '../../app/models';
 import { getDefaultSubscriptionPref } from '../../app/utils';
 import { RateLimiter } from '../../app/lib';
 import { callbacks } from '../../app/callbacks';
-import { addUser } from '../../app/federation/server/functions/addUser';
+// import { addUser } from '../../app/federation/server/functions/addUser';
 
 Meteor.methods({
 	createDirectMessage(username) {
@@ -39,12 +39,12 @@ Meteor.methods({
 			});
 		}
 
-		let to = Users.findOneByUsernameIgnoringCase(username);
+		const to = Users.findOneByUsernameIgnoringCase(username);
 
 		// If the username does have an `@`, but does not exist locally, we create it first
-		if (!to && username.indexOf('@') !== -1) {
-			to = addUser(username);
-		}
+		// if (!to && username.indexOf('@') !== -1) {
+		// 	to = addUser(username);
+		// }
 
 		if (!to) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

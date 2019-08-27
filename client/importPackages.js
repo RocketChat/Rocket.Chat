@@ -18,7 +18,7 @@ import '../app/emoji';
 import '../app/emoji-custom/client';
 import '../app/emoji-emojione/client';
 import '../app/favico';
-import '../app/federation/client';
+// import '../app/federation/client';
 import '../app/file-upload';
 import '../app/github-enterprise/client';
 import '../app/gitlab/client';
