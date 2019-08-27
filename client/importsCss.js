@@ -1,4 +1,4 @@
-
+import './RocketChat.font.css';
 import '../app/chatpal-search/client/style.css';
 import '../app/theme/client/main.css';
 import '../app/theme/client/vendor/photoswipe.css';

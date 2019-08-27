@@ -36,7 +36,7 @@ Template.authorize.onCreated(function() {
 
 Template.authorize.helpers({
 	getToken() {
-		return localStorage.getItem(Accounts.LOGIN_TOKEN_KEY);
+		return Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY);
 	},
 	getClient() {
 		return ChatOAuthApps.findOne();
