@@ -5,6 +5,7 @@ import { normalizers } from '../../normalizers';
 import { deleteRoom } from '../../../../lib/server/functions';
 
 export async function doAfterCreateRoom(room, users, subscriptions) {
+	console.log('doAfterCreateRoom');
 	//
 	// Genesis
 	//
@@ -40,6 +41,7 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 }
 
 async function afterCreateRoom(roomOwner, room) {
+	console.log('afterCreateRoom');
 	// If the room is federated, ignore
 	if (room.federation) { return; }
 

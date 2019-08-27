@@ -5,6 +5,7 @@ import { normalizers } from '../../normalizers';
 import { isFederated } from './helpers/federatedResources';
 
 async function afterMuteUser(involvedUsers, room) {
+	console.log('afterMuteUser');
 	// If there are not federated users on this room, ignore it
 	if (!isFederated(room)) { return; }
 

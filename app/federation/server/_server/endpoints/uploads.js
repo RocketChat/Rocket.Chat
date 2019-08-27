@@ -7,6 +7,7 @@ import { Federation } from '../..';
 
 API.v1.addRoute('federation.uploads', { authRequired: false }, {
 	get() {
+		console.log('GET federation.uploads');
 		if (!Federation.enabled) {
 			return API.v1.failure('Not found');
 		}

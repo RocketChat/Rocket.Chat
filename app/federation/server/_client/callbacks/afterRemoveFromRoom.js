@@ -5,6 +5,7 @@ import { normalizers } from '../../normalizers';
 import { Federation } from '../../federation';
 
 async function afterRemoveFromRoom(involvedUsers, room) {
+	console.log('afterRemoveFromRoom');
 	const { removedUser } = involvedUsers;
 
 	// If there are not federated users on this room, ignore it

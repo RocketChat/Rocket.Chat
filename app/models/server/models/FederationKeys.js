@@ -20,6 +20,7 @@ class FederationKeysModel extends Base {
 	}
 
 	generateKeys() {
+		console.log('generateKeys');
 		const key = new NodeRSA({ b: 512 });
 
 		key.generateKeyPair();

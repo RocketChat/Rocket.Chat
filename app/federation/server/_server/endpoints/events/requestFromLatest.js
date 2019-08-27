@@ -7,6 +7,7 @@ import { FederationRoomEvents } from '../../../../../models/server';
 
 API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, {
 	async post() {
+		console.log('POST federation.events.requestFromLatest');
 		if (!Federation.enabled) {
 			return API.v1.failure('Not found');
 		}

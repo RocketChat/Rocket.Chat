@@ -5,6 +5,7 @@ import { normalizers } from '../../normalizers';
 import { deleteRoom } from '../../../../lib/server/functions';
 
 async function afterCreateDirectRoom(room, extras) {
+	console.log('afterCreateDirectRoom');
 	logger.client.debug(() => `afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } extras=${ JSON.stringify(extras, null, 2) }`);
 
 	// If the room is federated, ignore

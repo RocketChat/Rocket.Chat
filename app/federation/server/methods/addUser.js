@@ -5,6 +5,7 @@ import { FederationServers, Users } from '../../../models';
 import { Federation } from '..';
 
 export function addUser(query) {
+	console.log('addUser ->', query);
 	if (!Meteor.userId()) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addUser' });
 	}

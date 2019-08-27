@@ -42,6 +42,11 @@ if (!FederationKeys.getPublicKey()) {
 }
 
 const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
+	console.log('updateSettings');
+	if (Federation.enabled) {
+		return;
+	}
+
 	Federation.domain = settings.get('FEDERATION_Domain').replace('@', '');
 	Federation.discoveryMethod = settings.get('FEDERATION_Discovery_Method');
 
@@ -65,6 +70,7 @@ const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 }), 150);
 
 function enableOrDisable() {
+	console.log('enableOrDisable');
 	Federation.enabled = settings.get('FEDERATION_Enabled');
 
 	logger.setup.info(`Federation is ${ Federation.enabled ? 'enabled' : 'disabled' }`);

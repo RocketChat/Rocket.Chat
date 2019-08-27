@@ -7,6 +7,7 @@ import { Federation } from '.';
 
 class HTTP {
 	requestToPeer(method, peerDomain, uri, body, options = {}) {
+		console.log('requestToPeer ->', method, peerDomain);
 		const ignoreErrors = peerDomain === Federation.domain ? false : options.ignoreErrors;
 
 		const { url: baseUrl, publicKey } = Federation.dns.search(peerDomain);
@@ -36,6 +37,7 @@ class HTTP {
 	}
 
 	request(method, url, body, headers, peerKey = null) {
+		console.log('request ->', method, url);
 		let data = null;
 
 		if ((method === 'POST' || method === 'PUT') && body) {

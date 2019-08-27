@@ -5,6 +5,7 @@ import { Federation } from '../federation';
 
 Meteor.methods({
 	FEDERATION_Test_Setup() {
+		console.log('FEDERATION_Test_Setup');
 		try {
 			Federation.client.dispatchEvent([Federation.domain], {
 				type: eventTypes.PING,

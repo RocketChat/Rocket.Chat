@@ -5,6 +5,7 @@ import { Federation } from '..';
 import { normalizers } from '../normalizers';
 
 export function searchUsers(query) {
+	console.log('searchUsers ->', query);
 	if (!Meteor.userId()) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'searchUsers' });
 	}

@@ -25,17 +25,20 @@ class Client {
 
 	enableCallbacks() {
 		for (const definition of this.callbackDefinitions) {
+			console.log('enableCallback ->', definition.hook, definition.id);
 			callbacks.add(definition.hook, definition.callback, callbacks.priority.LOW, definition.id);
 		}
 	}
 
 	disableCallbacks() {
 		for (const definition of this.callbackDefinitions) {
+			console.log('disableCallback ->', definition.hook, definition.id);
 			callbacks.remove(definition.hook, definition.id);
 		}
 	}
 
 	searchUsers(query) {
+		console.log('searchUsers ->', query);
 		if (!Federation.enabled) {
 			throw Federation.errors.disabled('client.searchUsers');
 		}
@@ -52,6 +55,7 @@ class Client {
 	}
 
 	getUserByUsername(query) {
+		console.log('getUserByUsername ->', query);
 		if (!Federation.enabled) {
 			throw Federation.errors.disabled('client.searchUsers');
 		}
@@ -68,6 +72,7 @@ class Client {
 	}
 
 	dispatchEvent(domains, event) {
+		console.log('dispatchEvent ->', domains, event);
 		if (!Federation.enabled) {
 			throw Federation.errors.disabled('client.dispatchEvent');
 		}
@@ -76,6 +81,7 @@ class Client {
 	}
 
 	dispatchEvents(domains, events) {
+		console.log('dispatchEvents ->', domains, event);
 		if (!Federation.enabled) {
 			throw Federation.errors.disabled('client.dispatchEvents');
 		}
@@ -90,6 +96,7 @@ class Client {
 	}
 
 	requestEventsFromLatest(domain, fromDomain, contextType, contextQuery, latestEventIds) {
+		console.log('requestEventsFromLatest ->', domain, fromDomain);
 		if (!Federation.enabled) {
 			throw Federation.errors.disabled('client.requestEventsFromLatest');
 		}
@@ -102,6 +109,7 @@ class Client {
 	}
 
 	getUpload(domain, fileId) {
+		console.log('getUpload ->', domain);
 		const { data: { upload, buffer } } = Federation.http.requestToPeer('GET', domain, `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
 
 		return { upload, buffer: Buffer.from(buffer) };

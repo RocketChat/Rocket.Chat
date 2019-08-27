@@ -19,6 +19,7 @@ import { FileUpload } from '../../../../../file-upload';
 
 API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 	async post() {
+		console.log('POST federation.events.dispatch');
 		if (!Federation.enabled) {
 			return API.v1.failure('Not found');
 		}

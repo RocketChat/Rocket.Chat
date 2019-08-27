@@ -4,6 +4,7 @@ import { Federation } from '../../federation';
 import { isFederated } from './helpers/federatedResources';
 
 async function afterDeleteMessage(message) {
+	console.log('afterDeleteMessage');
 	const room = Rooms.findOneById(message.rid);
 
 	// If there are not federated users on this room, ignore it

@@ -5,6 +5,7 @@ import { Federation } from '.';
 
 class Crypt {
 	decryptIfNeeded(request, bodyParams) {
+		console.log('decryptIfNeeded ->', request);
 		//
 		// Look for the domain that sent this event
 		const remotePeerDomain = request.headers['x-federation-domain'];
@@ -35,6 +36,7 @@ class Crypt {
 	}
 
 	encrypt(data, peerKey) {
+		console.log('encrypt ->');
 		if (!data) {
 			return data;
 		}
@@ -47,6 +49,7 @@ class Crypt {
 	}
 
 	decrypt(data, peerKey) {
+		console.log('decrypt ->');
 		//
 		// Decrypt the payload
 		const payloadBuffer = Buffer.from(data);

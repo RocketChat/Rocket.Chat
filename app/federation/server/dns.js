@@ -15,6 +15,7 @@ class DNS {
 	}
 
 	registerWithHub(peerDomain, url, publicKey) {
+		console.log('registerWithHub ->', peerDomain, url, publicKey);
 		const body = { domain: peerDomain, url, public_key: publicKey };
 
 		try {
@@ -30,6 +31,7 @@ class DNS {
 	}
 
 	searchHub(peerDomain) {
+		console.log('searchHub ->', peerDomain);
 		try {
 			// If there is no DNS entry for that, get from the Hub
 			const { data: { peer } } = Federation.http.request('GET', `${ this.hubUrl }/api/v1/peers?search=${ peerDomain }`);
@@ -53,6 +55,7 @@ class DNS {
 	}
 
 	search(peerDomain) {
+		console.log('search ->', peerDomain);
 		if (!Federation.enabled) {
 			throw Federation.errors.disabled('dns.search');
 		}

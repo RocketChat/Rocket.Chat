@@ -8,6 +8,7 @@ const userFields = { _id: 1, username: 1, type: 1, emails: 1, name: 1 };
 
 API.v1.addRoute('federation.users.search', { authRequired: false }, {
 	get() {
+		console.log('GET federation.users.search');
 		if (!Federation.enabled) {
 			return API.v1.failure('Not found');
 		}
@@ -35,6 +36,7 @@ API.v1.addRoute('federation.users.search', { authRequired: false }, {
 
 API.v1.addRoute('federation.users.getByUsername', { authRequired: false }, {
 	get() {
+		console.log('GET federation.users.getByUsername');
 		if (!Federation.enabled) {
 			return API.v1.failure('Not found');
 		}

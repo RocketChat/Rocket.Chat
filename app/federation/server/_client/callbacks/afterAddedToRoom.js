@@ -6,6 +6,7 @@ import { normalizers } from '../../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
 
 async function afterAddedToRoom(involvedUsers, room) {
+	console.log('afterAddedToRoom');
 	const { user: addedUser } = involvedUsers;
 
 	if (!isFederated(room) && !isFederated(addedUser)) { return; }

@@ -6,6 +6,7 @@ import { Federation } from '../../federation';
 import { isFederated } from './helpers/federatedResources';
 
 async function afterUnsetReaction(message, { user, reaction }) {
+	console.log('afterUnsetReaction');
 	const room = Rooms.findOneById(message.rid, { fields: { _id: 1, federation: 1 } });
 
 	// If there are not federated users on this room, ignore it
