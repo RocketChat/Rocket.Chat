@@ -15,12 +15,6 @@ import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 import { CONSTANTS } from '../../lib';
 
-const whereNotSetting = {
-	$where: function() {
-		return this.level !== 'setting';
-	}.toString(),
-};
-
 Template.permissions.helpers({
 	tabsData() {
 		const {
@@ -28,8 +22,8 @@ Template.permissions.helpers({
 		} = Template.instance();
 
 		const permissionsTab = {
-			label: t('Permissons'),
-			value: 'permissons',
+			label: t('Permissions'),
+			value: 'permissions',
 			condition() {
 				return true;
 			},
