@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
@@ -12,6 +11,7 @@ import toastr from 'toastr';
 import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
 import { modal } from '../../ui-utils';
+import { goToRoomById } from '../../ui-utils/client/lib/goToRoomById';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -192,7 +192,7 @@ OTR.Room = class {
 					this.generateKeyPair().then(() => {
 						this.importPublicKey(data.publicKey).then(() => {
 							this.firstPeer = false;
-							FlowRouter.goToRoomById(data.roomId);
+							goToRoomById(data.roomId);
 							Meteor.defer(() => {
 								this.established.set(true);
 								this.acknowledge();

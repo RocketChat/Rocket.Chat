@@ -2,7 +2,6 @@ import EventEmitter from 'wolfy87-eventemitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { ChromeScreenShare } from './screenShare';
@@ -10,6 +9,7 @@ import { t } from '../../utils';
 import { Notifications } from '../../notifications';
 import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
+import { goToRoomById } from '../../ui-utils/client/lib/goToRoomById';
 import { ChatSubscription } from '../../models';
 
 import { WEB_RTC_EVENTS } from '..';
@@ -664,7 +664,7 @@ class WebRTCClass {
 
 	onRemoteCall(data) {
 		if (this.autoAccept === true) {
-			FlowRouter.goToRoomById(data.room);
+			goToRoomById(data.room);
 			Meteor.defer(() => {
 				this.joinCall({
 					to: data.from,
@@ -713,7 +713,7 @@ class WebRTCClass {
 			cancelButtonText: t('No'),
 		}, (isConfirm) => {
 			if (isConfirm) {
-				FlowRouter.goToRoomById(data.room);
+				goToRoomById(data.room);
 				return this.joinCall({
 					to: data.from,
 					monitor: data.monitor,

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
@@ -9,6 +8,7 @@ import _ from 'underscore';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { goToRoomById } from '../../../ui-utils/client/lib/goToRoomById';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -22,7 +22,7 @@ Meteor.startup(function() {
 				return RoomHistoryManager.getSurroundingMessages(message, 50);
 			}
 
-			FlowRouter.goToRoomById(message.rid);
+			goToRoomById(message.rid);
 			// RocketChat.MessageAction.hideDropDown();
 
 			if (window.matchMedia('(max-width: 500px)').matches) {

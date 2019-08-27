@@ -1,13 +1,13 @@
 import mem from 'mem';
 import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 
-import { ChatSubscription } from '../../app/models';
-import { roomTypes } from '../../app/utils';
-import { call } from '../../app/ui-utils';
+import { ChatSubscription } from '../../../models';
+import { roomTypes } from '../../../utils';
+import { call } from './callMethod';
 
 const getRoomById = mem((rid) => call('getRoomById', rid));
 
-FlowRouter.goToRoomById = async (rid) => {
+export const goToRoomById = async (rid) => {
 	if (!rid) {
 		return;
 	}

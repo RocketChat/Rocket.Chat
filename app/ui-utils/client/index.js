@@ -28,3 +28,4 @@ export { openRoom } from './lib/openRoom';
 export * from './lib/rtl';
 export * from './lib/keyCodes';
 export * from './lib/prependReplies';
+export * from './lib/goToRoomById';

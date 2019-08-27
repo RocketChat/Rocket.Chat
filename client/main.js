@@ -21,7 +21,6 @@ import './notifications/updateAvatar';
 import './notifications/updateUserState';
 import './notifications/UsersNameChanged';
 import './routes/adminRouter';
-import './routes/roomRoute';
 import './routes/router';
 import './startup/emailVerification';
 import './startup/i18n';

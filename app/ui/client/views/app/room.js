@@ -25,6 +25,7 @@ import {
 	MessageAction,
 	RocketChatTabBar,
 } from '../../../../ui-utils';
+import { goToRoomById } from '../../../../ui-utils/client/lib/goToRoomById';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { getConfig } from '../../../../ui-utils/client/config';
@@ -832,7 +833,7 @@ Template.room.events({
 			if (Layout.isEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
 			}
-			FlowRouter.goToRoomById(channel);
+			goToRoomById(channel);
 			return;
 		}
 
@@ -953,7 +954,7 @@ Template.room.events({
 	'click .js-navigate-to-discussion'(event) {
 		event.preventDefault();
 		const { msg: { drid } } = messageArgs(this);
-		FlowRouter.goToRoomById(drid);
+		goToRoomById(drid);
 	},
 });
 
