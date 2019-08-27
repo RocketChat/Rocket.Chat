@@ -22,8 +22,8 @@ Template.permissions.helpers({
 		} = Template.instance();
 
 		const permissionsTab = {
-			label: t('Permissions'),
-			value: 'permissions',
+			label: t('Permissons'),
+			value: 'permissons',
 			condition() {
 				return true;
 			},
@@ -191,7 +191,7 @@ Template.permissionsTable.events({
 
 		const action = ~permission.roles.indexOf(role) ? 'authorization:removeRoleFromPermission' : 'authorization:addPermissionToRole';
 
-		return Meteor.call(action, permission, role);
+		return Meteor.call(action, permissionId, role);
 	},
 });
 
