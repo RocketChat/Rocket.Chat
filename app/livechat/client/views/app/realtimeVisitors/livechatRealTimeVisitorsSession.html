@@ -31,6 +31,7 @@
               </div>
             </div>
           </div>
+          {{#if checkLocationPermission}}
           <div class="map-container">
             <h4>{{_ "Visitor_Location"}}</h4>
             {{#unless geolocationError}}
@@ -39,6 +40,7 @@
             Geolocation failed: {{geolocationError}}
             {{/unless}}
           </div>
+          {{/if}}
         </div>
       {{/with}}
     </div>

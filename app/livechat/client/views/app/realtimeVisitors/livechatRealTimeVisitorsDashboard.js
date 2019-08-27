@@ -84,7 +84,7 @@ Template.livechatRealTimeVisitorsDashboard.helpers({
 	sessions() {
 		return Template.instance().sessions.get();
 	},
-	totalVisitors() {
+	totalSessions() {
 		return Template.instance().sessions.get().length;
 	},
 	flexData() {
