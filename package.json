@@ -266,5 +266,8 @@
 			".docker/Dockerfile.rhel",
 			"app/utils/rocketchat.info"
 		]
-	}
+	},
+	"browserslist": [
+		"last 2 versions"
+	]
 }
