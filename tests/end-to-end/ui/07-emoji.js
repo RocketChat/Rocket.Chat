@@ -1,6 +1,5 @@
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
-
 import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 
@@ -89,7 +88,7 @@ describe('[Emoji]', () => {
 			});
 
 			it('it should be that the value on the message input is the same as the emoji clicked', () => {
-				mainContent.messageInput.getValue().should.equal(':grinning:');
+				mainContent.messageInput.getValue().should.equal(':grinning: ');
 			});
 
 			it('it should send the emoji', () => {
@@ -98,6 +97,7 @@ describe('[Emoji]', () => {
 			});
 
 			it('it should be that the value on the message is the same as the emoji clicked', () => {
+				browser.pause(100);
 				mainContent.lastMessage.getText().should.equal('😀');
 			});
 		});
@@ -132,9 +132,21 @@ describe('[Emoji]', () => {
 			});
 
 			it('it should be that the value on the message is the same as the emoji clicked', () => {
+				browser.pause(100);
 				mainContent.lastMessage.getText().should.equal('😄');
 			});
 		});
-	});
 
+		describe('send texts and make sure they\'re not converted to emojis:', () => {
+			it('should render numbers', () => {
+				mainContent.sendMessage('0 1 2 3 4 5 6 7 8 9');
+				mainContent.waitForLastMessageEqualsHtml('0 1 2 3 4 5 6 7 8 9');
+			});
+
+			it('should render special characters', () => {
+				mainContent.sendMessage('# * ® © ™');
+				mainContent.waitForLastMessageEqualsHtml('# * ® © ™');
+			});
+		});
+	});
 });

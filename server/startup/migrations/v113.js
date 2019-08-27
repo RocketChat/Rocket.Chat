@@ -1,17 +1,20 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Uploads, Messages } from '../../../app/models';
+
+Migrations.add({
 	version: 113,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Uploads && RocketChat.models.Messages) {
+		if (Uploads && Messages) {
 			const fileQuery = {
 				userId: null,
 			};
 
-			const filesToUpdate = RocketChat.models.Uploads.find(fileQuery);
+			const filesToUpdate = Uploads.find(fileQuery);
 			filesToUpdate.forEach((file) => {
 				const messageQuery = {
-					'file._id' : file._id,
+					'file._id': file._id,
 				};
-				const message = RocketChat.models.Messages.findOne(messageQuery);
+				const message = Messages.findOne(messageQuery);
 				if (message) {
 					const filter = {
 						_id: file._id,
@@ -23,7 +26,7 @@ RocketChat.Migrations.add({
 						},
 					};
 
-					RocketChat.models.Uploads.model.direct.update(filter, update);
+					Uploads.model.direct.update(filter, update);
 				}
 			});
 		}

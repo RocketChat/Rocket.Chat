@@ -22,7 +22,7 @@ describe('[Subscriptions]', function() {
 		request.get(api('subscriptions.get'))
 			.set(credentials)
 			.query({
-				updatedSince: new Date,
+				updatedSince: new Date(),
 			})
 			.expect(200)
 			.expect((res) => {

@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
+
+Migrations.add({
 	version: 12,
 	up() {
 		// Set oldest user as admin, if none exists yet
-		const admin = RocketChat.models.Users.findOneAdmin(true, {
+		const admin = Users.findOneAdmin(true, {
 			fields: {
 				_id: 1,
 			},
@@ -12,7 +15,7 @@ RocketChat.Migrations.add({
 
 		if (!admin) {
 			// get oldest user
-			const oldestUser = RocketChat.models.Users.findOne({}, {
+			const oldestUser = Users.findOne({}, {
 				fields: {
 					username: 1,
 				},

@@ -1,0 +1,7 @@
+<template name="iframeModal">
+	<main class="rc-modal__content" style="height: 300px; width: 450px; padding: 0px;">
+		<iframe src="{{ data.url }}" style="border: none; display: none; height: 100%; width: 100%;"></iframe>
+
+		<div class="loading">{{> loading class="loading-animation--primary"}}</div>
+	</main>
+</template>

@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Subscriptions, Users } from '../../../app/models';
+
+Migrations.add({
 	version: 133,
 	up() {
-		const subscriptions = RocketChat.models.Subscriptions.find({
+		const subscriptions = Subscriptions.find({
 			t: 'd',
 			$or: [{
 				ts: { $gte: new Date('2018-07-09T00:00:00Z') },
@@ -14,7 +17,7 @@ RocketChat.Migrations.add({
 			if (subscription.name !== subscription.fname) {
 				return;
 			}
-			const user = RocketChat.models.Users.findOne({
+			const user = Users.findOne({
 				username: subscription.name,
 			}, {
 				fields: {
@@ -24,7 +27,7 @@ RocketChat.Migrations.add({
 			if (!user) {
 				return;
 			}
-			RocketChat.models.Subscriptions.update({
+			Subscriptions.update({
 				_id: subscription._id,
 			}, {
 				$set: {

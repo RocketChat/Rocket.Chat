@@ -1,12 +1,15 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Rooms, Subscriptions, Messages } from '../../../app/models';
+
+Migrations.add({
 	version: 6,
 	up() {
 		console.log('Changing _id of #general channel room from XXX to GENERAL');
 
-		const room = RocketChat.models.Rooms.findOneByName('general');
+		const room = Rooms.findOneByName('general');
 
 		if (room && room._id !== 'GENERAL') {
-			RocketChat.models.Subscriptions.update({
+			Subscriptions.update({
 				rid: room._id,
 			}, {
 				$set: {
@@ -16,7 +19,7 @@ RocketChat.Migrations.add({
 				multi: 1,
 			});
 
-			RocketChat.models.Messages.update({
+			Messages.update({
 				rid: room._id,
 			}, {
 				$set: {
@@ -26,11 +29,11 @@ RocketChat.Migrations.add({
 				multi: 1,
 			});
 
-			RocketChat.models.Rooms.removeById(room._id);
+			Rooms.removeById(room._id);
 
 			delete room._id;
 
-			RocketChat.models.Rooms.upsert({
+			Rooms.upsert({
 				_id: 'GENERAL',
 			}, {
 				$set: room,

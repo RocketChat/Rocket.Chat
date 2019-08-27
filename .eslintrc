@@ -4,18 +4,21 @@
 	"globals": {
 		"__meteor_bootstrap__"        : false,
 		"__meteor_runtime_config__"   : false,
-		"Apps"                        : false,
 		"Assets"                      : false,
 		"chrome"                      : false,
-		"DynamicCss"                  : false,
-		"handleError"                 : false,
-		"getAvatarSuggestionForUser"  : false,
-		"JitsiMeetExternalAPI"        : false,
-		"jscolor"                     : false,
-		"msgStream"                   : false,
-		"openRoom"                    : false,
-		"RocketChat"                  : true,
-		"roomExit"                    : true,
-		"Settings"                    : false
-	}
+		"jscolor"                     : false
+  },
+  "plugins": ["react"],
+	"rules": {
+    "jsx-quotes": ["error", "prefer-single"],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/jsx-no-undef": "error",
+    "react/jsx-fragments": ["error", "syntax"],
+  },
+  "settings": {
+    "react": {
+      "version": "detect",
+    },
+  },
 }

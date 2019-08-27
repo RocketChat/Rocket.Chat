@@ -71,7 +71,6 @@ before_deploy:
 - source ".travis/setdeploydir.sh"
 - ".travis/setupsig.sh"
 - ".travis/namefiles.sh"
-- echo ".travis/sandstorm.sh"
 deploy:
   - provider: s3
     access_key_id: AKIAIKIA7H7D47KUHYCA
