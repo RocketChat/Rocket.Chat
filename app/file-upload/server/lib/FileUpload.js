@@ -11,7 +11,7 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import filesize from 'filesize';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
 import Avatars from '../../../models/server/models/Avatars';
@@ -370,6 +370,20 @@ export const FileUpload = {
 		}
 
 		return false;
+	},
+
+	redirectToFile(fileUrl, req, res) {
+		res.removeHeader('Content-Length');
+		res.removeHeader('Cache-Control');
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
+		res.end();
+	},
+
+	proxyFile(fileName, fileUrl, forceDownload, request, req, res) {
+		res.setHeader('Content-Disposition', `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(fileName) }"`);
+
+		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 	},
 };
 

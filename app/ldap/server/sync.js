@@ -144,7 +144,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 							if (currKey === lastKey) {
 								obj[currKey] = tmpLdapField;
 							} else {
-								obj[currKey] = obj[currKey];
+								obj[currKey] = obj[currKey] || {};
 							}
 							return obj[currKey];
 						}, userData);
