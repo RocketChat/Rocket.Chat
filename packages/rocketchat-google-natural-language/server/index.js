@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import './settings.js';
-import './models/Rooms.js';
 import googleLanguage from '@google-cloud/language';
 
 let languageClient;
 
-RocketChat.settings.get('GoogleNaturalLanguage_ServiceAccount', (key, value) => {
+settings.get('GoogleNaturalLanguage_ServiceAccount', (key, value) => {
 	if (value) {
 		try {
 			languageClient = googleLanguage({
@@ -26,17 +27,17 @@ const setRoomSentiment = function(message) {
 
 	languageClient.detectSentiment(message.msg, Meteor.bindEnvironment((error, result) => {
 		if (!error) {
-			RocketChat.models.Rooms.setSentiment(message.rid, result);
+			Rooms.setSentiment(message.rid, result);
 		}
 	}));
 
 	return message;
 };
 
-RocketChat.settings.get('GoogleNaturalLanguage_Enabled', (key, value) => {
+settings.get('GoogleNaturalLanguage_Enabled', (key, value) => {
 	if (value) {
-		RocketChat.callbacks.add('afterSaveMessage', setRoomSentiment, RocketChat.callbacks.priority.MEDIUM, 'GoogleNaturalLanguage');
+		callbacks.add('afterSaveMessage', setRoomSentiment, callbacks.priority.MEDIUM, 'GoogleNaturalLanguage');
 	} else {
-		RocketChat.callbacks.remove('afterSaveMessage', 'GoogleNaturalLanguage');
+		callbacks.remove('afterSaveMessage', 'GoogleNaturalLanguage');
 	}
 });

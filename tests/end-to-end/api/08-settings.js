@@ -1,6 +1,3 @@
-/* eslint-env mocha */
-/* globals expect */
-
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
 describe('[Settings]', function() {

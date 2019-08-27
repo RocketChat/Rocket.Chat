@@ -1,11 +1,6 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import sideNav from '../../pageobjects/side-nav.page';
 import flexTab from '../../pageobjects/flex-tab.page';
 import admin from '../../pageobjects/administration.page';
-
-// test data imports
 import { checkIfUserIsAdmin } from '../../data/checks';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
@@ -24,6 +19,7 @@ describe('[Administration]', () => {
 
 	describe('[Admin View]', () => {
 		before(() => {
+			sideNav.sidebarMenu.waitForVisible(5000);
 			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
@@ -37,7 +33,7 @@ describe('[Administration]', () => {
 			before(() => {
 				admin.infoLink.waitForVisible(5000);
 				admin.infoLink.click();
-				admin.infoRocketChatTable.waitForVisible(5000);
+				admin.infoRocketChatTable.waitForVisible(10000);
 			});
 			it('the first title should be Rocket.Chat', () => {
 				admin.infoRocketChatTableTitle.getText().should.equal('Rocket.Chat');
@@ -877,6 +873,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the enter key behavior field', () => {
+					browser.scroll(0, 500);
 					admin.accountsSendOnEnter.click();
 					admin.accountsSendOnEnter.isVisible().should.be.true;
 				});
@@ -885,6 +882,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the messagebox view mode field', () => {
+					admin.accountsMessageViewMode.moveToObject();
 					admin.accountsMessageViewMode.click();
 					admin.accountsMessageViewMode.isVisible().should.be.true;
 				});

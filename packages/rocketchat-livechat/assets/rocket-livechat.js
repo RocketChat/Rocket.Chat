@@ -472,8 +472,6 @@
 	}
 }(this || {}));
 
-/* globals EventEmitter */
-
 (function(w) {
 	w.RocketChat = w.RocketChat || { _: [] };
 	var config = {};
@@ -605,8 +603,8 @@
 				return;
 			}
 
-			const right = parseInt(widget.style.right.replace(/px$/, ''), 10);
-			const bottom = parseInt(widget.style.bottom.replace(/px$/, ''), 10);
+			var right = parseInt(widget.style.right.replace(/px$/, ''), 10);
+			var bottom = parseInt(widget.style.bottom.replace(/px$/, ''), 10);
 			widget.style.right = (right - (displacement.x - this.dragOffset.x)) + 'px';
 			widget.style.bottom = (bottom - (displacement.y - this.dragOffset.y)) + 'px';
 		},

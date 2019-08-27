@@ -1,10 +1,8 @@
-/* eslint-env mocha */
-/* globals expect */
-
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
-import { updatePermission } from '../../data/permissions.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { sendSimpleMessage } from '../../data/chat.helper';
 
 describe('[Rooms]', function() {
 	this.retries(0);
@@ -27,7 +25,7 @@ describe('[Rooms]', function() {
 		request.get(api('rooms.get'))
 			.set(credentials)
 			.query({
-				updatedSince: new Date,
+				updatedSince: new Date(),
 			})
 			.expect(200)
 			.expect((res) => {
@@ -293,14 +291,14 @@ describe('[Rooms]', function() {
 				});
 		});
 		it('create a group', (done) => {
-			createRoom(({ type: 'p', name: testGroupName }))
+			createRoom({ type: 'p', name: testGroupName })
 				.end((err, res) => {
 					testGroup = res.body.group;
 					done();
 				});
 		});
 		it('create a Direct message room with rocket.cat', (done) => {
-			createRoom(({ type: 'd', username: 'rocket.cat' }))
+			createRoom({ type: 'd', username: 'rocket.cat' })
 				.end((err, res) => {
 					testDM = res.body.room;
 					done();
@@ -411,14 +409,14 @@ describe('[Rooms]', function() {
 				});
 		});
 		it('create a group', (done) => {
-			createRoom(({ type: 'p', name: testGroupName }))
+			createRoom({ type: 'p', name: testGroupName })
 				.end((err, res) => {
 					testGroup = res.body.group;
 					done();
 				});
 		});
 		it('create a Direct message room with rocket.cat', (done) => {
-			createRoom(({ type: 'd', username: 'rocket.cat' }))
+			createRoom({ type: 'd', username: 'rocket.cat' })
 				.end((err, res) => {
 					testDM = res.body.room;
 					done();
@@ -550,6 +548,253 @@ describe('[Rooms]', function() {
 							});
 					});
 			});
+		});
+	});
+
+	describe('/rooms.createDiscussion', () => {
+		let testChannel;
+		const testChannelName = `channel.test.${ Date.now() }`;
+		let messageSent;
+		before((done) => {
+			createRoom({ type: 'c', name: testChannelName })
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					sendSimpleMessage({
+						roomId: testChannel._id,
+					}).end((err, res) => {
+						messageSent = res.body.message;
+						done();
+					});
+				});
+		});
+		it('should throw an error when the user tries to create a discussion and the feature is disabled', (done) => {
+			updateSetting('Discussion_enabled', false).then(() => {
+				request.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: testChannel._id,
+						t_name: 'valid name',
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					})
+					.end(() => updateSetting('Discussion_enabled', true).then(done));
+			});
+		});
+		it('should throw an error when the user tries to create a discussion and does not have at least one of the required permissions', (done) => {
+			updatePermission('start-discussion', []).then(() => {
+				updatePermission('start-discussion-other-user', []).then(() => {
+					request.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testChannel._id,
+							t_name: 'valid name',
+						})
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+						})
+						.end(() => {
+							updatePermission('start-discussion', ['admin', 'user', 'guest'])
+								.then(() => updatePermission('start-discussion-other-user', ['admin', 'user', 'guest']))
+								.then(done);
+						});
+				});
+			});
+		});
+		it('should throw an error when the user tries to create a discussion without the required parameter "prid"', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Body parameter \"prid\" is required.');
+				})
+				.end(done);
+		});
+		it('should throw an error when the user tries to create a discussion without the required parameter "t_name"', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Body parameter \"t_name\" is required.');
+				})
+				.end(done);
+		});
+		it('should throw an error when the user tries to create a discussion with the required parameter invalid "users"(different from an array)', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: 'valid name',
+					users: 'invalid-type-of-users',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Body parameter \"users\" must be an array.');
+				})
+				.end(done);
+		});
+		it('should throw an error when the user tries to create a discussion with the channel\'s id invalid', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: 'invalid-id',
+					t_name: 'valid name',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-room');
+				})
+				.end(done);
+		});
+		it('should throw an error when the user tries to create a discussion with the message\'s id invalid', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: 'valid name',
+					pmid: 'invalid-message',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-message');
+				})
+				.end(done);
+		});
+		it('should create a discussion successfully when send only the required parameters', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+				})
+				.end(done);
+		});
+		it('should create a discussion successfully when send the required parameters plus the optional parameter "reply"', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
+					reply: 'reply from discussion tests',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+				})
+				.end(done);
+		});
+		it('should create a discussion successfully when send the required parameters plus the optional parameter "users"', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
+					reply: 'reply from discussion tests',
+					users: ['rocket.cat'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+				})
+				.end(done);
+		});
+		it('should create a discussion successfully when send the required parameters plus the optional parameter "pmid"', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
+					reply: 'reply from discussion tests',
+					users: ['rocket.cat'],
+					pmid: messageSent._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/rooms.getDiscussions', () => {
+		let testChannel;
+		const testChannelName = `channel.test.getDiscussions${ Date.now() }`;
+		let discussion;
+		before((done) => {
+			createRoom({ type: 'c', name: testChannelName })
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					request.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testChannel._id,
+							t_name: `discussion-create-from-tests-${ testChannel.name }`,
+						})
+						.end((err, res) => {
+							discussion = res.body.discussion;
+							done();
+						});
+				});
+		});
+		after((done) => closeRoom({ type: 'p', roomId: discussion._id }).then(done));
+		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', (done) => {
+			request.get(api('rooms.getDiscussions'))
+				.set(credentials)
+				.query({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The parameter \"roomId\" or \"roomName\" is required [error-roomid-param-not-provided]');
+				})
+				.end(done);
+		});
+		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
+			updatePermission('view-c-room', []).then(() => {
+				request.get(api('rooms.getDiscussions'))
+					.set(credentials)
+					.query({})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Not Allowed');
+					})
+					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot', 'anonymous']).then(done));
+			});
+		});
+		it('should return a list of discussions with ONE discussion', (done) => {
+			request.get(api('rooms.getDiscussions'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('discussions').and.to.be.an('array');
+					expect(res.body.discussions).to.have.lengthOf(1);
+				})
+				.end(done);
 		});
 	});
 });

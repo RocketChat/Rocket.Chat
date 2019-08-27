@@ -1,12 +1,15 @@
-/* globals KonchatNotification */
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
+import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import s from 'underscore.string';
+
+import { KonchatNotification } from '../../app/ui';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
 	return FlowRouter.path(path, kw.hash);
@@ -14,20 +17,54 @@ Blaze.registerHelper('pathFor', function(path, kw) {
 
 BlazeLayout.setRoot('body');
 
+const createTemplateForComponent = async (
+	component,
+	props = {},
+	// eslint-disable-next-line new-cap
+	renderContainerView = () => HTML.DIV()
+) => {
+	const React = await import('react');
+	const ReactDOM = await import('react-dom');
+
+	const name = component.displayName || component.name;
+
+	if (!name) {
+		throw new Error('the component must have a name');
+	}
+
+	Template[name] = new Blaze.Template(name, renderContainerView);
+
+	Template[name].onRendered(() => {
+		Template.instance().autorun((computation) => {
+			if (computation.firstRun) {
+				Template.instance().container = Template.instance().firstNode;
+			}
+
+			ReactDOM.render(React.createElement(component, props), Template.instance().firstNode);
+		});
+	});
+
+	Template[name].onDestroyed(() => {
+		if (Template.instance().container) {
+			ReactDOM.unmountComponentAtNode(Template.instance().container);
+		}
+	});
+
+	return name;
+};
+
 FlowRouter.subscriptions = function() {
 	Tracker.autorun(() => {
 		if (Meteor.userId()) {
 			this.register('userData', Meteor.subscribe('userData'));
-			this.register('activeUsers', Meteor.subscribe('activeUsers'));
 		}
 	});
 };
 
-
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
+		BlazeLayout.render('main', { center: 'loading' });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -120,20 +157,21 @@ FlowRouter.route('/privacy-policy', {
 	},
 });
 
+FlowRouter.route('/legal-notice', {
+	name: 'legal-notice',
+
+	action() {
+		Session.set('cmsPage', 'Layout_Legal_Notice');
+		BlazeLayout.render('cmsPage');
+	},
+});
+
 FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 
 	action(params) {
 		Session.set('roomNotFound', { type: params.type, name: params.name });
 		BlazeLayout.render('main', { center: 'roomNotFound' });
-	},
-});
-
-FlowRouter.route('/fxos', {
-	name: 'firefox-os-install',
-
-	action() {
-		BlazeLayout.render('fxOsInstallPrompt');
 	},
 });
 
@@ -156,25 +194,17 @@ FlowRouter.route('/register/:hash', {
 	},
 });
 
-FlowRouter.route('/setup-wizard', {
+FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
-
-	action() {
-		BlazeLayout.render('setupWizard');
-	},
-});
-
-FlowRouter.route('/setup-wizard/final', {
-	name: 'setup-wizard-final',
-
-	action() {
-		BlazeLayout.render('setupWizardFinal');
+	action: async () => {
+		const { SetupWizard } = await import('../components/setupWizard/SetupWizard');
+		BlazeLayout.render(await createTemplateForComponent(SetupWizard));
 	},
 });
 
 FlowRouter.notFound = {
-	action() {
-		BlazeLayout.render('pageNotFound');
+	action: async () => {
+		const { PageNotFound } = await import('../components/pageNotFound/PageNotFound');
+		BlazeLayout.render(await createTemplateForComponent(PageNotFound));
 	},
 };
-
