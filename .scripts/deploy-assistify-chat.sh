@@ -42,8 +42,8 @@ TARGET_ENVIRONMENT_TAG="undefined"
 DEPLOYMENT_TARGET_ENVIRONMENT=""
 if [ ${BRANCH} = master ]
 	then
-    	TARGET_ENVIRONMENT_TAG="production"
-    	DEPLOYMENT_TARGET_ENVIRONMENT="prd"
+      TARGET_ENVIRONMENT_TAG="production"
+      DEPLOYMENT_TARGET_ENVIRONMENT="prd"
       IMAGE_TAG="latest"
       
       # publish a new "latest"-file in order to make new clients be created with it
@@ -52,7 +52,7 @@ if [ ${BRANCH} = master ]
 else
   if [[ ${BRANCH} == develop ]]
       then
-      	TARGET_ENVIRONMENT_TAG="test"
+        TARGET_ENVIRONMENT_TAG="test"
         DEPLOYMENT_TARGET_ENVIRONMENT="iat"
         IMAGE_TAG="develop"
   fi
