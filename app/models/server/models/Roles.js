@@ -83,6 +83,21 @@ export class Roles extends Base {
 
 		return this.findOne(query, options);
 	}
+
+	canAddUserToRole(uid, roleName, scope) {
+		const role = this.findOne({ _id: roleName }, { fields: { scope: 1 } });
+		if (!role) {
+			return false;
+		}
+
+		const model = Models[role.scope];
+		if (!model) {
+			return;
+		}
+
+		const user = model.isUserInRoleScope(uid, scope);
+		return !!user;
+	}
 }
 
 export default new Roles('roles');

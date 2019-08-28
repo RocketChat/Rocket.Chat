@@ -15,16 +15,23 @@ import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUse
 
 const logger = new Logger('API', {});
 const rateLimiterDictionary = {};
-const defaultRateLimiterOptions = {
+export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
 
 export let API = {};
 
-class APIClass extends Restivus {
+const getRequestIP = (req) =>
+	req.headers['x-forwarded-for']
+	|| (req.connection && req.connection.remoteAddress)
+	|| (req.socket && req.socket.remoteAddress)
+	|| (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+
+export class APIClass extends Restivus {
 	constructor(properties) {
 		super(properties);
+		this.apiPath = properties.apiPath;
 		this.authMethods = [];
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
@@ -68,6 +75,12 @@ class APIClass extends Restivus {
 
 	addAuthMethod(method) {
 		this.authMethods.push(method);
+	}
+
+	shouldAddRateLimitToRoute(options) {
+		const { version } = this._config;
+		const { rateLimiterOptions } = options;
+		return (typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
 	}
 
 	success(result = {}) {
@@ -120,6 +133,16 @@ class APIClass extends Restivus {
 		};
 	}
 
+	internalError(msg) {
+		return {
+			statusCode: 500,
+			body: {
+				success: false,
+				error: msg || 'Internal error occured',
+			},
+		};
+	}
+
 	unauthorized(msg) {
 		return {
 			statusCode: 403,
@@ -140,11 +163,41 @@ class APIClass extends Restivus {
 		};
 	}
 
+	getRateLimiter(route) {
+		return rateLimiterDictionary[route];
+	}
+
+	shouldVerifyRateLimit(route) {
+		return rateLimiterDictionary.hasOwnProperty(route)
+			&& settings.get('API_Enable_Rate_Limiter') === true
+			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
+			&& !(this.userId && hasPermission(this.userId, 'api-bypass-rate-limit'));
+	}
+
+	enforceRateLimit(objectForRateLimitMatch, request, response) {
+		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route)) {
+			return;
+		}
+
+		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
+		const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
+		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
+		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
+		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
+
+		if (!attemptResult.allowed) {
+			throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ timeToResetAttempsInSeconds } seconds before trying this endpoint again.`, {
+				timeToReset: attemptResult.timeToReset,
+				seconds: timeToResetAttempsInSeconds,
+			});
+		}
+	}
+
 	reloadRoutesToRefreshRateLimiter() {
 		const { version } = this._config;
 		this._routes.forEach((route) => {
-			const shouldAddRateLimitToRoute = (typeof route.options.rateLimiterOptions === 'object' || route.options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
-			if (shouldAddRateLimitToRoute) {
+			if (this.shouldAddRateLimitToRoute(route.options)) {
 				this.addRateLimiterRuleForRoutes({
 					routes: [route.path],
 					rateLimiterOptions: route.options.rateLimiterOptions || defaultRateLimiterOptions,
@@ -162,10 +215,6 @@ class APIClass extends Restivus {
 		if (!rateLimiterOptions.intervalTimeInMS) {
 			throw new Meteor.Error('You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint');
 		}
-		const nameRoute = (route) => {
-			const routeActions = Array.isArray(endpoints) ? endpoints : Object.keys(endpoints);
-			return routeActions.map((endpoint) => `/api/${ apiVersion }/${ route }${ endpoint }`);
-		};
 		const addRateLimitRuleToEveryRoute = (routes) => {
 			routes.forEach((route) => {
 				rateLimiterDictionary[route] = {
@@ -180,8 +229,22 @@ class APIClass extends Restivus {
 			});
 		};
 		routes
-			.map(nameRoute)
+			.map((route) => this.namedRoutes(route, endpoints, apiVersion))
 			.map(addRateLimitRuleToEveryRoute);
+	}
+
+	getFullRouteName(route, method, apiVersion = null) {
+		let prefix = `/${ this.apiPath || '' }`;
+		if (apiVersion) {
+			prefix += `${ apiVersion }/`;
+		}
+		return `${ prefix }${ route }${ method }`;
+	}
+
+	namedRoutes(route, endpoints, apiVersion) {
+		const routeActions = Array.isArray(endpoints) ? endpoints : Object.keys(endpoints);
+
+		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
 	}
 
 	addRoute(routes, options, endpoints) {
@@ -206,8 +269,7 @@ class APIClass extends Restivus {
 			routes = [routes];
 		}
 		const { version } = this._config;
-		const shouldAddRateLimitToRoute = (typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
-		if (shouldAddRateLimitToRoute) {
+		if (this.shouldAddRateLimitToRoute(options)) {
 			this.addRateLimiterRuleForRoutes({
 				routes,
 				rateLimiterOptions: options.rateLimiterOptions || defaultRateLimiterOptions,
@@ -223,6 +285,7 @@ class APIClass extends Restivus {
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
+				const api = this;
 				endpoints[method].action = function _internalRouteActionHandler() {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
@@ -232,30 +295,14 @@ class APIClass extends Restivus {
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-					const requestIp = this.request.headers['x-forwarded-for'] || this.request.connection.remoteAddress || this.request.socket.remoteAddress || this.request.connection.socket.remoteAddress;
+					const requestIp = getRequestIP(this.request);
 					const objectForRateLimitMatch = {
 						IPAddr: requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
 					let result;
 					try {
-						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route)
-							&& (!this.userId || !hasPermission(this.userId, 'api-bypass-rate-limit'))
-							&& ((process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') === true) || process.env.NODE_ENV !== 'development');
-						if (shouldVerifyRateLimit) {
-							rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
-							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
-							const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-							this.response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
-							this.response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
-							this.response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
-							if (!attemptResult.allowed) {
-								throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ timeToResetAttempsInSeconds } seconds before trying this endpoint again.`, {
-									timeToReset: attemptResult.timeToReset,
-									seconds: timeToResetAttempsInSeconds,
-								});
-							}
-						}
+						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response);
 
 						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
@@ -523,6 +570,7 @@ const createApi = function _createApi(enableCors) {
 	if (!API.v1 || API.v1._config.enableCors !== enableCors) {
 		API.v1 = new APIClass({
 			version: 'v1',
+			apiPath: 'api/',
 			useDefaultAuth: true,
 			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
@@ -533,6 +581,7 @@ const createApi = function _createApi(enableCors) {
 
 	if (!API.default || API.default._config.enableCors !== enableCors) {
 		API.default = new APIClass({
+			apiPath: 'api/',
 			useDefaultAuth: true,
 			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,

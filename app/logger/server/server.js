@@ -87,6 +87,11 @@ const defaultTypes = {
 		color: 'red',
 		level: 0,
 	},
+	deprecation: {
+		name: 'warn',
+		color: 'magenta',
+		level: 0,
+	},
 };
 
 class _Logger {
@@ -282,6 +287,11 @@ class _Logger {
 
 		if (LoggerManager.logLevel < options.level) {
 			return;
+		}
+
+		// Deferred logging
+		if (typeof options.arguments[0] === 'function') {
+			options.arguments[0] = options.arguments[0]();
 		}
 
 		const prefix = this.getPrefix(options);

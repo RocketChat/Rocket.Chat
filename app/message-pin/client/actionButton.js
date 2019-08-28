@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
@@ -64,7 +64,7 @@ Meteor.startup(function() {
 		id: 'jump-to-pin-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['pinned'],
+		context: ['pinned', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {

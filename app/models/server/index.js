@@ -15,6 +15,7 @@ import Statistics from './models/Statistics';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
+import CustomUserStatus from './models/CustomUserStatus';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
 import CredentialTokens from './models/CredentialTokens';
@@ -28,6 +29,7 @@ import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatOfficeHour from './models/LivechatOfficeHour';
 import LivechatPageVisited from './models/LivechatPageVisited';
+import LivechatRooms from './models/LivechatRooms';
 import LivechatTrigger from './models/LivechatTrigger';
 import LivechatVisitors from './models/LivechatVisitors';
 import ReadReceipts from './models/ReadReceipts';
@@ -36,9 +38,9 @@ export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
 export { AppsModel } from './models/apps-model';
 export { FederationDNSCache } from './models/FederationDNSCache';
-export { FederationEvents } from './models/FederationEvents';
+export { FederationRoomEvents } from './models/FederationRoomEvents';
 export { FederationKeys } from './models/FederationKeys';
-export { FederationPeers } from './models/FederationPeers';
+export { FederationServers } from './models/FederationServers';
 
 export {
 	Base,
@@ -58,6 +60,7 @@ export {
 	Permissions,
 	Roles,
 	CustomSounds,
+	CustomUserStatus,
 	Integrations,
 	IntegrationHistory,
 	CredentialTokens,
@@ -71,6 +74,7 @@ export {
 	LivechatDepartmentAgents,
 	LivechatOfficeHour,
 	LivechatPageVisited,
+	LivechatRooms,
 	LivechatTrigger,
 	LivechatVisitors,
 	ReadReceipts,
