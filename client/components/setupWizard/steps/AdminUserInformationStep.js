@@ -27,7 +27,7 @@ const registerAdminUser = async ({ name, username, email, password, onRegistrati
 			onRegistrationEmailSent && onRegistrationEmailSent();
 			return;
 		}
-
+		handleError(error);
 		throw error;
 	}
 
@@ -100,7 +100,6 @@ export function AdminUserInformationStep({ step, title }) {
 			goToNextStep();
 		} catch (error) {
 			console.error(error);
-			handleError(error);
 		} finally {
 			setCommiting(false);
 		}
