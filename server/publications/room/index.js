@@ -51,7 +51,6 @@ export const fields = {
 	e2eKeyId: 1,
 	departmentId: 1,
 	servedBy: 1,
-	federation: 1,
 };
 
 const roomMap = (record) => {
