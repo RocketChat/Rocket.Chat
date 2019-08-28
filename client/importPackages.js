@@ -97,6 +97,7 @@ import '../app/lazy-load';
 import '../app/discussion/client';
 import '../app/threads/client';
 import '../app/mail-messages/client';
+import '../app/user-status';
 import '../app/utils';
 import '../app/settings';
 import '../app/models';

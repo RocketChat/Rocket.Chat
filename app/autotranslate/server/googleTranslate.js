@@ -6,8 +6,9 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
-import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
-import { logger } from './logger';
+import { AutoTranslate,	TranslationProviderRegistry } from './autotranslate';
+import { SystemLogger } from '../../logger/server';
+import { settings } from '../../settings';
 
 /**
  * Represents google translate class
@@ -22,7 +23,11 @@ class GoogleAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'google-translate';
-		// this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
+		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
+		// Get the service provide API key.
+		settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
+			this.apiKey = value;
+		});
 	}
 
 	/**
@@ -58,35 +63,46 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @returns {object} code : value pair
 	 */
 	getSupportedLanguages(target) {
+		let supportedLanguages = {};
 		if (this.autoTranslateEnabled && this.apiKey) {
 			if (this.supportedLanguages[target]) {
 				return this.supportedLanguages[target];
 			}
+
 			let result;
-			const params = { key: this.apiKey };
+			const params = {
+				key: this.apiKey,
+			};
+
 			if (target) {
 				params.target = target;
 			}
 
 			try {
-				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
+				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
+					params,
+				});
 			} catch (e) {
+				// Fallback: Get the English names of the target languages
 				if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
 					params.target = 'en';
 					target = 'en';
 					if (!this.supportedLanguages[target]) {
-						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
+						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
+							params,
+						});
 					}
 				}
-			} finally {
-				if (this.supportedLanguages[target]) {
-					// eslint-disable-next-line no-unsafe-finally
-					return this.supportedLanguages[target];
-				}
-				this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-				// eslint-disable-next-line no-unsafe-finally
-				return this.supportedLanguages[target || 'en'];
 			}
+
+			if (this.supportedLanguages[target]) {
+				supportedLanguages = this.supportedLanguages[target];
+			} else {
+				this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
+				supportedLanguages = this.supportedLanguages[target || 'en'];
+			}
+
+			return supportedLanguages;
 		}
 	}
 
@@ -102,8 +118,10 @@ class GoogleAutoTranslate extends AutoTranslate {
 		const translations = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
+
 		const query = `q=${ msgs.join('&q=') }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
+
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
@@ -121,7 +139,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
 			} catch (e) {
-				logger.google.error('Error translating message', e);
+				SystemLogger.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -132,12 +150,13 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @private
 	 * @param {object} attachment
 	 * @param {object} targetLanguages
-	 * @returns {object} translated messages for each target language
+	 * @returns {object} translated attachment descriptions for each target language
 	 */
-	_translateAtachment(attachment, targetLanguages) {
+	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
 		const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
+
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
@@ -154,7 +173,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 				}
 			} catch (e) {
-				logger.google.error('Error translating message', e);
+				SystemLogger.error('Error translating message', e);
 			}
 		});
 		return translations;

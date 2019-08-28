@@ -6,9 +6,17 @@ import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
-import { logger } from './logger';
+import { Logger } from '../../logger';
 
+/**
+ * This class allows translation providers to
+ * register,load and also returns the active provider.
+ */
 export class TranslationProviderRegistry {
+	/**
+	 * Registers the translation provider into the registry.
+	 * @param {*} provider
+	 */
 	static registerProvider(provider) {
 		// get provider information
 		const metadata = provider._getProviderMetadata();
@@ -18,21 +26,27 @@ export class TranslationProviderRegistry {
 		TranslationProviderRegistry._providers[metadata.name] = provider;
 	}
 
+	/**
+	 * Return the active Translation provider
+	 */
 	static getActiveProvider() {
 		return TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
 	}
 
+	/**
+	 * Make the activated provider by setting as the active.
+	 */
 	static loadActiveServiceProvider() {
 		settings.get('AutoTranslate_ServiceProvider', (key, value) => {
 			TranslationProviderRegistry._activeProvider = value;
-			// TODO RocketChat.AutoTranslate = TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
 		});
 	}
 }
 
 /**
  * Generic auto translate base implementation.
- * Can be used as superclass for translation providers
+ * This class provides generic parts of implementation for
+ * tokenization, detokenization, call back register and unregister.
  * @abstract
  * @class
  */
@@ -45,14 +59,6 @@ export class AutoTranslate {
 		this.name = '';
 		this.languages = [];
 		this.supportedLanguages = {};
-		// Get the service provide API key.
-		settings.get('AutoTranslate_APIKey', (key, value) => {
-			this.apiKey = value;
-		});
-		// Get Service provider URL.
-		settings.get('AutoTranslate_ServiceProviderURL', (key, value) => {
-			this.apiEndPointUrl = value;
-		});
 		// Get Auto Translate Active flag
 		settings.get('AutoTranslate_Enabled', (key, value) => {
 			this.autoTranslateEnabled = value;
@@ -282,7 +288,7 @@ export class AutoTranslate {
 		};
 	 */
 	_getProviderMetadata() {
-		logger.warn('must be implemented by subclass!', '_getProviderMetadata');
+		Logger.warn('must be implemented by subclass!', '_getProviderMetadata');
 	}
 
 
@@ -294,7 +300,7 @@ export class AutoTranslate {
 	 * @returns [{ language, name }]
 	 */
 	getSupportedLanguages(target) {
-		logger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
+		Logger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
 	}
 
 	/**
@@ -307,7 +313,7 @@ export class AutoTranslate {
 	 * @return {object}
 	 */
 	_translateMessage(message, targetLanguages) {
-		logger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
+		Logger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
 	}
 
 	/**
@@ -319,7 +325,7 @@ export class AutoTranslate {
 	 * @returns {object} translated messages for each target language
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		logger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
+		Logger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
 	}
 }
 
