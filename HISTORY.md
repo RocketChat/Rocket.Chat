@@ -1,6 +1,26 @@
 
 # 2.0.0 (Under Release Candidate Process)
 
+## 2.0.0-rc.2
+`2019-08-28  ·  5 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Double error toast on Setup Wizard ([#15268](https://github.com/RocketChat/Rocket.Chat/pull/15268))
+- Regression: addPermissionToRole argument as string ([#15267](https://github.com/RocketChat/Rocket.Chat/pull/15267))
+- Regression: Remove old scripts of Setup Wizard ([#15263](https://github.com/RocketChat/Rocket.Chat/pull/15263))
+- Fix get IP for rate limiter ([#15262](https://github.com/RocketChat/Rocket.Chat/pull/15262))
+- Add oplog events metrics ([#15249](https://github.com/RocketChat/Rocket.Chat/pull/15249))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 2.0.0-rc.1
 `2019-08-23  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
