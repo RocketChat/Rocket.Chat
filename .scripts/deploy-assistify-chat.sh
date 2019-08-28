@@ -6,9 +6,9 @@ function parse_git_hash(){
 
 # Install AWS-CLI - if it's there, this will be done quickly
 sudo apt-get -y -qq update
-sudo apt-get -y -qq install python3.4-dev
+sudo apt-get -y -qq install python3
 curl -O https://bootstrap.pypa.io/get-pip.py
-python3.4 get-pip.py --user
+python3 get-pip.py --user
 export PATH=~/.local/bin:$PATH
 pip install awscli --upgrade --user
 
