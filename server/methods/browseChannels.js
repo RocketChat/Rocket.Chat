@@ -118,9 +118,9 @@ Meteor.methods({
 		if (workspace === 'all') {
 			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
 		} else if (workspace === 'external') {
-			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.domain);
+			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
 		} else {
-			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.domain);
+			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
 		}
 
 		const total = result.count(); // count ignores the `skip` and `limit` options
@@ -128,18 +128,22 @@ Meteor.methods({
 
 		// Try to find federated users, when appliable
 		if (Federation.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
-			const users = Federation.methods.searchUsers(text);
+			const federatedUsers = Federation.methods.searchUsers(text);
 
-			for (const user of users) {
-				if (results.find((e) => e._id === user._id)) { continue; }
+			for (const federatedUser of federatedUsers) {
+				const { user } = federatedUser;
+
+				const exists = results.findIndex((e) => e.domain === user.federation.peer && e.username === user.username) !== -1;
+
+				if (exists) { continue; }
 
 				// Add the federated user to the results
 				results.unshift({
 					username: user.username,
 					name: user.name,
+					createdAt: user.createdAt,
 					emails: user.emails,
 					federation: user.federation,
-					isRemote: true,
 				});
 			}
 		}
