@@ -1,18 +1,19 @@
+import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
 import { FederationRoomEvents, Rooms } from '../../../../models/server';
 import { Federation } from '../../federation';
-import { isFederated } from './helpers/federatedResources';
+import getFederatedRoomData from './helpers/getFederatedRoomData';
 
 async function beforeDeleteRoom(roomId) {
-	const room = Rooms.findOneById(roomId, { fields: { _id: 1, federation: 1 } });
+	const room = Rooms.findOneById(roomId);
 
 	// If room does not exist, skip
 	if (!room) { return; }
 
 	// If there are not federated users on this room, ignore it
-	if (!isFederated(room)) { return; }
+	if (!getFederatedRoomData(room).hasFederatedUser) { return; }
 
-	logger.client.debug(() => `beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) }`);
+	logger.client.debug(`beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) }`);
 
 	try {
 		// Create the message event
@@ -21,7 +22,7 @@ async function beforeDeleteRoom(roomId) {
 		// Dispatch event (async)
 		Federation.client.dispatchEvent(room.federation.domains, event);
 	} catch (err) {
-		logger.client.error(() => `beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) } => Could not remove room: ${ err }`);
+		logger.client.error(`beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) } => Could not remove room: ${ err }`);
 
 		throw err;
 	}
@@ -29,8 +30,4 @@ async function beforeDeleteRoom(roomId) {
 	return roomId;
 }
 
-export const definition = {
-	hook: 'beforeDeleteRoom',
-	callback: (roomId) => Promise.await(beforeDeleteRoom(roomId)),
-	id: 'federation-before-delete-room',
-};
+callbacks.add('beforeDeleteRoom', (roomId) => Promise.await(beforeDeleteRoom(roomId)), callbacks.priority.LOW, 'federation-before-delete-room');

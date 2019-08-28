@@ -1,14 +1,15 @@
 import { FederationRoomEvents } from '../../../../models/server';
+import { callbacks } from '../../../../callbacks';
 import { logger } from '../../logger';
 import { Federation } from '../../federation';
 import { normalizers } from '../../normalizers';
-import { isFederated } from './helpers/federatedResources';
+import getFederatedRoomData from './helpers/getFederatedRoomData';
 
 async function afterMuteUser(involvedUsers, room) {
 	// If there are not federated users on this room, ignore it
-	if (!isFederated(room)) { return; }
+	if (!getFederatedRoomData(room).hasFederatedUser) { return; }
 
-	logger.client.debug(() => `afterMuteUser => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	logger.client.debug(`afterMuteUser => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
 	const { mutedUser } = involvedUsers;
 
@@ -21,8 +22,4 @@ async function afterMuteUser(involvedUsers, room) {
 	return involvedUsers;
 }
 
-export const definition = {
-	hook: 'afterMuteUser',
-	callback: (involvedUsers, room) => Promise.await(afterMuteUser(involvedUsers, room)),
-	id: 'federation-after-mute-user',
-};
+callbacks.add('afterMuteUser', (involvedUsers, room) => Promise.await(afterMuteUser(involvedUsers, room)), callbacks.priority.LOW, 'federation-after-mute-user');

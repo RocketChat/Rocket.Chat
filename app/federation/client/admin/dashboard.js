@@ -18,6 +18,8 @@ let templateInstance;		// current template instance/context
 const updateOverviewData = () => {
 	Meteor.call('federation:getOverviewData', (error, result) => {
 		if (error) {
+			console.log(error);
+
 			return;
 		}
 
@@ -30,6 +32,8 @@ const updateOverviewData = () => {
 const updateServers = () => {
 	Meteor.call('federation:getServers', (error, result) => {
 		if (error) {
+			console.log(error);
+
 			return;
 		}
 

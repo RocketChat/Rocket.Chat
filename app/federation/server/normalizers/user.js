@@ -2,16 +2,15 @@ import _ from 'underscore';
 
 import { Federation } from '../index';
 import { Users } from '../../../models/server';
-import { getNameAndDomain, isFullyQualified } from './helpers/federatedResources';
 
-const denormalizeUser = (originalResource) => {
-	const resource = { ...originalResource };
+const denormalizeUser = (resource) => {
+	resource = { ...resource };
 
 	resource.emails = [{
 		address: resource.federation.originalInfo.email,
 	}];
 
-	const [username, domain] = getNameAndDomain(resource.username);
+	const [username, domain] = resource.username.split('@');
 
 	resource.username = domain === Federation.domain ? username : resource.username;
 
@@ -20,9 +19,9 @@ const denormalizeUser = (originalResource) => {
 
 const denormalizeAllUsers = (resources) => resources.map(denormalizeUser);
 
-const normalizeUser = (originalResource) => {
+const normalizeUser = (resource) => {
 	// Get only what we need, non-sensitive data
-	const resource = _.pick(originalResource, '_id', 'username', 'type', 'emails', 'name', 'federation', 'isRemote', 'createdAt', '_updatedAt');
+	resource = _.pick(resource, '_id', 'username', 'type', 'emails', 'name', 'federation', 'isRemote', 'createdAt', '_updatedAt');
 
 	const email = resource.emails[0].address;
 
@@ -33,7 +32,7 @@ const normalizeUser = (originalResource) => {
 	resource.active = true;
 	resource.roles = ['user'];
 	resource.status = 'online';
-	resource.username = !isFullyQualified(resource.username) ? `${ resource.username }@${ Federation.domain }` : resource.username;
+	resource.username = resource.username.indexOf('@') === -1 ? `${ resource.username }@${ Federation.domain }` : resource.username;
 
 	// Federation
 	resource.federation = resource.federation || {

@@ -1,10 +1,9 @@
 import { Federation } from '../index';
-import { getNameAndDomain, isFullyQualified } from './helpers/federatedResources';
 
-const denormalizeMessage = (originalResource) => {
-	const resource = { ...originalResource };
+const denormalizeMessage = (resource) => {
+	resource = { ...resource };
 
-	const [username, domain] = getNameAndDomain(resource.u.username);
+	const [username, domain] = resource.u.username.split('@');
 
 	// Denormalize username
 	resource.u.username = domain === Federation.domain ? username : resource.u.username;
@@ -14,7 +13,7 @@ const denormalizeMessage = (originalResource) => {
 		// Ignore if we are dealing with all, here or rocket.cat
 		if (['all', 'here', 'rocket.cat'].indexOf(mention.username) !== -1) { continue; }
 
-		const [username, domain] = getNameAndDomain(mention.username);
+		const [username, domain] = mention.username.split('@');
 
 		if (domain === Federation.domain) {
 			const originalUsername = mention.username;
@@ -30,7 +29,7 @@ const denormalizeMessage = (originalResource) => {
 		// Ignore if we are dealing with all, here or rocket.cat
 		if (['all', 'here', 'rocket.cat'].indexOf(channel.name) !== -1) { continue; }
 
-		const [username, domain] = getNameAndDomain(channel.name);
+		const [username, domain] = channel.name.split('@');
 
 		if (domain === Federation.domain) {
 			const originalUsername = channel.name;
@@ -46,10 +45,10 @@ const denormalizeMessage = (originalResource) => {
 
 const denormalizeAllMessages = (resources) => resources.map(denormalizeMessage);
 
-const normalizeMessage = (originalResource) => {
-	const resource = { ...originalResource };
+const normalizeMessage = (resource) => {
+	resource = { ...resource };
 
-	resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
+	resource.u.username = resource.u.username.indexOf('@') === -1 ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
 
 	// Federation
 	resource.federation = resource.federation || {
@@ -61,7 +60,7 @@ const normalizeMessage = (originalResource) => {
 		// Ignore if we are dealing with all, here or rocket.cat
 		if (['all', 'here', 'rocket.cat'].indexOf(mention.username) !== -1) { continue; }
 
-		if (!isFullyQualified(mention.username)) {
+		if (mention.username.indexOf('@') === -1) {
 			const originalUsername = mention.username;
 
 			mention.username = `${ mention.username }@${ Federation.domain }`;
@@ -72,7 +71,7 @@ const normalizeMessage = (originalResource) => {
 
 	// Normalize channels
 	for (const channel of resource.channels) {
-		if (!isFullyQualified(channel.name)) {
+		if (channel.name.indexOf('@') === -1) {
 			const originalUsername = channel.name;
 
 			channel.name = `${ channel.name }@${ Federation.domain }`;

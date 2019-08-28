@@ -1,14 +1,13 @@
 import { Federation } from '../index';
-import { getNameAndDomain, isFullyQualified } from './helpers/federatedResources';
 
-const denormalizeSubscription = (originalResource) => {
-	const resource = { ...originalResource };
+const denormalizeSubscription = (resource) => {
+	resource = { ...resource };
 
-	const [username, domain] = getNameAndDomain(resource.u.username);
+	const [username, domain] = resource.u.username.split('@');
 
 	resource.u.username = domain === Federation.domain ? username : resource.u.username;
 
-	const [nameUsername, nameDomain] = getNameAndDomain(resource.name);
+	const [nameUsername, nameDomain] = resource.name.split('@');
 
 	resource.name = nameDomain === Federation.domain ? nameUsername : resource.name;
 
@@ -17,12 +16,12 @@ const denormalizeSubscription = (originalResource) => {
 
 const denormalizeAllSubscriptions = (resources) => resources.map(denormalizeSubscription);
 
-const normalizeSubscription = (originalResource) => {
-	const resource = { ...originalResource };
+const normalizeSubscription = (resource) => {
+	resource = { ...resource };
 
-	resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
+	resource.u.username = resource.u.username.indexOf('@') === -1 ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
 
-	resource.name = !isFullyQualified(resource.name) ? `${ resource.name }@${ Federation.domain }` : resource.name;
+	resource.name = resource.name.indexOf('@') === -1 ? `${ resource.name }@${ Federation.domain }` : resource.name;
 
 	// Federation
 	resource.federation = resource.federation || {

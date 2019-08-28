@@ -131,7 +131,9 @@ Meteor.methods({
 			const users = Federation.methods.searchUsers(text);
 
 			for (const user of users) {
-				if (results.find((e) => e._id === user._id)) { continue; }
+				const exists = results.findIndex((e) => e._id === user._id) !== -1;
+
+				if (exists) { continue; }
 
 				// Add the federated user to the results
 				results.unshift({
