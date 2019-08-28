@@ -122,7 +122,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 	}
 
-	const { emailField, usernameField } = Accounts.saml.settings;
+	const { emailField, usernameField, defaultUserRole = 'user', roleAttributeName } = Accounts.saml.settings;
 
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
 		const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
@@ -170,12 +170,19 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			verified: true,
 		}));
 
+		let globalRoles;
+		if (roleAttributeName && loginResult.profile[roleAttributeName]) {
+			globalRoles = [].concat(loginResult.profile[roleAttributeName]);
+		} else {
+			globalRoles = [].concat(defaultUserRole.split(','));
+		}
+
 		if (!user) {
 			const newUser = {
 				name: fullName,
 				active: true,
 				eppn: eduPersonPrincipalName,
-				globalRoles: ['user'],
+				globalRoles,
 				emails,
 			};
 
