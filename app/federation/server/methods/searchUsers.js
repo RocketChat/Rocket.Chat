@@ -2,18 +2,20 @@ import { Meteor } from 'meteor/meteor';
 
 import { Federation } from '..';
 
-import { normalizers } from '../normalizers';
-
-export function searchUsers(query) {
+export function searchUsers(identifier) {
 	if (!Meteor.userId()) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'searchUsers' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'federationSearchUsers' });
 	}
 
-	const users = Federation.client.searchUsers(query);
-
-	if (!users.length) {
-		throw Federation.errors.userNotFound(query);
+	if (!Federation.peerClient.enabled) {
+		throw new Meteor.Error('error-federation-disabled', 'Federation disabled', { method: 'federationSearchUsers' });
 	}
 
-	return normalizers.denormalizeAllUsers(users);
+	const federatedUsers = Federation.peerClient.findUsers(identifier);
+
+	if (!federatedUsers.length) {
+		throw new Meteor.Error('federation-user-not-found', `Could not find federated users using "${ identifier }"`);
+	}
+
+	return federatedUsers;
 }

@@ -94,7 +94,8 @@ statistics.get = function _getStatistics() {
 	// Federation statistics
 	const federationOverviewData = federationGetStatistics();
 
-	statistics.federatedServers = federationOverviewData.numberOfServers;
+	statistics.federatedServers = federationOverviewData.numberOfActivePeers + federationOverviewData.numberOfInactivePeers;
+	statistics.federatedServersActive = federationOverviewData.numberOfActivePeers;
 	statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
 
 	statistics.lastLogin = Users.getLastLogin();
