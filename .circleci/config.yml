@@ -259,7 +259,6 @@ jobs:
       - run:
           name: Publish assets
           command: |
-            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
             bash .scripts/deploy-assistify-chat.sh
 
   image-build:
