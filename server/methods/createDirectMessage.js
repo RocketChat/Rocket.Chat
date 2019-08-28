@@ -41,9 +41,11 @@ Meteor.methods({
 
 		let to = Users.findOneByUsernameIgnoringCase(username);
 
-		// If the username does have an `@`, but does not exist locally, we create it first
 		if (!to && username.indexOf('@') !== -1) {
-			to = Federation.methods.addUser(username);
+			// If the username does have an `@`, but does not exist locally, we create it first
+			const toId = Federation.methods.addUser(username);
+
+			to = Users.findOneById(toId);
 		}
 
 		if (!to) {
