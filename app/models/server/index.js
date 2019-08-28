@@ -32,6 +32,7 @@ import LivechatPageVisited from './models/LivechatPageVisited';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatTrigger from './models/LivechatTrigger';
 import LivechatVisitors from './models/LivechatVisitors';
+import LivechatSessions from './models/LivechatSessions';
 import ReadReceipts from './models/ReadReceipts';
 
 export { AppsLogsModel } from './models/apps-logs-model';
@@ -77,5 +78,6 @@ export {
 	LivechatRooms,
 	LivechatTrigger,
 	LivechatVisitors,
+	LivechatSessions,
 	ReadReceipts,
 };

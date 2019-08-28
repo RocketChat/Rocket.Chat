@@ -10,6 +10,7 @@ import { LivechatInquiry } from '../lib/LivechatInquiry';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 import { createLivechatQueueView } from './lib/Helper';
+import { LivechatSessionsMonitor } from './statistics/LivechatSessionsMonitor';
 
 Meteor.startup(() => {
 	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
@@ -60,4 +61,6 @@ Meteor.startup(() => {
 	}, callbacks.priority.LOW, 'cant-leave-room');
 
 	createLivechatQueueView();
+
+	new LivechatSessionsMonitor().start();
 });

@@ -865,6 +865,7 @@ export const Livechat = {
 				status,
 			});
 		});
+		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
 	},
 
 	allowAgentChangeServiceStatus(statusLivechat) {
