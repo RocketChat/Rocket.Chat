@@ -193,7 +193,7 @@ export class Settings extends Base {
 
 		const update = {
 			$pull: {
-				values: { key }
+				values: { key },
 			},
 		};
 
