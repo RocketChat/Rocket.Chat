@@ -34380,6 +34380,62 @@
           ]
         }
       ]
+    },
+    "2.0.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15268",
+          "title": "Regression: Double error toast on Setup Wizard",
+          "userLogin": "tassoevan",
+          "milestone": "2.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15267",
+          "title": "Regression: addPermissionToRole argument as string",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15263",
+          "title": "Regression: Remove old scripts of Setup Wizard",
+          "userLogin": "tassoevan",
+          "milestone": "2.0.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15262",
+          "title": "Fix get IP for rate limiter",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15249",
+          "title": "Add oplog events metrics",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
