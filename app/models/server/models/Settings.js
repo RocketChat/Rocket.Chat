@@ -166,6 +166,40 @@ export class Settings extends Base {
 		return this.update(query, update);
 	}
 
+	addOptionValueById(_id, option = {}) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const { key, i18nLabel } = option;
+		const update = {
+			$addToSet: {
+				values: {
+					key,
+					i18nLabel,
+				},
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	removeOptionValueByIdAndKey(_id, key) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const update = {
+			$pull: {
+				values: { key }
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	// INSERT
 	createWithIdAndValue(_id, value) {
 		const record = {
