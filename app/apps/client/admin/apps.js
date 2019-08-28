@@ -36,7 +36,7 @@ Template.apps.onCreated(function() {
 
 	(async () => {
 		try {
-			const appsFromMarketplace = await Apps.getAppsFromMarketplace().catch(() => []);
+			const appsFromMarketplace = await Apps.getAppsFromMarketplace();
 			const installedApps = await Apps.getApps();
 
 			const apps = installedApps.map((app) => {
