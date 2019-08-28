@@ -4,35 +4,36 @@ export class LivechatSessions extends Base {
 	constructor(...args) {
 		super(...args);
 
-		this.tryEnsureIndex({ year: 1, month: 1, day: 1 });
-		this.tryEnsureIndex({ agentId: 1, year: 1, month: 1, day: 1 });
+		this.tryEnsureIndex({ date: 1 });
+		this.tryEnsureIndex({ agentId: 1, date: 1 }, { unique: true });
 		this.tryEnsureIndex({ agentId: 1 });
 	}
 
 	createOrUpdate(data = {}) {
-		const { year, month, day, agentId } = data;
+		const { date, agentId } = data;
 
-		if (!year || !month || !day || !agentId) {
+		if (!date || !agentId) {
 			return;
 		}
 
-		return this.upsert({ agentId, year, month, day }, {
+		return this.upsert({ agentId, date }, {
 			$unset: {
 				lastStopedAt: 1,
 			},
 			$set: {
-				...data,
 				lastStartedAt: new Date(),
+			},
+			$setOnInsert: {
+				date,
+				agentId,
 			},
 		});
 	}
 
-	updateLastStoppedAt({ agentId, year, month, day, lastStopedAt, availableTime }) {
+	updateLastStoppedAt({ agentId, date, lastStopedAt, availableTime }) {
 		const query = {
 			agentId,
-			year,
-			month,
-			day,
+			date,
 		};
 		const update = {
 			$inc: { availableTime },
@@ -43,12 +44,10 @@ export class LivechatSessions extends Base {
 		return this.update(query, update);
 	}
 
-	updateServiceHistory({ agentId, year, month, day, historyObject }) {
+	updateServiceHistory({ agentId, date, historyObject }) {
 		const query = {
 			agentId,
-			year,
-			month,
-			day,
+			date,
 		};
 		const update = {
 			$addToSet: {
