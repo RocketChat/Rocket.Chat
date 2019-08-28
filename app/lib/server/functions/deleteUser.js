@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { FileUpload } from '../../../file-upload';
-import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models';
+import { Users, Subscriptions, Messages, Rooms, Integrations } from '../../../models';
+// import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models';
 import { hasRole, getUsersInRole } from '../../../authorization';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
@@ -107,5 +108,5 @@ export const deleteUser = function(userId) {
 	Users.removeById(userId); // Remove user from users database
 
 	// Refresh the servers list
-	FederationServers.refreshServers();
+	// FederationServers.refreshServers();
 };
