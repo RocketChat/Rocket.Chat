@@ -4,7 +4,13 @@ import { Users, Settings, FederationPeers } from '../../../app/models/server';
 Migrations.add({
 	version: 148,
 	up() {
-		const { value: localDomain } = Settings.findOne({ _id: 'FEDERATION_Domain' });
+		const domainSetting = Settings.findOne({ _id: 'FEDERATION_Domain' });
+		
+		if(!domainSetting) {
+			return;
+		}
+		
+		const { value: localDomain } = domainSetting;
 
 		Users.update({
 			federation: { $exists: true }, 'federation.peer': { $ne: localDomain },
