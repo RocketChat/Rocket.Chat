@@ -1,4 +1,4 @@
-import { hasPermission } from './hasPermission';
+import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
 
@@ -10,7 +10,7 @@ export const roomAccessValidators = [
 				return true;
 			}
 
-			return hasPermission(user._id, 'view-c-room');
+			return hasPermissionAsync(user._id, 'view-c-room');
 		}
 	},
 	async function(room, user) {

@@ -89,7 +89,7 @@ const recordingRoomId = new ReactiveVar(null);
 Template.messageBoxAudioMessage.onCreated(function() {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
-	this.isMicrophoneDenied = new ReactiveVar(true);
+	this.isMicrophoneDenied = new ReactiveVar(false);
 
 	if (navigator.permissions) {
 		navigator.permissions.query({ name: 'microphone' })
@@ -99,8 +99,6 @@ Template.messageBoxAudioMessage.onCreated(function() {
 					this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
 				};
 			});
-	} else {
-		this.isMicrophoneDenied.set(false);
 	}
 });
 
@@ -152,7 +150,6 @@ Template.messageBoxAudioMessage.events({
 			recordingRoomId.set(this.rid);
 		} catch (error) {
 			instance.state.set(null);
-			instance.isMicrophoneDenied.set(true);
 		}
 	},
 

@@ -1,198 +1,188 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { TAPi18next } from 'meteor/tap:i18n';
+import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
-import { Utilities } from '../lib/misc/Utilities';
 import { APIClient } from '../../utils';
 import { AdminBox } from '../../ui-utils';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { handleI18nResources } from './i18n';
+
+const createDeferredValue = () => {
+	let resolve;
+	let reject;
+	const promise = new Promise((_resolve, _reject) => {
+		resolve = _resolve;
+		reject = _reject;
+	});
+
+	return [promise, resolve, reject];
+};
 
 class AppClientOrchestrator {
 	constructor() {
-		this._isInitialized = false;
+		this.isLoaded = false;
+		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
 	}
 
-	initialize() {
-		this._isInitialized = true;
-		this._isLoaded = false;
-		this._isEnabled = false;
-		this._loadingResolve;
-		this._refreshLoading();
-	}
-
-	isInitialized() {
-		return this._isInitialized;
-	}
-
-	isLoaded() {
-		return this._isLoaded;
-	}
-
-	isEnabled() {
-		return this._isEnabled;
-	}
-
-	getLoadingPromise() {
-		if (this._isLoaded) {
-			return Promise.resolve(this._isEnabled);
+	load = async (isEnabled) => {
+		if (!this.isLoaded) {
+			this.ws = new AppWebsocketReceiver();
+			this.registerAdminMenuItems();
+			this.isLoaded = true;
 		}
 
-		return this._loadingPromise;
+		this.setEnabled(isEnabled);
+
+		// Since the deferred value (a promise) is immutable after resolved,
+		// it need to be recreated to resolve a new value
+		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
+
+		await handleI18nResources();
+		this.setEnabled(isEnabled);
 	}
 
-	load(isEnabled) {
-		this._isEnabled = isEnabled;
+	getWsListener = () => this.ws
 
-		// It was already loaded, so let's load it again
-		if (this._isLoaded) {
-			this._refreshLoading();
-		} else {
-			this.ws = new AppWebsocketReceiver(this);
-			this._addAdminMenuOption();
-		}
-
-		Meteor.defer(() => {
-			this._loadLanguages().then(() => {
-				this._loadingResolve(this._isEnabled);
-				this._isLoaded = true;
-			});
-		});
-	}
-
-	getWsListener() {
-		return this.ws;
-	}
-
-	_refreshLoading() {
-		this._loadingPromise = new Promise((resolve) => {
-			this._loadingResolve = resolve;
-		});
-	}
-
-	_addAdminMenuOption() {
+	registerAdminMenuItems = () => {
 		AdminBox.addOption({
 			icon: 'cube',
 			href: 'apps',
 			i18nLabel: 'Apps',
-			permissionGranted() {
-				return hasAtLeastOnePermission(['manage-apps']);
-			},
+			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});
 
 		AdminBox.addOption({
 			icon: 'cube',
 			href: 'marketplace',
 			i18nLabel: 'Marketplace',
-			permissionGranted() {
-				return hasAtLeastOnePermission(['manage-apps']);
-			},
+			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});
 	}
 
-	_loadLanguages() {
-		return APIClient.get('apps/languages').then((info) => {
-			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages, rlInfo.id));
-		});
+	handleError = (error) => {
+		console.error(error);
+		if (hasAtLeastOnePermission(['manage-apps'])) {
+			toastr.error(error.message);
+		}
 	}
 
-	parseAndLoadLanguages(languages, id) {
-		Object.entries(languages).forEach(([language, translations]) => {
-			try {
-				translations = Object.entries(translations).reduce((newTranslations, [key, value]) => {
-					newTranslations[Utilities.getI18nKeyForApp(key, id)] = value;
-					return newTranslations;
-				}, {});
+	isEnabled = () => this.deferredIsEnabled
 
-				TAPi18next.addResourceBundle(language, 'project', translations);
-			} catch (e) {
-				// Failed to parse the json
-			}
-		});
+	getApps = async () => {
+		const { apps } = await APIClient.get('apps');
+		return apps;
 	}
 
-	async getAppApis(appId) {
-		const result = await APIClient.get(`apps/${ appId }/apis`);
-		return result.apis;
+	getAppsFromMarketplace = async () => {
+		const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
+		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType }) => ({
+			...latest,
+			price,
+			pricingPlans,
+			purchaseType,
+		}));
+	}
+
+	getAppsOnBundle = async (bundleId) => {
+		const { apps } = await APIClient.get(`apps/bundles/${ bundleId }/apps`);
+		return apps;
+	}
+
+	getAppsLanguages = async () => {
+		const { apps } = await APIClient.get('apps/languages');
+		return apps;
+	}
+
+	getApp = async (appId) => {
+		const { app } = await APIClient.get(`apps/${ appId }`);
+		return app;
+	}
+
+	getAppFromMarketplace = async (appId, version) => {
+		const { app } = await APIClient.get(`apps/${ appId }`, {
+			marketplace: 'true',
+			version,
+		});
+		return app;
+	}
+
+	getLatestAppFromMarketplace = async (appId, version) => {
+		const { app } = await APIClient.get(`apps/${ appId }`, {
+			marketplace: 'true',
+			update: 'true',
+			appVersion: version,
+		});
+		return app;
+	}
+
+	getAppSettings = async (appId) => {
+		const { settings } = await APIClient.get(`apps/${ appId }/settings`);
+		return settings;
+	}
+
+	setAppSettings = async (appId, settings) => {
+		const { updated } = await APIClient.post(`apps/${ appId }/settings`, undefined, { settings });
+		return updated;
+	}
+
+	getAppApis = async (appId) => {
+		const { apis } = await APIClient.get(`apps/${ appId }/apis`);
+		return apis;
+	}
+
+	getAppLanguages = async (appId) => {
+		const { languages } = await APIClient.get(`apps/${ appId }/languages`);
+		return languages;
+	}
+
+	installApp = async (appId, version) => {
+		const { app } = await APIClient.post('apps/', {
+			appId,
+			marketplace: true,
+			version,
+		});
+		return app;
+	}
+
+	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`)
+
+	syncApp = (appId) => APIClient.post(`apps/${ appId }/sync`)
+
+	setAppStatus = async (appId, status) => {
+		const { status: effectiveStatus } = await APIClient.post(`apps/${ appId }/status`, { status });
+		return effectiveStatus;
+	}
+
+	enableApp = (appId) => this.setAppStatus(appId, 'manually_enabled')
+
+	disableApp = (appId) => this.setAppStatus(appId, 'manually_disabled')
+
+	buildExternalUrl = (appId, purchaseType = 'buy', details = false) =>
+		APIClient.get('apps', {
+			buildExternalUrl: 'true',
+			appId,
+			purchaseType,
+			details,
+		})
+
+	getCategories = async () => {
+		const categories = await APIClient.get('apps', { categories: 'true' });
+		return categories;
 	}
 }
 
 export const Apps = new AppClientOrchestrator();
 
-Meteor.startup(function _rlClientOrch() {
-	Apps.initialize();
-
+Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
 		Meteor.call('apps/is-enabled', (error, isEnabled) => {
+			if (error) {
+				Apps.handleError(error);
+				return;
+			}
+
 			Apps.load(isEnabled);
 		});
 	});
-});
-
-const appsRouteAction = function _theRealAction(whichCenter) {
-	Meteor.defer(() => Apps.getLoadingPromise().then((isEnabled) => {
-		if (isEnabled) {
-			BlazeLayout.render('main', { center: whichCenter, old: true }); // TODO remove old
-		} else {
-			FlowRouter.go('app-what-is-it');
-		}
-	}));
-};
-
-// Bah, this has to be done *before* `Meteor.startup`
-FlowRouter.route('/admin/marketplace', {
-	name: 'marketplace',
-	action() {
-		appsRouteAction('marketplace');
-	},
-});
-
-FlowRouter.route('/admin/marketplace/:itemId', {
-	name: 'app-manage',
-	action() {
-		appsRouteAction('appManage');
-	},
-});
-
-FlowRouter.route('/admin/apps', {
-	name: 'apps',
-	action() {
-		appsRouteAction('apps');
-	},
-});
-
-FlowRouter.route('/admin/app/install', {
-	name: 'app-install',
-	action() {
-		appsRouteAction('appInstall');
-	},
-});
-
-FlowRouter.route('/admin/apps/:appId', {
-	name: 'app-manage',
-	action() {
-		appsRouteAction('appManage');
-	},
-});
-
-FlowRouter.route('/admin/apps/:appId/logs', {
-	name: 'app-logs',
-	action() {
-		appsRouteAction('appLogs');
-	},
-});
-
-FlowRouter.route('/admin/app/what-is-it', {
-	name: 'app-what-is-it',
-	action() {
-		Meteor.defer(() => Apps.getLoadingPromise().then((isEnabled) => {
-			if (isEnabled) {
-				FlowRouter.go('apps');
-			} else {
-				BlazeLayout.render('main', { center: 'appWhatIsIt' });
-			}
-		}));
-	},
 });

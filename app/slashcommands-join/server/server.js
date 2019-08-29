@@ -1,18 +1,13 @@
-
-/*
-* Join is a named function that will replace /join commands
-* @param {Object} message - The message object
-*/
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions } from '../../models';
 import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
 
-slashCommands.add('join', function Join(command, params, item) {
+function Join(command, params, item) {
 	if (command !== 'join' || !Match.test(params, String)) {
 		return;
 	}
@@ -42,7 +37,9 @@ slashCommands.add('join', function Join(command, params, item) {
 		});
 	}
 	Meteor.call('joinRoom', room._id);
-}, {
+}
+
+slashCommands.add('join', Join, {
 	description: 'Join_the_given_channel',
 	params: '#channel',
 });
