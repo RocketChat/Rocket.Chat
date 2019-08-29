@@ -430,22 +430,6 @@ export class LivechatRooms extends Base {
 		this.remove(query);
 	}
 
-	setNameById(_id, name, fname) {
-		const query = {
-			_id,
-			t: 'l',
-		};
-
-		const update = {
-			$set: {
-				name,
-				fname,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	removeById(_id) {
 		const query = {
 			_id,

@@ -21,6 +21,7 @@ import {
 	Messages,
 	Subscriptions,
 	Settings,
+	Rooms,
 	LivechatDepartmentAgents,
 	LivechatDepartment,
 	LivechatCustomField,
@@ -389,7 +390,7 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return LivechatRooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
