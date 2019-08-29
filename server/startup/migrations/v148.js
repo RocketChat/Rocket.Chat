@@ -5,11 +5,11 @@ Migrations.add({
 	version: 148,
 	up() {
 		const domainSetting = Settings.findOne({ _id: 'FEDERATION_Domain' });
-		
+
 		if (!domainSetting) {
 			return;
 		}
-		
+
 		const { value: localDomain } = domainSetting;
 
 		Users.update({
