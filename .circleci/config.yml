@@ -423,8 +423,9 @@ workflows:
           requires:
             - build
           filters:
-#            branches:
-#              ignore: develop
+            branches:
+              only: 
+                - master
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - pr-image-build:
