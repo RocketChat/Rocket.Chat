@@ -6,7 +6,7 @@ Migrations.add({
 	up() {
 		const domainSetting = Settings.findOne({ _id: 'FEDERATION_Domain' });
 		
-		if(!domainSetting) {
+		if (!domainSetting) {
 			return;
 		}
 		
