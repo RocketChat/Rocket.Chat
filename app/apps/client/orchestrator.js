@@ -75,17 +75,13 @@ class AppClientOrchestrator {
 	}
 
 	getAppsFromMarketplace = async () => {
-		try {
-			const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
-			return appsOverviews.map(({ latest, price, pricingPlans, purchaseType }) => ({
-				...latest,
-				price,
-				pricingPlans,
-				purchaseType,
-			}));
-		} catch (error) {
-			return [];
-		}
+		const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
+		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType }) => ({
+			...latest,
+			price,
+			pricingPlans,
+			purchaseType,
+		}));
 	}
 
 	getAppsOnBundle = async (bundleId) => {
