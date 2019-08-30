@@ -83,8 +83,6 @@ html.rtl .attachment {
 		margin-top: 4px;
 
 		line-height: 0;
-
-		image-orientation: from-image;
 	}
 
 	& .attachment-fields {
