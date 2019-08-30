@@ -16,10 +16,11 @@
 							{{/each}}
 						</div>
 						<div class="group left wrap border-component-color">
-							{{#each federationPeers}}
+							{{#each federationPeerStatuses}}
 							<div class="overview-column small">
-								<div class="overview-pill">
-									<span class="title">{{domain}}</span>
+								<div class="overview-pill" title="{{status}} - {{statusAt}}">
+									<div class="status {{status}}"></div>
+									<span class="title">{{peer}}</span>
 								</div>
 							</div>
 							{{/each}}
