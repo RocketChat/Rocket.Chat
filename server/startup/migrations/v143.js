@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Users, FederationServers } from '../../../app/models/server';
+import { Users, FederationPeers } from '../../../app/models/server';
 
 Migrations.add({
 	version: 143,
@@ -15,7 +15,7 @@ Migrations.add({
 		}));
 
 		if (peers.length) {
-			FederationServers.model.rawCollection().insertMany(peers);
+			FederationPeers.model.rawCollection().insertMany(peers);
 		}
 	},
 });

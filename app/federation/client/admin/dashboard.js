@@ -18,7 +18,10 @@ let templateInstance;		// current template instance/context
 const updateOverviewData = () => {
 	Meteor.call('federation:getOverviewData', (error, result) => {
 		if (error) {
+			console.log(error);
+
 			return;
+			// return handleError(error);
 		}
 
 		const { data } = result;
@@ -27,29 +30,32 @@ const updateOverviewData = () => {
 	});
 };
 
-const updateServers = () => {
-	Meteor.call('federation:getServers', (error, result) => {
+const updatePeerStatuses = () => {
+	Meteor.call('federation:getPeerStatuses', (error, result) => {
 		if (error) {
+			console.log(error);
+
 			return;
+			// return handleError(error);
 		}
 
 		const { data } = result;
 
-		templateInstance.federationPeers.set(data);
+		templateInstance.federationPeerStatuses.set(data);
 	});
 };
 
 const updateData = () => {
 	updateOverviewData();
-	updateServers();
+	updatePeerStatuses();
 };
 
 Template.dashboard.helpers({
 	federationOverviewData() {
 		return templateInstance.federationOverviewData.get();
 	},
-	federationPeers() {
-		return templateInstance.federationPeers.get();
+	federationPeerStatuses() {
+		return templateInstance.federationPeerStatuses.get();
 	},
 });
 
@@ -58,7 +64,7 @@ Template.dashboard.onCreated(function() {
 	templateInstance = Template.instance();
 
 	this.federationOverviewData = new ReactiveVar();
-	this.federationPeers = new ReactiveVar();
+	this.federationPeerStatuses = new ReactiveVar();
 });
 
 Template.dashboard.onRendered(() => {

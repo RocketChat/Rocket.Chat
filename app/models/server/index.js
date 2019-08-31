@@ -38,9 +38,9 @@ export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
 export { AppsModel } from './models/apps-model';
 export { FederationDNSCache } from './models/FederationDNSCache';
-export { FederationRoomEvents } from './models/FederationRoomEvents';
+export { FederationEvents } from './models/FederationEvents';
 export { FederationKeys } from './models/FederationKeys';
-export { FederationServers } from './models/FederationServers';
+export { FederationPeers } from './models/FederationPeers';
 
 export {
 	Base,
