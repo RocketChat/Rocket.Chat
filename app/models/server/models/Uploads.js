@@ -16,7 +16,7 @@ export class Uploads extends Base {
 		this.tryEnsureIndex({ uploadedAt: 1 });
 	}
 
-	findNotHiddenFilesOfRoom(roomId, searchText, limit) {
+	findNotHiddenFilesOfRoom(roomId, searchText, fileType, limit) {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
@@ -28,6 +28,10 @@ export class Uploads extends Base {
 
 		if (searchText) {
 			fileQuery.name = { $regex: new RegExp(RegExp.escape(searchText), 'i') };
+		}
+
+		if (fileType && fileType !== 'all') {
+			fileQuery.type = { $regex: fileType };
 		}
 
 		const fileOptions = {

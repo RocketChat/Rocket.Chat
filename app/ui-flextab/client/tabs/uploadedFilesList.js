@@ -16,6 +16,7 @@ const LIST_SIZE = 50;
 Template.uploadedFilesList.onCreated(function() {
 	const { rid } = Template.currentData();
 	this.searchText = new ReactiveVar(null);
+	this.showFileType = new ReactiveVar('all');
 
 	this.state = new ReactiveDict({
 		limit: LIST_SIZE,
@@ -23,7 +24,10 @@ Template.uploadedFilesList.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const ready = this.subscribe('roomFilesWithSearchText', rid, this.searchText.get(), this.state.get('limit'), () => this.state.set('hasMore', this.state.get('limit') <= roomFiles.find({ rid }).count())).ready();
+		const ready = this.subscribe('roomFilesWithSearchText', rid, this.searchText.get(), this.showFileType.get(), this.state.get('limit'), () => {
+			this.state.set('hasMore', this.state.get('limit') <= roomFiles.find({ rid, type: this.showFileType.get() }).count());
+		}).ready();
+
 		this.state.set('loading', !ready);
 	});
 });
@@ -125,6 +129,10 @@ Template.uploadedFilesList.events({
 			return t.state.set('limit', t.state.get('limit') + LIST_SIZE);
 		}
 	}, 200),
+
+	'change .js-type'(e, t) {
+		t.showFileType.set(e.currentTarget.value);
+	},
 
 	'click .js-action'(e) {
 		e.currentTarget.parentElement.classList.add('active');
