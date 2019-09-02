@@ -1,4 +1,5 @@
 import NodeRSA from 'node-rsa';
+import uuid from 'uuid/v4';
 
 import { Base } from './_Base';
 
@@ -32,6 +33,16 @@ class FederationKeysModel extends Base {
 			privateKey: this.getPrivateKey(),
 			publicKey: this.getPublicKey(),
 		};
+	}
+
+	generateUniqueId() {
+		const uniqueId = uuid();
+
+		this.update({ type: 'unique' }, { type: 'unique', key: uniqueId }, { upsert: true });
+	}
+
+	getUniqueId() {
+		return (this.findOne({ type: 'unique' }) || {}).key;
 	}
 
 	getPrivateKey() {
