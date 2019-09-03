@@ -19,13 +19,13 @@ settings.addGroup('UserDataDownload', function() {
 		i18nLabel: 'UserData_FileSystemZipPath',
 	});
 
-	this.add('UserData_ProcessingFrequency', 15, {
+	this.add('UserData_ProcessingFrequency', 2, {
 		type: 'int',
 		public: true,
 		i18nLabel: 'UserData_ProcessingFrequency',
 	});
 
-	this.add('UserData_MessageLimitPerRequest', 100, {
+	this.add('UserData_MessageLimitPerRequest', 10000, {
 		type: 'int',
 		public: true,
 		i18nLabel: 'UserData_MessageLimitPerRequest',
