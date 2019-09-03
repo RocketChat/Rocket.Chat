@@ -319,7 +319,7 @@ const sendEmail = function(userId) {
 	});
 };
 
-const makeZipFile = function(exportOperation) {
+const makeZipFile = async function(exportOperation) {
 	createDir(zipFolder);
 
 	const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
@@ -328,22 +328,28 @@ const makeZipFile = function(exportOperation) {
 		return;
 	}
 
-	const output = fs.createWriteStream(targetFile);
+	const p1 = new Promise((resolve, reject) => {
+		const output = fs.createWriteStream(targetFile);
 
-	exportOperation.generatedFile = targetFile;
+		exportOperation.generatedFile = targetFile;
 
-	const archive = archiver('zip');
+		const archive = archiver('zip');
 
-	output.on('close', () => {
+		output.on('close', () => {
+			exportOperation.status = 'uploading';
+			resolve();
+		});
+
+		archive.on('error', (err) => {
+			reject(err);
+		});
+
+		archive.pipe(output);
+		archive.directory(exportOperation.exportPath, false);
+		archive.finalize();
 	});
 
-	archive.on('error', (err) => {
-		throw err;
-	});
-
-	archive.pipe(output);
-	archive.directory(exportOperation.exportPath, false);
-	archive.finalize();
+	await p1;
 };
 
 const uploadZipFile = function(exportOperation, callback) {
@@ -399,7 +405,7 @@ const generateChannelsFile = function(exportOperation) {
 	exportOperation.status = 'exporting';
 };
 
-const continueExportOperation = function(exportOperation) {
+const continueExportOperation = async function(exportOperation) {
 	if (exportOperation.status === 'completed') {
 		return;
 	}
@@ -421,7 +427,6 @@ const continueExportOperation = function(exportOperation) {
 
 			if (isExportComplete(exportOperation)) {
 				exportOperation.status = 'downloading';
-				return;
 			}
 		}
 
@@ -437,13 +442,11 @@ const continueExportOperation = function(exportOperation) {
 				}
 
 				exportOperation.status = 'compressing';
-				return;
 			}
 		}
 
 		if (exportOperation.status === 'compressing') {
-			makeZipFile(exportOperation);
-			return;
+			await makeZipFile(exportOperation);
 		}
 
 		if (exportOperation.status === 'uploading') {
@@ -458,20 +461,25 @@ const continueExportOperation = function(exportOperation) {
 	}
 };
 
-function processDataDownloads() {
+async function processDataDownloads() {
 	const cursor = ExportOperations.findAllPending({ limit: 1 });
-	cursor.forEach((exportOperation) => {
-		if (exportOperation.status === 'completed') {
-			return;
-		}
+	const exportOperations = cursor.fetch();
+	if (!exportOperations || !exportOperations.length) {
+		return;
+	}
 
-		continueExportOperation(exportOperation);
-		ExportOperations.updateOperation(exportOperation);
+	const operation = exportOperations.pop();
 
-		if (exportOperation.status === 'completed') {
-			sendEmail(exportOperation.userId);
-		}
-	});
+	if (operation.status === 'completed') {
+		return;
+	}
+
+	await continueExportOperation(operation);
+	await ExportOperations.updateOperation(operation);
+
+	if (operation.status === 'completed') {
+		sendEmail(operation.userId);
+	}
 }
 
 Meteor.startup(function() {
