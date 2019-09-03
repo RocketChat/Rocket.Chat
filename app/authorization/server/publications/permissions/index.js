@@ -6,13 +6,9 @@ import './emitter';
 Meteor.methods({
 	'permissions/get'(updatedAt) {
 		// TODO: should we return this for non logged users?
-		// TODO: we could cache this collection
-
-		const records = Permissions.find().fetch();
-
 		if (updatedAt instanceof Date) {
 			return {
-				update: records.filter((record) => record._updatedAt > updatedAt),
+				update: Permissions.findUpdatedAfter(updatedAt),
 				remove: Permissions.trashFindDeletedAfter(
 					updatedAt,
 					{},
@@ -21,6 +17,6 @@ Meteor.methods({
 			};
 		}
 
-		return records;
+		return Permissions.find().fetch();
 	},
 });

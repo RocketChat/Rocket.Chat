@@ -1,32 +1,20 @@
+import mem from 'mem';
+
 import Settings from '../../../../models/server/models/Settings';
 import { Notifications } from '../../../../notifications/server';
 import { CONSTANTS } from '../../../lib';
 import Permissions from '../../../../models/server/models/Permissions';
+
+Permissions.find = mem(Permissions.find.bind(Permissions));
 
 Permissions.on('change', ({ clientAction, id, data, diff }) => {
 	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
 		// avoid useless changes
 		return;
 	}
-	switch (clientAction) {
-		case 'updated':
-		case 'inserted':
-			data = data || Permissions.findOneById(id);
-			break;
 
-		case 'removed':
-			data = { _id: id };
-			break;
-	}
+	mem.clear(Permissions.find);
 
-	Notifications.notifyLoggedInThisInstance(
-		'permissions-changed',
-		clientAction,
-		data
-	);
-});
-
-Permissions.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':

@@ -52,14 +52,13 @@ API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 			}
 		}
 
-		let result;
-		Meteor.runAsUser(this.userId, () => { result = Meteor.call('permissions/get', updatedSinceDate); });
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get', updatedSinceDate));
 
 		if (Array.isArray(result)) {
-			result = {
+			return API.v1.success({
 				update: result,
 				remove: [],
-			};
+			});
 		}
 
 		return API.v1.success(result);

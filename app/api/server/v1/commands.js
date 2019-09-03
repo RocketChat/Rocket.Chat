@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import mem from 'mem';
 
 import { slashCommands } from '../../../utils';
 import { Rooms, Messages } from '../../../models';
@@ -23,19 +24,26 @@ API.v1.addRoute('commands.get', { authRequired: true }, {
 	},
 });
 
+const filterCommands = mem((keys, options) => Rooms.processQueryOptionsOnResult(keys.map((key) => slashCommands.commands[key]), {
+	options,
+}));
+
+const originalAdd = slashCommands.add.bind(slashCommands);
+
+slashCommands.add = function(...args) {
+	mem.clear(filterCommands);
+	originalAdd(...args);
+};
+
 API.v1.addRoute('commands.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		let commands = Object.values(slashCommands.commands);
+		const keys = Object.keys(slashCommands.commands);
+		const total = keys.length;
 
-		if (query && query.command) {
-			commands = commands.filter((command) => command.command === query.command);
-		}
-
-		const totalCount = commands.length;
-		commands = Rooms.processQueryOptionsOnResult(commands, {
+		const commands = filterCommands(query && query.command ? [query.command] : keys, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
@@ -46,7 +54,7 @@ API.v1.addRoute('commands.list', { authRequired: true }, {
 			commands,
 			offset,
 			count: commands.length,
-			total: totalCount,
+			total,
 		});
 	},
 });

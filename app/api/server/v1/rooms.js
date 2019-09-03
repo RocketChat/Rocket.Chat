@@ -36,19 +36,17 @@ API.v1.addRoute('rooms.get', { authRequired: true }, {
 		if (updatedSince) {
 			if (isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			} else {
-				updatedSinceDate = new Date(updatedSince);
 			}
+			updatedSinceDate = new Date(updatedSince);
 		}
 
-		let result;
-		Meteor.runAsUser(this.userId, () => { result = Meteor.call('rooms/get', updatedSinceDate); });
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('rooms/get', updatedSinceDate));
 
 		if (Array.isArray(result)) {
-			result = {
+			return API.v1.success({
 				update: result,
 				remove: [],
-			};
+			});
 		}
 
 		return API.v1.success({

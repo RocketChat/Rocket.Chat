@@ -11,27 +11,31 @@ import { API } from '../api';
 API.v1.addRoute('settings.public', { authRequired: false }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
+		const { sort = { _id: 1 }, fields, query } = this.parseJsonQuery();
 
-		let ourQuery = {
-			hidden: { $ne: true },
-			public: true,
+		const ourQuery = {
+			...query,
+			...{
+				hidden: { $ne: true },
+				public: true,
+			},
 		};
 
-		ourQuery = Object.assign({}, query, ourQuery);
-
-		const settings = Settings.find(ourQuery, {
-			sort: sort || { _id: 1 },
+		const cursor = Settings.find(ourQuery, {
+			sort,
 			skip: offset,
 			limit: count,
 			fields: Object.assign({ _id: 1, value: 1 }, fields),
-		}).fetch();
+		});
+
+		const total = cursor.count();
+		const settings = cursor.fetch();
 
 		return API.v1.success({
 			settings,
 			count: settings.length,
 			offset,
-			total: Settings.find(ourQuery).count(),
+			total,
 		});
 	},
 });
@@ -43,7 +47,7 @@ API.v1.addRoute('settings.oauth', { authRequired: false }, {
 
 			return oAuthServicesEnabled.map((service) => {
 				if (service.custom || ['saml', 'cas', 'wordpress'].includes(service.service)) {
-					return { ...service };
+					return service;
 				}
 
 				return {

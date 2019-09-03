@@ -41,23 +41,20 @@ export const fields = {
 	tunread: 1,
 };
 
+const options = { fields };
+
 Meteor.methods({
 	'subscriptions/get'(updatedAt) {
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			return [];
 		}
 
-		const options = { fields };
-
-		const records = Subscriptions.findByUserId(Meteor.userId(), options).fetch();
-
 		if (updatedAt instanceof Date) {
 			return {
-				update: records.filter(function(record) {
-					return record._updatedAt > updatedAt;
-				}),
+				update: Subscriptions.findByUserIdUpdatedAfter(uid, updatedAt, options).fetch(),
 				remove: Subscriptions.trashFindDeletedAfter(updatedAt, {
-					'u._id': Meteor.userId(),
+					'u._id': uid,
 				}, {
 					fields: {
 						_id: 1,
@@ -67,6 +64,6 @@ Meteor.methods({
 			};
 		}
 
-		return records;
+		return Subscriptions.findByUserId(uid, options).fetch();
 	},
 });

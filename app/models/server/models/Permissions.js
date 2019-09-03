@@ -25,6 +25,18 @@ export class Permissions extends Base {
 	removeRole(permission, role) {
 		this.update({ _id: permission }, { $pull: { roles: role } });
 	}
+
+	findUpdatedAfter(updatedAt) {
+		const filter = {
+			hidden: { $ne: true },
+			public: true,
+			_updatedAt: {
+				$gt: updatedAt,
+			},
+		};
+
+		return this.find(filter, { fields: { _id: 1, value: 1 } });
+	}
 }
 
 export default new Permissions('permissions');
