@@ -26,11 +26,6 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	if (message.file) {
-		message = addJWTToFileUrlIfNecessary(message);
-		console.log(message);
-	}
-
 	if (!knowledgeEnabled) {
 		return message;
 	}
