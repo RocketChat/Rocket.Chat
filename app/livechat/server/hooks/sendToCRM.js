@@ -2,6 +2,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
+import { addJWTToFileUrlIfNecessary } from '../lib/FileHelper';
 
 const msgNavType = 'livechat_navigation_history';
 
@@ -54,8 +55,7 @@ function sendToCRM(type, room, includeMessages = true) {
 			if (message.t === msgNavType) {
 				msg.navigation = message.navigation;
 			}
-
-			postData.messages.push(msg);
+			postData.messages.push(message.file ? addJWTToFileUrlIfNecessary(message) : msg);
 		});
 	}
 

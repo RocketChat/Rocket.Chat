@@ -23,6 +23,7 @@ import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import { isValidJWT } from '../../../livechat/server/lib/FileHelper';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -294,6 +295,7 @@ export const FileUpload = {
 		}
 
 		let { rc_uid, rc_token, rc_rid, rc_room_type } = query;
+		const { jwt } = query;
 
 		if (!rc_uid && headers.cookie) {
 			rc_uid = cookie.get('rc_uid', headers.cookie);
@@ -305,7 +307,8 @@ export const FileUpload = {
 		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
 		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
+		const isAuthorizedByJWT = jwt && isValidJWT(jwt);
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {

@@ -1,6 +1,7 @@
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
+import { addJWTToFileUrlIfNecessary } from '../lib/FileHelper';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -15,6 +16,10 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	// only send the sms by SMS if it is a livechat room with SMS set to true
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)) {
 		return message;
+	}
+
+	if (message.file) {
+		message = addJWTToFileUrlIfNecessary(message);
 	}
 
 	// if the message has a token, it was sent from the visitor, so ignore it

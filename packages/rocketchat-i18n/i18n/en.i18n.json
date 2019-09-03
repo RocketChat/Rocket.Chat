@@ -1938,6 +1938,8 @@
   "Livechat_forward_open_chats_timeout": "Timeout (in seconds) to forward chats",
   "Livechat_guest_count": "Guest Counter",
   "Livechat_Inquiry_Already_Taken": "Livechat inquiry already taken",
+  "Livechat_json_web_token_secret_for_files": "Livechat Json Web Token Secret",
+  "Livechat_json_web_token_secret_for_files_description": "Livechat Json Web Token Secret (Used to be able to access uploaded files without authentication)",
   "Livechat_managers": "Livechat managers",
   "Livechat_Managers": "Managers",
   "Livechat_offline": "Livechat offline",
