@@ -199,7 +199,7 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 		}
 	}
 
-	let limit = 100;
+	let limit = 1000;
 	if (settings.get('UserData_MessageLimitPerRequest') > 0) {
 		limit = settings.get('UserData_MessageLimitPerRequest');
 	}

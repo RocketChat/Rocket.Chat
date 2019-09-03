@@ -25,7 +25,7 @@ settings.addGroup('UserDataDownload', function() {
 		i18nLabel: 'UserData_ProcessingFrequency',
 	});
 
-	this.add('UserData_MessageLimitPerRequest', 10000, {
+	this.add('UserData_MessageLimitPerRequest', 1000, {
 		type: 'int',
 		public: true,
 		i18nLabel: 'UserData_MessageLimitPerRequest',
