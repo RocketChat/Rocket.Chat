@@ -462,13 +462,10 @@ const continueExportOperation = async function(exportOperation) {
 };
 
 async function processDataDownloads() {
-	const cursor = ExportOperations.findAllPending({ limit: 1 });
-	const exportOperations = cursor.fetch();
-	if (!exportOperations || !exportOperations.length) {
+	const operation = ExportOperations.findOnePending();
+	if (!operation) {
 		return;
 	}
-
-	const operation = exportOperations.pop();
 
 	if (operation.status === 'completed') {
 		return;

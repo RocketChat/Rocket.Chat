@@ -46,6 +46,14 @@ export class ExportOperations extends Base {
 		return this.find(query, options);
 	}
 
+	findOnePending(options) {
+		const query = {
+			status: { $nin: ['completed'] },
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findAllPendingBeforeMyRequest(requestDay, options) {
 		const query = {
 			status: { $nin: ['completed'] },
