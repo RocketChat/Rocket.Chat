@@ -359,8 +359,9 @@ jobs:
 
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-            echo "Build official Docker image"
+            echo "Building custom Docker image"
             cp ~/repo/.docker/Dockerfile .
+            cp ~/repo/.docker/startup.sh .
             docker build -t assistify/chat:pr-$CIRCLE_PR_NUMBER .
             docker push assistify/chat:pr-$CIRCLE_PR_NUMBER
 
@@ -430,7 +431,7 @@ workflows:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - pr-image-build:
           requires:
-            - hold
+            - build
           filters:
             branches:
               ignore:
