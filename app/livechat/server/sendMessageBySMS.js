@@ -2,7 +2,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
 import { LivechatVisitors } from '../../models';
-import { addJWTToFileUrlIfNecessary } from './lib/FileHelper';
+import { addJWTToFileUrlIfNecessary } from '../../utils/server/lib/FileHelper';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited

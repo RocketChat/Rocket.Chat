@@ -23,7 +23,7 @@ import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { isValidJWT } from '../../../livechat/server/lib/FileHelper';
+import { isValidJWT } from '../../../utils/server/lib/FileHelper';
 
 const cookie = new Cookies();
 let maxFileSize = 0;

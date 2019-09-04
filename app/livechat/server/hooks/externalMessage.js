@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SystemLogger } from '../../../logger';
 import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
-import { addJWTToFileUrlIfNecessary } from '../lib/FileHelper';
+import { addJWTToFileUrlIfNecessary } from '../../../utils/server/lib/FileHelper';
 
 let knowledgeEnabled = false;
 let apiaiKey = '';

@@ -2,7 +2,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
-import { addJWTToFileUrlIfNecessary } from '../lib/FileHelper';
+import { addJWTToFileUrlIfNecessary } from '../../../utils/server/lib/FileHelper';
 
 const msgNavType = 'livechat_navigation_history';
 

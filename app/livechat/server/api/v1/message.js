@@ -8,7 +8,7 @@ import { API } from '../../../../api';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
-import { addJWTToFileUrlIfNecessary } from '../../lib/FileHelper';
+import { addJWTToFileUrlIfNecessary } from '../../../../utils/server/lib/FileHelper';
 
 API.v1.addRoute('livechat/message', {
 	post() {
