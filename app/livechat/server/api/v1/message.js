@@ -228,10 +228,9 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				limit = parseInt(this.queryParams.limit);
 			}
 
-			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls });
-			messages.messages.forEach((message) => {
-				message = message.file ? addJWTToFileUrlIfNecessary(message) : message;
-			});
+			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls })
+				.messages
+				.map((message) => (message.file ? addJWTToFileUrlIfNecessary(message) : message));
 			return API.v1.success(messages);
 		} catch (e) {
 			return API.v1.failure(e.error);
