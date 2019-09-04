@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
@@ -369,7 +369,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(user._id, () => {
-			if (this.bodyParams.message) {
+			if (this.bodyParams.message || this.bodyParams.message.length === 0) {
 				setStatusText(user._id, this.bodyParams.message);
 			}
 			if (this.bodyParams.status) {

@@ -101,10 +101,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		return Session.get(`user_${ subscription.name }_status_text`);
 	}
 
-	getDisplayName(room) {
-		return room.usernames.join(' x ');
-	}
-
 	allowRoomSettingChange(room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.NAME:

@@ -87,6 +87,11 @@ const defaultTypes = {
 		color: 'red',
 		level: 0,
 	},
+	deprecation: {
+		name: 'warn',
+		color: 'magenta',
+		level: 0,
+	},
 };
 
 class _Logger {

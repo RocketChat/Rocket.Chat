@@ -1,21 +1,30 @@
-import { Migrations } from '../../../app/migrations';
-import { Permissions } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Users, Settings, FederationPeers } from '../../../app/models/server';
 
 Migrations.add({
-	version: 147,
+	version: 148,
 	up() {
-		const manageIntegrationsPermission = Permissions.findOne('manage-integrations');
-		const manageOwnIntegrationsPermission = Permissions.findOne('manage-own-integrations');
+		const { value: localDomain } = Settings.findOne({ _id: 'FEDERATION_Domain' });
 
-		if (manageIntegrationsPermission) {
-			Permissions.upsert({ _id: 'manage-incoming-integrations' }, { $set: { roles: manageIntegrationsPermission.roles } });
-			Permissions.upsert({ _id: 'manage-outgoing-integrations' }, { $set: { roles: manageIntegrationsPermission.roles } });
-			Permissions.remove({ _id: 'manage-integrations' });
-		}
-		if (manageOwnIntegrationsPermission) {
-			Permissions.upsert({ _id: 'manage-own-incoming-integrations' }, { $set: { roles: manageOwnIntegrationsPermission.roles } });
-			Permissions.upsert({ _id: 'manage-own-outgoing-integrations' }, { $set: { roles: manageOwnIntegrationsPermission.roles } });
-			Permissions.remove({ _id: 'manage-own-integrations' });
-		}
+		Users.update({
+			federation: { $exists: true }, 'federation.peer': { $ne: localDomain },
+		}, {
+			$set: { isRemote: true },
+		}, { multi: true });
+
+		FederationPeers.update({
+			peer: { $ne: localDomain },
+		}, {
+			$set: { isRemote: true },
+		}, { multi: true });
+
+		FederationPeers.update({
+			peer: localDomain,
+		}, {
+			$set: { isRemote: false },
+		}, { multi: true });
+	},
+	down() {
+		// Down migration does not apply in this case
 	},
 });

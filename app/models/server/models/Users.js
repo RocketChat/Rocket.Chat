@@ -21,6 +21,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
+		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -169,6 +170,20 @@ export class Users extends Base {
 			};
 		}
 		return null;
+	}
+
+	setLastRoutingTime(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				lastRoutingTime: new Date(),
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	setLivechatStatus(userId, status) {
@@ -375,6 +390,16 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByUsernameAndServiceNameIgnoringCase(username, serviceName, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+
+		return this.findOne(query, options);
+	}
+
 	findOneByUsername(username, options) {
 		const query = { username };
 
@@ -460,6 +485,10 @@ export class Users extends Base {
 		const query = { username };
 
 		return this.find(query, options);
+	}
+
+	findActive(options = {}) {
+		return this.find({ active: true }, options);
 	}
 
 	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
@@ -664,6 +693,14 @@ export class Users extends Base {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findRemote(options = {}) {
+		return this.find({ isRemote: true }, options);
+	}
+
+	findActiveRemote(options = {}) {
+		return this.find({ active: true, isRemote: true }, options);
 	}
 
 	// UPDATE
@@ -1106,6 +1143,20 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	getActiveLocalUserCount() {
+		return this.findActive().count() - this.findActiveRemote().count();
+	}
+
+	removeOlderResumeTokensByUserId(userId, fromDate) {
+		this.update(userId, {
+			$pull: {
+				'services.resume.loginTokens': {
+					when: { $lt: fromDate },
+				},
+			},
+		});
 	}
 }
 
