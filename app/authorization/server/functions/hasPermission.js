@@ -1,31 +1,90 @@
-import { Permissions, Roles } from '../../../models/server/raw';
+import mem from 'mem';
 
-async function atLeastOne(userId, permissions = [], scope) {
-	for (let i = 0, total = permissions.length; i < total; i++) {
-		const permissionId = permissions[i];
+import { Permissions, Roles, Users, Subscriptions } from '../../../models/server/raw';
 
-		// eslint-disable-next-line no-await-in-loop
-		const permission = await Permissions.findOne({ _id: permissionId });
-		// eslint-disable-next-line no-await-in-loop
-		const found = await Roles.isUserInRoles(userId, permission.roles, scope);
-		if (found) {
-			return true;
+
+const getRole = mem((role) => Roles.findOne({ _id: role }));
+
+const rolesHasPermission = mem(async (permission, roles) => {
+	const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } });
+	return !!result;
+});
+
+const subscriptionHasPermission = mem(async (uid, permission, roles, rid) => {
+	if (rid == null) {
+		return;
+	}
+
+	const query = {
+		'u._id': uid,
+		rid,
+		roles: { $in: roles },
+	};
+
+	return !!await Subscriptions.findOne(query, { fields: { roles: 1 } });
+});
+
+async function atLeastOne(uid, permissions = [], scope) {
+	const { roles: userRoles } = await Users.findOne({ _id: uid });
+
+
+	const roles = (await Promise.all(userRoles.map(getRole))).reduce((roles, role) => {
+		roles[role.scope || 'Users'] = [].concat([role._id]);
+		return roles;
+	}, {});
+
+	const keys = Object.keys(roles);
+
+	for (let index = 0; index < keys.length; index++) {
+		const key = keys[index];
+		switch (key) {
+			case 'Users':
+				for (const permission of permissions) {
+					if (await rolesHasPermission(permission, roles[key])) { // eslint-disable-line
+						return true;
+					}
+				}
+				break;
+			case 'Subscriptions':
+				const found = await subscriptionHasPermission(uid, roles[key], scope);// eslint-disable-line
+				if (found) {
+					return true;
+				}
+				break;
 		}
 	}
 
 	return false;
 }
 
-async function all(userId, permissions = [], scope) {
-	for (let i = 0, total = permissions.length; i < total; i++) {
-		const permissionId = permissions[i];
+async function all(uid, permissions = [], scope) {
+	const { roles: userRoles } = await Users.findOne({ _id: uid });
 
-		// eslint-disable-next-line no-await-in-loop
-		const permission = await Permissions.findOne({ _id: permissionId });
-		// eslint-disable-next-line no-await-in-loop
-		const found = await Roles.isUserInRoles(userId, permission.roles, scope);
-		if (!found) {
-			return false;
+
+	const roles = (await Promise.all(userRoles.map(getRole))).reduce((roles, role) => {
+		roles[role.scope || 'Users'] = [].concat([role._id]);
+		return roles;
+	}, {});
+
+	const keys = Object.keys(roles);
+
+	for (let index = 0; index < keys.length; index++) {
+		const key = keys[index];
+		switch (key) {
+			case 'Users':
+				for (const permission of permissions) {
+					if (!await rolesHasPermission(permission, roles[key])) { // eslint-disable-line
+						return false;
+					}
+				}
+				break;
+			default:
+			case 'Subscriptions':
+				const found = await subscriptionHasPermission(uid, roles[key], scope);// eslint-disable-line
+				if (!found) {
+					return false;
+				}
+				break;
 		}
 	}
 
