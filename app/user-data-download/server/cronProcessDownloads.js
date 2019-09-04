@@ -18,7 +18,7 @@ if (settings.get('UserData_FileSystemZipPath') != null) {
 	}
 }
 
-let processingFrequency = 15;
+let processingFrequency = 2;
 if (settings.get('UserData_ProcessingFrequency') > 0) {
 	processingFrequency = settings.get('UserData_ProcessingFrequency');
 }
