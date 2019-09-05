@@ -28,6 +28,7 @@ import './methods/getAnalyticsOverviewData';
 import './methods/getInitialData';
 import './methods/getNextAgent';
 import './methods/getRoutingConfig';
+import './methods/getSessionFilter';
 import './methods/loadHistory';
 import './methods/loginByToken';
 import './methods/pageVisited';

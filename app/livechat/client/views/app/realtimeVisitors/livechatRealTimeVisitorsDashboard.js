@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -11,7 +12,7 @@ import { setTimeRange } from '../../../lib/timeHandler';
 import { visitorNavigationHistory } from '../../../collections/LivechatVisitorNavigation';
 import { LivechatSession } from '../../../collections/LivechatSession';
 import { RocketChatTabBar, popover } from '../../../../../ui-utils';
-import { t } from '../../../../../utils';
+import { t, handleError } from '../../../../../utils';
 
 import './livechatRealTimeVisitorsDashboard.html';
 
@@ -43,15 +44,11 @@ const updateChartData = (chartId, label, data) => {
 	updateChart(chartContexts[chartId], label, data);
 };
 
-const updateChatsChart = () => {
-	const createdAt = {
-		$gte: moment().startOf('day').toDate(),
-		$lte: moment().endOf('day').toDate(),
-	};
+const updateChatsChart = (query) => {
 	const chats = {
-		chatting: LivechatSession.find({ chatStatus: 'Chatting', createdAt }).count(),
-		notStarted: LivechatSession.find({ chatStatus: 'Not Started', createdAt }).count(),
-		closed: LivechatSession.find({ chatStatus: 'Closed', createdAt }).count(),
+		chatting: LivechatSession.find({ chatStatus: 'Chatting', ...query }).count(),
+		notStarted: LivechatSession.find({ chatStatus: 'Not Started', ...query }).count(),
+		closed: LivechatSession.find({ chatStatus: 'Closed', ...query }).count(),
 	};
 
 	updateChartData('lc-status-chart', 'Chatting', [chats.chatting]);
@@ -59,12 +56,8 @@ const updateChatsChart = () => {
 	updateChartData('lc-status-chart', 'Closed', [chats.closed]);
 };
 
-const updateSessionOverviews = () => {
-	const createdAt = {
-		$gte: moment().startOf('day').toDate(),
-		$lte: moment().endOf('day').toDate(),
-	};
-	const data = getSessionOverviewData(LivechatSession.find({ createdAt }));
+const updateSessionOverviews = (query) => {
+	const data = getSessionOverviewData(LivechatSession.find(query));
 
 	templateInstance.sessionOverview.set(data);
 };
@@ -281,19 +274,28 @@ Template.livechatRealTimeVisitorsDashboard.onCreated(function() {
 		}
 	});
 
-	const updateSessionDashboard = (fields) => {
-		if (fields.chatStatus) {
-			updateChatsChart();
-		}
-		updateSessionOverviews();
+	const updateSessionDashboard = () => {
+		Meteor.call('livechat:getSessionFilter', this.filter.get(), function(err, result) {
+			if (err) {
+				return handleError(err);
+			}
+			updateChatsChart(result);
+			updateSessionOverviews(result);
+		});
 	};
 
+	this.autorun(() => {
+		if (this.filter.get()) {
+			updateSessionDashboard();
+		}
+	});
+
 	LivechatSession.find().observeChanges({
-		changed(id, fields) {
-			updateSessionDashboard(fields);
+		changed() {
+			updateSessionDashboard();
 		},
-		added(id, fields) {
-			updateSessionDashboard(fields);
+		added() {
+			updateSessionDashboard();
 		},
 	});
 });
