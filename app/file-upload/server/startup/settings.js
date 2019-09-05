@@ -1,3 +1,5 @@
+import { Random } from 'meteor/random';
+
 import { settings } from '../../../settings';
 
 settings.addGroup('FileUpload', function() {
@@ -22,6 +24,26 @@ settings.addGroup('FileUpload', function() {
 		type: 'boolean',
 		public: true,
 		i18nDescription: 'FileUpload_ProtectFilesDescription',
+	});
+
+	this.add('FileUpload_Enable_json_web_token_for_files', true, {
+		type: 'boolean',
+		i18nLabel: 'FileUpload_Enable_json_web_token_for_files',
+		i18nDescription: 'FileUpload_Enable_json_web_token_for_files_description',
+		enableQuery: {
+			_id: 'FileUpload_ProtectFiles',
+			value: true,
+		},
+	});
+
+	this.add('FileUpload_json_web_token_secret_for_files', Random.secret(), {
+		type: 'string',
+		i18nLabel: 'FileUpload_json_web_token_secret_for_files',
+		i18nDescription: 'FileUpload_json_web_token_secret_for_files_description',
+		enableQuery: {
+			_id: 'FileUpload_Enable_json_web_token_for_files',
+			value: true,
+		},
 	});
 
 	this.add('FileUpload_Storage_Type', 'GridFS', {

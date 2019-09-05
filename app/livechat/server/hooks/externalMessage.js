@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SystemLogger } from '../../../logger';
 import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
-import { addJWTToFileUrlIfNecessary } from '../../../utils/server/lib/FileHelper';
+import { FileUpload } from '../../../file-upload/server';
 
 let knowledgeEnabled = false;
 let apiaiKey = '';
@@ -34,9 +34,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	if (message.file) {
-		message = addJWTToFileUrlIfNecessary(message);
-	}
+	message = FileUpload.addJWTToFileUrlIfNecessary(message);
 
 	// if the message hasn't a token, it was not sent by the visitor, so ignore it
 	if (!message.token) {

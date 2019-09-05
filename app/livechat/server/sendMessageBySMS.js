@@ -2,7 +2,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
 import { LivechatVisitors } from '../../models';
-import { addJWTToFileUrlIfNecessary } from '../../utils/server/lib/FileHelper';
+import { FileUpload } from '../../file-upload/server';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -19,9 +19,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	if (message.file) {
-		message = addJWTToFileUrlIfNecessary(message);
-	}
+	FileUpload.addJWTToFileUrlIfNecessary(message);
 
 	// if the message has a token, it was sent from the visitor, so ignore it
 	if (message.token) {

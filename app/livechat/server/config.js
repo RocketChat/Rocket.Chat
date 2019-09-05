@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 
 import { settings } from '../../settings';
 
@@ -445,12 +444,5 @@ Meteor.startup(function() {
 		i18nLabel: 'Data_processing_consent_text',
 		i18nDescription: 'Data_processing_consent_text_description',
 		enableQuery: { _id: 'Livechat_force_accept_data_processing_consent', value: true },
-	});
-
-	settings.add('Livechat_json_web_token_secret_for_files', Random.secret(), {
-		type: 'string',
-		group: 'Livechat',
-		i18nLabel: 'Livechat_json_web_token_secret_for_files',
-		i18nDescription: 'Livechat_json_web_token_secret_for_files_description',
 	});
 });
