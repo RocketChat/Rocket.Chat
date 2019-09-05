@@ -411,13 +411,15 @@ const generateUserFile = function(exportOperation) {
 		return;
 	}
 
-	const { username, name, statusText, emails } = exportOperation.userData;
+	const { username, name, statusText, emails, roles, services } = exportOperation.userData;
 
 	const dataToSave = {
 		username,
 		name,
 		statusText,
 		emails: _.pluck(emails, 'address'),
+		roles,
+		services: Object.keys(services),
 	};
 
 	const fileName = path.join(exportOperation.exportPath, exportOperation.fullExport ? 'user.json' : 'user.html');
