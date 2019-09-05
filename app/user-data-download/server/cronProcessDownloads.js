@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
@@ -405,6 +406,53 @@ const generateChannelsFile = function(exportOperation) {
 	exportOperation.status = 'exporting';
 };
 
+const generateUserFile = function(exportOperation) {
+	if (!exportOperation.userData) {
+		return;
+	}
+
+	const { username, name, statusText, emails } = exportOperation.userData;
+
+	const dataToSave = {
+		username,
+		name,
+		statusText,
+		emails: _.pluck(emails, 'address'),
+	};
+
+	const fileName = path.join(exportOperation.exportPath, exportOperation.fullExport ? 'user.json' : 'user.html');
+	startFile(fileName, '');
+
+	if (exportOperation.fullExport) {
+		writeToFile(fileName, JSON.stringify(dataToSave));
+
+		exportOperation.generatedUserFile = true;
+		return;
+	}
+
+	writeToFile(fileName, '<meta http-equiv="content-type" content="text/html; charset=utf-8">');
+	for (const key in dataToSave) {
+		if (!dataToSave.hasOwnProperty(key)) {
+			continue;
+		}
+
+		const value = dataToSave[key];
+
+		writeToFile(fileName, `<p><strong>${ key }</strong>:`);
+		if (typeof value === 'string') {
+			writeToFile(fileName, value);
+		} else if (Array.isArray(value)) {
+			writeToFile(fileName, '<br/>');
+
+			for (const item of value) {
+				writeToFile(fileName, `${ item }<br/>`);
+			}
+		}
+
+		writeToFile(fileName, '</p>');
+	}
+};
+
 const continueExportOperation = async function(exportOperation) {
 	if (exportOperation.status === 'completed') {
 		return;
@@ -415,6 +463,10 @@ const continueExportOperation = async function(exportOperation) {
 	}
 
 	try {
+		if (!exportOperation.generatedUserFile) {
+			generateUserFile(exportOperation);
+		}
+
 		if (exportOperation.status === 'exporting-rooms') {
 			generateChannelsFile(exportOperation);
 		}

@@ -77,6 +77,7 @@ Meteor.methods({
 			fileList: [],
 			generatedFile: null,
 			fullExport,
+			userData: currentUserData,
 		};
 
 		ExportOperations.create(exportOperation);
