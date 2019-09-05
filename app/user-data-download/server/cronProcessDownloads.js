@@ -365,10 +365,15 @@ const uploadZipFile = function(exportOperation, callback) {
 
 	const { userId } = exportOperation;
 	const user = Users.findOneById(userId);
-	const userDisplayName = user ? user.name : userId;
-	const utcDate = new Date().toISOString().split('T')[0];
+	let userDisplayName = userId;
+	if (user) {
+		userDisplayName = user.name || user.username || userId;
+	}
 
-	const newFileName = encodeURIComponent(`${ utcDate }-${ userDisplayName }.zip`);
+	const utcDate = new Date().toISOString().split('T')[0];
+	const fileSuffix = exportOperation.fullExport ? '-data' : '';
+
+	const newFileName = encodeURIComponent(`${ utcDate }-${ userDisplayName }${ fileSuffix }.zip`);
 
 	const details = {
 		userId,
