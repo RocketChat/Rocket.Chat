@@ -8,7 +8,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 
 import { settings } from '../../settings';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations } from '../../models';
+import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models';
 import { FileUpload } from '../../file-upload';
 import * as Mailer from '../../mailer';
 
@@ -453,6 +453,18 @@ const generateUserFile = function(exportOperation) {
 	}
 };
 
+const generateUserAvatarFile = function(exportOperation) {
+	const file = Avatars.findOneByName(exportOperation.userData.username);
+	if (!file) {
+		return;
+	}
+
+	const filePath = path.join(exportOperation.exportPath, 'avatar');
+	if (FileUpload.copy(file, filePath)) {
+		exportOperation.generatedAvatar = true;
+	}
+};
+
 const continueExportOperation = async function(exportOperation) {
 	if (exportOperation.status === 'completed') {
 		return;
@@ -465,6 +477,10 @@ const continueExportOperation = async function(exportOperation) {
 	try {
 		if (!exportOperation.generatedUserFile) {
 			generateUserFile(exportOperation);
+		}
+
+		if (!exportOperation.generatedAvatar) {
+			generateUserAvatarFile(exportOperation);
 		}
 
 		if (exportOperation.status === 'exporting-rooms') {
