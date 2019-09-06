@@ -368,6 +368,8 @@
   "assign-admin-role": "Atribuir papel de administrador",
   "assign-admin-role_description": "Permissão para atribuir a função de administrador a outros usuários",
   "Assign_admin": "Atribuindo administrador",
+  "Assign_new_conversations_to_bot_agent": "Atribuir novas conversas para um agente bot",
+  "Assign_new_conversations_to_bot_agent_description": "O sistema de roteamento irá procurar por um agente bot antes de encaminhar novas conversas para um agente humano.",
   "assign-roles": "Atribuir papéis",
   "at": "em",
   "At_least_one_added_token_is_required_by_the_user": "Pelo menos um token adicionado é requerido pelo usuário",
