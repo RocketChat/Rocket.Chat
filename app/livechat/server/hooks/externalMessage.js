@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SystemLogger } from '../../../logger';
 import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
-import { addJWTTAttachmentsUrls } from '../../../utils/server/functions/addJWTToAttachmentsUrls';
+import { normalizeMessageAttachments } from '../../../utils/server/functions/normalizeMessageAttachments';
 
 let knowledgeEnabled = false;
 let apiaiKey = '';
@@ -34,7 +34,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	message = addJWTTAttachmentsUrls(message);
+	message = normalizeMessageAttachments(message);
 
 	// if the message hasn't a token, it was not sent by the visitor, so ignore it
 	if (!message.token) {

@@ -1,6 +1,6 @@
 import { callbacks } from '../../../callbacks';
 import { LivechatRooms } from '../../../models';
-import { addJWTTAttachmentsUrls } from '../../../utils/server/functions/addJWTToAttachmentsUrls';
+import { normalizeMessageAttachments } from '../../../utils/server/functions/normalizeMessageAttachments';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -13,7 +13,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	message = addJWTTAttachmentsUrls(message);
+	message = normalizeMessageAttachments(message);
 
 
 	const now = new Date();

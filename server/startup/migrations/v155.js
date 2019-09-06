@@ -7,7 +7,10 @@ import { settings } from '../../../app/settings/server';
 Migrations.add({
 	version: 155,
 	up() {
-		Settings.insert({
+		Settings.upsert({
+			_id: 'FileUpload_Enable_json_web_token_for_files',
+		},
+		{
 			_id: 'FileUpload_Enable_json_web_token_for_files',
 			value: settings.get('FileUpload_ProtectFiles'),
 			type: 'boolean',
@@ -19,7 +22,10 @@ Migrations.add({
 				value: true,
 			},
 		});
-		Settings.insert({
+		Settings.upsert({
+			_id: 'FileUpload_json_web_token_secret_for_files',
+		},
+		{
 			_id: 'FileUpload_json_web_token_secret_for_files',
 			value: Random.secret(),
 			type: 'string',

@@ -1,5 +1,3 @@
-import { Random } from 'meteor/random';
-
 import { settings } from '../../../settings';
 
 settings.addGroup('FileUpload', function() {
@@ -36,7 +34,7 @@ settings.addGroup('FileUpload', function() {
 		},
 	});
 
-	this.add('FileUpload_json_web_token_secret_for_files', Random.secret(), {
+	this.add('FileUpload_json_web_token_secret_for_files', '', {
 		type: 'string',
 		i18nLabel: 'FileUpload_json_web_token_secret_for_files',
 		i18nDescription: 'FileUpload_json_web_token_secret_for_files_description',

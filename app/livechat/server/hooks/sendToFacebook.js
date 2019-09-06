@@ -1,7 +1,7 @@
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
-import { addJWTTAttachmentsUrls } from '../../../utils/server/functions/addJWTToAttachmentsUrls';
+import { normalizeMessageAttachments } from '../../../utils/server/functions/normalizeMessageAttachments';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -34,5 +34,5 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		text: message.msg,
 	});
 
-	return addJWTTAttachmentsUrls(message);
+	return normalizeMessageAttachments(message);
 }, callbacks.priority.LOW, 'sendMessageToFacebook');

@@ -8,7 +8,7 @@ import { API } from '../../../../api';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
-import { addJWTTAttachmentsUrls } from '../../../../utils/server/functions/addJWTToAttachmentsUrls';
+import { normalizeMessageAttachments } from '../../../../utils/server/functions/normalizeMessageAttachments';
 
 API.v1.addRoute('livechat/message', {
 	post() {
@@ -96,7 +96,7 @@ API.v1.addRoute('livechat/message/:_id', {
 				throw new Meteor.Error('invalid-message');
 			}
 
-			return API.v1.success({ message: addJWTTAttachmentsUrls(message) });
+			return API.v1.success({ message: normalizeMessageAttachments(message) });
 		} catch (e) {
 			return API.v1.failure(e.error);
 		}
@@ -135,7 +135,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			const result = Livechat.updateMessage({ guest, message: { _id: msg._id, msg: this.bodyParams.msg } });
 			if (result) {
 				const message = Messages.findOneById(_id);
-				return API.v1.success({ message: addJWTTAttachmentsUrls(message) });
+				return API.v1.success({ message: normalizeMessageAttachments(message) });
 			}
 
 			return API.v1.failure();
@@ -230,7 +230,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 
 			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls })
 				.messages
-				.map(addJWTTAttachmentsUrls);
+				.map(normalizeMessageAttachments);
 			return API.v1.success(messages);
 		} catch (e) {
 			return API.v1.failure(e.error);

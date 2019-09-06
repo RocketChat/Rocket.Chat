@@ -2,7 +2,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
 import { LivechatVisitors } from '../../models';
-import { addJWTTAttachmentsUrls } from '../../utils/server/functions/addJWTToAttachmentsUrls';
+import { normalizeMessageAttachments } from '../../utils/server/functions/normalizeMessageAttachments';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -43,5 +43,5 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
 
-	return addJWTTAttachmentsUrls(message);
+	return normalizeMessageAttachments(message);
 }, callbacks.priority.LOW, 'sendMessageBySms');
