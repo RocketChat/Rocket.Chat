@@ -70,10 +70,7 @@
 	&:disabled {
 		cursor: default;
 
-		color: var(--button-disabled-text-color);
-		border: 0;
-		border-color: var(--button-disabled-background);
-		background-color: var(--button-disabled-background);
+		opacity: 0.4;
 	}
 
 	&--invisible {
@@ -189,7 +186,7 @@
 
 		flex-direction: row;
 
-		margin: 10px -5px;
+		margin: 10px 0;
 
 		& > .rc-button {
 			margin: 0 5px;

@@ -7,6 +7,7 @@ import { settings } from '../../../settings';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import { SideNav } from '../../../ui-utils/client';
+import { modal } from '../../../ui-utils';
 import {
 	appButtonProps,
 	appStatusSpanProps,
@@ -135,7 +136,7 @@ Template.apps.onRendered(() => {
 
 Template.apps.helpers({
 	isDevelopmentModeEnabled() {
-		return settings.get('Apps_Framework_Development_Mode') === true;
+		return true || settings.get('Apps_Framework_Development_Mode') === true;
 	},
 	isLoading() {
 		return Template.instance().state.get('isLoading');
@@ -210,7 +211,22 @@ Template.apps.events({
 		FlowRouter.go('marketplace');
 	},
 	'click .js-upload'() {
-		FlowRouter.go('app-install');
+		modal.open({
+			// title: t('Two-factor_authentication'),
+			// text: t('Open_your_authentication_app_and_enter_the_code'),
+			template: 'appInstall',
+			type: 'input',
+			inputType: 'text',
+			showCancelButton: true,
+			closeOnConfirm: false,
+			// confirmButtonText: t('Verify'),
+			// cancelButtonText: t('Cancel'),
+		}, (code) => {
+			if (code === false) {
+				return;
+			}
+			FlowRouter.go('app-install');
+		});
 	},
 	'submit .js-search-form'(event) {
 		event.stopPropagation();

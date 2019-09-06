@@ -25,10 +25,6 @@
 	}
 
 	&-details {
-		display: flex;
-
-		padding: 25px;
-
 		&__photo {
 
 			flex: 0 0 auto;

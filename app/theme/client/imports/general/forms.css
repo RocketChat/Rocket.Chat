@@ -126,11 +126,14 @@
 }
 
 .rc-form-group {
-	margin-bottom: var(--gap-between-elements);
+	& + .rc-form-group {
+		margin-top: var(--gap-between-elements);
 
-	&--small {
-		margin-bottom: var(--default-small-padding);
+		&--small {
+			margin-bottom: var(--default-small-padding);
+		}
 	}
+
 
 	&--inline {
 		display: flex;
@@ -265,7 +268,7 @@
 		flex: 1;
 
 		width: 100%;
-		padding: 25px 0;
+		padding-top: 25px;
 	}
 
 	&--apps .preferences-page__header {

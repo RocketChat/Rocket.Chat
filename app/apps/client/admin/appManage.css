@@ -1,6 +1,6 @@
-#rocket-chat .rc-apps-details {
+.rc-apps-details {
 	margin-bottom: 0;
-	padding: 0;
+	padding: 1rem;
 
 	&__photo {
 		width: 96px;
@@ -177,5 +177,70 @@
 		& > .rc-icon {
 			animation: spin 1s linear infinite;
 		}
+	}
+}
+
+.divider {
+	border: 0;
+	border-top: 2px solid #e1e5e8;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	overflow: visible;
+	margin-block-start: 1rem;
+	margin-block-end: 1rem;
+
+	&:after {
+		content: attr(data-content);
+		position: relative;
+		display: inline-block;
+		color: black;
+
+		padding: 0 .5rem;
+		color: #e1e5e8;
+		background-color: #fff;
+		font-weight: 600;
+		font-size: .75rem;
+
+		top: -10px;
+	}
+}
+.rc-dropfile {
+	border: 3px #e1e5e8 dashed;
+	min-height: 50px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	text-align: center;
+	font-weight: 500;
+	align-items: center;
+	justify-content: center;
+	color: #6c727a;
+	font-size: 1rem;
+	padding: 2rem;
+	transition: border 250ms;
+
+	&.error {
+		border-color: var(--color-dark-red);
+	}
+
+	&.error>&--icon {
+		color: var(--color-dark-red);
+	}
+
+	&.over {
+		border-color: var(--color-blue);
+	}
+
+	&.over > &--icon {
+		color: var(--color-blue);
+	}
+
+
+	&--icon {
+		font-size: 3.5rem;
+		color: #6c727a;
+		transition: color 250ms;
 	}
 }

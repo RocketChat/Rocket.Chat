@@ -8,6 +8,7 @@
 // then it will be enabled by default for development reasons. The server prefers a url
 // over the passed in body, so if both are found it will only use the url.
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
@@ -16,6 +17,13 @@ import { APIClient } from '../../../utils';
 import { SideNav } from '../../../ui-utils/client';
 
 Template.appInstall.helpers({
+	over() {
+		const instance = Template.instance();
+		return (instance.appUrl.get() || instance.state.get('over')) && 'over';
+	},
+	error() {
+		return Template.instance().state.get('error') && 'error';
+	},
 	appFile() {
 		return Template.instance().file.get();
 	},
@@ -27,7 +35,7 @@ Template.appInstall.helpers({
 	},
 	disabled() {
 		const instance = Template.instance();
-		return !(instance.appUrl.get() || instance.file.get());
+		return instance.state.get('error') || !(instance.appUrl.get() || instance.file.get());
 	},
 	isUpdating() {
 		const instance = Template.instance();
@@ -38,6 +46,9 @@ Template.appInstall.helpers({
 
 Template.appInstall.onCreated(function() {
 	const instance = this;
+	this.state = new ReactiveDict({
+		error: false,
+	});
 	instance.file = new ReactiveVar('');
 	instance.isInstalling = new ReactiveVar(false);
 	instance.appUrl = new ReactiveVar('');
@@ -55,6 +66,55 @@ Template.appInstall.onCreated(function() {
 });
 
 Template.appInstall.events({
+	'dragenter .rc-dropfile'(e, i) {
+		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
+		if (types != null && types.length > 0 && types.every((type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1)) {
+			i.state.set('over', true);
+		}
+		e.stopPropagation();
+	},
+
+	'dragleave .rc-dropfile'(e, i) {
+		i.state.set('over', false);
+		e.stopPropagation();
+	},
+
+	'dragover .rc-dropfile'(e) {
+		e = e.originalEvent || e;
+		if (['move', 'linkMove'].includes(e.dataTransfer.effectAllowed)) {
+			e.dataTransfer.dropEffect = 'move';
+		} else {
+			e.dataTransfer.dropEffect = 'copy';
+		}
+		e.stopPropagation();
+	},
+
+	'dropped .rc-dropfile'(event, i) {
+		i.state.set('over', false);
+		const e = event.originalEvent || event;
+		const accept = event.currentTarget.getAttribute('accept').split(',');
+
+		let files = [];
+
+		if (e.dataTransfer) {
+			files = e.dataTransfer.files;
+		} else if (e.target) {
+			files = e.target.files;
+		}
+
+		e.stopPropagation();
+
+		const [file] = files;
+
+		if (!file) {
+			return;
+		}
+
+		const accepted = accept.map((s) => s.trim()).includes(file.type);
+		i.state.set('error', !accepted);
+		i.files = accepted && files;
+		i.file.set(accepted && file.name);
+	},
 	'input #appPackage'(e, i) {
 		i.appUrl.set(e.currentTarget.value);
 	},
@@ -66,6 +126,8 @@ Template.appInstall.events({
 		FlowRouter.go('/admin/apps');
 	},
 	async 'click .js-install'(e, t) {
+		e.preventDefault();
+
 		const url = $('#appPackage').val().trim();
 
 		// Handle url installations
@@ -95,14 +157,14 @@ Template.appInstall.events({
 			return;
 		}
 
-		const { files } = $('#upload-app')[0];
-		if (!(files instanceof FileList)) {
+		const f = t.file;
+		if (!f) {
 			return;
 		}
 
 		const data = new FormData();
-		for (let i = 0; i < files.length; i++) {
-			const f = files[0];
+		for (let i = 0; i < t.files.length; i++) {
+			const f = t.files[0];
 
 			if (f.type === 'application/zip') {
 				data.append('app', f, f.name);
