@@ -81,13 +81,11 @@ Template.visitorEdit.onCreated(function() {
 
 	const rid = Template.currentData().roomId;
 
+	this.subscribe('livechat:rooms', { _id: rid });
 	this.autorun(() => {
-		const sub = this.subscribe('livechat:rooms', { _id: rid });
-		if (sub.ready()) {
-			const room = LivechatRoom.findOne({ _id: rid });
-			this.room.set(room);
-			this.tags.set((room && room.tags) || []);
-		}
+		const room = LivechatRoom.findOne({ _id: rid });
+		this.room.set(room);
+		this.tags.set((room && room.tags) || []);
 	});
 
 	const uid = Meteor.userId();

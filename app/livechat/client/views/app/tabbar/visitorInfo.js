@@ -298,14 +298,12 @@ Template.visitorInfo.onCreated(function() {
 	});
 
 	if (rid) {
+		this.subscribe('livechat:rooms', { _id: rid });
 		this.autorun(() => {
-			const sub = this.subscribe('livechat:rooms', { _id: rid });
-			if (sub.ready()) {
-				const room = LivechatRoom.findOne({ _id: rid });
-				this.visitorId.set(room && room.v && room.v._id);
-				this.departmentId.set(room && room.departmentId);
-				this.tags.set(room && room.tags);
-			}
+			const room = LivechatRoom.findOne({ _id: rid });
+			this.visitorId.set(room && room.v && room.v._id);
+			this.departmentId.set(room && room.departmentId);
+			this.tags.set(room && room.tags);
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid });

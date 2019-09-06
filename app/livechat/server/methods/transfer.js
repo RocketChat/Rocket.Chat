@@ -6,7 +6,7 @@ import { LivechatRooms, Subscriptions, LivechatVisitors } from '../../../models'
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	async 'livechat:transfer'(transferData) {
+	'livechat:transfer'(transferData) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });
 		}
