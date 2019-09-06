@@ -8,7 +8,6 @@ callbacks.add('livechat.beforeGetNextAgent', (department) => {
 		return null;
 	}
 
-	console.log('department = ', department);
 	if (department) {
 		return LivechatDepartmentAgents.getNextBotForDepartment(department);
 	}
