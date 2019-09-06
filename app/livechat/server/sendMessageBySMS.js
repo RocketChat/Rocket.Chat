@@ -2,7 +2,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
 import { LivechatVisitors } from '../../models';
-import { FileUpload } from '../../file-upload/server';
+import { addJWTTAttachmentsUrls } from '../../utils/server/functions/addJWTToAttachmentsUrls';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -18,8 +18,6 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.sms && room.v && room.v.token)) {
 		return message;
 	}
-
-	FileUpload.addJWTToFileUrlIfNecessary(message);
 
 	// if the message has a token, it was sent from the visitor, so ignore it
 	if (message.token) {
@@ -45,5 +43,5 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
 
-	return message;
+	return addJWTTAttachmentsUrls(message);
 }, callbacks.priority.LOW, 'sendMessageBySms');

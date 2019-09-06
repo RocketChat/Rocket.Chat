@@ -1,7 +1,7 @@
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
-import { FileUpload } from '../../../file-upload/server';
+import { addJWTTAttachmentsUrls } from '../../../utils/server/functions/addJWTToAttachmentsUrls';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -17,7 +17,6 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)) {
 		return message;
 	}
-	FileUpload.addJWTToFileUrlIfNecessary(message);
 
 	// if the message has a token, it was sent from the visitor, so ignore it
 	if (message.token) {
@@ -35,5 +34,5 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		text: message.msg,
 	});
 
-	return message;
+	return addJWTTAttachmentsUrls(message);
 }, callbacks.priority.LOW, 'sendMessageToFacebook');

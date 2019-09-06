@@ -5,7 +5,7 @@ const HEADER = {
 	alg: 'HS256',
 };
 
-export const generateJsonWebToken = (payload, secret) => {
+export const generateJWT = (payload, secret) => {
 	const tokenPayload = {
 		iat: jws.IntDate.get('now'),
 		nbf: jws.IntDate.get('now'),
