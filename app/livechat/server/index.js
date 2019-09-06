@@ -6,6 +6,7 @@ import './permissions';
 import '../lib/messageTypes';
 import './config';
 import './roomType';
+import './hooks/beforeGetNextAgent';
 import './hooks/externalMessage';
 import './hooks/leadCapture';
 import './hooks/markRoomResponded';
