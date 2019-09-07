@@ -5,16 +5,23 @@ import { hasPermission } from '../../../authorization';
 import { LivechatDepartment, LivechatRooms } from '../../../models';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 
+const userCanAccessRoom = ({ _id }) => {
+	if (!_id) {
+		return;
+	}
+
+	const room = LivechatRooms.findOneById(_id);
+	const user = Meteor.user();
+
+	return canAccessRoom(room, user);
+};
+
 Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:rooms' }));
 	}
 
-	const { _id: rid } = filter;
-	const room = rid && LivechatRooms.findOneById(rid);
-	const user = Meteor.user();
-
-	if (!hasPermission(this.userId, 'view-livechat-rooms') && !canAccessRoom(room, user)) {
+	if (!hasPermission(this.userId, 'view-livechat-rooms') && !userCanAccessRoom(filter)) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:rooms' }));
 	}
 
