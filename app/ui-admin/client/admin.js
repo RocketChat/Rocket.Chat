@@ -444,7 +444,7 @@ Template.admin.events({
 					handleError(error);
 				});
 			}
-			settings.forEach((setting) => {
+			rcSettings.forEach((setting) => {
 				if (!failedSettings.includes(setting._id)) {
 					TempSettings.update({ _id: setting._id }, { $unset: { changed: 1 } });
 				}
