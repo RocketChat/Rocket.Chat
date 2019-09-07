@@ -64,6 +64,11 @@ async function afterCreateRoom(roomOwner, room) {
 	// If there are not federated users on this room, ignore it
 	if (!hasFederatedUser) { return; }
 
+	// Channels cannot be federated
+	if (hasFederatedUser && room.t === 'c') {
+		throw new Error('Channels cannot be federated');
+	}
+
 	logger.client.debug(() => `afterCreateRoom => roomOwner=${ JSON.stringify(roomOwner, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
 	try {

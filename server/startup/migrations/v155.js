@@ -38,29 +38,14 @@ Migrations.add({
 
 		// Normalize the federation property on all collections
 
-		// Update non-direct rooms
-		const nonDirectRooms = Rooms.find({ t: { $ne: 'd' }, federation: { $exists: true } });
+		// Update rooms
+		const rooms = Rooms.find({ federation: { $exists: true } });
 
-		nonDirectRooms.forEach((r) => {
-			const name = `[OLD] ${ r.name }`;
-			const fname = `[OLD] ${ r.fname }`;
-
-			Rooms.update({ _id: r._id }, { $unset: { federation: 1 }, $set: { name, fname } });
-		});
-
-		// Update direct rooms
-		const directRooms = Rooms.find({ t: 'd', federation: { $exists: true } });
-
-		Rooms.update({ _id: { $in: directRooms.map((r) => r._id) } }, { $unset: { federation: 1 } }, { multi: true });
+		Rooms.update({ _id: { $in: rooms.map((r) => r._id) } }, { $unset: { federation: 1 } }, { multi: true });
 
 		// Update all subscriptions
-		const rooms = [...nonDirectRooms, ...directRooms];
-
 		for (const r of rooms) {
-			const name = `[OLD] ${ r.name }`;
-			const fname = `[OLD] ${ r.fname }`;
-
-			Subscriptions.update({ rid: r._id }, { $unset: { federation: 1 }, $set: { name, fname } }, { multi: true });
+			Subscriptions.update({ rid: r._id }, { $unset: { federation: 1 } }, { multi: true });
 		}
 
 		// Update all users
