@@ -8,7 +8,7 @@ const denormalizeUser = (originalResource) => {
 	const resource = { ...originalResource };
 
 	// Only denormalize local emails
-	if (resource.federation && resource.federation.origin === Federation.domain) {
+	if (resource.federation && resource.federation.origin === getFederationDomain()) {
 		resource.emails = [{
 			address: resource.federation.originalInfo.email,
 		}];
