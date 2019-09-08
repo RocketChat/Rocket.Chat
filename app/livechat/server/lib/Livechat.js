@@ -9,6 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
+import Sentiment from 'sentiment';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -26,6 +27,7 @@ import {
 	LivechatCustomField,
 	LivechatVisitors,
 	LivechatOfficeHour,
+	LivechatSessions,
 } from '../../../models';
 import { Logger } from '../../../logger';
 import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
@@ -296,7 +298,6 @@ export const Livechat = {
 
 		LivechatRooms.closeByRoomId(room._id, closeData);
 		LivechatInquiry.closeByRoomId(room._id, closeData);
-
 		const message = {
 			t: 'livechat-close',
 			msg: comment,
@@ -311,6 +312,10 @@ export const Livechat = {
 		if (room.servedBy) {
 			Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
 		}
+
+		if (room.v) {
+			this.addSentimentAnalysis(room);
+		}
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
 
 		Meteor.defer(() => {
@@ -318,6 +323,28 @@ export const Livechat = {
 		});
 
 		return true;
+	},
+
+	addSentimentAnalysis(room) {
+		// Add sentiment analysis on all messages here
+		const sentiment = new Sentiment();
+		let sentimentScore = 0;
+		let messageCount = 0;
+		// Find All messsages sent by visitor for room
+		const messages = Messages.findByRoomId(room._id).fetch().filter(({ token }) => token);
+		if (messages && messages.length > 0) {
+			messages.forEach((val) => {
+				if (!val.t) {
+					messageCount++;
+					const result = sentiment.analyze(val.msg);
+					sentimentScore += result.comparative;
+				}
+			});
+			LivechatSessions.updateSentimentByToken(room.v.token, sentimentScore / messageCount);
+		}
+
+		// Set chat Status of livechat session
+		LivechatSessions.updateChatStatusByToken(room.v.token, 'Closed');
 	},
 
 	setCustomFields({ token, key, value, overwrite } = {}) {
@@ -365,6 +392,8 @@ export const Livechat = {
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
+			'Livechat_location_permission',
+			'Livechat_Allow_collect_and_store_HTTP_header_informations',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
@@ -781,6 +810,73 @@ export const Livechat = {
 	notifyGuestStatusChanged(token, status) {
 		LivechatInquiry.updateVisitorStatus(token, status);
 		LivechatRooms.updateVisitorStatus(token, status);
+		const room = LivechatRooms.findOne({ t: 'l', 'v.token': token }, { sort: { ts: -1 } });
+		let chatStatus;
+		if (room && room.open) {
+			chatStatus = 'Chatting';
+		} else if (room && room.closedAt) {
+			chatStatus = 'Closed';
+		} else {
+			chatStatus = 'Not Started';
+		}
+		const query = {
+			token,
+		};
+		let update;
+		const sessionInfo = LivechatSessions.findOne(query);
+		if (status === 'online') {
+			const { chatStart } = sessionInfo;
+			if (!chatStart && chatStatus !== 'Not Started') {
+				update = {
+					$set: {
+						status,
+						chatStatus,
+						chatStartTime: new Date(),
+						chatStart: true,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			} else if (chatStatus === 'Not Started') {
+				update = {
+					$set: {
+						status,
+						chatStatus,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			} else {
+				update = {
+					$set: {
+						status,
+						chatStatus,
+					},
+					$unset: {
+						offlineTime: '',
+					},
+				};
+			}
+		} else if (status === 'offline') {
+			update = {
+				$set: {
+					status,
+					chatStatus,
+					offlineTime: new Date(),
+					chatStart: false,
+				},
+			};
+		} else {
+			update = {
+				$set: {
+					status,
+					chatStatus,
+				},
+			};
+		}
+		LivechatSessions.updateStatusByToken(query, update);
 	},
 
 	sendOfflineMessage(data = {}) {

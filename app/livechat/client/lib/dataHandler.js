@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  *
  * @param  {Object} dbCursor cursor to minimongo result
@@ -195,5 +197,83 @@ export const getTimingsOverviewData = (dbCursor) => {
 	}, {
 		title: 'Avg_response_time',
 		value: total ? secondsToHHMMSS((totalResponseTime / total).toFixed(2)) : '-',
+	}];
+};
+
+const convertTimeAvg = (duration) => {
+	let hours = Number(duration.get('h'));
+	let minutes = Number(duration.get('m'));
+	let seconds = Number(duration.get('s'));
+
+	if (hours.toString().length === 1) {
+		hours = `0${ hours }`;
+	}
+	if (minutes.toString().length === 1) {
+		minutes = `0${ minutes }`;
+	}
+	if (seconds.toString().length === 1) {
+		seconds = `0${ seconds }`;
+	}
+	return `${ hours }:${ minutes }:${ seconds }`;
+};
+
+const getKeyHavingMaxValue = (map, def) => {
+	let maxValue = 0;
+	let maxKey = def;	// default
+
+	map.forEach((value, key) => {
+		if (value > maxValue) {
+			maxValue = value;
+			maxKey = key;
+		}
+	});
+
+	return maxKey;
+};
+
+export const getSessionOverviewData = (dbCursor) => {
+	let totalOnline = 0;
+	let totalCompletedChat = 0;
+	let timeDuration = 0;
+	const busiestTimeCount = new Map();
+	const mostCountryVisitors = new Map();
+	dbCursor.forEach(function(data) {
+		if (data.status === 'online') {
+			totalOnline++;
+		}
+
+		if (data.offlineTime) {
+			totalCompletedChat++;
+			const offlineTime = moment(data.offlineTime);
+			timeDuration += offlineTime.diff(data.createdAt);
+		}
+
+		if (data.chatStartTime) {
+			const dayHour = moment(data.chatStartTime).format('H');
+			busiestTimeCount.set(dayHour, busiestTimeCount.has(dayHour) ? busiestTimeCount.get(dayHour) + 1 : 1);
+		}
+
+		if (data.location) {
+			const { countryName, city } = data.location;
+			mostCountryVisitors.set(`${ countryName }, ${ city }`, mostCountryVisitors.has(`${ countryName }, ${ city }`) ? mostCountryVisitors.get(`${ countryName }, ${ city }`) + 1 : 1);
+		}
+	});
+
+	const avg = parseFloat(timeDuration / totalCompletedChat).toFixed(2);
+	const avgTimeDuration = moment.duration(Number(avg));
+	const MaxVisitorsFrom = getKeyHavingMaxValue(mostCountryVisitors, '-');
+	const busiestHour = getKeyHavingMaxValue(busiestTimeCount, -1);
+	return [{
+		title: 'Online_Visitors',
+		value: totalOnline,
+	}, {
+		title: 'Avg_time_on_site',
+		value: isNaN(avgTimeDuration) ? '-' : convertTimeAvg(avgTimeDuration),
+	}, {
+		title: 'Busiest_time',
+		value: busiestHour > 0 ? `${ moment(busiestHour, ['H']).format('hA') }-${ moment((parseInt(busiestHour) + 1) % 24, ['H']).format('hA') }` : '-',
+	}, {
+		title: 'Most_visitors_from',
+		value: MaxVisitorsFrom,
 	}];
 };

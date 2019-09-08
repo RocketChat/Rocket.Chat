@@ -1,0 +1,192 @@
+<template name="livechatRealTimeVisitorsDashboard">
+  {{#requiresPermission 'view-livechat-manager'}}
+  <div class="main-content-flex">
+    <section class="flex-tab-main-content">
+      <div class="section">
+        <div class="section-content border-component-color">
+          <div class="lc-analytics-overview">
+            <div class="section lc-monitoring-doughnut-chart">
+              <div class="section-content border-component-color-doughnut">
+                <div class="lc-monitoring-chart-container">
+                  <canvas id="lc-status-chart"></canvas>
+                </div>
+              </div>
+            </div>
+            {{#each sessionOverview}}
+            <div class="lc-analytics-ov-col">
+              {{#each this}}
+              <div class="lc-analytics-ov-case">
+                <span class="title">{{_ title}}</span>
+                <span class="value">{{value}}</span>
+              </div>
+              {{/each}}
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      <br><br>
+      <fieldset>
+        <form class="form-inline" method="post">
+          <div class="form-group">
+            <input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
+          </div>
+          <div class="form-group">
+            <div class="rc-select">
+              <select class="rc-select__element" name="status">
+                <option class="rc-select__option" value="">{{_ "All"}}</option>
+                <option class="rc-select__option" value="online">{{_ "Online"}}</option>
+                <option class="rc-select__option" value="away">{{_ "Away"}}</option>
+                <option class="rc-select__option" value="offline">{{_ "Offline"}}</option>
+              </select>
+              {{> icon block="rc-select__arrow" icon="arrow-down" }}
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="rc-select">
+              <select class="rc-select__element" name="chatStatus">
+                <option class="rc-select__option" value="">{{_ "All"}}</option>
+                <option class="rc-select__option" value="Chatting">{{_ "Chatting"}}</option>
+                <option class="rc-select__option" value="Not Started">{{_ "Not Started"}}</option>
+                <option class="rc-select__option" value="Closed">{{_ "Closed"}}</option>
+              </select>
+              {{> icon block="rc-select__arrow" icon="arrow-down" }}
+            </div>
+          </div>
+          <div class="form-group">
+            <button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+          </div>
+          <br><br>
+          <div>
+            <div class="form-group lc-time">
+              {{#if showLeftNavButton}}
+              <button class="lc-timerange-prev">
+                <i class="icon-left-circled"></i>
+              </button>
+              {{/if}}
+              <button class="rc-tooltip rc-tooltip--down js-button lc-time-picker-btn">
+                {{#with timerange}}
+                <span class="lc-time-from">{{from}}</span>
+                <span class="fade">{{_ "to" }}</span>
+                <span class="lc-time-to">{{to}}</span>
+                {{/with}}
+              </button>
+              {{#if showRightNavButton}}
+              <button class="lc-timerange-next">
+                <i class="icon-right-circled"></i>
+              </button>
+              {{/if}}
+            </div>
+            <p align="right">{{_ "Total_visitors"}} : {{totalSessions}}</p>
+          </div>
+          <br>
+        </form>
+      </fieldset>
+      <div class="rc-table-content">
+        {{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+        <thead>
+          <tr>
+            <th width="15%">
+              <div class="table-fake-th">{{_ "Visitor Info"}}</div>
+            </th>
+            <th width="5%">
+              <div class="table-fake-th">{{_ "Status"}}</div>
+            </th>
+            <th width="25%">
+              <div class="table-fake-th">{{_ "Location"}}</div>
+            </th>
+            <th width="5%">
+              <div class="table-fake-th">{{_ "Visits"}}</div>
+            </th>
+            <th width="5%">
+              <div class="table-fake-th">{{_ "Device"}}</div>
+            </th>
+            <th width="15%">
+              <div class="table-fake-th">{{_ "Session Started"}}</div>
+            </th>
+            <th width="10%">
+              <div class="table-fake-th">{{_ "Time on Site"}}</div>
+            </th>
+            <th width="7%">
+              <div class="table-fake-th">{{_ "Chat Status"}}</div>
+            </th>
+            <th width="7%">
+              <div class="table-fake-th">{{_ "Agent Info"}}</div>
+            </th>
+            <th width="6%">
+              <div class="table-fake-th">{{_ "Sentiment Score"}}</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#if sessions}}
+          {{#each sessions}}
+          <tr class="rc-table-tr-livechat-session manage row-link" data-id="{{_id}}">
+            <td>
+              <div class="rc-table-wrapper">
+                {{#if visitorInfo}}
+                <div class="rc-table-avatar user-image">{{> avatar username=visitorInfo.name}}</div>
+                <div class="rc-table-info">
+                  <span class="rc-table-title">
+                          {{visitorInfo.name}}
+                        </span>
+                </div>
+                {{else}}
+                <div class="rc-table-info">
+                  {{_ "Not Registered"}}
+                </div>
+                {{/if}}
+              </div>
+            </td>
+            <td>
+              {{status}}
+            </td>
+            <td>
+              {{#if location}}
+                {{location.city}}, {{location.countryName}}
+              {{else}}
+                {{_ "No Info"}}
+              {{/if}}
+            </td>
+            <td>{{count}}</td>
+            <td>
+              <i class="{{osIcon}}"></i><i class="{{browserIcon}}"></i>
+            </td>
+            <td>{{sessionStarted}}</td>
+            <td>
+              {{#if timeSince}}
+                {{timeSince}}
+              {{else}}
+                {{_ "No Info"}}
+              {{/if}}
+            </td>
+            <td>{{chatStatus}}</td>
+            <td>
+              {{#if servedBy}}
+                {{servedBy.username}}
+              {{else}}
+                {{_ "No Info"}}
+              {{/if}}
+            </td>
+            <td>
+              {{#if sentimentScore}}
+                {{sentimentScore}}
+              {{else}}
+                {{_ "No Info"}}
+              {{/if}}
+            </td>
+          </tr>
+          {{/each}}
+          {{else}}
+          {{_ "No Visitors Currently"}}
+          {{/if}}
+        </tbody>
+        {{/table}}
+      </div>
+    </section>
+    {{#with flexData}}
+      {{> contextualBar}}
+    {{/with}}
+  </div>
+  {{/requiresPermission}}
+</template>

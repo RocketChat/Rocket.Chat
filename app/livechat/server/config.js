@@ -427,6 +427,14 @@ Meteor.startup(function() {
 		i18nDescription: 'Allow_collect_and_store_HTTP_header_informations_description',
 	});
 
+	settings.add('Livechat_location_permission', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Allow_livechat_location_permission',
+		enableQuery: { _id: 'Livechat_Allow_collect_and_store_HTTP_header_informations', value: true },
+	});
+
 	settings.add('Livechat_force_accept_data_processing_consent', false, {
 		type: 'boolean',
 		group: 'Livechat',

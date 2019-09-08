@@ -474,6 +474,26 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findByRoomIdOrTokenAndType(filter, type, options) {
+		const { rid, token } = filter;
+		let query;
+		if (rid) {
+			query = {
+				rid,
+				t: type,
+			};
+		}
+		if (token) {
+			query = {
+				'navigation.token': token,
+				t: type,
+			};
+		}
+
+		if (options == null) { options = {}; }
+		return this.find(query, options);
+	}
+
 	findByRoomId(roomId, options) {
 		const query = {
 			rid: roomId,
@@ -753,6 +773,7 @@ export class Messages extends Base {
 			t: type,
 			rid: roomId,
 			ts: new Date(),
+			token: extraData.navigation.token,
 			msg: message,
 			u: {
 				_id: user._id,

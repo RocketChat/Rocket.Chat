@@ -29,6 +29,7 @@ Meteor.methods({
 			emailFieldRegistrationForm: null,
 			registrationFormMessage: null,
 			showConnecting: false,
+			allowCollectGuestLocation: null,
 		};
 
 		const options = {
@@ -94,7 +95,7 @@ Meteor.methods({
 			info.departments.push(department);
 		});
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
-
+		info.allowCollectGuestLocation = initSettings.Livechat_location_permission && initSettings.Livechat_Allow_collect_and_store_HTTP_header_informations;
 		info.online = Users.findOnlineAgents().count() > 0;
 		return info;
 	},

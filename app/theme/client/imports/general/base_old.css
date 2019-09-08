@@ -1936,6 +1936,11 @@ rc-old select,
 
 	overflow: auto;
 	flex-grow: 1;
+	scrollbar-width: none;
+}
+
+.flex-tab-main-content::-webkit-scrollbar {
+	display: none;
 }
 
 .rc-old .room-container {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatRooms, Messages, Subscriptions } from '../../../models';
+import { LivechatRooms, Messages, Subscriptions, LivechatSessions } from '../../../models';
 
 Meteor.methods({
 	'livechat:removeRoom'(rid) {
@@ -27,6 +27,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-room-is-not-closed', 'Room is not closed', {
 				method: 'livechat:removeRoom',
 			});
+		}
+
+		if (room.v) {
+			LivechatSessions.updateChatStatusByToken(room.v.token, 'Not Started');
 		}
 
 		Messages.removeByRoomId(rid);

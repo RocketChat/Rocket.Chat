@@ -204,13 +204,13 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByVisitorToken(visitorToken) {
+	findByVisitorToken(visitorToken, options) {
 		const query = {
 			t: 'l',
 			'v.token': visitorToken,
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	findByVisitorId(visitorId) {
