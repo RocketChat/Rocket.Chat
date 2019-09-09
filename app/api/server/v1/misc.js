@@ -13,7 +13,7 @@ import { getURL } from '../../../utils/lib/getURL';
 
 
 // DEPRECATED
-// Will be removed after v1.12.0
+// Will be removed after v3.0.0
 API.v1.addRoute('info', { authRequired: false }, {
 	get() {
 		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v3.0.0';
