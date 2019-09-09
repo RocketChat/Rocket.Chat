@@ -7,16 +7,16 @@ import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import { sendNotification } from '../../../../lib/server';
 import { LivechatRooms } from '../../../../models/server';
 
-/* Guest Pool Queuing Method:
+/* Manual Selection Queuing Method:
 	*
 	* An incomming livechat is created as an Inquiry
 	* which is picked up from an agent.
-	* An Inquiry is visible to all agents (TODO: in the correct department)
+	* An Inquiry is visible to all agents
 	*
 	* A room is still created with the initial message, but it is occupied by
 	* only the client until paired with an agent
 */
-class GuestPool {
+class ManualSelection {
 	constructor() {
 		this.config = {
 			previewRoom: true,
@@ -84,4 +84,4 @@ class GuestPool {
 	}
 }
 
-RoutingManager.registerMethod('Guest_Pool', GuestPool);
+RoutingManager.registerMethod('Manual_Selection', ManualSelection);
