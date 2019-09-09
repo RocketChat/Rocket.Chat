@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../../../settings';
-import { hasRole } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization';
 import { Users } from '../../../../models';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatQueueUser } from '../../collections/LivechatQueueUser';
@@ -49,7 +49,7 @@ Template.livechatQueue.helpers({
 
 	hasPermission() {
 		const user = Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
-		return hasRole(Meteor.userId(), 'livechat-manager') || (user.statusLivechat === 'available' && settings.get('Livechat_show_queue_list_link'));
+		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (user.statusLivechat === 'available' && settings.get('Livechat_show_queue_list_link'));
 	},
 });
 

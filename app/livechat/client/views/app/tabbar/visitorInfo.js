@@ -10,13 +10,23 @@ import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
 import { modal } from '../../../../../ui-utils';
-import { ChatRoom, Rooms, Subscriptions } from '../../../../../models';
+import { Rooms, Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
-import { hasRole } from '../../../../../authorization';
+import { hasRole, hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import './visitorInfo.html';
+
+const isSubscribedToRoom = () => {
+	const data = Template.currentData();
+	if (!data || !data.rid) {
+		return false;
+	}
+
+	const subscription = Subscriptions.findOne({ rid: data.rid });
+	return subscription !== undefined;
+};
 
 Template.visitorInfo.helpers({
 	user() {
@@ -40,7 +50,7 @@ Template.visitorInfo.helpers({
 	},
 
 	room() {
-		return ChatRoom.findOne({ _id: this.rid });
+		return Template.instance().room.get();
 	},
 
 	department() {
@@ -48,7 +58,8 @@ Template.visitorInfo.helpers({
 	},
 
 	joinTags() {
-		return this.tags && this.tags.join(', ');
+		const tags = Template.instance().tags.get();
+		return tags && tags.join(', ');
 	},
 
 	customFields() {
@@ -136,13 +147,14 @@ Template.visitorInfo.helpers({
 	},
 
 	roomOpen() {
-		const room = ChatRoom.findOne({ _id: this.rid });
-
-		return room.open;
+		const room = Template.instance().room.get();
+		const uid = Meteor.userId();
+		return room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
 	},
 
-	guestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	canReturnQueue() {
+		const config = Template.instance().routingConfig.get();
+		return config.returnQueue;
 	},
 
 	showDetail() {
@@ -152,16 +164,35 @@ Template.visitorInfo.helpers({
 	},
 
 	canSeeButtons() {
-		if (hasRole(Meteor.userId(), 'livechat-manager')) {
+		if (hasAtLeastOnePermission(['close-others-livechat-room', 'transfer-livechat-guest'])) {
 			return true;
 		}
 
-		const data = Template.currentData();
-		if (data && data.rid) {
-			const subscription = Subscriptions.findOne({ rid: data.rid });
-			return subscription !== undefined;
+		return isSubscribedToRoom();
+	},
+
+	canEditRoom() {
+		if (hasAllPermission('save-others-livechat-room-info')) {
+			return true;
 		}
-		return false;
+
+		return isSubscribedToRoom();
+	},
+
+	canCloseRoom() {
+		if (hasAllPermission('close-others-livechat-room')) {
+			return true;
+		}
+
+		return isSubscribedToRoom();
+	},
+
+	canForwardGuest() {
+		if (hasAllPermission('transfer-livechat-guest')) {
+			return true;
+		}
+
+		return isSubscribedToRoom();
 	},
 });
 
@@ -249,6 +280,9 @@ Template.visitorInfo.onCreated(function() {
 	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
 	this.departmentId = new ReactiveVar(null);
+	this.tags = new ReactiveVar(null);
+	this.room = new ReactiveVar(null);
+	this.routingConfig = new ReactiveVar({});
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -256,17 +290,24 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	const currentData = Template.currentData();
+	const { rid } = Template.currentData();
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
+		}
+	});
 
-	if (currentData && currentData.rid) {
+	if (rid) {
 		this.autorun(() => {
-			const room = Rooms.findOne({ _id: currentData.rid });
+			const room = Rooms.findOne({ _id: rid });
+			this.room.set(room);
 			this.visitorId.set(room && room.v && room.v._id);
 			this.departmentId.set(room && room.departmentId);
+			this.tags.set(room && room.tags);
 		});
 
-		this.subscribe('livechat:visitorInfo', { rid: currentData.rid });
-		this.subscribe('livechat:departments', this.departmentId.get());
+		this.subscribe('livechat:visitorInfo', { rid });
+		this.subscribe('livechat:departments', { _id: this.departmentId.get() });
 	}
 
 	this.autorun(() => {

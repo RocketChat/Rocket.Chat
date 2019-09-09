@@ -172,6 +172,20 @@ export class Users extends Base {
 		return null;
 	}
 
+	setLastRoutingTime(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				lastRoutingTime: new Date(),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setLivechatStatus(userId, status) {
 		const query = {
 			_id: userId,
@@ -1133,6 +1147,16 @@ Find users to send a message by email if:
 
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
+	}
+
+	removeOlderResumeTokensByUserId(userId, fromDate) {
+		this.update(userId, {
+			$pull: {
+				'services.resume.loginTokens': {
+					when: { $lt: fromDate },
+				},
+			},
+		});
 	}
 }
 

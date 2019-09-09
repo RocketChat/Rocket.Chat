@@ -6,7 +6,6 @@ Package.describe({
 });
 
 const additionalPackages = {
-	livechat: 'rocketchat-livechat/.app/i18n',
 };
 
 const fs = Npm.require('fs');

@@ -12,6 +12,7 @@ import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorizatio
 import { EmojiPicker, emoji } from '../../../emoji';
 import { call } from '../../../ui-utils';
 import { t, getUserPreference, slashCommands } from '../../../utils';
+import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
@@ -178,6 +179,15 @@ Template.messagePopupConfig.onCreated(function() {
 });
 
 Template.messagePopupConfig.helpers({
+	customMessagePopups() {
+		return customMessagePopups.get();
+	},
+
+	getCustomConfig() {
+		const template = Template.instance();
+		return this.configGetter(template);
+	},
+
 	popupUserConfig() {
 		const template = Template.instance();
 		return {
