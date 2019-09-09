@@ -671,5 +671,99 @@ export class AppsRestApi {
 				return API.v1.success({ status: result.getStatus() });
 			},
 		});
+
+		this.api.addRoute(':id/persistence/getItem', { authRequired: true, permissionsRequired: ['create-p'] }, {
+			post() {
+				if (!this.bodyParams.key || typeof this.bodyParams.key !== 'string') {
+					return API.v1.failure('Invalid key provided, it must be "key" field and a string.');
+				}
+
+				const appId = this.urlParams.id;
+				const { key } = this.bodyParams;
+				const prl = manager.getOneById(appId);
+
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ appId }`);
+				}
+
+				const result = Promise.await(orchestrator.getPersistenceModel().findOne({ appId, key }));
+
+				return API.v1.success({ key, value: result.value });
+			},
+		});
+
+		this.api.addRoute(':id/persistence/getAll', { authRequired: true, permissionsRequired: ['create-p'] }, {
+			get() {
+				const appId = this.urlParams.id;
+				const prl = manager.getOneById(appId);
+
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ appId }`);
+				}
+
+				const result = Promise.await(orchestrator.getPersistenceModel().find({ appId }).fetch());
+
+				return API.v1.success(result.map(({ key, value }) => ({ key, value })));
+			},
+		});
+
+		this.api.addRoute(':id/persistence/setItem', { authRequired: true, permissionsRequired: ['create-p'] }, {
+			post() {
+				if (!this.bodyParams.key || typeof this.bodyParams.key !== 'string') {
+					return API.v1.failure('Invalid key provided, it must be "key" field and a string.');
+				}
+
+				if (!this.bodyParams.value) {
+					return API.v1.failure('Invalid value provided, it must be "value" field.');
+				}
+
+				const appId = this.urlParams.id;
+				const { key, value } = this.bodyParams;
+				const prl = manager.getOneById(appId);
+
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ appId }`);
+				}
+
+				Promise.await(orchestrator.getPersistenceModel().upsert({ appId, key }, { appId, key, value }));
+
+				return API.v1.success();
+			},
+		});
+
+		this.api.addRoute(':id/persistence/removeItem', { authRequired: true, permissionsRequired: ['create-p'] }, {
+			post() {
+				if (!this.bodyParams.key || typeof this.bodyParams.key !== 'string') {
+					return API.v1.failure('Invalid key provided, it must be "key" field and a string.');
+				}
+
+				const appId = this.urlParams.id;
+				const { key } = this.bodyParams;
+				const prl = manager.getOneById(appId);
+
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ appId }`);
+				}
+
+				Promise.await(orchestrator.getPersistenceModel().remove({ appId, key }));
+
+				return API.v1.success();
+			},
+		});
+
+		this.api.addRoute(':id/persistence/clear', { authRequired: true, permissionsRequired: ['create-p'] }, {
+			get() {
+				const appId = this.urlParams.id;
+				const prl = manager.getOneById(appId);
+
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ appId }`);
+				}
+
+				Promise.await(orchestrator.getPersistenceModel().remove({ appId }));
+
+				return API.v1.success();
+			},
+		});
 	}
 }
