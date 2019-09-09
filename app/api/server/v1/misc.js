@@ -16,7 +16,7 @@ import { getURL } from '../../../utils/lib/getURL';
 // Will be removed after v1.12.0
 API.v1.addRoute('info', { authRequired: false }, {
 	get() {
-		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v1.12.0';
+		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v3.0.0';
 		console.warn(warningMessage);
 		const user = this.getLoggedInUser();
 
