@@ -152,20 +152,31 @@ const getMessageData = function(msg, exportOperation) {
 		});
 	}
 
+	let username = msg.u.username || msg.u.name;
+
+	if (!exportOperation.userNameTable) {
+		exportOperation.userNameTable = {};
+	}
+
+	if (exportOperation.userNameTable[username]) {
+		username = exportOperation.userNameTable[username];
+	} else {
+		exportOperation.userNameTable[username] = `User_${ (Object.keys(exportOperation.userNameTable).length + 1) }`;
+		username = exportOperation.userNameTable[username];
+	}
+
 	const messageObject = {
 		msg: msg.msg,
-		username: msg.u.username,
+		username,
 		ts: msg.ts,
 	};
 
 	if (attachments && attachments.length > 0) {
 		messageObject.attachments = attachments;
 	}
+
 	if (msg.t) {
 		messageObject.type = msg.t;
-	}
-	if (msg.u.name) {
-		messageObject.name = msg.u.name;
 	}
 
 	return messageObject;
@@ -206,9 +217,15 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 	}
 
 	const skip = exportOpRoomData.exportedCount;
+	const cursor = Messages.model.rawCollection().aggregate([
+		{ $match: { rid: exportOpRoomData.roomId } },
+		{ $sort: { ts: 1 } },
+		{ $skip: skip },
+		{ $limit: limit },
+	]);
 
-	const cursor = Messages.findByRoomId(exportOpRoomData.roomId, { limit, skip });
-	const count = cursor.count();
+	const findCursor = Messages.findByRoomId(exportOpRoomData.roomId, { limit: 1 });
+	const count = findCursor.count();
 
 	cursor.forEach((msg) => {
 		const messageObject = getMessageData(msg, exportOperation);
@@ -218,7 +235,6 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 			writeToFile(filePath, `${ messageString }\n`);
 		} else {
 			const messageType = msg.t;
-			const userName = msg.u.username || msg.u.name;
 			const timestamp = msg.ts ? new Date(msg.ts).toUTCString() : '';
 			let message = msg.msg;
 
@@ -230,16 +246,16 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 					message = TAPi18n.__('User_left');
 					break;
 				case 'au':
-					message = TAPi18n.__('User_added_by', { user_added: msg.msg, user_by: msg.u.username });
+					message = TAPi18n.__('User_added_by', { user_added: msg.msg, user_by: messageObject.username });
 					break;
 				case 'r':
-					message = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: msg.u.username });
+					message = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: messageObject.username });
 					break;
 				case 'ru':
-					message = TAPi18n.__('User_removed_by', { user_removed: msg.msg, user_by: msg.u.username });
+					message = TAPi18n.__('User_removed_by', { user_removed: msg.msg, user_by: messageObject.username });
 					break;
 				case 'wm':
-					message = TAPi18n.__('Welcome', { user: msg.u.username });
+					message = TAPi18n.__('Welcome', { user: messageObject.username });
 					break;
 				case 'livechat-close':
 					message = TAPi18n.__('Conversation_finished');
@@ -250,7 +266,7 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 				message = `<i>${ message }</i>`;
 			}
 
-			writeToFile(filePath, `<p><strong>${ userName }</strong> (${ timestamp }):<br/>`);
+			writeToFile(filePath, `<p><strong>${ messageObject.username }</strong> (${ timestamp }):<br/>`);
 			writeToFile(filePath, message);
 
 			if (messageObject.attachments && messageObject.attachments.length > 0) {
@@ -527,10 +543,10 @@ const continueExportOperation = async function(exportOperation) {
 		if (exportOperation.status === 'uploading') {
 			uploadZipFile(exportOperation, () => {
 				exportOperation.status = 'completed';
-				ExportOperations.updateOperation(exportOperation);
 			});
-			return;
 		}
+
+		ExportOperations.updateOperation(exportOperation);
 	} catch (e) {
 		console.error(e);
 	}
