@@ -23,7 +23,7 @@ API.v1.addRoute('info', { authRequired: false }, {
 		if (user && hasRole(user._id, 'admin')) {
 			return API.v1.success(this.deprecationWarning({
 				endpoint: 'info',
-				versionWillBeRemoved: '1.12.0',
+				versionWillBeRemoved: '3.0.0',
 				response: {
 					info: Info,
 				},
