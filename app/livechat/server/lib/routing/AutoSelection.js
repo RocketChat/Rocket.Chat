@@ -1,12 +1,12 @@
 import { RoutingManager } from '../RoutingManager';
 import { LivechatDepartmentAgents, Users } from '../../../../models/server';
 
-/* Least Amount Queuing method:
+/* Auto Selection Queuing method:
 	*
 	* default method where the agent with the least number
 	* of open chats is paired with the incoming livechat
 */
-class LeastAmount {
+class AutoSelection {
 	constructor() {
 		this.config = {
 			previewRoom: false,
@@ -32,4 +32,4 @@ class LeastAmount {
 	}
 }
 
-RoutingManager.registerMethod('Least_Amount', LeastAmount);
+RoutingManager.registerMethod('Auto_Selection', AutoSelection);
