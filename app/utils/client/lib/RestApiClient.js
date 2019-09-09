@@ -90,7 +90,9 @@ export const APIClient = {
 					resolve(result);
 				},
 				error: function _jqueryFormDataError(xhr, status, errorThrown) {
-					reject(new Error(errorThrown));
+					const error = new Error(errorThrown);
+					error.xhr = xhr;
+					reject(error);
 				},
 			});
 		});
