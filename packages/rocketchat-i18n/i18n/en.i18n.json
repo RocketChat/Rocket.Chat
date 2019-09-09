@@ -2915,7 +2915,7 @@
   "Support": "Support",
   "Support_Cordova_App": "Support Cordova App",
   "Support_Cordova_App_Alert": "This feature is deprecated and will be removed on next major release",
-  "Support_Cordova_App_Description": "Allow the old mobile app, based on cordova technology, to access the server enebling CORS for some APIs",
+  "Support_Cordova_App_Description": "Allow the old mobile app, based on Cordova technology, to access the server enabling CORS for some APIs",
   "Survey": "Survey",
   "Survey_instructions": "Rate each question according to your satisfaction, 1 meaning you are completely unsatisfied and 5 meaning you are completely satisfied.",
   "Symbols": "Symbols",
