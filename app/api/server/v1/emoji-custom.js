@@ -4,25 +4,6 @@ import Busboy from 'busboy';
 import { EmojiCustom } from '../../../models';
 import { API } from '../api';
 
-// DEPRECATED
-// Will be removed after v1.12.0
-API.v1.addRoute('emoji-custom', { authRequired: true }, {
-	get() {
-		const warningMessage = 'The endpoint "emoji-custom" is deprecated and will be removed after version v1.12.0';
-		console.warn(warningMessage);
-		const { query } = this.parseJsonQuery();
-		const emojis = Meteor.call('listEmojiCustom', query);
-
-		return API.v1.success(this.deprecationWarning({
-			endpoint: 'emoji-custom',
-			versionWillBeRemoved: '1.12.0',
-			response: {
-				emojis,
-			},
-		}));
-	},
-});
-
 API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
