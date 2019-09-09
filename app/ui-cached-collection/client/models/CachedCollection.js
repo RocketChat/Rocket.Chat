@@ -47,13 +47,13 @@ class CachedCollectionManagerClass extends EventEmitter {
 		// on first connection the `reconnect` callbacks will run
 
 		Tracker.autorun(() => {
-			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DICONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
+			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DISCONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
 			this.step = this.step || WAITING_FIRST_CONNECTION;
 			const { connected } = Meteor.status();
 			switch (this.step) {
 				case WAITING_FIRST_CONNECTION:
 					return !connected || this.step++;
-				case WAITING_FIRST_DICONNECTION:
+				case WAITING_FIRST_DISCONNECTION:
 					return connected || this.step++;
 				case LISTENING_RECONNECTIONS:
 					return connected && this.emit('reconnect');
@@ -199,11 +199,11 @@ export class CachedCollection extends EventEmitter {
 			callbacks.run(`cachedCollection-loadFromCache-${ this.name }`, record);
 			// this.collection.direct.insert(record);
 
-			if (record._updatedAt) {
+			if (!record._updatedAt) {
 				return;
 			}
-
 			const _updatedAt = new Date(record._updatedAt);
+			record._updatedAt = _updatedAt;
 
 			if (_updatedAt > this.updatedAt) {
 				this.updatedAt = _updatedAt;
@@ -309,7 +309,7 @@ export class CachedCollection extends EventEmitter {
 	}
 
 	async sync() {
-		if (this.updatedAt.valueOf() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
+		if (!this.updatedAt || this.updatedAt.valueOf() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
 			return false;
 		}
 
@@ -357,7 +357,7 @@ export class CachedCollection extends EventEmitter {
 				this.collection.direct.upsert({ _id }, recordData);
 			}
 			if (actionTime > this.updatedAt) {
-				this.updatedAt = record._updatedAt;
+				this.updatedAt = actionTime;
 			}
 			this.onSyncData(action, record);
 		}
