@@ -193,7 +193,7 @@ Template.appManage.onCreated(function() {
 		loadApp(this);
 	});
 
-	this.handleRemoved = () => FlowRouter.go('/admin/apps');
+	this.handleRemoved = withAppIdFilter(() => FlowRouter.go('/admin/apps'));
 
 	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleChange);
 	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleChange);
