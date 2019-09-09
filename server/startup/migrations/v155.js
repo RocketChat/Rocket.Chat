@@ -26,6 +26,7 @@ Migrations.add({
 			Settings.update({ _id }, {
 				$set: {
 					value: newValue,
+					packageValue: newValue,
 				},
 			});
 		}
