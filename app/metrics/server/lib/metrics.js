@@ -9,6 +9,7 @@ import { Info } from '../../../utils';
 import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
+import { oplogEvents } from '../../../models/server/oplogEvents';
 
 client.collectDefaultMetrics();
 
@@ -56,6 +57,11 @@ metrics.version = new client.Gauge({ name: 'rocketchat_version', labelNames: ['v
 metrics.migration = new client.Gauge({ name: 'rocketchat_migration', help: 'migration versoin' });
 metrics.instanceCount = new client.Gauge({ name: 'rocketchat_instance_count', help: 'instances running' });
 metrics.oplogEnabled = new client.Gauge({ name: 'rocketchat_oplog_enabled', labelNames: ['enabled'], help: 'oplog enabled' });
+metrics.oplog = new client.Counter({
+	name: 'rocketchat_oplog',
+	help: 'summary of oplog operations',
+	labelNames: ['collection', 'op'],
+});
 
 // User statistics
 metrics.totalUsers = new client.Gauge({ name: 'rocketchat_users_total', help: 'total of users' });
@@ -157,24 +163,33 @@ app.use('/', (req, res) => {
 
 const server = http.createServer(app);
 
+const oplogMetric = ({ collection, op }) => {
+	metrics.oplog.inc({
+		collection,
+		op,
+	});
+};
+
 let timer;
 const updatePrometheusConfig = async () => {
 	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
 	const enabled = settings.get('Prometheus_Enabled');
-	if (port == null || enabled == null) {
+
+	if (!port || !enabled) {
+		server.close();
+		Meteor.clearInterval(timer);
+		oplogEvents.removeListener('record', oplogMetric);
 		return;
 	}
 
-	if (enabled === true) {
-		server.listen({
-			port,
-			host: process.env.BIND_IP || '0.0.0.0',
-		});
-		timer = Meteor.setInterval(setPrometheusData, 5000);
-	} else {
-		server.close();
-		Meteor.clearInterval(timer);
-	}
+	server.listen({
+		port,
+		host: process.env.BIND_IP || '0.0.0.0',
+	});
+
+	timer = Meteor.setInterval(setPrometheusData, 5000);
+
+	oplogEvents.on('record', oplogMetric);
 };
 
 Meteor.startup(async () => {

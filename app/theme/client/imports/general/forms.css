@@ -253,7 +253,7 @@
 	height: 100%;
 
 	&--new {
-		padding: 0 1.5rem;
+		padding: 1.5rem;
 	}
 
 	&__content {

@@ -57,6 +57,8 @@ textarea.rc-input__element {
 		height: 2.5rem;
 		padding: 0 1rem;
 
+		text-align: start;
+
 		text-overflow: ellipsis;
 
 		color: var(--input-text-color);
@@ -74,6 +76,8 @@ textarea.rc-input__element {
 		}
 
 		&::placeholder {
+
+			text-align: start;
 			text-overflow: ellipsis;
 
 			color: var(--input-placeholder-color);
