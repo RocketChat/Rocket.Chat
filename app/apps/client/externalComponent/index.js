@@ -105,14 +105,13 @@ Meteor.startup(function() {
 					try {
 						const { payload: { key } } = data.rcEmbeddedSDK;
 						const { appId } = Template.GameModal.currentExternalComponent;
-						const value = await getItem(appId, key);
+						const payload = await getItem(appId, key);
+
 						source.postMessage({
 							rcEmbeddedSDK: {
 								action,
 								id,
-								payload: {
-									value,
-								},
+								payload,
 							},
 						}, '*');
 					} catch (err) {
