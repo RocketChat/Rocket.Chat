@@ -259,7 +259,6 @@ jobs:
       - run:
           name: Publish assets
           command: |
-            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
             bash .scripts/deploy-assistify-chat.sh
 
   image-build:
@@ -360,8 +359,9 @@ jobs:
 
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-            echo "Build official Docker image"
+            echo "Building custom Docker image"
             cp ~/repo/.docker/Dockerfile .
+            cp ~/repo/.docker/startup.sh .
             docker build -t assistify/chat:pr-$CIRCLE_PR_NUMBER .
             docker push assistify/chat:pr-$CIRCLE_PR_NUMBER
 
@@ -424,13 +424,14 @@ workflows:
           requires:
             - build
           filters:
-#            branches:
-#              ignore: develop
+            branches:
+              only: 
+                - master
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - pr-image-build:
           requires:
-            - hold
+            - build
           filters:
             branches:
               ignore:

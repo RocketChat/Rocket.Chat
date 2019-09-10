@@ -30,10 +30,10 @@ export class GoogleStorageStore extends UploadFS.Store {
 			}
 		};
 
-		this.getRedirectURL = function(file, callback) {
+		this.getRedirectURL = function(file, forceDownload = false, callback) {
 			const params = {
 				action: 'read',
-				responseDisposition: 'inline',
+				responseDisposition: forceDownload ? 'attachment' : 'inline',
 				expires: Date.now() + this.options.URLExpiryTimeSpan * 1000,
 			};
 

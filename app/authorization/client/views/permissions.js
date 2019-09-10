@@ -1,5 +1,7 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
@@ -11,84 +13,157 @@ import { hasAtLeastOnePermission } from '..';
 
 import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
-
-const whereNotSetting = {
-	$where: function() {
-		return this.level !== 'setting';
-	}.toString(),
-};
+import { CONSTANTS } from '../../lib';
 
 Template.permissions.helpers({
+	tabsData() {
+		const {
+			state,
+		} = Template.instance();
+
+		const permissionsTab = {
+			label: t('Permissons'),
+			value: 'permissons',
+			condition() {
+				return true;
+			},
+		};
+
+		const settingsTab = {
+			label: t('Settings'),
+			value: 'settings',
+			condition() {
+				return true;
+			},
+		};
+
+		const tabs = [permissionsTab];
+
+		const settingsPermissions = hasAllPermission('access-setting-permissions');
+
+		if (settingsPermissions) {
+			tabs.push(settingsTab);
+		}
+		switch (settingsPermissions && state.get('tab')) {
+			case 'settings':
+				settingsTab.active = true;
+				break;
+			case 'permissions':
+				permissionsTab.active = true;
+				break;
+			default:
+				permissionsTab.active = true;
+		}
+
+
+		return {
+			tabs,
+			onChange(value) {
+				state.set({
+					tab: value,
+					size: 50,
+				});
+			},
+		};
+	},
 	roles() {
-		return Template.instance().roles.get();
+		return Roles.find();
 	},
 
 	permissions() {
-		return ChatPermissions.find(whereNotSetting, // the $where seems to have no effect - filtered as workaround after fetch()
+		const { state } = Template.instance();
+		const limit = state.get('size');
+		const filter = new RegExp(s.escapeRegExp(state.get('filter')), 'i');
+
+		return ChatPermissions.find(
+			{
+				level: { $ne: CONSTANTS.SETTINGS_LEVEL },
+				_id: filter,
+			},
 			{
 				sort: {
 					_id: 1,
 				},
-			}).fetch()
-			.filter((setting) => !setting.level);
+				limit,
+			}
+		);
 	},
 
 	settingPermissions() {
-		return ChatPermissions.find({
-			level: 'setting',
-		},
-		{
-			sort: { // sorting seems not to be copied from the publication, we need to request it explicitly in find()
-				group: 1,
-				section: 1,
+		const { state } = Template.instance();
+		const limit = state.get('size');
+		const filter = new RegExp(s.escapeRegExp(state.get('filter')), 'i');
+		return ChatPermissions.find(
+			{
+				_id: filter,
+				level: CONSTANTS.SETTINGS_LEVEL,
+				group: { $exists: true },
 			},
-		}).fetch()
-			.filter((setting) => setting.group); // group permissions are assigned implicitly,  we can hide them. $exists: {group:false} not supported by Minimongo
+			{
+				limit,
+				sort: {
+					group: 1,
+					section: 1,
+				},
+			}
+		);
 	},
 
 	hasPermission() {
 		return hasAllPermission('access-permissions');
 	},
 
-	hasSettingPermission() {
-		return hasAllPermission('access-setting-permissions');
-	},
-
 	hasNoPermission() {
-		return !hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']);
+		return !hasAtLeastOnePermission([
+			'access-permissions',
+			'access-setting-permissions',
+		]);
+	},
+	filter() {
+		return Template.instance().state.get('filter');
 	},
 
-	settingPermissionExpanded() {
-		return Template.instance().settingPermissionsExpanded.get();
+	tab() {
+		return Template.instance().state.get('tab');
 	},
 });
 
 Template.permissions.events({
-	'click .js-toggle-setting-permissions'(event, instance) {
-		instance.settingPermissionsExpanded.set(!instance.settingPermissionsExpanded.get());
+	'keyup #permissions-filter'(e, t) {
+		e.stopPropagation();
+		e.preventDefault();
+		t.state.set('filter', e.currentTarget.value);
 	},
+	'scroll .content': _.throttle(({ currentTarget }, i) => {
+		if (
+			currentTarget.offsetHeight + currentTarget.scrollTop
+			>= currentTarget.scrollHeight - 100
+		) {
+			return i.state.set('size', i.state.get('size') + 50);
+		}
+	}, 300),
 });
 
 Template.permissions.onCreated(function() {
-	this.settingPermissionsExpanded = new ReactiveVar(false);
-	this.roles = new ReactiveVar([]);
+	this.state = new ReactiveDict({
+		filter: '',
+		tab: '',
+		size: 50,
+	});
 
-	Tracker.autorun(() => {
-		this.roles.set(Roles.find().fetch());
+	this.autorun(() => {
+		this.state.get('filter');
+		this.state.set('size', 50);
 	});
 });
 
 Template.permissionsTable.helpers({
 	granted(roles, role) {
-		if (roles) {
-			if (roles.indexOf(role._id) !== -1) {
-				return 'checked';
-			}
-		}
+		return (roles && ~roles.indexOf(role._id) && 'checked') || null;
 	},
 
 	permissionName(permission) {
-		if (permission.level === 'setting') {
+		if (permission.level === CONSTANTS.SETTINGS_LEVEL) {
 			let path = '';
 			if (permission.group) {
 				path = `${ t(permission.group) } > `;
@@ -96,8 +171,7 @@ Template.permissionsTable.helpers({
 			if (permission.section) {
 				path = `${ path }${ t(permission.section) } > `;
 			}
-			path = `${ path }${ t(permission.settingId) }`;
-			return path;
+			return `${ path }${ t(permission.settingId) }`;
 		}
 
 		return t(permission._id);
@@ -106,56 +180,19 @@ Template.permissionsTable.helpers({
 	permissionDescription(permission) {
 		return t(`${ permission._id }_description`);
 	},
-
-	hasPermission() {
-		return hasAllPermission('access-permissions');
-	},
 });
 
 Template.permissionsTable.events({
-	'click .role-permission'(e, instance) {
-		const permission = e.currentTarget.getAttribute('data-permission');
+	'click .role-permission'(e) {
+		const permissionId = e.currentTarget.getAttribute('data-permission');
 		const role = e.currentTarget.getAttribute('data-role');
 
-		if (!instance.permissionByRole[permission] // the permissino has this role not assigned at all (undefined)
-			|| instance.permissionByRole[permission].indexOf(role) === -1) {
-			return Meteor.call('authorization:addPermissionToRole', permission, role);
-		}
-		return Meteor.call('authorization:removeRoleFromPermission', permission, role);
+		const permission = permissionId && ChatPermissions.findOne(permissionId);
+
+		const action = ~permission.roles.indexOf(role) ? 'authorization:removeRoleFromPermission' : 'authorization:addPermissionToRole';
+
+		return Meteor.call(action, permissionId, role);
 	},
-});
-
-Template.permissionsTable.onCreated(function() {
-	this.roles = new ReactiveVar([]);
-	this.permissionByRole = {};
-	this.actions = {
-		added: {},
-		removed: {},
-	};
-
-	Tracker.autorun(() => {
-		this.roles.set(Roles.find().fetch());
-
-		const observer = ChatPermissions.find().observeChanges({
-			added: (id, fields) => {
-				this.permissionByRole[id] = fields.roles;
-			},
-			changed: (id, fields) => {
-				this.permissionByRole[id] = fields.roles;
-			},
-			removed: (id) => {
-				delete this.permissionByRole[id];
-			},
-		});
-
-		if (this.data.collection === 'Chat') {
-			ChatPermissions.find(whereNotSetting).observeChanges(observer);
-		}
-
-		if (this.data.collection === 'Setting') {
-			ChatPermissions.find({ level: 'setting' }).observeChanges(observer);
-		}
-	});
 });
 
 Template.permissions.onRendered(() => {

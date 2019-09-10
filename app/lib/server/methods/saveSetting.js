@@ -1,22 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission, hasAllPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
-import { hasAllPermission } from '../../../authorization/server';
+import { getSettingPermissionId } from '../lib';
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {
-		if (Meteor.userId() === null) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'edit-privileged-setting')
-			&& !hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])
-		) {
+		if (!hasPermission(uid, 'edit-privileged-setting')
+			&& !hasAllPermission(uid, ['manage-selected-settings', getSettingPermissionId(_id)])) { // TODO use the same function
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
 				settingId: _id,

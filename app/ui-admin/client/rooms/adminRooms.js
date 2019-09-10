@@ -12,10 +12,20 @@ import { SideNav, RocketChatTabBar, TabBar } from '../../../ui-utils';
 import { t, roomTypes } from '../../../utils';
 import { hasAllPermission } from '../../../authorization';
 import { ChannelSettings } from '../../../channel-settings';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
+	url() {
+		return this.t === 'd' ? getAvatarURL({ username: `@${ this.usernames[0] }` }) : roomTypes.getConfig(this.t).getAvatarPath(this);
+	},
+	getIcon() {
+		return roomTypes.getIcon(this);
+	},
+	roomName() {
+		return this.t === 'd' ? this.usernames.join(' x ') : roomTypes.getRoomName(this.t, this);
+	},
 	searchText() {
 		const instance = Template.instance();
 		return instance.filter && instance.filter.get();
@@ -42,9 +52,6 @@ Template.adminRooms.helpers({
 	roomCount() {
 		const rooms = Template.instance().rooms();
 		return rooms && rooms.count();
-	},
-	name() {
-		return roomTypes.roomTypes[this.t].getDisplayName(this);
 	},
 	type() {
 		return TAPi18n.__(roomTypes.roomTypes[this.t].label);
@@ -110,11 +117,12 @@ Template.adminRooms.onCreated(function() {
 			return hasAllPermission('view-room-administration');
 		},
 	});
+	const allowedTypes = ['c', 'd', 'p'];
 	this.autorun(function() {
 		const filter = instance.filter.get();
 		let types = instance.types.get();
 		if (types.length === 0) {
-			types = ['c', 'd', 'p'];
+			types = allowedTypes;
 		}
 		const limit = instance.limit.get();
 		const subscription = instance.subscribe('adminRooms', filter, types, limit);
@@ -130,14 +138,18 @@ Template.adminRooms.onCreated(function() {
 			types = [];
 		}
 		let query = {};
+		const discussion = types.includes('dicussions');
 		filter = s.trim(filter);
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
+			query = { ...discussion && { prid: { $exists: true } }, $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
 		}
+		types = types.filter((type) => type !== 'dicussions');
+
 		if (types.length) {
 			query.t = { $in: types };
 		}
+
 		const limit = instance.limit && instance.limit.get();
 		return AdminChatRoom.find(query, { limit, sort: { default: -1, name: 1 } });
 	};

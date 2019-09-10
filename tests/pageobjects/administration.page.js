@@ -87,7 +87,11 @@ class Administration extends Page {
 
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
 
-	get rolesSettingPermissionsButton() { return browser.element('.js-toggle-setting-permissions'); }
+	get rolesSettingsFindInput() { return browser.element('input#permissions-filter'); }
+
+	get rolesSettingsTab() { return browser.element('button[data-value="settings"]'); }
+
+	get rolesPermissionsTab() { return browser.element('button[data-value="permissions"]'); }
 
 	// permissions grids checkboxes
 
@@ -371,12 +375,15 @@ class Administration extends Page {
 
 	get accountsRealNameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowRealNameChange"]'); }
 
+	get accountsUserStatusMessageChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUserStatusMessageChange"]'); }
+
+	get accountsUserStatusMessageChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUserStatusMessageChange"]'); }
+
 	get accountsUsernameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUsernameChange"]'); }
 
 	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUsernameChange"]'); }
 
-	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .rc-button'); }
-	// get layoutButton() { return browser.element('.sidebar-item__link[href$="/admin/Layout"]'); }
+	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .rc-button.rc-button--nude'); }
 
 	checkUserList(user) {
 		const element = browser.element(`td=adminCreated${ user }`);

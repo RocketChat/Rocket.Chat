@@ -245,6 +245,7 @@ const createManagerRole = function() {
 		'view-full-other-user-info',
 		'view-room-administration',
 		'view-user-administration',
+		'view-statistics',
 	];
 
 	assignPermissions(MANAGER_ROLE_NAME, permissions);

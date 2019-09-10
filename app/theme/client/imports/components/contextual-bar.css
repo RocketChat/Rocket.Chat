@@ -163,123 +163,125 @@
 	}
 }
 
-.attachments {
-	&__item {
-		position: relative;
+.flex-tab__result {
+	.attachments {
+		&__item {
+			position: relative;
 
-		margin-bottom: 10px;
+			margin-bottom: 10px;
 
-		transition: background-color 300ms linear;
+			transition: background-color 300ms linear;
 
-		&.active,
-		&:hover {
-			cursor: pointer;
+			&.active,
+			&:hover {
+				cursor: pointer;
 
-			background-color: #f7f8fa;
+				background-color: #f7f8fa;
 
-			.attachments-menu {
-				display: inline-block;
+				.attachments-menu {
+					display: inline-block;
+				}
+			}
+
+			&-link {
+				display: flex;
+				flex-direction: row;
+
+				padding: 8px 0;
+				align-items: center;
 			}
 		}
 
-		&-link {
+		&__file,
+		&__thumb {
+			display: inline-block;
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
+			flex: 0 0 auto;
 
-			padding: 8px 0;
+			width: 50px;
+
+			height: 50px;
+			margin: 0 8px;
+
+			border-radius: 2px;
+
+			background: radial-gradient(ellipse at center, rgba(155, 169, 186, 1) 0%, rgba(131, 143, 158, 1) 100%);
+			background-size: cover;
+
+			font-size: 24px;
+
 			align-items: center;
-		}
-	}
-
-	&__file,
-	&__thumb {
-		display: inline-block;
-		display: flex;
-		flex-direction: column;
-		flex: 0 0 auto;
-
-		width: 50px;
-
-		height: 50px;
-		margin: 0 8px;
-
-		border-radius: 2px;
-
-		background: radial-gradient(ellipse at center, rgba(155, 169, 186, 1) 0%, rgba(131, 143, 158, 1) 100%);
-		background-size: cover;
-
-		font-size: 24px;
-
-		align-items: center;
-		justify-content: center;
-	}
-
-	&__file {
-		&--pdf {
-			background: radial-gradient(ellipse at center, rgba(250, 97, 97, 1) 0%, rgba(251, 19, 19, 1) 100%);
+			justify-content: center;
 		}
 
-		&--sheets {
-			background: radial-gradient(ellipse at center, rgba(0, 163, 82, 1) 0%, rgba(2, 114, 59, 1) 100%);
+		&__file {
+			&--pdf {
+				background: radial-gradient(ellipse at center, rgba(250, 97, 97, 1) 0%, rgba(251, 19, 19, 1) 100%);
+			}
+
+			&--sheets {
+				background: radial-gradient(ellipse at center, rgba(0, 163, 82, 1) 0%, rgba(2, 114, 59, 1) 100%);
+			}
+
+			&--ppt {
+				background: radial-gradient(ellipse at center, rgba(250, 109, 77, 1) 0%, rgba(208, 71, 40, 1) 100%);
+			}
 		}
 
-		&--ppt {
-			background: radial-gradient(ellipse at center, rgba(250, 109, 77, 1) 0%, rgba(208, 71, 40, 1) 100%);
+		&__type {
+			overflow: hidden;
+			flex: 0 0 auto;
+
+			max-width: 100%;
+			padding: 0 10px;
+
+			text-overflow: ellipsis;
+
+			color: white;
+
+			font-size: 10px;
 		}
-	}
 
-	&__type {
-		overflow: hidden;
-		flex: 0 0 auto;
+		&__name {
 
-		max-width: 100%;
-		padding: 0 10px;
+			overflow: hidden;
 
-		text-overflow: ellipsis;
+			min-width: 0;
+			margin: 0 8px;
 
-		color: white;
+			white-space: nowrap;
+			text-overflow: ellipsis;
 
-		font-size: 10px;
-	}
+			color: #2f343d;
 
-	&__name {
+			font-size: 14px;
+			line-height: 1.5;
+		}
 
-		overflow: hidden;
+		&__details {
+			margin: 0 8px 2px;
 
-		min-width: 0;
-		margin: 0 8px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
 
-		white-space: nowrap;
-		text-overflow: ellipsis;
+			font-size: 12px;
+		}
 
-		color: #2f343d;
+		&__bold {
+			font-weight: 600;
+		}
 
-		font-size: 14px;
-		line-height: 1.5;
-	}
+		&__content {
+			display: flex;
 
-	&__details {
-		margin: 0 8px 2px;
+			overflow: hidden;
+			flex-direction: column;
 
-		white-space: nowrap;
-		text-overflow: ellipsis;
+			flex: 1 1 100%;
 
-		font-size: 12px;
-	}
-
-	&__bold {
-		font-weight: 600;
-	}
-
-	&__content {
-		display: flex;
-
-		overflow: hidden;
-		flex-direction: column;
-
-		flex: 1 1 100%;
-
-		color: #9ea2a8;
+			color: #9ea2a8;
+		}
 	}
 }
 
