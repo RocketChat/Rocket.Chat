@@ -46,18 +46,8 @@ const loadUserSubscriptions = function(exportOperation) {
 	cursor.forEach((subscription) => {
 		const roomId = subscription.rid;
 		const roomData = Rooms.findOneById(roomId);
-		let roomName = roomData && roomData.name ? roomData.name : roomId;
-		let userId = null;
-
-		if (subscription.t === 'd') {
-			userId = roomId.replace(exportUserId, '');
-			const userData = Users.findOneById(userId);
-
-			if (userData) {
-				roomName = userData.name;
-			}
-		}
-
+		const roomName = roomData && roomData.name && subscription.t !== 'd' ? roomData.name : roomId;
+		const userId = subscription.t === 'd' ? roomId.replace(exportUserId, '') : null;
 		const fileName = exportOperation.fullExport ? roomId : roomName;
 		const fileType = exportOperation.fullExport ? 'json' : 'html';
 		const targetFile = `${ fileName }.${ fileType }`;
@@ -140,6 +130,22 @@ const addToFileList = function(exportOperation, attachment) {
 	exportOperation.fileList.push(attachmentData);
 };
 
+const hideUserName = function(username, exportOperation) {
+	if (!exportOperation.userNameTable) {
+		exportOperation.userNameTable = {};
+	}
+
+	if (!exportOperation.userNameTable[username]) {
+		if (username === exportOperation.userData.username) {
+			exportOperation.userNameTable[username] = username;
+		} else {
+			exportOperation.userNameTable[username] = `User_${ (Object.keys(exportOperation.userNameTable).length + 1) }`;
+		}
+	}
+
+	return exportOperation.userNameTable[username];
+};
+
 const getMessageData = function(msg, exportOperation) {
 	const attachments = [];
 
@@ -152,18 +158,7 @@ const getMessageData = function(msg, exportOperation) {
 		});
 	}
 
-	let username = msg.u.username || msg.u.name;
-
-	if (!exportOperation.userNameTable) {
-		exportOperation.userNameTable = {};
-	}
-
-	if (exportOperation.userNameTable[username]) {
-		username = exportOperation.userNameTable[username];
-	} else {
-		exportOperation.userNameTable[username] = `User_${ (Object.keys(exportOperation.userNameTable).length + 1) }`;
-		username = exportOperation.userNameTable[username];
-	}
+	const username = hideUserName(msg.u.username || msg.u.name, exportOperation);
 
 	const messageObject = {
 		msg: msg.msg,
@@ -177,6 +172,30 @@ const getMessageData = function(msg, exportOperation) {
 
 	if (msg.t) {
 		messageObject.type = msg.t;
+
+		switch (msg.t) {
+			case 'uj':
+				messageObject.msg = TAPi18n.__('User_joined_channel');
+				break;
+			case 'ul':
+				messageObject.msg = TAPi18n.__('User_left');
+				break;
+			case 'au':
+				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, exportOperation), user_by: username });
+				break;
+			case 'r':
+				messageObject.msg = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: username });
+				break;
+			case 'ru':
+				messageObject.msg = TAPi18n.__('User_removed_by', { user_removed: hideUserName(msg.msg, exportOperation), user_by: username });
+				break;
+			case 'wm':
+				messageObject.msg = TAPi18n.__('Welcome', { user: username });
+				break;
+			case 'livechat-close':
+				messageObject.msg = TAPi18n.__('Conversation_finished');
+				break;
+		}
 	}
 
 	return messageObject;
@@ -206,6 +225,7 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 	if (exportOpRoomData.status === 'pending') {
 		exportOpRoomData.status = 'exporting';
 		startFile(filePath, '');
+		console.log(2, filePath);
 		if (!exportOperation.fullExport) {
 			writeToFile(filePath, '<meta http-equiv="content-type" content="text/html; charset=utf-8">');
 		}
@@ -234,35 +254,13 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 			const messageString = JSON.stringify(messageObject);
 			writeToFile(filePath, `${ messageString }\n`);
 		} else {
-			const messageType = msg.t;
+			const messageType = messageObject.type;
 			const timestamp = msg.ts ? new Date(msg.ts).toUTCString() : '';
-			let message = msg.msg;
+			let message = messageObject.msg;
 
-			switch (messageType) {
-				case 'uj':
-					message = TAPi18n.__('User_joined_channel');
-					break;
-				case 'ul':
-					message = TAPi18n.__('User_left');
-					break;
-				case 'au':
-					message = TAPi18n.__('User_added_by', { user_added: msg.msg, user_by: messageObject.username });
-					break;
-				case 'r':
-					message = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: messageObject.username });
-					break;
-				case 'ru':
-					message = TAPi18n.__('User_removed_by', { user_removed: msg.msg, user_by: messageObject.username });
-					break;
-				case 'wm':
-					message = TAPi18n.__('Welcome', { user: messageObject.username });
-					break;
-				case 'livechat-close':
-					message = TAPi18n.__('Conversation_finished');
-					break;
-			}
+			const italicTypes = ['uj', 'ul', 'au', 'r', 'ru', 'wm', 'livechat-close'];
 
-			if (message !== msg.msg) {
+			if (italicTypes.includes(messageType)) {
 				message = `<i>${ message }</i>`;
 			}
 
@@ -307,9 +305,9 @@ const isDownloadFinished = function(exportOperation) {
 	return !anyDownloadPending;
 };
 
-const sendEmail = function(userId) {
-	const lastFile = UserDataFiles.findLastFileByUser(userId);
-	if (!lastFile) {
+const sendEmail = function(userId, fileId) {
+	const file = fileId ? UserDataFiles.findOneById(fileId) : UserDataFiles.findLastFileByUser(userId);
+	if (!file) {
 		return;
 	}
 	const userData = Users.findOneById(userId);
@@ -321,7 +319,7 @@ const sendEmail = function(userId) {
 	const fromAddress = settings.get('From_Email');
 	const subject = TAPi18n.__('UserDataDownload_EmailSubject');
 
-	const download_link = lastFile.url;
+	const download_link = file.url;
 	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
 
 	if (!Mailer.checkAddressFormat(emailAddress)) {
@@ -398,13 +396,15 @@ const uploadZipFile = function(exportOperation, callback) {
 		name: newFileName,
 	};
 
-	userDataStore.insert(details, stream, (err) => {
+	const file = userDataStore.insert(details, stream, (err) => {
 		if (err) {
 			throw new Meteor.Error('invalid-file', 'Invalid Zip File', { method: 'cronProcessDownloads.uploadZipFile' });
 		} else {
 			callback();
 		}
 	});
+
+	exportOperation.fileId = file._id;
 };
 
 const generateChannelsFile = function(exportOperation) {
@@ -543,6 +543,7 @@ const continueExportOperation = async function(exportOperation) {
 		if (exportOperation.status === 'uploading') {
 			uploadZipFile(exportOperation, () => {
 				exportOperation.status = 'completed';
+				ExportOperations.updateOperation(exportOperation);
 			});
 		}
 
@@ -566,7 +567,7 @@ async function processDataDownloads() {
 	await ExportOperations.updateOperation(operation);
 
 	if (operation.status === 'completed') {
-		sendEmail(operation.userId);
+		sendEmail(operation.userId, operation.fileId);
 	}
 }
 

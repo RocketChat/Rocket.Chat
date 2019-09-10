@@ -71,6 +71,11 @@ export class ExportOperations extends Base {
 				status: data.status,
 				fileList: data.fileList,
 				generatedFile: data.generatedFile,
+				fileId: data.fileId,
+				userNameTable: data.userNameTable,
+				userData: data.userData,
+				generatedUserFile: data.generatedUserFile,
+				generatedAvatar: data.generatedAvatar,
 			},
 		};
 

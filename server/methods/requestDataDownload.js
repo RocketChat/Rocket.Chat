@@ -29,12 +29,12 @@ Meteor.methods({
 
 			if (lastOperation.createdAt > yesterday) {
 				if (lastOperation.status === 'completed') {
-					const lastFile = UserDataFiles.findLastFileByUser(userId);
-					if (lastFile) {
+					const file = lastOperation.fileId ? UserDataFiles.findOneById(lastOperation.fileId) : UserDataFiles.findLastFileByUser(userId);
+					if (file) {
 						return {
 							requested: false,
 							exportOperation: lastOperation,
-							url: lastFile.url,
+							url: file.url,
 							pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 						};
 					}
