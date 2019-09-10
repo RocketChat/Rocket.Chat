@@ -76,6 +76,8 @@ export class ExportOperations extends Base {
 				userData: data.userData,
 				generatedUserFile: data.generatedUserFile,
 				generatedAvatar: data.generatedAvatar,
+				exportPath: data.exportPath,
+				assetsPath: data.assetsPath,
 			},
 		};
 
@@ -91,7 +93,13 @@ export class ExportOperations extends Base {
 
 		_.extend(exportOperation, data);
 
-		return this.insert(exportOperation);
+		const result = this.insert(exportOperation);
+
+		if (exportOperation._id) {
+			data._id = exportOperation._id;
+		}
+
+		return result;
 	}
 
 

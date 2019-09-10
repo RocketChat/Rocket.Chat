@@ -53,27 +53,10 @@ Meteor.methods({
 			mkdirp.sync(tempFolder);
 		}
 
-		const subFolderName = fullExport ? 'full' : 'partial';
-		const baseFolder = path.join(tempFolder, userId);
-		if (!fs.existsSync(baseFolder)) {
-			mkdirp.sync(baseFolder);
-		}
-
-		const folderName = path.join(baseFolder, subFolderName);
-		if (!fs.existsSync(folderName)) {
-			mkdirp.sync(folderName);
-		}
-		const assetsFolder = path.join(folderName, 'assets');
-		if (!fs.existsSync(assetsFolder)) {
-			mkdirp.sync(assetsFolder);
-		}
-
 		const exportOperation = {
 			userId: currentUserData._id,
 			roomList: null,
-			status: 'pending',
-			exportPath: folderName,
-			assetsPath: assetsFolder,
+			status: 'preparing',
 			fileList: [],
 			generatedFile: null,
 			fullExport,
@@ -81,6 +64,22 @@ Meteor.methods({
 		};
 
 		ExportOperations.create(exportOperation);
+
+		const folderName = path.join(tempFolder, exportOperation._id);
+		if (!fs.existsSync(folderName)) {
+			mkdirp.sync(folderName);
+		}
+
+		const assetsFolder = path.join(folderName, 'assets');
+		if (!fs.existsSync(assetsFolder)) {
+			mkdirp.sync(assetsFolder);
+		}
+
+		exportOperation.exportPath = folderName;
+		exportOperation.assetsPath = assetsFolder;
+		exportOperation.status = 'pending';
+
+		ExportOperations.updateOperation(exportOperation);
 
 		return {
 			requested: true,

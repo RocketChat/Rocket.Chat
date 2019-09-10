@@ -225,7 +225,6 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 	if (exportOpRoomData.status === 'pending') {
 		exportOpRoomData.status = 'exporting';
 		startFile(filePath, '');
-		console.log(2, filePath);
 		if (!exportOperation.fullExport) {
 			writeToFile(filePath, '<meta http-equiv="content-type" content="text/html; charset=utf-8">');
 		}
