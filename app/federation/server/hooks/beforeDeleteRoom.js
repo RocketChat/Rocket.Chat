@@ -4,7 +4,7 @@ import { isFederated } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 
 async function beforeDeleteRoom(roomId) {
-	const room = Rooms.findOneById(roomId, { fields: { _id: 1, federation: 1 } });
+	const room = Rooms.findOneById(roomId, { fields: { federation: 1 } });
 
 	// If room does not exist, skip
 	if (!room) { return; }
