@@ -34436,6 +34436,134 @@
           ]
         }
       ]
+    },
+    "2.0.0-rc.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15283",
+          "title": "Add federation back",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "alansikora",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15332",
+          "title": "Revert \"[BREAK] Remove REST endpoint `/api/v1/info`\"",
+          "userLogin": "rodrigok",
+          "milestone": "2.0.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15333",
+          "title": "Revert \"[BREAK] Remove REST endpoint `/api/v1/emoji-custom`\"",
+          "userLogin": "rodrigok",
+          "milestone": "2.0.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15306",
+          "title": "[FIX] Redirect on app manual install",
+          "userLogin": "d-gubert",
+          "milestone": "2.0.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15329",
+          "title": "Regression: last message doesn't update after reconnect",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15242",
+          "title": "Regression: New Livechat methods and processes",
+          "userLogin": "renatobecker",
+          "milestone": "2.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15319",
+          "title": "[FIX] IE11 baseURI ",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15321",
+          "title": "Regression: Remove duplicated permission changes emitter",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15310",
+          "title": "Regression: Errors on the console preventing some settings to be saved",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15285",
+          "title": "Fix v148 migration",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "15258",
+          "title": "Fix apps list error",
+          "userLogin": "d-gubert",
+          "milestone": "2.0.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15278",
+          "title": "Revert federation",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
