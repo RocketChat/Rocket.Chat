@@ -1,5 +1,5 @@
 import { FederationRoomEvents } from '../../../models/server';
-import { isFederated, getFederatedRoomData } from '../functions/helpers';
+import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
 import { logger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -8,8 +8,12 @@ import { dispatchEvent } from '../handler';
 async function afterRemoveFromRoom(involvedUsers, room) {
 	const { removedUser } = involvedUsers;
 
+	const localDomain = getFederationDomain();
+
 	// If there are not federated users on this room, ignore it
-	if (!isFederated(room) && !isFederated(removedUser)) { return; }
+	if (!hasExternalDomain(room) && isLocalUser(removedUser, localDomain)) {
+		return;
+	}
 
 	logger.client.debug(() => `afterRemoveFromRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
@@ -33,7 +37,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		//
 		const normalizedSourceUser = normalizers.normalizeUser(removedUser);
 
-		const removeUserEvent = await FederationRoomEvents.createRemoveUserEvent(getFederationDomain(), room._id, normalizedSourceUser, domainsAfterRemoval);
+		const removeUserEvent = await FederationRoomEvents.createRemoveUserEvent(localDomain, room._id, normalizedSourceUser, domainsAfterRemoval);
 
 		// Dispatch the events
 		dispatchEvent(domainsBeforeRemoval, removeUserEvent);

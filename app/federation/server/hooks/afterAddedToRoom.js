@@ -1,27 +1,17 @@
 import { logger } from '../lib/logger';
-import { getFederatedRoomData } from '../functions/helpers';
+import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
 import { FederationRoomEvents, Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
 
-const hasExternalDomain = ({ federation }) => {
-	// same test as isFederated(room)
-	if (!federation) {
-		return false;
-	}
-
-	return federation.domains
-		.some((domain) => domain !== federation.origin);
-};
-
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;
 
-	const isLocalUser = !addedUser.federation || addedUser.federation.origin === getFederationDomain();
+	const localDomain = getFederationDomain();
 
-	if (!hasExternalDomain(room) && isLocalUser) {
+	if (!hasExternalDomain(room) && isLocalUser(addedUser, localDomain)) {
 		return;
 	}
 
@@ -58,7 +48,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 			const normalizedSourceUser = normalizers.normalizeUser(addedUser);
 			const normalizedSourceSubscription = normalizers.normalizeSubscription(subscription);
 
-			const addUserEvent = await FederationRoomEvents.createAddUserEvent(getFederationDomain(), room._id, normalizedSourceUser, normalizedSourceSubscription, domainsAfterAdd);
+			const addUserEvent = await FederationRoomEvents.createAddUserEvent(localDomain, room._id, normalizedSourceUser, normalizedSourceSubscription, domainsAfterAdd);
 
 			// Dispatch the events
 			dispatchEvent(domainsAfterAdd, addUserEvent);

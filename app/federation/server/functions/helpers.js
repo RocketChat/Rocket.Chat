@@ -13,6 +13,19 @@ export function updateEnabled(enabled) {
 
 export const isFederated = (resource) => !!resource.federation;
 
+export const hasExternalDomain = ({ federation }) => {
+	// same test as isFederated(room)
+	if (!federation) {
+		return false;
+	}
+
+	return federation.domains
+		.some((domain) => domain !== federation.origin);
+};
+
+export const isLocalUser = ({ federation }, localDomain) =>
+	!federation || federation.origin === localDomain;
+
 export const getFederatedRoomData = (room) => {
 	let hasFederatedUser = false;
 
