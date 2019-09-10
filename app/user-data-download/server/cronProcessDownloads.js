@@ -342,7 +342,7 @@ const makeZipFile = async function(exportOperation) {
 		return;
 	}
 
-	const p1 = new Promise((resolve, reject) => {
+	const zipFilePromise = new Promise((resolve, reject) => {
 		const output = fs.createWriteStream(targetFile);
 
 		exportOperation.generatedFile = targetFile;
@@ -363,7 +363,7 @@ const makeZipFile = async function(exportOperation) {
 		archive.finalize();
 	});
 
-	await p1;
+	await zipFilePromise;
 };
 
 const uploadZipFile = function(exportOperation, callback) {
