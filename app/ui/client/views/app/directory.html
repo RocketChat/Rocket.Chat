@@ -113,8 +113,8 @@
 							</th>
 							{{/if}}
 							{{#if $eq searchWorkspace 'external'}}
-							<th class="directory__domain js-sort {{#if searchSortBy 'domain'}}is-sorting{{/if}}" data-sort="domain">
-								<div class="table-fake-th"><span>{{_ "Domain"}}</span> {{> icon icon=(sortIcon 'domain') }}</div>
+							<th class="directory__origin js-sort {{#if searchSortBy 'origin'}}is-sorting{{/if}}" data-sort="origin">
+								<div class="table-fake-th"><span>{{_ "Domain"}}</span> {{> icon icon=(sortIcon 'origin') }}</div>
 							</th>
 							{{/if}}
 							{{#if $eq searchWorkspace 'internal'}}

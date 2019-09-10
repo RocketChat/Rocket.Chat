@@ -36,11 +36,11 @@ Template.apps.onCreated(function() {
 
 	(async () => {
 		try {
-			const appsFromMarketplace = await Apps.getAppsFromMarketplace();
+			const appsFromMarketplace = await Apps.getAppsFromMarketplace().catch(() => []);
 			const installedApps = await Apps.getApps();
 
 			const apps = installedApps.map((app) => {
-				const appFromMarketplace = appsFromMarketplace.find(({ id }) => id === app.id);
+				const appFromMarketplace = appsFromMarketplace.find(({ id } = {}) => id === app.id);
 
 				if (!appFromMarketplace) {
 					return {
