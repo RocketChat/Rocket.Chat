@@ -1,5 +1,4 @@
 import { FederationKeys } from '../../../models/server';
-import { API } from '../../../api/server';
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { logger } from './logger';
@@ -30,28 +29,23 @@ export function decryptIfNeeded(request, bodyParams) {
 	const remotePeerDomain = request.headers['x-federation-domain'];
 
 	if (!remotePeerDomain) {
-		return API.v1.failure('Domain is unknown, ignoring event');
+		throw new Error('Domain is unknown, ignoring event');
 	}
-
-	let payload;
 
 	//
 	// Decrypt payload if needed
-	if (remotePeerDomain !== getFederationDomain()) {
-		//
-		// Find the peer's public key
-		const { publicKey: peerKey } = search(remotePeerDomain);
+	if (remotePeerDomain === getFederationDomain()) {
+		return bodyParams;
+	}
+	//
+	// Find the peer's public key
+	const { publicKey: peerKey } = search(remotePeerDomain);
 
-		if (!peerKey) {
-			return API.v1.failure("Could not find the peer's public key to decrypt");
-		}
-
-		payload = decrypt(bodyParams, peerKey);
-	} else {
-		payload = bodyParams;
+	if (!peerKey) {
+		throw new Error("Could not find the peer's public key to decrypt");
 	}
 
-	return payload;
+	return decrypt(bodyParams, peerKey);
 }
 
 export function encrypt(data, peerKey) {

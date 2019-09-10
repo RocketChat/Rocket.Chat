@@ -6,8 +6,10 @@ const denormalizeMessage = (originalResource) => {
 
 	const [username, domain] = getNameAndDomain(resource.u.username);
 
+	const localDomain = getFederationDomain();
+
 	// Denormalize username
-	resource.u.username = domain === getFederationDomain() ? username : resource.u.username;
+	resource.u.username = domain === localDomain ? username : resource.u.username;
 
 	// Denormalize mentions
 	for (const mention of resource.mentions) {
@@ -16,7 +18,7 @@ const denormalizeMessage = (originalResource) => {
 
 		const [username, domain] = getNameAndDomain(mention.username);
 
-		if (domain === getFederationDomain()) {
+		if (domain === localDomain) {
 			const originalUsername = mention.username;
 
 			mention.username = username;
@@ -32,7 +34,7 @@ const denormalizeMessage = (originalResource) => {
 
 		const [username, domain] = getNameAndDomain(channel.name);
 
-		if (domain === getFederationDomain()) {
+		if (domain === localDomain) {
 			const originalUsername = channel.name;
 
 			channel.name = username;

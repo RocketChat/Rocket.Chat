@@ -10,7 +10,7 @@ import { dispatchEvents } from '../handler';
 API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, {
 	async post() {
 		if (!isFederationEnabled()) {
-			return API.v1.failure('Not found');
+			return API.v1.failure('Federation not enabled');
 		}
 
 		//
@@ -55,5 +55,7 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 
 		// Dispatch all the events, on the same request
 		dispatchEvents([fromDomain], missingEvents);
+
+		return API.v1.success();
 	},
 });

@@ -9,7 +9,7 @@ const userFields = { _id: 1, username: 1, type: 1, emails: 1, name: 1 };
 API.v1.addRoute('federation.users.search', { authRequired: false }, {
 	get() {
 		if (!isFederationEnabled()) {
-			return API.v1.failure('Not found');
+			return API.v1.failure('Federation not enabled');
 		}
 
 		const { username, domain } = this.requestParams();
@@ -36,7 +36,7 @@ API.v1.addRoute('federation.users.search', { authRequired: false }, {
 API.v1.addRoute('federation.users.getByUsername', { authRequired: false }, {
 	get() {
 		if (!isFederationEnabled()) {
-			return API.v1.failure('Not found');
+			return API.v1.failure('Federation not enabled');
 		}
 
 		const { username } = this.requestParams();

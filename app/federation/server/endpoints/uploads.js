@@ -8,7 +8,7 @@ import { isFederationEnabled } from '../lib/isFederationEnabled';
 API.v1.addRoute('federation.uploads', { authRequired: false }, {
 	get() {
 		if (!isFederationEnabled()) {
-			return API.v1.failure('Not found');
+			return API.v1.failure('Federation not enabled');
 		}
 
 		const { upload_id } = this.requestParams();

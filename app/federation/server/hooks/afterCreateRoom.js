@@ -6,15 +6,7 @@ import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvents } from '../handler';
 
 export async function doAfterCreateRoom(room, users, subscriptions) {
-	//
-	// Genesis
-	//
-
-	// Normalize room
-	const normalizedRoom = normalizers.normalizeRoom(room, users);
-
-	// Ensure a genesis event for this room
-	const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
+	const normalizedUsers = [];
 
 	//
 	// Add user events
@@ -29,12 +21,24 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 		const normalizedSourceUser = normalizers.normalizeUser(user);
 		const normalizedSourceSubscription = normalizers.normalizeSubscription(subscription);
 
-		const addUserEvent = await FederationRoomEvents.createAddUserEvent(getFederationDomain(), normalizedRoom._id, normalizedSourceUser, normalizedSourceSubscription);
+		normalizedUsers.push(normalizedSourceUser);
+
+		const addUserEvent = await FederationRoomEvents.createAddUserEvent(getFederationDomain(), room._id, normalizedSourceUser, normalizedSourceSubscription);
 
 		addUserEvents.push(addUserEvent);
 
 		/* eslint-enable no-await-in-loop */
 	}
+
+	//
+	// Genesis
+	//
+
+	// Normalize room
+	const normalizedRoom = normalizers.normalizeRoom(room, normalizedUsers);
+
+	// Ensure a genesis event for this room
+	const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
 
 	// Dispatch the events
 	dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, ...addUserEvents]);

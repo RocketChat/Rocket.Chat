@@ -1,15 +1,29 @@
 import { logger } from '../lib/logger';
-import { isFederated, getFederatedRoomData } from '../functions/helpers';
+import { getFederatedRoomData } from '../functions/helpers';
 import { FederationRoomEvents, Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
 
+const hasExternalDomain = ({ federation }) => {
+	// same test as isFederated(room)
+	if (!federation) {
+		return false;
+	}
+
+	return federation.domains
+		.some((domain) => domain !== federation.origin);
+};
+
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;
 
-	if (!isFederated(room) && !isFederated(addedUser)) { return; }
+	const isLocalUser = !addedUser.federation || addedUser.federation.origin === getFederationDomain();
+
+	if (!hasExternalDomain(room) && isLocalUser) {
+		return;
+	}
 
 	logger.client.debug(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
@@ -17,7 +31,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 	const { users, subscriptions } = getFederatedRoomData(room);
 
 	// Load the subscription
-	const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id));
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id);
 
 	try {
 		//
@@ -51,7 +65,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 		}
 	} catch (err) {
 		// Remove the user subscription from the room
-		Promise.await(Subscriptions.remove({ _id: subscription._id }));
+		Subscriptions.remove({ _id: subscription._id });
 
 		logger.client.error(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } => Could not add user: ${ err }`);
 	}

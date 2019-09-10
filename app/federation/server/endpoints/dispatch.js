@@ -23,7 +23,7 @@ import { getUpload, requestEventsFromLatest } from '../handler';
 API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 	async post() {
 		if (!isFederationEnabled()) {
-			return API.v1.failure('Not found');
+			return API.v1.failure('Federation not enabled');
 		}
 
 		//
