@@ -12,9 +12,37 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
 
 import { APIClient } from '../../../utils';
 import { SideNav } from '../../../ui-utils/client';
+
+function handleInstallError(apiError) {
+	if (!apiError.xhr || !apiError.xhr.responseJSON) { return; }
+
+	const { status, messages, error } = apiError.xhr.responseJSON;
+
+	let message;
+
+	switch (status) {
+		case 'storage_error':
+			message = messages.join('');
+			break;
+
+		case 'compiler_error':
+			message = 'There has been compiler errors. App cannot be installed';
+			break;
+
+		default:
+			if (error) {
+				message = error;
+			} else {
+				message = 'There has been an error installing the app';
+			}
+	}
+
+	toastr.error(message);
+}
 
 Template.appInstall.helpers({
 	over() {
@@ -143,13 +171,9 @@ Template.appInstall.events({
 					result = await APIClient.post('apps', { url });
 				}
 
-				if (result.compilerErrors.length !== 0 || result.app.status === 'compiler_error') {
-					console.warn(`The App contains errors and could not be ${ isUpdating ? 'updated' : 'installed' }.`);
-				} else {
-					FlowRouter.go(`/admin/apps/${ result.app.id }`);
-				}
+				FlowRouter.go(`/admin/apps/${ result.app.id }`);
 			} catch (err) {
-				console.warn('err', err);
+				handleInstallError(err);
 			}
 
 			t.isInstalling.set(false);
@@ -186,15 +210,9 @@ Template.appInstall.events({
 				result = await APIClient.upload('apps', data);
 			}
 
-			console.log('install result', result);
-
-			if (result.compilerErrors.length !== 0 || result.app.status === 'compiler_error') {
-				console.warn(`The App contains errors and could not be ${ isUpdating ? 'updated' : 'installed' }.`);
-			} else {
-				FlowRouter.go(`/admin/apps/${ result.app.id }`);
-			}
+			FlowRouter.go(`/admin/apps/${ result.app.id }?version=${ result.app.version }`);
 		} catch (err) {
-			console.warn('err', err);
+			handleInstallError(err);
 		}
 
 		t.isInstalling.set(false);

@@ -20,7 +20,7 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
 import { Apps } from '../../../apps/server';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/methods/dashboard';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 
 const wizardFields = [
 	'Organization_Type',
