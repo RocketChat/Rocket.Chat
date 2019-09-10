@@ -15,7 +15,7 @@ import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
 import { APIClient } from '../../../utils';
-import { SideNav } from '../../../ui-utils/client';
+import { SideNav, modal } from '../../../ui-utils/client';
 
 function handleInstallError(apiError) {
 	if (!apiError.xhr || !apiError.xhr.responseJSON) { return; }
@@ -42,15 +42,19 @@ function handleInstallError(apiError) {
 	}
 
 	toastr.error(message);
+	return message;
 }
 
 Template.appInstall.helpers({
 	over() {
 		const instance = Template.instance();
-		return (instance.appUrl.get() || instance.state.get('over')) && 'over';
+		return (instance.file.get() || instance.state.get('dragLevel') > 0) && 'over';
+	},
+	errorClass() {
+		return Template.instance().state.get('error') && 'error';
 	},
 	error() {
-		return Template.instance().state.get('error') && 'error';
+		return Template.instance().state.get('error');
 	},
 	appFile() {
 		return Template.instance().file.get();
@@ -60,6 +64,10 @@ Template.appInstall.helpers({
 	},
 	appUrl() {
 		return Template.instance().appUrl.get();
+	},
+	loading() {
+		const instance = Template.instance();
+		return instance.state.get('loading') && 'loading';
 	},
 	disabled() {
 		const instance = Template.instance();
@@ -75,11 +83,12 @@ Template.appInstall.helpers({
 Template.appInstall.onCreated(function() {
 	const instance = this;
 	this.state = new ReactiveDict({
+		dragLevel: 0,
 		error: false,
 	});
 	instance.file = new ReactiveVar('');
-	instance.isInstalling = new ReactiveVar(false);
 	instance.appUrl = new ReactiveVar('');
+	instance.isInstalling = new ReactiveVar(false);
 	instance.isUpdatingId = new ReactiveVar('');
 
 	// Allow passing in a url as a query param to show installation of
@@ -95,6 +104,8 @@ Template.appInstall.onCreated(function() {
 
 Template.appInstall.events({
 	'dragenter .rc-dropfile'(e, i) {
+		const level = i.state.get('dragLevel');
+		i.state.set('dragLevel', level + 1);
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
 		if (types != null && types.length > 0 && types.every((type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1)) {
 			i.state.set('over', true);
@@ -103,7 +114,8 @@ Template.appInstall.events({
 	},
 
 	'dragleave .rc-dropfile'(e, i) {
-		i.state.set('over', false);
+		const level = i.state.get('dragLevel');
+		i.state.set('dragLevel', level - 1);
 		e.stopPropagation();
 	},
 
@@ -118,9 +130,9 @@ Template.appInstall.events({
 	},
 
 	'dropped .rc-dropfile'(event, i) {
-		i.state.set('over', false);
+		i.state.set('dragLevel', 0);
 		const e = event.originalEvent || event;
-		const accept = event.currentTarget.getAttribute('accept').split(',');
+		const accept = event.currentTarget.querySelector('input').getAttribute('accept').split(',');
 
 		let files = [];
 
@@ -139,7 +151,7 @@ Template.appInstall.events({
 		}
 
 		const accepted = accept.map((s) => s.trim()).includes(file.type);
-		i.state.set('error', !accepted);
+		i.state.set('error', !accepted && 'error-invalid-file-type');
 		i.files = accepted && files;
 		i.file.set(accepted && file.name);
 	},
@@ -148,20 +160,20 @@ Template.appInstall.events({
 	},
 	'change #upload-app'(e, i) {
 		const file = e.currentTarget.files[0];
-		i.file.set(file.name);
-	},
-	'click .js-cancel'() {
-		FlowRouter.go('/admin/apps');
+		file && i.file.set(file.name);
+		i.state.set('error', null);
+		i.files = [file];
 	},
 	async 'click .js-install'(e, t) {
 		e.preventDefault();
+		e.stopPropagation();
 
 		const url = $('#appPackage').val().trim();
+		t.state.set('loading', true);
 
 		// Handle url installations
 		if (url) {
 			try {
-				t.isInstalling.set(true);
 				const isUpdating = t.isUpdatingId.get();
 				let result;
 
@@ -170,26 +182,25 @@ Template.appInstall.events({
 				} else {
 					result = await APIClient.post('apps', { url });
 				}
-
+				modal.close();
 				FlowRouter.go(`/admin/apps/${ result.app.id }`);
 			} catch (err) {
-				handleInstallError(err);
+				t.state.set('error', handleInstallError(err));
 			}
 
-			t.isInstalling.set(false);
+			t.state.set('loading', false);
 
 			return;
 		}
 
-		const f = t.file;
+		const f = t.file.get();
 		if (!f) {
 			return;
 		}
 
 		const data = new FormData();
 		for (let i = 0; i < t.files.length; i++) {
-			const f = t.files[0];
-
+			const f = t.files[i];
 			if (f.type === 'application/zip') {
 				data.append('app', f, f.name);
 			}
@@ -199,7 +210,6 @@ Template.appInstall.events({
 			return;
 		}
 
-		t.isInstalling.set(true);
 		try {
 			const isUpdating = t.isUpdatingId.get();
 			let result;
@@ -210,12 +220,14 @@ Template.appInstall.events({
 				result = await APIClient.upload('apps', data);
 			}
 
+			modal.close();
+
 			FlowRouter.go(`/admin/apps/${ result.app.id }?version=${ result.app.version }`);
 		} catch (err) {
-			handleInstallError(err);
+			t.state.set('error', handleInstallError(err));
 		}
 
-		t.isInstalling.set(false);
+		t.state.set('loading', false);
 	},
 });
 

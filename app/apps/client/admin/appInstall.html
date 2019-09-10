@@ -19,20 +19,23 @@
 				<hr class='divider' data-content="OR">
 				<div class="rc-form-group">
 
-					<div class="rc-dropfile {{error}} {{over}}" accept=".zip, application/zip, application/x-rar">
+					<div class="rc-dropfile {{errorClass}} {{over}}">
+						<label class="rc-dropfile__wrapper" for="upload-app">
 						{{# if error}}
 							{{> icon icon="circle-cross" block="rc-dropfile--icon"}}
 							{{appFile}}
-							Invalid type file
+							{{_ error}}
 						{{else}}
 							{{# if appFile}}
 								 {{> icon icon="checkmark-circled" block="rc-dropfile--icon"}}
 								 {{appFile}}
 							{{else}}
 								{{> icon icon="upload" block="rc-dropfile--icon"}}
-								Drag and drop a file here
+								{{_ "Drop_to_upload_file"}}
 							{{/if}}
 						{{/if}}
+						</label>
+						<input type="file" id="upload-app" name="upload-app" class="rc-dropfile--input js-input"  accept=".zip, application/zip, application/x-rar"/>
 					</div>
 					<!-- <div class="rc-input-file">
 						<label class="rc-input-file__label">
@@ -49,8 +52,8 @@
 				</div>
 				<div class="rc-form-group">
 					<div class="rc-button__group">
-						<button class="rc-button rc-button--secondary js-cancel">{{_ "Cancel"}}</button>
-						<button class="rc-button rc-button--primary js-install" disabled='{{disabled}}'>
+						<button class="rc-button rc-button--secondary js-close">{{_ "Cancel"}}</button>
+						<button class="rc-button rc-button--primary js-install {{loading}}" disabled='{{disabled}}'>
 							{{#if isUpdating}}
 								{{_ "Update"}}
 							{{else}}
