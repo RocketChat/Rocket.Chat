@@ -1,6 +1,44 @@
 
 # 2.0.0 (Under Release Candidate Process)
 
+## 2.0.0-rc.3
+`2019-09-10  ·  2 ️️️⚠️  ·  2 🐛  ·  8 🔍  ·  8 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+- Remove REST endpoint `/api/v1/info`" ([#15332](https://github.com/RocketChat/Rocket.Chat/pull/15332))
+- Remove REST endpoint `/api/v1/emoji-custom`" ([#15333](https://github.com/RocketChat/Rocket.Chat/pull/15333))
+
+### 🐛 Bug fixes
+
+- Redirect on app manual install ([#15306](https://github.com/RocketChat/Rocket.Chat/pull/15306))
+- IE11 baseURI  ([#15319](https://github.com/RocketChat/Rocket.Chat/pull/15319))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Add federation back ([#15283](https://github.com/RocketChat/Rocket.Chat/pull/15283))
+- Regression: last message doesn't update after reconnect ([#15329](https://github.com/RocketChat/Rocket.Chat/pull/15329))
+- Regression: New Livechat methods and processes ([#15242](https://github.com/RocketChat/Rocket.Chat/pull/15242))
+- Regression: Remove duplicated permission changes emitter ([#15321](https://github.com/RocketChat/Rocket.Chat/pull/15321))
+- Regression: Errors on the console preventing some settings to be saved ([#15310](https://github.com/RocketChat/Rocket.Chat/pull/15310))
+- Fix v148 migration ([#15285](https://github.com/RocketChat/Rocket.Chat/pull/15285))
+- Fix apps list error ([#15258](https://github.com/RocketChat/Rocket.Chat/pull/15258))
+- Revert federation ([#15278](https://github.com/RocketChat/Rocket.Chat/pull/15278))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@alansikora](https://github.com/alansikora)
+- [@d-gubert](https://github.com/d-gubert)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 2.0.0-rc.2
 `2019-08-28  ·  5 🔍  ·  3 👩‍💻👨‍💻`
 
