@@ -12,7 +12,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 	const localDomain = getFederationDomain();
 
 	if (!hasExternalDomain(room) && isLocalUser(addedUser, localDomain)) {
-		return;
+		return involvedUsers;
 	}
 
 	logger.client.debug(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);

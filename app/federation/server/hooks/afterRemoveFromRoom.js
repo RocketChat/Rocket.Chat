@@ -12,7 +12,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room) && isLocalUser(removedUser, localDomain)) {
-		return;
+		return involvedUsers;
 	}
 
 	logger.client.debug(() => `afterRemoveFromRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);

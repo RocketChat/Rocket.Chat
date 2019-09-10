@@ -1,13 +1,13 @@
 import { logger } from '../lib/logger';
 import { FederationRoomEvents } from '../../../models/server';
 import { normalizers } from '../normalizers';
-import { isFederated } from '../functions/helpers';
+import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
 
 async function afterSaveMessage(message, room) {
 	// If there are not federated users on this room, ignore it
-	if (!isFederated(room)) { return; }
+	if (!hasExternalDomain(room)) { return message; }
 
 	logger.client.debug(() => `afterSaveMessage => message=${ JSON.stringify(message, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 

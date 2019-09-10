@@ -4,18 +4,19 @@ import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvents } from '../handler';
+import { hasExternalDomain } from '../functions/helpers';
 
 async function afterCreateDirectRoom(room, extras) {
 	logger.client.debug(() => `afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } extras=${ JSON.stringify(extras, null, 2) }`);
 
 	// If the room is federated, ignore
-	if (room.federation) { return; }
+	if (!hasExternalDomain(room)) { return room; }
 
 	// Check if there is a federated user on this direct room
 	const hasFederatedUser = room.usernames.find((u) => u.indexOf('@') !== -1);
 
 	// If there are not federated users on this room, ignore it
-	if (!hasFederatedUser) { return; }
+	if (!hasFederatedUser) { return room; }
 
 	try {
 		//

@@ -46,7 +46,7 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 
 async function afterCreateRoom(roomOwner, room) {
 	// If the room is federated, ignore
-	if (room.federation) { return; }
+	if (room.federation) { return roomOwner; }
 
 	// Find all subscriptions of this room
 	let subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id).fetch();

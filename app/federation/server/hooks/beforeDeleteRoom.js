@@ -1,16 +1,16 @@
 import { logger } from '../lib/logger';
 import { FederationRoomEvents, Rooms } from '../../../models/server';
-import { isFederated } from '../functions/helpers';
+import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 
 async function beforeDeleteRoom(roomId) {
 	const room = Rooms.findOneById(roomId, { fields: { federation: 1 } });
 
 	// If room does not exist, skip
-	if (!room) { return; }
+	if (!room) { return roomId; }
 
 	// If there are not federated users on this room, ignore it
-	if (!isFederated(room)) { return; }
+	if (!hasExternalDomain(room)) { return roomId; }
 
 	logger.client.debug(() => `beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) }`);
 
