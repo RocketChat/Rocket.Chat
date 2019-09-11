@@ -98,7 +98,7 @@ API.v1.addRoute('livechat/message/:_id', {
 
 			return API.v1.success({ message: normalizeMessageAttachments(message) });
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 
@@ -140,7 +140,7 @@ API.v1.addRoute('livechat/message/:_id', {
 
 			return API.v1.failure();
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 	delete() {
@@ -184,7 +184,7 @@ API.v1.addRoute('livechat/message/:_id', {
 
 			return API.v1.failure();
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 });
@@ -231,9 +231,9 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls })
 				.messages
 				.map(normalizeMessageAttachments);
-			return API.v1.success(messages);
+			return API.v1.success({ messages });
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 });
