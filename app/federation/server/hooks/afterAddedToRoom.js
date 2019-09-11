@@ -1,10 +1,11 @@
 import { logger } from '../lib/logger';
-import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
+import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
 import { FederationRoomEvents, Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
+
 
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;
@@ -24,6 +25,11 @@ async function afterAddedToRoom(involvedUsers, room) {
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id);
 
 	try {
+		// If the room is not on the allowed types, ignore
+		if (!checkRoomType(room)) {
+			throw new Error('Channels cannot be federated');
+		}
+
 		//
 		// Check if the room is already federated, if it is not, create the genesis event
 		//
@@ -40,6 +46,11 @@ async function afterAddedToRoom(involvedUsers, room) {
 
 			// Get the users domains
 			const domainsAfterAdd = users.map((u) => u.federation.origin);
+
+			// Check if the number of domains is allowed
+			if (!checkRoomDomainsLength(room.federation.domains)) {
+				throw new Error('Cannot federate rooms with more than 10 domains');
+			}
 
 			//
 			// Create the user add event

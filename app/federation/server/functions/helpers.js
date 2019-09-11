@@ -11,7 +11,8 @@ export function updateEnabled(enabled) {
 	Settings.updateValueById('FEDERATION_Enabled', enabled);
 }
 
-export const isFederated = (resource) => !!resource.federation;
+export const checkRoomType = (room) => room.t === 'p' || room.t === 'd';
+export const checkRoomDomainsLength = (domains) => domains.length <= 10;
 
 export const hasExternalDomain = ({ federation }) => {
 	// same test as isFederated(room)

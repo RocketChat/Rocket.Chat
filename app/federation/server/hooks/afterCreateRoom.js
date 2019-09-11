@@ -4,6 +4,7 @@ import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvents } from '../handler';
+import { checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
 
 export async function doAfterCreateRoom(room, users, subscriptions) {
 	const normalizedUsers = [];
@@ -35,7 +36,12 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 	//
 
 	// Normalize room
-	const normalizedRoom = normalizers.normalizeRoom(room, normalizedUsers);
+	const normalizedRoom = normalizers.normalizeRoom(room);
+
+	// Check if the number of domains is allowed
+	if (!checkRoomDomainsLength(room.federation.domains)) {
+		throw new Error('Cannot federate rooms with more than 10 domains');
+	}
 
 	// Ensure a genesis event for this room
 	const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
@@ -69,11 +75,11 @@ async function afterCreateRoom(roomOwner, room) {
 	if (!hasFederatedUser) { return roomOwner; }
 
 	try {
-		// Channels cannot be federated
-		if (hasFederatedUser && room.t === 'c') {
+		// If the room is not on the allowed types, ignore
+		if (!checkRoomType(room)) {
 			throw new Error('Channels cannot be federated');
 		}
-		
+
 		logger.client.debug(() => `afterCreateRoom => roomOwner=${ JSON.stringify(roomOwner, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
 
 		await doAfterCreateRoom(room, users, subscriptions);
