@@ -43,5 +43,5 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
 
-	return normalizeMessageAttachments(message);
+	return message.file ? normalizeMessageAttachments(message) : message;
 }, callbacks.priority.LOW, 'sendMessageBySms');

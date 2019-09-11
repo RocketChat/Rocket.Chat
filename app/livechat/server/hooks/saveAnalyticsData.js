@@ -13,8 +13,9 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	message = normalizeMessageAttachments(message);
-
+	if (message.file) {
+		message = normalizeMessageAttachments(message);
+	}
 
 	const now = new Date();
 	let analyticsData;

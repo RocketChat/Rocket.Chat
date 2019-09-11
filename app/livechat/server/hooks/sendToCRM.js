@@ -61,7 +61,7 @@ function sendToCRM(type, room, includeMessages = true) {
 				msg.attachments = message.attachments;
 			}
 
-			postData.messages.push(normalizeMessageAttachments(msg));
+			postData.messages.push(msg.file ? normalizeMessageAttachments(msg) : msg);
 		});
 	}
 

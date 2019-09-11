@@ -34,5 +34,5 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		text: message.msg,
 	});
 
-	return normalizeMessageAttachments(message);
+	return message.file ? normalizeMessageAttachments(message) : message;
 }, callbacks.priority.LOW, 'sendMessageToFacebook');

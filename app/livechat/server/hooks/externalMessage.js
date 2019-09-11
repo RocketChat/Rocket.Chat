@@ -34,7 +34,9 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	message = normalizeMessageAttachments(message);
+	if (message.file) {
+		message = normalizeMessageAttachments(message);
+	}
 
 	// if the message hasn't a token, it was not sent by the visitor, so ignore it
 	if (!message.token) {
