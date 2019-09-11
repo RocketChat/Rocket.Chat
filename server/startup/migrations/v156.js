@@ -42,11 +42,19 @@ Migrations.add({
 
 		// Update rooms
 		console.log('Migration: update rooms');
-		Rooms.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
+		Promise.await(Rooms.model.rawCollection().updateMany({
+			federation: { $exists: true },
+		}, {
+			$unset: { federation: 1 },
+		}, { multi: true }));
 
 		// Update all subscriptions
 		console.log('Migration: update subscriptions');
-		Subscriptions.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
+		Promise.await(Subscriptions.model.rawCollection().updateMany({
+			federation: { $exists: true },
+		}, {
+			$unset: { federation: 1 },
+		}, { multi: true }));
 
 		// Update all users
 		console.log('Migration: update remote users');
@@ -71,11 +79,19 @@ Migrations.add({
 		// Update all messages
 		// We will not update the mentions and channels here
 		console.log('Migration: update messages');
-		Messages.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
+		Promise.await(Messages.model.rawCollection().updateMany({
+			federation: { $exists: true },
+		}, {
+			$unset: { federation: 1 },
+		}, { multi: true }));
 
 		// Update all uploads
 		console.log('Migration: update uploads');
-		Uploads.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
+		Promise.await(Uploads.model.rawCollection().updateMany({
+			federation: { $exists: true },
+		}, {
+			$unset: { federation: 1 },
+		}, { multi: true }));
 	},
 	down() {
 		// Down migration does not apply in this case
