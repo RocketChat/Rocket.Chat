@@ -393,7 +393,7 @@ export const FileUpload = {
 		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 	},
 
-	addJWTToFileUrl({ rid, userId, fileId }) {
+	generateJWTToFileUrls({ rid, userId, fileId }) {
 		if (!settings.get('FileUpload_ProtectFiles') || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
 			return;
 		}
