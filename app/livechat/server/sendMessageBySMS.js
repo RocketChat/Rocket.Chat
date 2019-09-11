@@ -29,6 +29,11 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+
+	if (message.file) {
+		message = normalizeMessageAttachments(message);
+	}
+
 	const SMSService = SMS.getService(settings.get('SMS_Service'));
 
 	if (!SMSService) {
@@ -43,5 +48,5 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
 
-	return message.file ? normalizeMessageAttachments(message) : message;
+	return message;
 }, callbacks.priority.LOW, 'sendMessageBySms');

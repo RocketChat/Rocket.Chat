@@ -28,11 +28,15 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	if (message.file) {
+		message = normalizeMessageAttachments(message);
+	}
+
 	OmniChannel.reply({
 		page: room.facebook.page.id,
 		token: room.v.token,
 		text: message.msg,
 	});
 
-	return message.file ? normalizeMessageAttachments(message) : message;
+	return message;
 }, callbacks.priority.LOW, 'sendMessageToFacebook');

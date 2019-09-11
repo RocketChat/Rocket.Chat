@@ -91,12 +91,16 @@ API.v1.addRoute('livechat/message/:_id', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const message = Messages.findOneById(_id);
+			let message = Messages.findOneById(_id);
 			if (!message) {
 				throw new Meteor.Error('invalid-message');
 			}
 
-			return API.v1.success({ message: message.file ? normalizeMessageAttachments(message) : message });
+			if (message.file) {
+				message = normalizeMessageAttachments(message);
+			}
+
+			return API.v1.success({ message });
 		} catch (e) {
 			return API.v1.failure(e);
 		}
@@ -134,8 +138,12 @@ API.v1.addRoute('livechat/message/:_id', {
 
 			const result = Livechat.updateMessage({ guest, message: { _id: msg._id, msg: this.bodyParams.msg } });
 			if (result) {
-				const message = Messages.findOneById(_id);
-				return API.v1.success({ message: message.file ? normalizeMessageAttachments(message) : message });
+				let message = Messages.findOneById(_id);
+				if (message.file) {
+					message = normalizeMessageAttachments(message);
+				}
+
+				return API.v1.success({ message });
 			}
 
 			return API.v1.failure();
