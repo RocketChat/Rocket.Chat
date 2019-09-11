@@ -18,6 +18,27 @@ const validSettings = [
 	'FEDERATION_Test_Setup',
 ];
 
+const updateLocalUsers = () => {
+	console.log('Migration: update local users');
+	const options = {
+		fields: { _id: 1 },
+		limit: 500,
+	};
+	const users = Users.find({ federation: { $exists: true } }, options).fetch();
+
+	const ids = users.map((u) => u._id);
+	if (ids.length === 0) {
+		return;
+	}
+
+	Users.update({ _id: { $in: ids } }, { $unset: { federation: 1 } }, { multi: true });
+
+	// if removed 500 users probably there is more to remove, so call it again
+	if (ids.length === 500) {
+		return updateLocalUsers();
+	}
+};
+
 const federationEventsCollection = new Mongo.Collection('rocketchat_federation_events');
 
 Migrations.add({
@@ -25,7 +46,7 @@ Migrations.add({
 	up() {
 		try {
 			// Delete all old, deprecated tables
-			console.log('drop collection');
+			console.log('Migration: drop collection');
 			Promise.await(federationEventsCollection.rawCollection().drop());
 		} catch (err) {
 			// Ignore if the collection does not exist
@@ -35,21 +56,21 @@ Migrations.add({
 		}
 
 		// Make sure we keep only the valid settings
-		console.log('remove old settings');
+		console.log('Migration: remove old settings');
 		Settings.remove({ $and: [{ _id: /FEDERATION/ }, { _id: { $nin: validSettings } }] });
 
 		// Normalize the federation property on all collections
 
 		// Update rooms
-		console.log('update rooms');
+		console.log('Migration: update rooms');
 		Rooms.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
 
 		// Update all subscriptions
-		console.log('update subscriptions');
+		console.log('Migration: update subscriptions');
 		Subscriptions.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
 
 		// Update all users
-		console.log('update remote users');
+		console.log('Migration: update remote users');
 		Users.find({ isRemote: true }).forEach((u) => {
 			const [name, domain] = u.username.split('@');
 
@@ -61,16 +82,15 @@ Migrations.add({
 			});
 		});
 
-		console.log('update local users');
-		Users.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
+		updateLocalUsers();
 
 		// Update all messages
 		// We will not update the mentions and channels here
-		console.log('update messages');
+		console.log('Migration: update messages');
 		Messages.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
 
 		// Update all uploads
-		console.log('update uploads');
+		console.log('Migration: update uploads');
 		Uploads.update({ federation: { $exists: true } }, { $unset: { federation: 1 } }, { multi: true });
 	},
 	down() {
