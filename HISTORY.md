@@ -1,3 +1,7 @@
+# Assistify 0.9.12
+
+This Release bumps Rocket.Chat to 1.3.2
+
 # 1.3.2
 `2019-08-13  ·  3 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
 
