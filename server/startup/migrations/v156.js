@@ -18,27 +18,6 @@ const validSettings = [
 	'FEDERATION_Test_Setup',
 ];
 
-const updateLocalUsers = () => {
-	console.log('Migration: update local users');
-	const options = {
-		fields: { _id: 1 },
-		limit: 500,
-	};
-	const users = Users.find({ federation: { $exists: true } }, options).fetch();
-
-	const ids = users.map((u) => u._id);
-	if (ids.length === 0) {
-		return;
-	}
-
-	Users.update({ _id: { $in: ids } }, { $unset: { federation: 1 } }, { multi: true });
-
-	// if removed 500 users probably there is more to remove, so call it again
-	if (ids.length === 500) {
-		return updateLocalUsers();
-	}
-};
-
 const federationEventsCollection = new Mongo.Collection('rocketchat_federation_events');
 
 Migrations.add({
@@ -82,7 +61,12 @@ Migrations.add({
 			});
 		});
 
-		updateLocalUsers();
+		console.log('Migration: update local users');
+		Promise.await(Users.model.rawCollection().updateMany({
+			federation: { $exists: true },
+		}, {
+			$unset: { federation: 1 },
+		}));
 
 		// Update all messages
 		// We will not update the mentions and channels here
