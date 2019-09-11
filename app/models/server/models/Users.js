@@ -555,22 +555,22 @@ export class Users extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [
 			{
 				$or: [
 					{ federation: { $exists: false } },
-					{ 'federation.peer': localPeer },
+					{ 'federation.origin': localDomain },
 				],
 			},
 		];
 		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [
 			{ federation: { $exists: true } },
-			{ 'federation.peer': { $ne: localPeer } },
+			{ 'federation.origin': { $ne: localDomain } },
 		];
 		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
