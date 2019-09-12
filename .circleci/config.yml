@@ -43,7 +43,7 @@ test-save-npm-cache: &test-save-npm-cache
     - ./node_modules
 
 test-docker-image: &test-docker-image
-  circleci/node:8.11-stretch-browsers
+  circleci/node:8.15-stretch-browsers
 
 test-with-oplog: &test-with-oplog
   <<: *defaults
@@ -68,7 +68,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11-stretch
+      - image: circleci/node:8.15-stretch
       - image: mongo:3.4
 
     steps:
@@ -208,7 +208,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11-stretch
+      - image: circleci/node:8.15-stretch
 
     steps:
       - attach_workspace:
@@ -322,7 +322,7 @@ jobs:
   pr-build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11-stretch
+      - image: circleci/node:8.15-stretch
 
     steps:
       - checkout
