@@ -1,122 +1,20 @@
 
-# 2.0.0 (Under Release Candidate Process)
+# 2.0.0
+`2019-09-12  ·  7 ️️️⚠️  ·  14 🎉  ·  6 🚀  ·  16 🐛  ·  36 🔍  ·  26 👩‍💻👨‍💻`
 
-## 2.0.0-rc.5
-`2019-09-12  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Fix wrong import and minor code improvements ([#15352](https://github.com/RocketChat/Rocket.Chat/pull/15352))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-
-## 2.0.0-rc.4
-`2019-09-11  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Federation migration and additional improvements ([#15336](https://github.com/RocketChat/Rocket.Chat/pull/15336))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@alansikora](https://github.com/alansikora)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 2.0.0-rc.3
-`2019-09-10  ·  2 ️️️⚠️  ·  2 🐛  ·  8 🔍  ·  8 👩‍💻👨‍💻`
-
-### ⚠️ BREAKING CHANGES
-
-- Remove REST endpoint `/api/v1/info`" ([#15332](https://github.com/RocketChat/Rocket.Chat/pull/15332))
-- Remove REST endpoint `/api/v1/emoji-custom`" ([#15333](https://github.com/RocketChat/Rocket.Chat/pull/15333))
-
-### 🐛 Bug fixes
-
-- Redirect on app manual install ([#15306](https://github.com/RocketChat/Rocket.Chat/pull/15306))
-- IE11 baseURI  ([#15319](https://github.com/RocketChat/Rocket.Chat/pull/15319))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Add federation back ([#15283](https://github.com/RocketChat/Rocket.Chat/pull/15283))
-- Regression: last message doesn't update after reconnect ([#15329](https://github.com/RocketChat/Rocket.Chat/pull/15329))
-- Regression: New Livechat methods and processes ([#15242](https://github.com/RocketChat/Rocket.Chat/pull/15242))
-- Regression: Remove duplicated permission changes emitter ([#15321](https://github.com/RocketChat/Rocket.Chat/pull/15321))
-- Regression: Errors on the console preventing some settings to be saved ([#15310](https://github.com/RocketChat/Rocket.Chat/pull/15310))
-- Fix v148 migration ([#15285](https://github.com/RocketChat/Rocket.Chat/pull/15285))
-- Fix apps list error ([#15258](https://github.com/RocketChat/Rocket.Chat/pull/15258))
-- Revert federation ([#15278](https://github.com/RocketChat/Rocket.Chat/pull/15278))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@alansikora](https://github.com/alansikora)
-- [@d-gubert](https://github.com/d-gubert)
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
-- [@ggazzo](https://github.com/ggazzo)
-- [@renatobecker](https://github.com/renatobecker)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 2.0.0-rc.2
-`2019-08-28  ·  5 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Double error toast on Setup Wizard ([#15268](https://github.com/RocketChat/Rocket.Chat/pull/15268))
-- Regression: addPermissionToRole argument as string ([#15267](https://github.com/RocketChat/Rocket.Chat/pull/15267))
-- Regression: Remove old scripts of Setup Wizard ([#15263](https://github.com/RocketChat/Rocket.Chat/pull/15263))
-- Fix get IP for rate limiter ([#15262](https://github.com/RocketChat/Rocket.Chat/pull/15262))
-- Add oplog events metrics ([#15249](https://github.com/RocketChat/Rocket.Chat/pull/15249))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 2.0.0-rc.1
-`2019-08-23  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Federation improvements ([#15234](https://github.com/RocketChat/Rocket.Chat/pull/15234))
-- Regression: Fix assets extension detection ([#15231](https://github.com/RocketChat/Rocket.Chat/pull/15231))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@alansikora](https://github.com/alansikora)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 2.0.0-rc.0
-`2019-08-21  ·  9 ️️️⚠️  ·  14 🎉  ·  6 🚀  ·  14 🐛  ·  21 🔍  ·  25 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.4, 3.6, 4.0`
 
 ### ⚠️ BREAKING CHANGES
 
 - Federation refactor with addition of chained events ([#15206](https://github.com/RocketChat/Rocket.Chat/pull/15206))
 - Remove support of MongoDB 3.2 and deprecate MongoDB 3.4 ([#15199](https://github.com/RocketChat/Rocket.Chat/pull/15199))
-- Remove REST endpoint `/api/v1/emoji-custom` ([#15195](https://github.com/RocketChat/Rocket.Chat/pull/15195))
 - Remove GraphQL and grant packages ([#15192](https://github.com/RocketChat/Rocket.Chat/pull/15192))
-- Remove REST endpoint `/api/v1/info` ([#15197](https://github.com/RocketChat/Rocket.Chat/pull/15197))
 - Remove publication `roomSubscriptionsByRole` ([#15193](https://github.com/RocketChat/Rocket.Chat/pull/15193))
 - Remove publication `usersInRole` ([#15194](https://github.com/RocketChat/Rocket.Chat/pull/15194))
-- remove old livechat client ([#15133](https://github.com/RocketChat/Rocket.Chat/pull/15133))
+- Remove old livechat client ([#15133](https://github.com/RocketChat/Rocket.Chat/pull/15133))
 - Replace tap:i18n to add support to 3-digit locales ([#15109](https://github.com/RocketChat/Rocket.Chat/pull/15109))
 
 ### 🎉 New features
@@ -161,6 +59,8 @@
 - Prevent to create discussion with empty name ([#14507](https://github.com/RocketChat/Rocket.Chat/pull/14507))
 - Remove new hidden file and fix for .env files for Snap ([#15120](https://github.com/RocketChat/Rocket.Chat/pull/15120))
 - cachedcollection calling multiple times SYNC ([#15104](https://github.com/RocketChat/Rocket.Chat/pull/15104))
+- Redirect on app manual install ([#15306](https://github.com/RocketChat/Rocket.Chat/pull/15306))
+- IE11 baseURI  ([#15319](https://github.com/RocketChat/Rocket.Chat/pull/15319))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -186,6 +86,21 @@
 - LingoHub based on develop ([#15115](https://github.com/RocketChat/Rocket.Chat/pull/15115))
 - Improve url validation inside message object ([#15074](https://github.com/RocketChat/Rocket.Chat/pull/15074))
 - Merge master into develop & Set version to 1.4.0-develop ([#15097](https://github.com/RocketChat/Rocket.Chat/pull/15097))
+- Federation improvements ([#15234](https://github.com/RocketChat/Rocket.Chat/pull/15234))
+- Regression: Fix assets extension detection ([#15231](https://github.com/RocketChat/Rocket.Chat/pull/15231))
+- Regression: Double error toast on Setup Wizard ([#15268](https://github.com/RocketChat/Rocket.Chat/pull/15268))
+- Regression: addPermissionToRole argument as string ([#15267](https://github.com/RocketChat/Rocket.Chat/pull/15267))
+- Regression: Remove old scripts of Setup Wizard ([#15263](https://github.com/RocketChat/Rocket.Chat/pull/15263))
+- Fix get IP for rate limiter ([#15262](https://github.com/RocketChat/Rocket.Chat/pull/15262))
+- Add oplog events metrics ([#15249](https://github.com/RocketChat/Rocket.Chat/pull/15249))
+- Regression: last message doesn't update after reconnect ([#15329](https://github.com/RocketChat/Rocket.Chat/pull/15329))
+- Regression: New Livechat methods and processes ([#15242](https://github.com/RocketChat/Rocket.Chat/pull/15242))
+- Regression: Remove duplicated permission changes emitter ([#15321](https://github.com/RocketChat/Rocket.Chat/pull/15321))
+- Regression: Errors on the console preventing some settings to be saved ([#15310](https://github.com/RocketChat/Rocket.Chat/pull/15310))
+- Fix v148 migration ([#15285](https://github.com/RocketChat/Rocket.Chat/pull/15285))
+- Fix apps list error ([#15258](https://github.com/RocketChat/Rocket.Chat/pull/15258))
+- Federation migration and additional improvements ([#15336](https://github.com/RocketChat/Rocket.Chat/pull/15336))
+- Regression: Fix wrong import and minor code improvements ([#15352](https://github.com/RocketChat/Rocket.Chat/pull/15352))
 
 </details>
 
@@ -208,6 +123,7 @@
 - [@Hudell](https://github.com/Hudell)
 - [@LuluGO](https://github.com/LuluGO)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@alansikora](https://github.com/alansikora)
 - [@cardoso](https://github.com/cardoso)
 - [@d-gubert](https://github.com/d-gubert)
