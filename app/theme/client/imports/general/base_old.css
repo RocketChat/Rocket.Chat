@@ -3177,7 +3177,8 @@ rc-old select,
 	z-index: 2;
 
 	display: flex;
-	flex: 0 0 40px;
+
+	flex: 0 0 auto;
 
 	transform: box-shadow 0.3s;
 

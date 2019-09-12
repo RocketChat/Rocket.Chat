@@ -227,7 +227,7 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff.toString('base64'), false, marketplaceInfo));
+				const aff = Promise.await(manager.add(buff.toString('base64'), true, marketplaceInfo));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -236,10 +236,6 @@ export class AppsRestApi {
 
 				if (aff.getCompilerErrors().length) {
 					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
-				}
-
-				if (aff.getLicenseValidationResult().hasErrors) {
-					return API.v1.failure({ status: 'license_error', messages: aff.getLicenseValidationResult().getErrors() });
 				}
 
 				info.status = aff.getApp().getStatus();

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
+import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
@@ -25,7 +25,6 @@ import {
 
 import './appManage.html';
 import './appManage.css';
-
 
 const attachAPIs = async (appId, state) => {
 	try {
@@ -194,9 +193,11 @@ Template.appManage.onCreated(function() {
 		loadApp(this);
 	});
 
+	this.handleRemoved = withAppIdFilter(() => FlowRouter.go('/admin/apps'));
+
 	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, this.handleChange);
 	Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, this.handleChange);
-	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleChange);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, this.handleRemoved);
 	Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, this.handleChange);
 	Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, this.handleSettingUpdated);
 });
@@ -204,7 +205,7 @@ Template.appManage.onCreated(function() {
 Template.apps.onDestroyed(function() {
 	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, this.handleChange);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, this.handleChange);
-	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleChange);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, this.handleRemoved);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, this.handleChange);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, this.handleSettingUpdated);
 });

@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Reload } from 'meteor/reload';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -138,11 +138,11 @@ Template.accountPreferences.onCreated(function() {
 	});
 
 	this.clearForm = function() {
-		this.find('#language').value = localStorage.getItem('userLanguage');
+		this.find('#language').value = Meteor._localStorage.getItem('userLanguage');
 	};
 
 	this.shouldUpdateLocalStorageSetting = function(setting, newValue) {
-		return localStorage.getItem(setting) !== newValue;
+		return Meteor._localStorage.getItem(setting) !== newValue;
 	};
 
 	this.save = function() {
@@ -190,7 +190,7 @@ Template.accountPreferences.onCreated(function() {
 
 		const selectedLanguage = $('#language').val();
 		if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
-			localStorage.setItem('userLanguage', selectedLanguage);
+			Meteor._localStorage.setItem('userLanguage', selectedLanguage);
 			data.language = selectedLanguage;
 			reload = true;
 		}
@@ -198,14 +198,14 @@ Template.accountPreferences.onCreated(function() {
 		const enableAutoAway = JSON.parse($('#enableAutoAway').find('input:checked').val());
 		data.enableAutoAway = enableAutoAway;
 		if (this.shouldUpdateLocalStorageSetting('enableAutoAway', enableAutoAway)) {
-			localStorage.setItem('enableAutoAway', enableAutoAway);
+			Meteor._localStorage.setItem('enableAutoAway', enableAutoAway);
 			reload = true;
 		}
 
 		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? settings.get('Accounts_Default_User_Preferences_idleTimeLimit') : parseInt($('input[name=idleTimeLimit]').val());
 		data.idleTimeLimit = idleTimeLimit;
 		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
-			localStorage.setItem('idleTimeLimit', idleTimeLimit);
+			Meteor._localStorage.setItem('idleTimeLimit', idleTimeLimit);
 			reload = true;
 		}
 
