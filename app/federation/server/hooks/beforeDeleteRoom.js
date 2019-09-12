@@ -21,7 +21,7 @@ async function beforeDeleteRoom(roomId) {
 		// Dispatch event (async)
 		dispatchEvent(room.federation.domains, event);
 	} catch (err) {
-		logger.client.error(() => `beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) } => Could not remove room: ${ err }`);
+		logger.client.error('beforeDeleteRoom => Could not remove room:', err);
 
 		throw err;
 	}
