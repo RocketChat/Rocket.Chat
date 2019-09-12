@@ -1,6 +1,21 @@
 
 # 2.0.0 (Under Release Candidate Process)
 
+## 2.0.0-rc.4
+`2019-09-11  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Federation migration and additional improvements ([#15336](https://github.com/RocketChat/Rocket.Chat/pull/15336))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@alansikora](https://github.com/alansikora)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 2.0.0-rc.3
 `2019-09-10  ·  2 ️️️⚠️  ·  2 🐛  ·  8 🔍  ·  8 👩‍💻👨‍💻`
 

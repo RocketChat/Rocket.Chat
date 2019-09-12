@@ -34564,6 +34564,28 @@
           ]
         }
       ]
+    },
+    "2.0.0-rc.4": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15336",
+          "title": "Federation migration and additional improvements",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "alansikora",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
