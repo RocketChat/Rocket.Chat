@@ -3,7 +3,6 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import './codeMirrorComponent.html';
 
-
 const CodeMirrors = {};
 
 Template.CodeMirror.onRendered(async function() {
@@ -43,7 +42,6 @@ Template.CodeMirror.onRendered(async function() {
 	Meteor.defer(function() {
 		editor.refresh();
 	});
-
 });
 
 

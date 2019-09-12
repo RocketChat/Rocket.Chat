@@ -295,7 +295,7 @@ Template.admin.helpers({
 			readOnly,
 		};
 	},
-	setEditorOnBlur(_id) {
+	setEditorOnBlur() {
 		return function(_id) {
 			if (!$(`.code-mirror-box[data-editor-id="${ _id }"] .CodeMirror`)[0]) {
 				return;
