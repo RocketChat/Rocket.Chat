@@ -34586,6 +34586,25 @@
           ]
         }
       ]
+    },
+    "2.0.0-rc.5": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15352",
+          "title": "Regression: Fix wrong import and minor code improvements",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
