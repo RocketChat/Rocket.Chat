@@ -7,5 +7,18 @@
 		"Assets"                      : false,
 		"chrome"                      : false,
 		"jscolor"                     : false
-	}
+  },
+  "plugins": ["react"],
+	"rules": {
+    "jsx-quotes": ["error", "prefer-single"],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/jsx-no-undef": "error",
+    "react/jsx-fragments": ["error", "syntax"],
+  },
+  "settings": {
+    "react": {
+      "version": "detect",
+    },
+  },
 }

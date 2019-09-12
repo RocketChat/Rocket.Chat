@@ -3,12 +3,20 @@ import path from 'path';
 
 import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SystemLogger } from '../../app/logger';
 import { settings } from '../../app/settings';
 import { Info, getMongoInfo } from '../../app/utils';
 import { Roles, Users } from '../../app/models/server';
+
+const exitIfNotBypassed = (ignore, errorCode = 1) => {
+	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
+		return;
+	}
+
+	process.exit(errorCode);
+};
 
 Meteor.startup(function() {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
@@ -42,28 +50,28 @@ Meteor.startup(function() {
 			msg += ['', '', 'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:', 'https://go.rocket.chat/i/oplog-required'].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-			return process.exit(1);
+			exitIfNotBypassed(process.env.BYPASS_OPLOG_VALIDATION);
 		}
 
 		if (!semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
 			msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${ desiredNodeVersionMajor }.X.X`].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-			return process.exit(1);
+			exitIfNotBypassed(process.env.BYPASS_NODEJS_VALIDATION);
 		}
 
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=3.2.0')) {
-			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.2 OR LATER'].join('\n');
+		if (!semver.satisfies(semver.coerce(mongoVersion), '>=3.4.0')) {
+			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.4 OR LATER'].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-			return process.exit(1);
+			exitIfNotBypassed(process.env.BYPASS_MONGO_VALIDATION);
 		}
 
 		SystemLogger.startup_box(msg, 'SERVER RUNNING');
 
 		// Deprecation
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=3.4.0')) {
-			msg = [`YOUR CURRENT MONGODB VERSION (${ mongoVersion }) IS DEPRECATED.`, 'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 2.0.0 AND GREATER,', 'PLEASE UPGRADE MONGODB TO VERSION 3.4 OR GREATER'].join('\n');
+		if (!semver.satisfies(semver.coerce(mongoVersion), '>=3.6.0')) {
+			msg = [`YOUR CURRENT MONGODB VERSION (${ mongoVersion }) IS DEPRECATED.`, 'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 4.0.0 AND GREATER,', 'PLEASE UPGRADE MONGODB TO VERSION 3.6 OR GREATER'].join('\n');
 			SystemLogger.deprecation_box(msg, 'DEPRECATION');
 
 			const id = `mongodbDeprecation_${ mongoVersion.replace(/[^0-9]/g, '_') }`;

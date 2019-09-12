@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms, Subscriptions } from '../../../models';
+import { LivechatRooms, Subscriptions } from '../../../models';
 
 Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 	if (!this.userId) {
@@ -12,7 +12,7 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorHistory' }));
 	}
 
-	const room = Rooms.findOneById(roomId);
+	const room = LivechatRooms.findOneById(roomId);
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } });
 	if (!subscription) {
@@ -22,7 +22,7 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 	const self = this;
 
 	if (room && room.v && room.v._id) {
-		const handle = Rooms.findByVisitorId(room.v._id).observeChanges({
+		const handle = LivechatRooms.findByVisitorId(room.v._id).observeChanges({
 			added(id, fields) {
 				self.added('visitor_history', id, fields);
 			},
