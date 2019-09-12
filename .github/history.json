@@ -33832,15 +33832,6 @@
           ]
         },
         {
-          "pr": "15195",
-          "title": "[BREAK] Remove REST endpoint `/api/v1/emoji-custom`",
-          "userLogin": "sampaiodiego",
-          "milestone": "2.0.0",
-          "contributors": [
-            "sampaiodiego"
-          ]
-        },
-        {
           "pr": "15184",
           "title": "Change notifications file imports to server",
           "userLogin": "sampaiodiego",
@@ -33852,15 +33843,6 @@
         {
           "pr": "15192",
           "title": "[BREAK] Remove GraphQL and grant packages",
-          "userLogin": "sampaiodiego",
-          "milestone": "2.0.0",
-          "contributors": [
-            "sampaiodiego"
-          ]
-        },
-        {
-          "pr": "15197",
-          "title": "[BREAK] Remove REST endpoint `/api/v1/info`",
           "userLogin": "sampaiodiego",
           "milestone": "2.0.0",
           "contributors": [
@@ -33907,7 +33889,7 @@
         },
         {
           "pr": "15133",
-          "title": "[BREAK] remove old livechat client",
+          "title": "[BREAK] Remove old livechat client",
           "userLogin": "ggazzo",
           "milestone": "2.0.0",
           "contributors": [
@@ -34447,38 +34429,6 @@
       ],
       "pull_requests": [
         {
-          "pr": "15283",
-          "title": "Add federation back",
-          "userLogin": "sampaiodiego",
-          "milestone": "2.0.0",
-          "contributors": [
-            "alansikora",
-            "sampaiodiego",
-            "web-flow"
-          ]
-        },
-        {
-          "pr": "15332",
-          "title": "Revert \"[BREAK] Remove REST endpoint `/api/v1/info`\"",
-          "userLogin": "rodrigok",
-          "milestone": "2.0.0",
-          "contributors": [
-            "rodrigok",
-            "web-flow"
-          ]
-        },
-        {
-          "pr": "15333",
-          "title": "Revert \"[BREAK] Remove REST endpoint `/api/v1/emoji-custom`\"",
-          "userLogin": "rodrigok",
-          "milestone": "2.0.0",
-          "contributors": [
-            "rodrigok",
-            "web-flow",
-            "sampaiodiego"
-          ]
-        },
-        {
           "pr": "15306",
           "title": "[FIX] Redirect on app manual install",
           "userLogin": "d-gubert",
@@ -34553,14 +34503,6 @@
           "contributors": [
             "d-gubert",
             "web-flow"
-          ]
-        },
-        {
-          "pr": "15278",
-          "title": "Revert federation",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "sampaiodiego"
           ]
         }
       ]
