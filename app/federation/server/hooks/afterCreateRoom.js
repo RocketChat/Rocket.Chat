@@ -86,7 +86,7 @@ async function afterCreateRoom(roomOwner, room) {
 	} catch (err) {
 		deleteRoom(room._id);
 
-		logger.client.error(() => `afterCreateRoom => room=${ JSON.stringify(room, null, 2) } => Could not create federated room: ${ err }`);
+		logger.client.error('afterCreateRoom => Could not create federated room:', err);
 	}
 
 	return room;

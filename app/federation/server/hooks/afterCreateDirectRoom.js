@@ -62,7 +62,7 @@ async function afterCreateDirectRoom(room, extras) {
 	} catch (err) {
 		Promise.await(deleteRoom(room._id));
 
-		logger.client.error(() => `afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } => Could not create federated room: ${ err }`);
+		logger.client.error('afterCreateDirectRoom => Could not create federated room:', err);
 	}
 
 	return room;

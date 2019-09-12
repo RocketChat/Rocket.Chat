@@ -68,7 +68,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 		// Remove the user subscription from the room
 		Subscriptions.remove({ _id: subscription._id });
 
-		logger.client.error(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } => Could not add user: ${ err }`);
+		logger.client.error('afterAddedToRoom => Could not add user:', err);
 	}
 
 	return involvedUsers;
