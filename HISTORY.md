@@ -1,6 +1,20 @@
 
 # 2.0.0 (Under Release Candidate Process)
 
+## 2.0.0-rc.5
+`2019-09-12  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Fix wrong import and minor code improvements ([#15352](https://github.com/RocketChat/Rocket.Chat/pull/15352))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 2.0.0-rc.4
 `2019-09-11  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
