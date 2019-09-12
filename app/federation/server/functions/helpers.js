@@ -35,7 +35,7 @@ export const getFederatedRoomData = (room) => {
 
 	if (room.t === 'd') {
 		// Check if there is a federated user on this room
-		hasFederatedUser = room.usernames.find((u) => u.indexOf('@') !== -1);
+		hasFederatedUser = room.usernames.some(isFullyQualified);
 	} else {
 		// Find all subscriptions of this room
 		subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id).fetch();
@@ -52,7 +52,7 @@ export const getFederatedRoomData = (room) => {
 		users = Users.findUsersWithUsernameByIds(userIds).fetch();
 
 		// Check if there is a federated user on this room
-		hasFederatedUser = users.find((u) => u.username.indexOf('@') !== -1);
+		hasFederatedUser = users.some((u) => isFullyQualified(u.username));
 	}
 
 	return {

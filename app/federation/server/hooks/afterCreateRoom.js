@@ -36,10 +36,10 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 	//
 
 	// Normalize room
-	const normalizedRoom = normalizers.normalizeRoom(room);
+	const normalizedRoom = normalizers.normalizeRoom(room, normalizedUsers);
 
 	// Check if the number of domains is allowed
-	if (!checkRoomDomainsLength(room.federation.domains)) {
+	if (!checkRoomDomainsLength(normalizedRoom.federation.domains)) {
 		throw new Error('Cannot federate rooms with more than 10 domains');
 	}
 

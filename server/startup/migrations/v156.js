@@ -46,7 +46,7 @@ Migrations.add({
 			federation: { $exists: true },
 		}, {
 			$unset: { federation: 1 },
-		}, { multi: true }));
+		}));
 
 		// Update all subscriptions
 		console.log('Migration: update subscriptions');
@@ -54,7 +54,7 @@ Migrations.add({
 			federation: { $exists: true },
 		}, {
 			$unset: { federation: 1 },
-		}, { multi: true }));
+		}));
 
 		// Update all users
 		console.log('Migration: update remote users');
@@ -83,7 +83,7 @@ Migrations.add({
 			federation: { $exists: true },
 		}, {
 			$unset: { federation: 1 },
-		}, { multi: true }));
+		}));
 
 		// Update all uploads
 		console.log('Migration: update uploads');
@@ -91,7 +91,7 @@ Migrations.add({
 			federation: { $exists: true },
 		}, {
 			$unset: { federation: 1 },
-		}, { multi: true }));
+		}));
 	},
 	down() {
 		// Down migration does not apply in this case
