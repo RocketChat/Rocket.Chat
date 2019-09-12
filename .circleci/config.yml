@@ -133,6 +133,16 @@ jobs:
           keys:
             - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
+      # To reduce memory need during actual build, build the packages solely first
+      - run:
+          name: Build a Meteor cache
+          command: |
+            # to do this we can clear the main files and it build the rest
+            echo "" > server/main.js
+            echo "" > client/main.js
+            meteor build --server-only --debug --directory /tmp/build-temp
+            git checkout -- server/main.js client/main.js
+
       - run:
           name: Build Rocket.Chat
           environment:
