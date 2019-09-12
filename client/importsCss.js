@@ -1,4 +1,4 @@
-
+import './RocketChat.font.css';
 import '../app/chatpal-search/client/style.css';
 import '../app/theme/client/main.css';
 import '../app/theme/client/vendor/photoswipe.css';
@@ -33,7 +33,6 @@ import '../app/search/client/style/style.css';
 import '../app/tokenpass/client/login-button.css';
 import '../app/tokenpass/client/channelSettings.css';
 import '../app/tokenpass/client/styles.css';
-import '../app/tooltip/client/tooltip.css';
 import '../app/ui-clean-history/client/views/stylesheets/cleanHistory.css';
 import '../app/ui-vrecord/client/vrecord.css';
 import '../app/videobridge/client/stylesheets/video.less';

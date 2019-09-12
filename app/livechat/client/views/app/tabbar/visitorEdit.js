@@ -3,9 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
-import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
+import { hasRole } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
+import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
+import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorEdit.html';
 
 Template.visitorEdit.helpers({
@@ -31,21 +33,68 @@ Template.visitorEdit.helpers({
 		}
 	},
 
-	joinTags() {
-		return this.tags && this.tags.join(', ');
+	tags() {
+		return Template.instance().tags.get();
 	},
+
+	availableUserTags() {
+		return Template.instance().availableUserTags.get();
+	},
+
+	hasAvailableTags() {
+		const tags = Template.instance().availableTags.get();
+		return tags && tags.length > 0;
+	},
+
+	canRemoveTag(availableUserTags, tag) {
+		return hasRole(Meteor.userId(), ['admin', 'livechat-manager']) || (Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1));
+	},
+});
+
+Template.visitorEdit.onRendered(function() {
+	Meteor.call('livechat:getTagsList', (err, tagsList) => {
+		this.availableTags.set(tagsList);
+
+		const uid = Meteor.userId();
+		const agentDepartments = this.agentDepartments.get();
+		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
+		const tags = this.availableTags.get() || [];
+		const availableTags = tags
+			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
+			.map(({ name }) => name);
+
+		this.availableUserTags.set(availableTags);
+	});
 });
 
 Template.visitorEdit.onCreated(function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
+	this.tags = new ReactiveVar([]);
+	this.availableTags = new ReactiveVar([]);
+	this.agentDepartments = new ReactiveVar([]);
+	this.availableUserTags = new ReactiveVar([]);
 
 	this.autorun(() => {
 		this.visitor.set(LivechatVisitor.findOne({ _id: Template.currentData().visitorId }));
 	});
 
+	const rid = Template.currentData().roomId;
+
+	this.subscribe('livechat:rooms', { _id: rid });
 	this.autorun(() => {
-		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
+		const room = LivechatRoom.findOne({ _id: rid });
+		this.room.set(room);
+		this.tags.set((room && room.tags) || []);
+	});
+
+	const uid = Meteor.userId();
+	this.subscribe('livechat:departmentAgents', null, uid, () => {
+		const departments = [];
+		LivechatDepartmentAgents.find({ agentId: uid }).forEach((dept) => {
+			departments.push(dept.departmentId);
+		});
+		this.agentDepartments.set(departments);
 	});
 });
 
@@ -60,7 +109,7 @@ Template.visitorEdit.events({
 		userData.phone = event.currentTarget.elements.phone.value;
 
 		roomData.topic = event.currentTarget.elements.topic.value;
-		roomData.tags = event.currentTarget.elements.tags.value;
+		roomData.tags = instance.tags.get();
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
@@ -69,6 +118,57 @@ Template.visitorEdit.events({
 				toastr.success(t('Saved'));
 			}
 		});
+	},
+
+	'click .remove-tag'(e, t) {
+		const tag = this.valueOf();
+		const availableTags = t.availableTags.get();
+		const hasAvailableTags = availableTags && availableTags.length > 0;
+		const availableUserTags = t.availableUserTags.get();
+		if (!hasRole(Meteor.userId(), ['admin', 'livechat-manager']) && hasAvailableTags && (!availableUserTags || availableUserTags.indexOf(tag) === -1)) {
+			return;
+		}
+		e.stopPropagation();
+		e.preventDefault();
+		let tags = t.tags.get();
+		tags = tags.filter((el) => el !== tag);
+		t.tags.set(tags);
+	},
+
+	'click #addTag'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		if ($('#tagSelect').find(':selected').is(':disabled')) {
+			return;
+		}
+
+		const tags = [...instance.tags.get()];
+		const tagVal = $('#tagSelect').val();
+		if (tagVal === '' || tags.indexOf(tagVal) > -1) {
+			return;
+		}
+
+		tags.push(tagVal);
+		instance.tags.set(tags);
+		$('#tagSelect').val('placeholder');
+	},
+
+	'keydown #tagInput'(e, instance) {
+		if (e.which === 13) {
+			e.stopPropagation();
+			e.preventDefault();
+
+			const tags = [...instance.tags.get()];
+			const tagVal = $('#tagInput').val();
+			if (tagVal === '' || tags.indexOf(tagVal) > -1) {
+				return;
+			}
+
+			tags.push(tagVal);
+			instance.tags.set(tags);
+			$('#tagInput').val('');
+		}
 	},
 
 	'click .save'() {

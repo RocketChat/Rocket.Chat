@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms, Users } from '../../../models';
+import { LivechatRooms, Users } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:getNextAgent'({ token, department }) {
 		check(token, String);
 
-		const room = Rooms.findOpenByVisitorToken(token).fetch();
+		const room = LivechatRooms.findOpenByVisitorToken(token).fetch();
 
 		if (room && room.length > 0) {
 			return;
