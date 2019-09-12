@@ -7,9 +7,12 @@ import { getFederationDomain } from '../lib/getFederationDomain';
 const denormalizeUser = (originalResource) => {
 	const resource = { ...originalResource };
 
-	resource.emails = [{
-		address: resource.federation.originalInfo.email,
-	}];
+	// Only denormalize local emails
+	if (resource.federation && resource.federation.origin === getFederationDomain()) {
+		resource.emails = [{
+			address: resource.federation.originalInfo.email,
+		}];
+	}
 
 	const [username, domain] = getNameAndDomain(resource.username);
 
