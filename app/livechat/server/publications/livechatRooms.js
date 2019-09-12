@@ -2,23 +2,39 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { LivechatDepartment, LivechatRooms } from '../../../models';
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+
+const userCanAccessRoom = ({ _id }) => {
+	if (!_id) {
+		return;
+	}
+
+	const room = LivechatRooms.findOneById(_id);
+	const user = Meteor.user();
+
+	return canAccessRoom(room, user);
+};
 
 Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:rooms' }));
 	}
 
-	if (!hasPermission(this.userId, 'view-livechat-rooms')) {
+	if (!hasPermission(this.userId, 'view-livechat-rooms') && !userCanAccessRoom(filter)) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:rooms' }));
 	}
 
 	check(filter, {
+		_id: Match.Maybe(String), // room id to filter
 		name: Match.Maybe(String), // room name to filter
 		agent: Match.Maybe(String), // agent _id who is serving
 		status: Match.Maybe(String), // either 'opened' or 'closed'
 		from: Match.Maybe(Date),
 		to: Match.Maybe(Date),
+		department: Match.Maybe(String), // room department
+		customFields: Match.Maybe(Object),
+		tags: Match.Maybe(Array),
 	});
 
 	const query = {};
@@ -49,14 +65,33 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		}
 		query.ts.$lte = filter.to;
 	}
+	if (filter.department) {
+		query.departmentId = filter.department;
+	}
+	if (filter._id) {
+		query._id = filter._id;
+	}
+	if (filter.customFields) {
+		for (const key in filter.customFields) {
+			if (filter.customFields[key]) {
+				query[`livechatData.${ key }`] = new RegExp(filter.customFields[key], 'i');
+			}
+		}
+	}
+	if (filter.tags && filter.tags.length) {
+		query.tags = {
+			$in: filter.tags,
+		};
+	}
 
 	const self = this;
-
-	const handle = Rooms.findLivechat(query, offset, limit).observeChanges({
+	const handle = LivechatRooms.findLivechat(query, offset, limit).observeChanges({
 		added(id, fields) {
+			fields = Object.assign(fields, { lookupDepartment: fields.departmentId ? LivechatDepartment.findOneById(fields.departmentId) : {} });
 			self.added('livechatRoom', id, fields);
 		},
 		changed(id, fields) {
+			fields = Object.assign(fields, { lookupDepartment: fields.departmentId ? LivechatDepartment.findOneById(fields.departmentId) : {} });
 			self.changed('livechatRoom', id, fields);
 		},
 		removed(id) {

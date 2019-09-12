@@ -24,6 +24,10 @@ Template.livechatAutocompleteUser.helpers({
 			},
 		};
 	},
+	label() {
+		const instance = Template.instance();
+		return instance.showLabel && instance.label;
+	},
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
@@ -76,6 +80,9 @@ Template.livechatAutocompleteUser.onCreated(function() {
 	this.filter = new ReactiveVar('');
 	this.selected = new ReactiveVar([]);
 	this.onClickTag = this.data.onClickTag;
+	this.showLabel = this.data.showLabel;
+	this.label = this.data.label;
+
 	const filter = {};
 	this.autorun(() => {
 		const { exceptions } = Template.currentData();

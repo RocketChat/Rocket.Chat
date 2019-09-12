@@ -7,7 +7,7 @@ import { Livechat } from '../../../server/lib/Livechat';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-departments')) {
 			return API.v1.unauthorized();
 		}
 
@@ -16,7 +16,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 		});
 	},
 	post() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'manage-livechat-departments')) {
 			return API.v1.unauthorized();
 		}
 
@@ -44,7 +44,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 
 API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-departments')) {
 			return API.v1.unauthorized();
 		}
 
@@ -62,7 +62,10 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 		}
 	},
 	put() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+		const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');
+		const permissionToAddAgents = hasPermission(this.userId, 'add-livechat-department-agents');
+
+		if (!permissionToSave && !permissionToAddAgents) {
 			return API.v1.unauthorized();
 		}
 
@@ -76,7 +79,14 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 				agents: Array,
 			});
 
-			if (Livechat.saveDepartment(this.urlParams._id, this.bodyParams.department, this.bodyParams.agents)) {
+			let success;
+			if (permissionToSave) {
+				success = Livechat.saveDepartment(this.urlParams._id, this.bodyParams.department, this.bodyParams.agents);
+			} else if (permissionToAddAgents) {
+				success = Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams.agents);
+			}
+
+			if (success) {
 				return API.v1.success({
 					department: LivechatDepartment.findOneById(this.urlParams._id),
 					agents: LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
@@ -89,7 +99,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 		}
 	},
 	delete() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'manage-livechat-departments')) {
 			return API.v1.unauthorized();
 		}
 
