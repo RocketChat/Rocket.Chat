@@ -141,18 +141,16 @@ Meteor.startup(() => {
 		Settings.update({ _id: 'AutoTranslate_DeepLAPIKey' }, {
 			$set: {
 				value: apiKey.value,
-				meteorSettingsValue: apiKey.meteorSettingsValue,
 			},
 		});
-		console.log('Copied key value to new DeepL settings');
+		console.log('Copied API key value to new DeepL settings');
 	} else if (activeProvider && activeProvider.value === 'google-translate' && apiKey) {
 		Settings.update({ _id: 'AutoTranslate_GoogleAPIKey' }, {
 			$set: {
 				value: apiKey.value,
-				meteorSettingsValue: apiKey.meteorSettingsValue,
 			},
 		});
-		console.log('Copied key value to new Google settings');
+		console.log('Copied API key value to new Google settings');
 	}
 
 	// Remove the Old API Key setting
