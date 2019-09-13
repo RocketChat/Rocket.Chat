@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "2.0.0-develop",
+	"version": "2.1.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -235,7 +235,6 @@
 		"underscore.string": "^3.3.5",
 		"url-polyfill": "^1.1.5",
 		"uuid": "^3.3.2",
-		"vis": "^4.21.0",
 		"webdav": "^2.0.0",
 		"wolfy87-eventemitter": "^5.2.5",
 		"xml-crypto": "^1.0.2",

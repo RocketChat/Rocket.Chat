@@ -238,10 +238,6 @@ export class AppsRestApi {
 					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
 				}
 
-				if (aff.getLicenseValidationResult().hasErrors) {
-					return API.v1.failure({ status: 'license_error', messages: aff.getLicenseValidationResult().getErrors() });
-				}
-
 				info.status = aff.getApp().getStatus();
 
 				return API.v1.success({

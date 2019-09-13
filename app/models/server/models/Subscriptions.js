@@ -807,6 +807,18 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	updateFnameByRoomId(rid, fname) {
+		const query = { rid };
+
+		const update = {
+			$set: {
+				fname,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	setUserUsernameByUserId(userId, username) {
 		const query =			{ 'u._id': userId };
 

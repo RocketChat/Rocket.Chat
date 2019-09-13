@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
 import { eventTypes } from '../../../models/server/models/FederationEvents';
-import { Federation } from '../federation';
+import { getFederationDomain } from '../lib/getFederationDomain';
+import { dispatchEvent } from '../handler';
 
 Meteor.methods({
 	FEDERATION_Test_Setup() {
 		try {
-			Federation.client.dispatchEvent([Federation.domain], {
+			dispatchEvent([getFederationDomain()], {
 				type: eventTypes.PING,
 			});
 
