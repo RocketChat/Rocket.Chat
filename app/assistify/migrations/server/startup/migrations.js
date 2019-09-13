@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users, Messages, Rooms, Subscriptions } from '../../../../models/server';
+import { Users, Messages, Rooms, Subscriptions, Settings } from '../../../../models/server';
 import { getUserAvatarURL } from '../../../../utils/lib/getUserAvatarURL';
 import { roomTypes } from '../../../../utils/server';
 
@@ -118,4 +118,46 @@ Meteor.startup(() => {
 		code: 1,
 	});
 	console.log('Fixing ChatSubscription u._id_1_name_1_t_1_code_1');
+});
+
+
+/* Auto Translate Migrations
+ 1) Remove service provider URL
+ 2) Remove API Key from Auto-Translate section
+ 3) If API Key exists, copy the API Key to new API key section of the service provider.
+*/
+
+Meteor.startup(() => {
+	// Remove the URL Setting
+	const url = Settings.removeById('AutoTranslate_ServiceProviderURL');
+	if (url) {
+		console.log('Removed Translation service provider URL setting.');
+	}
+
+	// Copy the existing settings to new settings
+	const activeProvider = Settings.findOne({ _id: 'AutoTranslate_ServiceProvider' });
+	const apiKey = Settings.findOne({ _id: 'AutoTranslate_APIKey' });
+	if (activeProvider && activeProvider.value === 'deepl-translate' && apiKey) {
+		Settings.update({ _id: 'AutoTranslate_DeepLAPIKey' }, {
+			$set: {
+				value: apiKey.value,
+				meteorSettingsValue: apiKey.meteorSettingsValue,
+			},
+		});
+		console.log('Copied key value to new DeepL settings');
+	} else if (activeProvider && activeProvider.value === 'google-translate' && apiKey) {
+		Settings.update({ _id: 'AutoTranslate_GoogleAPIKey' }, {
+			$set: {
+				value: apiKey.value,
+				meteorSettingsValue: apiKey.meteorSettingsValue,
+			},
+		});
+		console.log('Copied key value to new Google settings');
+	}
+
+	// Remove the Old API Key setting
+	const key = Settings.removeById('AutoTranslate_APIKey');
+	if (key) {
+		console.log('Removed old API Key setting.');
+	}
 });
