@@ -1,5 +1,6 @@
-import { Mongo } from 'meteor/mongo';
 import tls from 'tls';
+
+import { Mongo } from 'meteor/mongo';
 
 // FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
 // TODO: Remove after NodeJS fix it, more information
