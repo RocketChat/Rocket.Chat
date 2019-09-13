@@ -5,7 +5,7 @@ import './lib/iframeCommands';
 import './lib/menu';
 import './lib/Modernizr';
 import './lib/parentTemplate';
-import './lib/codeMirror/codeMirror';
+import './lib/codeMirror';
 import './lib/textarea-cursor';
 import './views/cmsPage.html';
 import './views/404/roomNotFound.html';
