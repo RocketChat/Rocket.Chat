@@ -11,16 +11,16 @@ export class Subscriptions extends Base {
 	constructor(...args) {
 		super(...args);
 
+		this.tryEnsureIndex({ rid: 1 });
+		this.tryEnsureIndex({ rid: 1, ls: 1 });
 		this.tryEnsureIndex({ rid: 1, 'u._id': 1 }, { unique: 1 });
+		this.tryEnsureIndex({ rid: 1, 'u._id': 1, open: 1 });
 		this.tryEnsureIndex({ rid: 1, 'u.username': 1 });
 		this.tryEnsureIndex({ rid: 1, alert: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ rid: 1, roles: 1 });
 		this.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
 		this.tryEnsureIndex({ open: 1 });
 		this.tryEnsureIndex({ alert: 1 });
-
-		this.tryEnsureIndex({ rid: 1, 'u._id': 1, open: 1 });
-
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ ls: 1 });
 		this.tryEnsureIndex({ audioNotifications: 1 }, { sparse: 1 });
