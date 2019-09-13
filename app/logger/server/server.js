@@ -289,6 +289,11 @@ class _Logger {
 			return;
 		}
 
+		// Deferred logging
+		if (typeof options.arguments[0] === 'function') {
+			options.arguments[0] = options.arguments[0]();
+		}
+
 		const prefix = this.getPrefix(options);
 
 		if (options.box === true && _.isString(options.arguments[0])) {

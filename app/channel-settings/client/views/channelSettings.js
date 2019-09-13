@@ -221,6 +221,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return hasAllPermission('edit-room', room._id);
 			},
 			getValue() {
+				if (room.prid) {
+					return room.fname;
+				}
 				if (settings.get('UI_Allow_room_names_with_special_chars')) {
 					return room.fname || room.name;
 				}
