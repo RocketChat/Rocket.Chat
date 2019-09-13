@@ -112,13 +112,14 @@
 		padding: 0;
 
 		resize: none;
-		line-height: 21px;
 
 		border: 0;
 		background-color: transparent;
 
 		font-family: inherit;
 		font-size: var(--message-box-text-size);
+
+		line-height: 21px;
 
 		&::placeholder {
 			color: var(--message-box-placeholder-color);
