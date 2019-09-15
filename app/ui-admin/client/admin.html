@@ -135,8 +135,8 @@
 															<div class="title">
 																{{label}}
 															</div>
-															{{> CodeMirror name=_id options=getEditorOptions code=value }}
-															{{setEditorOnBlur _id}}
+															{{> CodeMirror name=_id options=getEditorOptions code=value editorOnBlur=setEditorOnBlur}}
+
 															<div class="buttons">
 																<button class="rc-button rc-button--primary button-fullscreen">{{_ "Full_Screen"}}</button>
 																<button class="rc-button rc-button--primary button-restore">{{_ "Exit_Full_Screen"}}</button>
