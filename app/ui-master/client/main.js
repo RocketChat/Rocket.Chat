@@ -227,12 +227,6 @@ Template.main.helpers({
 	},
 });
 
-Template.main.events({
-	'click .burger'() {
-		return menu.toggle();
-	},
-});
-
 Template.main.onRendered(function() {
 	$('#initial-page-loading').remove();
 

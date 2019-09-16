@@ -1,12 +1,15 @@
-import React, { useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 
 import { ChatSubscription } from '../../../app/models/client/models/ChatSubscription';
 import { Layout } from '../../../app/ui-utils/client/lib/Layout';
 import { useSession } from '../../hooks/useSession';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useUserPreference } from '../../hooks/useUserPreference';
+import { menu } from '../../../app/ui-utils/client/lib/menu';
 
-export function Burger() {
+import './Burger.css';
+
+const useBurgerState = () => {
 	const isMenuOpen = useSession('isMenuOpen');
 	const isLayoutEmbedded = useReactiveValue(() => Layout.isEmbedded(), []);
 
@@ -38,34 +41,40 @@ export function Burger() {
 			return [unreadCount, unreadAlert];
 		}, [0, false]), [openedRoom, alertUnreadMessages]);
 
-	const unread = useMemo(() => {
+	const unreadBadge = useMemo(() => {
 		if (unreadCount > 0) {
-			return unreadCount > 99 ? '99+' : unreadCount;
+			return unreadCount > 99 ? '99+' : unreadCount.toString(10);
 		}
 
 		return unreadAlert || '';
 	}, [unreadCount, unreadAlert]);
 
-	const firstChildRef = useRef();
+	return { isMenuOpen, isLayoutEmbedded, unreadBadge };
+};
 
-	useLayoutEffect(() => {
-		const container = firstChildRef.current && firstChildRef.current.parentElement;
-		if (!container) {
-			return;
-		}
+export function Burger() {
+	const { isMenuOpen, isLayoutEmbedded, unreadBadge } = useBurgerState();
 
-		container.classList.add('rc-old');
-		container.classList.add('burger');
-		container.classList.toggle('menu-opened', !!isMenuOpen);
-	}, [isMenuOpen]);
+	const handleClick = () => {
+		menu.toggle();
+	};
 
-	return <>
-		<i ref={firstChildRef}></i>
-		<i></i>
-		<i></i>
-		{!isLayoutEmbedded && unread
+	return <button
+		aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+		className={[
+			'rc-old',
+			'burger',
+			!!isMenuOpen && 'menu-opened',
+		].filter(Boolean).join(' ')}
+		type='button'
+		onClick={handleClick}
+	>
+		<i className='burger__line' aria-hidden='true' />
+		<i className='burger__line' aria-hidden='true' />
+		<i className='burger__line' aria-hidden='true' />
+		{!isLayoutEmbedded && unreadBadge
 			&& <div className='unread-burger-alert color-error-contrast background-error-color'>
-				{unread}
+				{unreadBadge}
 			</div>}
-	</>;
+	</button>;
 }

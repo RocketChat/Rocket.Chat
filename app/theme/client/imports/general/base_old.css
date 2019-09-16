@@ -634,44 +634,6 @@ rc-old select,
 	}
 }
 
-.rc-old.burger {
-	display: none;
-	visibility: hidden;
-
-	cursor: pointer;
-	transition: transform 0.2s ease-out 0.1s;
-	will-change: transform;
-
-	& i {
-		display: block;
-
-		width: 20px;
-		height: 2px;
-		margin: 5px 0;
-
-		transition: transform 0.2s ease-out;
-
-		opacity: 0.8;
-	}
-
-	&.menu-opened i {
-		&:nth-child(1),
-		&:nth-child(3) {
-			transform-origin: 50%, 50%, 0;
-
-			opacity: 1;
-		}
-
-		&:nth-child(1) {
-			transform: translate(-25%, 3px) rotate(-45deg) scale(0.5, 1);
-		}
-
-		&:nth-child(3) {
-			transform: translate(-25%, -3px) rotate(45deg) scale(0.5, 1);
-		}
-	}
-}
-
 .rc-old .arrow {
 	z-index: 100;
 	top: calc(50% - 13px);
@@ -5069,11 +5031,6 @@ rc-old select,
 	}
 
 	.rc-old {
-		&.burger {
-			display: inline-block;
-			visibility: visible;
-		}
-
 		& .fixed-title h2 {
 			margin-left: 45px;
 		}
