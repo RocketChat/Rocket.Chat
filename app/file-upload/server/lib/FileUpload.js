@@ -175,14 +175,14 @@ export const FileUpload = {
 			s.flatten({ background: '#FFFFFF' })
 				.jpeg()
 				.resize({
-					width: Math.min(height || 0, metadata.width || Infinity),
+					width: Math.min(width || 0, metadata.width || Infinity),
 					height: Math.min(height || 0, metadata.height || Infinity),
 					fit: sharp.fit.cover,
 				})
 				.pipe(sharp()
 					.resize({
-						height,
-						width: height,
+						height: height,
+						width: width,
 						fit: sharp.fit.contain,
 						background: '#FFFFFF',
 					})
