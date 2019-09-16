@@ -2625,7 +2625,7 @@
   "Snippet_name": "정의 이름",
   "Snippeted_a_message": "미리 정의된 메시지를 생성했습니다: __snippetLink__",
   "Social_Network": "소셜 네트워크",
-  "Sorry_page_you_requested_does_not_exists_or_was_deleted": "죄송합니다. 요청한 페이지가 없거나 삭제되었습니다.",
+  "Sorry_page_you_requested_does_not_exist_or_was_deleted": "죄송합니다. 요청한 페이지가 없거나 삭제되었습니다.",
   "Sort": "정렬",
   "Sort_by_activity": "활동순으로 정렬",
   "Sound": "소리",

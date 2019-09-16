@@ -2835,7 +2835,7 @@
   "Snippet_name": "Название сниппета",
   "Snippeted_a_message": "Создан сниппет __snippetLink__",
   "Social_Network": "Социальная сеть",
-  "Sorry_page_you_requested_does_not_exists_or_was_deleted": "Извините, запрошенная вами страница не существует или была удалена!",
+  "Sorry_page_you_requested_does_not_exist_or_was_deleted": "Извините, запрошенная вами страница не существует или была удалена!",
   "Sort": "Сортировка",
   "Sort_by_activity": "Сортировать по активности",
   "Sound": "Звуковые оповещения",

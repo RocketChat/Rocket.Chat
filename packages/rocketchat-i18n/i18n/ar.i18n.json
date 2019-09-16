@@ -2375,7 +2375,7 @@
   "Snippet_name": "اسم المقتطف",
   "Snippeted_a_message": "تم إنشاء مقتطف __snippetLink__",
   "Social_Network": "شبكة اجتماعية",
-  "Sorry_page_you_requested_does_not_exists_or_was_deleted": "عذرًا ، الصفحة التي طلبتها غير موجودة أو تم حذفها!",
+  "Sorry_page_you_requested_does_not_exist_or_was_deleted": "عذرًا ، الصفحة التي طلبتها غير موجودة أو تم حذفها!",
   "Sort": "فرز",
   "Sort_by_activity": "الترتيب بحسب النشاط",
   "Sound": "الصوت",
