@@ -1,11 +1,34 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server';
 
 Migrations.add({
 	version: 155,
 	up() {
-		Settings.update({ _id: 'Livechat_agent_leave_action' }, { $set: { section: 'Sessions' } });
-		Settings.update({ _id: 'Livechat_agent_leave_action_timeout' }, { $set: { section: 'Sessions' } });
-		Settings.update({ _id: 'Livechat_agent_leave_comment' }, { $set: { section: 'Sessions' } });
+		const _id = 'Livechat_Routing_Method';
+		const setting = Settings.findOne({ _id });
+		if (setting) {
+			const { value } = setting;
+
+			let newValue;
+			switch (value) {
+				case 'Least_Amount':
+					newValue = 'Auto_Selection';
+					break;
+				case 'Guest_Pool':
+					newValue = 'Manual_Selection';
+					break;
+			}
+
+			if (!newValue) {
+				return;
+			}
+
+			Settings.update({ _id }, {
+				$set: {
+					value: newValue,
+					packageValue: newValue,
+				},
+			});
+		}
 	},
 });
