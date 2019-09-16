@@ -79,20 +79,26 @@ Meteor.startup(function() {
 			const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
 			const link = 'https://rocket.chat/docs/installation';
 
+			const rocketCatUser = Users.findOneById('rocket.cat', { fields: { _id: 1 } });
+
 			Roles.findUsersInRole('admin').forEach((adminUser) => {
 				if (Users.bannerExistsById(id)) {
 					return;
 				}
 
-				try {
-					Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
+				if (rocketCatUser) {
+					try {
+						Meteor.runAsUser('rocket.cat', () => {
+							Meteor.call('createDirectMessage', adminUser.username);
 
-					Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', {
-						msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(text, mongoVersion, adminUser.language) }\n${ link }`,
-						rid: [adminUser._id, 'rocket.cat'].sort().join(''),
-					}));
-				} catch (e) {
-					console.error(e);
+							Meteor.call('sendMessage', {
+								msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(text, mongoVersion, adminUser.language) }\n${ link }`,
+								rid: [adminUser._id, 'rocket.cat'].sort().join(''),
+							});
+						});
+					} catch (e) {
+						console.error(e);
+					}
 				}
 
 				Users.addBannerById(adminUser._id, {
