@@ -9,7 +9,7 @@ import { Template } from 'meteor/templating';
 
 import { t, getUserPreference } from '../../utils/client';
 import { chatMessages } from '../../ui';
-import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
+import { mainReady, Layout, iframeLogin, modal, popover, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
