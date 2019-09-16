@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { LivechatTrigger } from '../../../models';
 
@@ -13,7 +14,6 @@ Meteor.publish('livechat:triggers', function(_id) {
 
 	if (_id !== undefined) {
 		return LivechatTrigger.findById(_id);
-	} else {
-		return LivechatTrigger.find();
 	}
+	return LivechatTrigger.find();
 });

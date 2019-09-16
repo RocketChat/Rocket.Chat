@@ -1,14 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
+
+import { Meteor } from 'meteor/meteor';
 import streamBuffers from 'stream-buffers';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../../settings';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import filesize from 'filesize';
+
+import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
 import Avatars from '../../../models/server/models/Avatars';
@@ -20,7 +23,6 @@ import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import filesize from 'filesize';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -36,6 +38,10 @@ settings.get('FileUpload_MaxFileSize', function(key, value) {
 
 export const FileUpload = {
 	handlers: {},
+
+	getPath(path = '') {
+		return `/file-upload/${ path }`;
+	},
 
 	configureUploadsStore(store, name, options) {
 		const type = name.split(':').pop();
@@ -253,8 +259,6 @@ export const FileUpload = {
 						console.error(err);
 						fut.return();
 					});
-
-				return;
 			};
 
 			reorientation(() => {
@@ -311,7 +315,7 @@ export const FileUpload = {
 		// This file type can be pretty much anything, so it's better if we don't mess with the file extension
 		if (file.type !== 'application/octet-stream') {
 			const ext = mime.extension(file.type);
-			if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
+			if (ext && new RegExp(`\.${ ext }$`, 'i').test(file.name) === false) {
 				file.name = `${ file.name }.${ ext }`;
 			}
 		}
@@ -370,6 +374,20 @@ export const FileUpload = {
 		}
 
 		return false;
+	},
+
+	redirectToFile(fileUrl, req, res) {
+		res.removeHeader('Content-Length');
+		res.removeHeader('Cache-Control');
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
+		res.end();
+	},
+
+	proxyFile(fileName, fileUrl, forceDownload, request, req, res) {
+		res.setHeader('Content-Disposition', `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(fileName) }"`);
+
+		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 	},
 };
 

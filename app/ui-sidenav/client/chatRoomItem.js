@@ -2,7 +2,6 @@ import { Template } from 'meteor/templating';
 
 import { t, roomTypes } from '../../utils/client';
 import { settings } from '../../settings/client';
-
 import { Rooms } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 
@@ -23,7 +22,7 @@ Template.chatRoomItem.helpers({
 			...this,
 			icon,
 			avatar: roomType.getAvatarPath(this),
-			username : this.name,
+			username: this.name,
 			route: roomTypes.getRouteLink(this.t, this),
 			name: roomType.roomName(this),
 			unread,

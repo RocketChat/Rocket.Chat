@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '../../../authorization';
+
+import { hasPermission, hasRole } from '../../../authorization';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { settings } from '../../../settings';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
 
 Meteor.publish('livechat:inquiry', function(_id) {
 	if (!this.userId) {
@@ -12,12 +15,24 @@ Meteor.publish('livechat:inquiry', function(_id) {
 	}
 
 	const publication = this;
+	const limit = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed');
+	let departmentIds;
+	if (!hasRole(this.userId, 'livechat-manager')) {
+		const departmentAgents = LivechatDepartmentAgents.findByAgentId(this.userId).fetch().map((d) => d.departmentId);
+		departmentIds = LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true }).fetch().map((d) => d._id);
+	}
 
-	const cursorHandle = LivechatInquiry.find({
-		agents: this.userId,
-		status: 'open',
-		...(_id && { _id }),
-	}).observeChanges({
+	const filter = {
+		status: 'queued',
+		..._id && { _id },
+		...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } },
+	};
+
+	const options = {
+		...limit && { limit },
+	};
+
+	const cursorHandle = LivechatInquiry.find(filter, options).observeChanges({
 		added(_id, record) {
 			return publication.added('rocketchat_livechat_inquiry', _id, record);
 		},
@@ -33,5 +48,4 @@ Meteor.publish('livechat:inquiry', function(_id) {
 	return this.onStop(function() {
 		return cursorHandle.stop();
 	});
-
 });

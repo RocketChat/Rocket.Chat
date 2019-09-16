@@ -3,7 +3,8 @@ function registerUser(parameters) {
 
 	this.write({
 		prefix: this.config.server.name,
-		command: 'NICK', parameters: [nick, 1, username, 'irc.rocket.chat', 1, '+i'],
+		command: 'NICK',
+		parameters: [nick, 1, username, 'irc.rocket.chat', 1, '+i'],
 		trailer: name,
 	});
 }
@@ -16,7 +17,8 @@ function joinChannel(parameters) {
 
 	this.write({
 		prefix: this.config.server.name,
-		command: 'NJOIN', parameters: [`#${ roomName }`],
+		command: 'NJOIN',
+		parameters: [`#${ roomName }`],
 		trailer: nick,
 	});
 }
@@ -29,7 +31,8 @@ function joinedChannel(parameters) {
 
 	this.write({
 		prefix: nick,
-		command: 'JOIN', parameters: [`#${ roomName }`],
+		command: 'JOIN',
+		parameters: [`#${ roomName }`],
 	});
 }
 
@@ -41,7 +44,8 @@ function leftChannel(parameters) {
 
 	this.write({
 		prefix: nick,
-		command: 'PART', parameters: [`#${ roomName }`],
+		command: 'PART',
+		parameters: [`#${ roomName }`],
 	});
 }
 
@@ -54,7 +58,8 @@ function sentMessage(parameters) {
 
 	this.write({
 		prefix: nick,
-		command: 'PRIVMSG', parameters: [to],
+		command: 'PRIVMSG',
+		parameters: [to],
 		trailer: message,
 	});
 }

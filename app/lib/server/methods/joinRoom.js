@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { hasPermission, canAccessRoom } from '../../../authorization';
 import { Rooms } from '../../../models';
 import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';

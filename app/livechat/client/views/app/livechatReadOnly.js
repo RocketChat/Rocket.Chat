@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { ChatRoom } from '../../../../models';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import { call } from '../../../../ui-utils/client';
-import { settings } from '../../../../settings';
 import './livechatReadOnly.html';
 
 Template.livechatReadOnly.helpers({
@@ -19,9 +19,11 @@ Template.livechatReadOnly.helpers({
 		return room && room.open === true;
 	},
 
-	guestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	showPreview() {
+		const config = Template.instance().routingConfig.get();
+		return config.previewRoom;
 	},
+
 });
 
 Template.livechatReadOnly.events({
@@ -39,9 +41,16 @@ Template.livechatReadOnly.onCreated(function() {
 	this.rid = Template.currentData().rid;
 	this.room = new ReactiveVar();
 	this.inquiry = new ReactiveVar();
+	this.routingConfig = new ReactiveVar({});
+
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
+		}
+	});
 
 	this.autorun(() => {
-		const inquiry = LivechatInquiry.findOne({ agents: Meteor.userId(), status: 'open', rid: this.rid });
+		const inquiry = LivechatInquiry.findOne({ status: 'queued', rid: this.rid });
 		this.inquiry.set(inquiry);
 
 		if (inquiry) {
@@ -52,5 +61,4 @@ Template.livechatReadOnly.onCreated(function() {
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().rid }, { fields: { open: 1 } }));
 	});
-
 });

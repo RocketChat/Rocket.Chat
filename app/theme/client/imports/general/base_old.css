@@ -145,7 +145,10 @@
 }
 
 .rc-old .text-center {
+	display: flex;
+
 	text-align: center;
+	justify-content: center;
 }
 
 .connection-status > .alert {
@@ -754,7 +757,6 @@ rc-old select,
 	visibility: visible;
 
 	width: auto;
-	height: auto;
 
 	transition: opacity 0.2s ease-out;
 
@@ -3168,7 +3170,8 @@ rc-old select,
 	z-index: 2;
 
 	display: flex;
-	flex: 0 0 40px;
+
+	flex: 0 0 auto;
 
 	transform: box-shadow 0.3s;
 
@@ -3733,58 +3736,58 @@ rc-old select,
 		}
 	}
 
-	& .edit-form {
-		padding: 20px 20px 0;
+	& .room-info-content > div {
+		margin: 0 0 20px;
+	}
+}
 
-		white-space: normal;
+.rc-old .edit-form {
+	padding: 20px 20px 0;
 
-		& h3 {
-			margin-bottom: 8px;
+	white-space: normal;
 
-			font-size: 24px;
-			line-height: 22px;
+	& h3 {
+		margin-bottom: 8px;
+
+		font-size: 24px;
+		line-height: 22px;
+	}
+
+	& p {
+		font-size: 12px;
+		font-weight: 300;
+		line-height: 18px;
+	}
+
+	& > .input-line {
+		margin-top: 20px;
+
+		& #password {
+			width: 70%;
 		}
 
-		& p {
-			font-size: 12px;
-			font-weight: 300;
-			line-height: 18px;
-		}
-
-		& > .input-line {
-			margin-top: 20px;
-
-			& #password {
-				width: 70%;
-			}
-
-			& #roleSelect {
-				width: 70%;
-			}
-		}
-
-		& nav {
-			padding: 0;
-
-			&.buttons {
-				margin-top: 2em;
-			}
-		}
-
-		& .form-divisor {
-			height: 9px;
-			margin: 2em 0;
-
-			text-align: center;
-
-			& > span {
-				padding: 0 1em;
-			}
+		& #roleSelect {
+			width: 70%;
 		}
 	}
 
-	& .room-info-content > div {
-		margin: 0 0 20px;
+	& nav {
+		padding: 0;
+
+		&.buttons {
+			margin-top: 2em;
+		}
+	}
+
+	& .form-divisor {
+		height: 9px;
+		margin: 2em 0;
+
+		text-align: center;
+
+		& > span {
+			padding: 0 1em;
+		}
 	}
 }
 
@@ -3936,197 +3939,6 @@ rc-old select,
 
 .rc-old .profile-buttons {
 	margin-top: 1em;
-}
-
-.rc-old .rocket-modal {
-	position: fixed;
-	z-index: 1000;
-	top: 0;
-	left: 0;
-
-	visibility: hidden;
-
-	width: 100%;
-	height: 100%;
-
-	&.fluid .modal {
-		height: 100%;
-
-		& main {
-			position: absolute;
-
-			overflow-y: scroll;
-
-			height: calc(100% - 112px);
-		}
-	}
-
-	&.opened {
-		animation: fadeIn 0.1s ease-out forwards;
-
-		& .modal {
-			animation: modalEnter 0.35s cubic-bezier(0.5, 0, 0.1, 1) forwards 0.1s;
-		}
-	}
-
-	&.closed {
-		animation: fadeOut 0.2s ease-out forwards;
-
-		& .modal {
-			animation: modalExit 0.25s cubic-bezier(0.5, 0, 0.1, 1) forwards;
-		}
-	}
-
-	&.overflow .modal {
-		overflow: visible;
-
-		& main {
-			position: relative;
-
-			overflow: visible;
-		}
-	}
-
-	& .wrapper {
-		position: relative;
-
-		display: table;
-
-		width: 100%;
-		height: 100%;
-	}
-
-	& .window {
-		position: relative;
-
-		display: table-cell;
-
-		width: 100%;
-		height: 100%;
-
-		text-align: center;
-		vertical-align: middle;
-	}
-
-	& fieldset {
-		margin-bottom: 8px;
-	}
-
-	& legend {
-		position: relative;
-		z-index: 2;
-
-		display: block;
-
-		margin-bottom: 18px;
-
-		text-transform: uppercase;
-
-		font-size: 13px;
-
-		& i {
-			margin-right: 4px;
-		}
-
-		&::before {
-			position: absolute;
-			z-index: 1;
-			top: 19px;
-			left: 0;
-
-			width: 100%;
-			height: 1px;
-
-			content: " ";
-		}
-	}
-
-	& .modal {
-		position: relative;
-
-		display: block;
-		overflow: hidden;
-
-		width: 90%;
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 56px 0;
-
-		text-align: left;
-
-		opacity: 0;
-		border-radius: var(--border-radius);
-		box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.15);
-
-		& header {
-			position: absolute;
-			z-index: 1;
-			top: 0;
-
-			width: 100%;
-			height: 55px;
-			padding: 0 25px;
-
-			text-align-last: right;
-
-			box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-
-			font-size: 14px;
-
-			& h3 {
-				display: inline-block;
-				overflow: hidden;
-
-				margin: 0;
-
-				text-align: left;
-				text-overflow: ellipsis;
-
-				font-size: 18px;
-				font-weight: 600;
-				line-height: 55px;
-			}
-
-			& .close {
-				position: absolute;
-				top: 16px;
-				right: 20px;
-
-				width: 20px;
-				height: 26px;
-
-				opacity: 1;
-
-				& i {
-					font-size: 24px;
-				}
-			}
-		}
-
-		& main {
-			display: block;
-			overflow-x: hidden;
-			overflow-y: auto;
-
-			width: 100%;
-			height: 100%;
-			padding: 20px 25px;
-		}
-
-		& footer {
-			position: absolute;
-			z-index: 1;
-			bottom: 0;
-
-			width: 100%;
-			height: 55px;
-			padding: 11px 25px 0;
-
-			text-align: right;
-
-			box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15);
-		}
-	}
 }
 
 .rc-old .avatarPrompt {
@@ -4659,8 +4471,6 @@ rc-old select,
 }
 
 .rc-old .dropzone {
-	height: 100%;
-
 	& .dropzone-overlay {
 
 		position: absolute;
@@ -4947,8 +4757,7 @@ rc-old select,
 .rc-old .load-more {
 	position: relative;
 
-	height: 10px;
-	padding: 1rem 0;
+	height: 2rem;
 }
 
 .rc-old .flex-tab {
@@ -5184,6 +4993,8 @@ rc-old select,
 
 	& .form-group {
 		display: inline-block;
+
+		vertical-align: middle;
 	}
 }
 
@@ -5366,12 +5177,10 @@ rc-old select,
 
 .room-leader .chat-now {
 	position: absolute;
-	top: 15px;
 	right: 25px;
 
-	width: 80px;
 	height: 30px;
-	padding-top: 4px;
+	padding: 4px;
 
 	cursor: pointer;
 	text-align: center;
@@ -5395,14 +5204,18 @@ rc-old select,
 	right: 0;
 	left: 0;
 
+	display: flex;
+
 	visibility: visible;
+	flex-direction: column;
 
 	height: 57px;
 	padding-bottom: 8px;
 
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
-	border-bottom: 1px solid;
+	border-bottom: 1px solid var(--color-gray-lightest);
+	justify-content: center;
 
 	&.message:hover {
 		background-color: #ffffff;

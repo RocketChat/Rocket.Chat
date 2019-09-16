@@ -1,12 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+
 import { handleError, slashCommands } from '../../utils';
 import { ChatRoom } from '../../models';
 import { callbacks } from '../../callbacks';
 import { hasPermission } from '../../authorization';
-/*
- * Join is a named function that will replace /topic commands
- * @param {Object} message - The message object
- */
 
 function Topic(command, params, item) {
 	if (command === 'topic') {
@@ -15,9 +12,8 @@ function Topic(command, params, item) {
 				if (err) {
 					if (Meteor.isClient) {
 						return handleError(err);
-					} else {
-						throw err;
 					}
+					throw err;
 				}
 
 				if (Meteor.isClient) {

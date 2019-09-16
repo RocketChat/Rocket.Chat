@@ -3,15 +3,16 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Reload } from 'meteor/reload';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+
 import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
 import { settings } from '../../settings';
 import { CustomSounds } from '../../custom-sounds/client';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 const notificationLabels = {
 	all: 'All_messages',
@@ -137,11 +138,11 @@ Template.accountPreferences.onCreated(function() {
 	});
 
 	this.clearForm = function() {
-		this.find('#language').value = localStorage.getItem('userLanguage');
+		this.find('#language').value = Meteor._localStorage.getItem('userLanguage');
 	};
 
 	this.shouldUpdateLocalStorageSetting = function(setting, newValue) {
-		return localStorage.getItem(setting) !== newValue;
+		return Meteor._localStorage.getItem(setting) !== newValue;
 	};
 
 	this.save = function() {
@@ -189,7 +190,7 @@ Template.accountPreferences.onCreated(function() {
 
 		const selectedLanguage = $('#language').val();
 		if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
-			localStorage.setItem('userLanguage', selectedLanguage);
+			Meteor._localStorage.setItem('userLanguage', selectedLanguage);
 			data.language = selectedLanguage;
 			reload = true;
 		}
@@ -197,14 +198,14 @@ Template.accountPreferences.onCreated(function() {
 		const enableAutoAway = JSON.parse($('#enableAutoAway').find('input:checked').val());
 		data.enableAutoAway = enableAutoAway;
 		if (this.shouldUpdateLocalStorageSetting('enableAutoAway', enableAutoAway)) {
-			localStorage.setItem('enableAutoAway', enableAutoAway);
+			Meteor._localStorage.setItem('enableAutoAway', enableAutoAway);
 			reload = true;
 		}
 
 		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? settings.get('Accounts_Default_User_Preferences_idleTimeLimit') : parseInt($('input[name=idleTimeLimit]').val());
 		data.idleTimeLimit = idleTimeLimit;
 		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
-			localStorage.setItem('idleTimeLimit', idleTimeLimit);
+			Meteor._localStorage.setItem('idleTimeLimit', idleTimeLimit);
 			reload = true;
 		}
 
@@ -234,8 +235,9 @@ Template.accountPreferences.onCreated(function() {
 				if (results.requested) {
 					modal.open({
 						title: t('UserDataDownload_Requested'),
-						text: t('UserDataDownload_Requested_Text'),
+						text: t('UserDataDownload_Requested_Text', { pending_operations: results.pendingOperationsBeforeMyRequest }),
 						type: 'success',
+						html: true,
 					});
 
 					return true;
@@ -243,10 +245,15 @@ Template.accountPreferences.onCreated(function() {
 
 				if (results.exportOperation) {
 					if (results.exportOperation.status === 'completed') {
+						const text = results.url
+							? TAPi18n.__('UserDataDownload_CompletedRequestExistedWithLink_Text', { download_link: results.url })
+							: t('UserDataDownload_CompletedRequestExisted_Text');
+
 						modal.open({
 							title: t('UserDataDownload_Requested'),
-							text: t('UserDataDownload_CompletedRequestExisted_Text'),
+							text,
 							type: 'success',
+							html: true,
 						});
 
 						return true;
@@ -254,8 +261,9 @@ Template.accountPreferences.onCreated(function() {
 
 					modal.open({
 						title: t('UserDataDownload_Requested'),
-						text: t('UserDataDownload_RequestExisted_Text'),
+						text: t('UserDataDownload_RequestExisted_Text', { pending_operations: results.pendingOperationsBeforeMyRequest }),
 						type: 'success',
+						html: true,
 					});
 					return true;
 				}
@@ -320,8 +328,7 @@ Template.accountPreferences.events({
 			return;
 		}
 		if (audio) {
-			const $audio = $(`audio#${ audio }`);
-			return $audio && $audio[0] && $audio[0].play();
+			CustomSounds.play(audio);
 		}
 	},
 	'click .js-dont-ask-remove'(e) {

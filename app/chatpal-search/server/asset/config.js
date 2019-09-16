@@ -1,4 +1,4 @@
-import { Inject } from 'meteor/meteorhacks:inject-initial';
+import { injectIntoBody } from '../../../ui-master/server';
 
-Inject.rawBody('chatpal-enter', Assets.getText('server/asset/chatpal-enter.svg'));
-Inject.rawBody('chatpal-logo-icon-darkblue', Assets.getText('server/asset/chatpal-logo-icon-darkblue.svg'));
+injectIntoBody('chatpal-enter', Assets.getText('server/asset/chatpal-enter.svg'));
+injectIntoBody('chatpal-logo-icon-darkblue', Assets.getText('server/asset/chatpal-logo-icon-darkblue.svg'));

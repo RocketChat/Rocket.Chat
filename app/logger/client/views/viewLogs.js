@@ -2,9 +2,9 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+
 import { ansispan } from '../ansispan';
 import { stdout } from '../viewLogs';
-import { readMessage } from '../../../ui-utils';
 import { hasAllPermission } from '../../../authorization';
 import { SideNav } from '../../../ui-utils/client';
 import './viewLogs.html';
@@ -12,7 +12,7 @@ import './viewLogs.css';
 
 Template.viewLogs.onCreated(function() {
 	this.subscribe('stdout');
-	return this.atBottom = true;
+	this.atBottom = true;
 });
 
 Template.viewLogs.helpers({
@@ -59,15 +59,13 @@ Template.viewLogs.onRendered(function() {
 
 	this.checkIfScrollIsAtBottom = () => {
 		this.atBottom = this.isAtBottom(100);
-		readMessage.enable();
-		readMessage.read();
 	};
 
 	this.sendToBottomIfNecessary = () => {
 		if (this.atBottom === true && this.isAtBottom() !== true) {
-			return this.sendToBottom();
+			this.sendToBottom();
 		} else if (this.atBottom === false) {
-			return newLogs.className = 'new-logs';
+			newLogs.className = 'new-logs';
 		}
 	};
 

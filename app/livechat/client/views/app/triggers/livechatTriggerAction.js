@@ -1,6 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { settings } from '../../../../../settings';
+
 import './livechatTriggerAction.html';
 
 Template.livechatTriggerAction.helpers({
@@ -8,7 +9,7 @@ Template.livechatTriggerAction.helpers({
 		if (this.name === undefined && Template.instance().firstAction) {
 			Template.instance().firstAction = false;
 			return '';
-		} else if (this.name !== current) {
+		} if (this.name !== current) {
 			return 'hidden';
 		}
 	},
@@ -18,8 +19,9 @@ Template.livechatTriggerAction.helpers({
 	senderSelected(current) {
 		return !!(this.params && this.params.sender === current);
 	},
-	disableIfGuestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	disableGetNextAgent() {
+		const config = Template.instance().routingConfig.get();
+		return !config.enableTriggerAction;
 	},
 });
 
@@ -37,6 +39,13 @@ Template.livechatTriggerAction.onCreated(function() {
 	this.firstAction = true;
 
 	this.sender = new ReactiveVar('');
+	this.routingConfig = new ReactiveVar({});
+
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
+		}
+	});
 
 	const data = Template.currentData();
 	if (data && data.name === 'send-message') {

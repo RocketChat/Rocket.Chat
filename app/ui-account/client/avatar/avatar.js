@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 Template.avatar.helpers({

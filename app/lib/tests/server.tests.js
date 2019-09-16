@@ -58,8 +58,8 @@ describe('PasswordPolicyClass', () => {
 			assert.equal(passwordPolice.validate(), false);
 			assert.equal(passwordPolice.validate(1), false);
 			assert.equal(passwordPolice.validate(true), false);
-			assert.equal(passwordPolice.validate(new Date), false);
-			assert.equal(passwordPolice.validate(new Function), false);
+			assert.equal(passwordPolice.validate(new Date()), false);
+			assert.equal(passwordPolice.validate(new Function()), false);
 			assert.equal(passwordPolice.validate(''), false);
 		});
 

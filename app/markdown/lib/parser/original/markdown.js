@@ -4,8 +4,9 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { settings } from '../../../../settings';
 import s from 'underscore.string';
+
+import { settings } from '../../../../settings';
 
 const parseNotEscaped = function(msg, message) {
 	if (message && message.tokens == null) {
@@ -22,7 +23,7 @@ const parseNotEscaped = function(msg, message) {
 		return token;
 	};
 
-	const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+	const schemes = (settings.get('Markdown_SupportSchemesForLink') || '').split(',').join('|');
 
 	if (settings.get('Markdown_Headers')) {
 		// Support # Text for h1

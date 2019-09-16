@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
+
 import { modal, popover, call, erase, hide, leave } from '../../../ui-utils';
 import { ChatRoom } from '../../../models';
 import { settings } from '../../../settings';
@@ -178,7 +179,7 @@ Template.channelSettingsEditing.events({
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
-				change : (value) => {
+				change: (value) => {
 					const falseOrUndefined = value === 'disabled' ? false : undefined;
 					const realValue = value === 'enabled' ? true : falseOrUndefined;
 					return this.value.set(realValue);
@@ -207,7 +208,8 @@ Template.channelSettingsEditing.events({
 });
 
 Template.channelSettingsEditing.onCreated(function() {
-	const room = this.room = ChatRoom.findOne(this.data && this.data.rid);
+	const room = ChatRoom.findOne(this.data && this.data.rid);
+	this.room = room;
 	this.settings = {
 		name: {
 			type: 'text',
@@ -219,6 +221,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return hasAllPermission('edit-room', room._id);
 			},
 			getValue() {
+				if (room.prid) {
+					return room.fname;
+				}
 				if (settings.get('UI_Allow_room_names_with_special_chars')) {
 					return room.fname || room.name;
 				}
@@ -326,9 +331,9 @@ Template.channelSettingsEditing.onCreated(function() {
 			canView() {
 				if (!['c', 'p'].includes(room.t)) {
 					return false;
-				} else if (room.t === 'p' && !hasAllPermission('create-c')) {
+				} if (room.t === 'p' && !hasAllPermission('create-c')) {
 					return false;
-				} else if (room.t === 'c' && !hasAllPermission('create-p')) {
+				} if (room.t === 'c' && !hasAllPermission('create-p')) {
 					return false;
 				}
 				return true;
@@ -360,7 +365,6 @@ Template.channelSettingsEditing.onCreated(function() {
 								}
 								return reject();
 							});
-
 						});
 					}
 					// return $('.channel-settings form [name=\'t\']').prop('checked', !!room.type === 'p');
@@ -668,7 +672,7 @@ Template.channelSettingsEditing.onCreated(function() {
 	};
 	Object.keys(this.settings).forEach((key) => {
 		const setting = this.settings[key];
-		const def = setting.getValue ? setting.getValue(this.room) : (this.room[key] || false);
+		const def = setting.getValue ? setting.getValue(this.room) : this.room[key] || false;
 		setting.default = new ReactiveVar(def);
 		setting.value = new ReactiveVar(def);
 	});

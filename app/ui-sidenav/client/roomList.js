@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '../../callbacks';
 import { Template } from 'meteor/templating';
+
+import { callbacks } from '../../callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
@@ -124,6 +125,9 @@ Template.roomList.helpers({
 
 	noSubscriptionText() {
 		const instance = Template.instance();
+		if (instance.data.anonymous) {
+			return 'No_channels_yet';
+		}
 		return roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 

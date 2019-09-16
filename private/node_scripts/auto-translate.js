@@ -1,15 +1,17 @@
 /* eslint import/no-unresolved: 0 */
 
-const async = require('async');
 const fs = require('fs');
+
+const async = require('async');
 const _ = require('underscore');
+const translate = require('google-translate');
 
 if (!process.argv[2]) {
 	console.error('\You must inform your Google API key: node auto-translate.js [google-api-key]\n');
 	process.exit();
 }
 
-const googleTranslate = require('google-translate')(process.argv[2]);
+const googleTranslate = translate(process.argv[2]);
 
 googleTranslate.getSupportedLanguages(function(err, langs) {
 	if (err) {
@@ -17,7 +19,7 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		return;
 	}
 
-	async.eachSeries(['../../packages/rocketchat-lib/i18n/', '../../packages/rocketchat-livechat/.app/i18n/'], function(path, callback) {
+	async.eachSeries(['../../packages/rocketchat-lib/i18n/'], function(path, callback) {
 		console.log(`Translating files in: ${ path }`);
 		const enContents = fs.readFileSync(`${ path }en.i18n.json`, 'utf-8');
 		const enUnsorted = JSON.parse(enContents);
@@ -25,9 +27,8 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		_.keys(enUnsorted).sort(function(a, b) {
 			if (a.toLowerCase() !== b.toLowerCase()) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
-			} else {
-				return a.localeCompare(b);
 			}
+			return a.localeCompare(b);
 		}).forEach(function(key) {
 			en[key] = enUnsorted[key];
 		});

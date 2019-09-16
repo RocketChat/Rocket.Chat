@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from '../../../utils';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+
+import { slashCommands } from '../../../utils';
 import { Utilities } from '../../lib/misc/Utilities';
 
 export class AppCommandsBridge {

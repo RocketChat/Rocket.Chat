@@ -5,14 +5,16 @@ import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../settings';
-import { SideNav, modal } from '../../ui-utils';
-import { t, handleError } from '../../utils';
-import { CachedCollection } from '../../ui-cached-collection';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
+import { settings } from '../../settings';
+import { SideNav, modal } from '../../ui-utils';
+import { t, handleError } from '../../utils';
+import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
+import { hasAtLeastOnePermission } from '../../authorization/client';
 
 const TempSettings = new Mongo.Collection(null);
 
@@ -49,11 +51,7 @@ const setFieldValue = function(settingId, value, type, editor) {
 
 Template.admin.onCreated(function() {
 	if (settings.cachedCollectionPrivate == null) {
-		settings.cachedCollectionPrivate = new CachedCollection({
-			name: 'private-settings',
-			eventType: 'onLogged',
-			useCache: false,
-		});
+		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
 		settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
 		settings.cachedCollectionPrivate.init();
 	}
@@ -91,6 +89,9 @@ Template.admin.onDestroyed(function() {
 });
 
 Template.admin.helpers({
+	hasSettingPermission() {
+		return hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
@@ -188,11 +189,10 @@ Template.admin.helpers({
 		});
 		if (found === enableQuery.length) {
 			return {};
-		} else {
-			return {
-				disabled: 'disabled',
-			};
 		}
+		return {
+			disabled: 'disabled',
+		};
 	},
 	isReadonly() {
 		if (this.readonly === true) {
@@ -292,8 +292,8 @@ Template.admin.helpers({
 			readOnly,
 		};
 	},
-	setEditorOnBlur(_id) {
-		Meteor.defer(function() {
+	setEditorOnBlur() {
+		return function(_id) {
 			if (!$(`.code-mirror-box[data-editor-id="${ _id }"] .CodeMirror`)[0]) {
 				return;
 			}
@@ -308,7 +308,7 @@ Template.admin.helpers({
 			const onChangeDelayed = _.debounce(onChange, 500);
 			codeMirror.on('change', onChangeDelayed);
 			codeMirror.changeAdded = true;
-		});
+		};
 	},
 	assetAccept(fileConstraints) {
 		if (fileConstraints.extensions && fileConstraints.extensions.length) {
@@ -429,12 +429,23 @@ Template.admin.events({
 			return;
 		}
 
+		const failedSettings = [];
+
 		settings.batchSet(rcSettings, (err) => {
 			if (err) {
-				return handleError(err);
+				// Handle error for every settings failed.
+				err.details.settingIds.forEach((settingId) => {
+					const error = Object.assign({}, err);
+					failedSettings.push(settingId);
+					error.details.settingIds = settingId;
+					handleError(error);
+				});
 			}
-
-			TempSettings.update({ changed: true }, { $unset: { changed: 1 } });
+			rcSettings.forEach((setting) => {
+				if (!failedSettings.includes(setting._id)) {
+					TempSettings.update({ _id: setting._id }, { $unset: { changed: 1 } });
+				}
+			});
 
 			if (rcSettings.some(({ _id }) => _id === 'Language')) {
 				const lng = Meteor.user().language
@@ -444,7 +455,6 @@ Template.admin.events({
 			}
 			toastr.success(TAPi18n.__('Settings_updated'));
 		});
-
 	},
 	'click .rc-header__section-button .refresh-clients'() {
 		Meteor.call('refreshClients', function() {
@@ -480,9 +490,8 @@ Template.admin.events({
 		return Meteor.call('refreshOAuthService', function(err) {
 			if (err) {
 				return handleError(err);
-			} else {
-				return toastr.success(TAPi18n.__('Done'));
 			}
+			return toastr.success(TAPi18n.__('Done'));
 		});
 	},
 	'click .remove-custom-oauth'() {

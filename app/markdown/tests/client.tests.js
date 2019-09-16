@@ -1,7 +1,9 @@
 /* eslint-env mocha */
 import 'babel-polyfill';
 import assert from 'assert';
+
 import s from 'underscore.string';
+
 import './client.mocks.js';
 import { original } from '../lib/parser/original/original';
 import { Markdown } from '../lib/markdown';

@@ -1,13 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { Importers } from '..';
+
 import { Template } from 'meteor/templating';
-import { hasRole } from '../../../authorization';
-import { t, APIClient } from '../../../utils';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
+import { hasRole } from '../../../authorization';
+import { t, APIClient } from '../../../utils';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { SideNav } from '../../../ui-utils/client';
 
 Template.adminImportHistory.helpers({

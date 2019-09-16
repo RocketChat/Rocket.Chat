@@ -18,7 +18,6 @@ const makeCursorReactive = function(obj) {
 };
 
 Blaze.toHTMLWithDataNonReactive = function(content, data) {
-
 	makeCursorReactive(data);
 
 	if (data instanceof Spacebars.kw && Object.keys(data.hash).length > 0) {

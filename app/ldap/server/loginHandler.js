@@ -1,13 +1,14 @@
 import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import ldapEscape from 'ldap-escape';
+
+import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
+import LDAP from './ldap';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Logger } from '../../logger';
-import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
-import LDAP from './ldap';
 
-import ldapEscape from 'ldap-escape';
 
 const logger = new Logger('LDAPHandler', {});
 
@@ -124,7 +125,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 		logger.info('Logging user');
 
-		syncUserData(user, ldapUser);
+		syncUserData(user, ldapUser, ldap);
 
 		if (settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
 			Accounts.setPassword(user._id, loginRequest.ldapPass, { logout: false });

@@ -1,6 +1,8 @@
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { settings } from '../../../settings';
 
 Template.loginFooter.onCreated(function() {
@@ -21,7 +23,7 @@ Template.loginFooter.onCreated(function() {
 		}
 	};
 
-	const currentLanguage = localStorage.getItem('userLanguage');
+	const currentLanguage = Meteor._localStorage.getItem('userLanguage');
 	this.suggestAnotherLanguageFor(currentLanguage);
 });
 
