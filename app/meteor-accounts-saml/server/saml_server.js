@@ -10,6 +10,7 @@ import _ from 'underscore';
 import { SAML } from './saml_utils';
 import { CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
+import { _setUsername } from '../../lib/server/functions';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -94,6 +95,16 @@ Meteor.methods({
 	},
 });
 
+Accounts.normalizeUsername = function(name) {
+	switch (Accounts.saml.settings.usernameNormalize) {
+		case 'Lowercase':
+			name = name.toLowerCase();
+			break;
+	}
+
+	return name;
+};
+
 Accounts.registerLoginHandler(function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
@@ -111,12 +122,14 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 	}
 
+	const { emailField, usernameField } = Accounts.saml.settings;
+
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
-		const emailList = Array.isArray(loginResult.profile.email) ? loginResult.profile.email : [loginResult.profile.email];
+		const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
 		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
 
 		const eduPersonPrincipalName = loginResult.profile.eppn;
-		const fullName = loginResult.profile.cn || loginResult.profile.username || loginResult.profile.displayName;
+		const fullName = loginResult.profile.cn || loginResult.profile.displayName || loginResult.profile.username;
 
 		let eppnMatch = false;
 		let user = null;
@@ -132,12 +145,30 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			}
 		}
 
+		let username;
+		if (loginResult.profile[usernameField]) {
+			username = Accounts.normalizeUsername(loginResult.profile[usernameField]);
+		}
+
 		// If eppn is not exist
 		if (!user) {
-			user = Meteor.users.findOne({
-				'emails.address': emailRegex,
-			});
+			if (Accounts.saml.settings.immutableProperty === 'Username') {
+				if (username) {
+					user = Meteor.users.findOne({
+						username,
+					});
+				}
+			} else {
+				user = Meteor.users.findOne({
+					'emails.address': emailRegex,
+				});
+			}
 		}
+
+		const emails = emailList.map((email) => ({
+			address: email,
+			verified: true,
+		}));
 
 		if (!user) {
 			const newUser = {
@@ -145,19 +176,15 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				active: true,
 				eppn: eduPersonPrincipalName,
 				globalRoles: ['user'],
-				emails: emailList.map((email) => ({
-					address: email,
-					verified: true,
-				})),
+				emails,
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
-				const username = generateUsernameSuggestion(newUser);
-				if (username) {
-					newUser.username = username;
-				}
-			} else if (loginResult.profile.username) {
-				newUser.username = loginResult.profile.username;
+				username = generateUsernameSuggestion(newUser);
+			}
+
+			if (username) {
+				newUser.username = username;
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
@@ -190,14 +217,24 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			nameID: loginResult.profile.nameID,
 		};
 
+		const updateData = {
+			// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
+			'services.saml': samlLogin,
+		};
+
+		if (Accounts.saml.settings.immutableProperty !== 'EMail') {
+			updateData.emails = emails;
+		}
+
 		Meteor.users.update({
 			_id: user._id,
 		}, {
-			$set: {
-				// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
-				'services.saml': samlLogin,
-			},
+			$set: updateData,
 		});
+
+		if (username) {
+			_setUsername(user._id, username);
+		}
 
 		// Overwrite fullname if needed
 		if (Accounts.saml.settings.nameOverwrite === true) {

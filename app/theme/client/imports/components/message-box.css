@@ -94,7 +94,6 @@
 		border-color: var(--message-box-container-border-color);
 		border-radius: var(--message-box-container-border-radius);
 
-		line-height: 20px;
 		align-items: center;
 
 		&.editing {
@@ -119,6 +118,8 @@
 
 		font-family: inherit;
 		font-size: var(--message-box-text-size);
+
+		line-height: 21px;
 
 		&::placeholder {
 			color: var(--message-box-placeholder-color);

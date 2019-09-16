@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -20,11 +20,12 @@ export class AppServerListener {
 		this.clientStreamer = clientStreamer;
 		this.received = received;
 
-		this.engineStreamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
 		this.engineStreamer.on(AppEvents.APP_STATUS_CHANGE, this.onAppStatusUpdated.bind(this));
-		this.engineStreamer.on(AppEvents.APP_SETTING_UPDATED, this.onAppSettingUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
 		this.engineStreamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
+		this.engineStreamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
+
+		this.engineStreamer.on(AppEvents.APP_SETTING_UPDATED, this.onAppSettingUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_ADDED, this.onCommandAdded.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_DISABLED, this.onCommandDisabled.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_UPDATED, this.onCommandUpdated.bind(this));
@@ -36,21 +37,27 @@ export class AppServerListener {
 		this.clientStreamer.emit(AppEvents.APP_ADDED, appId);
 	}
 
+
 	async onAppStatusUpdated({ appId, status }) {
+		const app = this.orch.getManager().getOneById(appId);
+
+		if (app.getStatus() === status) {
+			return;
+		}
+
 		this.received.set(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`, { appId, status, when: new Date() });
 
 		if (AppStatusUtils.isEnabled(status)) {
-			await this.orch.getManager().enable(appId);
+			await this.orch.getManager().enable(appId).catch(console.error);
 			this.clientStreamer.emit(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		} else if (AppStatusUtils.isDisabled(status)) {
-			await this.orch.getManager().disable(appId, AppStatus.MANUALLY_DISABLED === status);
+			await this.orch.getManager().disable(appId, status, true).catch(console.error);
 			this.clientStreamer.emit(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		}
 	}
 
 	async onAppSettingUpdated({ appId, setting }) {
 		this.received.set(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`, { appId, setting, when: new Date() });
-
 		await this.orch.getManager().getSettingsManager().updateAppSetting(appId, setting);
 		this.clientStreamer.emit(AppEvents.APP_SETTING_UPDATED, { appId });
 	}
@@ -65,6 +72,12 @@ export class AppServerListener {
 	}
 
 	async onAppRemoved(appId) {
+		const app = this.orch.getManager().getOneById(appId);
+
+		if (!app) {
+			return;
+		}
+
 		await this.orch.getManager().remove(appId);
 		this.clientStreamer.emit(AppEvents.APP_REMOVED, appId);
 	}

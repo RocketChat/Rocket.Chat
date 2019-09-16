@@ -221,10 +221,10 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Options'),
 	icon: 'menu',
-	condition: () => AccountBox.getItems().length || hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration']),
+	condition: () => AccountBox.getItems().length || hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-selected-settings', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions']),
 	action: (e) => {
 		let adminOption;
-		if (hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration'])) {
+		if (hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-selected-settings', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions'])) {
 			adminOption = {
 				icon: 'customize',
 				name: t('Administration'),
@@ -295,7 +295,7 @@ Template.sidebarHeader.helpers({
 			};
 		}
 		return id && Meteor.users.findOne(id, { fields: {
-			username: 1, status: 1,
+			username: 1, status: 1, statusText: 1,
 		} });
 	},
 	toolbarButtons() {
@@ -316,18 +316,24 @@ Template.sidebarHeader.events({
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
-
+			const STATUS_MAP = [
+				'offline',
+				'online',
+				'away',
+				'busy',
+			];
 			const userStatusList = Object.keys(userStatus.list).map((key) => {
 				const status = userStatus.list[key];
-				const customName = status.localizeName ? null : status.name;
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
+				const defaultStatus = STATUS_MAP.includes(status.id);
+				const statusText = defaultStatus ? null : name;
 
 				return {
 					icon: 'circle',
 					name,
 					modifier,
-					action: () => setStatus(status.statusType, customName),
+					action: () => setStatus(status.statusType, statusText),
 				};
 			});
 
