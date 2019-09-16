@@ -1112,6 +1112,7 @@
   "SAML_Custom_Generate_Username": "חולל שם משתמש",
   "SAML_Custom_Issuer": "Issuer מותאם אישית",
   "SAML_Custom_Provider": "Provider מותאם אישית",
+  "SAML_Custom_Immutable_Property_Username": "שם משתמש",
   "Save": "שמירה",
   "Save_changes": "שמירת השינויים",
   "Save_Mobile_Bandwidth": "חסכון בתעבורה סלולרית",
