@@ -3,7 +3,7 @@
 	{{#if isGroupChat}}
 	{{#with roomUsers}}
 		<div class="flex-tab__header">
-			<form class="search-form rc-member-list__search" role="form">
+			<form class="search-form rc-member-list__search js-search-form" role="form">
 				<div class="rc-input">
 
 					<div class="rc-input__icon">
@@ -13,9 +13,9 @@
 
 				</div>
 				<label class="rc-select">
-					<select id="status-type" class="rc-select__element js-type" name="status-type">
-						<option value="">{{_ 'online'}}</option>
-						<option value="">{{_ 'All_users'}}</option>
+					<select class="rc-select__element js-type" name="status-type">
+						<option value="online">{{_ 'online'}}</option>
+						<option value="all">{{_ 'All_users'}}</option>
 					</select>
 					{{> icon block="rc-select__arrow" icon="arrow-down" }}
 				</label>

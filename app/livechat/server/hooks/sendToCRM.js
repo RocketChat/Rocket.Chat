@@ -1,14 +1,13 @@
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Messages, Rooms } from '../../../models';
+import { Messages, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 const msgNavType = 'livechat_navigation_history';
 
 const crmEnabled = () => {
-	const secretToken = settings.get('Livechat_secret_token');
 	const webhookUrl = settings.get('Livechat_webhookUrl');
-	return secretToken !== '' && secretToken !== undefined && webhookUrl !== '' && webhookUrl !== undefined;
+	return webhookUrl !== '' && webhookUrl !== undefined;
 };
 
 const sendMessageType = (msgType) => {
@@ -63,7 +62,7 @@ function sendToCRM(type, room, includeMessages = true) {
 	const response = Livechat.sendRequest(postData);
 
 	if (response && response.data && response.data.data) {
-		Rooms.saveCRMDataByRoomId(room._id, response.data.data);
+		LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
 	}
 
 	return room;

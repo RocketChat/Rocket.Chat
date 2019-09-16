@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Rooms, Messages } from '../../../models';
+
+import { LivechatRooms, Messages } from '../../../models';
 import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
@@ -11,7 +12,7 @@ Meteor.methods({
 
 		check(rid, String);
 
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 
 		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');

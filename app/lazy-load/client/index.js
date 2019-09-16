@@ -27,7 +27,6 @@ const isVisible = (el, instance) => {
 			return loadImage(el, instance);
 		}
 	});
-
 };
 
 window.addEventListener('resize', window.lazyloadtick);

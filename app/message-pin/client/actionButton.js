@@ -1,19 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import toastr from 'toastr';
+
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { settings } from '../../settings';
-import { Subscriptions } from '../../models';
 import { hasAtLeastOnePermission } from '../../authorization';
-import toastr from 'toastr';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'pin-message',
 		icon: 'pin',
-		label: 'Pin_Message',
+		label: 'Pin',
 		context: ['pinned', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
@@ -24,21 +24,21 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition(message) {
-			if	(!settings.get('Message_AllowPinning') || message.pinned || !Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
+		condition({ msg, subscription }) {
+			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
 				return false;
 			}
 
-			return hasAtLeastOnePermission('pin-message', message.rid);
+			return hasAtLeastOnePermission('pin-message', msg.rid);
 		},
-		order: 20,
+		order: 7,
 		group: 'menu',
 	});
 
 	MessageAction.addButton({
 		id: 'unpin-message',
 		icon: 'pin',
-		label: 'Unpin_Message',
+		label: 'Unpin',
 		context: ['pinned', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
@@ -49,14 +49,14 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition(message) {
-			if	(!settings.get('Message_AllowPinning') || !message.pinned || !Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
+		condition({ msg, subscription }) {
+			if (!subscription || !settings.get('Message_AllowPinning') || !msg.pinned) {
 				return false;
 			}
 
-			return hasAtLeastOnePermission('pin-message', message.rid);
+			return hasAtLeastOnePermission('pin-message', msg.rid);
 		},
-		order: 21,
+		order: 8,
 		group: 'menu',
 	});
 
@@ -64,7 +64,7 @@ Meteor.startup(function() {
 		id: 'jump-to-pin-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['pinned'],
+		context: ['pinned', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
@@ -72,11 +72,8 @@ Meteor.startup(function() {
 			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		condition(message) {
-			if (!Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
-				return false;
-			}
-			return true;
+		condition({ subscription }) {
+			return !!subscription;
 		},
 		order: 100,
 		group: 'menu',
@@ -85,7 +82,7 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'permalink-pinned',
 		icon: 'permalink',
-		label: 'Permalink',
+		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['pinned'],
 		async action(event) {
@@ -93,11 +90,8 @@ Meteor.startup(function() {
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition(message) {
-			if (!Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
-				return false;
-			}
-			return true;
+		condition({ subscription }) {
+			return !!subscription;
 		},
 		order: 101,
 		group: 'menu',

@@ -1,9 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import _ from 'underscore';
+import { settings } from '../../../settings';
+
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
@@ -20,7 +23,7 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 		room = Rooms.findOneByName(params.roomName, { fields });
 	}
 
-	if (!room || room.t !== 'c') {
+	if (!room || (room.t !== 'c' && room.t !== 'l')) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 
@@ -28,7 +31,8 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 		throw new Meteor.Error('error-room-archived', `The channel, ${ room.name }, is archived`);
 	}
 	if (userId && room.lastMessage) {
-		room.lastMessage = composeMessageObjectWithUser(room.lastMessage, userId);
+		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		room.lastMessage = lastMessage;
 	}
 
 	return room;
@@ -264,7 +268,7 @@ API.v1.addRoute('channels.files', { authRequired: true }, {
 		const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
 		const files = Uploads.find(ourQuery, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -309,7 +313,7 @@ API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 		ourQuery = Object.assign({}, query, ourQuery);
 
 		const integrations = Integrations.find(ourQuery, {
-			sort: sort ? sort : { _createdAt: 1 },
+			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -464,7 +468,7 @@ API.v1.addRoute('channels.list', { authRequired: true }, {
 			}
 
 			const cursor = Rooms.find(ourQuery, {
-				sort: sort ? sort : { name: 1 },
+				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				fields,
@@ -491,7 +495,7 @@ API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 		// TODO: CACHE: Add Breacking notice since we removed the query param
 		const cursor = Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -535,7 +539,7 @@ API.v1.addRoute('channels.members', { authRequired: true }, {
 		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
 
 		const users = Users.find({ _id: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
+			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 			sort: { username: sort.username != null ? sort.username : 1 },
 		}).fetch();
 
@@ -568,7 +572,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 		}
 
 		const cursor = Messages.find(ourQuery, {
-			sort: sort ? sort : { ts: -1 },
+			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -578,7 +582,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 		const messages = cursor.fetch();
 
 		return API.v1.success({
-			messages: messages.map((record) => composeMessageObjectWithUser(record, this.userId)),
+			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
 			total,
@@ -760,7 +764,7 @@ API.v1.addRoute('channels.setDefault', { authRequired: true }, {
 
 API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.description || !this.bodyParams.description.trim()) {
+		if (!this.bodyParams.hasOwnProperty('description')) {
 			return API.v1.failure('The bodyParam "description" is required');
 		}
 
@@ -779,6 +783,7 @@ API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 		});
 	},
 });
+
 
 API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 	post() {
@@ -800,7 +805,7 @@ API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 
 API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.purpose || !this.bodyParams.purpose.trim()) {
+		if (!this.bodyParams.hasOwnProperty('purpose')) {
 			return API.v1.failure('The bodyParam "purpose" is required');
 		}
 
@@ -844,7 +849,7 @@ API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
 
 API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
+		if (!this.bodyParams.hasOwnProperty('topic')) {
 			return API.v1.failure('The bodyParam "topic" is required');
 		}
 
@@ -866,7 +871,7 @@ API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 
 API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+		if (!this.bodyParams.hasOwnProperty('announcement')) {
 			return API.v1.failure('The bodyParam "announcement" is required');
 		}
 
@@ -933,7 +938,7 @@ API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequired: true }, 
 		const mentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
 			roomId,
 			options: {
-				sort: sort ? sort : { ts: 1 },
+				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
 			},
@@ -1005,3 +1010,38 @@ API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
+	get() {
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false,
+		});
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		if (!settings.get('Accounts_AllowAnonymousRead')) {
+			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
+				method: 'channels.anonymousread',
+			});
+		}
+
+		const cursor = Messages.find(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages: normalizeMessagesForUser(messages, this.userId),
+			count: messages.length,
+			offset,
+			total,
+		});
+	},
+});

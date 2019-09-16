@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { DateFormat } from '../../lib';
 import { Template } from 'meteor/templating';
-import { getUserPreference, getURL } from '../../utils';
+
+import { DateFormat } from '../../lib';
+import { getUserPreference, getURL } from '../../utils/client';
 import { Users } from '../../models';
 import { renderMessageBody } from '../../ui-utils';
 
@@ -27,7 +28,7 @@ Template.messageAttachment.helpers({
 	},
 	loadImage() {
 		if (this.downloadImages !== true) {
-			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad' : 1 } });
+			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad': 1 } });
 			if (getUserPreference(user, 'autoImageLoad') === false) {
 				return false;
 			}
@@ -52,9 +53,8 @@ Template.messageAttachment.helpers({
 	mediaCollapsed() {
 		if (this.collapsed != null) {
 			return this.collapsed;
-		} else {
-			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
+		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 	},
 	time() {
 		const messageDate = new Date(this.ts);
@@ -72,8 +72,8 @@ Template.messageAttachment.helpers({
 		return this.type === 'file';
 	},
 	isPDF() {
-		if (this.type === 'file' && this.title_link.endsWith('.pdf') && Template.parentData().file) {
-			this.fileId = Template.parentData().file._id;
+		if (this.type === 'file' && this.title_link.endsWith('.pdf') && Template.parentData().msg.file) {
+			this.fileId = Template.parentData().msg.file._id;
 			return true;
 		}
 		return false;

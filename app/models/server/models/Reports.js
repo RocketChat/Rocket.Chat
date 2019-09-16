@@ -1,10 +1,12 @@
-import { Base } from './_Base';
 import _ from 'underscore';
+
+import { Base } from './_Base';
 
 export class Reports extends Base {
 	constructor() {
 		super('reports');
 	}
+
 	createWithMessageDescriptionAndUserId(message, description, userId, extraData) {
 		const record = {
 			message,

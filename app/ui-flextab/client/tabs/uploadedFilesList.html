@@ -12,7 +12,6 @@
 			</label>
 		</div>
 	</form>
-
 	<div class="flex-tab__result">
 		<ul class="attachments">
 			{{#each files}}
@@ -39,19 +38,17 @@
 					</a>
 
 					{{> icon file=. block="attachments-menu js-action" icon="menu"}}
-
 				</li>
+			{{else}}
+				{{#if Template.subscriptionsReady}}
+					<h2>{{_ "Room_uploaded_file_list_empty"}}</h2>
+				{{/if}}
 			{{/each}}
 		</ul>
-		{{#if hasMore}}
+		{{#if isLoading}}
 			<div class="load-more">
 				{{> loading}}
 			</div>
-		{{/if}}
-		{{#if Template.subscriptionsReady}}
-			{{#unless hasFiles}}
-				<h2>{{_ "Room_uploaded_file_list_empty"}}</h2>
-			{{/unless}}
 		{{/if}}
 	</div>
 </template>

@@ -22,10 +22,6 @@
 		background-color: var(--badge-unread-background);
 	}
 
-	&--dm {
-		background-color: var(--badge-dm-background);
-	}
-
 	&--user-mentions {
 		background-color: var(--badge-user-mentions-background);
 	}

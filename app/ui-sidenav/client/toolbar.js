@@ -4,13 +4,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import _ from 'underscore';
+
+import { toolbarSearch } from './sidebarHeader';
 import { Rooms, Subscriptions } from '../../models';
 import { roomTypes } from '../../utils';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { menu } from '../../ui-utils';
-import { toolbarSearch } from './sidebarHeader';
-import _ from 'underscore';
 
 let filterText = '';
 let usernamesFromClient;
@@ -35,35 +36,15 @@ const getFromServer = (cb, type) => {
 		}
 
 		const resultsFromServer = [];
-		const usersLength = results.users.length;
-		const roomsLength = results.rooms.length;
 
-		if (usersLength) {
-			for (let i = 0; i < usersLength; i++) {
-				resultsFromServer.push({
-					_id: results.users[i]._id,
-					t: 'd',
-					name: results.users[i].username,
-					fname: results.users[i].name,
-				});
-			}
-		}
+		resultsFromServer.push(...results.users.map((user) => ({
+			_id: user._id,
+			t: 'd',
+			name: user.username,
+			fname: user.name,
+		})));
 
-		if (roomsLength) {
-			for (let i = 0; i < roomsLength; i++) {
-				const alreadyOnClient = resultsFromClient.find((item) => item._id === results.rooms[i]._id);
-				if (alreadyOnClient) {
-					continue;
-				}
-
-				resultsFromServer.push({
-					_id: results.rooms[i]._id,
-					t: results.rooms[i].t,
-					name: results.rooms[i].name,
-					lastMessage: results.rooms[i].lastMessage,
-				});
-			}
-		}
+		resultsFromServer.push(...results.rooms.filter((room) => !resultsFromClient.find((item) => [item.rid, item._id].includes(room._id))));
 
 		if (resultsFromServer.length) {
 			cb(resultsFromClient.concat(resultsFromServer));
@@ -82,7 +63,7 @@ Template.toolbar.helpers({
 
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
-		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
+		} if (window.navigator.platform.toLowerCase().includes('mac')) {
 			placeholder = `${ placeholder } (\u2318+K)`;
 		} else {
 			placeholder = `${ placeholder } (\u2303+K)`;
@@ -135,7 +116,7 @@ Template.toolbar.helpers({
 					query.t = 'd';
 				}
 
-				const searchQuery = new RegExp((RegExp.escape(filterText)), 'i');
+				const searchQuery = new RegExp(RegExp.escape(filterText), 'i');
 				query.$or = [
 					{ name: searchQuery },
 					{ fname: searchQuery },
@@ -144,7 +125,7 @@ Template.toolbar.helpers({
 				resultsFromClient = collection.find(query, { limit: 20, sort: { unread: -1, ls: -1 } }).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username:1 } });
+				const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username: 1 } });
 				if (user) {
 					usernamesFromClient = [user];
 				}

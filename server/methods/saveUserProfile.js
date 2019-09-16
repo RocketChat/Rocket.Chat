@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+
 import { saveCustomFields, passwordPolicy } from '../../app/lib';
 import { Users } from '../../app/models';
 import { settings as rcSettings } from '../../app/settings';
@@ -30,7 +31,7 @@ Meteor.methods({
 			}
 
 			const passCheck = Accounts._checkPassword(user, {
-				digest: typedPassword,
+				digest: typedPassword.toLowerCase(),
 				algorithm: 'sha-256',
 			});
 
@@ -48,6 +49,10 @@ Meteor.methods({
 			Meteor.call('setUsername', settings.username);
 		}
 
+		if (settings.statusText || settings.statusText === '') {
+			Meteor.call('setUserStatus', null, settings.statusText);
+		}
+
 		if (settings.email) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
@@ -59,7 +64,7 @@ Meteor.methods({
 		}
 
 		// Should be the last check to prevent error when trying to check password for users without password
-		if ((settings.newPassword) && rcSettings.get('Accounts_AllowPasswordChange') === true) {
+		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile',

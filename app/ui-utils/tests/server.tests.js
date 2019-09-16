@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 import 'babel-polyfill';
 import assert from 'assert';
+
 import './server.mocks.js';
 import { messageProperties } from '../lib/MessageProperties';
 

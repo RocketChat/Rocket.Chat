@@ -1,7 +1,8 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { VideoRecorder } from '../../ui';
 import _ from 'underscore';
+
+import { VideoRecorder } from '../../ui';
 
 export const VRecDialog = new class {
 	constructor() {
@@ -57,13 +58,12 @@ export const VRecDialog = new class {
 					right = 10;
 				}
 				return dialog.css({ top: `${ top }px`, right: `${ right }px` });
-			} else {
-				let left = (sourcePos.left - this.width) + 100;
-				if (left < 0) {
-					left = 10;
-				}
-				return dialog.css({ top: `${ top }px`, left: `${ left }px` });
 			}
+			let left = (sourcePos.left - this.width) + 100;
+			if (left < 0) {
+				left = 10;
+			}
+			return dialog.css({ top: `${ top }px`, left: `${ left }px` });
 		};
 
 		const set = _.debounce(_set, 2000);
@@ -79,4 +79,4 @@ export const VRecDialog = new class {
 		}
 		return VideoRecorder.start(this.video);
 	}
-};
+}();

@@ -3,6 +3,7 @@ import './admin/cloud';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { AdminBox } from '../../ui-utils';
 import { hasAtLeastOnePermission } from '../../authorization';
 
@@ -23,7 +24,7 @@ FlowRouter.route('/admin/cloud/oauth-callback', {
 AdminBox.addOption({
 	icon: 'cloud-plus',
 	href: 'admin/cloud',
-	i18nLabel: 'Cloud',
+	i18nLabel: 'Connectivity_Services',
 	permissionGranted() {
 		return hasAtLeastOnePermission(['manage-cloud']);
 	},

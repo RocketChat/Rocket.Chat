@@ -1,3 +1,5 @@
+import 'url-polyfill';
+
 import './importsCss';
 import './importPackages';
 import '../imports/startup/client';
@@ -5,9 +7,7 @@ import '../imports/startup/client';
 import '../lib/RegExp';
 
 import './lib/toastr';
-import './helpers/escapeCssUrl';
-import './helpers/log';
-import './helpers/not';
+import './templateHelpers';
 import './methods/deleteMessage';
 import './methods/hideRoom';
 import './methods/openRoom';
@@ -19,7 +19,6 @@ import './notifications/updateAvatar';
 import './notifications/updateUserState';
 import './notifications/UsersNameChanged';
 import './routes/adminRouter';
-import './routes/pageNotFound';
 import './routes/roomRoute';
 import './routes/router';
 import './startup/emailVerification';

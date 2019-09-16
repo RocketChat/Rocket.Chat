@@ -61,8 +61,6 @@ Migrations.add({
 			if (setting.value === oldValue) {
 				Settings.updateValueById(_id, setting.packageValue);
 			}
-
 		});
-
 	},
 });

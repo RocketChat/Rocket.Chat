@@ -1,5 +1,6 @@
-import { settings } from '../../settings';
 import s from 'underscore.string';
+
+import { settings } from '../../settings';
 
 export const placeholders = {
 	replace: (str, data) => {
@@ -25,7 +26,7 @@ export const placeholders = {
 			}
 		}
 
-		str = str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+		str = str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 
 		return str;
 	},

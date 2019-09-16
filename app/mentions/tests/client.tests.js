@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 import 'babel-polyfill';
 import assert from 'assert';
+
 import { MentionsParser } from '../lib/MentionsParser';
 
 let mentionsParser;
@@ -14,7 +15,7 @@ beforeEach(function functionName() {
 describe('Mention', function() {
 	describe('get pattern', () => {
 		const regexp = '[0-9a-zA-Z-_.]+';
-		beforeEach(() => mentionsParser.pattern = () => regexp);
+		beforeEach(() => { mentionsParser.pattern = () => regexp; });
 
 		describe('by function', function functionName() {
 			it(`should be equal to ${ regexp }`, () => {
@@ -30,7 +31,7 @@ describe('Mention', function() {
 	});
 
 	describe('get useRealName', () => {
-		beforeEach(() => mentionsParser.useRealName = () => true);
+		beforeEach(() => { mentionsParser.useRealName = () => true; });
 
 		describe('by function', function functionName() {
 			it('should be true', () => {
@@ -49,7 +50,7 @@ describe('Mention', function() {
 		const me = 'me';
 
 		describe('by function', function functionName() {
-			beforeEach(() => mentionsParser.me = () => me);
+			beforeEach(() => { mentionsParser.me = () => me; });
 
 			it(`should be equal to ${ me }`, () => {
 				assert.equal(me, mentionsParser.me);
@@ -57,7 +58,7 @@ describe('Mention', function() {
 		});
 
 		describe('by const', function functionName() {
-			beforeEach(() => mentionsParser.me = me);
+			beforeEach(() => { mentionsParser.me = me; });
 
 			it(`should be equal to ${ me }`, () => {
 				assert.equal(me, mentionsParser.me);
@@ -215,7 +216,7 @@ describe('replace methods', function() {
 	describe('replaceUsers', () => {
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
-			assert.equal('<a class="mention-link mention-link--user mention-link--all mention-link--group">all</a>', result);
+			assert.equal(result, '<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
 		const str2 = 'rocket.cat';
@@ -237,7 +238,7 @@ describe('replace methods', function() {
 
 		it('should render for me', () => {
 			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link--user mention-link--me" data-username="me" title="me">me</a>');
+			assert.equal(result, 'hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">me</a>');
 		});
 	});
 
@@ -248,7 +249,7 @@ describe('replace methods', function() {
 
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
-			assert.equal(result, '<a class="mention-link mention-link--user mention-link--all mention-link--group">all</a>');
+			assert.equal(result, '<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
 		const str2 = 'rocket.cat';
@@ -284,7 +285,7 @@ describe('replace methods', function() {
 
 		it('should render for me', () => {
 			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link--user mention-link--me" data-username="me" title="me">Me</a>');
+			assert.equal(result, 'hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">Me</a>');
 		});
 	});
 

@@ -1,5 +1,6 @@
-import { Migrations } from '../../../app/migrations';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+
+import { Migrations } from '../../../app/migrations';
 
 Migrations.add({
 	version: 71.1,
@@ -14,4 +15,3 @@ Migrations.add({
 		ServiceConfiguration.configurations.remove({});
 	},
 });
-

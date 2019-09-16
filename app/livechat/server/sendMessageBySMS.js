@@ -43,5 +43,4 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
 
 	return message;
-
 }, callbacks.priority.LOW, 'sendMessageBySms');

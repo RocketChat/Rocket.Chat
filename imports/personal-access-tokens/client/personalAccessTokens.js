@@ -3,11 +3,12 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+import toastr from 'toastr';
+import moment from 'moment';
+
 import { t } from '../../../app/utils';
 import { modal, SideNav } from '../../../app/ui-utils';
 import { hasAllPermission } from '../../../app/authorization';
-import toastr from 'toastr';
-import moment from 'moment';
 
 import './personalAccessTokens.html';
 

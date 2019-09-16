@@ -1,5 +1,6 @@
-import { Base } from './_Base';
 import _ from 'underscore';
+
+import { Base } from './_Base';
 
 /**
  * Livechat Custom Fields model

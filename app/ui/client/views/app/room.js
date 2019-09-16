@@ -1,10 +1,16 @@
+import _ from 'underscore';
+import moment from 'moment';
+import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
@@ -21,28 +27,30 @@ import {
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { getConfig } from '../../../../ui-utils/client/config';
+import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { promises } from '../../../../promises/client';
 import { hasAllPermission, hasRole } from '../../../../authorization';
-import _ from 'underscore';
-import moment from 'moment';
-import mime from 'mime-type/with-db';
-import Clipboard from 'clipboard';
 import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
+import { mime } from '../../../../utils/lib/mimeTypes';
 
 export const chatMessages = {};
 
-const favoritesEnabled = () => settings.get('Favorite_Rooms');
-
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
-const openProfileTab = (e, instance, username) => {
-	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
+const openMembersListTab = (instance, group) => {
+	instance.userDetail.set(null);
+	instance.groupDetail.set(group);
+	instance.tabBar.setTemplate('membersList');
+	instance.tabBar.open();
+};
 
+const openProfileTab = (e, instance, username) => {
 	if (Layout.isEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
@@ -50,10 +58,12 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 
+	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
 	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
-		instance.setUserDetail(username);
+		instance.userDetail.set(username);
 	}
 
+	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.open();
 };
@@ -69,7 +79,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 				}
 			}
 
-			if ((result != null ? result.rid : undefined) != null) {
+			if (result && result.rid) {
 				FlowRouter.go('direct', { username }, FlowRouter.current().queryParams);
 			}
 		});
@@ -85,9 +95,9 @@ const mountPopover = (e, i, outerContext) => {
 		context = 'message';
 	}
 
-	const { msg: message } = messageArgs(outerContext);
+	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
+	let menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',
@@ -96,7 +106,7 @@ const mountPopover = (e, i, outerContext) => {
 	}));
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(message, context, 'message').map((item) => ({
+		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
 			type: 'message-action',
@@ -107,7 +117,7 @@ const mountPopover = (e, i, outerContext) => {
 		menuItems = menuItems.concat(messageItems);
 	}
 
-	const [items, deleteItem] = menuItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
 	const groups = [{ items }];
 
 	if (deleteItem.length) {
@@ -215,10 +225,18 @@ function roomMaxAge(room) {
 
 callbacks.add('enter-room', wipeFailedUploads);
 
+const ignoreReplies = getConfig('ignoreReplies') === 'true';
+
 Template.room.helpers({
+	useNrr() {
+		const useNrr = getConfig('useNrr');
+		return useNrr === 'true' || useNrr !== 'false';
+	},
 	isTranslated() {
-		const sub = Template.instance().subscription;
-		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
+		const { state } = Template.instance();
+		return settings.get('AutoTranslate_Enabled')
+			&& (state.get('autoTranslate') === true)
+			&& !!state.get('autoTranslateLanguage');
 	},
 
 	embeddedVersion() {
@@ -226,7 +244,8 @@ Template.room.helpers({
 	},
 
 	subscribed() {
-		return Template.instance().subscription;
+		const { state } = Template.instance();
+		return state.get('subscribed');
 	},
 
 	messagesHistory() {
@@ -253,11 +272,16 @@ Template.room.helpers({
 			});
 		});
 
-		const query = { rid };
+		const modes = ['', 'cozy', 'compact'];
+		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
+		const query = {
+			rid,
+			_hidden: { $ne: true },
+			...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
+		};
 
 		if (hideMessagesOfType.length > 0) {
-			query.t =
-				{ $nin: hideMessagesOfType };
+			query.t =				{ $nin: hideMessagesOfType };
 		}
 
 		const options = {
@@ -292,12 +316,13 @@ Template.room.helpers({
 	roomLeader() {
 		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
 		if (roles) {
-			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1 } }) || {};
+			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
+
 			return {
 				...roles.u,
-				name: settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
+				name: settings.get('UI_Use_Real_Name') ? roles.u.name || roles.u.username : roles.u.username,
 				status: leader.status || 'offline',
-				statusDisplay: ((status) => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline'),
+				statusDisplay: leader.statusText || t(leader.status || 'offline'),
 			};
 		}
 	},
@@ -320,7 +345,7 @@ Template.room.helpers({
 
 		return {
 			rid,
-			subscription,
+			subscription: subscription.get(),
 			isEmbedded,
 			showFormattingTips: showFormattingTips && !isEmbedded,
 			onInputChanged: (input) => {
@@ -363,22 +388,16 @@ Template.room.helpers({
 		return roomIcon;
 	},
 
-	userStatus() {
-		const { room } = Template.instance();
-		return roomTypes.getUserStatus(room.t, this._id) || 'offline';
-	},
-
 	maxMessageLength() {
 		return settings.get('Message_MaxAllowedSize');
 	},
 
 	unreadData() {
-		const data =
-			{ count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
+		const data = { count: Template.instance().state.get('count') };
 
 		const room = RoomManager.getOpenedRoomByRid(this._id);
-		if (room != null) {
-			data.since = room.unreadSince != null ? room.unreadSince.get() : undefined;
+		if (room) {
+			data.since = room.unreadSince.get();
 		}
 
 		return data;
@@ -394,7 +413,9 @@ Template.room.helpers({
 	},
 
 	formatUnreadSince() {
-		if ((this.since == null)) { return; }
+		if (!this.since) {
+			return;
+		}
 
 		return moment(this.since).calendar(null, { sameDay: 'LT' });
 	},
@@ -405,6 +426,7 @@ Template.room.helpers({
 			data: {
 				rid: this._id,
 				userDetail: Template.instance().userDetail.get(),
+				groupDetail: Template.instance().groupDetail.get(),
 				clearUserDetail: Template.instance().clearUserDetail,
 			},
 		};
@@ -417,8 +439,8 @@ Template.room.helpers({
 	},
 
 	showToggleFavorite() {
-		const { subscription } = Template.instace();
-		return subscription && favoritesEnabled();
+		const { state } = Template.instace();
+		return state.get('subscribed') && settings.get('Favorite_Rooms');
 	},
 
 	messageViewMode() {
@@ -453,7 +475,7 @@ Template.room.helpers({
 	},
 
 	canPreview() {
-		const { room, subscription } = Template.instance();
+		const { room, state } = Template.instance();
 
 		if (room && room.t !== 'c') {
 			return true;
@@ -467,8 +489,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return subscription != null;
-
+		return state.get('subscribed');
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -510,17 +531,76 @@ let lastTouchX = null;
 let lastTouchY = null;
 let lastScrollTop;
 
+export const dropzoneEvents = {
+	'dragenter .dropzone'(e) {
+		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
+		if (types != null && types.length > 0 && _.every(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1) && userCanDrop(this._id)) {
+			e.currentTarget.classList.add('over');
+		}
+		e.stopPropagation();
+	},
+
+	'dragleave .dropzone-overlay'(e) {
+		e.currentTarget.parentNode.classList.remove('over');
+		e.stopPropagation();
+	},
+
+	'dragover .dropzone-overlay'(e) {
+		e = e.originalEvent || e;
+		if (['move', 'linkMove'].includes(e.dataTransfer.effectAllowed)) {
+			e.dataTransfer.dropEffect = 'move';
+		} else {
+			e.dataTransfer.dropEffect = 'copy';
+		}
+		e.stopPropagation();
+	},
+
+	'dropped .dropzone-overlay'(event, instance) {
+		event.currentTarget.parentNode.classList.remove('over');
+
+		const e = event.originalEvent || event;
+
+		e.stopPropagation();
+
+		const files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
+
+		const filesToUpload = Array.from(files).map((file) => {
+			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
+			return {
+				file,
+				name: file.name,
+			};
+		});
+
+		return instance.onFile && instance.onFile(filesToUpload);
+	},
+};
+
 Template.room.events({
-	'click .js-open-thread'() {
-		const { tabBar } = Template.instance();
+	...dropzoneEvents,
+	'click .js-follow-thread'() {
+		const { msg } = messageArgs(this);
+		call('followMessage', { mid: msg._id });
+	},
+	'click .js-unfollow-thread'() {
+		const { msg } = messageArgs(this);
+		call('unfollowMessage', { mid: msg._id });
+	},
+	'click .js-open-thread'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const { tabBar, subscription } = Template.instance();
 
 		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
 		const $flexTab = $('.flex-tab-container .flex-tab');
 		$flexTab.attr('template', 'thread');
 
 		tabBar.setData({
+			subscription: subscription.get(),
 			msg,
 			rid,
+			jump: tmid && tmid !== _id && _id,
 			mid: tmid || _id,
 			label: 'Threads',
 			icon: 'thread',
@@ -631,13 +711,11 @@ Template.room.events({
 		const { _id } = t.data;
 		const room = RoomHistoryManager.getRoom(_id);
 		let message = room && room.firstUnread.get();
-		if (message) {
-			RoomHistoryManager.getSurroundingMessages(message, 50);
-		} else {
+		if (!message) {
 			const subscription = Subscriptions.findOne({ rid: _id });
-			message = ChatMessage.find({ rid: _id, ts: { $gt: (subscription != null ? subscription.ls : undefined) } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
-			RoomHistoryManager.getSurroundingMessages(message, 50);
+			message = ChatMessage.find({ rid: _id, ts: { $gt: subscription != null ? subscription.ls : undefined } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
 		}
+		RoomHistoryManager.getSurroundingMessages(message, 50);
 	},
 
 	'click .toggle-favorite'(event) {
@@ -700,25 +778,28 @@ Template.room.events({
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
+		const messageContext = messageArgs(this);
+		const { msg: message, context: ctx } = messageContext;
+		const context = ctx || message.context || message.actionContext || 'message';
 
-		const { msg: message, context: ctx } = messageArgs(this);
-
-		const context = ctx || message.actionContext || 'message';
-
-		const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
+		const allItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
 			type: 'message-action',
 			id: item.id,
 			modifier: item.color,
 		}));
-		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+
+		const itemsBelowDivider = [
+			'delete-message',
+			'report-message',
+		];
+		const [items, alertsItem] = allItems.reduce((result, value) => { result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value); return result; }, [[], []]);
 		const groups = [{ items }];
 
-		if (deleteItem.length) {
-			groups.push({ items: deleteItem });
+		if (alertsItem.length) {
+			groups.push({ items: alertsItem });
 		}
-
 		const config = {
 			columns: [
 				{
@@ -744,7 +825,9 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const channel = $(e.currentTarget).data('channel');
+
+		const { currentTarget: { dataset: { channel, group, username } } } = e;
+
 		if (channel) {
 			if (Layout.isEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
@@ -752,9 +835,17 @@ Template.room.events({
 			FlowRouter.goToRoomById(channel);
 			return;
 		}
-		const username = $(e.currentTarget).data('username');
 
-		openProfileTabOrOpenDM(e, instance, username);
+		if (group) {
+			e.stopPropagation();
+			e.preventDefault();
+			openMembersListTab(instance, group);
+			return;
+		}
+
+		if (username) {
+			openProfileTabOrOpenDM(e, instance, username);
+		}
 	},
 
 	'click .image-to-download'(event) {
@@ -777,48 +868,8 @@ Template.room.events({
 			ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
 		}
 	},
-
-	'dragenter .dropzone'(e) {
-		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
-		if (types != null && types.length > 0 && _.every(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1) && userCanDrop(this._id)) {
-			e.currentTarget.classList.add('over');
-		}
-	},
-
-	'dragleave .dropzone-overlay'(e) {
-		e.currentTarget.parentNode.classList.remove('over');
-	},
-
-	'dragover .dropzone-overlay'(e) {
-		e = e.originalEvent || e;
-		if (['move', 'linkMove'].includes(e.dataTransfer.effectAllowed)) {
-			e.dataTransfer.dropEffect = 'move';
-		} else {
-			e.dataTransfer.dropEffect = 'copy';
-		}
-	},
-
-	'dropped .dropzone-overlay'(event) {
-		event.currentTarget.parentNode.classList.remove('over');
-
-		const e = event.originalEvent || event;
-		const files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
-
-		const filesToUpload = [];
-		for (const file of Array.from(files)) {
-			// `file.type = mime.lookup(file.name)` does not work.
-			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
-			filesToUpload.push({
-				file,
-				name: file.name,
-			});
-		}
-
-		fileUpload(filesToUpload, chatMessages[RoomManager.openedRoom].input, { rid: RoomManager.openedRoom });
-	},
-
 	'load img'(e, template) {
-		return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
+		return typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined;
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -857,44 +908,45 @@ Template.room.events({
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return callbacks.run(roomData.announcementDetails.callback, this._id);
-		} else {
-			modal.open({
-				title: t('Announcement'),
-				text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
-				html: true,
-				showConfirmButton: false,
-				showCancelButton: true,
-				cancelButtonText: t('Close'),
-			});
 		}
+		modal.open({
+			title: t('Announcement'),
+			text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
+			html: true,
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonText: t('Close'),
+		});
 	},
 	'click .toggle-hidden'(e) {
 		const id = e.currentTarget.dataset.message;
 		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	},
-	'click .js-actionButton-sendMessage'(event, instance) {
+	async 'click .js-actionButton-sendMessage'(event, instance) {
 		const rid = instance.data._id;
 		const msg = event.currentTarget.value;
-		const msgObject = { _id: Random.id(), rid, msg };
+		let msgObject = { _id: Random.id(), rid, msg };
 		if (!msg) {
 			return;
 		}
-		promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
-			const _chatMessages = chatMessages[rid];
-			if (_chatMessages && _chatMessages.processSlashCommand(msgObject)) {
-				return;
-			}
 
-			Meteor.call('sendMessage', msgObject);
-		});
+		msgObject = await promises.run('onClientBeforeSendMessage', msgObject);
+
+		const _chatMessages = chatMessages[rid];
+		if (_chatMessages && await _chatMessages.processSlashCommand(msgObject)) {
+			return;
+		}
+
+		await call('sendMessage', msgObject);
 	},
-	'click .js-actionButton-respondWithMessage'(event) {
+	'click .js-actionButton-respondWithMessage'(event, instance) {
+		const rid = instance.data._id;
 		const msg = event.currentTarget.value;
 		if (!msg) {
 			return;
 		}
 
-		const { input } = chatMessages[RoomManager.openedRoom];
+		const { input } = chatMessages[rid];
 		input.value = msg;
 		input.focus();
 	},
@@ -911,9 +963,24 @@ Template.room.onCreated(function() {
 	// this.typing = new msgTyping this.data._id
 	lazyloadtick();
 	const rid = this.data._id;
+
+	this.onFile = (filesToUpload) => {
+		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
+	};
+
 	this.rid = rid;
-	this.subscription = Subscriptions.findOne({ rid });
-	this.room = Rooms.findOne({ _id: rid });
+
+	this.subscription = new ReactiveVar();
+	this.state = new ReactiveDict();
+	this.autorun(() => {
+		const subscription = Subscriptions.findOne({ rid });
+		this.subscription.set(subscription);
+		this.state.set({
+			subscribed: !!subscription,
+			autoTranslate: subscription && subscription.autoTranslate,
+			autoTranslateLanguage: subscription && subscription.autoTranslateLanguage,
+		});
+	});
 
 	this.showUsersOffline = new ReactiveVar(false);
 	this.atBottom = !FlowRouter.getQueryParam('msg');
@@ -924,9 +991,10 @@ Template.room.onCreated(function() {
 	this.selectedRange = [];
 	this.selectablePointer = null;
 
-	this.flexTemplate = new ReactiveVar;
+	this.flexTemplate = new ReactiveVar();
 
 	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
+	this.groupDetail = new ReactiveVar();
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
@@ -1029,13 +1097,16 @@ Template.room.onDestroyed(function() {
 	readMessage.off(this.data._id);
 
 	window.removeEventListener('resize', this.onWindowResize);
+
+	const chatMessage = chatMessages[this.data._id];
+	return chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
 });
 
 Template.room.onRendered(function() {
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {
-		chatMessages[rid] = new ChatMessages;
+		chatMessages[rid] = new ChatMessages();
 	}
 	chatMessages[rid].initializeWrapper(this.find('.wrapper'));
 	chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
@@ -1063,8 +1134,6 @@ Template.room.onRendered(function() {
 
 	template.checkIfScrollIsAtBottom = function() {
 		template.atBottom = template.isAtBottom(100);
-		readMessage.enable();
-		readMessage.read();
 	};
 
 	template.sendToBottomIfNecessary = function() {
@@ -1079,32 +1148,33 @@ Template.room.onRendered(function() {
 
 	template.sendToBottomIfNecessary();
 
-	if ((window.MutationObserver == null)) {
-		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
-	} else {
+	if (window.MutationObserver) {
 		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
 
 		observer.observe(wrapperUl, { childList: true });
+	} else {
+		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
 	}
 	// observer.disconnect()
 
 	template.onWindowResize = () =>
-		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced())
-	;
-
+		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced());
 	window.addEventListener('resize', template.onWindowResize);
 
-	wrapper.addEventListener('mousewheel', function() {
-		template.atBottom = false;
-		Meteor.defer(() => template.checkIfScrollIsAtBottom());
-	});
+	const wheelHandler = (() => {
+		const fn = _.throttle(function() {
+			template.checkIfScrollIsAtBottom();
+		}, 50);
+		return () => {
+			template.atBottom = false;
+			fn();
+		};
+	})();
+	wrapper.addEventListener('mousewheel', wheelHandler);
 
-	wrapper.addEventListener('wheel', function() {
-		template.atBottom = false;
-		Meteor.defer(() => template.checkIfScrollIsAtBottom());
-	});
+	wrapper.addEventListener('wheel', wheelHandler);
 
-	wrapper.addEventListener('touchstart', () => template.atBottom = false);
+	wrapper.addEventListener('touchstart', () => { template.atBottom = false; });
 
 	wrapper.addEventListener('touchend', function() {
 		template.checkIfScrollIsAtBottom();
@@ -1112,14 +1182,8 @@ Template.room.onRendered(function() {
 		setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
-	wrapper.addEventListener('scroll', function() {
-		template.atBottom = false;
-		template.checkIfScrollIsAtBottom();
-	});
+	wrapper.addEventListener('scroll', wheelHandler);
 
-	$('.flex-tab-bar').on('click', (/* e, t*/) =>
-		setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
-	);
 	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
 	const rtl = $('html').hasClass('rtl');
@@ -1139,31 +1203,62 @@ Template.room.onRendered(function() {
 		}
 	};
 
-	const subscription = Subscriptions.findOne({ rid: template.data._id }, { reactive: false });
-	const updateUnreadCount = _.throttle(function() {
-		const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
+	const updateUnreadCount = _.throttle(() => {
+		Tracker.afterFlush(() => {
+			const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
-		if (lastInvisibleMessageOnScreen == null || lastInvisibleMessageOnScreen.id == null) {
-			return template.unreadCount.set(0);
-		}
+			if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
+				return this.unreadCount.set(0);
+			}
 
-		const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
-		if (lastMessage == null) {
-			return template.unreadCount.set(0);
-		}
+			const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
+			if (!lastMessage) {
+				return this.unreadCount.set(0);
+			}
 
-		const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
-		template.unreadCount.set(count);
+			this.state.set('lastMessage', lastMessage.ts);
+		});
 	}, 300);
 
-	readMessage.on(template.data._id, () => template.unreadCount.set(0));
+	this.autorun(() => {
+		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
+		readMessage.read();
+		return (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
+	});
 
-	wrapper.addEventListener('scroll', () => updateUnreadCount());
+	this.autorun(() => {
+		const lastMessage = this.state.get('lastMessage');
+
+		const subscription = Subscriptions.findOne({ rid }, { fields: { ls: 1 } });
+		const count = ChatMessage.find({ rid, ts: { $lte: lastMessage, $gt: subscription && subscription.ls } }).count();
+
+		this.unreadCount.set(count);
+	});
+
+
+	this.autorun(() => {
+		const count = RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() + this.unreadCount.get();
+		this.state.set('count', count);
+	});
+
+
+	this.autorun(() => {
+		Rooms.findOne(rid);
+		const count = this.state.get('count');
+		if (count === 0) {
+			return readMessage.read();
+		}
+		readMessage.refreshUnreadMark(rid);
+	});
+
+	readMessage.on(template.data._id, () => this.unreadCount.set(0));
+
+	wrapper.addEventListener('scroll', updateUnreadCount);
 	// salva a data da renderização para exibir alertas de novas mensagens
-	$.data(this.firstNode, 'renderedAt', new Date);
+	$.data(this.firstNode, 'renderedAt', new Date());
 
 	const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
-	if (webrtc != null) {
+	if (webrtc) {
 		this.autorun(() => {
 			const remoteItems = webrtc.remoteItems.get();
 			if (remoteItems && remoteItems.length > 0) {
@@ -1171,7 +1266,7 @@ Template.room.onRendered(function() {
 				this.tabBar.open();
 			}
 
-			if (webrtc.localUrl.get() != null) {
+			if (webrtc.localUrl.get()) {
 				this.tabBar.setTemplate('membersList');
 				this.tabBar.open();
 			}
@@ -1187,7 +1282,6 @@ Template.room.onRendered(function() {
 	});
 
 	this.autorun(function() {
-
 		if (template.data._id !== RoomManager.openedRoom) {
 			return;
 		}
@@ -1197,5 +1291,12 @@ Template.room.onRendered(function() {
 			FlowRouter.go('home');
 		}
 	});
+});
 
+callbacks.add('enter-room', (sub) => {
+	const isAReplyInDMFromChannel = FlowRouter.getQueryParam('reply') && sub.t === 'd';
+	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
+		chatMessages[sub.rid].restoreReplies();
+	}
+	readMessage.refreshUnreadMark(sub.rid);
 });

@@ -1,9 +1,10 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
-import { Rooms, Subscriptions } from '../../../models';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+
+import { Rooms, Subscriptions } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { callbacks } from '../../../callbacks/server';
 
 /**
  * Chechs if a messages contains a user highlight
@@ -32,11 +33,9 @@ export function updateUsersSubscriptions(message, room, users) {
 
 		const highlightOptions = { fields: { userHighlights: 1, 'u._id': 1 } };
 
-		const highlights = users ?
-			Subscriptions.findByRoomAndUsersWithUserHighlights(room._id, users, highlightOptions).fetch() :
-			Subscriptions.findByRoomWithUserHighlights(room._id, highlightOptions).fetch();
-
-		// const usersToNotify = users || [message.u._id];
+		const highlights = users
+			? Subscriptions.findByRoomAndUsersWithUserHighlights(room._id, users, highlightOptions).fetch()
+			: Subscriptions.findByRoomWithUserHighlights(room._id, highlightOptions).fetch();
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
@@ -60,35 +59,21 @@ export function updateUsersSubscriptions(message, room, users) {
 			}
 		});
 
-		if (room.t === 'd') {
-			const unreadCountDM = settings.get('Unread_Count_DM');
+		const unreadSetting = room.t === 'd' ? 'Unread_Count_DM' : 'Unread_Count';
+		const unreadCount = settings.get(unreadSetting);
 
-			if (unreadCountDM === 'all_messages') {
-				Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
-			} else if (toAll || toHere) {
-				Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, 1);
-			} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
-				Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, 1);
-			}
-		} else {
-			const unreadCount = settings.get('Unread_Count');
+		if (toAll || toHere) {
+			const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
+			const incUnread = room.t === 'd' || incUnreadByGroup ? 1 : 0;
 
-			if (toAll || toHere) {
-				let incUnread = 0;
-				if (['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
-					incUnread = 1;
-				}
-				Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, incUnread);
+			Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, incUnread);
+		} else if (users || (mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
+			const incUnreadByUser = ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
+			const incUnread = room.t === 'd' || users || incUnreadByUser ? 1 : 0;
 
-			} else if (users || (mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
-				let incUnread = 0;
-				if (users || ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
-					incUnread = 1;
-				}
-				Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds, users))), 1, incUnread);
-			} else if (unreadCount === 'all_messages') {
-				Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
-			}
+			Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds, users))), 1, incUnread);
+		} else if (unreadCount === 'all_messages') {
+			Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
 		}
 	}
 
@@ -105,8 +90,7 @@ function notifyUsersOnMessage(message, room) {
 		// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
 		Rooms.incMsgCountById(message.rid, 1);
 		return message;
-	} else if (message.editedAt) {
-
+	} if (message.editedAt) {
 		// only updates last message if it was edited (skip rest of callback)
 		if (settings.get('Store_Last_Message') && (!room.lastMessage || room.lastMessage._id === message._id)) {
 			Rooms.setLastMessageById(message.rid, message);
