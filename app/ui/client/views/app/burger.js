@@ -1,54 +1,33 @@
-import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
+import { Blaze } from 'meteor/blaze';
+import { HTML } from 'meteor/htmljs';
 import { Template } from 'meteor/templating';
 
-import { ChatSubscription } from '../../../../models/client';
-import { Layout } from '../../../../ui-utils/client';
-import { getUserPreference } from '../../../../utils';
+// eslint-disable-next-line new-cap
+Template.burger = new Blaze.Template(name, () => HTML.DIV());
 
-Template.burger.helpers({
-	unread() {
-		const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
-		const [unreadCount, unreadAlert] = ChatSubscription
-			.find({
-				open: true,
-				hideUnreadStatus: { $ne: true },
-				rid: { $ne: Session.get('openedRoom') },
-			}, {
-				fields: {
-					unread: 1,
-					alert: 1,
-					unreadAlert: 1,
-				},
-			})
-			.fetch()
-			.reduce(([unreadCount, unreadAlert], { alert, unread, unreadAlert: alertType }) => {
-				if (alert || unread > 0) {
-					unreadCount += unread;
-					if (alert === true && alertType !== 'nothing') {
-						if (alertType === 'all' || userUnreadAlert !== false) {
-							unreadAlert = '•';
-						}
-					}
-				}
+Template.burger.onRendered(() => {
+	const instance = Template.instance();
+	(async () => {
+		const React = await import('react');
+		const ReactDOM = await import('react-dom');
+		const { Burger } = await import('../../../../../client/components/basic/Burger');
 
-				return [unreadCount, unreadAlert];
-			}, [0, false]);
+		instance.autorun((computation) => {
+			if (computation.firstRun) {
+				instance.container = instance.firstNode;
+			}
 
-		if (unreadCount > 0) {
-			return unreadCount > 99 ? '99+' : unreadCount;
+			ReactDOM.render(React.createElement(Burger), instance.firstNode);
+		});
+	})();
+});
+
+Template.burger.onDestroyed(() => {
+	const instance = Template.instance();
+	(async () => {
+		const ReactDOM = await import('react-dom');
+		if (instance.container) {
+			ReactDOM.unmountComponentAtNode(instance.container);
 		}
-
-		return unreadAlert || '';
-	},
-
-	isMenuOpen() {
-		if (Session.equals('isMenuOpen', true)) {
-			return 'menu-opened';
-		}
-	},
-
-	embeddedVersion() {
-		return Layout.isEmbedded();
-	},
+	})();
 });
