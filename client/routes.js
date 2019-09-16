@@ -231,13 +231,6 @@ FlowRouter.route('/admin/rooms', {
 	},
 });
 
-FlowRouter.route('/admin/info', {
-	name: 'admin-info',
-	action() {
-		BlazeLayout.render('main', { center: 'adminInfo' });
-	},
-});
-
 FlowRouter.route('/admin/import', {
 	name: 'admin-import',
 	action() {
@@ -268,8 +261,15 @@ FlowRouter.route('/admin/import/progress/:importer', {
 
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
-	action() {
-		BlazeLayout.render('main', { center: 'admin' });
+	action: async ({ group = 'info' } = {}) => {
+		switch (group) {
+			case 'info':
+				BlazeLayout.render('main', { center: 'adminInfo' });
+				break;
+
+			default:
+				BlazeLayout.render('main', { center: 'admin' });
+		}
 	},
 });
 
