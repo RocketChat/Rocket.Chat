@@ -1187,7 +1187,7 @@
   "SMTP_Port": "פורט SMTP",
   "SMTP_Test_Button": "הגדרות SMTP מבחן",
   "SMTP_Username": "שם משתמש ב־SMTP",
-  "Sorry_page_you_requested_does_not_exists_or_was_deleted": "מצטערים, העמוד שביקשת לא קיים או נמחק!",
+  "Sorry_page_you_requested_does_not_exist_or_was_deleted": "מצטערים, העמוד שביקשת לא קיים או נמחק!",
   "Sort": "מיין",
   "Sort_by_activity": "מיין לפי פעילות",
   "Sound": "שמע",

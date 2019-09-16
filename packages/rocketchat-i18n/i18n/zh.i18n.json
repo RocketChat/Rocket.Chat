@@ -2764,7 +2764,7 @@
   "Snippet_name": "片段名称",
   "Snippeted_a_message": "创建了一个片段 __snippetLink__",
   "Social_Network": "社交网络",
-  "Sorry_page_you_requested_does_not_exists_or_was_deleted": "对不起，您请求的网页不存在或被删除！",
+  "Sorry_page_you_requested_does_not_exist_or_was_deleted": "对不起，您请求的网页不存在或被删除！",
   "Sort": "分类",
   "Sort_by_activity": "按活动排序",
   "Sound": "声音",

@@ -2834,7 +2834,7 @@
   "Snippet_name": "スニペット名",
   "Snippeted_a_message": "スニペットを作成しました__snippetLink__",
   "Social_Network": "ソーシャルネットワーク",
-  "Sorry_page_you_requested_does_not_exists_or_was_deleted": "申し訳ありませんが、リクエストしたページは存在しないか、削除されました。",
+  "Sorry_page_you_requested_does_not_exist_or_was_deleted": "申し訳ありませんが、リクエストしたページは存在しないか、削除されました。",
   "Sort": "ソート",
   "Sort_by_activity": "アクティビティで並べ替える",
   "Sound": "サウンド",
