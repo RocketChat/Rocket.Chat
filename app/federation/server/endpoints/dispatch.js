@@ -19,6 +19,7 @@ import { getFederationDomain } from '../lib/getFederationDomain';
 import { decryptIfNeeded } from '../lib/crypt';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { getUpload, requestEventsFromLatest } from '../handler';
+import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 
 API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 	async post() {
@@ -195,8 +196,11 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 							// Update the federation
 							Messages.update({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
 						} else {
-							// Update the subscription open status
-							Subscriptions.update({ rid: message.rid, name: message.u.username }, { $set: { open: true, alert: true } });
+							// Load the room
+							const room = Rooms.findById(message.rid);
+
+							// Update the subscriptions
+							notifyUsersOnMessage(message, room);
 
 							// Denormalize user
 							const denormalizedMessage = normalizers.denormalizeMessage(message);
