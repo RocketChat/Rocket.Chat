@@ -1,4 +1,3 @@
-import Chart from 'chart.js';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = false }) => {
@@ -126,7 +125,7 @@ const doughnutChartConfiguration = (title) => ({
  * @param {Array(String)} dataLabels
  * @param {Array(Array(Double))} dataPoints
  */
-export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, dataSets, options = {}) => {
+export const drawLineChart = async (chart, chartContext, chartLabels, dataLabels, dataSets, options = {}) => {
 	if (!chart) {
 		console.log('No chart element');
 		return;
@@ -157,7 +156,7 @@ export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, data
 			fill: false,
 		});
 	});
-
+	const Chart = await import('chart.js');
 	return new Chart(chart, {
 		type: 'line',
 		data: {
@@ -175,14 +174,14 @@ export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, data
  * @param {Array(String)} dataLabels
  * @param {Array(Double)} dataPoints
  */
-export const drawDoughnutChart = (chart, title, chartContext, dataLabels, dataPoints) => {
+export const drawDoughnutChart = async (chart, title, chartContext, dataLabels, dataPoints) => {
 	if (!chart) {
 		return;
 	}
 	if (chartContext) {
 		chartContext.destroy();
 	}
-
+	const Chart = await import('chart.js');
 	return new Chart(chart, {
 		type: 'doughnut',
 		data: {
