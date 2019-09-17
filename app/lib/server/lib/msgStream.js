@@ -18,6 +18,10 @@ const send = function(self, msg) {
 };
 
 class MessageStream extends Meteor.Streamer {
+	getSubscriptionByUserIdAndRoomId(userId, rid) {
+		return this.subscriptions.find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+	}
+
 	mymessage = (eventName, args) => {
 		const subscriptions = this.subscriptionsByEventName[eventName];
 		if (!Array.isArray(subscriptions)) {

@@ -4,6 +4,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { WEB_RTC_EVENTS } from '../../../webrtc';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
+import { msgStream } from '../../../lib/server/lib/msgStream';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
@@ -23,7 +24,7 @@ class RoomStreamer extends Meteor.Streamer {
 	_publish(publication, eventName, options) {
 		super._publish(publication, eventName, options);
 		const uid = Meteor.userId();
-		if (/rooms-changed/.test(eventName)) {
+		if (/rooms-changed/.test(eventName) || /subscriptions-changed/.test(eventName)) {
 			const roomEvent = (...args) => send(publication._session, changedPayload(this.subscriptionName, 'id', {
 				eventName: `${ uid }/rooms-changed`,
 				args,
@@ -42,6 +43,7 @@ class RoomStreamer extends Meteor.Streamer {
 
 					case 'removed':
 						this.removeListener(rid, roomEvent);
+						msgStream.removeSubscription(msgStream.getSubscriptionByUserIdAndRoomId(uid, rid), rid);
 						break;
 				}
 			};
