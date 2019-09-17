@@ -263,9 +263,12 @@ FlowRouter.route('/admin/:group?', {
 	name: 'admin',
 	action: async ({ group = 'info' } = {}) => {
 		switch (group) {
-			case 'info':
-				BlazeLayout.render('main', { center: 'adminInfo' });
+			case 'info': {
+				const { InformationPage } = await import('./components/admin/info/InformationPage');
+				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationPage) });
+				// BlazeLayout.render('main', { center: 'adminInfo' });
 				break;
+			}
 
 			default:
 				BlazeLayout.render('main', { center: 'admin' });
