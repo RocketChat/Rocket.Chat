@@ -1,7 +1,7 @@
 import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import s from 'underscore.string';
-import katex from 'katex';
 
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
@@ -17,7 +17,8 @@ class Boundary {
 }
 
 class Katex {
-	constructor() {
+	constructor(katex) {
+		this.katex = katex;
 		this.delimitersMap = [
 			{
 				opener: '\\[',
@@ -120,7 +121,7 @@ class Katex {
 	// to HTML using the KaTeX library
 	renderLatex = (latex, displayMode) => {
 		try {
-			return katex.renderToString(latex, {
+			return this.katex.renderToString(latex, {
 				displayMode,
 				macros: {
 					'\\href': '\\@secondoftwo',
@@ -152,10 +153,6 @@ class Katex {
 	}
 
 	renderMessage = (message) => {
-		if (!this.isEnabled()) {
-			return message;
-		}
-
 		if (_.isString(message)) {
 			return this.render(message, this.renderLatex);
 		}
@@ -187,8 +184,23 @@ class Katex {
 	isParenthesisSyntaxEnabled = () => settings.get('Katex_Parenthesis_Syntax')
 }
 
-const instance = new Katex();
 
-callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH - 1, 'katex');
+Tracker.autorun(async () => {
+	if (!settings.get('Katex_Enabled')) {
+		callbacks.remove('renderMessage', 'katex');
+	}
 
-export default instance;
+
+	const [katex] = await Promise.all([import('katex'), import('../client/style.css'), import('../katex.min.css')]);
+	const instance = new Katex(katex);
+
+	callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH - 1, 'katex');
+});
+
+export default {
+	isEnabled: () => settings.get('Katex_Enabled'),
+
+	isDollarSyntaxEnabled: () => settings.get('Katex_Dollar_Syntax'),
+
+	isParenthesisSyntaxEnabled: () => settings.get('Katex_Parenthesis_Syntax'),
+};
