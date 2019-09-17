@@ -3,9 +3,10 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 
 import { isSetNotNull } from './function-isSet';
-import { RoomManager, call } from '../../../ui-utils';
-import { emoji, EmojiPicker } from '../../../emoji';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { RoomManager } from '../../../ui-utils/client';
+import { emoji, EmojiPicker } from '../../../emoji/client';
+import { CachedCollectionManager } from '../../../ui-cached-collection/client';
+import { APIClient } from '../../../utils/client';
 
 export const getEmojiUrlFromName = function(name, extension) {
 	Session.get;
@@ -164,21 +165,27 @@ emoji.packages.emojiCustom = {
 
 Meteor.startup(() =>
 	CachedCollectionManager.onLogin(async () => {
-		const emojis = await call('listEmojiCustom');
+		try {
+			const { emojis: { update: emojis } } = await APIClient.v1.get('emoji-custom.list');
 
-		emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
-		for (const currentEmoji of emojis) {
-			emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
-			emoji.packages.emojiCustom.list.push(`:${ currentEmoji.name }:`);
-			emoji.list[`:${ currentEmoji.name }:`] = currentEmoji;
-			emoji.list[`:${ currentEmoji.name }:`].emojiPackage = 'emojiCustom';
-			for (const alias of currentEmoji.aliases) {
-				emoji.packages.emojiCustom.list.push(`:${ alias }:`);
-				emoji.list[`:${ alias }:`] = {
-					emojiPackage: 'emojiCustom',
-					aliasOf: currentEmoji.name,
-				};
+			emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
+			for (const currentEmoji of emojis) {
+				emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
+				emoji.packages.emojiCustom.list.push(`:${ currentEmoji.name }:`);
+				emoji.list[`:${ currentEmoji.name }:`] = currentEmoji;
+				emoji.list[`:${ currentEmoji.name }:`].emojiPackage = 'emojiCustom';
+				for (const alias of currentEmoji.aliases) {
+					emoji.packages.emojiCustom.list.push(`:${ alias }:`);
+					emoji.list[`:${ alias }:`] = {
+						emojiPackage: 'emojiCustom',
+						aliasOf: currentEmoji.name,
+					};
+				}
 			}
+
+			EmojiPicker.updateRecent('rocket');
+		} catch (e) {
+			console.error('Error getting custom emoji', e);
 		}
 	})
 );

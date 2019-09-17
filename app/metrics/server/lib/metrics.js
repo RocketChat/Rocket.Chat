@@ -97,9 +97,9 @@ const setPrometheusData = async () => {
 		version: Info.version,
 	});
 
-	const sessions = Object.values(Meteor.server.sessions);
+	const sessions = Array.from(Meteor.server.sessions.values());
 	const authenticatedSessions = sessions.filter((s) => s.userId);
-	metrics.ddpSessions.set(sessions.length, date);
+	metrics.ddpSessions.set(Meteor.server.sessions.size, date);
 	metrics.ddpAthenticatedSessions.set(authenticatedSessions.length, date);
 	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length, date);
 
