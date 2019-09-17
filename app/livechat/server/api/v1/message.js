@@ -8,6 +8,7 @@ import { API } from '../../../../api';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { normalizeMessageAttachments } from '../../../../utils/server/functions/normalizeMessageAttachments';
 
 API.v1.addRoute('livechat/message', {
 	post() {
@@ -90,14 +91,18 @@ API.v1.addRoute('livechat/message/:_id', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const message = Messages.findOneById(_id);
+			let message = Messages.findOneById(_id);
 			if (!message) {
 				throw new Meteor.Error('invalid-message');
 			}
 
+			if (message.file) {
+				message = normalizeMessageAttachments(message);
+			}
+
 			return API.v1.success({ message });
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 
@@ -133,13 +138,17 @@ API.v1.addRoute('livechat/message/:_id', {
 
 			const result = Livechat.updateMessage({ guest, message: { _id: msg._id, msg: this.bodyParams.msg } });
 			if (result) {
-				const message = Messages.findOneById(_id);
+				let message = Messages.findOneById(_id);
+				if (message.file) {
+					message = normalizeMessageAttachments(message);
+				}
+
 				return API.v1.success({ message });
 			}
 
 			return API.v1.failure();
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 	delete() {
@@ -183,7 +192,7 @@ API.v1.addRoute('livechat/message/:_id', {
 
 			return API.v1.failure();
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 });
@@ -227,10 +236,12 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				limit = parseInt(this.queryParams.limit);
 			}
 
-			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls });
-			return API.v1.success(messages);
+			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls })
+				.messages
+				.map(normalizeMessageAttachments);
+			return API.v1.success({ messages });
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 });
