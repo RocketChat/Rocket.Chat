@@ -1,6 +1,6 @@
 /* General */
-@import 'imports/general/reset.css';
 @import 'imports/general/variables.css';
+@import 'imports/general/reset.css';
 @import 'imports/general/base_old.css';
 @import 'imports/general/base.css';
 @import 'imports/general/animations.css';
