@@ -70,6 +70,16 @@ Template.userInfo.helpers({
 		return customFields;
 	},
 
+        customFieldIsUrl(str) {
+          var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+         '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+         '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+         '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+         '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+         return !!pattern.test(str);
+        },
+
 	name() {
 		const user = Template.instance().user.get();
 		return user && user.name ? user.name : TAPi18n.__('Unnamed');
@@ -114,14 +124,14 @@ Template.userInfo.helpers({
 	lastLogin() {
 		const user = Template.instance().user.get();
 		if (user && user.lastLogin) {
-			return DateFormat.formatDateAndTime(user.lastLogin);
+			return moment(user.lastLogin).format('LLL');
 		}
 	},
 
 	createdAt() {
 		const user = Template.instance().user.get();
 		if (user && user.createdAt) {
-			return DateFormat.formatDateAndTime(user.createdAt);
+			return moment(user.createdAt).format('LLL');
 		}
 	},
 	linkedinUsername() {
