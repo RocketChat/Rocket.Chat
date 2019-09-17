@@ -2,13 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
-import qrcode from 'yaqrcode';
 
 import { modal } from '../../ui-utils';
 import { settings } from '../../settings';
 import { t } from '../../utils';
-
-window.qrcode = qrcode;
 
 Template.accountSecurity.helpers({
 	showImage() {
@@ -41,7 +38,8 @@ Template.accountSecurity.events({
 	'click .enable-2fa'(event, instance) {
 		event.preventDefault();
 
-		Meteor.call('2fa:enable', (error, result) => {
+		Meteor.call('2fa:enable', async (error, result) => {
+			const qrcode = await import('yaqrcode');
 			instance.imageSecret.set(result.secret);
 			instance.imageData.set(qrcode(result.url, { size: 200 }));
 
