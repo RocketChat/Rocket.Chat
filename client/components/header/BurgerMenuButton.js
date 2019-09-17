@@ -7,9 +7,9 @@ import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useUserPreference } from '../../hooks/useUserPreference';
 import { menu } from '../../../app/ui-utils/client/lib/menu';
 
-import './Burger.css';
+import './BurgerMenuButton.css';
 
-const useBurgerState = () => {
+const useBurgerMenuState = () => {
 	const isMenuOpen = useSession('isMenuOpen');
 	const isLayoutEmbedded = useReactiveValue(() => Layout.isEmbedded(), []);
 
@@ -52,8 +52,8 @@ const useBurgerState = () => {
 	return { isMenuOpen, isLayoutEmbedded, unreadBadge };
 };
 
-export function Burger() {
-	const { isMenuOpen, isLayoutEmbedded, unreadBadge } = useBurgerState();
+export function BurgerMenuButton() {
+	const { isMenuOpen, isLayoutEmbedded, unreadBadge } = useBurgerMenuState();
 
 	const handleClick = () => {
 		menu.toggle();

@@ -1,6 +1,5 @@
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import s from 'underscore.string';
+import { Button, Icon } from '@rocket.chat/fuselage';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { call } from '../../../../app/ui-utils/client/lib/callMethod';
 import { useViewStatisticsPermission } from '../../../hooks/usePermissions';
@@ -9,71 +8,10 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Info } from '../../../../app/utils';
 import { SideNav } from '../../../../app/ui-utils/client/lib/SideNav';
 import { Header } from '../../header/Header';
-
-const useStatistics = () => {
-	const [statistics, setStatistics] = useState(null);
-
-	const canViewStatistics = useViewStatisticsPermission();
-
-	const fetchStatistics = async () => {
-		if (!canViewStatistics) {
-			return;
-		}
-
-		setStatistics(null);
-		const statistics = await call('getStatistics');
-		setStatistics(statistics);
-	};
-
-	useEffect(() => {
-		fetchStatistics();
-	}, [canViewStatistics]);
-
-	return [statistics, fetchStatistics];
-};
-
-const useInfo = () => useReactiveValue(() => Info, []);
-
-const useInstances = () => {
-	const [instances, setInstances] = useState(null);
-
-	const canViewStatistics = useViewStatisticsPermission();
-
-	const fetchInstances = async () => {
-		if (!canViewStatistics) {
-			return;
-		}
-
-		setInstances(null);
-		const instances = await call('instances/get');
-		setInstances(instances);
-	};
-
-	useEffect(() => {
-		fetchInstances();
-	}, [canViewStatistics]);
-
-	if (instances && !instances.length) {
-		return null;
-	}
-
-	return instances;
-};
-
-const inGB = (size) => {
-	if (size > 1073741824) {
-		return `${ s.numberFormat(size / 1024 / 1024 / 1024, 2) } GB`;
-	}
-	return `${ s.numberFormat(size / 1024 / 1024, 2) } MB`;
-};
-
-const formatDate = (date) => {
-	if (date) {
-		return moment(date).format('LLL');
-	}
-};
-
-const numFormat = (number) => s.numberFormat(number, 2);
+import { SkeletonText } from './SkeletonText';
+import { useFormatters } from '../../../hooks/useFormatters';
+import { Link } from '../../basic/Link';
+import { ErrorAlert } from '../../basic/ErrorAlert';
 
 const InformationList = ({ children }) =>
 	<table className='statistics-table secondary-background-color'>
@@ -82,41 +20,204 @@ const InformationList = ({ children }) =>
 		</tbody>
 	</table>;
 
-const InformationEntry = ({ children, label }) => <tr className='admin-table-row'>
-	<th className='content-background-color border-component-color'>{label}</th>
-	<td className='border-component-color'>{children}</td>
-</tr>;
+const InformationEntry = ({ children, label }) =>
+	<tr className='admin-table-row'>
+		<th className='content-background-color border-component-color'>{label}</th>
+		<td className='border-component-color'>{children}</td>
+	</tr>;
+
+function RocketChatSection({ info, statistics, isLoading }) {
+	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
+	const t = useTranslation();
+	const { formatDate, formatHumanReadableTime } = useFormatters();
+
+	const appsEngineVersion = info.marketplaceApiVersion;
+
+	return <>
+		<h3>{t('Rocket.Chat')}</h3>
+		<InformationList>
+			<InformationEntry label={t('Version')}>{s(() => statistics.version)}</InformationEntry>
+			{appsEngineVersion && <InformationEntry label={t('Apps_Engine_Version')}>{appsEngineVersion}</InformationEntry>}
+			<InformationEntry label={t('DB_Migration')}>{s(() => statistics.migration.version)}</InformationEntry>
+			<InformationEntry label={t('DB_Migration_Date')}>{s(() => formatDate(statistics.migration.lockedAt))}</InformationEntry>
+			<InformationEntry label={t('Installed_at')}>{s(() => formatDate(statistics.installedAt))}</InformationEntry>
+			<InformationEntry label={t('Uptime')}>{s(() => formatHumanReadableTime(statistics.process.uptime))}</InformationEntry>
+			<InformationEntry label={t('Deployment_ID')}>{s(() => statistics.uniqueId)}</InformationEntry>
+			<InformationEntry label={t('PID')}>{s(() => statistics.process.pid)}</InformationEntry>
+			<InformationEntry label={t('Running_Instances')}>{s(() => statistics.instanceCount)}</InformationEntry>
+			<InformationEntry label={t('OpLog')}>{s(() => (statistics.oplogEnabled ? t('Enabled') : t('Disabled')))}</InformationEntry>
+		</InformationList>
+	</>;
+}
+
+function CommitSection({ info }) {
+	const t = useTranslation();
+	const { commit } = info;
+
+	return <>
+		<h3>{t('Commit')}</h3>
+		<InformationList>
+			<InformationEntry label={t('Hash')}>{commit.hash}</InformationEntry>
+			<InformationEntry label={t('Date')}>{commit.date}</InformationEntry>
+			<InformationEntry label={t('Branch')}>{commit.branch}</InformationEntry>
+			<InformationEntry label={t('Tag')}>{commit.tag}</InformationEntry>
+			<InformationEntry label={t('Author')}>{commit.author}</InformationEntry>
+			<InformationEntry label={t('Subject')}>{commit.subject}</InformationEntry>
+		</InformationList>
+	</>;
+}
+
+function RuntimeEnvironmentSection({ statistics, isLoading }) {
+	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
+	const t = useTranslation();
+	const { formatMemorySize, formatHumanReadableTime, formatCPULoad } = useFormatters();
+
+	return <>
+		<h3>{t('Runtime_Environment')}</h3>
+		<InformationList>
+			<InformationEntry label={t('OS_Type')}>{s(() => statistics.os.type)}</InformationEntry>
+			<InformationEntry label={t('OS_Platform')}>{s(() => statistics.os.platform)}</InformationEntry>
+			<InformationEntry label={t('OS_Arch')}>{s(() => statistics.os.arch)}</InformationEntry>
+			<InformationEntry label={t('OS_Release')}>{s(() => statistics.os.release)}</InformationEntry>
+			<InformationEntry label={t('Node_version')}>{s(() => statistics.process.nodeVersion)}</InformationEntry>
+			<InformationEntry label={t('Mongo_version')}>{s(() => statistics.mongoVersion)}</InformationEntry>
+			<InformationEntry label={t('Mongo_storageEngine')}>{s(() => statistics.mongoStorageEngine)}</InformationEntry>
+			<InformationEntry label={t('OS_Uptime')}>{s(() => formatHumanReadableTime(statistics.os.uptime))}</InformationEntry>
+			<InformationEntry label={t('OS_Loadavg')}>{s(() => formatCPULoad(statistics.os.loadavg))}</InformationEntry>
+			<InformationEntry label={t('OS_Totalmem')}>{s(() => formatMemorySize(statistics.os.totalmem))}</InformationEntry>
+			<InformationEntry label={t('OS_Freemem')}>{s(() => formatMemorySize(statistics.os.freemem))}</InformationEntry>
+			<InformationEntry label={t('OS_Cpus')}>{s(() => statistics.os.cpus.length)}</InformationEntry>
+		</InformationList>
+	</>;
+}
+
+function BuildEnvironmentSection({ info }) {
+	const t = useTranslation();
+	const { formatDate } = useFormatters();
+	const build = info && (info.compile || info.build);
+
+	return <>
+		<h3>{t('Build_Environment')}</h3>
+		<InformationList>
+			<InformationEntry label={t('OS_Platform')}>{build.platform}</InformationEntry>
+			<InformationEntry label={t('OS_Arch')}>{build.arch}</InformationEntry>
+			<InformationEntry label={t('OS_Release')}>{build.osRelease}</InformationEntry>
+			<InformationEntry label={t('Node_version')}>{build.nodeVersion}</InformationEntry>
+			<InformationEntry label={t('Date')}>{formatDate(build.date)}</InformationEntry>
+		</InformationList>
+	</>;
+}
+
+function UsageSection({ statistics, isLoading }) {
+	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
+	const t = useTranslation();
+	const { formatMemorySize } = useFormatters();
+
+	return <>
+		<h3>{t('Usage')}</h3>
+		<InformationList>
+			<InformationEntry label={t('Stats_Total_Users')}>{s(() => statistics.totalUsers)}</InformationEntry>
+			<InformationEntry label={t('Stats_Active_Users')}>{s(() => statistics.activeUsers)}</InformationEntry>
+			<InformationEntry label={t('Stats_Non_Active_Users')}>{s(() => statistics.nonActiveUsers)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Connected_Users')}>{s(() => statistics.totalConnectedUsers)}</InformationEntry>
+			<InformationEntry label={t('Stats_Online_Users')}>{s(() => statistics.onlineUsers)}</InformationEntry>
+			<InformationEntry label={t('Stats_Away_Users')}>{s(() => statistics.awayUsers)}</InformationEntry>
+			<InformationEntry label={t('Stats_Offline_Users')}>{s(() => statistics.offlineUsers)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Rooms')}>{s(() => statistics.totalRooms)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Channels')}>{s(() => statistics.totalChannels)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Private_Groups')}>{s(() => statistics.totalPrivateGroups)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Direct_Messages')}>{s(() => statistics.totalDirect)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Livechat_Rooms')}>{s(() => statistics.totalLivechat)}</InformationEntry>
+			<InformationEntry label={t('Total_Discussions')}>{s(() => statistics.totalDiscussions)}</InformationEntry>
+			<InformationEntry label={t('Total_Threads')}>{s(() => statistics.totalThreads)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Messages')}>{s(() => statistics.totalMessages)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Messages_Channel')}>{s(() => statistics.totalChannelMessages)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Messages_PrivateGroup')}>{s(() => statistics.totalPrivateGroupMessages)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Messages_Direct')}>{s(() => statistics.totalDirectMessages)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Messages_Livechat')}>{s(() => statistics.totalLivechatMessages)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Uploads')}>{s(() => statistics.uploadsTotal)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Uploads_Size')}>{s(() => formatMemorySize(statistics.uploadsTotalSize))}</InformationEntry>
+			{statistics && statistics.apps && <>
+					<InformationEntry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</InformationEntry>
+				</>}
+			<InformationEntry label={t('Stats_Total_Integrations')}>{s(() => statistics.integrations.totalIntegrations)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Incoming_Integrations')}>{s(() => statistics.integrations.totalIncoming)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Active_Incoming_Integrations')}>{s(() => statistics.integrations.totalIncomingActive)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Outgoing_Integrations')}>{s(() => statistics.integrations.totalOutgoing)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Active_Outgoing_Integrations')}>{s(() => statistics.integrations.totalOutgoingActive)}</InformationEntry>
+			<InformationEntry label={t('Stats_Total_Integrations_With_Script_Enabled')}>{s(() => statistics.integrations.totalWithScriptEnabled)}</InformationEntry>
+		</InformationList>
+	</>;
+}
+
+function InstancesSection({ instances, isLoading }) {
+	const t = useTranslation();
+	const { formatDate } = useFormatters();
+
+	return <>
+		<h3>{t('Broadcast_Connected_Instances')}</h3>
+		{isLoading
+			? <InformationList>
+				<InformationEntry label={t('Address')}><SkeletonText /></InformationEntry>
+				<InformationEntry label={t('Auth')}><SkeletonText /></InformationEntry>
+				<InformationEntry label={<>{t('Current_Status')} > {t('Connected')}</>}><SkeletonText /></InformationEntry>
+				<InformationEntry label={<>{t('Current_Status')} > {t('Retry_Count')}</>}><SkeletonText /></InformationEntry>
+				<InformationEntry label={<>{t('Current_Status')} > {t('Status')}</>}><SkeletonText /></InformationEntry>
+				<InformationEntry label={<>{t('Instance_Record')} > {t('ID')}</>}><SkeletonText /></InformationEntry>
+				<InformationEntry label={<>{t('Instance_Record')} > {t('PID')}</>}><SkeletonText /></InformationEntry>
+				<InformationEntry label={<>{t('Instance_Record')} > {t('Created_at')}</>}><SkeletonText />}</InformationEntry>
+				<InformationEntry label={<>{t('Instance_Record')} > {t('Updated_at')}</>}><SkeletonText />}</InformationEntry>
+			</InformationList>
+			: instances.map(({ address, broadcastAuth, currentStatus, instanceRecord }, i) =>
+				<InformationList key={i}>
+					<InformationEntry label={t('Address')}>{address}</InformationEntry>
+					<InformationEntry label={t('Auth')}>{broadcastAuth}</InformationEntry>
+					<InformationEntry label={<>{t('Current_Status')} > {t('Connected')}</>}>{currentStatus.connected}</InformationEntry>
+					<InformationEntry label={<>{t('Current_Status')} > {t('Retry_Count')}</>}>{currentStatus.retryCount}</InformationEntry>
+					<InformationEntry label={<>{t('Current_Status')} > {t('Status')}</>}>{currentStatus.status}</InformationEntry>
+					<InformationEntry label={<>{t('Instance_Record')} > {t('ID')}</>}>{instanceRecord._id}</InformationEntry>
+					<InformationEntry label={<>{t('Instance_Record')} > {t('PID')}</>}>{instanceRecord.pid}</InformationEntry>
+					<InformationEntry label={<>{t('Instance_Record')} > {t('Created_at')}</>}>{formatDate(instanceRecord._createdAt)}</InformationEntry>
+					<InformationEntry label={<>{t('Instance_Record')} > {t('Updated_at')}</>}>{formatDate(instanceRecord._updatedAt)}</InformationEntry>
+				</InformationList>
+			)}
+	</>;
+}
 
 export function InformationPage() {
-	const [statistics, fetchStatistics] = useStatistics();
-	const info = useInfo();
-	const build = info && (info.compile || info.build);
-	const instances = useInstances();
+	const [isLoading, setLoading] = useState(true);
+	const [statistics, setStatistics] = useState(null);
+	const [instances, setInstances] = useState(null);
+	const info = useReactiveValue(() => Info, []);
 
-	const alertOplogForMultipleInstances = statistics && statistics.instanceCount > 1 && !statistics.oplogEnabled;
+	const canViewStatistics = useViewStatisticsPermission();
+
+	const fetchInformation = useCallback(async () => {
+		if (!canViewStatistics) {
+			return;
+		}
+
+		setLoading(true);
+
+		try {
+			const [statistics, instances] = await Promise.all([
+				call('getStatistics'),
+				call('instances/get'),
+			]);
+
+			setStatistics(statistics);
+			setInstances(instances);
+		} finally {
+			setLoading(false);
+		}
+	}, [canViewStatistics]);
+
+	useEffect(() => {
+		fetchInformation();
+	}, [canViewStatistics]);
 
 	const t = useTranslation();
-
-	const humanReadableTime = (time) => {
-		const days = Math.floor(time / 86400);
-		const hours = Math.floor((time % 86400) / 3600);
-		const minutes = Math.floor(((time % 86400) % 3600) / 60);
-		const seconds = Math.floor(((time % 86400) % 3600) % 60);
-		let out = '';
-		if (days > 0) {
-			out += `${ days } ${ t('days') }, `;
-		}
-		if (hours > 0) {
-			out += `${ hours } ${ t('hours') }, `;
-		}
-		if (minutes > 0) {
-			out += `${ minutes } ${ t('minutes') }, `;
-		}
-		if (seconds > 0) {
-			out += `${ seconds } ${ t('seconds') }`;
-		}
-		return out;
-	};
 
 	useEffect(() => {
 		SideNav.setFlex('adminFlex');
@@ -124,129 +225,39 @@ export function InformationPage() {
 	}, []);
 
 	const handleRefreshClick = () => {
-		fetchStatistics();
+		if (isLoading) {
+			return;
+		}
+
+		fetchInformation();
 	};
 
-	return <section className='page-container page-list'>
-		<Header rawSectionName={t('Info')} />
+	const alertOplogForMultipleInstances = statistics && statistics.instanceCount > 1 && !statistics.oplogEnabled;
+
+	return <section className='page-container page-list Admin__InformationPage'>
+		<Header rawSectionName={t('Info')} hideHelp>
+			<div className='rc-header__block rc-header__block-action'>
+				<Button primary type='button' onClick={handleRefreshClick}>
+					<Icon name='reload' /> {t('Refresh')}
+				</Button>
+			</div>
+		</Header>
 
 		<div className='content'>
-			{alertOplogForMultipleInstances && <div className='alert error-color error-border error-background'>
-				<b>{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}</b><br/><br/>
-				{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}<br/><br/>
-				<a target='_blank' href='https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-performance/#running-multiple-instances-per-host-to-improve-performance'>{t('Click_here_for_more_info')}</a>
-			</div>}
+			{alertOplogForMultipleInstances
+				&& <ErrorAlert title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}>
+					<p>{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}</p>
+					<Link external href='https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-performance/#running-multiple-instances-per-host-to-improve-performance'>
+						{t('Click_here_for_more_info')}
+					</Link>
+				</ErrorAlert>}
 
-			{statistics && <>
-				<h3>{t('Rocket.Chat')}</h3>
-				<InformationList>
-					<InformationEntry label={t('Version')}>{statistics.version}</InformationEntry>
-					{info.marketplaceApiVersion
-							&& <InformationEntry label={t('Apps_Engine_Version')}>{info.marketplaceApiVersion}</InformationEntry>}
-					<InformationEntry label={t('DB_Migration')}>{statistics.migration.version}</InformationEntry>
-					<InformationEntry label={t('DB_Migration_Date')}>{formatDate(statistics.migration.lockedAt)}</InformationEntry>
-					<InformationEntry label={t('Installed_at')}>{formatDate(statistics.installedAt)}</InformationEntry>
-					<InformationEntry label={t('Uptime')}>{humanReadableTime(statistics.process.uptime)}</InformationEntry>
-					<InformationEntry label={t('Deployment_ID')}>{statistics.uniqueId}</InformationEntry>
-					<InformationEntry label={t('PID')}>{statistics.process.pid}</InformationEntry>
-					<InformationEntry label={t('Running_Instances')}>{statistics.instanceCount}</InformationEntry>
-					<InformationEntry label={t('OpLog')}>{statistics.oplogEnabled ? t('Enabled') : t('Disabled')}</InformationEntry>
-				</InformationList>
-			</>}
-
-			<h3>{t('Commit')}</h3>
-			<InformationList>
-				<InformationEntry label={t('Hash')}>{info.commit.hash}</InformationEntry>
-				<InformationEntry label={t('Date')}>{info.commit.date}</InformationEntry>
-				<InformationEntry label={t('Branch')}>{info.commit.branch}</InformationEntry>
-				<InformationEntry label={t('Tag')}>{info.commit.tag}</InformationEntry>
-				<InformationEntry label={t('Author')}>{info.commit.author}</InformationEntry>
-				<InformationEntry label={t('Subject')}>{info.commit.subject}</InformationEntry>
-			</InformationList>
-
-			{statistics ? <>
-				<h3>{t('Runtime_Environment')}</h3>
-				<InformationList>
-					<InformationEntry label={t('OS_Type')}>{statistics.os.type}</InformationEntry>
-					<InformationEntry label={t('OS_Platform')}>{statistics.os.platform}</InformationEntry>
-					<InformationEntry label={t('OS_Arch')}>{statistics.os.arch}</InformationEntry>
-					<InformationEntry label={t('OS_Release')}>{statistics.os.release}</InformationEntry>
-					<InformationEntry label={t('Node_version')}>{statistics.process.nodeVersion}</InformationEntry>
-					<InformationEntry label={t('Mongo_version')}>{statistics.mongoVersion}</InformationEntry>
-					<InformationEntry label={t('Mongo_storageEngine')}>{statistics.mongoStorageEngine}</InformationEntry>
-
-					<InformationEntry label={t('OS_Uptime')}>{humanReadableTime(statistics.os.uptime)}</InformationEntry>
-					<InformationEntry label={t('OS_Loadavg')}>{numFormat(statistics.os.loadavg[0])}, {numFormat(statistics.os.loadavg[1])}, {numFormat(statistics.os.loadavg[2])}</InformationEntry>
-					<InformationEntry label={t('OS_Totalmem')}>{inGB(statistics.os.totalmem)}</InformationEntry>
-					<InformationEntry label={t('OS_Freemem')}>{inGB(statistics.os.freemem)}</InformationEntry>
-					<InformationEntry label={t('OS_Cpus')}>{statistics.os.cpus.length}</InformationEntry>
-				</InformationList>
-
-				<h3>{t('Build_Environment')}</h3>
-				<InformationList>
-					<InformationEntry label={t('OS_Platform')}>{build.platform}</InformationEntry>
-					<InformationEntry label={t('OS_Arch')}>{build.arch}</InformationEntry>
-					<InformationEntry label={t('OS_Release')}>{build.osRelease}</InformationEntry>
-					<InformationEntry label={t('Node_version')}>{build.nodeVersion}</InformationEntry>
-					<InformationEntry label={t('Date')}>{formatDate(build.date)}</InformationEntry>
-				</InformationList>
-
-				<h3>{t('Usage')}</h3>
-				<InformationList>
-					<InformationEntry label={t('Stats_Total_Users')}>{statistics.totalUsers}</InformationEntry>
-					<InformationEntry label={t('Stats_Active_Users')}>{statistics.activeUsers}</InformationEntry>
-					<InformationEntry label={t('Stats_Non_Active_Users')}>{statistics.nonActiveUsers}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Connected_Users')}>{statistics.totalConnectedUsers}</InformationEntry>
-					<InformationEntry label={t('Stats_Online_Users')}>{statistics.onlineUsers}</InformationEntry>
-					<InformationEntry label={t('Stats_Away_Users')}>{statistics.awayUsers}</InformationEntry>
-					<InformationEntry label={t('Stats_Offline_Users')}>{statistics.offlineUsers}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Rooms')}>{statistics.totalRooms}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Channels')}>{statistics.totalChannels}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Private_Groups')}>{statistics.totalPrivateGroups}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Direct_Messages')}>{statistics.totalDirect}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Livechat_Rooms')}>{statistics.totalLivechat}</InformationEntry>
-					<InformationEntry label={t('Total_Discussions')}>{statistics.totalDiscussions}</InformationEntry>
-					<InformationEntry label={t('Total_Threads')}>{statistics.totalThreads}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Messages')}>{statistics.totalMessages}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Messages_Channel')}>{statistics.totalChannelMessages}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Messages_PrivateGroup')}>{statistics.totalPrivateGroupMessages}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Messages_Direct')}>{statistics.totalDirectMessages}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Messages_Livechat')}>{statistics.totalLivechatMessages}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Uploads')}>{statistics.uploadsTotal}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Uploads_Size')}>{inGB(statistics.uploadsTotalSize)}</InformationEntry>
-					{statistics.apps && <>
-						<InformationEntry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</InformationEntry>
-						<InformationEntry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</InformationEntry>
-					</>}
-					<InformationEntry label={t('Stats_Total_Integrations')}>{statistics.integrations.totalIntegrations}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Incoming_Integrations')}>{statistics.integrations.totalIncoming}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Active_Incoming_Integrations')}>{statistics.integrations.totalIncomingActive}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Outgoing_Integrations')}>{statistics.integrations.totalOutgoing}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Active_Outgoing_Integrations')}>{statistics.integrations.totalOutgoingActive}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Integrations_With_Script_Enabled')}>{statistics.integrations.totalWithScriptEnabled}</InformationEntry>
-				</InformationList>
-
-				{instances && <>
-					<h3>{t('Broadcast_Connected_Instances')}</h3>
-					{instances.map(({ address, broadcastAuth, currentStatus, instanceRecord }, i) =>
-						<InformationList key={i}>
-							<InformationEntry label={t('Address')}>{address}</InformationEntry>
-							<InformationEntry label={t('Auth')}>{broadcastAuth}</InformationEntry>
-							<InformationEntry label={<>{t('Current_Status')} > {t('Connected')}</>}>{currentStatus.connected}</InformationEntry>
-							<InformationEntry label={<>{t('Current_Status')} > {t('Retry_Count')}</>}>{currentStatus.retryCount}</InformationEntry>
-							<InformationEntry label={<>{t('Current_Status')} > {t('Status')}</>}>{currentStatus.status}</InformationEntry>
-							<InformationEntry label={<>{t('Instance_Record')} > {t('ID')}</>}>{instanceRecord._id}</InformationEntry>
-							<InformationEntry label={<>{t('Instance_Record')} > {t('PID')}</>}>{instanceRecord.pid}</InformationEntry>
-							<InformationEntry label={<>{t('Instance_Record')} > {t('Created_at')}</>}>{formatDate(instanceRecord._createdAt)}</InformationEntry>
-							<InformationEntry label={<>{t('Instance_Record')} > {t('Updated_at')}</>}>{formatDate(instanceRecord._updatedAt)}</InformationEntry>
-						</InformationList>
-					)}
-				</>}
-
-				<button className='button primary refresh' name='refresh' type='button' onClick={handleRefreshClick}>
-					{t('Refresh')}
-				</button>
-			</> : <>{t('Loading...')}</>}
+			<RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />
+			<CommitSection info={info} />
+			<RuntimeEnvironmentSection statistics={statistics} isLoading={isLoading} />
+			<BuildEnvironmentSection info={info} />
+			<UsageSection statistics={statistics} isLoading={isLoading} />
+			<InstancesSection instances={instances} isLoading={isLoading} />
 		</div>
 	</section>;
 }

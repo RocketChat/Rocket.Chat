@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Burger } from './Burger';
+import { BurgerMenuButton } from './BurgerMenuButton';
 import { useTranslation } from '../../hooks/useTranslation';
 
 export function Header({
@@ -14,7 +14,7 @@ export function Header({
 	return <header className='rc-header'>
 		<div className='rc-header__wrap'>
 			<div className='rc-header__block rc-header--burger'>
-				<Burger />
+				<BurgerMenuButton />
 			</div>
 
 			<span className='rc-header__block'>{rawSectionName || t(sectionName)}</span>
