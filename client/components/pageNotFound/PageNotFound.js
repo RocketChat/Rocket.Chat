@@ -24,7 +24,7 @@ export function PageNotFound() {
 		<section className='PageNotFound'>
 			<span className='PageNotFound__404'>404</span>
 			<span className='PageNotFound__message'>{t('Oops_page_not_found')}</span>
-			<span className='PageNotFound__description'>{t('Sorry_page_you_requested_does_not_exists_or_was_deleted')}</span>
+			<span className='PageNotFound__description'>{t('Sorry_page_you_requested_does_not_exist_or_was_deleted')}</span>
 
 			<div className='PageNotFound__actions'>
 				<ButtonGroup>
