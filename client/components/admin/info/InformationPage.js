@@ -8,6 +8,7 @@ import { useTranslation } from '../../../hooks/useTranslation';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Info } from '../../../../app/utils';
 import { SideNav } from '../../../../app/ui-utils/client/lib/SideNav';
+import { Header } from '../../header/Header';
 
 const useStatistics = () => {
 	const [statistics, setStatistics] = useState(null);
@@ -74,6 +75,18 @@ const formatDate = (date) => {
 
 const numFormat = (number) => s.numberFormat(number, 2);
 
+const InformationList = ({ children }) =>
+	<table className='statistics-table secondary-background-color'>
+		<tbody>
+			{children}
+		</tbody>
+	</table>;
+
+const InformationEntry = ({ children, label }) => <tr className='admin-table-row'>
+	<th className='content-background-color border-component-color'>{label}</th>
+	<td className='border-component-color'>{children}</td>
+</tr>;
+
 export function InformationPage() {
 	const [statistics, fetchStatistics] = useStatistics();
 	const info = useInfo();
@@ -115,7 +128,7 @@ export function InformationPage() {
 	};
 
 	return <section className='page-container page-list'>
-		<header />
+		<Header rawSectionName={t('Info')} />
 
 		<div className='content'>
 			{alertOplogForMultipleInstances && <div className='alert error-color error-border error-background'>
@@ -126,330 +139,107 @@ export function InformationPage() {
 
 			{statistics && <>
 				<h3>{t('Rocket.Chat')}</h3>
-				<table className='statistics-table secondary-background-color'>
-					<tbody>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Version')}</th>
-							<td className='border-component-color'>{statistics.version}</td>
-						</tr>
-						{info.marketplaceApiVersion
-						&& <tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Apps_Engine_Version')}</th>
-							<td className='border-component-color'>{info.marketplaceApiVersion}</td>
-						</tr>}
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('DB_Migration')}</th>
-							<td className='border-component-color'>{statistics.migration.version}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('DB_Migration_Date')}</th>
-							<td className='border-component-color'>{String(statistics.migration.lockedAt)}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Installed_at')}</th>
-							<td className='border-component-color'>{String(statistics.installedAt)}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Uptime')}</th>
-							<td className='border-component-color'>{humanReadableTime(statistics.process.uptime)}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Deployment_ID')}</th>
-							<td className='border-component-color'>{statistics.uniqueId}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('PID')}</th>
-							<td className='border-component-color'>{statistics.process.pid}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Running_Instances')}</th>
-							<td className='border-component-color'>{statistics.instanceCount}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OpLog')}</th>
-							<td className='border-component-color'>{statistics.oplogEnabled ? t('Enabled') : t('Disabled')}</td>
-						</tr>
-					</tbody>
-				</table>
+				<InformationList>
+					<InformationEntry label={t('Version')}>{statistics.version}</InformationEntry>
+					{info.marketplaceApiVersion
+							&& <InformationEntry label={t('Apps_Engine_Version')}>{info.marketplaceApiVersion}</InformationEntry>}
+					<InformationEntry label={t('DB_Migration')}>{statistics.migration.version}</InformationEntry>
+					<InformationEntry label={t('DB_Migration_Date')}>{formatDate(statistics.migration.lockedAt)}</InformationEntry>
+					<InformationEntry label={t('Installed_at')}>{formatDate(statistics.installedAt)}</InformationEntry>
+					<InformationEntry label={t('Uptime')}>{humanReadableTime(statistics.process.uptime)}</InformationEntry>
+					<InformationEntry label={t('Deployment_ID')}>{statistics.uniqueId}</InformationEntry>
+					<InformationEntry label={t('PID')}>{statistics.process.pid}</InformationEntry>
+					<InformationEntry label={t('Running_Instances')}>{statistics.instanceCount}</InformationEntry>
+					<InformationEntry label={t('OpLog')}>{statistics.oplogEnabled ? t('Enabled') : t('Disabled')}</InformationEntry>
+				</InformationList>
 			</>}
 
 			<h3>{t('Commit')}</h3>
-			<table className='statistics-table secondary-background-color'>
-				<tbody>
-					<tr className='admin-table-row'>
-						<th className='content-background-color border-component-color'>{t('Hash')}</th>
-						<td className='border-component-color'>{info.commit.hash}</td>
-					</tr>
-					<tr className='admin-table-row'>
-						<th className='content-background-color border-component-color'>{t('Date')}</th>
-						<td className='border-component-color'>{info.commit.date}</td>
-					</tr>
-					<tr className='admin-table-row'>
-						<th className='content-background-color border-component-color'>{t('Branch')}</th>
-						<td className='border-component-color'>{info.commit.branch}</td>
-					</tr>
-					<tr className='admin-table-row'>
-						<th className='content-background-color border-component-color'>{t('Tag')}</th>
-						<td className='border-component-color'>{info.commit.tag}</td>
-					</tr>
-					<tr className='admin-table-row'>
-						<th className='content-background-color border-component-color'>{t('Author')}</th>
-						<td className='border-component-color'>{info.commit.author}</td>
-					</tr>
-					<tr className='admin-table-row'>
-						<th className='content-background-color border-component-color'>{t('Subject')}</th>
-						<td className='border-component-color'>{info.commit.subject}</td>
-					</tr>
-				</tbody>
-			</table>
+			<InformationList>
+				<InformationEntry label={t('Hash')}>{info.commit.hash}</InformationEntry>
+				<InformationEntry label={t('Date')}>{info.commit.date}</InformationEntry>
+				<InformationEntry label={t('Branch')}>{info.commit.branch}</InformationEntry>
+				<InformationEntry label={t('Tag')}>{info.commit.tag}</InformationEntry>
+				<InformationEntry label={t('Author')}>{info.commit.author}</InformationEntry>
+				<InformationEntry label={t('Subject')}>{info.commit.subject}</InformationEntry>
+			</InformationList>
 
 			{statistics ? <>
 				<h3>{t('Runtime_Environment')}</h3>
-				<table className='statistics-table secondary-background-color'>
-					<tbody>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Type')}</th>
-							<td className='border-component-color'>{statistics.os.type}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Platform')}</th>
-							<td className='border-component-color'>{statistics.os.platform}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Arch')}</th>
-							<td className='border-component-color'>{statistics.os.arch}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Release')}</th>
-							<td className='border-component-color'>{statistics.os.release}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Node_version')}</th>
-							<td className='border-component-color'>{statistics.process.nodeVersion}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Mongo_version')}</th>
-							<td className='border-component-color'>{statistics.mongoVersion}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Mongo_storageEngine')}</th>
-							<td className='border-component-color'>{statistics.mongoStorageEngine}</td>
-						</tr>
+				<InformationList>
+					<InformationEntry label={t('OS_Type')}>{statistics.os.type}</InformationEntry>
+					<InformationEntry label={t('OS_Platform')}>{statistics.os.platform}</InformationEntry>
+					<InformationEntry label={t('OS_Arch')}>{statistics.os.arch}</InformationEntry>
+					<InformationEntry label={t('OS_Release')}>{statistics.os.release}</InformationEntry>
+					<InformationEntry label={t('Node_version')}>{statistics.process.nodeVersion}</InformationEntry>
+					<InformationEntry label={t('Mongo_version')}>{statistics.mongoVersion}</InformationEntry>
+					<InformationEntry label={t('Mongo_storageEngine')}>{statistics.mongoStorageEngine}</InformationEntry>
 
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Uptime')}</th>
-							<td className='border-component-color'>{humanReadableTime(statistics.os.uptime)}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Loadavg')}</th>
-							<td className='border-component-color'>{numFormat(statistics.os.loadavg[0])}, {numFormat(statistics.os.loadavg[1])}, {numFormat(statistics.os.loadavg[2])}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Totalmem')}</th>
-							<td className='border-component-color'>{inGB(statistics.os.totalmem)}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Freemem')}</th>
-							<td className='border-component-color'>{inGB(statistics.os.freemem)}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Cpus')}</th>
-							<td className='border-component-color'>{statistics.os.cpus.length}</td>
-						</tr>
-					</tbody>
-				</table>
+					<InformationEntry label={t('OS_Uptime')}>{humanReadableTime(statistics.os.uptime)}</InformationEntry>
+					<InformationEntry label={t('OS_Loadavg')}>{numFormat(statistics.os.loadavg[0])}, {numFormat(statistics.os.loadavg[1])}, {numFormat(statistics.os.loadavg[2])}</InformationEntry>
+					<InformationEntry label={t('OS_Totalmem')}>{inGB(statistics.os.totalmem)}</InformationEntry>
+					<InformationEntry label={t('OS_Freemem')}>{inGB(statistics.os.freemem)}</InformationEntry>
+					<InformationEntry label={t('OS_Cpus')}>{statistics.os.cpus.length}</InformationEntry>
+				</InformationList>
 
 				<h3>{t('Build_Environment')}</h3>
-				<table className='statistics-table secondary-background-color'>
-					<tbody>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Platform')}</th>
-							<td className='border-component-color'>{build.platform}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Arch')}</th>
-							<td className='border-component-color'>{build.arch}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('OS_Release')}</th>
-							<td className='border-component-color'>{build.osRelease}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Node_version')}</th>
-							<td className='border-component-color'>{build.nodeVersion}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Date')}</th>
-							<td className='border-component-color'>{formatDate(build.date)}</td>
-						</tr>
-					</tbody>
-				</table>
+				<InformationList>
+					<InformationEntry label={t('OS_Platform')}>{build.platform}</InformationEntry>
+					<InformationEntry label={t('OS_Arch')}>{build.arch}</InformationEntry>
+					<InformationEntry label={t('OS_Release')}>{build.osRelease}</InformationEntry>
+					<InformationEntry label={t('Node_version')}>{build.nodeVersion}</InformationEntry>
+					<InformationEntry label={t('Date')}>{formatDate(build.date)}</InformationEntry>
+				</InformationList>
 
 				<h3>{t('Usage')}</h3>
-				<table className='statistics-table secondary-background-color'>
-					<tbody>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Users')}</th>
-							<td className='border-component-color'>{statistics.totalUsers}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Active_Users')}</th>
-							<td className='border-component-color'>{statistics.activeUsers}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Non_Active_Users')}</th>
-							<td className='border-component-color'>{statistics.nonActiveUsers}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Connected_Users')}</th>
-							<td className='border-component-color'>{statistics.totalConnectedUsers}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Online_Users')}</th>
-							<td className='border-component-color'>{statistics.onlineUsers}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Away_Users')}</th>
-							<td className='border-component-color'>{statistics.awayUsers}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Offline_Users')}</th>
-							<td className='border-component-color'>{statistics.offlineUsers}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Rooms')}</th>
-							<td className='border-component-color'>{statistics.totalRooms}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Channels')}</th>
-							<td className='border-component-color'>{statistics.totalChannels}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Private_Groups')}</th>
-							<td className='border-component-color'>{statistics.totalPrivateGroups}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Direct_Messages')}</th>
-							<td className='border-component-color'>{statistics.totalDirect}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Livechat_Rooms')}</th>
-							<td className='border-component-color'>{statistics.totalLivechat}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Total_Discussions')}</th>
-							<td className='border-component-color'>{statistics.totalDiscussions}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Total_Threads')}</th>
-							<td className='border-component-color'>{statistics.totalThreads}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Messages')}</th>
-							<td className='border-component-color'>{statistics.totalMessages}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Messages_Channel')}</th>
-							<td className='border-component-color'>{statistics.totalChannelMessages}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Messages_PrivateGroup')}</th>
-							<td className='border-component-color'>{statistics.totalPrivateGroupMessages}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Messages_Direct')}</th>
-							<td className='border-component-color'>{statistics.totalDirectMessages}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Messages_Livechat')}</th>
-							<td className='border-component-color'>{statistics.totalLivechatMessages}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Uploads')}</th>
-							<td className='border-component-color'>{statistics.uploadsTotal}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Uploads_Size')}</th>
-							<td className='border-component-color'>{inGB(statistics.uploadsTotalSize)}</td>
-						</tr>
-						{statistics.apps && <>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Installed_Apps')}</th>
-							<td className='border-component-color'>{statistics.apps.totalInstalled}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Active_Apps')}</th>
-							<td className='border-component-color'>{statistics.apps.totalActive}</td>
-						</tr>
+				<InformationList>
+					<InformationEntry label={t('Stats_Total_Users')}>{statistics.totalUsers}</InformationEntry>
+					<InformationEntry label={t('Stats_Active_Users')}>{statistics.activeUsers}</InformationEntry>
+					<InformationEntry label={t('Stats_Non_Active_Users')}>{statistics.nonActiveUsers}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Connected_Users')}>{statistics.totalConnectedUsers}</InformationEntry>
+					<InformationEntry label={t('Stats_Online_Users')}>{statistics.onlineUsers}</InformationEntry>
+					<InformationEntry label={t('Stats_Away_Users')}>{statistics.awayUsers}</InformationEntry>
+					<InformationEntry label={t('Stats_Offline_Users')}>{statistics.offlineUsers}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Rooms')}>{statistics.totalRooms}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Channels')}>{statistics.totalChannels}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Private_Groups')}>{statistics.totalPrivateGroups}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Direct_Messages')}>{statistics.totalDirect}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Livechat_Rooms')}>{statistics.totalLivechat}</InformationEntry>
+					<InformationEntry label={t('Total_Discussions')}>{statistics.totalDiscussions}</InformationEntry>
+					<InformationEntry label={t('Total_Threads')}>{statistics.totalThreads}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Messages')}>{statistics.totalMessages}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Messages_Channel')}>{statistics.totalChannelMessages}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Messages_PrivateGroup')}>{statistics.totalPrivateGroupMessages}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Messages_Direct')}>{statistics.totalDirectMessages}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Messages_Livechat')}>{statistics.totalLivechatMessages}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Uploads')}>{statistics.uploadsTotal}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Uploads_Size')}>{inGB(statistics.uploadsTotalSize)}</InformationEntry>
+					{statistics.apps && <>
+						<InformationEntry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</InformationEntry>
+						<InformationEntry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</InformationEntry>
 					</>}
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Integrations')}</th>
-							<td className='border-component-color'>{statistics.integrations.totalIntegrations}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Incoming_Integrations')}</th>
-							<td className='border-component-color'>{statistics.integrations.totalIncoming}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Active_Incoming_Integrations')}</th>
-							<td className='border-component-color'>{statistics.integrations.totalIncomingActive}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Outgoing_Integrations')}</th>
-							<td className='border-component-color'>{statistics.integrations.totalOutgoing}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Active_Outgoing_Integrations')}</th>
-							<td className='border-component-color'>{statistics.integrations.totalOutgoingActive}</td>
-						</tr>
-						<tr className='admin-table-row'>
-							<th className='content-background-color border-component-color'>{t('Stats_Total_Integrations_With_Script_Enabled')}</th>
-							<td className='border-component-color'>{statistics.integrations.totalWithScriptEnabled}</td>
-						</tr>
-					</tbody>
-				</table>
+					<InformationEntry label={t('Stats_Total_Integrations')}>{statistics.integrations.totalIntegrations}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Incoming_Integrations')}>{statistics.integrations.totalIncoming}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Active_Incoming_Integrations')}>{statistics.integrations.totalIncomingActive}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Outgoing_Integrations')}>{statistics.integrations.totalOutgoing}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Active_Outgoing_Integrations')}>{statistics.integrations.totalOutgoingActive}</InformationEntry>
+					<InformationEntry label={t('Stats_Total_Integrations_With_Script_Enabled')}>{statistics.integrations.totalWithScriptEnabled}</InformationEntry>
+				</InformationList>
 
 				{instances && <>
 					<h3>{t('Broadcast_Connected_Instances')}</h3>
 					{instances.map(({ address, broadcastAuth, currentStatus, instanceRecord }, i) =>
-						<table key={i} className='statistics-table secondary-background-color'>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Address')}</th>
-								<td className='border-component-color'>{address}</td>
-							</tr>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Auth')}</th>
-								<td className='border-component-color'>{broadcastAuth}</td>
-							</tr>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Current_Status')} > {t('Connected')}</th>
-								<td className='border-component-color'>{currentStatus.connected}</td>
-							</tr>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Current_Status')} > {t('Retry_Count')}</th>
-								<td className='border-component-color'>{currentStatus.retryCount}</td>
-							</tr>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Current_Status')} > {t('Status')}</th>
-								<td className='border-component-color'>{currentStatus.status}</td>
-							</tr>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Instance_Record')} > {t('ID')}</th>
-								<td className='border-component-color'>{instanceRecord._id}</td>
-							</tr>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Instance_Record')} > {t('PID')}</th>
-								<td className='border-component-color'>{instanceRecord.pid}</td>
-							</tr>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Instance_Record')} > {t('Created_at')}</th>
-								<td className='border-component-color'>{formatDate(instanceRecord._createdAt)}</td>
-							</tr>
-							<tr className='admin-table-row'>
-								<th className='content-background-color border-component-color'>{t('Instance_Record')} > {t('Updated_at')}</th>
-								<td className='border-component-color'>{formatDate(instanceRecord._updatedAt)}</td>
-							</tr>
-						</table>
+						<InformationList key={i}>
+							<InformationEntry label={t('Address')}>{address}</InformationEntry>
+							<InformationEntry label={t('Auth')}>{broadcastAuth}</InformationEntry>
+							<InformationEntry label={<>{t('Current_Status')} > {t('Connected')}</>}>{currentStatus.connected}</InformationEntry>
+							<InformationEntry label={<>{t('Current_Status')} > {t('Retry_Count')}</>}>{currentStatus.retryCount}</InformationEntry>
+							<InformationEntry label={<>{t('Current_Status')} > {t('Status')}</>}>{currentStatus.status}</InformationEntry>
+							<InformationEntry label={<>{t('Instance_Record')} > {t('ID')}</>}>{instanceRecord._id}</InformationEntry>
+							<InformationEntry label={<>{t('Instance_Record')} > {t('PID')}</>}>{instanceRecord.pid}</InformationEntry>
+							<InformationEntry label={<>{t('Instance_Record')} > {t('Created_at')}</>}>{formatDate(instanceRecord._createdAt)}</InformationEntry>
+							<InformationEntry label={<>{t('Instance_Record')} > {t('Updated_at')}</>}>{formatDate(instanceRecord._updatedAt)}</InformationEntry>
+						</InformationList>
 					)}
 				</>}
 
