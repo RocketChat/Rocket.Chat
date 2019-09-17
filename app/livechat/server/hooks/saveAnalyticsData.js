@@ -1,5 +1,6 @@
 import { callbacks } from '../../../callbacks';
 import { LivechatRooms } from '../../../models';
+import { normalizeMessageAttachments } from '../../../utils/server/functions/normalizeMessageAttachments';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -12,6 +13,9 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	if (message.file) {
+		message = normalizeMessageAttachments(message);
+	}
 
 	const now = new Date();
 	let analyticsData;
