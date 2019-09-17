@@ -60,7 +60,7 @@ async function afterCreateDirectRoom(room, extras) {
 		// Dispatch the events
 		dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, sourceUserEvent, targetUserEvent]);
 	} catch (err) {
-		Promise.await(deleteRoom(room._id));
+		await deleteRoom(room._id);
 
 		logger.client.error('afterCreateDirectRoom => Could not create federated room:', err);
 	}
