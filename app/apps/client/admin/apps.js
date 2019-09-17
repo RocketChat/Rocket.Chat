@@ -83,7 +83,7 @@ Template.apps.onCreated(function() {
 	this.handleAppAddedOrUpdated = async (appId) => {
 		try {
 			const app = await Apps.getApp(appId);
-			const { categories, version: marketplaceVersion } = await Apps.getAppFromMarketplace(appId, app.version) || {};
+			const { categories, version: marketplaceVersion } = await Apps.getAppFromMarketplace(appId, app.version).catch(() => ({}));
 			const apps = [
 				...this.state.get('apps').filter(({ id }) => id !== appId),
 				{
