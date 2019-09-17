@@ -1,6 +1,3 @@
-import './codeMirrorComponent.html';
-import './codeMirrorComponent.js';
-
 import 'codemirror/addon/fold/brace-fold.js';
 import 'codemirror/addon/fold/comment-fold.js';
 import 'codemirror/addon/fold/foldcode.js';

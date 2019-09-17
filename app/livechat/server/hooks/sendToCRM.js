@@ -2,6 +2,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
+import { normalizeMessageAttachments } from '../../../utils/server/functions/normalizeMessageAttachments';
 
 const msgNavType = 'livechat_navigation_history';
 
@@ -55,7 +56,12 @@ function sendToCRM(type, room, includeMessages = true) {
 				msg.navigation = message.navigation;
 			}
 
-			postData.messages.push(msg);
+			if (message.file) {
+				msg.file = message.file;
+				msg.attachments = message.attachments;
+			}
+
+			postData.messages.push(normalizeMessageAttachments(msg));
 		});
 	}
 
