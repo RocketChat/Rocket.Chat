@@ -30,8 +30,11 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 
+	let extraData;
 	if (message.file) {
 		message = normalizeMessageAttachments(message);
+		const { attachments, rid, u: { _id: userId } = {} } = message;
+		extraData = Object.assign({}, { rid, userId, attachments });
 	}
 
 	const SMSService = SMS.getService(settings.get('SMS_Service'));
@@ -46,7 +49,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
+	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg, extraData);
 
 	return message;
 }, callbacks.priority.LOW, 'sendMessageBySms');
