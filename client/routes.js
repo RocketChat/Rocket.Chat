@@ -266,7 +266,6 @@ FlowRouter.route('/admin/:group?', {
 			case 'info': {
 				const { InformationPage } = await import('./components/admin/info/InformationPage');
 				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationPage) });
-				// BlazeLayout.render('main', { center: 'adminInfo' });
 				break;
 			}
 

@@ -7,7 +7,7 @@ export const useFormatters = () => {
 	const formatNumber = (number) => s.numberFormat(number, 2);
 
 	const formatMemorySize = (memorySize) => {
-		if (!memorySize) {
+		if (typeof memorySize !== 'number') {
 			return null;
 		}
 
@@ -23,7 +23,8 @@ export const useFormatters = () => {
 		}
 
 		const divider = Math.pow(1024, order);
-		return `${ formatNumber(memorySize / divider) } ${ units[order] }`;
+		const decimalDigits = order === 0 ? 0 : 2;
+		return `${ s.numberFormat(memorySize / divider, decimalDigits) } ${ units[order] }`;
 	};
 
 	const formatDate = (date) => {
