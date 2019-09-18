@@ -1,6 +1,6 @@
 import { Base } from './_Base';
 
-export class LivechatSessions extends Base {
+export class LivechatAgentActivity extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -58,4 +58,4 @@ export class LivechatSessions extends Base {
 	}
 }
 
-export default new LivechatSessions('livechat_sessions');
+export default new LivechatAgentActivity('livechat_agent_activity');

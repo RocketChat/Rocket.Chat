@@ -60,7 +60,9 @@ Template.visitorForward.events({
 		};
 
 		if (instance.find('#forwardUser').value) {
+			const user = AgentUsers.findOne({ _id: instance.find('#forwardUser').value });
 			transferData.userId = instance.find('#forwardUser').value;
+			transferData.username = user.username;
 		} else if (instance.find('#forwardDepartment').value) {
 			transferData.departmentId = instance.find('#forwardDepartment').value;
 		}

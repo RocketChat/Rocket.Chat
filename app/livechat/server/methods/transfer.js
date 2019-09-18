@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatRooms, Subscriptions, LivechatVisitors } from '../../../models';
+import { LivechatRooms, Subscriptions, LivechatVisitors, Users } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -28,7 +28,12 @@ Meteor.methods({
 		}
 
 		const guest = LivechatVisitors.findOneById(room.v && room.v._id);
-		transferData.transferedBy = Meteor.userId();
+		const user = Meteor.user();
+		transferData.transferedBy = { _id: user._id, username: user.username };
+		if (transferData.userId) {
+			const userToTransfer = Users.findOneById(transferData.userId);
+			transferData.transferedTo = { _id: userToTransfer._id, username: userToTransfer.username };
+		}
 
 		return Livechat.transfer(room, guest, transferData);
 	},

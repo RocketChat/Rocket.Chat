@@ -449,7 +449,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Comment_to_leave_on_closing_session',
 	});
 
-	settings.add('Livechat_visitor_inactivity', 3600, {
+	settings.add('Livechat_visitor_inactivity_timeout', 3600, {
 		type: 'int',
 		group: 'Livechat',
 		section: 'Sessions',

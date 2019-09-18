@@ -2,13 +2,13 @@ import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks/server';
-import { LivechatSessions, Sessions, Users } from '../../../models/server';
+import { LivechatAgentActivity, Sessions, Users } from '../../../models/server';
 
 const formatDate = (dateTime = new Date()) => ({
 	date: parseInt(moment(dateTime).format('YYYYMMDD')),
 });
 
-export class LivechatSessionsMonitor {
+export class LivechatAgentActivityMonitor {
 	constructor() {
 		this._handleMeteorConnection = this._handleMeteorConnection.bind(this);
 		this._handleAgentStatusChanged = this._handleAgentStatusChanged.bind(this);
@@ -70,17 +70,17 @@ export class LivechatSessionsMonitor {
 
 	_createOrUpdateSession(userId) {
 		const data = { ...formatDate(), agentId: userId };
-		LivechatSessions.createOrUpdate(data);
+		LivechatAgentActivity.createOrUpdate(data);
 	}
 
 	_updateSessionWhenAgentStop(userId) {
 		const data = { ...formatDate(), agentId: userId };
-		const livechatSession = LivechatSessions.findOne(data);
+		const livechatSession = LivechatAgentActivity.findOne(data);
 		if (livechatSession) {
 			const stopedAt = new Date();
 			const availableTime = moment(stopedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
-			LivechatSessions.updateLastStoppedAt({ ...data, availableTime, lastStopedAt: stopedAt });
-			LivechatSessions.updateServiceHistory({ ...data, historyObject: { startedAt: livechatSession.lastStartedAt, stopedAt } });
+			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStopedAt: stopedAt });
+			LivechatAgentActivity.updateServiceHistory({ ...data, historyObject: { startedAt: livechatSession.lastStartedAt, stopedAt } });
 		}
 	}
 }

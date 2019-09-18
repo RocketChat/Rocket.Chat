@@ -5,8 +5,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
 		return message;
 	}
-	const sentByVisitor = Boolean(message.token);
-	if (sentByVisitor) {
+	if (message.token) {
 		LivechatRooms.setVisitorLastMessageTimestampByRoomId(room._id, message.ts);
 	}
 	return message;
