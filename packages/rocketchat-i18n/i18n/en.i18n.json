@@ -520,6 +520,8 @@
   "CAS_Sync_User_Data_Enabled_Description": "Always synchronize external CAS User data into available attributes upon login. Note: Attributes are always synced upon account creation anyway.",
   "CAS_Sync_User_Data_FieldMap": "Attribute Map",
   "CAS_Sync_User_Data_FieldMap_Description": "Use this JSON input to build internal attributes (key) from external attributes (value). External attribute names enclosed with '%' will interpolated in value strings.<br/>Example, `{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`<br/><br/>The attribute map is always interpolated. In CAS 1.0 only the `username` attribute is available. Available internal attributes are: username, name, email, rooms; rooms is a comma separated list of rooms to join upon user creation e.g: {\"rooms\": \"%team%,%department%\"} would join CAS users on creation to their team and department channel.",
+  "CAS_trust_username": "Trust CAS username",
+  "CAS_trust_username_description": "When enabled, Rocket.Chat will trust that any username from CAS belongs to the same user on Rocket.Chat.<br/>This may be needed if an user is renamed on CAS, but may also allow people to take control of Rocket.Chat accounts by renaming their own CAS users.",
   "CAS_version": "CAS Version",
   "CAS_version_Description": "Only use a supported CAS version supported by your CAS SSO service.",
   "Categories": "Categories",
