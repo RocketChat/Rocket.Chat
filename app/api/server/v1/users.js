@@ -529,28 +529,21 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});
+		if (this.bodyParams.userId && this.bodyParams.userId !== this.userId && !hasPermission(this.userId, 'edit-other-user-info')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
+		}
 		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
-		const userData = {
-			_id: userId,
-			settings: {
-				preferences: this.bodyParams.data,
-			},
-		};
-
-		if (this.bodyParams.data.language) {
-			const { language } = this.bodyParams.data;
-			delete this.bodyParams.data.language;
-			userData.language = language;
+		if (!Users.findOneById(userId)) {
+			throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 		}
 
-		Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
+		Meteor.runAsUser(userId, () => Meteor.call('saveUserPreferences', this.bodyParams.data));
 		const user = Users.findOneById(userId, {
 			fields: {
 				'settings.preferences': 1,
 				language: 1,
 			},
 		});
-
 		return API.v1.success({
 			user: {
 				_id: user._id,
