@@ -6,13 +6,14 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('http');
-	api.use('templating', 'client');
-
-	api.use('rocketchat:lib');
-	api.use('rocketchat:ui', 'client');
-
+	api.use([
+		'ecmascript',
+		'http',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'rocketchat:models',
+		'templating',
+	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

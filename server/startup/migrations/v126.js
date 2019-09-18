@@ -1,19 +1,22 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
+
+Migrations.add({
 	version: 126,
 	up() {
-		if (!RocketChat.models || !RocketChat.models.Settings) {
+		if (!Settings) {
 			return;
 		}
 
 		const query = {
 			_id: 'Accounts_Default_User_Preferences_idleTimeoutLimit',
 		};
-		const setting = RocketChat.models.Settings.findOne(query);
+		const setting = Settings.findOne(query);
 
 		if (setting) {
 			delete setting._id;
-			RocketChat.models.Settings.upsert({ _id: 'Accounts_Default_User_Preferences_idleTimeLimit' }, setting);
-			RocketChat.models.Settings.remove(query);
+			Settings.upsert({ _id: 'Accounts_Default_User_Preferences_idleTimeLimit' }, setting);
+			Settings.remove(query);
 		}
 	},
 });
