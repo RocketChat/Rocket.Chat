@@ -616,7 +616,6 @@ settings.get('Accounts_CustomFields', (key, value) => {
 		const nonPublicCustomFields = Object.keys(customFields).filter((customFieldKey) => customFields[customFieldKey].public !== true);
 		API.v1.setLimitedCustomFields(nonPublicCustomFields);
 	} catch (error) {
-		logger.warn('Invalid Custom Fields', error);
 		console.warn('Invalid Custom Fields', error);
 	}
 });
