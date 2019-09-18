@@ -328,8 +328,7 @@ Template.accountPreferences.events({
 			return;
 		}
 		if (audio) {
-			const $audio = $(`audio#${ audio }`);
-			return $audio && $audio[0] && $audio[0].play();
+			CustomSounds.play(audio);
 		}
 	},
 	'click .js-dont-ask-remove'(e) {

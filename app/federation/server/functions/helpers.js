@@ -11,7 +11,8 @@ export function updateEnabled(enabled) {
 	Settings.updateValueById('FEDERATION_Enabled', enabled);
 }
 
-export const isFederated = (resource) => !!resource.federation;
+export const checkRoomType = (room) => room.t === 'p' || room.t === 'd';
+export const checkRoomDomainsLength = (domains) => domains.length <= 10;
 
 export const hasExternalDomain = ({ federation }) => {
 	// same test as isFederated(room)
@@ -34,7 +35,7 @@ export const getFederatedRoomData = (room) => {
 
 	if (room.t === 'd') {
 		// Check if there is a federated user on this room
-		hasFederatedUser = room.usernames.find((u) => u.indexOf('@') !== -1);
+		hasFederatedUser = room.usernames.some(isFullyQualified);
 	} else {
 		// Find all subscriptions of this room
 		subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id).fetch();
@@ -51,7 +52,7 @@ export const getFederatedRoomData = (room) => {
 		users = Users.findUsersWithUsernameByIds(userIds).fetch();
 
 		// Check if there is a federated user on this room
-		hasFederatedUser = users.find((u) => u.username.indexOf('@') !== -1);
+		hasFederatedUser = users.some((u) => isFullyQualified(u.username));
 	}
 
 	return {

@@ -11,10 +11,6 @@ import { Session } from 'meteor/session';
 
 import { KonchatNotification } from '../../app/ui';
 
-Blaze.registerHelper('pathFor', function(path, kw) {
-	return FlowRouter.path(path, kw.hash);
-});
-
 BlazeLayout.setRoot('body');
 
 const createTemplateForComponent = async (

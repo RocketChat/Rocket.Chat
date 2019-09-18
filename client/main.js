@@ -7,9 +7,7 @@ import '../imports/startup/client';
 import '../lib/RegExp';
 
 import './lib/toastr';
-import './helpers/escapeCssUrl';
-import './helpers/log';
-import './helpers/not';
+import './templateHelpers';
 import './methods/deleteMessage';
 import './methods/hideRoom';
 import './methods/openRoom';
