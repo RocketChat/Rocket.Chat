@@ -32,6 +32,10 @@ function getEmailContent({ message, user, room }) {
 	});
 
 	if (message.msg !== '') {
+		if (!settings.get('Email_notification_show_message')) {
+			return header;
+		}
+
 		let messageContent = s.escapeHTML(message.msg);
 
 		if (message.t === 'e2e') {
@@ -45,7 +49,7 @@ function getEmailContent({ message, user, room }) {
 				messageContent = messageContent.replace(token.token, token.text);
 			});
 		}
-		return `${ header }<br/><br/>${ messageContent.replace(/\n/gm, '<br/>') }`;
+		return `${ header }:<br/><br/>${ messageContent.replace(/\n/gm, '<br/>') }`;
 	}
 
 	if (message.file) {
@@ -55,13 +59,21 @@ function getEmailContent({ message, user, room }) {
 			lng,
 		});
 
+		if (!settings.get('Email_notification_show_message')) {
+			return fileHeader;
+		}
+
 		let content = `${ s.escapeHTML(message.file.name) }`;
 
 		if (message.attachments && message.attachments.length === 1 && message.attachments[0].description !== '') {
 			content += `<br/><br/>${ s.escapeHTML(message.attachments[0].description) }`;
 		}
 
-		return `${ fileHeader }<br/><br/>${ content }`;
+		return `${ fileHeader }:<br/><br/>${ content }`;
+	}
+
+	if (!settings.get('Email_notification_show_message')) {
+		return header;
 	}
 
 	if (message.attachments.length > 0) {
@@ -76,7 +88,7 @@ function getEmailContent({ message, user, room }) {
 			content += `${ s.escapeHTML(attachment.text) }<br/>`;
 		}
 
-		return `${ header }<br/><br/>${ content }`;
+		return `${ header }:<br/><br/>${ content }`;
 	}
 
 	return header;
