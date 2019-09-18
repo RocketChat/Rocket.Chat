@@ -58,7 +58,9 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			});
 		}
 
-		return API.v1.success({ user: Users.findOneById(newUserId, { fields: API.v1.defaultFieldsToExclude }) });
+		const { fields } = this.parseJsonQuery();
+
+		return API.v1.success({ user: Users.findOneById(newUserId, { fields }) });
 	},
 });
 
@@ -229,8 +231,9 @@ API.v1.addRoute('users.register', { authRequired: false }, {
 
 		// Now set their username
 		Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
+		const { fields } = this.parseJsonQuery();
 
-		return API.v1.success({ user: Users.findOneById(userId, { fields: API.v1.defaultFieldsToExclude }) });
+		return API.v1.success({ user: Users.findOneById(userId, { fields }) });
 	},
 });
 
@@ -426,8 +429,9 @@ API.v1.addRoute('users.update', { authRequired: true }, {
 				Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.data.active);
 			});
 		}
+		const { fields } = this.parseJsonQuery();
 
-		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: API.v1.defaultFieldsToExclude }) });
+		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields }) });
 	},
 });
 
