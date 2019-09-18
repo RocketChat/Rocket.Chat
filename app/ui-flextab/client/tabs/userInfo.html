@@ -101,7 +101,11 @@
 							{{#each customField}}
 								<div class="rc-user-info-details__item">
 									<label class="rc-user-info-details__label">{{label}}</label>
-									<p class="rc-user-info-details__info">{{value}}</p>
+									{{#if customFieldIsUrl value}}
+                                                                                <p class="rc-user-info-details__info"><a href="{{value}}" target="_blank">{{value}}</a></p>
+                                                                        {{else}}
+                                                                                <p class="rc-user-info-details__info">{{value}}</p>
+                                                                        {{/if}}
 								</div>
 							{{/each}}
 							<div class="rc-user-info-details__item">
