@@ -105,15 +105,14 @@ Accounts.normalizeUsername = function(name) {
 	return name;
 };
 
-Accounts.registerLoginHandler(function(loginRequest) {
-	const _guessNameFromUsername = function(username) {
-		return username
-			.replace(/\W/g, ' ')
-			.replace(/\s(.)/g, function($1) { return $1.toUpperCase(); })
-			.replace(/^(.)/, function($1) { return $1.toLowerCase(); })
-			.replace(/^\w/, function($1) { return $1.toUpperCase(); });
-	};
+const guessNameFromUsername = (username) =>
+	username
+		.replace(/\W/g, ' ')
+		.replace(/\s(.)/g, (u) => u.toUpperCase())
+		.replace(/^(.)/, (u) => u.toLowerCase())
+		.replace(/^\w/, (u) => u.toUpperCase());
 
+Accounts.registerLoginHandler(function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
@@ -193,7 +192,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			if (username) {
 				newUser.username = username;
-				newUser.name = newUser.name || _guessNameFromUsername(username);
+				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
