@@ -39,7 +39,7 @@ export function UsageSection({ statistics, isLoading }) {
 			<InformationEntry label={t('Stats_Total_Messages_Livechat')}>{s(() => statistics.totalLivechatMessages)}</InformationEntry>
 			<InformationEntry label={t('Stats_Total_Uploads')}>{s(() => statistics.uploadsTotal)}</InformationEntry>
 			<InformationEntry label={t('Stats_Total_Uploads_Size')}>{s(() => formatMemorySize(statistics.uploadsTotalSize))}</InformationEntry>
-			{statistics && statistics.apps && <>
+			{statistics.apps && <>
 					<InformationEntry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</InformationEntry>
 					<InformationEntry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</InformationEntry>
 				</>}

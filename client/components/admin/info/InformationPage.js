@@ -19,8 +19,8 @@ import { InstancesSection } from './InstancesSection';
 
 const useStatistics = (canViewStatistics) => {
 	const [isLoading, setLoading] = useState(true);
-	const [statistics, setStatistics] = useState(null);
-	const [instances, setInstances] = useState(null);
+	const [statistics, setStatistics] = useState({});
+	const [instances, setInstances] = useState([]);
 	const [fetchStatistics, setFetchStatistics] = useState(() => () => ({}));
 
 	useEffect(() => {
