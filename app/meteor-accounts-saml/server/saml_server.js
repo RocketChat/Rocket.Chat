@@ -105,6 +105,13 @@ Accounts.normalizeUsername = function(name) {
 	return name;
 };
 
+const guessNameFromUsername = (username) =>
+	username
+		.replace(/\W/g, ' ')
+		.replace(/\s(.)/g, (u) => u.toUpperCase())
+		.replace(/^(.)/, (u) => u.toLowerCase())
+		.replace(/^\w/, (u) => u.toUpperCase());
+
 Accounts.registerLoginHandler(function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
@@ -185,6 +192,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			if (username) {
 				newUser.username = username;
+				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
