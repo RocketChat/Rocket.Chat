@@ -2,9 +2,9 @@
 	<section class="page-container page-home page-static page-settings">
 		{{#header sectionName=pageTitle buttons=true}}
 			<div class="rc-header__section-button">
-				<button class="rc-button rc-button--secondary history" disabled="{{not showHistoryButton}}">{{_ "History"}}</button>
-				<button class="rc-button rc-button--cancel delete" disabled="{{not canDelete}}"><span>{{_ "Delete"}}</span></button>
-				<button class="rc-button rc-button--primary save" disabled="{{not hasTypeSelected}}"><span>{{_ "Save_changes"}}</span></button>
+				<button class="rc-button rc-button--secondary history" disabled="{{$not showHistoryButton}}">{{_ "History"}}</button>
+				<button class="rc-button rc-button--cancel delete" disabled="{{$not canDelete}}"><span>{{_ "Delete"}}</span></button>
+				<button class="rc-button rc-button--primary save" disabled="{{$not hasTypeSelected}}"><span>{{_ "Save_changes"}}</span></button>
 			</div>
 		{{/header}}
 
