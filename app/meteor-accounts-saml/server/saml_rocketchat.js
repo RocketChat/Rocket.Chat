@@ -163,10 +163,10 @@ Meteor.methods({
 		settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
 			type: 'select',
 			values: [
-				{ key: 'better', i18nLabel: 'SAML_Custom_Authn_Context_Comparison_Better' },
-				{ key: 'exact', i18nLabel: 'SAML_Custom_Authn_Context_Comparison_Exact' },
-				{ key: 'maximum', i18nLabel: 'SAML_Custom_Authn_Context_Comparison_Maximum' },
-				{ key: 'minimum', i18nLabel: 'SAML_Custom_Authn_Context_Comparison_Minimum' },
+				{ key: 'better', i18nLabel: 'Better' },
+				{ key: 'exact', i18nLabel: 'Exact' },
+				{ key: 'maximum', i18nLabel: 'Maximum' },
+				{ key: 'minimum', i18nLabel: 'Minimum' },
 			],
 			group: 'SAML',
 			section: name,
