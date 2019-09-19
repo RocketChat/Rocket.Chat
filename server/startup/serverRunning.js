@@ -8,7 +8,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SystemLogger } from '../../app/logger';
 import { settings } from '../../app/settings';
 import { Info, getMongoInfo } from '../../app/utils';
-import { Roles, Users } from '../../app/models/server';
+import { Users } from '../../app/models/server';
+import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -79,38 +80,20 @@ Meteor.startup(function() {
 			const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
 			const link = 'https://rocket.chat/docs/installation';
 
-			const rocketCatUser = Users.findOneById('rocket.cat', { fields: { _id: 1 } });
-
-			Roles.findUsersInRole('admin').forEach((adminUser) => {
-				if (Users.bannerExistsById(id)) {
-					return;
-				}
-
-				if (rocketCatUser) {
-					try {
-						Meteor.runAsUser('rocket.cat', () => {
-							Meteor.call('createDirectMessage', adminUser.username);
-
-							Meteor.call('sendMessage', {
-								msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(text, mongoVersion, adminUser.language) }\n${ link }`,
-								rid: [adminUser._id, 'rocket.cat'].sort().join(''),
-							});
-						});
-					} catch (e) {
-						console.error(e);
-					}
-				}
-
-				Users.addBannerById(adminUser._id, {
-					id,
-					priority: 100,
-					title,
-					text,
-					textArguments: [mongoVersion],
-					modifiers: ['danger'],
-					link,
+			if (!Users.bannerExistsById(id)) {
+				sendMessagesToAdmins({
+					msgs: ({ adminUser }) => [{ msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(text, mongoVersion, adminUser.language) }\n${ link }` }],
+					banners: [{
+						id,
+						priority: 100,
+						title,
+						text,
+						textArguments: [mongoVersion],
+						modifiers: ['danger'],
+						link,
+					}],
 				});
-			});
+			}
 		}
 	}, 100);
 });
