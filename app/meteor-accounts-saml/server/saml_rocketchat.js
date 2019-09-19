@@ -155,6 +155,20 @@ Meteor.methods({
 			i18nLabel: 'SAML_Custom_user_data_fieldmap',
 			i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
 		});
+		settings.add(`SAML_Custom_${ name }_default_user_role`, 'user', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Default_User_Role',
+			i18nDescription: 'SAML_Default_User_Role_Description',
+		});
+		settings.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Role_Attribute_Name',
+			i18nDescription: 'SAML_Role_Attribute_Name_Description',
+		});
 	},
 });
 
@@ -185,6 +199,8 @@ const getSamlConfigs = function(service) {
 		issuer: settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: settings.get(`${ service.key }_logout_behaviour`),
 		customAuthnContext: settings.get(`${ service.key }_custom_authn_context`),
+		defaultUserRole: settings.get(`${ service.key }_default_user_role`),
+		roleAttributeName: settings.get(`${ service.key }_role_attribute_name`),
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
@@ -224,6 +240,8 @@ const configureSamlService = function(samlConfigs) {
 	Accounts.saml.settings.userDataFieldMap = samlConfigs.userDataFieldMap;
 	Accounts.saml.settings.usernameNormalize = samlConfigs.usernameNormalize;
 	Accounts.saml.settings.debug = samlConfigs.debug;
+	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
+	Accounts.saml.settings.roleAttributeName = samlConfigs.roleAttributeName;
 
 	return {
 		provider: samlConfigs.clientConfig.provider,
@@ -234,6 +252,8 @@ const configureSamlService = function(samlConfigs) {
 		privateCert,
 		privateKey,
 		customAuthnContext: samlConfigs.customAuthnContext,
+		defaultUserRole: samlConfigs.defaultUserRole,
+		roleAttributeName: samlConfigs.roleAttributeName,
 	};
 };
 

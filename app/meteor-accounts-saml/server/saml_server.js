@@ -153,6 +153,13 @@ function getUserDataMapping() {
 	return { emailField, usernameField, nameField, userDataFieldMap: newMapping };
 }
 
+const guessNameFromUsername = (username) =>
+	username
+		.replace(/\W/g, ' ')
+		.replace(/\s(.)/g, (u) => u.toUpperCase())
+		.replace(/^(.)/, (u) => u.toLowerCase())
+		.replace(/^\w/, (u) => u.toUpperCase());
+
 Accounts.registerLoginHandler(function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
@@ -169,6 +176,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 
 	const { emailField, usernameField, nameField, userDataFieldMap } = getUserDataMapping();
+	const { defaultUserRole = 'user', roleAttributeName } = Accounts.saml.settings;
 
 	if (loginResult && loginResult.profile && loginResult.profile[emailField]) {
 		const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
@@ -216,12 +224,19 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			verified: true,
 		}));
 
+		let globalRoles;
+		if (roleAttributeName && loginResult.profile[roleAttributeName]) {
+			globalRoles = [].concat(loginResult.profile[roleAttributeName]);
+		} else {
+			globalRoles = [].concat(defaultUserRole.split(','));
+		}
+
 		if (!user) {
 			const newUser = {
 				name: fullName,
 				active: true,
 				eppn: eduPersonPrincipalName,
-				globalRoles: ['user'],
+				globalRoles,
 				emails,
 			};
 
@@ -231,6 +246,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			if (username) {
 				newUser.username = username;
+				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);

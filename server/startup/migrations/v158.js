@@ -5,34 +5,19 @@ import { settings } from '../../../app/settings/server';
 Migrations.add({
 	version: 158,
 	up() {
-		if (!settings.get('SAML_Custom_Default')) {
+		if (!settings.get('CAS_enabled')) {
 			return;
 		}
-
-		const emailFieldSetting = Settings.findOne({ _id: 'SAML_Custom_Default_email_field' });
-		const usernameFieldSetting = Settings.findOne({ _id: 'SAML_Custom_Default_username_field' });
-
-		const emailField = (emailFieldSetting && emailFieldSetting.value) || 'email';
-		const usernameField = (usernameFieldSetting && usernameFieldSetting.value) || 'username';
-
-		if (emailField === 'email' && usernameField === 'username') {
-			// If using default values, there's no need to initialize the new setting here.
-			return;
-		}
-
-		const defaultMapping = `{"${ usernameField }":"username", "${ emailField }":"email", "cn": "name"}`;
 
 		Settings.upsert({
-			_id: 'SAML_Custom_Default_user_data_fieldmap',
+			_id: 'CAS_trust_username',
 		},
 		{
-			_id: 'SAML_Custom_Default_user_data_fieldmap',
-			value: defaultMapping,
-			type: 'string',
-			group: 'SAML',
-			section: 'Default',
-			i18nLabel: 'SAML_Custom_user_data_fieldmap',
-			i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
+			_id: 'CAS_trust_username',
+			value: true,
+			type: 'boolean',
+			group: 'CAS',
+			i18nDescription: 'CAS_trust_username_description',
 		});
 	},
 	down() {
