@@ -1,11 +1,26 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server';
+import { settings } from '../../../app/settings/server';
 
 Migrations.add({
 	version: 158,
 	up() {
-		Settings.update({ _id: 'Livechat_agent_leave_action' }, { $set: { section: 'Sessions' } });
-		Settings.update({ _id: 'Livechat_agent_leave_action_timeout' }, { $set: { section: 'Sessions' } });
-		Settings.update({ _id: 'Livechat_agent_leave_comment' }, { $set: { section: 'Sessions' } });
+		if (!settings.get('CAS_enabled')) {
+			return;
+		}
+
+		Settings.upsert({
+			_id: 'CAS_trust_username',
+		},
+		{
+			_id: 'CAS_trust_username',
+			value: true,
+			type: 'boolean',
+			group: 'CAS',
+			i18nDescription: 'CAS_trust_username_description',
+		});
+	},
+	down() {
+		// Down migration does not apply in this case
 	},
 });
