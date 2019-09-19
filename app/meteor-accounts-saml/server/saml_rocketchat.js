@@ -160,6 +160,18 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
 		});
+		settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
+			type: 'select',
+			values: [
+				{ key: 'better', i18nLabel: 'Better' },
+				{ key: 'exact', i18nLabel: 'Exact' },
+				{ key: 'maximum', i18nLabel: 'Maximum' },
+				{ key: 'minimum', i18nLabel: 'Minimum' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
+		});
 
 		settings.add(`SAML_Custom_${ name }_default_user_role`, 'user', {
 			type: 'string',
@@ -208,6 +220,7 @@ const getSamlConfigs = function(service) {
 		issuer: settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: settings.get(`${ service.key }_logout_behaviour`),
 		customAuthnContext: settings.get(`${ service.key }_custom_authn_context`),
+		authnContextComparison: settings.get(`${ service.key }_authn_context_comparison`),
 		defaultUserRole: settings.get(`${ service.key }_default_user_role`),
 		roleAttributeName: settings.get(`${ service.key }_role_attribute_name`),
 		secret: {
@@ -261,6 +274,7 @@ const configureSamlService = function(samlConfigs) {
 		privateCert,
 		privateKey,
 		customAuthnContext: samlConfigs.customAuthnContext,
+		authnContextComparison: samlConfigs.authnContextComparison,
 		defaultUserRole: samlConfigs.defaultUserRole,
 		roleAttributeName: samlConfigs.roleAttributeName,
 	};

@@ -96,9 +96,10 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 		request += `<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="${ this.options.identifierFormat }" AllowCreate="true"></samlp:NameIDPolicy>\n`;
 	}
 
+	const authnContextComparison = this.options.authnContextComparison || 'exact';
 	const authnContext = this.options.customAuthnContext || 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
 	request
-		+= '<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="exact">'
+		+= `<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="${ authnContextComparison }">`
 		+ `<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ authnContext }</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n`
 		+ '</samlp:AuthnRequest>';
 
