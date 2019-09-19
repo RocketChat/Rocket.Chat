@@ -33524,6 +33524,696 @@
         }
       ]
     },
+    "2.0.0-rc.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15117",
+          "title": "[NEW] Custom message popups",
+          "userLogin": "Hudell",
+          "milestone": "2.0.0",
+          "contributors": [
+            "Hudell",
+            "renatobecker",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15206",
+          "title": "[BREAK] Federation refactor with addition of chained events",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "14275",
+          "title": "[NEW] Options for SAML auth for individual organizations needs",
+          "userLogin": "Deltachaos",
+          "contributors": [
+            "Deltachaos",
+            "sampaiodiego",
+            "web-flow",
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14736",
+          "title": "[IMPROVE] Livechat User Management Improvements",
+          "userLogin": "Hudell",
+          "milestone": "2.0.0",
+          "contributors": [
+            "Hudell",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15218",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15214",
+          "title": "[NEW] Assume that Rocket.Chat runs behind one proxy by default (HTTP_FORWARDED_COUNT=1)",
+          "userLogin": "rodrigok",
+          "milestone": "2.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14278",
+          "title": "[NEW] LDAP User Groups, Roles, and Channel Synchronization",
+          "userLogin": "wreiske",
+          "milestone": "2.0.0",
+          "contributors": [
+            "wreiske",
+            "web-flow",
+            "engelgabriel",
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "15003",
+          "title": "[IMPROVE] Refactoring the queuing and routing processes of new livechats",
+          "userLogin": "renatobecker",
+          "milestone": "2.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15102",
+          "title": "[IMPROVE] Add limit of 50 user's resume tokens",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15217",
+          "title": "Regression: fix typo permisson to permission",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15204",
+          "title": "[NEW] Setup Wizard and Page not found, using React components",
+          "userLogin": "tassoevan",
+          "milestone": "2.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15088",
+          "title": "[IMPROVE] Add asset extension validation",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14655",
+          "title": "[NEW] Add Mobex to the list of SMS service providers",
+          "userLogin": "zolbayars",
+          "milestone": "2.0.0",
+          "contributors": [
+            "zolbayars",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14902",
+          "title": "[NEW] Support multiple push gateways",
+          "userLogin": "cardoso",
+          "milestone": "2.0.0",
+          "contributors": [
+            "cardoso",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14918",
+          "title": "[FIX] Webdav crash",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15174",
+          "title": "[FIX] Mark room as read logic",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13864",
+          "title": "[NEW] Rest API Endpoint to get pinned messages from a room ",
+          "userLogin": "thayannevls",
+          "milestone": "2.0.0",
+          "contributors": [
+            "thayannevls",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15205",
+          "title": "[FIX] Forget user session on window close",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15094",
+          "title": "[FIX] Search message wrongly grouping messages",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "15038",
+          "title": "[FIX] Rate limit incoming integrations (webhooks)",
+          "userLogin": "mrsimpson",
+          "milestone": "2.0.0",
+          "contributors": [
+            "mrsimpson",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15212",
+          "title": "[FIX] User's auto complete showing everyone on the server",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "8942",
+          "title": "[NEW] Granular permissions for settings",
+          "userLogin": "mrsimpson",
+          "milestone": "2.0.0",
+          "contributors": [
+            "mrsimpson",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14682",
+          "title": "[FIX] \"Discussion\" label in Sidebar not hidden, when Discussions are disabled (#14660)",
+          "userLogin": "ifantom",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ifantom",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15202",
+          "title": "NEW: Apps enable after app installed",
+          "userLogin": "d-gubert",
+          "milestone": "2.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "15167",
+          "title": "[IMPROVE] Add possibility to use commands inside threads through Rest API",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14885",
+          "title": "[NEW] Add autotranslate Rest endpoints",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15162",
+          "title": "[FIX] Typo in 'access-permissions_description' ja translation",
+          "userLogin": "NatsumiKubo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "NatsumiKubo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15201",
+          "title": "[FIX] IE11 modal, menu action and edit user page",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15053",
+          "title": "[NEW] Option to hide the button of Custom OAuth on login screen",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15199",
+          "title": "[BREAK] Remove support of MongoDB 3.2 and deprecate MongoDB 3.4",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15184",
+          "title": "Change notifications file imports to server",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15192",
+          "title": "[BREAK] Remove GraphQL and grant packages",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15193",
+          "title": "[BREAK] Remove publication `roomSubscriptionsByRole`",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15194",
+          "title": "[BREAK] Remove publication `usersInRole`",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15186",
+          "title": "Update Livechat to 1.1.6",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "sampaiodiego",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15183",
+          "title": "Regression: remove livechat cache from circle ci",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15133",
+          "title": "[BREAK] Remove old livechat client",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15155",
+          "title": "[NEW] Endpoint to fetch livechat rooms with several filters",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15177",
+          "title": "[FIX] TabBar not loading template titles",
+          "userLogin": "Hudell",
+          "milestone": "2.0.0",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "15178",
+          "title": "Update presence package",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15172",
+          "title": "[FIX] Attachment download button behavior",
+          "userLogin": "tassoevan",
+          "milestone": "1.3.2",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15175",
+          "title": "[FIX] Messages search scroll",
+          "userLogin": "ggazzo",
+          "milestone": "1.3.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15173",
+          "title": "Update latest Livechat widget version to 1.1.4",
+          "userLogin": "renatobecker",
+          "milestone": "1.3.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15157",
+          "title": "[FIX] IE11 -  callback createTreeWalker doesnt accept acceptNode",
+          "userLogin": "ggazzo",
+          "milestone": "1.3.2",
+          "contributors": [
+            "ggazzo",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15154",
+          "title": "Update latest Livechat widget version(1.1.3)",
+          "userLogin": "renatobecker",
+          "milestone": "1.3.2",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15166",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15156",
+          "title": "Switch outdated roadmap to point to milestones",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15146",
+          "title": "Remove GPG file",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12174",
+          "title": "[NEW] Integrate DEEPL translation service to RC core",
+          "userLogin": "vickyokrm",
+          "milestone": "2.0.0",
+          "contributors": [
+            "vickyokrm",
+            "mrsimpson",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "15147",
+          "title": "Add wreiske to authorized users in catbot",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12259",
+          "title": "[NEW] Jitsi meet room access via a token",
+          "userLogin": "alonelion1987",
+          "milestone": "2.0.0",
+          "contributors": [
+            "rrzharikov",
+            "tassoevan",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15141",
+          "title": "Fix custom auth",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.3.1",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15142",
+          "title": "Update to version 2.0.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14956",
+          "title": "[FIX] Threads contextual bar button visible even with threads disabled",
+          "userLogin": "cesarmal",
+          "milestone": "2.0.0",
+          "contributors": [
+            "cesarmal"
+          ]
+        },
+        {
+          "pr": "14507",
+          "title": "[FIX] Prevent to create discussion with empty name",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15120",
+          "title": "[FIX] Remove new hidden file and fix for .env files for Snap",
+          "userLogin": "LuluGO",
+          "milestone": "2.0.0",
+          "contributors": [
+            "LuluGO",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15078",
+          "title": "removed unwanted code",
+          "userLogin": "httpsOmkar",
+          "milestone": "2.0.0",
+          "contributors": [
+            "httpsOmkar",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15083",
+          "title": "Update pt-BR.i18n.json",
+          "userLogin": "lucassmacedo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "lucassmacedo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15136",
+          "title": "Regression: cachedCollection wrong callback parameters",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15135",
+          "title": "[IMPROVE] Message tooltips as everyone else",
+          "userLogin": "tassoevan",
+          "milestone": "2.0.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15119",
+          "title": "[FIX] Custom emoji table scroll",
+          "userLogin": "ggazzo",
+          "milestone": "1.3.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15114",
+          "title": "[FIX] Direct Message names not visible on Admin panel",
+          "userLogin": "ggazzo",
+          "milestone": "1.3.1",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15121",
+          "title": "Allow file upload paths on attachments URLs",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14978",
+          "title": "Fix automated test for manual user activation",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15124",
+          "title": "Add new step to build Docker image from PRs for production again",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15115",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15074",
+          "title": "Improve url validation inside message object",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15104",
+          "title": "[FIX] cachedcollection calling multiple times SYNC",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15109",
+          "title": "[BREAK] Replace tap:i18n to add support to 3-digit locales",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15097",
+          "title": "Merge master into develop & Set version to 1.4.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
     "1.3.1": {
       "node_version": "8.11.4",
       "npm_version": "6.4.1",
@@ -33534,6 +34224,16 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "15148",
+          "title": "Release 1.3.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "MarcosSpessatto"
+          ]
+        },
         {
           "pr": "15141",
           "title": "Fix custom auth",
@@ -33574,6 +34274,17 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "15176",
+          "title": "Release 1.3.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "ggazzo",
+            "tassoevan"
+          ]
+        },
         {
           "pr": "15172",
           "title": "[FIX] Attachment download button behavior",
@@ -33620,6 +34331,269 @@
           "contributors": [
             "renatobecker",
             "web-flow"
+          ]
+        }
+      ]
+    },
+    "2.0.0-rc.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15234",
+          "title": "Federation improvements",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "15231",
+          "title": "Regression: Fix assets extension detection",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "2.0.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15268",
+          "title": "Regression: Double error toast on Setup Wizard",
+          "userLogin": "tassoevan",
+          "milestone": "2.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15267",
+          "title": "Regression: addPermissionToRole argument as string",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15263",
+          "title": "Regression: Remove old scripts of Setup Wizard",
+          "userLogin": "tassoevan",
+          "milestone": "2.0.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15262",
+          "title": "Fix get IP for rate limiter",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15249",
+          "title": "Add oplog events metrics",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "2.0.0-rc.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15306",
+          "title": "[FIX] Redirect on app manual install",
+          "userLogin": "d-gubert",
+          "milestone": "2.0.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15329",
+          "title": "Regression: last message doesn't update after reconnect",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15242",
+          "title": "Regression: New Livechat methods and processes",
+          "userLogin": "renatobecker",
+          "milestone": "2.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15319",
+          "title": "[FIX] IE11 baseURI ",
+          "userLogin": "ggazzo",
+          "milestone": "2.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15321",
+          "title": "Regression: Remove duplicated permission changes emitter",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15310",
+          "title": "Regression: Errors on the console preventing some settings to be saved",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.0.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15285",
+          "title": "Fix v148 migration",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "15258",
+          "title": "Fix apps list error",
+          "userLogin": "d-gubert",
+          "milestone": "2.0.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "2.0.0-rc.4": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15336",
+          "title": "Federation migration and additional improvements",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.0.0",
+          "contributors": [
+            "alansikora",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "2.0.0-rc.5": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15352",
+          "title": "Regression: Fix wrong import and minor code improvements",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "2.0.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15176",
+          "title": "Release 1.3.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "ggazzo",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15141",
+          "title": "Fix custom auth",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.3.1",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15119",
+          "title": "[FIX] Custom emoji table scroll",
+          "userLogin": "ggazzo",
+          "milestone": "1.3.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15114",
+          "title": "[FIX] Direct Message names not visible on Admin panel",
+          "userLogin": "ggazzo",
+          "milestone": "1.3.1",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
           ]
         }
       ]

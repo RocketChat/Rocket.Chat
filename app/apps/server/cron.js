@@ -115,7 +115,7 @@ export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUp
 
 SyncedCron.add({
 	name: 'Apps-Engine:check',
-	schedule: (parser) => parser.text('at 4:00 pm'),
+	schedule: (parser) => parser.text('at 4:00 am'),
 	job() {
 		appsUpdateMarketplaceInfo();
 	},

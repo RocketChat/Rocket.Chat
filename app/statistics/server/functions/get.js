@@ -22,7 +22,7 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
 import { Apps } from '../../../apps/server';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/methods/dashboard';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 
 const wizardFields = [
 	'Organization_Type',
@@ -96,8 +96,7 @@ statistics.get = function _getStatistics() {
 	// Federation statistics
 	const federationOverviewData = federationGetStatistics();
 
-	statistics.federatedServers = federationOverviewData.numberOfActivePeers + federationOverviewData.numberOfInactivePeers;
-	statistics.federatedServersActive = federationOverviewData.numberOfActivePeers;
+	statistics.federatedServers = federationOverviewData.numberOfServers;
 	statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
 
 	statistics.lastLogin = Users.getLastLogin();
