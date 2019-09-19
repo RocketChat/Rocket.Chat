@@ -322,6 +322,7 @@ jobs:
 
               echo "Build official Docker image"
               cp ~/repo/.docker/Dockerfile .
+               cp ~/repo/.docker/startup.sh .
               docker build -t assistify/chat:develop .
               docker push assistify/chat:develop
 
@@ -474,6 +475,7 @@ workflows:
       - deploy:
           requires:
             - image-build
+            - image-build-prod
             - test-with-oplog-mongo-3-2
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
@@ -485,14 +487,20 @@ workflows:
                 - master
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - image-build:
+      - image-build-prod:
           requires:
             - hold
           filters:
             branches:
               only:
-                - develop
                 - master
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
+      - image-build:
+          filters:
+            branches:
+              only:
+                - develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - hold:
