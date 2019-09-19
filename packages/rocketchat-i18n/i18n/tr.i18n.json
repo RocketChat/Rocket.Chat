@@ -1266,6 +1266,8 @@
   "Error_404": "Hata:404",
   "Error_changing_password": "Şifre değiştirmede hata",
   "Error_loading_pages": "Sayfalar yüklenirken hata oluştu",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Hata: Rocket.Chat, birden çok örnekte çalışırken oplog tailing gerektirir",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Lütfen MongoDB'nizin ReplicaSet modunda olduğundan ve MONGO_OPLOG_URL ortam değişkeninin uygulama sunucusunda doğru tanımlandığından emin olun",
   "Error_sending_livechat_transcript": "Livechat dökümü gönderilirken hata oluştu",
   "Error_sending_livechat_offline_message": "Livechat çevrimdışı iletisi gönderilirken hata oluştu",
   "Errors_and_Warnings": "Hatalar ve Uyarılar",

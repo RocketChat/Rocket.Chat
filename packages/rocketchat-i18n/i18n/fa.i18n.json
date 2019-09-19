@@ -1131,6 +1131,8 @@
   "Error_404": "خطای 404",
   "Error_changing_password": "خطا هنگام تغییر رمز عبور",
   "Error_loading_pages": "خطا هنگام بارگیری صفحات",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "خطا: Rocket.Chat در هنگام اجرا در چندین مرحله نیاز به oplog tailing دارد",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "لطفا مطمئن شوید MongoDB شما در حالت ReplicaSet است و متغیر محدوده MONGO_OPLOG_URL به طور صحیح در سرور برنامه تعریف شده است",
   "Esc_to": "Esc برای",
   "Event_Trigger": "تکرار رویداد",
   "Event_Trigger_Description": "انتخاب نوع رویداد این ادغام WebHook خروجی را اجرا می کند",

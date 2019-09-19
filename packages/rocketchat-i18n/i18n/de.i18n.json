@@ -1308,6 +1308,8 @@
   "Error_404": "Fehler: 404(nicht gefunden)",
   "Error_changing_password": "Fehler beim Ändern des Passwortes",
   "Error_loading_pages": "Fehler beim Laden der Seite",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Fehler: Rocket.Chat erfordert Oplog-Tailing, wenn es auf mehreren Instanzen läuft",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Bitte stellen Sie sicher, dass die MongoDB als Replicaset konfiguriert ist und die Umgebungsvariable  MONGO_OPLOG_URL korrekt auf Ihren Anwendungsservern gesetzt wurde.",
   "Error_sending_livechat_transcript": "Fehler beim Versenden der Livechat-Mitschrift",
   "Error_sending_livechat_offline_message": "Fehler beim Versenden der Livechat-Offline-Nachricht",
   "Errors_and_Warnings": "Fehler und Warnungen",

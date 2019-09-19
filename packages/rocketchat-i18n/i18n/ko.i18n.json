@@ -1230,6 +1230,8 @@
   "Error_404": "오류: 404",
   "Error_changing_password": "비밀번호 변경 중 오류 발생",
   "Error_loading_pages": "페이지 로딩 오류",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "오류 : 여러 인스턴스에서 실행할 때 Rocket.Chat에서 oplog tailing이 필요합니다.",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "MongoDB가 ReplicaSet 모드에 있고 MONGO_OPLOG_URL 환경 변수가 응용 프로그램 서버에 올바르게 정의되어 있는지 확인하십시오.",
   "Error_sending_livechat_transcript": "Livechat 사본을 보내는 중 오류가 발생했습니다.",
   "Error_sending_livechat_offline_message": "Livechat 오프라인 메시지를 보내는 중 오류가 발생했습니다.",
   "Errors_and_Warnings": "오류 및 경고",

@@ -233,7 +233,7 @@ const toolbarButtons = (user) => [{
 				action: () => {
 					SideNav.setFlex('adminFlex');
 					SideNav.openFlex();
-					FlowRouter.go('admin-info');
+					FlowRouter.go('admin', { group: 'info' });
 					popover.close();
 				},
 			};
