@@ -155,7 +155,13 @@ export const removeAgentFromSubscription = (rid, { _id, username }) => {
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 };
 
-export const normalizeAgent = (agentId) => (settings.get('Livechat_show_agent_info') ? agentId && Users.getAgentInfo(agentId) : { name: 'Agent', hiddenInfo: true });
+export const normalizeAgent = (agentId) => {
+	if (!agentId) {
+		return;
+	}
+
+	return settings.get('Livechat_show_agent_info') ? Users.getAgentInfo(agentId) : { name: 'Agent', hiddenInfo: true };
+};
 
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
