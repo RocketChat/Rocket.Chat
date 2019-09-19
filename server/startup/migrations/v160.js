@@ -15,6 +15,9 @@ Migrations.add({
 		const emailField = (emailFieldSetting && emailFieldSetting.value) || 'email';
 		const usernameField = (usernameFieldSetting && usernameFieldSetting.value) || 'username';
 
+		Settings.removeById('SAML_Custom_Default_email_field');
+		Settings.removeById('SAML_Custom_Default_username_field');
+
 		if (emailField === 'email' && usernameField === 'username') {
 			// If using default values, there's no need to initialize the new setting here.
 			return;
