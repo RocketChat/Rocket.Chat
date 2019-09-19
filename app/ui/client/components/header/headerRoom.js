@@ -1,5 +1,6 @@
 import toastr from 'toastr';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -13,15 +14,6 @@ import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
 
-const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
-
-const favoritesEnabled = () => settings.get('Favorite_Rooms');
-
-const isDiscussion = ({ _id }) => {
-	const room = ChatRoom.findOne({ _id });
-	return !!(room && room.prid);
-};
-
 const getUserStatus = (id) => {
 	const roomData = Session.get(`roomData${ id }`);
 	return roomTypes.getUserStatus(roomData.t, id);
@@ -33,6 +25,11 @@ const getUserStatusText = (id) => {
 };
 
 Template.headerRoom.helpers({
+	isDiscussion: () => Template.instance().state.get('discussion'),
+	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
+	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
+	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
+
 	back() {
 		return Template.instance().data.back;
 	},
@@ -45,25 +42,9 @@ Template.headerRoom.helpers({
 		return TabBar.getButtons();
 	},
 
-	isDiscussion() {
-		return isDiscussion(Template.instance().data);
-	},
-
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
-	},
-
-	state() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return ' favorite-room'; }
-		return 'empty';
-	},
-
-	favoriteLabel() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return 'Unfavorite'; }
-		return 'Favorite';
 	},
 
 	isDirect() {
@@ -137,10 +118,6 @@ Template.headerRoom.helpers({
 		return t('offline');
 	},
 
-	showToggleFavorite() {
-		return !isDiscussion(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
-	},
-
 	fixedHeight() {
 		return Template.instance().data.fixedHeight;
 	},
@@ -165,13 +142,14 @@ Template.headerRoom.events({
 		return false;
 	},
 
-	'click .rc-header__toggle-favorite'(event) {
+	'click .js-favorite'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
+
 		return Meteor.call(
 			'toggleFavorite',
 			this._id,
-			!$(event.currentTarget).hasClass('favorite-room'),
+			!instance.state.get('favorite'),
 			(err) => err && handleError(err)
 		);
 	},
@@ -224,6 +202,31 @@ const loadUserStatusText = () => {
 };
 
 Template.headerRoom.onCreated(function() {
+	this.state = new ReactiveDict();
+
+	const isFavoritesEnabled = () => settings.get('Favorite_Rooms');
+
+	const isDiscussion = (rid) => {
+		const room = ChatRoom.findOne({ _id: rid });
+		return !!(room && room.prid);
+	};
+
+	this.autorun(() => {
+		const { _id: rid } = Template.currentData();
+
+		this.state.set({
+			rid,
+			discussion: isDiscussion(rid),
+		});
+
+		if (!this.state.get('discussion') && isFavoritesEnabled()) {
+			const subscription = ChatSubscription.findOne({ rid }, { fields: { f: 1 } });
+			this.state.set('favorite', !!(subscription && subscription.f));
+		} else {
+			this.state.set('favorite', null);
+		}
+	});
+
 	this.currentChannel = (this.data && this.data._id && Rooms.findOne(this.data._id)) || undefined;
 
 	this.hasTokenpass = new ReactiveVar(false);
