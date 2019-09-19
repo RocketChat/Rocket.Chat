@@ -88,11 +88,43 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
 		});
+		settings.add(`SAML_Custom_${ name }_email_field`, 'email', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_EMail_Field',
+		});
+		settings.add(`SAML_Custom_${ name }_username_field`, 'username', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Username_Field',
+		});
 		settings.add(`SAML_Custom_${ name }_generate_username`, false, {
 			type: 'boolean',
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Generate_Username',
+		});
+		settings.add(`SAML_Custom_${ name }_username_normalize`, 'None', {
+			type: 'select',
+			values: [
+				{ key: 'None', i18nLabel: 'SAML_Custom_Username_Normalize_None' },
+				{ key: 'Lowercase', i18nLabel: 'SAML_Custom_Username_Normalize_Lowercase' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Username_Normalize',
+		});
+		settings.add(`SAML_Custom_${ name }_immutable_property`, 'EMail', {
+			type: 'select',
+			values: [
+				{ key: 'Username', i18nLabel: 'SAML_Custom_Immutable_Property_Username' },
+				{ key: 'EMail', i18nLabel: 'SAML_Custom_Immutable_Property_EMail' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Immutable_Property',
 		});
 		settings.add(`SAML_Custom_${ name }_debug`, false, {
 			type: 'boolean',
@@ -128,6 +160,22 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
 		});
+
+		settings.add(`SAML_Custom_${ name }_default_user_role`, 'user', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Default_User_Role',
+			i18nDescription: 'SAML_Default_User_Role_Description',
+		});
+
+		settings.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Role_Attribute_Name',
+			i18nDescription: 'SAML_Role_Attribute_Name_Description',
+		});
 	},
 });
 
@@ -149,6 +197,10 @@ const getSamlConfigs = function(service) {
 		},
 		entryPoint: settings.get(`${ service.key }_entry_point`),
 		idpSLORedirectURL: settings.get(`${ service.key }_idp_slo_redirect_url`),
+		usernameField: settings.get(`${ service.key }_username_field`),
+		usernameNormalize: settings.get(`${ service.key }_username_normalize`),
+		emailField: settings.get(`${ service.key }_email_field`),
+		immutableProperty: settings.get(`${ service.key }_immutable_property`),
 		generateUsername: settings.get(`${ service.key }_generate_username`),
 		debug: settings.get(`${ service.key }_debug`),
 		nameOverwrite: settings.get(`${ service.key }_name_overwrite`),
@@ -156,6 +208,8 @@ const getSamlConfigs = function(service) {
 		issuer: settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: settings.get(`${ service.key }_logout_behaviour`),
 		customAuthnContext: settings.get(`${ service.key }_custom_authn_context`),
+		defaultUserRole: settings.get(`${ service.key }_default_user_role`),
+		roleAttributeName: settings.get(`${ service.key }_role_attribute_name`),
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
@@ -190,7 +244,13 @@ const configureSamlService = function(samlConfigs) {
 	Accounts.saml.settings.generateUsername = samlConfigs.generateUsername;
 	Accounts.saml.settings.nameOverwrite = samlConfigs.nameOverwrite;
 	Accounts.saml.settings.mailOverwrite = samlConfigs.mailOverwrite;
+	Accounts.saml.settings.immutableProperty = samlConfigs.immutableProperty;
+	Accounts.saml.settings.emailField = samlConfigs.emailField;
+	Accounts.saml.settings.usernameField = samlConfigs.usernameField;
+	Accounts.saml.settings.usernameNormalize = samlConfigs.usernameNormalize;
 	Accounts.saml.settings.debug = samlConfigs.debug;
+	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
+	Accounts.saml.settings.roleAttributeName = samlConfigs.roleAttributeName;
 
 	return {
 		provider: samlConfigs.clientConfig.provider,
@@ -201,6 +261,8 @@ const configureSamlService = function(samlConfigs) {
 		privateCert,
 		privateKey,
 		customAuthnContext: samlConfigs.customAuthnContext,
+		defaultUserRole: samlConfigs.defaultUserRole,
+		roleAttributeName: samlConfigs.roleAttributeName,
 	};
 };
 

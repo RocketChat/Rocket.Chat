@@ -29,6 +29,7 @@ import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatOfficeHour from './models/LivechatOfficeHour';
 import LivechatPageVisited from './models/LivechatPageVisited';
+import LivechatRooms from './models/LivechatRooms';
 import LivechatTrigger from './models/LivechatTrigger';
 import LivechatVisitors from './models/LivechatVisitors';
 import ReadReceipts from './models/ReadReceipts';
@@ -37,9 +38,9 @@ export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
 export { AppsModel } from './models/apps-model';
 export { FederationDNSCache } from './models/FederationDNSCache';
-export { FederationEvents } from './models/FederationEvents';
+export { FederationRoomEvents } from './models/FederationRoomEvents';
 export { FederationKeys } from './models/FederationKeys';
-export { FederationPeers } from './models/FederationPeers';
+export { FederationServers } from './models/FederationServers';
 
 export {
 	Base,
@@ -73,6 +74,7 @@ export {
 	LivechatDepartmentAgents,
 	LivechatOfficeHour,
 	LivechatPageVisited,
+	LivechatRooms,
 	LivechatTrigger,
 	LivechatVisitors,
 	ReadReceipts,

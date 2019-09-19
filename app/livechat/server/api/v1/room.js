@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings as rcSettings } from '../../../../settings';
-import { Messages, Rooms } from '../../../../models';
+import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api';
 import { findGuest, findRoom, getRoom, settings, findAgent } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -33,8 +33,7 @@ API.v1.addRoute('livechat/room', {
 			}
 
 			const rid = this.queryParams.rid || Random.id();
-			const room = getRoom({ guest, rid, agent });
-
+			const room = Promise.await(getRoom({ guest, rid, agent }));
 			return API.v1.success(room);
 		} catch (e) {
 			return API.v1.failure(e);
@@ -104,7 +103,7 @@ API.v1.addRoute('livechat/room.transfer', {
 			// update visited page history to not expire
 			Messages.keepHistoryForToken(token);
 
-			if (!Livechat.transfer(room, guest, { roomId: rid, departmentId: department })) {
+			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, departmentId: department }))) {
 				return API.v1.failure();
 			}
 
@@ -156,7 +155,7 @@ API.v1.addRoute('livechat/room.survey', {
 				throw new Meteor.Error('invalid-data');
 			}
 
-			if (!Rooms.updateSurveyFeedbackById(room._id, updateData)) {
+			if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
 				return API.v1.failure();
 			}
 
