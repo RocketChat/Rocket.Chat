@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
