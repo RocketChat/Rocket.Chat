@@ -27,7 +27,6 @@ API.v1.addRoute('livechat/config', {
 				room = findOpenRoom(token);
 				agent = room && room.servedBy && findAgent(room.servedBy._id);
 			}
-			console.log('agent = ', agent);
 			const extraConfig = room && Promise.await(getExtraConfigInfo(room));
 			Object.assign(config, { online: status, guest, room, agent }, extraConfig);
 
