@@ -3,13 +3,25 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
 import { LivechatDepartment, LivechatRooms } from '../../../models';
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+
+const userCanAccessRoom = ({ _id }) => {
+	if (!_id) {
+		return;
+	}
+
+	const room = LivechatRooms.findOneById(_id);
+	const user = Meteor.user();
+
+	return canAccessRoom(room, user);
+};
 
 Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:rooms' }));
 	}
 
-	if (!hasPermission(this.userId, 'view-livechat-rooms')) {
+	if (!hasPermission(this.userId, 'view-livechat-rooms') && !userCanAccessRoom(filter)) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:rooms' }));
 	}
 
@@ -73,7 +85,6 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	}
 
 	const self = this;
-
 	const handle = LivechatRooms.findLivechat(query, offset, limit).observeChanges({
 		added(id, fields) {
 			fields = Object.assign(fields, { lookupDepartment: fields.departmentId ? LivechatDepartment.findOneById(fields.departmentId) : {} });
@@ -81,7 +92,7 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		},
 		changed(id, fields) {
 			fields = Object.assign(fields, { lookupDepartment: fields.departmentId ? LivechatDepartment.findOneById(fields.departmentId) : {} });
-			self.added('livechatRoom', id, fields);
+			self.changed('livechatRoom', id, fields);
 		},
 		removed(id) {
 			self.removed('livechatRoom', id);

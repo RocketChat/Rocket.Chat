@@ -6,6 +6,7 @@ export { checkEmailAvailability } from './checkEmailAvailability';
 export { checkUsernameAvailability } from './checkUsernameAvailability';
 export { cleanRoomHistory } from './cleanRoomHistory';
 export { createRoom } from './createRoom';
+export { createDirectRoom } from './createDirectRoom';
 export { deleteMessage } from './deleteMessage';
 export { deleteRoom } from './deleteRoom';
 export { deleteUser } from './deleteUser';
