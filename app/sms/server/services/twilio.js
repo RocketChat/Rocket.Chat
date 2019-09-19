@@ -24,7 +24,6 @@ class Twilio {
 		this.authToken = settings.get('SMS_Twilio_authToken');
 		this.fileUploadEnabled = settings.get('SMS_Twilio_FileUpload_Enabled');
 		this.mediaTypeWhiteList = settings.get('SMS_Twilio_FileUpload_MediaTypeWhiteList');
-		this.siteUrl = settings.get('Site_Url');
 	}
 
 	parse(data) {
