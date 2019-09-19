@@ -6,6 +6,7 @@ import { Messages, LivechatRooms, Rooms, Subscriptions, Users } from '../../../m
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
+import { callbacks } from '../../../callbacks/server';
 
 export const createLivechatRoom = (rid, name, guest, extraData) => {
 	check(rid, String);
@@ -39,7 +40,9 @@ export const createLivechatRoom = (rid, name, guest, extraData) => {
 		waitingResponse: true,
 	}, extraData);
 
-	return Rooms.insert(room);
+	const roomId = Rooms.insert(room);
+	callbacks.run('livechat.newRoom', room);
+	return roomId;
 };
 
 export const createLivechatInquiry = (rid, name, guest, message, initialStatus) => {
@@ -146,6 +149,11 @@ export const createLivechatQueueView = () => {
 	});
 };
 
+export const removeAgentFromSubscription = (rid, { _id, username }) => {
+	Subscriptions.removeByRoomIdAndUserId(rid, _id);
+	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
+};
+
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = agentId && Users.getAgentInfo(agentId);
 	Livechat.stream.emit(rid, {
@@ -155,6 +163,10 @@ export const dispatchAgentDelegated = (rid, agentId) => {
 };
 
 export const forwardRoomToAgent = async (room, agentId) => {
+	if (!room || !room.open) {
+		return false;
+	}
+
 	const user = Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		return false;
@@ -166,31 +178,36 @@ export const forwardRoomToAgent = async (room, agentId) => {
 		throw new Meteor.Error('error-transferring-inquiry');
 	}
 
+	if (oldServedBy && agentId === oldServedBy._id) {
+		return false;
+	}
 
 	const { username } = user;
 	const agent = { agentId, username };
-
-	if (oldServedBy && agent.agentId !== oldServedBy._id) {
-		// There are some Enterprise features that may interrupt the fowarding process
-		// Due to that we need to check whether the agent has been changed or not
-		const room = await RoutingManager.takeInquiry(inquiry, agent);
-		if (!room) {
-			return false;
-		}
-
-		const { servedBy } = room;
-		if (servedBy && servedBy._id !== oldServedBy._id) {
-			Subscriptions.removeByRoomIdAndUserId(rid, oldServedBy._id);
-			Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: oldServedBy._id, username: oldServedBy.username });
-			Messages.createUserJoinWithRoomIdAndUser(rid, { _id: agent.agentId, username });
-			return true;
-		}
+	// There are some Enterprise features that may interrupt the fowarding process
+	// Due to that we need to check whether the agent has been changed or not
+	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent);
+	if (!roomTaken) {
+		return false;
 	}
 
-	return false;
+	const { servedBy } = roomTaken;
+	if (servedBy) {
+		if (oldServedBy && servedBy._id !== oldServedBy._id) {
+			removeAgentFromSubscription(rid, oldServedBy);
+		}
+
+		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
+	}
+
+	return true;
 };
 
 export const forwardRoomToDepartment = async (room, guest, departmentId) => {
+	if (!room || !room.open) {
+		return false;
+	}
+
 	const { _id: rid, servedBy: oldServedBy } = room;
 
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
@@ -205,30 +222,29 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	room = await RoutingManager.delegateInquiry(inquiry);
-	if (!room) {
+	const roomTaken = await RoutingManager.delegateInquiry(inquiry);
+	if (!roomTaken) {
 		return false;
 	}
 
-	const { servedBy } = room;
-	// if there was an agent assigned to the chat and there is no new agent assigned
-	// or the new agent is not the same, then the fowarding process successed
-	if (oldServedBy && (!servedBy || oldServedBy._id !== servedBy._id)) {
-		Subscriptions.removeByRoomIdAndUserId(rid, oldServedBy._id);
-		Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: oldServedBy._id, username: oldServedBy.username });
-		LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
-		LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
-		// Update the visitor's department
-		const { token } = guest;
-		Livechat.setDepartmentForGuest({ token, department: departmentId });
-
-		if (servedBy) {
-			const { _id, username } = servedBy;
-			Messages.createUserJoinWithRoomIdAndUser(rid, { _id, username });
-		}
-
-		return true;
+	const { servedBy } = roomTaken;
+	if (oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
+		return false;
 	}
 
-	return false;
+	if (oldServedBy) {
+		removeAgentFromSubscription(rid, oldServedBy);
+	}
+
+	if (servedBy) {
+		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
+	}
+
+	LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
+	LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
+
+	const { token } = guest;
+	Livechat.setDepartmentForGuest({ token, department: departmentId });
+
+	return true;
 };
