@@ -1,12 +1,14 @@
 .ErrorAlert {
 	margin-bottom: 1.25rem;
 	padding: 1.25rem;
-  border-width: 1px;
+
+	color: var(--rc-color-alert-message-warning);
+	border-width: 1px;
 	border-style: solid;
 	border-color: var(--rc-color-alert-message-warning);
-  border-radius: var(--border-radius);
+	border-radius: var(--border-radius);
 	background-color: var(--rc-color-alert-message-warning-background);
-	color: var(--rc-color-alert-message-warning);
+
 	font: inherit;
 }
 
