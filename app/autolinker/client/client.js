@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import s from 'underscore.string';
 import Autolinker from 'autolinker';
 
@@ -41,11 +42,13 @@ const createAutolinker = () => {
 	});
 };
 
-const renderMessage = (message) => {
-	if (settings.get('AutoLinker') !== true) {
-		return message;
-	}
+let autolinker;
 
+Tracker.autorun(() => {
+	autolinker = createAutolinker();
+});
+
+const renderMessage = (message) => {
 	if (!s.trim(message.html)) {
 		return message;
 	}
@@ -58,7 +61,7 @@ const renderMessage = (message) => {
 	} else {
 		msgParts = [message.html];
 	}
-	const autolinker = createAutolinker();
+
 	message.html = msgParts
 		.map((msgPart) => {
 			if (regexTokens && regexTokens.test(msgPart)) {
@@ -72,4 +75,9 @@ const renderMessage = (message) => {
 	return message;
 };
 
-callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'autolinker');
+Tracker.autorun(function() {
+	if (settings.get('AutoLinker') !== true) {
+		return callbacks.remove('renderMessage', 'autolinker');
+	}
+	callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'autolinker');
+});

@@ -18,6 +18,15 @@ Meteor.startup(() => {
 		return room && room.t === 'l' && user && hasPermission(user._id, 'view-livechat-rooms');
 	});
 
+	addRoomAccessValidator(function(room, user) {
+		if (!room || !user || room.t !== 'l') {
+			return;
+		}
+		const { _id: userId } = user;
+		const { servedBy: { _id: agentId } = {} } = room;
+		return userId === agentId;
+	});
+
 	addRoomAccessValidator(function(room, user, extraData) {
 		if (!room && extraData && extraData.rid) {
 			room = LivechatRooms.findOneById(extraData.rid);

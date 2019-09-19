@@ -1,31 +1,32 @@
-import { Federation } from '../index';
+import { getNameAndDomain, isFullyQualified } from '../functions/helpers';
+import { getFederationDomain } from '../lib/getFederationDomain';
 
-const denormalizeSubscription = (resource) => {
-	resource = { ...resource };
+const denormalizeSubscription = (originalResource) => {
+	const resource = { ...originalResource };
 
-	const [username, domain] = resource.u.username.split('@');
+	const [username, domain] = getNameAndDomain(resource.u.username);
 
-	resource.u.username = domain === Federation.domain ? username : resource.u.username;
+	resource.u.username = domain === getFederationDomain() ? username : resource.u.username;
 
-	const [nameUsername, nameDomain] = resource.name.split('@');
+	const [nameUsername, nameDomain] = getNameAndDomain(resource.name);
 
-	resource.name = nameDomain === Federation.domain ? nameUsername : resource.name;
+	resource.name = nameDomain === getFederationDomain() ? nameUsername : resource.name;
 
 	return resource;
 };
 
 const denormalizeAllSubscriptions = (resources) => resources.map(denormalizeSubscription);
 
-const normalizeSubscription = (resource) => {
-	resource = { ...resource };
+const normalizeSubscription = (originalResource) => {
+	const resource = { ...originalResource };
 
-	resource.u.username = resource.u.username.indexOf('@') === -1 ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
+	resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ getFederationDomain() }` : resource.u.username;
 
-	resource.name = resource.name.indexOf('@') === -1 ? `${ resource.name }@${ Federation.domain }` : resource.name;
+	resource.name = !isFullyQualified(resource.name) ? `${ resource.name }@${ getFederationDomain() }` : resource.name;
 
 	// Federation
 	resource.federation = resource.federation || {
-		origin: Federation.domain, // The origin of this resource, where it was created
+		origin: getFederationDomain(), // The origin of this resource, where it was created
 	};
 
 	return resource;
