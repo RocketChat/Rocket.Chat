@@ -1102,6 +1102,8 @@
   "Error_404": "Klaida: 404",
   "Error_changing_password": "Klaida pakeičiant slaptažodį",
   "Error_loading_pages": "Įkeliant puslapius įvyko klaida",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Klaida: \"Rocket.Chat\" reikalauja \"oplog tailing\" paleidžiant kelis kartus",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Įsitikinkite, kad jūsų MongoDB yra \"ReplicaSet\" režime, o aplinkos kintamasis MONGO_OPLOG_URL yra tinkamai apibrėžtas programų serveryje",
   "Esc_to": "Esc į",
   "Event_Trigger": "Įvykių treniruoklis",
   "Event_Trigger_Description": "Pasirinkite, kuris įvykio tipas suaktyvins šią išeinančią \"WebHook\" integraciją",

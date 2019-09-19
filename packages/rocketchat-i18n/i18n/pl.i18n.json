@@ -1272,6 +1272,8 @@
   "Error_404": "Błąd 404",
   "Error_changing_password": "Błąd zmiany hasła",
   "Error_loading_pages": "Wystąpił błąd podczas ładowania stron",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Błąd: Rocket.Chat wymaga oględzin oplog podczas uruchamiania w wielu instancjach",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Upewnij się, że MongoDB jest w trybie ReplicaSet, a zmienna środowiskowa MONGO_OPLOG_URL jest poprawnie zdefiniowana na serwerze aplikacji",
   "Error_sending_livechat_transcript": "Błąd wysyłania transkrypcji Livechat",
   "Error_sending_livechat_offline_message": "Błąd podczas wysyłania wiadomości offline w usłudze Livechat",
   "Errors_and_Warnings": "Błędy i ostrzeżenia",

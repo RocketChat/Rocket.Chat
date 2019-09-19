@@ -1101,6 +1101,8 @@
   "Error_404": "Napaka: 404",
   "Error_changing_password": "Napaka pri spreminjanju gesla",
   "Error_loading_pages": "Napaka pri nalaganju strani",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Napaka: Rocket.Chat zahteva oplog tailing, ko teče na več primerih",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Poskrbite, da je naš MongoDB v načinu ReplicaSet in da je spremenljivka okolja MONGO_OPLOG_URL pravilno definirana na programskem strežniku",
   "Esc_to": "Izhod na",
   "Event_Trigger": "Prožilec dogodkov",
   "Event_Trigger_Description": "Izberite, katera vrsta dogodka bo sprožila to izhodno integracijo Webhooka",
