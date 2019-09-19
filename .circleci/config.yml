@@ -288,6 +288,7 @@ jobs:
 
                echo "Build official Docker image"
                cp ~/repo/.docker/Dockerfile .
+               cp ~/repo/.docker/startup.sh .
                docker build -t assistify/chat:$CIRCLE_TAG .
                docker push assistify/chat:$CIRCLE_TAG
 
