@@ -5,15 +5,12 @@ import _ from 'underscore';
 import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
-import { settings as rcSettings } from '../../../../settings';
+import { normalizeAgent } from '../../lib/Helper';
 
 export function online() {
 	return Livechat.online();
 }
 
-export function showAgentInfo() {
-	return rcSettings.get('Livechat_show_agent_info');
-}
 export function findTriggers() {
 	return LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 }
@@ -84,7 +81,7 @@ export function getRoom({ guest, rid, roomInfo, agent }) {
 }
 
 export function findAgent(agentId) {
-	return Users.getAgentInfo(agentId);
+	return normalizeAgent(agentId);
 }
 
 export function normalizeHttpHeaderData(headers = {}) {
@@ -113,7 +110,6 @@ export function settings() {
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
-			showAgentInfo: initSettings.Livechat_show_agent_info,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
