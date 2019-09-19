@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api';
-import { findGuest, findRoom, getRoom, settings, findAgent } from '../lib/livechat';
+import { findGuest, findRoom, getRoom, settings, findAgent, showAgentInfo } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/room', {
@@ -26,7 +26,7 @@ API.v1.addRoute('livechat/room', {
 
 			let agent;
 			const { agentId } = this.queryParams;
-			const agentObj = agentId && findAgent(agentId);
+			const agentObj = agentId && showAgentInfo && findAgent(agentId);
 			if (agentObj) {
 				const { username } = agentObj;
 				agent = Object.assign({}, { agentId, username });

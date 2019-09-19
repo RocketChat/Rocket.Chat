@@ -7,6 +7,7 @@ import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
+import { settings } from '../../../settings';
 
 export const createLivechatRoom = (rid, name, guest, extraData) => {
 	check(rid, String);
@@ -155,6 +156,10 @@ export const removeAgentFromSubscription = (rid, { _id, username }) => {
 };
 
 export const dispatchAgentDelegated = (rid, agentId) => {
+	if (!settings.get('Livechat_show_agent_info')) {
+		return;
+	}
+
 	const agent = agentId && Users.getAgentInfo(agentId);
 	Livechat.stream.emit(rid, {
 		type: 'agentData',

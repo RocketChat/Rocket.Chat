@@ -5,11 +5,15 @@ import _ from 'underscore';
 import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
+import { settings as rcSettings } from '../../../../settings';
 
 export function online() {
 	return Livechat.online();
 }
 
+export function showAgentInfo() {
+	return rcSettings.get('Livechat_show_agent_info');
+}
 export function findTriggers() {
 	return LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 }
