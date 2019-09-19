@@ -93,13 +93,9 @@ export class ExportOperations extends Base {
 
 		_.extend(exportOperation, data);
 
-		const result = this.insert(exportOperation);
+		this.insert(exportOperation);
 
-		if (exportOperation._id) {
-			data._id = exportOperation._id;
-		}
-
-		return result;
+		return exportOperation._id;
 	}
 
 

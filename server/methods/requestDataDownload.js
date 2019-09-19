@@ -63,9 +63,10 @@ Meteor.methods({
 			userData: currentUserData,
 		};
 
-		ExportOperations.create(exportOperation);
+		const id = ExportOperations.create(exportOperation);
+		exportOperation._id = id;
 
-		const folderName = path.join(tempFolder, exportOperation._id);
+		const folderName = path.join(tempFolder, id);
 		if (!fs.existsSync(folderName)) {
 			mkdirp.sync(folderName);
 		}

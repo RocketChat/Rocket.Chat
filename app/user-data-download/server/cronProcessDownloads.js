@@ -333,7 +333,7 @@ const sendEmail = function(userId, fileId) {
 	});
 };
 
-const makeZipFile = async function(exportOperation) {
+const makeZipFile = function(exportOperation) {
 	createDir(zipFolder);
 
 	const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
@@ -342,7 +342,7 @@ const makeZipFile = async function(exportOperation) {
 		return;
 	}
 
-	const zipFilePromise = new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const output = fs.createWriteStream(targetFile);
 
 		exportOperation.generatedFile = targetFile;
@@ -362,8 +362,6 @@ const makeZipFile = async function(exportOperation) {
 		archive.directory(exportOperation.exportPath, false);
 		archive.finalize();
 	});
-
-	await zipFilePromise;
 };
 
 const uploadZipFile = function(exportOperation, callback) {
