@@ -241,11 +241,21 @@
 			& .attachment-author img {
 				border-radius: 2px;
 			}
+
+			& .inline-image img {
+				max-height: 100px;
+			}
+
+			& .inline-video {
+				max-height: 150px;
+			}
 		}
 
-		&.multiline, &.discussion-created {
+		&.multiline,
+		&.discussion-created {
 			& .message-body-wrapper {
 				flex-direction: column;
+
 				& .body {
 					margin-left: 0;
 				}
@@ -262,18 +272,9 @@
 			align-items: flex-start;
 		}
 
-		& .attachment {
-			& .inline-image img {
-				max-height: 100px;
-			}
-
-			& .inline-video {
-				max-height: 150px;
-			}
-		}
-
 		& .body {
 			display: inline;
+
 			margin-left: 4px;
 		}
 
@@ -288,6 +289,7 @@
 
 			& .edited {
 				margin-left: 4px;
+
 				& .icon-pencil::before {
 					margin-right: 0;
 				}
@@ -306,7 +308,5 @@
 				height: 20px;
 			}
 		}
-
-
 	}
 }
