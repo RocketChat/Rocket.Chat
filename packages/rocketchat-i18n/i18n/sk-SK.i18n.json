@@ -1102,6 +1102,8 @@
   "Error_404": "Chyba: 404",
   "Error_changing_password": "Chyba pri zmene hesla",
   "Error_loading_pages": "Chyba pri načítavaní stránok",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Chyba: Rocket.Chat vyžaduje oplog tailing pri spustení vo viacerých inštanciách",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Uistite sa, že váš MongoDB je v režime ReplicaSet a že premenná prostredia MONGO_OPLOG_URL je správne definovaná na aplikačnom serveri",
   "Esc_to": "Esc to",
   "Event_Trigger": "Spúšťač udalostí",
   "Event_Trigger_Description": "Vyberte, ktorý typ udalosti bude spustiť túto odchádzajúcu WebHook integráciu",

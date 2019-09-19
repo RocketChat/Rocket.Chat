@@ -65,7 +65,7 @@
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run stylelint && meteor npm run jslint",
 		"jslint": "eslint .",
-		"stylelint": "stylelint \"app/**/*.css\"",
+		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\"",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-path": "chimp tests/chimp-config.js --path=$CHIMP_PATH",

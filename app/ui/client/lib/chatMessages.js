@@ -298,10 +298,13 @@ export class ChatMessages {
 
 				this.resetToDraft(this.editing.id);
 				this.confirmDeleteMsg(message, done);
+				return;
 			} catch (error) {
 				handleError(error);
 			}
 		}
+
+		return done();
 	}
 
 	async processMessageSend(message) {

@@ -1102,6 +1102,8 @@
   "Error_404": "Fout: 404",
   "Error_changing_password": "Kon nie wagwoord verander nie",
   "Error_loading_pages": "Kon nie bladsye laai nie",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Fout: Rocket.Chat vereis oplog tailing wanneer dit in verskeie gevalle uitgevoer word",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Maak asseblief seker dat jou MongoDB op ReplicaSet af is en MONGO_OPLOG_URL omgewingsveranderlike korrek is gedefinieer op die aansoek bediener",
   "Esc_to": "Esc to",
   "Event_Trigger": "Event Trigger",
   "Event_Trigger_Description": "Kies watter tipe gebeurtenis hierdie Uitgaande WebHook-integrasie sal aktiveer",

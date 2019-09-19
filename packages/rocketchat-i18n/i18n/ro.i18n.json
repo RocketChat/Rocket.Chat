@@ -1102,6 +1102,8 @@
   "Error_404": "Eroare 404",
   "Error_changing_password": "Eroare la schimbarea parolei",
   "Error_loading_pages": "Eroare la încărcarea paginilor",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Eroare: Rocket.Chat necesită tăiere oplog atunci când rulează în mai multe instanțe",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Asigurați-vă că MongoDB este în modul ReplicaSet și că variabila de mediu MONGO_OPLOG_URL este definită corect pe serverul de aplicații",
   "Esc_to": "Esc pentru a",
   "Event_Trigger": "Evenimentul declanșator",
   "Event_Trigger_Description": "Selectați tipul de eveniment care va declanșa această integrare WebHook de ieșire",

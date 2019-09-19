@@ -1319,6 +1319,8 @@
   "Error_404": "エラー404",
   "Error_changing_password": "パスワード変更中に問題が発生しました",
   "Error_loading_pages": "ページの読み込み中のエラー",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "エラー：Rocket.Chatは、複数のインスタンスで実行しているときにoplog tailingが必要です",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "MongoDBがReplicaSetモードで、MONGO_OPLOG_URL環境変数がアプリケーションサーバー上で正しく定義されていることを確認してください",
   "Error_sending_livechat_transcript": "Livechatトランスクリプトを送信中にエラーが発生しました",
   "Error_sending_livechat_offline_message": "Livechatオフラインメッセージを送信中にエラーが発生しました",
   "Errors_and_Warnings": "エラーと警告",

@@ -1102,6 +1102,8 @@
   "Error_404": "பிழை: 404",
   "Error_changing_password": "கடவுச்சொல் மாற்றப்பட்டது",
   "Error_loading_pages": "பக்கங்களை ஏற்றுவதில் பிழை",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "பிழை: பல நிகழ்வுகளில் இயங்கும் போது ராக்கெட்",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "தயவுசெய்து உங்கள் மோங்கோ DB என்பது ReplicaSet முறைமை மற்றும் MONGO_OPLOG_URL சூழல் மாறி பயன்பாட்டு சேவையகத்தில் சரியாக வரையறுக்கப்பட்டுள்ளது",
   "Esc_to": "esc விசையை",
   "Event_Trigger": "நிகழ்வு தூண்டல்",
   "Event_Trigger_Description": "எந்த வகை நிகழ்வு இந்த வெளிச்செல்லும் WebHook ஒருங்கிணைப்புக்குத் தூண்டுகிறது",

@@ -1276,6 +1276,8 @@
   "Error_404": "404-es hibakód",
   "Error_changing_password": "Hiba a jelszó változtatáskor",
   "Error_loading_pages": "Hiba az oldalak betöltése során",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Hiba: A Rocket.Chat több példányban történő futáskor kényelmesen követel",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Győződjön meg róla, hogy a MongoDB ReplicaSet módban van és a MONGO_OPLOG_URL környezeti változó helyesen van definiálva az alkalmazáskiszolgálón",
   "Error_sending_livechat_transcript": "Hiba a Livechat átirat küldésekor",
   "Error_sending_livechat_offline_message": "Hiba a Livechat offline üzenet küldésekor",
   "Errors_and_Warnings": "Hibák és figyelmeztetések",
