@@ -462,6 +462,30 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 	}
 };
 
+SAML.prototype.validateNotBeforeNotOnOrAfterAssertions = function(element) {
+	const now = new Date();
+
+	if (element.hasAttribute('NotBefore')) {
+		const notBefore = element.getAttribute('NotBefore');
+
+		const date = new Date(notBefore);
+		if (now < date) {
+			return false;
+		}
+	}
+
+	if (element.hasAttribute('NotOnOrAfter')) {
+		const notOnOrAfter = element.getAttribute('NotOnOrAfter');
+		const date = new Date(notOnOrAfter);
+
+		if (now >= date) {
+			return false;
+		}
+	}
+
+	return true;
+};
+
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	const self = this;
 	const xml = new Buffer(samlResponse, 'base64').toString('utf8');
@@ -544,6 +568,19 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 				profile.nameIDFormat = nameID.getAttribute('Format');
 			}
 		}
+
+		const subjectConfirmation = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmation')[0];
+		if (subjectConfirmation) {
+			const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData')[0];
+			if (subjectConfirmationData && !this.validateNotBeforeNotOnOrAfterAssertions(subjectConfirmationData)) {
+				return callback(new Error('NotBefore / NotOnOrAfter assertion failed'), null, false);
+			}
+		}
+	}
+
+	const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
+	if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions)) {
+		return callback(new Error('NotBefore / NotOnOrAfter assertion failed'), null, false);
 	}
 
 	const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
