@@ -36,11 +36,11 @@ export function sendMessagesToAdmins({
 				Meteor.runAsUser(fromId, () => {
 					msgs.forEach((msg) => Meteor.call('sendMessage', Object.assign({ rid }, msg)));
 				});
-
-				banners.forEach((banner) => Users.addBannerById(adminUser._id, banner));
 			} catch (e) {
 				console.error(e);
 			}
 		}
+
+		banners.forEach((banner) => Users.addBannerById(adminUser._id, banner));
 	});
 }
