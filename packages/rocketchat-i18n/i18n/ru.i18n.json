@@ -1319,6 +1319,8 @@
   "Error_404": "Ошибка 404",
   "Error_changing_password": "Ошибка при изменении пароля",
   "Error_loading_pages": "Ошибка загрузки страниц",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Ошибка: требуется слежение за Oplog при запуске Rocket.Chat на виртуальных машинах",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Пожалуйста, убедитесь, что ваш MongoDB находится в режиме ReplicaSet, а переменная среды MONGO_OPLOG_URL правильно определена на сервере приложений.",
   "Error_sending_livechat_transcript": "Ошибка отправки протокола Livechat",
   "Error_sending_livechat_offline_message": "Ошибка отправки сообщения Livechat в автономном режиме",
   "Errors_and_Warnings": "Ошибки и предупреждения",
