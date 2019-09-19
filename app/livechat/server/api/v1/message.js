@@ -8,7 +8,7 @@ import { API } from '../../../../api';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
-import { normalizeMessageAttachments } from '../../../../utils/server/functions/normalizeMessageAttachments';
+import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 
 API.v1.addRoute('livechat/message', {
 	post() {
@@ -97,7 +97,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			}
 
 			if (message.file) {
-				message = normalizeMessageAttachments(message);
+				message = normalizeMessageFileUpload(message);
 			}
 
 			return API.v1.success({ message });
@@ -140,7 +140,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			if (result) {
 				let message = Messages.findOneById(_id);
 				if (message.file) {
-					message = normalizeMessageAttachments(message);
+					message = normalizeMessageFileUpload(message);
 				}
 
 				return API.v1.success({ message });
@@ -238,7 +238,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 
 			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls })
 				.messages
-				.map(normalizeMessageAttachments);
+				.map(normalizeMessageFileUpload);
 			return API.v1.success({ messages });
 		} catch (e) {
 			return API.v1.failure(e);
