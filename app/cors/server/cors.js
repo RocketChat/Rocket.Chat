@@ -44,7 +44,16 @@ WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	});
 }));
 
+let Support_Cordova_App = false;
+settings.get('Support_Cordova_App', (key, value) => {
+	Support_Cordova_App = value;
+});
+
 WebApp.rawConnectHandlers.use(function(req, res, next) {
+	if (Support_Cordova_App !== true) {
+		return next();
+	}
+
 	if (/^\/(api|_timesync|sockjs|tap-i18n)(\/|$)/.test(req.url)) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 	}

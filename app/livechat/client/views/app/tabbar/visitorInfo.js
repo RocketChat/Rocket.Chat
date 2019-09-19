@@ -10,12 +10,13 @@ import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
 import { modal } from '../../../../../ui-utils';
-import { Rooms, Subscriptions } from '../../../../../models';
+import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
 import { hasRole, hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
+import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorInfo.html';
 
 const isSubscribedToRoom = () => {
@@ -50,7 +51,7 @@ Template.visitorInfo.helpers({
 	},
 
 	room() {
-		return Template.instance().room.get();
+		return LivechatRoom.findOne({ _id: this.rid });
 	},
 
 	department() {
@@ -72,7 +73,7 @@ Template.visitorInfo.helpers({
 
 		const data = Template.currentData();
 		if (data && data.rid) {
-			const room = Rooms.findOne(data.rid);
+			const room = LivechatRoom.findOne(data.rid);
 			if (room) {
 				livechatData = _.extend(livechatData, room.livechatData);
 			}
@@ -147,7 +148,7 @@ Template.visitorInfo.helpers({
 	},
 
 	roomOpen() {
-		const room = Template.instance().room.get();
+		const room = LivechatRoom.findOne({ _id: this.rid });
 		const uid = Meteor.userId();
 		return room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
 	},
@@ -281,7 +282,6 @@ Template.visitorInfo.onCreated(function() {
 	this.user = new ReactiveVar();
 	this.departmentId = new ReactiveVar(null);
 	this.tags = new ReactiveVar(null);
-	this.room = new ReactiveVar(null);
 	this.routingConfig = new ReactiveVar({});
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
@@ -298,9 +298,9 @@ Template.visitorInfo.onCreated(function() {
 	});
 
 	if (rid) {
+		this.subscribe('livechat:rooms', { _id: rid });
 		this.autorun(() => {
-			const room = Rooms.findOne({ _id: rid });
-			this.room.set(room);
+			const room = LivechatRoom.findOne({ _id: rid });
 			this.visitorId.set(room && room.v && room.v._id);
 			this.departmentId.set(room && room.departmentId);
 			this.tags.set(room && room.tags);

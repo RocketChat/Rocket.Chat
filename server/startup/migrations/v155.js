@@ -1,14 +1,34 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server';
 
-// Enable iframe usage for existant RC installations.
 Migrations.add({
-	version: 148,
+	version: 155,
 	up() {
-		Settings.upsert({ _id: 'Iframe_Restrict_Access' }, {
-			$set: {
-				value: false,
-			},
-		});
+		const _id = 'Livechat_Routing_Method';
+		const setting = Settings.findOne({ _id });
+		if (setting) {
+			const { value } = setting;
+
+			let newValue;
+			switch (value) {
+				case 'Least_Amount':
+					newValue = 'Auto_Selection';
+					break;
+				case 'Guest_Pool':
+					newValue = 'Manual_Selection';
+					break;
+			}
+
+			if (!newValue) {
+				return;
+			}
+
+			Settings.update({ _id }, {
+				$set: {
+					value: newValue,
+					packageValue: newValue,
+				},
+			});
+		}
 	},
 });

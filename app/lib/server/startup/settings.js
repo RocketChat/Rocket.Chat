@@ -828,6 +828,11 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Support_Cordova_App', false, {
+		type: 'boolean',
+		i18nDescription: 'Support_Cordova_App_Description',
+		alert: 'Support_Cordova_App_Alert',
+	});
 	this.add('GoogleTagManager_id', '', {
 		type: 'string',
 		public: true,
