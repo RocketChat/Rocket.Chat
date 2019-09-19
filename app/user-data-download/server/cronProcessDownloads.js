@@ -34,7 +34,7 @@ const writeToFile = function(fileName, content) {
 
 const createDir = function(folderName) {
 	if (!fs.existsSync(folderName)) {
-		fs.mkdirSync(folderName);
+		fs.mkdirSync(folderName, { recursive: true });
 	}
 };
 
