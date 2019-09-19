@@ -31,7 +31,6 @@ function job() {
 
 		Rooms.find({
 			t: type,
-			// _updatedAt: { $gte: latest },
 			$or: [
 				{ 'retention.enabled': { $eq: true } },
 				{ 'retention.enabled': { $exists: false } },
@@ -46,13 +45,11 @@ function job() {
 		'retention.enabled': { $eq: true },
 		'retention.overrideGlobal': { $eq: true },
 		'retention.maxAge': { $gte: 0 },
-		// _updatedAt: { $gte: lastPrune },
 	}).forEach((room) => {
 		const { maxAge = 30, filesOnly, excludePinned } = room.retention;
 		const latest = new Date(now.getTime() - toDays(maxAge));
 		cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned, ignoreDiscussion });
 	});
-	// lastPrune = new Date(now.getTime() - getGrace(settings.get('RetentionPolicy_Precision')));
 }
 
 function getSchedule(precision) {
@@ -83,7 +80,6 @@ function deployCron(precision) {
 
 function reloadPolicy() {
 	types = [];
-	// lastPrune = oldest;
 
 	if (!settings.get('RetentionPolicy_Enabled')) {
 		return SyncedCron.remove(pruneCronName);
