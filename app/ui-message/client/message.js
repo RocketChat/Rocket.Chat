@@ -172,6 +172,12 @@ Template.message.helpers({
 			return 'false';
 		}
 	},
+	isMultiline() {
+		const { msg } = this;
+		if (msg && msg.msg && msg.msg.indexOf('\n') !== -1) {
+			return 'multiline';
+		}
+	},
 	sequentialClass() {
 		const { msg, groupable } = this;
 		if (MessageTypes.isSystemMessage(msg) && !msg.tmid) {
