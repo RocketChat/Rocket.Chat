@@ -1289,6 +1289,8 @@
   "Error_404": "កំហុស: 404",
   "Error_changing_password": "ពាក្យ​សម្ងាត់​បាន​ប្តូរ",
   "Error_loading_pages": "មានកំហុសក្នុងការផ្ទុកទំព័រ",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "កំហុស: Rocket.Chat តម្រូវឱ្យមានកន្ទុយអុកនៅពេលកំពុងរត់ក្នុងករណីច្រើន",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "សូមប្រាកដថាម៉ុង MongDB របស់អ្នកស្ថិតនៅលើទម្រង់ ReplicaSet ហើយអថេរបរិស្ថាន MONGO_OPLOG_URL ត្រូវបានកំណត់យ៉ាងត្រឹមត្រូវលើម៉ាស៊ីនមេ។",
   "Error_sending_livechat_transcript": "កំហុសក្នុងការផ្ញើប្រតិចារិក Livechat",
   "Error_sending_livechat_offline_message": "កំហុសពេលកំពុងផ្ញើរសារ Livechat ក្រៅបណ្តាញ",
   "Errors_and_Warnings": "កំហុសនិងការព្រមាន",

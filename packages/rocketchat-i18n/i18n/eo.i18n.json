@@ -1102,6 +1102,8 @@
   "Error_404": "Eraro: 404",
   "Error_changing_password": "Eraro ŝanĝi pasvorton",
   "Error_loading_pages": "Eraro ŝarĝante paĝojn",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Eraro: Rocket.Chat postulas oplog-fiksi kiam kurante en multaj petskriboj",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Bonvolu certigi, ke via MongoDB estas en ReplicaSet mode kaj MONGO_OPLOG_URL-medio-variablo estas difinita ĝuste en la servilo de aplikaĵoj",
   "Esc_to": "Esc al",
   "Event_Trigger": "Eventa Trigger",
   "Event_Trigger_Description": "Elektu kiun tipo de evento deĉenigos ĉi Ekspedanta WebHook Integriĝo",

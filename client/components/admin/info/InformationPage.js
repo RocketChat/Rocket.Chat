@@ -111,10 +111,14 @@ export function InformationPage() {
 		<div className='content'>
 			{alertOplogForMultipleInstances
 				&& <ErrorAlert title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}>
-					<p>{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}</p>
-					<Link external href='https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-performance/#running-multiple-instances-per-host-to-improve-performance'>
-						{t('Click_here_for_more_info')}
-					</Link>
+					<p>
+						{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}
+					</p>
+					<p>
+						<Link external href='https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-performance/#running-multiple-instances-per-host-to-improve-performance'>
+							{t('Click_here_for_more_info')}
+						</Link>
+					</p>
 				</ErrorAlert>}
 
 			<RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />

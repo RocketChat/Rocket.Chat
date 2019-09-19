@@ -1102,6 +1102,8 @@
   "Error_404": "Ralat: 404",
   "Error_changing_password": "Ralat menukar kata laluan",
   "Error_loading_pages": "Ralat memuatkan halaman",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Ralat: Rocket.Chat memerlukan tailing oplog apabila berjalan dalam beberapa keadaan",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Sila pastikan MongoDB anda berada pada mod ReplicaSet dan pembolehubah persekitaran MONGO_OPLOG_URL ditakrifkan dengan betul pada pelayan aplikasi",
   "Esc_to": "Esc untuk",
   "Event_Trigger": "Pemacu Peristiwa",
   "Event_Trigger_Description": "Pilih jenis peristiwa yang akan mencetuskan Integrasi WebHook Keluar ini",

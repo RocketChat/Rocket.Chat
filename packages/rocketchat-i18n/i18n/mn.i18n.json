@@ -1102,6 +1102,8 @@
   "Error_404": "Алдаа: 404",
   "Error_changing_password": "Нууц үгийг өөрчлөх алдаа",
   "Error_loading_pages": "Хуудсыг ачаалах алдаа",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Алдаа: Rocket.Chat олон тохиолдол дээр ажиллаж байхдаа oplog tailing шаарддаг",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "MongoDB нь ReplicaSet горимд байгаа эсэхийг шалгаарай, мөн MONGO_OPLOG_URL орчны хувьсагч нь програмын сервер дээр зөвөөр тодорхойлогдсон эсэхийг шалгана уу.",
   "Esc_to": "Esc руу",
   "Event_Trigger": "Үйл явдал Trigger",
   "Event_Trigger_Description": "Ямар төрлийн үйл явдал энэ вэбсайтын интеграцыг үүсгэхийг сонгоно уу",

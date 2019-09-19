@@ -1102,6 +1102,8 @@
   "Error_404": "Грешка: 404",
   "Error_changing_password": "Грешка приликом промене лозинке",
   "Error_loading_pages": "Грешка у учитавању страница",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Грешка: Роцкет.Цхат захтева оплог таилинг када ради у више инстанци",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Проверите да ли је ваш МонгоДБ на режиму РеплицаСет, а варијабла окружења МОНГО_ОПЛОГ_УРЛ је исправно дефинирана на серверу апликација",
   "Esc_to": "Есц да",
   "Event_Trigger": "Евент Триггер",
   "Event_Trigger_Description": "Изаберите који тип догађаја ће покренути ову Оутгоинг ВебХоок интеграцију",

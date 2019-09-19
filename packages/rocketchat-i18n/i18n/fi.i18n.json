@@ -1102,6 +1102,8 @@
   "Error_404": "Virhe: 404",
   "Error_changing_password": "Virhe vaihtaessa salasanaa",
   "Error_loading_pages": "Virhe sivujen lataamisessa",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Virhe: Rocket.Chat vaatii oplog tailing -toimintoa useissa tapauksissa",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Varmista, että MongoDB on ReplicaSet-tilassa ja että MONGO_OPLOG_URL ympäristömuuttuja määritetään oikein sovelluspalvelimella",
   "Esc_to": "Poistu",
   "Event_Trigger": "Tapahtuman käynnistys",
   "Event_Trigger_Description": "Valitse tapahtuman tyyppi, joka käynnistää tämän Lähtevän WebHook -integroinnin",

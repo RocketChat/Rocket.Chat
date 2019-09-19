@@ -1306,6 +1306,8 @@
   "Error_404": "错误：404",
   "Error_changing_password": "密码更改失败",
   "Error_loading_pages": "加载页面时出错",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "错误：Rocket.Chat在多个实例中运行时需要oplog拖尾",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "请确保您的MongoDB处于ReplicaSet模式，并且MONGO_OPLOG_URL环境变量已在应用程序服务器上正确定义",
   "Error_sending_livechat_transcript": "发送即时聊天记录时出错",
   "Error_sending_livechat_offline_message": "发送即时聊天离线消息时出错",
   "Errors_and_Warnings": "错误和警告",

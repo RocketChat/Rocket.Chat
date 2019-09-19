@@ -1102,6 +1102,8 @@
   "Error_404": "Hata: 404",
   "Error_changing_password": "Şifrəni dəyişməkdə səhv",
   "Error_loading_pages": "Səhifələr yüklənərkən səhv",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Hata: Rocket.Chat, birdən çox halında çalışırken oplog kuyruklamasını tələb edir",
+  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "MongoDB-nin ReplicaSet rejimində olduğundan və MONGO_OPLOG_URL ətraf mühitə dəyişənlərin tətbiq serverində düzgün olduğundan əmin olun",
   "Esc_to": "Esc üçün",
   "Event_Trigger": "Hadisə Tetikleyicisi",
   "Event_Trigger_Description": "Bu Çıxış WebHook Entegrasyonunu hansı növ hadisəni tetikleyeceğini seçin",
