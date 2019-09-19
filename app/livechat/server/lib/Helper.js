@@ -252,4 +252,3 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 
 	return true;
 };
-
