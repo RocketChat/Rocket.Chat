@@ -80,8 +80,8 @@ class Twilio {
 		const client = twilio(this.accountSid, this.authToken);
 
 		let mediaUrl;
-		if (extraData) {
-			const { rid, userId, type, size, url } = extraData;
+		if (extraData && extraData.fileUpload) {
+			const { rid, userId, fileUpload: { size, type, publicFilePath } } = extraData;
 			const user = userId ? Meteor.users.findOne(userId) : null;
 			const lng = (user && user.language) || settings.get('Language') || 'en';
 
@@ -102,8 +102,7 @@ class Twilio {
 				return console.error(`(Twilio) -> ${ reason }`);
 			}
 
-			mediaUrl = [`${ settings.get('Site_Url') }${ url }`];
-			console.log(mediaUrl);
+			mediaUrl = [publicFilePath];
 		}
 		// return
 		client.messages.create({

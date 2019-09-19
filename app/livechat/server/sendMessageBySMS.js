@@ -1,8 +1,8 @@
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
-import { Uploads, LivechatVisitors } from '../../models';
-import { normalizeMessageAttachments } from '../../utils/server/functions/normalizeMessageAttachments';
+import { LivechatVisitors } from '../../models';
+import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -31,19 +31,9 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 	let extraData;
 	if (message.file) {
-		message = normalizeMessageAttachments(message);
-		const { _id } = message.file;
-		const file = Uploads.findOneById(_id);
-		console.log('file');
-		console.log(file);
-		if (file) {
-			const { type, size } = file;
-			const { attachments, rid, u: { _id: userId } = {} } = message;
-			const [attachment] = attachments;
-			const { title_link: url } = attachment;
-
-			extraData = Object.assign({}, { rid, userId, type, size, url });
-		}
+		message = normalizeMessageFileUpload(message);
+		const { fileUpload, rid, u: { _id: userId } = {} } = message;
+		extraData = Object.assign({}, { rid, userId, fileUpload });
 	}
 
 	const SMSService = SMS.getService(settings.get('SMS_Service'));
