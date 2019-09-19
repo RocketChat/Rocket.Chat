@@ -570,14 +570,14 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 		const subjectConfirmation = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmation')[0];
 		if (subjectConfirmation) {
-			const [subjectConfirmationData] = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData');
+			const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData')[0];
 			if (subjectConfirmationData && !this.validateNotBeforeNotOnOrAfterAssertions(subjectConfirmationData, callback)) {
 				return callback(new Error('NotBefore / NotOnOrAfter assertion failed'), null, false);
 			}
 		}
 	}
 
-	const [conditions] = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions');
+	const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
 	if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions, callback)) {
 		return callback(new Error('NotBefore / NotOnOrAfter assertion failed'), null, false);
 	}
