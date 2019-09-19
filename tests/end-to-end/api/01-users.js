@@ -170,7 +170,6 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', username);
-					expect(res.body).to.have.nested.property('user.emails[0].address', email);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', 'name');
 				})
@@ -207,7 +206,6 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', apiUsername);
-					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', apiUsername);
 					expect(res.body).to.not.have.nested.property('user.e2e');
@@ -1131,6 +1129,70 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.setPreferences]', () => {
+		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
+			const userPreferences = {
+				userId: 'rocket.cat',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', []).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(400)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Editing user is not allowed [error-action-not-allowed]');
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the user try to update info of an inexistent user', (done) => {
+			const userPreferences = {
+				userId: 'invalid-id',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', ['admin', 'user']).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(400)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'The optional \"userId\" param provided does not match any users [error-invalid-user]');
+						expect(res.body).to.have.property('errorType', 'error-invalid-user');
+					})
+					.end(done);
+			});
+		});
+		it('should set some preferences of another user successfully', (done) => {
+			const userPreferences = {
+				userId: 'rocket.cat',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', ['admin', 'user']).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(200)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body.user).to.have.property('settings');
+						expect(res.body.user.settings).to.have.property('preferences');
+						expect(res.body.user._id).to.be.equal('rocket.cat');
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
 		it('should set some preferences by user when execute successfully', (done) => {
 			const userPreferences = {
 				userId: credentials['X-User-Id'],
@@ -1144,7 +1206,8 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					expect(Object.keys(res.body.user.settings.preferences)).to.include.members(Object.keys(userPreferences.data));
+					expect(res.body.user).to.have.property('settings');
+					expect(res.body.user.settings).to.have.property('preferences');
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);

@@ -1,7 +1,7 @@
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
-import { LivechatVisitors } from '../../models';
+import { Uploads, LivechatVisitors } from '../../models';
 import { normalizeMessageAttachments } from '../../utils/server/functions/normalizeMessageAttachments';
 
 callbacks.add('afterSaveMessage', function(message, room) {
@@ -29,12 +29,21 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-
 	let extraData;
 	if (message.file) {
 		message = normalizeMessageAttachments(message);
-		const { attachments, rid, u: { _id: userId } = {} } = message;
-		extraData = Object.assign({}, { rid, userId, attachments });
+		const { _id } = message.file;
+		const file = Uploads.findOneById(_id);
+		console.log('file');
+		console.log(file);
+		if (file) {
+			const { type, size } = file;
+			const { attachments, rid, u: { _id: userId } = {} } = message;
+			const [attachment] = attachments;
+			const { title_link: url } = attachment;
+
+			extraData = Object.assign({}, { rid, userId, type, size, url });
+		}
 	}
 
 	const SMSService = SMS.getService(settings.get('SMS_Service'));

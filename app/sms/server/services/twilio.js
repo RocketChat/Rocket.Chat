@@ -76,46 +76,36 @@ class Twilio {
 		return returnData;
 	}
 
-	send(fromNumber, toNumber, message, extraData = {}) {
+	send(fromNumber, toNumber, message, extraData) {
 		const client = twilio(this.accountSid, this.authToken);
 
 		let mediaUrl;
-		const { rid, userId, attachments } = extraData;
-
-		if (attachments) {
+		if (extraData) {
+			const { rid, userId, type, size, url } = extraData;
 			const user = userId ? Meteor.users.findOne(userId) : null;
 			const lng = (user && user.language) || settings.get('Language') || 'en';
-			// const { type: mime_type, size, dataURI: base64 } = attachment;
-			console.log('attachments');
-			console.log(attachments);
-			const {
-				fileUploadEnabled,
-				fileUploadMaxFileSize,
-				fileUploadMediaTypeWhiteList,
-			} = this.config;
 
 			let reason;
-			if (!fileUploadEnabled) {
+			if (!this.fileUploadEnabled) {
 				reason = TAPi18n.__('FileUpload_Disabled', { lng });
-			} else if (fileUploadMaxFileSize > -1 && MAX_FILE_SIZE > fileUploadMaxFileSize) {
+			} else if (size > MAX_FILE_SIZE) {
 				reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
-					size: filesize(fileUploadMaxFileSize),
+					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType('mime_type', fileUploadMediaTypeWhiteList)) {
+			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList)) {
 				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
 			}
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
-				return console.error(`(WhatsAppGateway) -> ${ reason }`);
+				return console.error(`(Twilio) -> ${ reason }`);
 			}
 
-			// midia = { mime_type, base64 };
+			mediaUrl = [`${ settings.get('Site_Url') }${ url }`];
+			console.log(mediaUrl);
 		}
-		console.log('extraData');
-		console.log(extraData);
-		// return `${ settings.get('Site_Url') }/admin/cloud/oauth-callback`.replace(/\/\/admin+/g, '/admin');
+		// return
 		client.messages.create({
 			to: toNumber,
 			from: fromNumber,
