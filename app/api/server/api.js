@@ -611,6 +611,9 @@ settings.get('API_Enable_CORS', (key, value) => {
 });
 
 settings.get('Accounts_CustomFields', (key, value) => {
+	if (!value) {
+		return API.v1.setLimitedCustomFields([]);
+	}
 	try {
 		const customFields = JSON.parse(value);
 		const nonPublicCustomFields = Object.keys(customFields).filter((customFieldKey) => customFields[customFieldKey].public !== true);
