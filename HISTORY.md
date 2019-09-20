@@ -1,3 +1,7 @@
+# Assistify 0.9.13
+
+This release enables Assistify to run with multiple instances on ECS.
+
 # Assistify 0.9.12
 
 This Release bumps Rocket.Chat to 1.3.2
