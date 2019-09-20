@@ -26,7 +26,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
-		this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
+		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
 		// Get the service provide API key.
 		settings.get('AutoTranslate_DeepLAPIKey', (key, value) => {
 			this.apiKey = value;
