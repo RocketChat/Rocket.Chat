@@ -497,6 +497,8 @@ workflows:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - image-build:
+          requires:
+            - build
           filters:
             branches:
               only:
