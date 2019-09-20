@@ -5,18 +5,18 @@ import { settings } from '../../../app/settings/server';
 Migrations.add({
 	version: 160,
 	up() {
+		const emailFieldSetting = Settings.findOne({ _id: 'SAML_Custom_Default_email_field' });
+		const usernameFieldSetting = Settings.findOne({ _id: 'SAML_Custom_Default_username_field' });
+
+		Settings.removeById('SAML_Custom_Default_email_field');
+		Settings.removeById('SAML_Custom_Default_username_field');
+
 		if (!settings.get('SAML_Custom_Default')) {
 			return;
 		}
 
-		const emailFieldSetting = Settings.findOne({ _id: 'SAML_Custom_Default_email_field' });
-		const usernameFieldSetting = Settings.findOne({ _id: 'SAML_Custom_Default_username_field' });
-
 		const emailField = (emailFieldSetting && emailFieldSetting.value) || 'email';
 		const usernameField = (usernameFieldSetting && usernameFieldSetting.value) || 'username';
-
-		Settings.removeById('SAML_Custom_Default_email_field');
-		Settings.removeById('SAML_Custom_Default_username_field');
 
 		if (emailField === 'email' && usernameField === 'username') {
 			// If using default values, there's no need to initialize the new setting here.
