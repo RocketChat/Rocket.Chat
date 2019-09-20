@@ -414,6 +414,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
 				data.text = message.msg;
+				data.siteUrl = settings.get('Site_Url');
 
 				if (message.alias) {
 					data.alias = message.alias;

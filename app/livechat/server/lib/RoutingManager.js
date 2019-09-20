@@ -2,9 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings/server';
-import { createLivechatSubscription, dispatchAgentDelegated, forwardRoomToAgent, forwardRoomToDepartment } from './Helper';
+import { createLivechatSubscription,
+	dispatchAgentDelegated,
+	forwardRoomToAgent,
+	forwardRoomToDepartment,
+	removeAgentFromSubscription,
+} from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Subscriptions, Users } from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users } from '../../../models/server';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 export const RoutingManager = {
@@ -77,15 +82,10 @@ export const RoutingManager = {
 	unassignAgent(inquiry, departmentId) {
 		const { _id, rid, department } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
-		const { servedBy } = room;
 
-		if (!servedBy) {
+		if (!room || !room.open) {
 			return false;
 		}
-
-		Subscriptions.removeByRoomId(rid);
-		LivechatRooms.removeAgentByRoomId(rid);
-		LivechatInquiry.queueInquiry(_id);
 
 		if (departmentId && departmentId !== department) {
 			LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
@@ -94,15 +94,19 @@ export const RoutingManager = {
 			inquiry.department = departmentId;
 		}
 
-		this.getMethod().delegateAgent(null, inquiry);
-		Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
-		dispatchAgentDelegated(rid, null);
+		const { servedBy } = room;
+		if (servedBy) {
+			removeAgentFromSubscription(rid, servedBy);
+			LivechatRooms.removeAgentByRoomId(rid);
+			dispatchAgentDelegated(rid, null);
+		}
 
+		LivechatInquiry.queueInquiry(_id);
+		this.getMethod().delegateAgent(null, inquiry);
 		return true;
 	},
 
 	async takeInquiry(inquiry, agent) {
-		// return Room Object
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
@@ -116,7 +120,11 @@ export const RoutingManager = {
 
 		const { _id, rid } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
-		if (room && room.servedBy && room.servedBy._id === agent.agentId) {
+		if (!room || !room.open) {
+			return room;
+		}
+
+		if (room.servedBy && room.servedBy._id === agent.agentId) {
 			return room;
 		}
 
@@ -135,7 +143,6 @@ export const RoutingManager = {
 
 	async transferRoom(room, guest, transferData) {
 		const { userId, departmentId } = transferData;
-
 		if (userId) {
 			return forwardRoomToAgent(room, userId);
 		}

@@ -114,14 +114,14 @@ Template.userInfo.helpers({
 	lastLogin() {
 		const user = Template.instance().user.get();
 		if (user && user.lastLogin) {
-			return moment(user.lastLogin).format('LLL');
+			return DateFormat.formatDateAndTime(user.lastLogin);
 		}
 	},
 
 	createdAt() {
 		const user = Template.instance().user.get();
 		if (user && user.createdAt) {
-			return moment(user.createdAt).format('LLL');
+			return DateFormat.formatDateAndTime(user.createdAt);
 		}
 	},
 	linkedinUsername() {
