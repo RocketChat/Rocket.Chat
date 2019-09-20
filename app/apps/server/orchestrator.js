@@ -10,6 +10,7 @@ import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../
 import { Logger } from '../../logger';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppUploadsConverter } from './converters/uploads';
+import { AppDepartmentsConverter } from './converters/departments';
 
 class AppServerOrchestrator {
 	constructor() {
@@ -34,6 +35,7 @@ class AppServerOrchestrator {
 		this._converters.set('settings', new AppSettingsConverter(this));
 		this._converters.set('users', new AppUsersConverter(this));
 		this._converters.set('visitors', new AppVisitorsConverter(this));
+		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
 
 		this._bridges = new RealAppBridges(this);

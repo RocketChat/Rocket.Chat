@@ -1,6 +1,6 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { Rooms, Users, LivechatVisitors } from '../../../models';
+import { Rooms, Users, LivechatVisitors, LivechatDepartment } from '../../../models';
 
 export class AppRoomsConverter {
 	constructor(orch) {
@@ -43,6 +43,12 @@ export class AppRoomsConverter {
 			};
 		}
 
+		let departmentId;
+		if (room.department) {
+			const department = LivechatDepartment.findOneById(room.department.id);
+			departmentId = department._id;
+		}
+
 		let servedBy;
 		if (room.servedBy) {
 			const user = Users.findOneById(room.servedBy.id);
@@ -68,6 +74,7 @@ export class AppRoomsConverter {
 			t: room.type,
 			u,
 			v,
+			departmentId,
 			servedBy,
 			closedBy,
 			members: room.members,
@@ -100,6 +107,11 @@ export class AppRoomsConverter {
 			visitor = this.orch.getConverters().get('visitors').convertById(room.v._id);
 		}
 
+		let department;
+		if (room.departmentId) {
+			department = this.orch.getConverters().get('departments').convertById(room.departmentId);
+		}
+
 		let servedBy;
 		if (room.servedBy) {
 			servedBy = this.orch.getConverters().get('users').convertById(room.servedBy._id);
@@ -117,6 +129,7 @@ export class AppRoomsConverter {
 			type: this._convertTypeToApp(room.t),
 			creator,
 			visitor,
+			department,
 			servedBy,
 			responseBy,
 			members: room.members,
