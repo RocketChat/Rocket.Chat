@@ -160,7 +160,7 @@ export const normalizeAgent = (agentId) => {
 		return;
 	}
 
-	return settings.get('Livechat_show_agent_info') ? Users.getAgentInfo(agentId) : { name: 'Agent', hiddenInfo: true };
+	return settings.get('Livechat_show_agent_info') ? Users.getAgentInfo(agentId) : { hiddenInfo: true };
 };
 
 export const dispatchAgentDelegated = (rid, agentId) => {
