@@ -680,12 +680,12 @@ export const Livechat = {
 
 		check(departmentData, defaultValidations);
 
-		check(departmentAgents, [
+		check(departmentAgents, Match.Maybe([
 			Match.ObjectIncluding({
 				agentId: String,
 				username: String,
 			}),
-		]);
+		]));
 
 		if (_id) {
 			const department = LivechatDepartment.findOneById(_id);
