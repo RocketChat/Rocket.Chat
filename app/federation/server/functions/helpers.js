@@ -5,7 +5,8 @@ export const getNameAndDomain = (fullyQualifiedName) => fullyQualifiedName.split
 export const isFullyQualified = (name) => name.indexOf('@') !== -1;
 
 export function isRegisteringOrEnabled() {
-	return [STATUS_ENABLED, STATUS_REGISTERING].indexOf(Settings.findOneById('FEDERATION_Status').value) !== -1;
+	const status = Settings.findOneById('FEDERATION_Status');
+	return [STATUS_ENABLED, STATUS_REGISTERING].includes(status && status.value);
 }
 
 export function updateStatus(status) {
