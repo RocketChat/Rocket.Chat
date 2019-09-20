@@ -29,12 +29,12 @@ Meteor.methods({
 
 			if (lastOperation.createdAt > yesterday) {
 				if (lastOperation.status === 'completed') {
-					const lastFile = UserDataFiles.findLastFileByUser(userId);
-					if (lastFile) {
+					const file = lastOperation.fileId ? UserDataFiles.findOneById(lastOperation.fileId) : UserDataFiles.findLastFileByUser(userId);
+					if (file) {
 						return {
 							requested: false,
 							exportOperation: lastOperation,
-							url: lastFile.url,
+							url: file.url,
 							pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 						};
 					}
@@ -53,33 +53,34 @@ Meteor.methods({
 			mkdirp.sync(tempFolder);
 		}
 
-		const subFolderName = fullExport ? 'full' : 'partial';
-		const baseFolder = path.join(tempFolder, userId);
-		if (!fs.existsSync(baseFolder)) {
-			mkdirp.sync(baseFolder);
-		}
+		const exportOperation = {
+			userId: currentUserData._id,
+			roomList: null,
+			status: 'preparing',
+			fileList: [],
+			generatedFile: null,
+			fullExport,
+			userData: currentUserData,
+		};
 
-		const folderName = path.join(baseFolder, subFolderName);
+		const id = ExportOperations.create(exportOperation);
+		exportOperation._id = id;
+
+		const folderName = path.join(tempFolder, id);
 		if (!fs.existsSync(folderName)) {
 			mkdirp.sync(folderName);
 		}
+
 		const assetsFolder = path.join(folderName, 'assets');
 		if (!fs.existsSync(assetsFolder)) {
 			mkdirp.sync(assetsFolder);
 		}
 
-		const exportOperation = {
-			userId: currentUserData._id,
-			roomList: null,
-			status: 'pending',
-			exportPath: folderName,
-			assetsPath: assetsFolder,
-			fileList: [],
-			generatedFile: null,
-			fullExport,
-		};
+		exportOperation.exportPath = folderName;
+		exportOperation.assetsPath = assetsFolder;
+		exportOperation.status = 'pending';
 
-		ExportOperations.create(exportOperation);
+		ExportOperations.updateOperation(exportOperation);
 
 		return {
 			requested: true,

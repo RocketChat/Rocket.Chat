@@ -60,6 +60,10 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Accounts_AllowEmailNotifications', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 		type: 'string',
 		public: true,
@@ -816,6 +820,11 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Support_Cordova_App', false, {
+		type: 'boolean',
+		i18nDescription: 'Support_Cordova_App_Description',
+		alert: 'Support_Cordova_App_Alert',
+	});
 	this.add('GoogleTagManager_id', '', {
 		type: 'string',
 		public: true,
@@ -1269,7 +1278,7 @@ settings.addGroup('Layout', function() {
 			multiline: true,
 			public: true,
 		});
-		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png"/></a>', {
+		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
 			type: 'code',
 			code: 'text/html',
 			public: true,

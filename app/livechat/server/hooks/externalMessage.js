@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SystemLogger } from '../../../logger';
 import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
-import { normalizeMessageAttachments } from '../../../utils/server/functions/normalizeMessageAttachments';
+import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 let knowledgeEnabled = false;
 let apiaiKey = '';
@@ -35,7 +35,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	if (message.file) {
-		message = normalizeMessageAttachments(message);
+		message = normalizeMessageFileUpload(message);
 	}
 
 	// if the message hasn't a token, it was not sent by the visitor, so ignore it
