@@ -10,6 +10,7 @@ import _ from 'underscore';
 import { SAML } from './saml_utils';
 import { CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
+import { _setUsername } from '../../lib/server/functions';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -94,6 +95,23 @@ Meteor.methods({
 	},
 });
 
+Accounts.normalizeUsername = function(name) {
+	switch (Accounts.saml.settings.usernameNormalize) {
+		case 'Lowercase':
+			name = name.toLowerCase();
+			break;
+	}
+
+	return name;
+};
+
+const guessNameFromUsername = (username) =>
+	username
+		.replace(/\W/g, ' ')
+		.replace(/\s(.)/g, (u) => u.toUpperCase())
+		.replace(/^(.)/, (u) => u.toLowerCase())
+		.replace(/^\w/, (u) => u.toUpperCase());
+
 Accounts.registerLoginHandler(function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
@@ -111,8 +129,10 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 	}
 
+	const { emailField, usernameField, defaultUserRole = 'user', roleAttributeName } = Accounts.saml.settings;
+
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
-		const emailList = Array.isArray(loginResult.profile.email) ? loginResult.profile.email : [loginResult.profile.email];
+		const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
 		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
 
 		const eduPersonPrincipalName = loginResult.profile.eppn;
@@ -132,11 +152,36 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			}
 		}
 
+		let username;
+		if (loginResult.profile[usernameField]) {
+			username = Accounts.normalizeUsername(loginResult.profile[usernameField]);
+		}
+
 		// If eppn is not exist
 		if (!user) {
-			user = Meteor.users.findOne({
-				'emails.address': emailRegex,
-			});
+			if (Accounts.saml.settings.immutableProperty === 'Username') {
+				if (username) {
+					user = Meteor.users.findOne({
+						username,
+					});
+				}
+			} else {
+				user = Meteor.users.findOne({
+					'emails.address': emailRegex,
+				});
+			}
+		}
+
+		const emails = emailList.map((email) => ({
+			address: email,
+			verified: true,
+		}));
+
+		let globalRoles;
+		if (roleAttributeName && loginResult.profile[roleAttributeName]) {
+			globalRoles = [].concat(loginResult.profile[roleAttributeName]);
+		} else {
+			globalRoles = [].concat(defaultUserRole.split(','));
 		}
 
 		if (!user) {
@@ -144,20 +189,17 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				name: fullName,
 				active: true,
 				eppn: eduPersonPrincipalName,
-				globalRoles: ['user'],
-				emails: emailList.map((email) => ({
-					address: email,
-					verified: true,
-				})),
+				globalRoles,
+				emails,
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
-				const username = generateUsernameSuggestion(newUser);
-				if (username) {
-					newUser.username = username;
-				}
-			} else if (loginResult.profile.username) {
-				newUser.username = loginResult.profile.username;
+				username = generateUsernameSuggestion(newUser);
+			}
+
+			if (username) {
+				newUser.username = username;
+				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
@@ -190,14 +232,24 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			nameID: loginResult.profile.nameID,
 		};
 
+		const updateData = {
+			// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
+			'services.saml': samlLogin,
+		};
+
+		if (Accounts.saml.settings.immutableProperty !== 'EMail') {
+			updateData.emails = emails;
+		}
+
 		Meteor.users.update({
 			_id: user._id,
 		}, {
-			$set: {
-				// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
-				'services.saml': samlLogin,
-			},
+			$set: updateData,
 		});
+
+		if (username) {
+			_setUsername(user._id, username);
+		}
 
 		// Overwrite fullname if needed
 		if (Accounts.saml.settings.nameOverwrite === true) {

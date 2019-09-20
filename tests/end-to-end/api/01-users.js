@@ -14,6 +14,7 @@ import { adminEmail, preferences, password, adminUsername } from '../../data/use
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createUser, login } from '../../data/users.helper.js';
 
 describe('[Users]', function() {
 	this.retries(0);
@@ -169,7 +170,6 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', username);
-					expect(res.body).to.have.nested.property('user.emails[0].address', email);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', 'name');
 				})
@@ -206,7 +206,6 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', apiUsername);
-					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', apiUsername);
 					expect(res.body).to.not.have.nested.property('user.e2e');
@@ -1006,130 +1005,71 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.createToken]', () => {
-		let user;
-		beforeEach((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
-		});
-
-		let userCredentials;
-		beforeEach((done) => {
-			request.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
-		});
-		afterEach((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(done);
-			user = undefined;
-		});
-
-		describe('logged as admin:', () => {
-			it('should return the user id and a new token', (done) => {
-				request.post(api('users.createToken'))
-					.set(credentials)
-					.send({
-						username: user.username,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('data.userId', user._id);
-						expect(res.body).to.have.nested.property('data.authToken');
-					})
-					.end(done);
-			});
-		});
-
-		describe('logged as itself:', () => {
-			it('should return the user id and a new token', (done) => {
-				request.post(api('users.createToken'))
-					.set(userCredentials)
-					.send({
-						username: user.username,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('data.userId', user._id);
-						expect(res.body).to.have.nested.property('data.authToken');
-					})
-					.end(done);
-			});
-		});
-
-		describe('As an user not allowed:', () => {
-			it('should return 401 unauthorized', (done) => {
-				request.post(api('users.createToken'))
-					.set(userCredentials)
-					.send({
-						username: 'rocket.cat',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('errorType');
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
-		});
-
-		describe('Not logged in:', () => {
-			it('should return 401 unauthorized', (done) => {
-				request.post(api('users.createToken'))
-					.send({
-						username: user.username,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(401)
-					.expect((res) => {
-						expect(res.body).to.have.property('message');
-					})
-					.end(done);
-			});
-		});
-
-		describe('Testing if the returned token is valid:', () => {
-			it('should return 200', (done) => request.post(api('users.createToken'))
-				.set(credentials)
-				.send({ username: user.username })
-				.expect('Content-Type', 'application/json')
-				.end((err, res) => (err ? done()
-					: request.get(api('me'))
-						.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done))
-				)
-			);
-		});
-	});
-
 	describe('[/users.setPreferences]', () => {
+		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
+			const userPreferences = {
+				userId: 'rocket.cat',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', []).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(400)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Editing user is not allowed [error-action-not-allowed]');
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the user try to update info of an inexistent user', (done) => {
+			const userPreferences = {
+				userId: 'invalid-id',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', ['admin', 'user']).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(400)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'The optional \"userId\" param provided does not match any users [error-invalid-user]');
+						expect(res.body).to.have.property('errorType', 'error-invalid-user');
+					})
+					.end(done);
+			});
+		});
+		it('should set some preferences of another user successfully', (done) => {
+			const userPreferences = {
+				userId: 'rocket.cat',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', ['admin', 'user']).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(200)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body.user).to.have.property('settings');
+						expect(res.body.user.settings).to.have.property('preferences');
+						expect(res.body.user._id).to.be.equal('rocket.cat');
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
 		it('should set some preferences by user when execute successfully', (done) => {
 			const userPreferences = {
 				userId: credentials['X-User-Id'],
@@ -1143,7 +1083,8 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					expect(Object.keys(res.body.user.settings.preferences)).to.include.members(Object.keys(userPreferences.data));
+					expect(res.body.user).to.have.property('settings');
+					expect(res.body.user.settings).to.have.property('preferences');
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
@@ -1325,6 +1266,24 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+
+		it('should delete user own account when the SHA256 hash is in upper case', (done) => {
+			createUser().then((user) => {
+				login(user.username, password).then((createdUserCredentials) => {
+					request.post(api('users.deleteOwnAccount'))
+						.set(createdUserCredentials)
+						.send({
+							password: crypto.createHash('sha256').update(password, 'utf8').digest('hex').toUpperCase(),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
+			});
 		});
 	});
 

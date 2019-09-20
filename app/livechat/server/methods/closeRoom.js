@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Subscriptions, Rooms } from '../../../models';
+import { Subscriptions, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -20,7 +20,7 @@ Meteor.methods({
 
 		return Livechat.closeRoom({
 			user,
-			room: Rooms.findOneById(roomId),
+			room: LivechatRooms.findOneById(roomId),
 			comment,
 		});
 	},

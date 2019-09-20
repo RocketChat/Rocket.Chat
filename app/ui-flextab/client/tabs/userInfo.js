@@ -1,7 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -114,14 +114,14 @@ Template.userInfo.helpers({
 	lastLogin() {
 		const user = Template.instance().user.get();
 		if (user && user.lastLogin) {
-			return moment(user.lastLogin).format('LLL');
+			return DateFormat.formatDateAndTime(user.lastLogin);
 		}
 	},
 
 	createdAt() {
 		const user = Template.instance().user.get();
 		if (user && user.createdAt) {
-			return moment(user.createdAt).format('LLL');
+			return DateFormat.formatDateAndTime(user.createdAt);
 		}
 	},
 	linkedinUsername() {
