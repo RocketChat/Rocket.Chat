@@ -29,10 +29,12 @@ import {
 	LivechatOfficeHour,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 
 export const Livechat = {
 	Analytics,
@@ -388,6 +390,7 @@ export const Livechat = {
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
+			'Livechat_show_agent_info',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
@@ -857,6 +860,10 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
+		if (!settings.get('Livechat_show_agent_info')) {
+			return;
+		}
+
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',

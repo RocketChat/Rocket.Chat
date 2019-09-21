@@ -2635,6 +2635,7 @@
   "Should_exists_a_user_with_this_username": "O usuário já deve existir.",
   "Show_Setup_Wizard": "Mostrar assistente de configuração",
   "Show_agent_email": "Mostrar o e-mail do agente",
+  "Show_agent_info": "Mostrar dados do agente",
   "Show_all": "Mostrar tudo",
   "Show_Avatars": "Mostrar Avatares",
   "Show_counter": "Show counter",

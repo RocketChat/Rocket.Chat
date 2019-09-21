@@ -88,18 +88,6 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
 		});
-		settings.add(`SAML_Custom_${ name }_email_field`, 'email', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_EMail_Field',
-		});
-		settings.add(`SAML_Custom_${ name }_username_field`, 'username', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Username_Field',
-		});
 		settings.add(`SAML_Custom_${ name }_generate_username`, false, {
 			type: 'boolean',
 			group: 'SAML',
@@ -160,6 +148,13 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
 		});
+		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_user_data_fieldmap',
+			i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
+		});
 		settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
 			type: 'select',
 			values: [
@@ -180,7 +175,6 @@ Meteor.methods({
 			i18nLabel: 'SAML_Default_User_Role',
 			i18nDescription: 'SAML_Default_User_Role_Description',
 		});
-
 		settings.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
 			type: 'string',
 			group: 'SAML',
@@ -209,9 +203,7 @@ const getSamlConfigs = function(service) {
 		},
 		entryPoint: settings.get(`${ service.key }_entry_point`),
 		idpSLORedirectURL: settings.get(`${ service.key }_idp_slo_redirect_url`),
-		usernameField: settings.get(`${ service.key }_username_field`),
 		usernameNormalize: settings.get(`${ service.key }_username_normalize`),
-		emailField: settings.get(`${ service.key }_email_field`),
 		immutableProperty: settings.get(`${ service.key }_immutable_property`),
 		generateUsername: settings.get(`${ service.key }_generate_username`),
 		debug: settings.get(`${ service.key }_debug`),
@@ -229,6 +221,7 @@ const getSamlConfigs = function(service) {
 			// People often overlook the instruction to remove the header and footer of the certificate on this specific setting, so let's do it for them.
 			cert: normalizeCert(settings.get(`${ service.key }_cert`)),
 		},
+		userDataFieldMap: settings.get(`${ service.key }_user_data_fieldmap`),
 	};
 };
 
@@ -258,8 +251,7 @@ const configureSamlService = function(samlConfigs) {
 	Accounts.saml.settings.nameOverwrite = samlConfigs.nameOverwrite;
 	Accounts.saml.settings.mailOverwrite = samlConfigs.mailOverwrite;
 	Accounts.saml.settings.immutableProperty = samlConfigs.immutableProperty;
-	Accounts.saml.settings.emailField = samlConfigs.emailField;
-	Accounts.saml.settings.usernameField = samlConfigs.usernameField;
+	Accounts.saml.settings.userDataFieldMap = samlConfigs.userDataFieldMap;
 	Accounts.saml.settings.usernameNormalize = samlConfigs.usernameNormalize;
 	Accounts.saml.settings.debug = samlConfigs.debug;
 	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
