@@ -94,6 +94,7 @@ export class AppCommandsBridge {
 			command: command.command.toLowerCase(),
 			params: Utilities.getI18nKeyForApp(command.i18nParamsExample, appId),
 			description: Utilities.getI18nKeyForApp(command.i18nDescription, appId),
+			permission: command.permission,
 			callback: this._appCommandExecutor.bind(this),
 			providesPreview: command.providesPreview,
 			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
