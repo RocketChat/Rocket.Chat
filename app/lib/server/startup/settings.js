@@ -243,7 +243,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'mentions', {
+		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -261,7 +261,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'mentions', {
+		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
