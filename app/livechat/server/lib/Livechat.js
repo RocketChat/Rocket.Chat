@@ -367,6 +367,7 @@ export const Livechat = {
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
+			'Livechat_show_agent_info',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
@@ -836,6 +837,10 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
+		if (!settings.get('Livechat_show_agent_info')) {
+			return;
+		}
+
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',
