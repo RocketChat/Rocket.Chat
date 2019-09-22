@@ -65,6 +65,9 @@ Template.accountPreferences.helpers({
 		const languageKey = Meteor.user().language;
 		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
+	ifThenElse(condition, val, not = '') {
+		return condition ? val : not;
+	},
 	checked(property, value, defaultValue = undefined) {
 		return checkedSelected(property, value, defaultValue);
 	},
@@ -117,6 +120,9 @@ Template.accountPreferences.helpers({
 	},
 	notificationsSoundVolume() {
 		return getUserPreference(Meteor.userId(), 'notificationsSoundVolume');
+	},
+	emailNotificationsAllowed() {
+		return settings.get('Accounts_AllowEmailNotifications');
 	},
 	dontAskAgainList() {
 		return getUserPreference(Meteor.userId(), 'dontAskAgainList');

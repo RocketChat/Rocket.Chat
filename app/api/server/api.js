@@ -40,7 +40,7 @@ export class APIClass extends Restivus {
 			importIds: 0,
 			e2e: 0,
 		};
-		this.limitedUserFieldsToExclude = {
+		this.defaultLimitedUserFieldsToExclude = {
 			avatarOrigin: 0,
 			emails: 0,
 			phone: 0,
@@ -53,11 +53,22 @@ export class APIClass extends Restivus {
 			roles: 0,
 			statusDefault: 0,
 			_updatedAt: 0,
-			customFields: 0,
 			settings: 0,
 		};
+		this.limitedUserFieldsToExclude = this.defaultLimitedUserFieldsToExclude;
 		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
 			services: 0,
+		};
+	}
+
+	setLimitedCustomFields(customFields) {
+		const nonPublicFieds = customFields.reduce((acc, customField) => {
+			acc[`customFields.${ customField }`] = 0;
+			return acc;
+		}, {});
+		this.limitedUserFieldsToExclude = {
+			...this.defaultLimitedUserFieldsToExclude,
+			...nonPublicFieds,
 		};
 	}
 
@@ -597,6 +608,19 @@ createApi(!!settings.get('API_Enable_CORS'));
 // register the API to be re-created once the CORS-setting changes.
 settings.get('API_Enable_CORS', (key, value) => {
 	createApi(value);
+});
+
+settings.get('Accounts_CustomFields', (key, value) => {
+	if (!value) {
+		return API.v1.setLimitedCustomFields([]);
+	}
+	try {
+		const customFields = JSON.parse(value);
+		const nonPublicCustomFields = Object.keys(customFields).filter((customFieldKey) => customFields[customFieldKey].public !== true);
+		API.v1.setLimitedCustomFields(nonPublicCustomFields);
+	} catch (error) {
+		console.warn('Invalid Custom Fields', error);
+	}
 });
 
 settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
