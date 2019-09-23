@@ -44,6 +44,10 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Accounts_AllowUserStatusMessageChange', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		public: true,
@@ -53,6 +57,10 @@ settings.addGroup('Accounts', function() {
 		public: true,
 	});
 	this.add('Accounts_AllowPasswordChange', true, {
+		type: 'boolean',
+		public: true,
+	});
+	this.add('Accounts_AllowEmailNotifications', true, {
 		type: 'boolean',
 		public: true,
 	});
@@ -173,6 +181,7 @@ settings.addGroup('Accounts', function() {
 		});
 		this.add('Accounts_RegistrationForm_SecretURL', Random.id(), {
 			type: 'string',
+			secret: true,
 		});
 		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
 			type: 'string',
@@ -234,7 +243,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'mentions', {
+		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -252,7 +261,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'mentions', {
+		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -579,6 +588,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Facebook_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Facebook_callback_url', '_oauth/facebook', {
 			type: 'relativeUrl',
@@ -603,6 +613,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Google_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Google_callback_url', '_oauth/google', {
 			type: 'relativeUrl',
@@ -627,6 +638,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Github_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Github_callback_url', '_oauth/github', {
 			type: 'relativeUrl',
@@ -651,6 +663,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Linkedin_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Linkedin_callback_url', '_oauth/linkedin', {
 			type: 'relativeUrl',
@@ -675,6 +688,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Meteor_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Meteor_callback_url', '_oauth/meteor', {
 			type: 'relativeUrl',
@@ -699,6 +713,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Twitter_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Twitter_callback_url', '_oauth/twitter', {
 			type: 'relativeUrl',
@@ -763,6 +778,7 @@ settings.addGroup('General', function() {
 	});
 	this.add('Allow_Invalid_SelfSigned_Certs', false, {
 		type: 'boolean',
+		secret: true,
 	});
 	this.add('Favorite_Rooms', true, {
 		type: 'boolean',
@@ -824,13 +840,20 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Support_Cordova_App', false, {
+		type: 'boolean',
+		i18nDescription: 'Support_Cordova_App_Description',
+		alert: 'Support_Cordova_App_Alert',
+	});
 	this.add('GoogleTagManager_id', '', {
 		type: 'string',
 		public: true,
+		secret: true,
 	});
 	this.add('Bugsnag_api_key', '', {
 		type: 'string',
 		public: false,
+		secret: true,
 	});
 	this.add('Restart', 'restart_server', {
 		type: 'action',
@@ -1109,15 +1132,18 @@ settings.addGroup('Meta', function() {
 	});
 	this.add('Meta_fb_app_id', '', {
 		type: 'string',
+		secret: true,
 	});
 	this.add('Meta_robots', 'INDEX,FOLLOW', {
 		type: 'string',
 	});
 	this.add('Meta_google-site-verification', '', {
 		type: 'string',
+		secret: true,
 	});
 	this.add('Meta_msvalidate01', '', {
 		type: 'string',
+		secret: true,
 	});
 	return this.add('Meta_custom', '', {
 		type: 'code',
@@ -1151,7 +1177,9 @@ settings.addGroup('Push', function() {
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
+		i18nDescription: 'Push_gateway_description',
 		alert: 'Push_Setting_Requires_Restart_Alert',
+		multiline: true,
 		enableQuery: [
 			{
 				_id: 'Push_enable',
@@ -1187,32 +1215,40 @@ settings.addGroup('Push', function() {
 	this.section('Certificates_and_Keys', function() {
 		this.add('Push_apn_passphrase', '', {
 			type: 'string',
+			secret: true,
 		});
 		this.add('Push_apn_key', '', {
 			type: 'string',
 			multiline: true,
+			secret: true,
 		});
 		this.add('Push_apn_cert', '', {
 			type: 'string',
 			multiline: true,
+			secret: true,
 		});
 		this.add('Push_apn_dev_passphrase', '', {
 			type: 'string',
+			secret: true,
 		});
 		this.add('Push_apn_dev_key', '', {
 			type: 'string',
 			multiline: true,
+			secret: true,
 		});
 		this.add('Push_apn_dev_cert', '', {
 			type: 'string',
 			multiline: true,
+			secret: true,
 		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
+			secret: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
+			secret: true,
 		});
 	});
 	return this.section('Privacy', function() {
@@ -1262,7 +1298,7 @@ settings.addGroup('Layout', function() {
 			multiline: true,
 			public: true,
 		});
-		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo"/></a>', {
+		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
 			type: 'code',
 			code: 'text/html',
 			public: true,
@@ -2642,6 +2678,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Id', '', {
@@ -2652,6 +2689,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Name', '', {
@@ -2662,6 +2700,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Client_Id', '', {
@@ -2672,6 +2711,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Client_Secret', '', {
@@ -2682,6 +2722,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
@@ -2692,6 +2733,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Registration_Client_Uri', '', {
@@ -2702,6 +2744,18 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
+		});
+
+		this.add('Cloud_Workspace_PublicKey', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_License', '', {
@@ -2712,6 +2766,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Access_Token', '', {
@@ -2722,6 +2777,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
@@ -2732,6 +2788,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Registration_State', '', {
@@ -2742,6 +2799,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 	});
 });
@@ -2770,9 +2828,10 @@ settings.addGroup('Rate Limiter', function() {
 	});
 
 	this.section('API Rate Limiter', function() {
-		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean' });
-		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int' });
-		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int' });
+		this.add('API_Enable_Rate_Limiter', true, { type: 'boolean' });
+		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 	});
 });
 

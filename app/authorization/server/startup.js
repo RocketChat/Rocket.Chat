@@ -1,7 +1,9 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
 
-import { Roles, Permissions } from '../../models';
+import { Roles, Permissions, Settings } from '../../models';
+import { settings } from '../../settings/server';
+import { getSettingPermissionId, CONSTANTS } from '../lib';
 
 Meteor.startup(function() {
 	// Note:
@@ -10,6 +12,7 @@ Meteor.startup(function() {
 	// 2. admin, moderator, and user roles should not be deleted as they are referened in the code.
 	const permissions = [
 		{ _id: 'access-permissions',            roles: ['admin'] },
+		{ _id: 'access-setting-permissions', 	roles: ['admin'] },
 		{ _id: 'add-oauth-service',             roles: ['admin'] },
 		{ _id: 'add-user-to-joined-room',       roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'add-user-to-any-c-room',        roles: ['admin'] },
@@ -48,8 +51,10 @@ Meteor.startup(function() {
 		{ _id: 'manage-assets',                 roles: ['admin'] },
 		{ _id: 'manage-emoji',                  roles: ['admin'] },
 		{ _id: 'manage-integrations',           roles: ['admin', 'bot'] },
+		{ _id: 'manage-user-status',            roles: ['admin'] },
 		{ _id: 'manage-own-integrations',       roles: ['admin'] },
 		{ _id: 'manage-oauth-apps',             roles: ['admin'] },
+		{ _id: 'manage-selected-settings', 		roles: ['admin'] },
 		{ _id: 'mention-all',                   roles: ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mention-here',                  roles: ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mute-user',                     roles: ['admin', 'owner', 'moderator'] },
@@ -102,4 +107,77 @@ Meteor.startup(function() {
 	for (const role of defaultRoles) {
 		Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true, mandatory2fa: false } });
 	}
+
+	const getPreviousPermissions = function(settingId) {
+		const previousSettingPermissions = {};
+
+		const selector = { level: CONSTANTS.SETTINGS_LEVEL };
+		if (settingId) {
+			selector.settingId = settingId;
+		}
+
+		Permissions.find(selector).fetch().forEach(
+			function(permission) {
+				previousSettingPermissions[permission._id] = permission;
+			});
+		return previousSettingPermissions;
+	};
+
+	const createSettingPermission = function(setting, previousSettingPermissions) {
+		const permissionId = getSettingPermissionId(setting._id);
+		const permission = {
+			_id: permissionId,
+			level: CONSTANTS.SETTINGS_LEVEL,
+			// copy those setting-properties which are needed to properly publish the setting-based permissions
+			settingId: setting._id,
+			group: setting.group,
+			section: setting.section,
+			sorter: setting.sorter,
+		};
+		// copy previously assigned roles if available
+		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
+			permission.roles = previousSettingPermissions[permissionId].roles;
+		} else {
+			permission.roles = [];
+		}
+		if (setting.group) {
+			permission.groupPermissionId = getSettingPermissionId(setting.group);
+		}
+		if (setting.section) {
+			permission.sectionPermissionId = getSettingPermissionId(setting.section);
+		}
+		Permissions.upsert(permission._id, { $set: permission });
+		delete previousSettingPermissions[permissionId];
+	};
+
+	const createPermissionsForExistingSettings = function() {
+		const previousSettingPermissions = getPreviousPermissions();
+
+		Settings.findNotHidden().fetch().forEach((setting) => {
+			createSettingPermission(setting, previousSettingPermissions);
+		});
+
+		// remove permissions for non-existent settings
+		for (const obsoletePermission in previousSettingPermissions) {
+			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
+				Permissions.remove({ _id: obsoletePermission });
+			}
+		}
+	};
+
+	// for each setting which already exists, create a permission to allow changing just this one setting
+	createPermissionsForExistingSettings();
+
+	// register a callback for settings for be create in higher-level-packages
+	const createPermissionForAddedSetting = function(settingId) {
+		const previousSettingPermissions = getPreviousPermissions(settingId);
+		const setting = Settings.findOneById(settingId);
+		if (setting) {
+			if (!setting.hidden) {
+				createSettingPermission(setting, previousSettingPermissions);
+			}
+		}
+	};
+
+	settings.onload('*', createPermissionForAddedSetting);
 });

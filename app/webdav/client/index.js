@@ -2,6 +2,7 @@ import './actionButton';
 import './addWebdavAccount.html';
 import './addWebdavAccount';
 import './webdavFilePicker.html';
+import './webdavFilePicker.css';
 import './webdavFilePicker';
 import './selectWebdavAccount.html';
 import './selectWebdavAccount';

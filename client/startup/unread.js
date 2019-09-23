@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 
 import { Favico } from '../../app/favico';
 import { ChatSubscription } from '../../app/models';
-import { RoomManager, menu, fireGlobalEvent, readMessage } from '../../app/ui-utils';
+import { menu, fireGlobalEvent } from '../../app/ui-utils';
 import { getUserPreference } from '../../app/utils';
 import { settings } from '../../app/settings';
 
@@ -24,48 +23,26 @@ const fetchSubscriptions = () => ChatSubscription.find({
 	},
 }).fetch();
 
-// TODO: make it a helper
-const getOpenRoomId = () => Tracker.nonreactive(() => {
-	if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-		return Session.get('openedRoom');
-	}
-});
-
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const openedRoomId = getOpenRoomId();
+		const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
 
-		let unreadCount = 0;
 		let unreadAlert = false;
 
-		for (const subscription of fetchSubscriptions()) {
+		const unreadCount = fetchSubscriptions().reduce((ret, subscription) => {
 			fireGlobalEvent('unread-changed-by-subscription', subscription);
 
 			if (subscription.alert || subscription.unread > 0) {
-				const hasFocus = readMessage.isEnable();
-				const subscriptionIsTheOpenedRoom = openedRoomId === subscription.rid;
-				if (hasFocus && subscriptionIsTheOpenedRoom) {
-					// The user has probably read all messages in this room.
-					// TODO: readNow() should return whether it has actually marked the room as read.
-					setTimeout(() => {
-						readMessage.readNow();
-					}, 500);
-				}
-
 				// Increment the total unread count.
-				unreadCount += subscription.unread;
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 						unreadAlert = '•';
 					}
 				}
+				return ret + subscription.unread;
 			}
-
-			if (RoomManager.openedRooms[subscription.t + subscription.name]) {
-				readMessage.refreshUnreadMark(subscription.rid);
-			}
-		}
+			return ret;
+		}, 0);
 
 		menu.updateUnreadBars();
 

@@ -8,7 +8,7 @@
 		</header>
 		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}" aria-label="{{_ "Administration"}}">
 			<ul class="rooms-list__list">
-				{{> sidebarItem menuItem "Info" "info-circled" "admin-info" "" }}
+				{{> sidebarItem menuItem "Info" "info-circled" "admin" "info" }}
 
 				{{#if hasPermission 'run-import'}}
 					{{> sidebarItem menuItem "Import" "import" "admin-import" "" }}
@@ -29,7 +29,7 @@
 				{{/each}}
 			</ul>
 
-			{{#if hasPermission 'view-privileged-setting'}}
+			{{#if hasSettingPermission}}
 				<h3 class="rooms-list__type">{{_ "Settings"}}</h3>
 				<div class="rc-input sidebar-flex__search">
 					<label class="rc-input__label">

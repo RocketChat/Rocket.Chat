@@ -5,17 +5,17 @@ import { EmojiCustom } from '../../../models';
 import { API } from '../api';
 
 // DEPRECATED
-// Will be removed after v1.12.0
+// Will be removed after v3.0.0
 API.v1.addRoute('emoji-custom', { authRequired: true }, {
 	get() {
-		const warningMessage = 'The endpoint "emoji-custom" is deprecated and will be removed after version v1.12.0';
+		const warningMessage = 'The endpoint "emoji-custom" is deprecated and will be removed after version v3.0.0';
 		console.warn(warningMessage);
 		const { query } = this.parseJsonQuery();
 		const emojis = Meteor.call('listEmojiCustom', query);
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'emoji-custom',
-			versionWillBeRemoved: '1.12.0',
+			versionWillBeRemoved: '3.0.0',
 			response: {
 				emojis,
 			},
@@ -122,7 +122,7 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 						if (!fields._id) {
 							return callback(new Meteor.Error('The required "_id" query param is missing.'));
 						}
-						const emojiToUpdate = EmojiCustom.findOneByID(fields._id);
+						const emojiToUpdate = EmojiCustom.findOneById(fields._id);
 						if (!emojiToUpdate) {
 							return callback(new Meteor.Error('Emoji not found.'));
 						}

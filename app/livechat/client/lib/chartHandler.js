@@ -1,5 +1,5 @@
-import Chart from 'chart.js/src/chart.js';
-import { TAPi18n } from 'meteor/tap:i18n';
+import Chart from 'chart.js';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = false }) => {
 	const config = {

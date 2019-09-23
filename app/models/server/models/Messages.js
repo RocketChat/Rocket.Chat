@@ -31,6 +31,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+		// livechat
+		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {
@@ -846,16 +848,6 @@ export class Messages extends Base {
 	createSubscriptionRoleRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
-	}
-
-	createRejectedMessageByPeer(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('rejected-message-by-peer', roomId, message, user, extraData);
-	}
-
-	createPeerDoesNotExist(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('peer-does-not-exist', roomId, message, user, extraData);
 	}
 
 	// REMOVE

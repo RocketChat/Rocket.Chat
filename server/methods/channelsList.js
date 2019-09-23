@@ -10,8 +10,6 @@ import { settings } from '../../app/settings';
 
 Meteor.methods({
 	channelsList(filter, channelType, limit, sort) {
-		this.unblock();
-
 		check(filter, String);
 		check(channelType, String);
 		check(limit, Match.Optional(Number));

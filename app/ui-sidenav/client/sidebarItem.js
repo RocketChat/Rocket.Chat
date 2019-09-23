@@ -73,9 +73,6 @@ Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
 	this.lastMessageTs = new ReactiveVar();
-	this.timeAgoInterval;
-
-	// console.log('sidebarItem.onCreated');
 
 	this.autorun(() => {
 		const currentData = Template.currentData();
@@ -98,7 +95,7 @@ Template.sidebarItem.onCreated(function() {
 
 		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
 		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
-		const sender = this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
+		const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
 		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
