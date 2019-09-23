@@ -150,6 +150,11 @@ export function shouldNotifyEmail({
 	hasReplyToThread,
 	roomType,
 }) {
+	// email notifications are disabled globally
+	if (!settings.get('Accounts_AllowEmailNotifications')) {
+		return false;
+	}
+
 	// use connected (don't need to send him an email)
 	if (statusConnection === 'online') {
 		return false;
