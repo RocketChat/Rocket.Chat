@@ -111,7 +111,7 @@ describe('miscellaneous', function() {
 					'saveMobileBandwidth', 'collapseMediaByDefault', 'hideUsernames', 'hideRoles', 'hideFlexTab', 'hideAvatars',
 					'sidebarViewMode', 'sidebarHideAvatar', 'sidebarShowUnread', 'sidebarShowDiscussion', 'sidebarShowFavorites', 'sidebarGroupByType',
 					'sendOnEnter', 'messageViewMode', 'emailNotificationMode', 'roomCounterSidebar', 'newRoomNotification', 'newMessageNotification',
-					'muteFocusedConversations', 'notificationsSoundVolume', 'isPublicAccount', 'discoverability'];
+					'muteFocusedConversations', 'notificationsSoundVolume', 'discoverability'];
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
 				expect(res.body).to.have.property('username', login.user);
