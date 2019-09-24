@@ -1,0 +1,12 @@
+{
+	"env": {
+		"mocha": true
+	},
+	"globals": {
+		"browser": false,
+		"expect": false,
+		"FlowRouter": false,
+		"Meteor": false,
+		"RocketChat": false
+	}
+}

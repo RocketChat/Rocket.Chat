@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
+import { Messages, Reports } from '../../app/models';
+
 Meteor.methods({
 	reportMessage(messageId, description) {
 		check(messageId, String);
@@ -18,13 +20,13 @@ Meteor.methods({
 			});
 		}
 
-		const message = RocketChat.models.Messages.findOneById(messageId);
+		const message = Messages.findOneById(messageId);
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message_id', 'Invalid message id', {
 				method: 'reportMessage',
 			});
 		}
 
-		return RocketChat.models.Reports.createWithMessageDescriptionAndUserId(message, description, Meteor.userId());
+		return Reports.createWithMessageDescriptionAndUserId(message, description, Meteor.userId());
 	},
 });

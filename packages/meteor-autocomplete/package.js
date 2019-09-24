@@ -11,14 +11,13 @@ Package.onUse(function(api) {
 		'mongo',
 		'ddp',
 	]);
-
 	api.use([
 		'blaze',
 		'templating',
 		'jquery',
 		'dandv:caret-position@2.1.0-3',
 	], 'client');
-
+	api.addFiles('client/autocomplete.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
