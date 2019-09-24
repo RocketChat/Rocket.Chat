@@ -1658,4 +1658,36 @@ describe('[Users]', function() {
 			});
 		});
 	});
+
+	describe('[/users.requestDataDownload]', () => {
+		it('should return requested true when the user request your own data', (done) => {
+			request.post(api('users.requestDataDownload'))
+				.set(credentials)
+				.send({
+					fullExport: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested', true);
+					expect(res.body).to.have.property('status', 'pending');
+				})
+				.end(done);
+		});
+		it('should return requested false when the user already request your own data', (done) => {
+			request.post(api('users.requestDataDownload'))
+				.set(credentials)
+				.send({
+					fullExport: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested', false);
+				})
+				.end(done);
+		});
+	});
 });

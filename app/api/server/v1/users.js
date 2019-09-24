@@ -674,10 +674,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 
 API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 	post() {
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('requestDataDownload', { fullExport: false });
-		});
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: false }));
 
 		return API.v1.success({
 			requested: result.requested,
