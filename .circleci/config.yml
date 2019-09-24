@@ -455,9 +455,9 @@ workflows:
               filters:
                 branches:
                   ignore: develop
-              account-url: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+              account-url: AWS_ECR_ACCOUNT_URL
               repo: ${AWS_RESOURCE_NAME_PREFIX}
-              region: ${AWS_DEFAULT_REGION}
+              region: AWS_DEFAULT_REGION
               tag: ${CIRCLE_SHA1}
               path: ~/repo/.docker/Dockerfile
 
