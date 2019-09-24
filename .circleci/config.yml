@@ -386,7 +386,9 @@ jobs:
             docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
 
 workflows:
-  version: 2
+  version: 2.1
+  orbs:
+    aws-ecr: circleci/aws-ecr@x.y.z
   build-and-test:
     jobs:
       - build:
@@ -409,25 +411,25 @@ workflows:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-3-6: *test-mongo-no-pr
       - test-with-oplog-mongo-4-0: *test-mongo
-      - deploy:
-          requires:
-            - test-with-oplog-mongo-3-2
-            - test-with-oplog-mongo-3-4
-            - test-with-oplog-mongo-3-6
-            - test-with-oplog-mongo-4-0
-          filters:
-            branches:
-              only: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - image-build:
-          requires:
-            - deploy
-          filters:
-            branches:
-              only: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - deploy:
+      #     requires:
+      #       - test-with-oplog-mongo-3-2
+      #       - test-with-oplog-mongo-3-4
+      #       - test-with-oplog-mongo-3-6
+      #       - test-with-oplog-mongo-4-0
+      #     filters:
+      #       branches:
+      #         only: develop
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - image-build:
+      #     requires:
+      #       - deploy
+      #     filters:
+      #       branches:
+      #         only: develop
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - hold:
           type: approval
           requires:
@@ -437,12 +439,23 @@ workflows:
               ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - pr-image-build:
-          requires:
-            - hold
-          filters:
-            branches:
-              ignore: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - pr-image-build:
+      #     requires:
+      #       - hold
+      #     filters:
+      #       branches:
+      #         ignore: develop
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - aws-ecr/build-and-push-image:
+              requires:
+                - hold
+              filters:
+                branches:
+                  ignore: develop
+              account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+              repo: "${AWS_RESOURCE_NAME_PREFIX}"
+              region: ${AWS_DEFAULT_REGION}
+              tag: "${CIRCLE_SHA1}"
+              path: ~/repo/.docker/Dockerfile
 
