@@ -14,7 +14,7 @@
 
 			{{#if isToggleFavoriteButtonVisible}}
 				<div class="rc-header__block rc-header__favorite rc-header__block--action">
-					<button aria-label="{{toggleFavoriteButtonIconLabel}}" type="button" class="rc-header__toggle-favorite rc-header__first-icon js-favorite">
+					<button aria-label="{{toggleFavoriteButtonIconLabel}}" type="button" class="rc-header__toggle-favorite {{#if isToggleFavoriteButtonChecked}}rc-header__toggle-favorite--checked{{/if}} rc-header__first-icon rc-tooltip rc-tooltip--down rc-tooltip--start js-favorite">
 						{{> icon block="rc-header__icon" icon=toggleFavoriteButtonIcon}}
 					</button>
 				</div>
