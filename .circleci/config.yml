@@ -63,7 +63,11 @@ test-with-oplog: &test-with-oplog
     - save_cache: *test-save-npm-cache
     - store_artifacts: *test-store_artifacts
 
-version: 2
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@x.y.z
+
 jobs:
   build:
     <<: *defaults
@@ -386,9 +390,7 @@ jobs:
             docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
 
 workflows:
-  version: 2.1
-  orbs:
-    aws-ecr: circleci/aws-ecr@x.y.z
+  # version: 2
   build-and-test:
     jobs:
       - build:
