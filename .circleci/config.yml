@@ -358,7 +358,7 @@ jobs:
             meteor npm install
       - restore_cache:
           keys:
-            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
       - run:
           name: Build Rocket.Chat
@@ -377,8 +377,16 @@ jobs:
   pr-image-build:
     <<: *defaults
 
-    docker:
-      - image: docker:17.05.0-ce-git
+    parameters:
+      image:
+        type: string
+        default: ubuntu-1604:201903-01
+
+    machine:
+      image: <<parameters.image>>
+
+    # docker:
+    #   - image: docker:17.05.0-ce-git
 
     steps:
       - attach_workspace:
