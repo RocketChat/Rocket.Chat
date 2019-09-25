@@ -15,6 +15,9 @@ Template.livechatAppearance.helpers({
 	color() {
 		return Template.instance().color.get();
 	},
+	showAgentInfo() {
+		return Template.instance().showAgentInfo.get();
+	},
 	showAgentEmail() {
 		return Template.instance().showAgentEmail.get();
 	},
@@ -38,6 +41,16 @@ Template.livechatAppearance.helpers({
 	},
 	sampleOfflineSuccessMessage() {
 		return Template.instance().offlineSuccessMessage.get().replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
+	},
+	showAgentInfoFormTrueChecked() {
+		if (Template.instance().showAgentInfo.get()) {
+			return 'checked';
+		}
+	},
+	showAgentInfoFormFalseChecked() {
+		if (!Template.instance().showAgentInfo.get()) {
+			return 'checked';
+		}
 	},
 	showAgentEmailFormTrueChecked() {
 		if (Template.instance().showAgentEmail.get()) {
@@ -97,6 +110,7 @@ Template.livechatAppearance.onCreated(function() {
 	this.title = new ReactiveVar(null);
 	this.color = new ReactiveVar(null);
 
+	this.showAgentInfo = new ReactiveVar(null);
 	this.showAgentEmail = new ReactiveVar(null);
 	this.displayOfflineForm = new ReactiveVar(null);
 	this.offlineUnavailableMessage = new ReactiveVar(null);
@@ -118,6 +132,10 @@ Template.livechatAppearance.onCreated(function() {
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_title_color');
 		this.color.set(setting && setting.value);
+	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_show_agent_info');
+		this.showAgentInfo.set(setting && setting.value);
 	});
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_show_agent_email');
@@ -193,6 +211,9 @@ Template.livechatAppearance.events({
 		const settingTitleColor = LivechatAppearance.findOne('Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
 
+		const settingShowAgentInfo = LivechatAppearance.findOne('Livechat_show_agent_info');
+		instance.showAgentInfo.set(settingShowAgentInfo && settingShowAgentInfo.value);
+
 		const settingShowAgentEmail = LivechatAppearance.findOne('Livechat_show_agent_email');
 		instance.showAgentEmail.set(settingShowAgentEmail && settingShowAgentEmail.value);
 
@@ -239,6 +260,10 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_title_color',
 				value: instance.color.get(),
+			},
+			{
+				_id: 'Livechat_show_agent_info',
+				value: instance.showAgentInfo.get(),
 			},
 			{
 				_id: 'Livechat_show_agent_email',

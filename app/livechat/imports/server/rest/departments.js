@@ -1,4 +1,4 @@
-import { check } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
@@ -23,7 +23,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 		try {
 			check(this.bodyParams, {
 				department: Object,
-				agents: Array,
+				agents: Match.Maybe(Array),
 			});
 
 			const department = Livechat.saveDepartment(null, this.bodyParams.department, this.bodyParams.agents);
@@ -76,26 +76,32 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 
 			check(this.bodyParams, {
 				department: Object,
-				agents: Array,
+				agents: Match.Maybe(Array),
+
 			});
+
+			const { _id } = this.urlParams;
+			const { department, agents } = this.bodyParams;
 
 			let success;
 			if (permissionToSave) {
-				success = Livechat.saveDepartment(this.urlParams._id, this.bodyParams.department, this.bodyParams.agents);
-			} else if (permissionToAddAgents) {
-				success = Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams.agents);
+				success = Livechat.saveDepartment(_id, department, agents);
+			}
+
+			if (success && agents && permissionToAddAgents) {
+				success = Livechat.saveDepartmentAgents(_id, agents);
 			}
 
 			if (success) {
 				return API.v1.success({
-					department: LivechatDepartment.findOneById(this.urlParams._id),
-					agents: LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
+					department: LivechatDepartment.findOneById(_id),
+					agents: LivechatDepartmentAgents.find({ departmentId: _id }).fetch(),
 				});
 			}
 
 			return API.v1.failure();
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 	delete() {
@@ -114,7 +120,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 
 			return API.v1.failure();
 		} catch (e) {
-			return API.v1.failure(e.error);
+			return API.v1.failure(e);
 		}
 	},
 });

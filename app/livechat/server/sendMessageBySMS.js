@@ -2,7 +2,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
 import { LivechatVisitors } from '../../models';
-import { normalizeMessageAttachments } from '../../utils/server/functions/normalizeMessageAttachments';
+import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -31,7 +31,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 
 	if (message.file) {
-		message = normalizeMessageAttachments(message);
+		message = normalizeMessageFileUpload(message);
 	}
 
 	const SMSService = SMS.getService(settings.get('SMS_Service'));
