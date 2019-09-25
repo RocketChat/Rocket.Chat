@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';

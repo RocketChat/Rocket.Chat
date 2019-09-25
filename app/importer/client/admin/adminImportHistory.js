@@ -6,7 +6,7 @@ import { Importers } from '..';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 
 import { hasRole } from '../../../authorization';
 import { t, APIClient } from '../../../utils';

@@ -2,7 +2,7 @@ import './admin/callback';
 import './admin/cloud';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 
 import { AdminBox } from '../../ui-utils';
 import { hasAtLeastOnePermission } from '../../authorization';

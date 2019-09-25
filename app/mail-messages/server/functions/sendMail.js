@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import s from 'underscore.string';
 
 import { placeholders } from '../../../utils';

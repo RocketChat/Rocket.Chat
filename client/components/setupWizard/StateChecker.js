@@ -1,4 +1,4 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import React, { useEffect, useState } from 'react';
 
 import { hasRole } from '../../../app/authorization';
