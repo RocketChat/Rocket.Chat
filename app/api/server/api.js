@@ -628,7 +628,7 @@ const createApi = function _createApi(enableCors) {
 createApi(!!settings.get('API_Enable_CORS'));
 
 // register the API to be re-created once the CORS-setting changes.
-settings.get(/^API_Enable_CORS|API_CORS_Origin$/, () => {
+settings.get(/^(API_Enable_CORS|API_CORS_Origin)$/, () => {
 	createApi(settings.get('API_Enable_CORS'));
 });
 
