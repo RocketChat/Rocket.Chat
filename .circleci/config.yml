@@ -401,14 +401,14 @@ jobs:
             cd /tmp/build-pr
             tar xzf repo.tar.gz
             rm repo.tar.gz
-            cp ~/repo/.docker/Dockerfile .
+            cp ~/repo/.docker/Dockerfile /tmp/build-pr
 
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
           repo: ${AWS_RESOURCE_NAME_PREFIX}
           region: AWS_DEFAULT_REGION
           tag: ${CIRCLE_SHA1}
-          path: /tmp/build-pr
+          path: "/tmp/build-pr"
           checkout: false
 
             # docker login -u $DOCKER_USER -p $DOCKER_PASS
