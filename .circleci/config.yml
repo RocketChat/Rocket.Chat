@@ -244,8 +244,11 @@ jobs:
   image-build:
     <<: *defaults
 
-    docker:
-      - image: docker:17.05.0-ce-git
+    # docker:
+    #   - image: docker:17.05.0-ce-git
+
+    machine:
+      image: ubuntu-1604:201903-01
 
     steps:
       - attach_workspace:
@@ -256,19 +259,28 @@ jobs:
       # - setup_remote_docker
 
       - run:
+          name: Install jq
+          command: |
+              sudo apt-get -y -qq update
+              sudo apt-get -y -qq install jq
+
+      - run:
           name: Build Docker image
           command: |
             cd /tmp/build
             tar xzf Rocket.Chat.tar.gz
             rm Rocket.Chat.tar.gz
-            cp ~/repo/.docker/Dockerfile .
+            cp ~/repo/.docker/Dockerfile /tmp/build
+            export WIDECHAT_SERVER_VERSION=$(jq '.version' ~/repo/app/utils/rocketchat.info)
             export CIRCLE_TAG=${CIRCLE_TAG:=}
 
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
           repo: ${AWS_RESOURCE_NAME_PREFIX}
           region: AWS_DEFAULT_REGION
-          tag: ${CIRCLE_TAG}
+          tag: ${WIDECHAT_SERVER_VERSION}
+          dockerfile: /tmp/build/Dockerfile
+          path: "/tmp/build-pr"
           checkout: false
             # if [[ $CIRCLE_TAG ]]; then
             #   docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -392,6 +404,12 @@ jobs:
       # - setup_remote_docker
 
       - run:
+          name: Install jq
+          command: |
+              sudo apt-get -y -qq update
+              sudo apt-get -y -qq install jq
+
+      - run:
           name: Build Docker image for PRs
           command: |
             export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
@@ -402,12 +420,13 @@ jobs:
             tar xzf repo.tar.gz
             rm repo.tar.gz
             cp ~/repo/.docker/Dockerfile /tmp/build-pr
+            export WIDECHAT_SERVER_VERSION=$(jq '.version' ~/repo/app/utils/rocketchat.info)
 
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
           repo: ${AWS_RESOURCE_NAME_PREFIX}
           region: AWS_DEFAULT_REGION
-          tag: ${CIRCLE_SHA1}
+          tag: ${WIDECHAT_SERVER_VERSION}
           dockerfile: /tmp/build-pr/Dockerfile
           path: "/tmp/build-pr"
           checkout: false
