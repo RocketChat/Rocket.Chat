@@ -253,7 +253,7 @@ jobs:
 
       - checkout
 
-      - setup_remote_docker
+      # - setup_remote_docker
 
       - run:
           name: Build Docker image
@@ -261,44 +261,52 @@ jobs:
             cd /tmp/build
             tar xzf Rocket.Chat.tar.gz
             rm Rocket.Chat.tar.gz
+            cp ~/repo/.docker/Dockerfile .
             export CIRCLE_TAG=${CIRCLE_TAG:=}
-            if [[ $CIRCLE_TAG ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
-              echo "Build official Docker image"
-              cp ~/repo/.docker/Dockerfile .
-              docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
-              docker push rocketchat/rocket.chat:$CIRCLE_TAG
-              echo "Build preview Docker image"
-              cp ~/repo/.docker-mongo/Dockerfile .
-              cp ~/repo/.docker-mongo/entrypoint.sh .
-              docker build -t rocketchat/rocket.chat.preview:$CIRCLE_TAG .
-              docker push rocketchat/rocket.chat.preview:$CIRCLE_TAG
-              if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
-                docker push rocketchat/rocket.chat:latest
-                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:latest
-                docker push rocketchat/rocket.chat.preview:latest
-              elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
-                docker push rocketchat/rocket.chat:release-candidate
-                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:release-candidate
-                docker push rocketchat/rocket.chat.preview:release-candidate
-              fi
-              exit 0
-            fi;
-            if [[ $CIRCLE_BRANCH == 'develop' ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
-              echo "Build official Docker image"
-              cp ~/repo/.docker/Dockerfile .
-              docker build -t rocketchat/rocket.chat:develop .
-              docker push rocketchat/rocket.chat:develop
-              echo "Build preview Docker image"
-              cp ~/repo/.docker-mongo/Dockerfile .
-              cp ~/repo/.docker-mongo/entrypoint.sh .
-              docker build -t rocketchat/rocket.chat.preview:develop .
-              docker push rocketchat/rocket.chat.preview:develop
-              exit 0
-            fi;
+
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: ${AWS_RESOURCE_NAME_PREFIX}
+          region: AWS_DEFAULT_REGION
+          tag: ${CIRCLE_TAG}
+          checkout: false
+            # if [[ $CIRCLE_TAG ]]; then
+            #   docker login -u $DOCKER_USER -p $DOCKER_PASS
+            #   echo "Build official Docker image"
+            #   cp ~/repo/.docker/Dockerfile .
+            #   docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
+            #   docker push rocketchat/rocket.chat:$CIRCLE_TAG
+            #   echo "Build preview Docker image"
+            #   cp ~/repo/.docker-mongo/Dockerfile .
+            #   cp ~/repo/.docker-mongo/entrypoint.sh .
+            #   docker build -t rocketchat/rocket.chat.preview:$CIRCLE_TAG .
+            #   docker push rocketchat/rocket.chat.preview:$CIRCLE_TAG
+            #   if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+            #     docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
+            #     docker push rocketchat/rocket.chat:latest
+            #     docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:latest
+            #     docker push rocketchat/rocket.chat.preview:latest
+            #   elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+            #     docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
+            #     docker push rocketchat/rocket.chat:release-candidate
+            #     docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:release-candidate
+            #     docker push rocketchat/rocket.chat.preview:release-candidate
+            #   fi
+            #   exit 0
+            # fi;
+            # if [[ $CIRCLE_BRANCH == 'develop' ]]; then
+            #   docker login -u $DOCKER_USER -p $DOCKER_PASS
+            #   echo "Build official Docker image"
+            #   cp ~/repo/.docker/Dockerfile .
+            #   docker build -t rocketchat/rocket.chat:develop .
+            #   docker push rocketchat/rocket.chat:develop
+            #   echo "Build preview Docker image"
+            #   cp ~/repo/.docker-mongo/Dockerfile .
+            #   cp ~/repo/.docker-mongo/entrypoint.sh .
+            #   docker build -t rocketchat/rocket.chat.preview:develop .
+            #   docker push rocketchat/rocket.chat.preview:develop
+            #   exit 0
+            # fi;
   pr-build:
     <<: *defaults
     docker:
@@ -378,7 +386,7 @@ jobs:
 
       - checkout
 
-      - setup_remote_docker
+      # - setup_remote_docker
 
       - run:
           name: Build Docker image for PRs
@@ -390,12 +398,14 @@ jobs:
             cd /tmp/build-pr
             tar xzf repo.tar.gz
             rm repo.tar.gz
+            cp ~/repo/.docker/Dockerfile .
 
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
           repo: ${AWS_RESOURCE_NAME_PREFIX}
           region: AWS_DEFAULT_REGION
           tag: ${CIRCLE_SHA1}
+          checkout: false
 
             # docker login -u $DOCKER_USER -p $DOCKER_PASS
             # echo "Build official Docker image"
@@ -411,25 +421,25 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-4: &test-mongo
-          requires:
-            - build
-          filters:
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-6: &test-mongo-no-pr
-          requires:
-            - build
-          filters:
-            branches:
-              only: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-4-0: *test-mongo
+      # - build:
+      #     filters:
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - test-with-oplog-mongo-3-4: &test-mongo
+      #     requires:
+      #       - build
+      #     filters:
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - test-with-oplog-mongo-3-6: &test-mongo-no-pr
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: develop
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - test-with-oplog-mongo-4-0: *test-mongo
       # - deploy:
       #     requires:
       #       - test-with-oplog-mongo-3-4
@@ -455,6 +465,14 @@ workflows:
           filters:
             branches:
               ignore: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - image-build:
+          requires:
+            - hold
+          filters:
+            branches:
+              only: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - pr-build:
