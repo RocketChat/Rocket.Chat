@@ -488,8 +488,8 @@ workflows:
       #       tags:
       #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - pr-image-build:
-          requires:
-            - pr-build
+          # requires:
+          #   - pr-build
           filters:
             branches:
               ignore: develop
