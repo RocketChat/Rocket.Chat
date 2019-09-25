@@ -83,6 +83,8 @@ Template.messageBox.onCreated(function() {
 		autogrow.update();
 	};
 
+	let isSending = false;
+
 	this.send = (event) => {
 		const { input } = this;
 
@@ -93,9 +95,16 @@ Template.messageBox.onCreated(function() {
 		const { autogrow, data: { rid, tmid, onSend } } = this;
 		const { value } = input;
 		this.set('');
-		onSend && onSend.call(this.data, event, { rid, tmid, value }, () => {
+
+		if (!onSend || isSending) {
+			return;
+		}
+
+		isSending = true;
+		onSend.call(this.data, event, { rid, tmid, value }, () => {
 			autogrow.update();
 			input.focus();
+			isSending = false;
 		});
 	};
 });
@@ -265,6 +274,15 @@ const handleFormattingShortcut = (event, instance) => {
 	return true;
 };
 
+let sendOnEnter;
+let sendOnEnterActive;
+
+Tracker.autorun(() => {
+	sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
+	sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal'
+		|| (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
+});
+
 const handleSubmit = (event, instance) => {
 	const { which: keyCode } = event;
 
@@ -274,9 +292,6 @@ const handleSubmit = (event, instance) => {
 		return false;
 	}
 
-	const sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
-	const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal'
-		|| (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
 	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
 

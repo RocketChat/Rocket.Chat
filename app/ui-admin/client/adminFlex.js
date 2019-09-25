@@ -2,22 +2,19 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings';
-import { CachedCollection } from '../../ui-cached-collection';
 import { menu, SideNav, AdminBox, Layout } from '../../ui-utils/client';
 import { t } from '../../utils';
+import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
+import { hasAtLeastOnePermission } from '../../authorization/client';
 
 Template.adminFlex.onCreated(function() {
 	this.isEmbedded = Layout.isEmbedded();
 	this.settingsFilter = new ReactiveVar('');
 	if (settings.cachedCollectionPrivate == null) {
-		settings.cachedCollectionPrivate = new CachedCollection({
-			name: 'private-settings',
-			eventType: 'onLogged',
-			useCache: false,
-		});
+		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
 		settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
 		settings.cachedCollectionPrivate.init();
 	}
@@ -28,6 +25,10 @@ const label = function() {
 };
 
 Template.adminFlex.helpers({
+	hasSettingPermission() {
+		return hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+	},
+
 	groups() {
 		const filter = Template.instance().settingsFilter.get();
 		const query = {
