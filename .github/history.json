@@ -35207,6 +35207,64 @@
           ]
         }
       ]
+    },
+    "2.1.0-rc.1": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15415",
+          "title": "[NEW] Allow file sharing through Twilio(WhatsApp) integration",
+          "userLogin": "renatobecker",
+          "milestone": "2.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15437",
+          "title": "Regression: Fix invalid version string error on marketplace screen",
+          "userLogin": "d-gubert",
+          "milestone": "2.1.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "15436",
+          "title": "Regression: Fix Commit Section when there is no commit info",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15432",
+          "title": "Regression: setup wizard dynamic import using relative url",
+          "userLogin": "ggazzo",
+          "milestone": "2.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15426",
+          "title": "Regression: Favorite room button",
+          "userLogin": "tassoevan",
+          "milestone": "2.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
