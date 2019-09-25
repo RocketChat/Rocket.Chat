@@ -390,16 +390,23 @@ jobs:
             cd /tmp/build-pr
             tar xzf repo.tar.gz
             rm repo.tar.gz
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            echo "Build official Docker image"
-            cp ~/repo/.docker/Dockerfile .
-            docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
-            docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
-            #echo "Build preview Docker image"
-            #cp ~/repo/.docker-mongo/Dockerfile .
-            #cp ~/repo/.docker-mongo/entrypoint.sh .
-            #docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
-            #docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
+
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: ${AWS_RESOURCE_NAME_PREFIX}
+          region: AWS_DEFAULT_REGION
+          tag: ${CIRCLE_SHA1}
+
+            # docker login -u $DOCKER_USER -p $DOCKER_PASS
+            # echo "Build official Docker image"
+            # cp ~/repo/.docker/Dockerfile .
+            # docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
+            # docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
+            # #echo "Build preview Docker image"
+            # #cp ~/repo/.docker-mongo/Dockerfile .
+            # #cp ~/repo/.docker-mongo/entrypoint.sh .
+            # #docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
+            # #docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
 workflows:
   version: 2
   build-and-test:
@@ -458,23 +465,23 @@ workflows:
               ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      # - pr-image-build:
-      #     requires:
-      #       - pr-build
-      #     filters:
-      #       branches:
-      #         ignore: develop
-      #       tags:
-      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - pr-image-build:
+          requires:
+            - pr-build
+          filters:
+            branches:
+              ignore: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
 
-      - aws-ecr/build-and-push-image:
-              requires:
-                - hold
-              filters:
-                branches:
-                  ignore: develop
-              account-url: AWS_ECR_ACCOUNT_URL
-              repo: ${AWS_RESOURCE_NAME_PREFIX}
-              region: AWS_DEFAULT_REGION
-              tag: ${CIRCLE_SHA1}
-              path: /home/circleci/project/.docker
+      # - aws-ecr/build-and-push-image:
+      #         requires:
+      #           - hold
+      #         filters:
+      #           branches:
+      #             ignore: develop
+      #         account-url: AWS_ECR_ACCOUNT_URL
+      #         repo: ${AWS_RESOURCE_NAME_PREFIX}
+      #         region: AWS_DEFAULT_REGION
+      #         tag: ${CIRCLE_SHA1}
+      #         path: "/home/circleci/project/.docker/"
