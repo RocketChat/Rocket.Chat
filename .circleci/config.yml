@@ -421,12 +421,13 @@ jobs:
             rm repo.tar.gz
             cp ~/repo/.docker/Dockerfile /tmp/build-pr
             export WIDECHAT_SERVER_VERSION=$(jq '.version' ~/repo/app/utils/rocketchat.info)
+            echo $WIDECHAT_SERVER_VERSION
 
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
           repo: ${AWS_RESOURCE_NAME_PREFIX}
           region: AWS_DEFAULT_REGION
-          tag: ${WIDECHAT_SERVER_VERSION}
+          tag: ${CIRCLE_PR_NUMBER}
           dockerfile: /tmp/build-pr/Dockerfile
           path: "/tmp/build-pr"
           checkout: false
