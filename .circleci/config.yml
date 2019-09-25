@@ -409,7 +409,7 @@ jobs:
           region: AWS_DEFAULT_REGION
           tag: ${CIRCLE_SHA1}
           dockerfile: /tmp/build-pr/Dockerfile
-          # path: "/tmp/build-pr"
+          path: "/tmp/build-pr"
           checkout: false
 
             # docker login -u $DOCKER_USER -p $DOCKER_PASS
