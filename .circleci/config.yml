@@ -377,16 +377,11 @@ jobs:
   pr-image-build:
     <<: *defaults
 
-    parameters:
-      image:
-        type: string
-        default: ubuntu-1604:201903-01
-
-    machine:
-      image: <<parameters.image>>
-
     # docker:
     #   - image: docker:17.05.0-ce-git
+
+    machine:
+      image: ubuntu-1604:201903-01
 
     steps:
       - attach_workspace:
