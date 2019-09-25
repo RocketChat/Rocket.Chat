@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+
 import { slashCommands } from '../../../utils';
-import { Rooms } from '../../../models';
+import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
 
 API.v1.addRoute('commands.get', { authRequired: true }, {
@@ -35,7 +36,7 @@ API.v1.addRoute('commands.list', { authRequired: true }, {
 
 		const totalCount = commands.length;
 		commands = Rooms.processQueryOptionsOnResult(commands, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -68,6 +69,10 @@ API.v1.addRoute('commands.run', { authRequired: true }, {
 			return API.v1.failure('The room\'s id where to execute this command must be provided and be a string.');
 		}
 
+		if (body.tmid && typeof body.tmid !== 'string') {
+			return API.v1.failure('The tmid parameter when provided must be a string.');
+		}
+
 		const cmd = body.command.toLowerCase();
 		if (!slashCommands.commands[body.command.toLowerCase()]) {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
@@ -77,15 +82,21 @@ API.v1.addRoute('commands.run', { authRequired: true }, {
 		Meteor.call('canAccessRoom', body.roomId, user._id);
 
 		const params = body.params ? body.params : '';
+		const message = {
+			_id: Random.id(),
+			rid: body.roomId,
+			msg: `/${ cmd } ${ params }`,
+		};
 
-		let result;
-		Meteor.runAsUser(user._id, () => {
-			result = slashCommands.run(cmd, params, {
-				_id: Random.id(),
-				rid: body.roomId,
-				msg: `/${ cmd } ${ params }`,
-			});
-		});
+		if (body.tmid) {
+			const thread = Messages.findOneById(body.tmid);
+			if (!thread || thread.rid !== body.roomId) {
+				return API.v1.failure('Invalid thread.');
+			}
+			message.tmid = body.tmid;
+		}
+
+		const result = Meteor.runAsUser(user._id, () => slashCommands.run(cmd, params, message));
 
 		return API.v1.success({ result });
 	},

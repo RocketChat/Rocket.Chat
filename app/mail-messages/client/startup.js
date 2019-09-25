@@ -2,7 +2,7 @@ import { AdminBox } from '../../ui-utils';
 import { hasAllPermission } from '../../authorization';
 
 AdminBox.addOption({
-	href: 'mailer',
+	href: 'admin-mailer',
 	i18nLabel: 'Mailer',
 	icon: 'mail',
 	permissionGranted() {

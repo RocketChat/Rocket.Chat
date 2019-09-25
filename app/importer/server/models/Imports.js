@@ -8,7 +8,7 @@ class ImportsModel extends Base {
 
 	findPendingImport(key) {
 		// Finds the latest import operation
-		const data = this.findOne({ importerKey: key }, { createdAt : -1 });
+		const data = this.findOne({ importerKey: key }, { createdAt: -1 });
 		if (!data || !data.status) {
 			return data;
 		}

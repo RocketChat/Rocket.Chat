@@ -1,9 +1,9 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { DateFormat } from '../../../lib/client';
 import { canDeleteMessage, getURL, handleError, t } from '../../../utils/client';
@@ -11,18 +11,20 @@ import { popover, modal } from '../../../ui-utils/client';
 
 const roomFiles = new Mongo.Collection('room_files');
 
+const LIST_SIZE = 50;
+
 Template.uploadedFilesList.onCreated(function() {
 	const { rid } = Template.currentData();
 	this.searchText = new ReactiveVar(null);
-	this.hasMore = new ReactiveVar(true);
-	this.limit = new ReactiveVar(50);
+
+	this.state = new ReactiveDict({
+		limit: LIST_SIZE,
+		hasMore: true,
+	});
 
 	this.autorun(() => {
-		this.subscribe('roomFilesWithSearchText', rid, this.searchText.get(), this.limit.get(), () => {
-			if (roomFiles.find({ rid }).fetch().length < this.limit.get()) {
-				this.hasMore.set(false);
-			}
-		});
+		const ready = this.subscribe('roomFilesWithSearchText', rid, this.searchText.get(), this.state.get('limit'), () => this.state.set('hasMore', this.state.get('limit') <= roomFiles.find({ rid }).count())).ready();
+		this.state.set('loading', !ready);
 	});
 });
 
@@ -46,6 +48,12 @@ Template.uploadedFilesList.helpers({
 		if (/image/.test(this.type)) {
 			return getURL(this.url);
 		}
+	},
+
+	escapeCssUrl: (url) => url.replace(/(['"])/g, '\\$1'),
+
+	limit() {
+		return Template.instance().state.get('limit');
 	},
 	format(timestamp) {
 		return DateFormat.formatDateAndTime(timestamp);
@@ -97,12 +105,8 @@ Template.uploadedFilesList.helpers({
 		return DateFormat.formatDateAndTime(timestamp);
 	},
 
-	hasMore() {
-		return Template.instance().hasMore.get();
-	},
-
-	hasFiles() {
-		return roomFiles.find({ rid: this.rid }).count() > 0;
+	isLoading() {
+		return Template.instance().state.get('loading');
 	},
 });
 
@@ -113,12 +117,15 @@ Template.uploadedFilesList.events({
 
 	'input .uploaded-files-list__search-input'(e, t) {
 		t.searchText.set(e.target.value.trim());
-		t.hasMore.set(true);
+		t.state.set('hasMore', true);
 	},
 
 	'scroll .flex-tab__result': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
-			return t.limit.set(t.limit.get() + 50);
+			if (!t.state.get('hasMore')) {
+				return;
+			}
+			return t.state.set('limit', t.state.get('limit') + LIST_SIZE);
 		}
 	}, 200),
 
@@ -142,7 +149,7 @@ Template.uploadedFilesList.events({
 									name: t('Download'),
 									action: () => {
 										const a = document.createElement('a');
-										a.href = this.file.url;
+										a.href = getURL(this.file.url);
 										a.download = this.file.name;
 										document.body.appendChild(a);
 										a.click();
@@ -152,7 +159,7 @@ Template.uploadedFilesList.events({
 								},
 							],
 						},
-						...(canDelete ? [{
+						...canDelete ? [{
 							items: [
 								{
 									icon: 'trash',
@@ -186,12 +193,12 @@ Template.uploadedFilesList.events({
 									},
 								},
 							],
-						}] : []),
+						}] : [],
 					],
 				},
 			],
 			currentTarget: e.currentTarget,
-			onDestroyed:() => {
+			onDestroyed: () => {
 				e.currentTarget.parentElement.classList.remove('active');
 			},
 		};

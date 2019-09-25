@@ -12,4 +12,3 @@ API.helperMethods.set('deprecationWarning', function _deprecationWarning({ endpo
 
 	return response;
 });
-

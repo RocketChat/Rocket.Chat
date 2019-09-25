@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { MessageTypes } from '../../ui-utils';
 
 Meteor.startup(function() {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission, getUsersInRole } from '../../../authorization';
 
 Meteor.publish('livechat:agents', function() {
@@ -6,7 +7,7 @@ Meteor.publish('livechat:agents', function() {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:agents' }));
 	}
 
-	if (!hasPermission(this.userId, 'view-l-room')) {
+	if (!hasPermission(this.userId, 'manage-livechat-agents')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:agents' }));
 	}
 

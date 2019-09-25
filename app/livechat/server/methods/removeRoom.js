@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
-import { Rooms, Messages, Subscriptions } from '../../../models';
+import { LivechatRooms, Messages, Subscriptions } from '../../../models';
 
 Meteor.methods({
 	'livechat:removeRoom'(rid) {
@@ -8,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeRoom' });
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -30,6 +31,6 @@ Meteor.methods({
 
 		Messages.removeByRoomId(rid);
 		Subscriptions.removeByRoomId(rid);
-		return Rooms.removeById(rid);
+		return LivechatRooms.removeById(rid);
 	},
 });

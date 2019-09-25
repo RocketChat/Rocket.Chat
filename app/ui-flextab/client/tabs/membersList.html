@@ -3,17 +3,17 @@
 	{{#if isGroupChat}}
 	{{#with roomUsers}}
 		<div class="flex-tab__header">
-			<form class="search-form rc-member-list__search" role="form">
+			<form class="search-form rc-member-list__search js-search-form" role="form">
 				<div class="rc-input">
 
 					<div class="rc-input__icon">
 						{{> icon block="rc-input__icon-svg" icon="magnifier"}}
 					</div>
-					<input type="text" class="rc-input__element js-filter" name="user-search" id="user-search" placeholder={{_ "Search_by_username"}} autocomplete="off" />
+					<input type="text" class="rc-input__element js-filter" name="user-search" id="user-search" placeholder={{_ "Search_by_username"}} autocomplete="off" aria-label="{{_ "Search_by_username"}}" />
 
 				</div>
 				<label class="rc-select">
-					<select class="rc-select__element js-type" name="status-type">
+					<select class="rc-select__element js-type" name="status-type" aria-label="{{_ "Status"}}">
 						<option value="online">{{_ 'online'}}</option>
 						<option value="all">{{_ 'All_users'}}</option>
 					</select>

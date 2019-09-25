@@ -1,8 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { API } from '../../../../api';
 import _ from 'underscore';
-import { findGuest, findRoom } from '../lib/livechat';
+
+import { API } from '../../../../api';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/page.visited', {
@@ -10,7 +9,7 @@ API.v1.addRoute('livechat/page.visited', {
 		try {
 			check(this.bodyParams, {
 				token: String,
-				rid: String,
+				rid: Match.Maybe(String),
 				pageInfo: Match.ObjectIncluding({
 					change: String,
 					title: String,
@@ -21,17 +20,6 @@ API.v1.addRoute('livechat/page.visited', {
 			});
 
 			const { token, rid, pageInfo } = this.bodyParams;
-
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
 			const obj = Livechat.savePageHistory(token, rid, pageInfo);
 			if (obj) {
 				const page = _.pick(obj, 'msg', 'navigation');

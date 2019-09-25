@@ -2,6 +2,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
 import { LivechatVisitors } from '../../models';
+import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -28,6 +29,11 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+
+	if (message.file) {
+		message = normalizeMessageFileUpload(message);
+	}
+
 	const SMSService = SMS.getService(settings.get('SMS_Service'));
 
 	if (!SMSService) {
@@ -43,5 +49,4 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
 
 	return message;
-
 }, callbacks.priority.LOW, 'sendMessageBySms');

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	sendMessageLivechat({ token, _id, rid, msg, attachments }, agent) {
+	sendMessageLivechat({ token, _id, rid, msg, file, attachments }, agent) {
 		check(token, String);
 		check(_id, String);
 		check(rid, String);
@@ -35,6 +36,7 @@ Meteor.methods({
 				rid,
 				msg,
 				token,
+				file,
 				attachments,
 			},
 			agent,

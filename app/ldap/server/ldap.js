@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../settings';
-import { Logger } from '../../logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
-import ldapEscape from 'ldap-escape';
+
+import { settings } from '../../settings';
+import { Logger } from '../../logger';
 
 const logger = new Logger('LDAP', {
 	sections: {
@@ -183,7 +183,6 @@ export default class LDAP {
 	}
 
 	getUserFilter(username) {
-		username = ldapEscape.filter`${ username }`;
 		const filter = [];
 
 		if (this.options.User_Search_Filter !== '') {
@@ -320,9 +319,6 @@ export default class LDAP {
 	}
 
 	isUserInGroup(username, userdn) {
-		username = ldapEscape.filter`${ username }`;
-		userdn = ldapEscape.dn`${ userdn }`;
-
 		if (!this.options.group_filter_enabled) {
 			return true;
 		}
@@ -384,11 +380,12 @@ export default class LDAP {
 			logger.search.info(title);
 			// Force LDAP idle to wait the record processing
 			this.client._updateIdle(true);
-			page(null, entries, { end, next: () => {
+			page(null, entries, { end,
+				next: () => {
 				// Reset idle timer
-				this.client._updateIdle();
-				next && next();
-			} });
+					this.client._updateIdle();
+					next && next();
+				} });
 		};
 
 		this.client.search(BaseDN, options, (error, res) => {
@@ -401,7 +398,6 @@ export default class LDAP {
 			res.on('error', (error) => {
 				logger.search.error(error);
 				page(error);
-				return;
 			});
 
 			let entries = [];
@@ -467,7 +463,6 @@ export default class LDAP {
 			res.on('error', (error) => {
 				logger.search.error(error);
 				callback(error);
-				return;
 			});
 
 			const entries = [];
@@ -484,7 +479,6 @@ export default class LDAP {
 	}
 
 	authSync(dn, password) {
-		dn = ldapEscape.dn`${ dn }`;
 		logger.auth.info('Authenticating', dn);
 
 		try {

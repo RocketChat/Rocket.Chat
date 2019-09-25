@@ -1,14 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
+
+import { Meteor } from 'meteor/meteor';
 import streamBuffers from 'stream-buffers';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../../settings';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import filesize from 'filesize';
+
+import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
 import Avatars from '../../../models/server/models/Avatars';
@@ -20,7 +23,7 @@ import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import filesize from 'filesize';
+import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -36,6 +39,10 @@ settings.get('FileUpload_MaxFileSize', function(key, value) {
 
 export const FileUpload = {
 	handlers: {},
+
+	getPath(path = '') {
+		return `/file-upload/${ path }`;
+	},
 
 	configureUploadsStore(store, name, options) {
 		const type = name.split(':').pop();
@@ -253,8 +260,6 @@ export const FileUpload = {
 						console.error(err);
 						fut.return();
 					});
-
-				return;
 			};
 
 			reorientation(() => {
@@ -290,6 +295,7 @@ export const FileUpload = {
 		}
 
 		let { rc_uid, rc_token, rc_rid, rc_room_type } = query;
+		const { token } = query;
 
 		if (!rc_uid && headers.cookie) {
 			rc_uid = cookie.get('rc_uid', headers.cookie);
@@ -301,7 +307,8 @@ export const FileUpload = {
 		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
 		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
+		const isAuthorizedByJWT = !settings.get('FileUpload_Enable_json_web_token_for_files') || (token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files')));
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
@@ -311,7 +318,7 @@ export const FileUpload = {
 		// This file type can be pretty much anything, so it's better if we don't mess with the file extension
 		if (file.type !== 'application/octet-stream') {
 			const ext = mime.extension(file.type);
-			if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
+			if (ext && new RegExp(`\.${ ext }$`, 'i').test(file.name) === false) {
 				file.name = `${ file.name }.${ ext }`;
 			}
 		}
@@ -370,6 +377,31 @@ export const FileUpload = {
 		}
 
 		return false;
+	},
+
+	redirectToFile(fileUrl, req, res) {
+		res.removeHeader('Content-Length');
+		res.removeHeader('Cache-Control');
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
+		res.end();
+	},
+
+	proxyFile(fileName, fileUrl, forceDownload, request, req, res) {
+		res.setHeader('Content-Disposition', `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(fileName) }"`);
+
+		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
+	},
+
+	generateJWTToFileUrls({ rid, userId, fileId }) {
+		if (!settings.get('FileUpload_ProtectFiles') || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
+			return;
+		}
+		return generateJWT({
+			rid,
+			userId,
+			fileId,
+		}, settings.get('FileUpload_json_web_token_secret_for_files'));
 	},
 };
 
