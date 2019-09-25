@@ -220,7 +220,7 @@
 		"tar-stream": "^1.6.2",
 		"toastr": "^2.1.4",
 		"turndown": "^5.0.1",
-		"twilio": "^3.25.0",
+		"twilio": "^3.35.0",
 		"twit": "^2.2.11",
 		"ua-parser-js": "^0.7.19",
 		"underscore": "^1.9.1",
