@@ -460,8 +460,8 @@ workflows:
       #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - hold:
           type: approval
-          requires:
-            - build
+          # requires:
+          #   - build
           filters:
             branches:
               ignore: develop
