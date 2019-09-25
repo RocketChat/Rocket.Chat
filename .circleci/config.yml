@@ -446,25 +446,25 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      # - build:
-      #     filters:
-      #       tags:
-      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      # - test-with-oplog-mongo-3-4: &test-mongo
-      #     requires:
-      #       - build
-      #     filters:
-      #       tags:
-      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      # - test-with-oplog-mongo-3-6: &test-mongo-no-pr
-      #     requires:
-      #       - build
-      #     filters:
-      #       branches:
-      #         only: develop
-      #       tags:
-      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      # - test-with-oplog-mongo-4-0: *test-mongo
+      - build:
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - test-with-oplog-mongo-3-4: &test-mongo
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - test-with-oplog-mongo-3-6: &test-mongo-no-pr
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - test-with-oplog-mongo-4-0: *test-mongo
       # - deploy:
       #     requires:
       #       - test-with-oplog-mongo-3-4
@@ -485,8 +485,8 @@ workflows:
       #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - hold:
           type: approval
-          # requires:
-          #   - build
+          requires:
+            - build
           filters:
             branches:
               ignore: develop
@@ -516,15 +516,3 @@ workflows:
               ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-
-      # - aws-ecr/build-and-push-image:
-      #         requires:
-      #           - hold
-      #         filters:
-      #           branches:
-      #             ignore: develop
-      #         account-url: AWS_ECR_ACCOUNT_URL
-      #         repo: ${AWS_RESOURCE_NAME_PREFIX}
-      #         region: AWS_DEFAULT_REGION
-      #         tag: ${CIRCLE_SHA1}
-      #         path: "/home/circleci/project/.docker/"
