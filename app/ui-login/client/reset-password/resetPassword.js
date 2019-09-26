@@ -11,7 +11,7 @@ import { callbacks } from '../../../callbacks';
 
 Template.resetPassword.helpers({
 	disabled() {
-		// return Template.instance().state.get('password') ? '' : 'disabled';
+		return Template.instance().state.get('password') ? '' : 'disabled';
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
