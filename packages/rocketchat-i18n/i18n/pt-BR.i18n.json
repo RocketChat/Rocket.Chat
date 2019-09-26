@@ -14,6 +14,7 @@
   "%_of_conversations": "% de conversas",
   "Accept": "Aceitar",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Aceitar requisições de livechat mesmo que não tenham agentes online",
+  "Accept_new_livechats_when_agent_is_idle": "Aceitar novas requisições de livechat quando o agente estiver inativo",
   "Accept_with_no_online_agents": "Aceitar Sem Agentes Online",
   "access-mailer": "Acessar Tela do Mailer",
   "access-mailer_description": "Permissão para enviar e-mails em massa para todos os usuários.",
