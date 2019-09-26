@@ -427,7 +427,7 @@ jobs:
           account-url: AWS_ECR_ACCOUNT_URL
           repo: ${AWS_RESOURCE_NAME_PREFIX}
           region: AWS_DEFAULT_REGION
-          tag: ${CIRCLE_PR_NUMBER}
+          tag: $(jq '.version' ~/repo/app/utils/rocketchat.info)
           dockerfile: /tmp/build-pr/Dockerfile
           path: "/tmp/build-pr"
           checkout: false
