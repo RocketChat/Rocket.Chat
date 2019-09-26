@@ -577,59 +577,44 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	this.done();
 };
 
-const createApi = function _createApi(enableCors) {
-	if (!API.v1) {
-		API.v1 = new APIClass({
-			version: 'v1',
+const createApi = function _createApi(name, enableCors, options = {}) {
+	if (!API[name]) {
+		API[name] = new APIClass(Object.assign({
 			apiPath: 'api/',
 			useDefaultAuth: true,
 			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
 			defaultOptionsEndpoint,
 			auth: getUserAuth(),
-		});
+		}, options));
 	} else {
-		API.v1._config.enableCors = enableCors;
+		API[name]._config.enableCors = enableCors;
 		if (enableCors) {
 			if (settings.get('API_CORS_Origin')) {
-				API.v1._config.defaultHeaders['Access-Control-Allow-Origin'] = settings.get('API_CORS_Origin');
+				API[name]._config.defaultHeaders['Access-Control-Allow-Origin'] = settings.get('API_CORS_Origin');
 			}
-			API.v1._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
+			API[name]._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
 		} else {
-			delete API.v1._config.defaultHeaders['Access-Control-Allow-Origin'];
-			delete API.v1._config.defaultHeaders['Access-Control-Allow-Headers'];
-		}
-	}
-
-	if (!API.default) {
-		API.default = new APIClass({
-			apiPath: 'api/',
-			useDefaultAuth: true,
-			prettyJson: process.env.NODE_ENV === 'development',
-			enableCors,
-			defaultOptionsEndpoint,
-			auth: getUserAuth(),
-		});
-	} else {
-		API.default._config.enableCors = enableCors;
-		if (enableCors) {
-			if (settings.get('API_CORS_Origin')) {
-				API.default._config.defaultHeaders['Access-Control-Allow-Origin'] = settings.get('API_CORS_Origin');
-			}
-			API.default._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
-		} else {
-			delete API.default._config.defaultHeaders['Access-Control-Allow-Origin'];
-			delete API.default._config.defaultHeaders['Access-Control-Allow-Headers'];
+			delete API[name]._config.defaultHeaders['Access-Control-Allow-Origin'];
+			delete API[name]._config.defaultHeaders['Access-Control-Allow-Headers'];
 		}
 	}
 };
 
+const createApis = function _createApis(enableCors) {
+	createApi('v1', enableCors, {
+		version: 'v1',
+	});
+
+	createApi('default', enableCors);
+};
+
 // also create the API immediately
-createApi(!!settings.get('API_Enable_CORS'));
+createApis(!!settings.get('API_Enable_CORS'));
 
 // register the API to be re-created once the CORS-setting changes.
 settings.get(/^(API_Enable_CORS|API_CORS_Origin)$/, () => {
-	createApi(settings.get('API_Enable_CORS'));
+	createApis(settings.get('API_Enable_CORS'));
 });
 
 settings.get('Accounts_CustomFields', (key, value) => {
