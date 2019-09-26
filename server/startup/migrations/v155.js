@@ -1,21 +1,34 @@
-import { Migrations } from '../../../app/migrations';
-import { Permissions } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server';
 
 Migrations.add({
 	version: 155,
 	up() {
-		const manageIntegrationsPermission = Permissions.findOne('manage-integrations');
-		const manageOwnIntegrationsPermission = Permissions.findOne('manage-own-integrations');
+		const _id = 'Livechat_Routing_Method';
+		const setting = Settings.findOne({ _id });
+		if (setting) {
+			const { value } = setting;
 
-		if (manageIntegrationsPermission) {
-			Permissions.upsert({ _id: 'manage-incoming-integrations' }, { $set: { roles: manageIntegrationsPermission.roles } });
-			Permissions.upsert({ _id: 'manage-outgoing-integrations' }, { $set: { roles: manageIntegrationsPermission.roles } });
-			Permissions.remove({ _id: 'manage-integrations' });
-		}
-		if (manageOwnIntegrationsPermission) {
-			Permissions.upsert({ _id: 'manage-own-incoming-integrations' }, { $set: { roles: manageOwnIntegrationsPermission.roles } });
-			Permissions.upsert({ _id: 'manage-own-outgoing-integrations' }, { $set: { roles: manageOwnIntegrationsPermission.roles } });
-			Permissions.remove({ _id: 'manage-own-integrations' });
+			let newValue;
+			switch (value) {
+				case 'Least_Amount':
+					newValue = 'Auto_Selection';
+					break;
+				case 'Guest_Pool':
+					newValue = 'Manual_Selection';
+					break;
+			}
+
+			if (!newValue) {
+				return;
+			}
+
+			Settings.update({ _id }, {
+				$set: {
+					value: newValue,
+					packageValue: newValue,
+				},
+			});
 		}
 	},
 });

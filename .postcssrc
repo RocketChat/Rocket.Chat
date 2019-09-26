@@ -7,11 +7,7 @@
 		"postcss-media-minmax": {},
 		"postcss-selector-not": {},
 		"postcss-nested": {},
-		"autoprefixer": {
-			"browsers": [
-				"last 2 versions"
-			]
-		}
+		"autoprefixer": {}
 	},
 	"excludedPackages": [
 		"deepwell:bootstrap-datepicker2",
