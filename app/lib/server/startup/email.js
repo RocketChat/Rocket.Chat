@@ -427,4 +427,11 @@ settings.addGroup('Email', function() {
 			i18nDescription: 'Forgot_Password_Description',
 		});
 	});
+
+	this.section('Privacy', function() {
+		this.add('Email_notification_show_message', true, {
+			type: 'boolean',
+			public: true,
+		});
+	});
 });

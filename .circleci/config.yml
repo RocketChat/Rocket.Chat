@@ -43,7 +43,7 @@ test-save-npm-cache: &test-save-npm-cache
     - ./node_modules
 
 test-docker-image: &test-docker-image
-  circleci/node:8.11-stretch-browsers
+  circleci/node:8.15-stretch-browsers
 
 test-with-oplog: &test-with-oplog
   <<: *defaults
@@ -68,7 +68,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11-stretch
+      - image: circleci/node:8.15-stretch
       - image: mongo:3.4
 
     steps:
@@ -132,6 +132,16 @@ jobs:
       - restore_cache:
           keys:
             - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+
+      # To reduce memory need during actual build, build the packages solely first
+      - run:
+          name: Build a Meteor cache
+          command: |
+            # to do this we can clear the main files and it build the rest
+            echo "" > server/main.js
+            echo "" > client/main.js
+            meteor build --server-only --debug --directory /tmp/build-temp
+            git checkout -- server/main.js client/main.js
 
       - run:
           name: Build Rocket.Chat
@@ -208,7 +218,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11-stretch
+      - image: circleci/node:8.15-stretch
 
     steps:
       - attach_workspace:
@@ -322,7 +332,7 @@ jobs:
   pr-build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11-stretch
+      - image: circleci/node:8.15-stretch
 
     steps:
       - checkout

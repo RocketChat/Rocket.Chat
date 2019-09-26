@@ -105,15 +105,68 @@ Accounts.normalizeUsername = function(name) {
 	return name;
 };
 
+function debugLog(content) {
+	if (Accounts.saml.settings.debug) {
+		console.log(content);
+	}
+}
+
+function getUserDataMapping() {
+	const { userDataFieldMap } = Accounts.saml.settings;
+
+	let map;
+
+	try {
+		map = JSON.parse(userDataFieldMap);
+	} catch (e) {
+		map = {};
+	}
+
+	let emailField = 'email';
+	let usernameField = 'username';
+	let nameField = 'cn';
+	const newMapping = {};
+
+	for (const field in map) {
+		if (!map.hasOwnProperty(field)) {
+			continue;
+		}
+
+		if (map[field] === 'email') {
+			emailField = field;
+			continue;
+		}
+
+		if (map[field] === 'username') {
+			usernameField = field;
+			continue;
+		}
+
+		if (map[field] === 'name') {
+			nameField = field;
+			continue;
+		}
+
+		newMapping[field] = map[field];
+	}
+
+	return { emailField, usernameField, nameField, userDataFieldMap: newMapping };
+}
+
+const guessNameFromUsername = (username) =>
+	username
+		.replace(/\W/g, ' ')
+		.replace(/\s(.)/g, (u) => u.toUpperCase())
+		.replace(/^(.)/, (u) => u.toLowerCase())
+		.replace(/^\w/, (u) => u.toUpperCase());
+
 Accounts.registerLoginHandler(function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
 
 	const loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
-	if (Accounts.saml.settings.debug) {
-		console.log(`RESULT :${ JSON.stringify(loginResult) }`);
-	}
+	debugLog(`RESULT :${ JSON.stringify(loginResult) }`);
 
 	if (loginResult === undefined) {
 		return {
@@ -122,14 +175,15 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 	}
 
-	const { emailField, usernameField } = Accounts.saml.settings;
+	const { emailField, usernameField, nameField, userDataFieldMap } = getUserDataMapping();
+	const { defaultUserRole = 'user', roleAttributeName } = Accounts.saml.settings;
 
-	if (loginResult && loginResult.profile && loginResult.profile.email) {
+	if (loginResult && loginResult.profile && loginResult.profile[emailField]) {
 		const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
 		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
 
 		const eduPersonPrincipalName = loginResult.profile.eppn;
-		const fullName = loginResult.profile.cn || loginResult.profile.displayName || loginResult.profile.username;
+		const fullName = loginResult.profile[nameField] || loginResult.profile.displayName || loginResult.profile.username;
 
 		let eppnMatch = false;
 		let user = null;
@@ -170,12 +224,19 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			verified: true,
 		}));
 
+		let globalRoles;
+		if (roleAttributeName && loginResult.profile[roleAttributeName]) {
+			globalRoles = [].concat(loginResult.profile[roleAttributeName]);
+		} else {
+			globalRoles = [].concat(defaultUserRole.split(','));
+		}
+
 		if (!user) {
 			const newUser = {
 				name: fullName,
 				active: true,
 				eppn: eduPersonPrincipalName,
-				globalRoles: ['user'],
+				globalRoles,
 				emails,
 			};
 
@@ -185,6 +246,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			if (username) {
 				newUser.username = username;
+				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
@@ -221,6 +283,17 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
 			'services.saml': samlLogin,
 		};
+
+		for (const field in userDataFieldMap) {
+			if (!userDataFieldMap.hasOwnProperty(field)) {
+				continue;
+			}
+
+			if (loginResult.profile[field]) {
+				const rcField = userDataFieldMap[field];
+				updateData[`customFields.${ rcField }`] = loginResult.profile[field];
+			}
+		}
 
 		if (Accounts.saml.settings.immutableProperty !== 'EMail') {
 			updateData.emails = emails;

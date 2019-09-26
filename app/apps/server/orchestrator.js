@@ -8,11 +8,16 @@ import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { settings } from '../../settings';
 import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
 import { Logger } from '../../logger';
-
-export let Apps;
+import { AppVisitorsConverter } from './converters/visitors';
+import { AppUploadsConverter } from './converters/uploads';
+import { AppDepartmentsConverter } from './converters/departments';
 
 class AppServerOrchestrator {
 	constructor() {
+		this._isInitialized = false;
+	}
+
+	initialize() {
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 		Permissions.createOrUpdate('manage-apps', ['admin']);
 
@@ -29,6 +34,9 @@ class AppServerOrchestrator {
 		this._converters.set('rooms', new AppRoomsConverter(this));
 		this._converters.set('settings', new AppSettingsConverter(this));
 		this._converters.set('users', new AppUsersConverter(this));
+		this._converters.set('visitors', new AppVisitorsConverter(this));
+		this._converters.set('departments', new AppDepartmentsConverter(this));
+		this._converters.set('uploads', new AppUploadsConverter(this));
 
 		this._bridges = new RealAppBridges(this);
 
@@ -38,6 +46,8 @@ class AppServerOrchestrator {
 		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
+
+		this._isInitialized = true;
 	}
 
 	getModel() {
@@ -75,6 +85,10 @@ class AppServerOrchestrator {
 	getEnabledGames() {
 		const { externalComponentManager: { providedComponents } } = this._manager;
 		return providedComponents;
+	}
+
+	isInitialized() {
+		return this._isInitialized;
 	}
 
 	isEnabled() {
@@ -138,6 +152,8 @@ class AppServerOrchestrator {
 	}
 }
 
+export const Apps = new AppServerOrchestrator();
+
 settings.addGroup('General', function() {
 	this.section('Apps', function() {
 		this.add('Apps_Framework_enabled', true, {
@@ -159,7 +175,7 @@ settings.addGroup('General', function() {
 
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`
-	if (!Apps) {
+	if (!Apps.isInitialized()) {
 		return;
 	}
 
@@ -171,7 +187,7 @@ settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 });
 
 Meteor.startup(function _appServerOrchestrator() {
-	Apps = new AppServerOrchestrator();
+	Apps.initialize();
 
 	if (Apps.isEnabled()) {
 		Apps.load();

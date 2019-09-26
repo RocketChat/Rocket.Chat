@@ -21,6 +21,7 @@ import {
 	Messages,
 	Subscriptions,
 	Settings,
+	Rooms,
 	LivechatDepartmentAgents,
 	LivechatDepartment,
 	LivechatCustomField,
@@ -28,10 +29,12 @@ import {
 	LivechatOfficeHour,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 
 export const Livechat = {
 	Analytics,
@@ -294,8 +297,9 @@ export const Livechat = {
 			};
 		}
 
-		LivechatRooms.closeByRoomId(room._id, closeData);
-		LivechatInquiry.closeByRoomId(room._id, closeData);
+		const { _id: rid, servedBy } = room;
+		LivechatRooms.closeByRoomId(rid, closeData);
+		LivechatInquiry.removeByRoomId(rid);
 
 		const message = {
 			t: 'livechat-close',
@@ -304,14 +308,14 @@ export const Livechat = {
 		};
 
 		// Retreive the closed room
-		room = LivechatRooms.findOneByIdOrName(room._id);
+		room = LivechatRooms.findOneByIdOrName(rid);
 
 		sendMessage(user, message, room);
 
-		if (room.servedBy) {
-			Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
+		if (servedBy) {
+			Subscriptions.hideByRoomIdAndUserId(rid, servedBy._id);
 		}
-		Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
+		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.closeRoom', room);
@@ -365,6 +369,7 @@ export const Livechat = {
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
+			'Livechat_show_agent_info',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
@@ -388,7 +393,7 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return LivechatRooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
@@ -676,12 +681,12 @@ export const Livechat = {
 
 		check(departmentData, defaultValidations);
 
-		check(departmentAgents, [
+		check(departmentAgents, Match.Maybe([
 			Match.ObjectIncluding({
 				agentId: String,
 				username: String,
 			}),
-		]);
+		]));
 
 		if (_id) {
 			const department = LivechatDepartment.findOneById(_id);
@@ -834,6 +839,10 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
+		if (!settings.get('Livechat_show_agent_info')) {
+			return;
+		}
+
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',

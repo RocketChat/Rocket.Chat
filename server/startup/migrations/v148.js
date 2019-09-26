@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Users, Settings, FederationPeers } from '../../../app/models/server';
+import { Users, Settings, FederationServers } from '../../../app/models/server';
 
 Migrations.add({
 	version: 148,
@@ -10,7 +10,9 @@ Migrations.add({
 			return;
 		}
 
-		const { value: localDomain } = domainSetting;
+		const { value: domain } = domainSetting;
+
+		const localDomain = domain.replace('@', '');
 
 		Users.update({
 			federation: { $exists: true }, 'federation.peer': { $ne: localDomain },
@@ -18,13 +20,13 @@ Migrations.add({
 			$set: { isRemote: true },
 		}, { multi: true });
 
-		FederationPeers.update({
+		FederationServers.update({
 			peer: { $ne: localDomain },
 		}, {
 			$set: { isRemote: true },
 		}, { multi: true });
 
-		FederationPeers.update({
+		FederationServers.update({
 			peer: localDomain,
 		}, {
 			$set: { isRemote: false },
