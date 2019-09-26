@@ -2,15 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { popover } from '../../ui-utils';
+
+import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
 import { t, getUserPreference, handleError } from '../../utils';
-import { AccountBox, menu, SideNav } from '../../ui-utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
-import { modal } from '../../ui-utils';
-const setStatus = (status) => {
-	AccountBox.setStatus(status);
+import { userStatus } from '../../user-status';
+
+const setStatus = (status, statusText) => {
+	AccountBox.setStatus(status, statusText);
 	callbacks.run('userStatusManuallySet', status);
 	popover.close();
 };
@@ -36,8 +37,6 @@ const extendedViewOption = (user) => {
 			},
 		};
 	}
-
-	return;
 };
 
 const showToolbar = new ReactiveVar(false);
@@ -75,6 +74,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('View_mode'),
 	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'condensed'],
+	hasPopup: true,
 	action: (e) => {
 		const hideAvatarSetting = getUserPreference(user, 'sidebarHideAvatar');
 		const config = {
@@ -138,6 +138,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Sort'),
 	icon: 'sort',
+	hasPopup: true,
 	action: (e) => {
 		const options = [];
 		const config = {
@@ -155,9 +156,8 @@ const toolbarButtons = (user) => [{
 	name: t('Create_new'),
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
+	hasPopup: true,
 	action: (e) => {
-
-
 		const createChannel = (e) => {
 			e.preventDefault();
 			modal.open({
@@ -224,10 +224,11 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Options'),
 	icon: 'menu',
-	condition: () => AccountBox.getItems().length || hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration']),
+	condition: () => AccountBox.getItems().length || hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-selected-settings', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions']),
+	hasPopup: true,
 	action: (e) => {
 		let adminOption;
-		if (hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration'])) {
+		if (hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-selected-settings', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions'])) {
 			adminOption = {
 				icon: 'customize',
 				name: t('Administration'),
@@ -236,7 +237,7 @@ const toolbarButtons = (user) => [{
 				action: () => {
 					SideNav.setFlex('adminFlex');
 					SideNav.openFlex();
-					FlowRouter.go('admin-info');
+					FlowRouter.go('admin', { group: 'info' });
 					popover.close();
 				},
 			};
@@ -298,7 +299,7 @@ Template.sidebarHeader.helpers({
 			};
 		}
 		return id && Meteor.users.findOne(id, { fields: {
-			username: 1, status: 1,
+			username: 1, status: 1, statusText: 1,
 		} });
 	},
 	toolbarButtons() {
@@ -319,39 +320,67 @@ Template.sidebarHeader.events({
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
+			const STATUS_MAP = [
+				'offline',
+				'online',
+				'away',
+				'busy',
+			];
+			const userStatusList = Object.keys(userStatus.list).map((key) => {
+				const status = userStatus.list[key];
+				const name = status.localizeName ? t(status.name) : status.name;
+				const modifier = status.statusType || user.status;
+				const defaultStatus = STATUS_MAP.includes(status.id);
+				const statusText = defaultStatus ? null : name;
+
+				return {
+					icon: 'circle',
+					name,
+					modifier,
+					action: () => setStatus(status.statusType, statusText),
+				};
+			});
+
+			const statusText = user.statusText || t(user.status);
+
+			userStatusList.push({
+				icon: 'edit',
+				name: t('Edit_Status'),
+				type: 'open',
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Edit_Status'),
+						content: 'editStatus',
+						data: {
+							onSave() {
+								modal.close();
+							},
+						},
+						modalClass: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			});
+
 			const config = {
 				popoverClass: 'sidebar-header',
 				columns: [
 					{
 						groups: [
 							{
+								title: user.name,
+								items: [{
+									icon: 'circle',
+									name: statusText,
+									modifier: user.status,
+								}],
+							},
+							{
 								title: t('User'),
-								items: [
-									{
-										icon: 'circle',
-										name: t('online'),
-										modifier: 'online',
-										action: () => setStatus('online'),
-									},
-									{
-										icon: 'circle',
-										name: t('away'),
-										modifier: 'away',
-										action: () => setStatus('away'),
-									},
-									{
-										icon: 'circle',
-										name: t('busy'),
-										modifier: 'busy',
-										action: () => setStatus('busy'),
-									},
-									{
-										icon: 'circle',
-										name: t('invisible'),
-										modifier: 'offline',
-										action: () => setStatus('offline'),
-									},
-								],
+								items: userStatusList,
 							},
 							{
 								items: [

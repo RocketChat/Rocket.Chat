@@ -1,5 +1,4 @@
 import Page from './Page';
-
 import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
@@ -61,6 +60,7 @@ class Discussion extends Page {
 
 		this.parentChannelName.setValue(parentChannelName);
 
+		browser.pause(1000);
 		const listItem = browser.element('.rc-popup-list__list .rc-popup-list__item');
 
 		listItem.waitForVisible(2000);

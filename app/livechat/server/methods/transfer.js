@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission, hasRole } from '../../../authorization';
-import { Rooms, Subscriptions, LivechatVisitors } from '../../../models';
+
+import { hasPermission } from '../../../authorization';
+import { LivechatRooms, Subscriptions, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -16,13 +17,13 @@ Meteor.methods({
 			departmentId: Match.Optional(String),
 		});
 
-		const room = Rooms.findOneById(transferData.roomId);
+		const room = LivechatRooms.findOneById(transferData.roomId);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:transfer' });
 		}
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), { fields: { _id: 1 } });
-		if (!subscription && !hasRole(Meteor.userId(), 'livechat-manager')) {
+		if (!subscription && !hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:transfer' });
 		}
 

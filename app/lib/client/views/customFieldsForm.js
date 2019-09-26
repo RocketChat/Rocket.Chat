@@ -1,6 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../settings';
 
 Template.customFieldsForm.helpers({
@@ -34,7 +35,7 @@ Template.customFieldsForm.helpers({
 
 		if (typeof formData[field.fieldName] !== 'undefined') {
 			return formData[field.fieldName] === current;
-		} else if (typeof field.defaultValue !== 'undefined') {
+		} if (typeof field.defaultValue !== 'undefined') {
 			return field.defaultValue === current;
 		}
 	},

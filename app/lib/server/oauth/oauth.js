@@ -53,5 +53,3 @@ Accounts.registerLoginHandler(function(options) {
 
 	return Accounts.updateOrCreateUserFromExternalService(service.serviceName, oauthResult.serviceData, oauthResult.options);
 });
-
-

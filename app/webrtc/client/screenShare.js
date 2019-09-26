@@ -13,7 +13,7 @@ export const ChromeScreenShare = {
 	},
 	getSourceId(navigator, callback) {
 		if (callback == null) {
-			throw '"callback" parameter is mandatory.';
+			throw new Error('"callback" parameter is mandatory.');
 		}
 		this.callbacks.getSourceId = callback;
 		if (navigator === 'electron') {

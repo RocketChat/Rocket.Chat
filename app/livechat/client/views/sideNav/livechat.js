@@ -3,14 +3,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { ChatSubscription } from '../../../../models';
+
+import { ChatSubscription, Users } from '../../../../models';
 import { KonchatNotification } from '../../../../ui';
 import { settings } from '../../../../settings';
-import { hasRole } from '../../../../authorization';
-import { modal } from '../../../../ui-utils';
-import { Users } from '../../../../models';
-import { t, handleError, getUserPreference, roomTypes } from '../../../../utils';
+import { hasPermission } from '../../../../authorization';
+import { t, handleError, getUserPreference } from '../../../../utils';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+import './livechat.html';
 
 Template.livechat.helpers({
 	isActive() {
@@ -51,10 +51,8 @@ Template.livechat.helpers({
 	},
 
 	inquiries() {
-		// get all inquiries of the department
 		const inqs = LivechatInquiry.find({
-			agents: Meteor.userId(),
-			status: 'open',
+			status: 'queued',
 		}, {
 			sort: {
 				ts: 1,
@@ -69,8 +67,9 @@ Template.livechat.helpers({
 		return inqs;
 	},
 
-	guestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	showIncomingQueue() {
+		const config = Template.instance().routingConfig.get();
+		return config.showQueue;
 	},
 
 	available() {
@@ -88,10 +87,11 @@ Template.livechat.helpers({
 	},
 
 	showQueueLink() {
-		if (settings.get('Livechat_Routing_Method') !== 'Least_Amount') {
+		const config = Template.instance().routingConfig.get();
+		if (!config.showQueueLink) {
 			return false;
 		}
-		return hasRole(Meteor.userId(), 'livechat-manager') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));
+		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));
 	},
 
 	activeLivechatQueue() {
@@ -110,37 +110,17 @@ Template.livechat.events({
 			}
 		});
 	},
-
-	'click .inquiries .sidebar-item'(event) {
-		event.preventDefault();
-		event.stopPropagation();
-
-		const { rid } = this;
-		Meteor.call('livechat:getFirstRoomMessage', { rid }, (error, result) => {
-			if (error) {
-				return handleError(error);
-			}
-
-			modal.open({
-				title: t('Livechat_Take_Confirm'),
-				text: `${ t('Message') }: ${ result && result.msg }`,
-				showCancelButton: true,
-				confirmButtonText: t('Take_it'),
-			}, (isConfirm) => {
-				if (isConfirm) {
-					Meteor.call('livechat:takeInquiry', this._id, (error, result) => {
-						if (!error) {
-							roomTypes.openRouteLink(result.t, result);
-						}
-					});
-				}
-			});
-		});
-	},
 });
 
 Template.livechat.onCreated(function() {
 	this.statusLivechat = new ReactiveVar();
+	this.routingConfig = new ReactiveVar({});
+
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
+		}
+	});
 
 	this.autorun(() => {
 		if (Meteor.userId()) {

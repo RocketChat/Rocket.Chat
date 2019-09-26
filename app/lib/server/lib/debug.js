@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
-import _ from 'underscore';
 import { Logger } from '../../../logger';
 
 const logger = new Logger('Meteor', {
@@ -19,13 +20,13 @@ const logger = new Logger('Meteor', {
 
 let Log_Trace_Methods;
 let Log_Trace_Subscriptions;
-settings.get('Log_Trace_Methods', (key, value) => Log_Trace_Methods = value);
-settings.get('Log_Trace_Subscriptions', (key, value) => Log_Trace_Subscriptions = value);
+settings.get('Log_Trace_Methods', (key, value) => { Log_Trace_Methods = value; });
+settings.get('Log_Trace_Subscriptions', (key, value) => { Log_Trace_Subscriptions = value; });
 
 let Log_Trace_Methods_Filter;
 let Log_Trace_Subscriptions_Filter;
-settings.get('Log_Trace_Methods_Filter', (key, value) => Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined);
-settings.get('Log_Trace_Subscriptions_Filter', (key, value) => Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined);
+settings.get('Log_Trace_Methods_Filter', (key, value) => { Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined; });
+settings.get('Log_Trace_Subscriptions_Filter', (key, value) => { Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined; });
 
 const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 	if (!enable) {
@@ -58,18 +59,6 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
 		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
-
-		// Temporary solution for a hotfix while we investigate the underlying issue.
-		const methodBlackList = [
-			'resetPassword',
-			'verifyEmail',
-			'resetPasswordWithTOTP',
-		];
-
-		if (methodBlackList.indexOf(name) < 0) {
-			this.unblock();
-		}
-
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;

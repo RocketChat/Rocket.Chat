@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { handleError, t } from '../../../utils';
 import { modal } from '../../../ui-utils';
 
@@ -67,17 +68,16 @@ Template.emojiInfo.events({
 				Meteor.call('deleteEmojiCustom', _id, (error/* , result*/) => {
 					if (error) {
 						return handleError(error);
-					} else {
-						modal.open({
-							title: t('Deleted'),
-							text: t('Custom_Emoji_Has_Been_Deleted'),
-							type: 'success',
-							timer: 2000,
-							showConfirmButton: false,
-						});
-
-						instance.tabBar.close();
 					}
+					modal.open({
+						title: t('Deleted'),
+						text: t('Custom_Emoji_Has_Been_Deleted'),
+						type: 'success',
+						timer: 2000,
+						showConfirmButton: false,
+					});
+
+					instance.tabBar.close();
 				});
 			});
 		}

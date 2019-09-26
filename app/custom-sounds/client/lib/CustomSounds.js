@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
 import _ from 'underscore';
+
+import { CachedCollectionManager } from '../../../ui-cached-collection';
 
 class CustomSoundsClass {
 	constructor() {
@@ -56,7 +57,21 @@ class CustomSoundsClass {
 		const list = Object.values(this.list.get());
 		return _.sortBy(list, 'name');
 	}
+
+	play = (sound, { volume = 1, loop = false } = {}) => {
+		const audio = document.querySelector(`audio#${ sound }`);
+		if (!audio || !audio.play) {
+			return;
+		}
+
+		audio.volume = volume;
+		audio.loop = loop;
+		audio.play();
+
+		return audio;
+	}
 }
+
 export const CustomSounds = new CustomSoundsClass();
 
 Meteor.startup(() =>

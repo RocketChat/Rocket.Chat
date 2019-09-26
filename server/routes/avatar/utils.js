@@ -1,6 +1,5 @@
 import sharp from 'sharp';
 import { throttle } from 'underscore';
-
 import { Cookies } from 'meteor/ostrio:cookies';
 
 import { Users } from '../../../app/models/server';
@@ -38,13 +37,17 @@ function isUserAuthenticated({ headers, query }) {
 	let { rc_uid, rc_token } = query;
 
 	if (!rc_uid && headers.cookie) {
-		rc_uid = cookie.get('rc_uid', headers.cookie) ;
+		rc_uid = cookie.get('rc_uid', headers.cookie);
 		rc_token = cookie.get('rc_token', headers.cookie);
 	}
 
-	const userFound = Users.findOneByIdAndLoginToken(rc_uid, rc_token, { fields: { _id: 1 } });
+	if (rc_uid == null || rc_token == null) {
+		return false;
+	}
 
-	return !!rc_uid && !!rc_token && !!userFound;
+	const userFound = Users.findOneByIdAndLoginToken(rc_uid, rc_token, { fields: { _id: 1 } }); // TODO memoize find
+
+	return !!userFound;
 }
 
 const warnUnauthenticatedAccess = throttle(() => {
@@ -52,17 +55,16 @@ const warnUnauthenticatedAccess = throttle(() => {
 }, 60000 * 30); // 30 minutes
 
 export function userCanAccessAvatar({ headers = {}, query = {} }) {
-	const isAuthenticated = isUserAuthenticated({ headers, query });
-
-	if (settings.get('Accounts_AvatarBlockUnauthenticatedAccess') === true) {
-		return isAuthenticated;
+	if (!settings.get('Accounts_AvatarBlockUnauthenticatedAccess')) {
+		return true;
 	}
 
+	const isAuthenticated = isUserAuthenticated({ headers, query });
 	if (!isAuthenticated) {
 		warnUnauthenticatedAccess();
 	}
 
-	return true;
+	return isAuthenticated;
 }
 
 const getFirstLetter = (name) => name.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();

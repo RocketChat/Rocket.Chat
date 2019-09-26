@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { RocketChatFile } from '../../../file';
 import { settings } from '../../../settings';
 

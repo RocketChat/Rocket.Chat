@@ -2,8 +2,6 @@
 
 	z-index: 10;
 
-	padding: 0.5rem;
-
 	font-size: var(--text-heading-size);
 
 	.rc-badge {
@@ -60,8 +58,6 @@
 		flex: 0 0 auto;
 
 		height: 36px;
-
-		margin: 0 -0.5rem;
 
 		white-space: nowrap;
 
@@ -205,8 +201,13 @@
 		text-overflow: ellipsis;
 	}
 
-	&-visual-status {
-		text-transform: capitalize;
+	&__visual-status {
+		overflow: hidden;
+
+		width: 100%;
+		max-width: fit-content;
+
+		text-overflow: ellipsis;
 	}
 
 	&__status {
@@ -247,21 +248,17 @@
 
 		padding: 0 0.25rem;
 
-		color: var(--header-toggle-favorite-star-color);
-
-		&.empty {
-			color: var(--header-toggle-favorite-color);
-
-			& > .rc-header__icon {
-				fill: none;
-			}
-		}
+		color: var(--header-toggle-favorite-color);
 
 		& > .rc-header__icon {
 			font-size: 2rem;
 		}
 
 		&:hover {
+			color: var(--header-toggle-favorite-star-color);
+		}
+
+		&--checked {
 			color: var(--header-toggle-favorite-star-color);
 		}
 	}
@@ -457,6 +454,9 @@
 
 		&--burger {
 			display: flex;
+
+			margin: 0;
+			padding: 0;
 		}
 	}
 }
@@ -466,6 +466,7 @@
 }
 
 .burger {
+	position: relative;
 
 	cursor: pointer;
 	transition: transform 0.2s ease-out 0.1s;
@@ -524,6 +525,9 @@
 	.rc-header {
 		&--burger {
 			display: flex;
+
+			margin: 0;
+			padding: 0;
 		}
 	}
 }

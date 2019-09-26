@@ -4,7 +4,6 @@ import { Rooms, Subscriptions, Settings } from '../../../app/models';
 Migrations.add({
 	version: 49,
 	up() {
-
 		let count = 1;
 
 		Rooms.find({ t: 'l' }, { sort: { ts: 1 }, fields: { _id: 1 } }).forEach(function(room) {

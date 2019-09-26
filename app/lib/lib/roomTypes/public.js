@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { openRoom } from '../../../ui-utils';
 import { ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';

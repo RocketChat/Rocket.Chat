@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { fireGlobalEvent } from '../../app/ui-utils';
 import { callbacks } from '../../app/callbacks';
 

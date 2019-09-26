@@ -2,12 +2,13 @@ import { exec } from 'child_process';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
+
 import Future from 'fibers/future';
 import async from 'async';
 
 class VersionCompiler {
 	processFilesForTarget(files) {
-		const future = new Future;
+		const future = new Future();
 		const processFile = function(file, cb) {
 			if (!file.getDisplayPath().match(/rocketchat\.info$/)) {
 				return cb();
@@ -54,7 +55,7 @@ class VersionCompiler {
 						}
 
 						const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
-						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/[^0-9.]/g, '');
+						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/^[^0-9]/g, '');
 
 						output = `exports.Info = ${ JSON.stringify(output, null, 4) };`;
 						file.addJavaScript({

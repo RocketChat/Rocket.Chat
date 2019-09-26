@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { settings as rcSettings } from '../../../settings';
 
@@ -11,6 +12,7 @@ Meteor.methods({
 		const validSettings = [
 			'Livechat_title',
 			'Livechat_title_color',
+			'Livechat_show_agent_info',
 			'Livechat_show_agent_email',
 			'Livechat_display_offline_form',
 			'Livechat_offline_form_unavailable',
@@ -35,7 +37,5 @@ Meteor.methods({
 		settings.forEach((setting) => {
 			rcSettings.updateById(setting._id, setting.value);
 		});
-
-		return;
 	},
 });

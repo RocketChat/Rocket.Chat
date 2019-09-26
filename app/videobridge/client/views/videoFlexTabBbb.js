@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../settings';
 import { Rooms } from '../../../models';
 import { hasAllPermission } from '../../../authorization';

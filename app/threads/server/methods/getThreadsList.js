@@ -8,7 +8,6 @@ const MAX_LIMIT = 100;
 
 Meteor.methods({
 	getThreadsList({ rid, limit = 50, skip = 0 }) {
-
 		if (limit > MAX_LIMIT) {
 			throw new Meteor.Error('error-not-allowed', `max limit: ${ MAX_LIMIT }`, { method: 'getThreadsList' });
 		}

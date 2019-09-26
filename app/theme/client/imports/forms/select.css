@@ -26,13 +26,18 @@
 	&__arrow {
 		position: absolute;
 
-		margin: 0 -5px;
+		right: 5px;
 
 		pointer-events: none;
 
 		color: var(--color-gray-light);
 
 		font-size: 20px;
+
+		.rtl & {
+			right: auto;
+			left: 5px;
+		}
 	}
 
 	&__element {

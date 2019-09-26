@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import s from 'underscore.string';
+
 import { AccountBox } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import s from 'underscore.string';
 
 const commands = {
 	go(data) {
@@ -14,7 +15,6 @@ const commands = {
 		}
 		FlowRouter.go(data.path, null, FlowRouter.current().queryParams);
 	},
-
 
 	'set-user-status'(data) {
 		AccountBox.setStatus(data.status);

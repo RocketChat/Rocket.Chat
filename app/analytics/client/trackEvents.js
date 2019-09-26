@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Tracker } from 'meteor/tracker';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { ChatRoom } from '../../models';
-import { Tracker } from 'meteor/tracker';
 
 function trackEvent(category, action, label) {
 	if (window._paq) {

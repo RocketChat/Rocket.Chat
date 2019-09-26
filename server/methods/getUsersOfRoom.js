@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Subscriptions } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
@@ -23,14 +24,14 @@ function findUsers({ rid, status, skip, limit }) {
 				'u.status': 1,
 			},
 		},
-		...(status ? [{ $match: { 'u.status': status } }] : []),
+		...status ? [{ $match: { 'u.status': status } }] : [],
 		{
 			$sort: {
 				[settings.get('UI_Use_Real_Name') ? 'u.name' : 'u.username']: 1,
 			},
 		},
-		...(skip > 0 ? [{ $skip: skip }] : []),
-		...(limit > 0 ? [{ $limit: limit }] : []),
+		...skip > 0 ? [{ $skip: skip }] : [],
+		...limit > 0 ? [{ $limit: limit }] : [],
 		{
 			$project: {
 				_id: { $arrayElemAt: ['$u._id', 0] },
@@ -59,13 +60,12 @@ Meteor.methods({
 
 		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 		const users = await findUsers({ rid, status: { $ne: 'offline' }, limit, skip });
-
-		if (showAll && users.length < limit) {
+		if (showAll && (!limit || users.length < limit)) {
 			const offlineUsers = await findUsers({
 				rid,
 				status: { $eq: 'offline' },
-				limit: limit - users.length,
-				skip,
+				limit: limit ? limit - users.length : 0,
+				skip: skip || 0,
 			});
 
 			return {

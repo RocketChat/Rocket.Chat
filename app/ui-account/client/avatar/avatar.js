@@ -1,7 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+
+const getUsername = ({ userId, username }) => {
+	if (username) {
+		return username;
+	}
+
+	if (userId) {
+		const user = Meteor.users.findOne(this.userId, { fields: { username: 1 } });
+		return user && user.username;
+	}
+};
 
 Template.avatar.helpers({
 	src() {
@@ -10,11 +22,7 @@ Template.avatar.helpers({
 			return url;
 		}
 
-		let { username } = this;
-		if (username == null && this.userId != null) {
-			const user = Meteor.users.findOne(this.userId);
-			username = user && user.username;
-		}
+		let username = getUsername(this);
 		if (!username) {
 			return;
 		}
@@ -26,5 +34,9 @@ Template.avatar.helpers({
 		}
 
 		return getUserAvatarURL(username);
+	},
+
+	alt() {
+		return getUsername(this);
 	},
 });

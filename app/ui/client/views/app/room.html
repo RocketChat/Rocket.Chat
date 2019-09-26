@@ -87,7 +87,7 @@
 								<div class="leader-name">{{name}}</div>
 								<div class="leader-status userStatus">
 									<span class="color-ball status-bg-{{status}}"></span>
-									<span class="status-text leader-status-text">{{_ statusDisplay}}</span>
+									<span class="status-text leader-status-text">{{statusDisplay}}</span>
 								</div>
 								<a class="chat-now" href="{{chatNowLink}}">{{_ "Chat_Now"}}</a>
 							</div>
@@ -126,9 +126,15 @@
 									{{/if}}
 								{{/if}}
 
-								{{# with messageContext}}
-									{{#each msg in messagesHistory}}{{#nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings u=u}}{{/nrr}}{{/each}}
-								{{/with}}
+								{{# if useNrr}}
+									{{# with messageContext}}
+										{{#each msg in messagesHistory}}{{> nrr nrrargs 'message' shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+									{{/with}}
+								{{else}}
+									{{# with messageContext}}
+										{{#each msg in messagesHistory}}{{> message shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+									{{/with}}
+								{{/if}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">

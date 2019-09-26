@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { loadMessageHistory } from '../../../lib';
 import { LivechatVisitors } from '../../../models';
 

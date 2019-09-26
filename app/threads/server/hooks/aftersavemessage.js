@@ -8,7 +8,6 @@ import { updateUsersSubscriptions } from '../../../lib/server/lib/notifyUsersOnM
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 
 function notifyUsersOnReply(message, replies, room) {
-
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -26,7 +25,6 @@ const metaData = (message, parentMessage) => {
 };
 
 const notification = (message, room, replies) => {
-
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -50,7 +48,7 @@ const processThreads = (message, room) => {
 
 	const replies = [
 		parentMessage.u._id,
-		...(parentMessage.replies || []),
+		...parentMessage.replies || [],
 	].filter((userId) => userId !== message.u._id);
 
 	notifyUsersOnReply(message, replies, room);
