@@ -275,7 +275,11 @@
 		& .body {
 			display: inline;
 
+			max-width: 100%;
 			margin-left: 4px;
+			padding-right: 48px;
+
+			word-wrap: anywhere;
 		}
 
 		& .title {
