@@ -577,44 +577,49 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	this.done();
 };
 
-const createApi = function _createApi(name, enableCors, options = {}) {
-	if (!API[name]) {
-		API[name] = new APIClass(Object.assign({
-			apiPath: 'api/',
-			useDefaultAuth: true,
-			prettyJson: process.env.NODE_ENV === 'development',
-			enableCors,
-			defaultOptionsEndpoint,
-			auth: getUserAuth(),
-		}, options));
-	} else {
-		API[name]._config.enableCors = enableCors;
-		if (enableCors) {
-			if (settings.get('API_CORS_Origin')) {
-				API[name]._config.defaultHeaders['Access-Control-Allow-Origin'] = settings.get('API_CORS_Origin');
+const createApi = function _createApi(_api, options = {}) {
+	_api = _api || new APIClass(Object.assign({
+		apiPath: 'api/',
+		useDefaultAuth: true,
+		prettyJson: process.env.NODE_ENV === 'development',
+		defaultOptionsEndpoint,
+		auth: getUserAuth(),
+	}, options));
+
+	delete _api._config.defaultHeaders['Access-Control-Allow-Origin'];
+	delete _api._config.defaultHeaders['Access-Control-Allow-Headers'];
+	delete _api._config.defaultHeaders.Vary;
+
+	if (settings.get('API_Enable_CORS')) {
+		const origin = settings.get('API_CORS_Origin');
+
+		if (origin) {
+			_api._config.defaultHeaders['Access-Control-Allow-Origin'] = origin;
+
+			if (origin !== '*') {
+				_api._config.defaultHeaders.Vary = 'Origin';
 			}
-			API[name]._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
-		} else {
-			delete API[name]._config.defaultHeaders['Access-Control-Allow-Origin'];
-			delete API[name]._config.defaultHeaders['Access-Control-Allow-Headers'];
 		}
+		_api._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
 	}
+
+	return _api;
 };
 
-const createApis = function _createApis(enableCors) {
-	createApi('v1', enableCors, {
+const createApis = function _createApis() {
+	API.v1 = createApi(API.v1, {
 		version: 'v1',
 	});
 
-	createApi('default', enableCors);
+	API.default = createApi(API.default);
 };
 
 // also create the API immediately
-createApis(!!settings.get('API_Enable_CORS'));
+createApis();
 
 // register the API to be re-created once the CORS-setting changes.
 settings.get(/^(API_Enable_CORS|API_CORS_Origin)$/, () => {
-	createApis(settings.get('API_Enable_CORS'));
+	createApis();
 });
 
 settings.get('Accounts_CustomFields', (key, value) => {
