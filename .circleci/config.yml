@@ -13,14 +13,17 @@ test-install-dependencies: &test-install-dependencies
     echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
     sudo apt-get update
     sudo apt-get install -y mongodb-org-shell google-chrome-stable
+
 test-run: &test-run
   name: Run Tests
   command: |
     for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
 test-npm-install: &test-npm-install
   name: NPM install
   command: |
     npm install
+
 test-store_artifacts: &test-store_artifacts
   path: .screenshots/
 
@@ -29,6 +32,7 @@ test-configure-replicaset: &test-configure-replicaset
   command: |
     mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
     mongo --eval 'rs.status()'
+
 test-restore-npm-cache: &test-restore-npm-cache
   keys:
     - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
@@ -59,6 +63,7 @@ test-with-oplog: &test-with-oplog
     - save_cache: *test-save-npm-cache
     - store_artifacts: *test-store_artifacts
 
+# WIDECHAT - using 2.1 and the aws orb to push docker images to ECR
 version: 2.1
 
 orbs:
@@ -100,6 +105,7 @@ jobs:
             fi
             # only install meteor if bin isn't found
             command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
       - run:
           name: Versions
           command: |
@@ -109,20 +115,25 @@ jobs:
             meteor npm --versions
             meteor node -v
             git version
+
       - run:
           name: Meteor npm install
           command: |
             # rm -rf node_modules
             # rm -f package-lock.json
             meteor npm install
+
+      # WIDECHAT TODO: uncomment after next upstream merge and resolve Lint failure
       # - run:
       #     name: Lint
       #     command: |
       #       meteor npm run lint
+
       - run:
           name: Unit Test
           command: |
             MONGO_URL=mongodb://localhost:27017 meteor npm run testunit
+
       - restore_cache:
           keys:
             - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
@@ -136,6 +147,7 @@ jobs:
             echo "" > client/main.js
             meteor build --server-only --debug --directory /tmp/build-temp
             git checkout -- server/main.js client/main.js
+
       - run:
           name: Build Rocket.Chat
           environment:
@@ -151,6 +163,7 @@ jobs:
               export METEOR_PROFILE=1000
               meteor build --server-only --directory --debug /tmp/build-test
             fi;
+
       - run:
           name: Prepare build
           command: |
@@ -159,6 +172,7 @@ jobs:
             tar czf /tmp/build/Rocket.Chat.tar.gz bundle
             cd /tmp/build-test/bundle/programs/server
             npm install
+
       - save_cache:
           key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
           paths:
@@ -226,6 +240,7 @@ jobs:
             python3.5 get-pip.py --user
             export PATH=~/.local/bin:$PATH
             pip install awscli --upgrade --user
+
       - run:
           name: Publish assets
           command: |
@@ -241,12 +256,14 @@ jobs:
             bash .circleci/update-releases.sh
             bash .circleci/snap.sh
             bash .circleci/redhat-registry.sh
+
   image-build:
     <<: *defaults
 
     # docker:
     #   - image: docker:17.05.0-ce-git
 
+    # WIDECHAT - need to use ubuntu machine for the aws orb to work properly
     machine:
       image: ubuntu-1604:201903-01
 
@@ -256,6 +273,7 @@ jobs:
 
       - checkout
 
+      # WIDEHCAT - handled instead by the aws orb below
       # - setup_remote_docker
 
       - run:
@@ -281,6 +299,7 @@ jobs:
           dockerfile: /tmp/build/Dockerfile
           path: "/tmp/build-pr"
           checkout: false
+            # WIDECHAT 
             # if [[ $CIRCLE_TAG ]]; then
             #   docker login -u $DOCKER_USER -p $DOCKER_PASS
             #   echo "Build official Docker image"
@@ -318,6 +337,7 @@ jobs:
             #   docker push rocketchat/rocket.chat.preview:develop
             #   exit 0
             # fi;
+
   pr-build:
     <<: *defaults
     docker:
@@ -352,6 +372,7 @@ jobs:
             fi
             # only install meteor if bin isn't found
             command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
       - run:
           name: Versions
           command: |
@@ -361,12 +382,14 @@ jobs:
             meteor npm --versions
             meteor node -v
             git version
+
       - run:
           name: Meteor npm install
           command: |
             # rm -rf node_modules
             # rm -f package-lock.json
             meteor npm install
+
       - restore_cache:
           keys:
             - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
@@ -377,6 +400,7 @@ jobs:
             TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
             meteor build --server-only /tmp/build-pr
+
       - persist_to_workspace:
           root: /tmp/
           paths:
@@ -391,6 +415,7 @@ jobs:
     # docker:
     #   - image: docker:17.05.0-ce-git
 
+    # WIDECHAT
     machine:
       image: ubuntu-1604:201903-01
 
@@ -400,6 +425,7 @@ jobs:
 
       - checkout
 
+      # WIDECHAT
       # - setup_remote_docker
 
       - run:
@@ -429,6 +455,7 @@ jobs:
           path: "/tmp/build-pr"
           checkout: false
 
+            # WIDECHAT
             # docker login -u $DOCKER_USER -p $DOCKER_PASS
             # echo "Build official Docker image"
             # cp ~/repo/.docker/Dockerfile .
@@ -439,6 +466,7 @@ jobs:
             # #cp ~/repo/.docker-mongo/entrypoint.sh .
             # #docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
             # #docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
+
 workflows:
   version: 2
   build-and-test:
@@ -462,6 +490,7 @@ workflows:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-4-0: *test-mongo
+      # WIDECHAT
       # - deploy:
       #     requires:
       #       - test-with-oplog-mongo-3-4
