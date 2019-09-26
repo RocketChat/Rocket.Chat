@@ -514,8 +514,8 @@ workflows:
           requires:
             - build
           filters:
-            branches:
-              ignore: develop
+          #   branches:
+          #     ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - image-build:
