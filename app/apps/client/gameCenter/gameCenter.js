@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { modal } from '../../../ui-utils';
 import { APIClient, t } from '../../../utils';
 
-const getactivatedGames = async (instance) => {
+const getActivatedGames = async (instance) => {
 	try {
 		const { games } = await APIClient.get('apps/games');
 		instance.games.set(games);
@@ -25,7 +25,7 @@ Template.GameCenter.onCreated(function() {
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
 
-	getactivatedGames(instance);
+	getActivatedGames(instance);
 });
 
 Template.GameCenter.helpers({
