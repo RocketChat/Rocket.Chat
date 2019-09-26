@@ -600,6 +600,7 @@ const createApi = function _createApi(_api, options = {}) {
 				_api._config.defaultHeaders.Vary = 'Origin';
 			}
 		}
+
 		_api._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
 	}
 
