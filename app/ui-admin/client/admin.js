@@ -292,8 +292,8 @@ Template.admin.helpers({
 			readOnly,
 		};
 	},
-	setEditorOnBlur(_id) {
-		Meteor.defer(function() {
+	setEditorOnBlur() {
+		return function(_id) {
 			if (!$(`.code-mirror-box[data-editor-id="${ _id }"] .CodeMirror`)[0]) {
 				return;
 			}
@@ -308,7 +308,7 @@ Template.admin.helpers({
 			const onChangeDelayed = _.debounce(onChange, 500);
 			codeMirror.on('change', onChangeDelayed);
 			codeMirror.changeAdded = true;
-		});
+		};
 	},
 	assetAccept(fileConstraints) {
 		if (fileConstraints.extensions && fileConstraints.extensions.length) {
