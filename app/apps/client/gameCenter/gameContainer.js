@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../ui-utils';
 import { randomString } from '../utils';
