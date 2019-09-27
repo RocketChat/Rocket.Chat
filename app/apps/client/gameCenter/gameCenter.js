@@ -17,16 +17,23 @@ const getActivatedGames = async (instance) => {
 	instance.ready.set(true);
 };
 
-Template.GameCenter.onCreated(function() {
-	const instance = this;
-	this.ready = new ReactiveVar(false);
-	this.games = new ReactiveVar([]);
-	this.isLoading = new ReactiveVar(true);
-	this.page = new ReactiveVar(0);
-	this.end = new ReactiveVar(false);
+const openGame = (gameManifestInfo) => {
+	const instance = Template.instance();
+	const { location = 'MODAL' } = gameManifestInfo;
 
-	getActivatedGames(instance);
-});
+	if (location === 'CONTEXTUAL_BAR') {
+		instance.gameManifestInfo.set(gameManifestInfo);
+	} else if (location === 'MODAL') {
+		modal.open({
+			allowOutsideClick: false,
+			data: {
+				game: gameManifestInfo,
+			},
+			template: 'GameContainer',
+			type: 'rc-game',
+		});
+	}
+};
 
 Template.GameCenter.helpers({
 	isReady() {
@@ -52,16 +59,41 @@ Template.GameCenter.helpers({
 			}
 		};
 	},
+	showGame() {
+		return Template.instance().gameManifestInfo.get();
+	},
+	gameContainerOptions() {
+		const { gameManifestInfo, clearGameManifestInfo } = Template.instance();
+
+		return {
+			game: gameManifestInfo.get(),
+			showBackButton: true,
+			clearGameManifestInfo,
+		};
+	},
+});
+
+Template.GameCenter.onCreated(function() {
+	this.ready = new ReactiveVar(false);
+	this.games = new ReactiveVar([]);
+	this.isLoading = new ReactiveVar(true);
+	this.page = new ReactiveVar(0);
+	this.end = new ReactiveVar(false);
+
+	this.gameManifestInfo = new ReactiveVar(null);
+
+	this.clearGameManifestInfo = () => {
+		this.gameManifestInfo.set(null);
+	};
+
+	getActivatedGames(this);
 });
 
 Template.GameCenter.events({
-	'click .rc-table-tr'() {
-		modal.open({
-			allowOutsideClick: false,
-			data: this,
-			template: 'GameModal',
-			type: 'rc-game',
-		});
+	'click .rc-game-center__game'() {
+		const gameManifestInfo = this;
+
+		openGame(gameManifestInfo);
 	},
 	'click .js-invite'(event) {
 		event.stopPropagation();
