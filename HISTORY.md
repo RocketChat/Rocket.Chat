@@ -1,61 +1,11 @@
 
-# 2.1.0 (Under Release Candidate Process)
+# 2.1.0
+`2019-09-27  ·  1 ️️️⚠️  ·  13 🎉  ·  12 🚀  ·  22 🐛  ·  22 🔍  ·  20 👩‍💻👨‍💻`
 
-## 2.1.0-rc.3
-`2019-09-27  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Update Apps-Engine version to final version ([#15458](https://github.com/RocketChat/Rocket.Chat/pull/15458))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-
-## 2.1.0-rc.2
-`2019-09-27  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: API CORS not working after Cordova being disabled by default ([#15443](https://github.com/RocketChat/Rocket.Chat/pull/15443))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@rodrigok](https://github.com/rodrigok)
-
-## 2.1.0-rc.1
-`2019-09-25  ·  1 🎉  ·  4 🔍  ·  5 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-- Allow file sharing through Twilio(WhatsApp) integration ([#15415](https://github.com/RocketChat/Rocket.Chat/pull/15415))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Fix invalid version string error on marketplace screen ([#15437](https://github.com/RocketChat/Rocket.Chat/pull/15437))
-- Regression: Fix Commit Section when there is no commit info ([#15436](https://github.com/RocketChat/Rocket.Chat/pull/15436))
-- Regression: setup wizard dynamic import using relative url ([#15432](https://github.com/RocketChat/Rocket.Chat/pull/15432))
-- Regression: Favorite room button ([#15426](https://github.com/RocketChat/Rocket.Chat/pull/15426))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 2.1.0-rc.0
-`2019-09-21  ·  1 ️️️⚠️  ·  12 🎉  ·  12 🚀  ·  22 🐛  ·  16 🔍  ·  20 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.15.1`
+- NPM: `6.9.0`
+- MongoDB: `3.4, 3.6, 4.0`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -75,6 +25,7 @@
 - Add JWT to uploaded files urls ([#15297](https://github.com/RocketChat/Rocket.Chat/pull/15297))
 - Provide site-url to outgoing integrations ([#15238](https://github.com/RocketChat/Rocket.Chat/pull/15238) by [@mrsimpson](https://github.com/mrsimpson))
 - Only Load CodeMirror code when it is needed ([#15351](https://github.com/RocketChat/Rocket.Chat/pull/15351))
+- Allow file sharing through Twilio(WhatsApp) integration ([#15415](https://github.com/RocketChat/Rocket.Chat/pull/15415))
 
 ### 🚀 Improvements
 
@@ -135,6 +86,12 @@
 - [CHORE] Remove obsolete modal template ([#15257](https://github.com/RocketChat/Rocket.Chat/pull/15257))
 - Update Meteor to 1.8.1 ([#15358](https://github.com/RocketChat/Rocket.Chat/pull/15358))
 - Merge master into develop & Set version to 2.1.0-develop ([#15357](https://github.com/RocketChat/Rocket.Chat/pull/15357))
+- Regression: Fix invalid version string error on marketplace screen ([#15437](https://github.com/RocketChat/Rocket.Chat/pull/15437))
+- Regression: Fix Commit Section when there is no commit info ([#15436](https://github.com/RocketChat/Rocket.Chat/pull/15436))
+- Regression: setup wizard dynamic import using relative url ([#15432](https://github.com/RocketChat/Rocket.Chat/pull/15432))
+- Regression: Favorite room button ([#15426](https://github.com/RocketChat/Rocket.Chat/pull/15426))
+- Regression: API CORS not working after Cordova being disabled by default ([#15443](https://github.com/RocketChat/Rocket.Chat/pull/15443))
+- Update Apps-Engine version to final version ([#15458](https://github.com/RocketChat/Rocket.Chat/pull/15458))
 
 </details>
 
