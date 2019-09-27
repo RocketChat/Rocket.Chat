@@ -35286,6 +35286,26 @@
           ]
         }
       ]
+    },
+    "2.1.0-rc.3": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15458",
+          "title": "Update Apps-Engine version to final version",
+          "userLogin": "d-gubert",
+          "milestone": "2.1.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }
