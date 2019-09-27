@@ -378,8 +378,8 @@
 	}
 }
 
-.rc-game-modal_content {
-	margin: -14px -14px -18px -14px;
+.rc-game-modal__content {
+	margin: -14px -14px -18px;
 }
 
 .rc-game__main {
