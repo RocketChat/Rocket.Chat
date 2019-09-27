@@ -1,6 +1,20 @@
 
 # 2.1.0 (Under Release Candidate Process)
 
+## 2.1.0-rc.2
+`2019-09-27  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: API CORS not working after Cordova being disabled by default ([#15443](https://github.com/RocketChat/Rocket.Chat/pull/15443))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 2.1.0-rc.1
 `2019-09-25  ·  1 🎉  ·  4 🔍  ·  5 👩‍💻👨‍💻`
 
