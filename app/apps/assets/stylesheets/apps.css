@@ -378,12 +378,13 @@
 	}
 }
 
-.rc-game {
-	margin: -14px;
+.rc-game-modal_content {
+	margin: -14px -14px -18px -14px;
 }
 
-.rc-game.container {
-	position: relative;
+.rc-game__main {
+	height: 784px;
+	width: 400px;
 }
 
 .rc-game.close {
