@@ -134,7 +134,7 @@
 		"@google-cloud/language": "^2.0.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
-		"@rocket.chat/apps-engine": "^1.6.0-beta.1231",
+		"@rocket.chat/apps-engine": "^1.6.0-alpha.3",
 		"@rocket.chat/fuselage": "^0.2.0-alpha.2",
 		"@rocket.chat/icons": "^0.2.0-alpha.0",
 		"@slack/client": "^4.8.0",
