@@ -372,10 +372,8 @@
 
 .rc-game {
 	&__list {
-		.rc-table-tr {
-			.rc-table-title {
-				width: 135px;
-			}
+		.rc-table-title {
+			width: 135px;
 		}
 	}
 
