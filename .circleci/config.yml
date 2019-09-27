@@ -142,7 +142,7 @@ jobs:
       - run:
           name: Build a Meteor cache
           command: |
-            # to do this we can clear the main files and it build the rest
+            # to do this we can clear the main files and it builds the rest
             echo "" > server/main.js
             echo "" > client/main.js
             meteor build --server-only --debug --directory /tmp/build-temp
@@ -273,7 +273,7 @@ jobs:
 
       - checkout
 
-      # WIDEHCAT - handled instead by the aws orb below
+      # WIDECHAT - handled instead by the aws orb below
       # - setup_remote_docker
 
       - run:
