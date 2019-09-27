@@ -383,8 +383,8 @@
 }
 
 .rc-game__main {
-	height: 784px;
 	width: 400px;
+	height: 784px;
 }
 
 .rc-game.close {
