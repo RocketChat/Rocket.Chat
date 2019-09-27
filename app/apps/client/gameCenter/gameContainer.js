@@ -30,7 +30,7 @@ Template.GameContainer.helpers({
 });
 
 Template.GameContainer.events({
-	'click .rc-game.close'() {
+	'click .rc-game__close'() {
 		modal.cancel();
 	},
 	'click .js-back'() {

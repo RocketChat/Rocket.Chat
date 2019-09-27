@@ -22,9 +22,9 @@
 	{{#if isLoading}}
 	{{> loading}}
 	{{else}}
-		<div class="rc-game__container {{#if isModal}} rc-game-modal__content {{/if}}">
-			<div class="rc-game close">✖</div>
-			<iframe class="rc-game__main" src="{{ game.url }}"></iframe>
+		<div class="rc-game__container {{#if isModal}} rc-game-modal__container {{/if}}">
+			<div class="rc-game__close">✖</div>
+			<iframe class="rc-game__main {{#if isModal}} rc-game-modal__main {{/if}}" src="{{ game.url }}"></iframe>
 		</div>
 	{{/if}}
 </template>

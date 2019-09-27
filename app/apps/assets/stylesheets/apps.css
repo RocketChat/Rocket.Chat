@@ -370,38 +370,51 @@
 	}
 }
 
-.rc-games {
-	.rc-table-tr {
-		.rc-table-title {
-			width: 135px;
+.rc-game {
+	&__list {
+		.rc-table-tr {
+			.rc-table-title {
+				width: 135px;
+			}
 		}
 	}
-}
 
-.rc-game-modal__content {
-	margin: -14px -14px -18px;
-}
+	&__container {
+		height: calc(100% - 79px);
+	}
 
-.rc-game__main {
-	width: 400px;
-	height: 784px;
-}
+	&__close {
+		position: absolute;
+		top: -30px;
+		right: -25px;
 
-.rc-game.close {
-	position: absolute;
-	top: -30px;
-	right: -25px;
+		cursor: pointer;
 
-	cursor: pointer;
+		color: #e9ebee;
 
-	color: #e9ebee;
+		font-size: 20px;
 
-	font-size: 20px;
+		&:hover {
+			color: white;
+		}
+	}
 
-	&:hover {
-		color: white;
+	&__main {
+		min-width: 400px;
+		height: 100%;
 	}
 }
+
+.rc-game-modal {
+	&__container {
+		margin: -14px -14px -18px;
+	}
+
+	&__main {
+		min-height: 730px;
+	}
+}
+
 
 .rc-icon.game-center__invite-players-icon.game-center__invite-players-icon--plus {
 	font-size: 18px;
