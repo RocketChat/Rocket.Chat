@@ -1,6 +1,6 @@
 <template name="GameCenter">
 	{{#table onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
-	<tbody class="rc-games">
+	<tbody class="rc-game__list">
 		<thead>
 			<tr>
 				<th class="js-sort rc-table-td--medium" data-sort="name">
@@ -12,7 +12,7 @@
 			</tr>
 		</thead>
 		{{#each games}}
-		<tr class="rc-table-tr" data-name="{{name}}">
+		<tr class="rc-game-center__game" data-name="{{name}}">
 			<td>
 				<div class="rc-table-wrapper">
 					{{#if icon}}
@@ -61,4 +61,9 @@
 		{{/if}}
 	</tbody>
 	{{/table}}
+	<div class="rc-user-info-container flex-nav animated{{#unless showGame}} animated-hidden{{/unless}}">
+		{{#if showGame}}
+			{{> GameContainer (gameContainerOptions) }}
+		{{/if}}
+	</div>
 </template>
