@@ -1,6 +1,20 @@
 
 # 2.1.0 (Under Release Candidate Process)
 
+## 2.1.0-rc.3
+`2019-09-27  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Update Apps-Engine version to final version ([#15458](https://github.com/RocketChat/Rocket.Chat/pull/15458))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+
 ## 2.1.0-rc.2
 `2019-09-27  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
