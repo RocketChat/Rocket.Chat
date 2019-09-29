@@ -1,6 +1,7 @@
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
+import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -25,6 +26,10 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	// if the message has a type means it is a special message (like the closing comment), so skips
 	if (message.t) {
 		return message;
+	}
+
+	if (message.file) {
+		message = normalizeMessageFileUpload(message);
 	}
 
 	OmniChannel.reply({

@@ -15,7 +15,7 @@ import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
-import { tooltip } from '../../tooltip';
+import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 
 function executeCustomScript(script) {
@@ -86,14 +86,15 @@ Template.body.onRendered(function() {
 			return;
 		}
 
-		popover.close();
-
 		if (/input|textarea|select/i.test(target.tagName)) {
 			return;
 		}
 		if (target.id === 'pswp') {
 			return;
 		}
+
+		popover.close();
+
 		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
 		if (!inputMessage) {
 			return;
@@ -184,7 +185,7 @@ Template.main.helpers({
 	hasUsername() {
 		const uid = Meteor.userId();
 		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
-		return (user && user.username) || settings.get('Accounts_AllowAnonymousRead');
+		return (user && user.username) || (!uid && settings.get('Accounts_AllowAnonymousRead'));
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
@@ -194,7 +195,7 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (user.services.totp !== undefined && user.services.totp.enabled) {
+		if (!user || (user.services.totp !== undefined && user.services.totp.enabled)) {
 			return false;
 		}
 
@@ -227,7 +228,7 @@ Template.main.helpers({
 });
 
 Template.main.events({
-	'click .burger'() {
+	'click div.burger'() {
 		return menu.toggle();
 	},
 });

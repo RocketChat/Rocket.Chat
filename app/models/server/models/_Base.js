@@ -4,6 +4,7 @@ import objectPath from 'object-path';
 import _ from 'underscore';
 
 import { BaseDb } from './_BaseDb';
+import { oplogEvents } from '../oplogEvents';
 
 export class Base {
 	constructor(nameOrModel) {
@@ -16,6 +17,16 @@ export class Base {
 		this.emit = this._db.emit.bind(this._db);
 
 		this.db = this;
+
+		this._db.on('change', ({ action, oplog }) => {
+			if (!oplog) {
+				return;
+			}
+			oplogEvents.emit('record', {
+				collection: this.collectionName,
+				op: action,
+			});
+		});
 	}
 
 	get origin() {
@@ -40,6 +51,20 @@ export class Base {
 
 		query.roles = roleName;
 		return !_.isUndefined(this.findOne(query, { fields: { roles: 1 } }));
+	}
+
+	isUserInRoleScope(uid, scope) {
+		const query = this.roleBaseQuery(uid, scope);
+		if (!query) {
+			return false;
+		}
+
+		const options = {
+			fields: { _id: 1 },
+		};
+
+		const found = this.findOne(query, options);
+		return !!found;
 	}
 
 	addRolesByUserId(userId, roles, scope) {

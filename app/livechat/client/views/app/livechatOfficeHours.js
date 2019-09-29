@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 
@@ -42,6 +42,16 @@ Template.livechatOfficeHours.helpers({
 	},
 	enableOfficeHoursFalseChecked() {
 		if (!Template.instance().enableOfficeHours.get()) {
+			return 'checked';
+		}
+	},
+	allowAgentsOnlineOutOfficeHoursTrueChecked() {
+		if (Template.instance().allowAgentsOnlineOutOfficeHours.get()) {
+			return 'checked';
+		}
+	},
+	allowAgentsOnlineOutOfficeHoursFalseChecked() {
+		if (!Template.instance().allowAgentsOnlineOutOfficeHours.get()) {
 			return 'checked';
 		}
 	},
@@ -96,6 +106,8 @@ Template.livechatOfficeHours.events({
 				});
 			}
 		}
+
+		settings.set('Livechat_allow_online_agents_outside_office_hours', instance.allowAgentsOnlineOutOfficeHours.get());
 
 		settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get(), (err/* , success*/) => {
 			if (err) {
@@ -158,8 +170,10 @@ Template.livechatOfficeHours.onCreated(function() {
 	});
 
 	this.enableOfficeHours = new ReactiveVar(null);
+	this.allowAgentsOnlineOutOfficeHours = new ReactiveVar(null);
 
 	this.autorun(() => {
 		this.enableOfficeHours.set(settings.get('Livechat_enable_office_hours'));
+		this.allowAgentsOnlineOutOfficeHours.set(settings.get('Livechat_allow_online_agents_outside_office_hours'));
 	});
 });

@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
@@ -27,8 +28,8 @@ export const EmojiPicker = {
 		}
 		this.initiated = true;
 
-		this.recent = window.localStorage.getItem('emoji.recent') ? window.localStorage.getItem('emoji.recent').split(',') : [];
-		this.tone = window.localStorage.getItem('emoji.tone') || 0;
+		this.recent = Meteor._localStorage.getItem('emoji.recent') ? Meteor._localStorage.getItem('emoji.recent').split(',') : [];
+		this.tone = Meteor._localStorage.getItem('emoji.tone') || 0;
 
 		Blaze.render(Template.emojiPicker, document.body);
 
@@ -55,7 +56,7 @@ export const EmojiPicker = {
 	},
 	setTone(tone) {
 		this.tone = tone;
-		window.localStorage.setItem('emoji.tone', tone);
+		Meteor._localStorage.setItem('emoji.tone', tone);
 	},
 	getTone() {
 		return this.tone;
@@ -130,9 +131,17 @@ export const EmojiPicker = {
 
 		updatePositions = true;
 
-		window.localStorage.setItem('emoji.recent', this.recent);
+		Meteor._localStorage.setItem('emoji.recent', this.recent);
 		emoji.packages.base.emojisByCategory.recent = this.recent;
 		this.updateRecent('recent');
+	},
+	removeFromRecent(_emoji) {
+		const pos = this.recent.indexOf(_emoji);
+		if (pos === -1) {
+			return;
+		}
+		this.recent.splice(pos, 1);
+		Meteor._localStorage.setItem('emoji.recent', this.recent);
 	},
 	updateRecent(category) {
 		updateRecentEmoji(category);
