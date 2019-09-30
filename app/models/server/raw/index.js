@@ -10,6 +10,8 @@ import UsersModel from '../models/Users';
 import { UsersRaw } from './Users';
 import RoomsModel from '../models/Rooms';
 import { RoomsRaw } from './Rooms';
+import LivechatDepartmentModel from '../models/LivechatDepartment';
+import { LivechatDepartmentRaw } from './LivechatDepartment';
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection());
 export const Roles = new RolesRaw(RolesModel.model.rawCollection());
@@ -17,3 +19,4 @@ export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCo
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection());
 export const Users = new UsersRaw(UsersModel.model.rawCollection());
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection());
+export const LivechatDepartment = new LivechatDepartmentRaw(LivechatDepartmentModel.model.rawCollection());
