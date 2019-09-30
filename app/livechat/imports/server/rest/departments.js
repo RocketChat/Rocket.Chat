@@ -4,21 +4,21 @@ import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
-import { findDepartments } from '../lib/departments';
+import { findDepartments } from '../../../server/api/lib/departments';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
-		const departments = findDepartments({
+		const departments = Promise.await(findDepartments({
 			userId: this.userId,
 			pagination: {
 				offset,
 				count,
 				sort,
 			},
-		});
+		}));
 
 		return API.v1.success(departments);
 	},
