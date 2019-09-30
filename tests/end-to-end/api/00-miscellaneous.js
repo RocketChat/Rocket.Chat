@@ -106,7 +106,6 @@ describe('miscellaneous', function() {
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
-				
 				const allUserPreferencesKeys = [
 					'audioNotifications',
 					// 'language',
