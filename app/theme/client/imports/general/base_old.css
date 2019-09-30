@@ -468,7 +468,7 @@ rc-old select,
 }
 
 .rc-old .-autocomplete-container {
-	top: auto !important;
+	top: auto;
 
 	width: 100%;
 
