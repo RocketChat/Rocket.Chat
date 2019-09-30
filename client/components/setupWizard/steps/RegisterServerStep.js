@@ -1,5 +1,5 @@
-import { CheckBox, RadioButton } from '@rocket.chat/fuselage';
-import React, { useState } from 'react';
+import { CheckBox, Label, RadioButton, useMergedRefs } from '@rocket.chat/fuselage';
+import React, { useRef, useState } from 'react';
 
 import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
@@ -14,18 +14,26 @@ import { useSetupWizardStepsState } from '../StepsState';
 import { batchSetSettings } from '../functions';
 import { useFocus } from '../../../hooks/useFocus';
 
-const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) =>
-	<label
+const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) => {
+	const innerRef = useRef();
+	const mergedRef = useMergedRefs(ref, innerRef);
+
+	return <span
 		className={[
 			'SetupWizard__RegisterServerStep-option',
 			selected && 'SetupWizard__RegisterServerStep-option--selected',
 			disabled && 'SetupWizard__RegisterServerStep-option--disabled',
 		].filter(Boolean).join(' ')}
+		onClick={() => {
+			innerRef.current.click();
+		}}
 	>
-		<RadioButton ref={ref} label={label} checked={selected} disabled={disabled} {...props} />
+		<Label text={label} position='end'>
+			<RadioButton ref={mergedRef} checked={selected} disabled={disabled} {...props} />
+		</Label>
 		{children}
-	</label>
-);
+	</span>;
+});
 
 const Items = (props) => <ul className='SetupWizard__RegisterServerStep-items' {...props} />;
 
@@ -116,16 +124,17 @@ export function RegisterServerStep({ step, title }) {
 						<Item icon='check'>{t('Register_Server_Registered_OAuth')}</Item>
 						<Item icon='check'>{t('Register_Server_Registered_Marketplace')}</Item>
 					</Items>
-					<CheckBox
-						name='optInMarketingEmails'
-						value='true'
-						label={t('Register_Server_Opt_In')}
-						disabled={!registerServer}
-						checked={optInMarketingEmails}
-						onChange={({ currentTarget: { checked } }) => {
-							setOptInMarketingEmails(checked);
-						}}
-					/>
+					<Label text={t('Register_Server_Opt_In')} position='end' className='SetupWizard__RegisterServerStep__optIn'>
+						<CheckBox
+							name='optInMarketingEmails'
+							value='true'
+							disabled={!registerServer}
+							checked={optInMarketingEmails}
+							onChange={({ currentTarget: { checked } }) => {
+								setOptInMarketingEmails(checked);
+							}}
+						/>
+					</Label>
 				</Option>
 				<Option
 					label={t('Register_Server_Standalone')}
