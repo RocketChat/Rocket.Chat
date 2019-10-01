@@ -1,6 +1,6 @@
 import { api, credentials, request } from '../api-data';
 
-export const createDepartment = () => new Promise((resolve) => {
+export const createDepartment = () => new Promise((resolve, reject) => {
 	request.post(api('/livechat/department'))
 		.send({
 			department: {
@@ -13,5 +13,10 @@ export const createDepartment = () => new Promise((resolve) => {
 			},
 		})
 		.set(credentials)
-		.end((err, res) => resolve(res.body.department));
+		.end((err, res) => {
+			if (err) {
+				return reject(err);
+			}
+			resolve(res.body.department);
+		});
 });

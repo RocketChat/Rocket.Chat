@@ -13,7 +13,7 @@ describe('LIVECHAT - departments', function() {
 			createDepartment().then((createdDepartment) => {
 				department = createdDepartment;
 				done();
-			});
+			}).catch(console.log);
 		});
 	});
 
