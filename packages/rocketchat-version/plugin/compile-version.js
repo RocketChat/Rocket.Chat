@@ -55,7 +55,7 @@ class VersionCompiler {
 						}
 
 						const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
-						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/[^0-9.]/g, '');
+						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/^[^0-9]/g, '');
 
 						output = `exports.Info = ${ JSON.stringify(output, null, 4) };`;
 						file.addJavaScript({

@@ -29,9 +29,11 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-
+	let extraData;
 	if (message.file) {
 		message = normalizeMessageFileUpload(message);
+		const { fileUpload, rid, u: { _id: userId } = {} } = message;
+		extraData = Object.assign({}, { rid, userId, fileUpload });
 	}
 
 	const SMSService = SMS.getService(settings.get('SMS_Service'));
@@ -46,7 +48,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
+	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg, extraData);
 
 	return message;
 }, callbacks.priority.LOW, 'sendMessageBySms');
