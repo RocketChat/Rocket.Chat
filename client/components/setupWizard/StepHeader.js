@@ -1,7 +1,7 @@
 import { Headline } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../hooks/useTranslation';
+import { useTranslation } from '../contexts/TranslationContext';
 import './StepHeader.css';
 
 export function StepHeader({ number, title }) {

@@ -1,9 +1,7 @@
 import moment from 'moment';
 import s from 'underscore.string';
 
-import { useTranslation } from './useTranslation';
-
-export const useFormatters = () => {
+export const useFormatters = (t) => {
 	const formatNumber = (number) => s.numberFormat(number, 2);
 
 	const formatMemorySize = (memorySize) => {
@@ -34,8 +32,6 @@ export const useFormatters = () => {
 
 		return moment(date).format('LLL');
 	};
-
-	const t = useTranslation();
 
 	const formatHumanReadableTime = (time) => {
 		const days = Math.floor(time / 86400);

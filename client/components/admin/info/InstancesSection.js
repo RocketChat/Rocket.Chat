@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { useTranslation } from '../../../hooks/useTranslation';
-import { useFormatters } from '../../../hooks/useFormatters';
+import { useFormatters } from './useFormatters';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
 
 export function InstancesSection({ instances }) {
 	const t = useTranslation();
-	const { formatDate } = useFormatters();
+	const { formatDate } = useFormatters(t);
 
 	if (!instances || !instances.length) {
 		return null;

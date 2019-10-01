@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { useTranslation } from '../../../hooks/useTranslation';
-import { useFormatters } from '../../../hooks/useFormatters';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
+import { useFormatters } from './useFormatters';
 
 export function BuildEnvironmentSection({ info }) {
 	const t = useTranslation();
-	const { formatDate } = useFormatters();
+	const { formatDate } = useFormatters(t);
 	const build = info && (info.compile || info.build);
 
 	return <>
