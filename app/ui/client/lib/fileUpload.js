@@ -152,7 +152,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			return;
 		}
 
-		if (!fileUploadIsValidContentType(file.file.type)) {
+		if (file.file.type && !fileUploadIsValidContentType(file.file.type)) {
 			modal.open({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,
