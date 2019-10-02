@@ -634,23 +634,13 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 
 	const metadata = {
 		EntityDescriptor: {
+			'@xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
+			'@xsi:schemaLocation': "urn:oasis:names:tc:SAML:2.0:metadata https://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd",
 			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
 			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
 			'@entityID': this.options.issuer,
 			SPSSODescriptor: {
 				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-				SingleLogoutService: {
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-				},
-				NameIDFormat: this.options.identifierFormat,
-				AssertionConsumerService: {
-					'@index': '1',
-					'@isDefault': 'true',
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-					'@Location': callbackUrl,
-				},
 			},
 		},
 	};
@@ -687,6 +677,19 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 			],
 		};
 	}
+
+	metadata.EntityDescriptor.SPSSODescriptor.SingleLogoutService = {
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+		'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+		'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+	};
+	metadata.EntityDescriptor.SPSSODescriptor.NameIDFormat = this.options.identifierFormat;
+	metadata.EntityDescriptor.SPSSODescriptor.AssertionConsumerService = {
+		'@index': '1',
+		'@isDefault': 'true',
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+		'@Location': callbackUrl,
+	};
 
 	return xmlbuilder.create(metadata).end({
 		pretty: true,
