@@ -2350,6 +2350,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Afslut SAML-session",
   "SAML_Custom_Private_Key": "Privat nøgleindhold",
   "SAML_Custom_Provider": "Tilpasset udbyder",
+  "SAML_Custom_user_data_fieldmap": "Brugerdata Field Map",
   "SAML_Custom_Immutable_Property_Username": "Brugernavn",
   "SAML_Custom_Public_Cert": "Offentligt certificeret indhold",
   "Saturday": "lørdag",

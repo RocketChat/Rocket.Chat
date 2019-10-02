@@ -2524,6 +2524,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Termine a sessão SAML",
   "SAML_Custom_Private_Key": "Conteúdo chave privado",
   "SAML_Custom_Provider": "Provedor Personalizado",
+  "SAML_Custom_user_data_fieldmap": "Mapeamento de campos do utilizador",
   "SAML_Custom_Immutable_Property_Username": "Nome de utilizador",
   "SAML_Custom_Public_Cert": "Conteúdo do Círculo Público",
   "Saturday": "Sábado",
