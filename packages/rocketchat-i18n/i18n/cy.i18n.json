@@ -2220,6 +2220,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Terfynu sesiwn SAML",
   "SAML_Custom_Private_Key": "Cynnwys Allweddol Preifat",
   "SAML_Custom_Provider": "Darparwr Arfaethedig",
+  "SAML_Custom_user_data_fieldmap": "Map Maes Data Defnyddwyr",
   "SAML_Custom_Immutable_Property_Username": "Enw Defnyddiwr",
   "SAML_Custom_Public_Cert": "Cynnwys Tystysgrif Gyhoeddus",
   "Saturday": "Sadwrn",

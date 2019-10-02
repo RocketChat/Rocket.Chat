@@ -2384,6 +2384,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "SAML-sessie beëindigen",
   "SAML_Custom_Private_Key": "Private Key Inhoud",
   "SAML_Custom_Provider": "Custom Provider",
+  "SAML_Custom_user_data_fieldmap": "User Data Field Map",
   "SAML_Custom_Immutable_Property_Username": "Gebruikersnaam",
   "SAML_Custom_Public_Cert": "Public Cert Contents",
   "Saturday": "Zaterdag",

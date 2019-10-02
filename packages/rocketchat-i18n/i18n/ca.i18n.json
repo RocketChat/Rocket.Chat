@@ -2366,6 +2366,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Finalitza la sessió SAML",
   "SAML_Custom_Private_Key": "Contingut de la clau privada",
   "SAML_Custom_Provider": "Proveïdor (provider) personalitzat",
+  "SAML_Custom_user_data_fieldmap": "Mapatge de camps de dades d'usuari",
   "SAML_Custom_Immutable_Property_Username": "Nom d'usuari",
   "SAML_Custom_Public_Cert": "Contingut del certificat públic",
   "Saturday": "dissabte",

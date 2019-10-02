@@ -2238,6 +2238,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Спыніць SAML-сесіі",
   "SAML_Custom_Private_Key": "Private Key Змест",
   "SAML_Custom_Provider": "прыстасаваныя Provider",
+  "SAML_Custom_user_data_fieldmap": "Дадзеныя карыстальніка Карта Поле",
   "SAML_Custom_Immutable_Property_Username": "імя карыстальніка",
   "SAML_Custom_Public_Cert": "Грамадскія Змест Cert",
   "Saturday": "субота",
