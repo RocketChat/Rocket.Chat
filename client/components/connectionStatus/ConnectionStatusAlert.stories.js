@@ -6,7 +6,8 @@ import { ConnectionStatusAlert } from './ConnectionStatusAlert';
 import { ConnectionStatusProvider } from '../providers/ConnectionStatusProvider.mock';
 
 export default {
-	title: 'ConnectionStatusAlert',
+	title: 'connectionStatus/ConnectionStatusAlert',
+	component: ConnectionStatusAlert,
 	decorators: [
 		rocketChatWrapper,
 	],

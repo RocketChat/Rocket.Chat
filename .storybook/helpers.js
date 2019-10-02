@@ -36,6 +36,7 @@ export const rocketChatWrapper = (fn) =>
 					color: #444;
 				}
 			`}</style>
+			<div dangerouslySetInnerHTML={{__html: require('!!raw-loader!../private/public/icons.svg').default}} />
 			<div className='global-font-family color-primary-font-color'>
 				{fn()}
 			</div>
