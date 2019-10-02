@@ -45,10 +45,9 @@ registerAccessTokenService('facebook', function(options) {
 		accessToken: String,
 		secret: String,
 		expiresIn: Match.Integer,
-		identity: Match.Maybe(Object),
 	}));
 
-	const identity = options.identity || getIdentity(options.accessToken, whitelisted, options.secret);
+	const identity = getIdentity(options.accessToken, whitelisted, options.secret);
 
 	const serviceData = {
 		accessToken: options.accessToken,

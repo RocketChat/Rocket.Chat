@@ -1,9 +1,10 @@
 import _ from 'underscore';
+import s from 'underscore.string';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -78,6 +79,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
+		msg.msg = s.escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
@@ -204,6 +206,10 @@ Template.message.helpers({
 			return 'own';
 		}
 	},
+	t() {
+		const { msg } = this;
+		return msg.t;
+	},
 	timestamp() {
 		const { msg } = this;
 		return +msg.ts;
@@ -310,7 +316,7 @@ Template.message.helpers({
 				let usernames;
 
 				if (displayNames.length > 15) {
-					usernames = `${ selectedDisplayNames.join(', ') }${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
+					usernames = `${ selectedDisplayNames.join(', ') } ${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
 				} else if (displayNames.length > 1) {
 					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
 				} else {
@@ -406,8 +412,8 @@ Template.message.helpers({
 		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
-		const { msg: { tmid, t }, settings: { showreply } } = this;
-		return !!(tmid && showreply && (!t || t === 'e2e'));
+		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
+		return !(groupable || _groupable) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -429,33 +435,34 @@ Template.message.helpers({
 
 const findParentMessage = (() => {
 	const waiting = [];
-
+	const uid = Tracker.nonreactive(() => Meteor.userId());
 	const getMessages = _.debounce(async function() {
-		const uid = Tracker.nonreactive(() => Meteor.userId());
 		const _tmp = [...waiting];
 		waiting.length = 0;
-		(await call('getMessages', _tmp)).map((msg) => upsertMessage({ msg, uid }));
+		(await call('getMessages', _tmp)).map((msg) => Messages.findOne({ _id: msg._id }) || upsertMessage({ msg: { ...msg, _hidden: true }, uid }));
 	}, 500);
+
 
 	return (tmid) => {
 		if (waiting.indexOf(tmid) > -1) {
 			return;
 		}
-
 		const message = Messages.findOne({ _id: tmid });
-		if (message) {
-			const uid = Tracker.nonreactive(() => Meteor.userId());
-			return Messages.update({ tmid, repliesCount: { $exists: 0 } }, {
+		if (!message) {
+			waiting.push(tmid);
+			return getMessages();
+		}
+		return Messages.update(
+			{ tmid, repliesCount: { $exists: 0 } },
+			{
 				$set: {
 					following: message.replies && message.replies.indexOf(uid) > -1,
 					threadMsg: normalizeThreadMessage(message),
 					repliesCount: message.tcount,
 				},
-			}, { multi: true });
-		}
-
-		waiting.push(tmid);
-		getMessages();
+			},
+			{ multi: true }
+		);
 	};
 })();
 

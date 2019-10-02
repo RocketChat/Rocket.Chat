@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import toastr from 'toastr';
 import s from 'underscore.string';
@@ -12,7 +13,7 @@ Template.accountEncryption.helpers({
 		return settings.get('E2E_Enable');
 	},
 	allowKeyChange() {
-		return localStorage.getItem('public_key') && localStorage.getItem('private_key');
+		return Meteor._localStorage.getItem('public_key') && Meteor._localStorage.getItem('private_key');
 	},
 	canConfirmNewKey() {
 		const encryptionKey = Template.instance().encryptionKey.get();

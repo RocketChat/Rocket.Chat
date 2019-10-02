@@ -19,6 +19,7 @@ describe('[Administration]', () => {
 
 	describe('[Admin View]', () => {
 		before(() => {
+			sideNav.sidebarMenu.waitForVisible(5000);
 			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
@@ -32,7 +33,7 @@ describe('[Administration]', () => {
 			before(() => {
 				admin.infoLink.waitForVisible(5000);
 				admin.infoLink.click();
-				admin.infoRocketChatTable.waitForVisible(5000);
+				admin.infoRocketChatTable.waitForVisible(10000);
 			});
 			it('the first title should be Rocket.Chat', () => {
 				admin.infoRocketChatTableTitle.getText().should.equal('Rocket.Chat');
@@ -759,16 +760,16 @@ describe('[Administration]', () => {
 					admin.accountsDesktopNotifications.click();
 					admin.accountsDesktopNotifications.isVisible().should.be.true;
 				});
-				it('the desktop audio notifications field value should be mentions', () => {
-					admin.accountsDesktopNotifications.getValue().should.equal('mentions');
+				it('the desktop audio notifications field value should be all', () => {
+					admin.accountsDesktopNotifications.getValue().should.equal('all');
 				});
 
-				it('it should show the mobile audio notifications select field', () => {
+				it('it should show the mobile notifications select field', () => {
 					admin.accountsMobileNotifications.click();
 					admin.accountsMobileNotifications.isVisible().should.be.true;
 				});
-				it('the mobile audio notifications field value should be mentions', () => {
-					admin.accountsMobileNotifications.getValue().should.equal('mentions');
+				it('the mobile notifications field value should be all', () => {
+					admin.accountsMobileNotifications.getValue().should.equal('all');
 				});
 
 				it('it should show the unread tray icon alert field', () => {

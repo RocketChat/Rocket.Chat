@@ -43,7 +43,7 @@ test-save-npm-cache: &test-save-npm-cache
     - ./node_modules
 
 test-docker-image: &test-docker-image
-  circleci/node:8.11-stretch-browsers
+  circleci/node:8.15-stretch-browsers
 
 test-with-oplog: &test-with-oplog
   <<: *defaults
@@ -68,8 +68,8 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11-stretch
-      - image: mongo:3.2
+      - image: circleci/node:8.15-stretch
+      - image: mongo:3.4
 
     steps:
       - checkout
@@ -133,13 +133,15 @@ jobs:
           keys:
             - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
-      - restore_cache:
-          keys:
-            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-
-      - restore_cache:
-          keys:
-            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
+      # To reduce memory need during actual build, build the packages solely first
+      - run:
+          name: Build a Meteor cache
+          command: |
+            # to do this we can clear the main files and it build the rest
+            echo "" > server/main.js
+            echo "" > client/main.js
+            meteor build --server-only --debug --directory /tmp/build-temp
+            git checkout -- server/main.js client/main.js
 
       - run:
           name: Build Rocket.Chat
@@ -178,16 +180,6 @@ jobs:
             - ./.meteor/local
 
       - save_cache:
-          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/node_modules
-
-      - save_cache:
-          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/.meteor/local
-
-      - save_cache:
           key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
           paths:
             - ~/.meteor
@@ -201,13 +193,6 @@ jobs:
       - store_artifacts:
           path: /tmp/build
 
-
-  test-with-oplog-mongo-3-2:
-    <<: *test-with-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.2
-        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
   test-with-oplog-mongo-3-4:
     <<: *test-with-oplog
@@ -233,7 +218,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11-stretch
+      - image: circleci/node:8.15-stretch
 
     steps:
       - attach_workspace:
@@ -260,6 +245,8 @@ jobs:
 
             export PATH=~/.local/bin:$PATH
             export CIRCLE_TAG=${CIRCLE_TAG:=}
+
+            aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
 
             source .circleci/setartname.sh
             source .circleci/setdeploydir.sh
@@ -342,6 +329,79 @@ jobs:
               exit 0
             fi;
 
+  pr-build:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8.15-stretch
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+
+      - restore_cache:
+          keys:
+            - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+
+      - run:
+          name: Install Meteor
+          command: |
+            # Restore bin from cache
+            set +e
+            METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+            METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+            set -e
+            LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+            if [ -e $LAUNCHER ]
+            then
+              echo "Cached Meteor bin found, restoring it"
+              sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+            else
+              echo "No cached Meteor bin found."
+            fi
+
+            # only install meteor if bin isn't found
+            command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
+      - run:
+          name: Versions
+          command: |
+            npm --versions
+            node -v
+            meteor --version
+            meteor npm --versions
+            meteor node -v
+            git version
+
+      - run:
+          name: Meteor npm install
+          command: |
+            # rm -rf node_modules
+            # rm -f package-lock.json
+            meteor npm install
+
+      - restore_cache:
+          keys:
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }
+
+      - run:
+          name: Build Rocket.Chat
+          environment:
+            TOOL_NODE_FLAGS: --max_old_space_size=3072
+          command: |
+            meteor build --server-only /tmp/build-pr
+
+
+      - persist_to_workspace:
+          root: /tmp/
+          paths:
+            - build-pr
+
+      - store_artifacts:
+          path: /tmp/build-pr
+
   pr-image-build:
     <<: *defaults
 
@@ -364,9 +424,9 @@ jobs:
               exit 0
             fi;
 
-            cd /tmp/build
-            tar xzf Rocket.Chat.tar.gz
-            rm Rocket.Chat.tar.gz
+            cd /tmp/build-pr
+            tar xzf repo.tar.gz
+            rm repo.tar.gz
 
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
@@ -375,11 +435,11 @@ jobs:
             docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
             docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
 
-            echo "Build preview Docker image"
-            cp ~/repo/.docker-mongo/Dockerfile .
-            cp ~/repo/.docker-mongo/entrypoint.sh .
-            docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
-            docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
+            #echo "Build preview Docker image"
+            #cp ~/repo/.docker-mongo/Dockerfile .
+            #cp ~/repo/.docker-mongo/entrypoint.sh .
+            #docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
+            #docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
 
 workflows:
   version: 2
@@ -389,13 +449,13 @@ workflows:
           filters:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-2: &test-mongo
+      - test-with-oplog-mongo-3-4: &test-mongo
           requires:
             - build
           filters:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-4: &test-mongo-no-pr
+      - test-with-oplog-mongo-3-6: &test-mongo-no-pr
           requires:
             - build
           filters:
@@ -403,11 +463,9 @@ workflows:
               only: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-6: *test-mongo-no-pr
       - test-with-oplog-mongo-4-0: *test-mongo
       - deploy:
           requires:
-            - test-with-oplog-mongo-3-2
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
@@ -433,7 +491,7 @@ workflows:
               ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - pr-image-build:
+      - pr-build:
           requires:
             - hold
           filters:
@@ -441,4 +499,11 @@ workflows:
               ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-
+      - pr-image-build:
+          requires:
+            - pr-build
+          filters:
+            branches:
+              ignore: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/

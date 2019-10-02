@@ -32,7 +32,7 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (soundData._id) {
-			matchingResults = CustomSounds.findByNameExceptID(soundData.name, soundData._id).fetch();
+			matchingResults = CustomSounds.findByNameExceptId(soundData.name, soundData._id).fetch();
 		} else {
 			matchingResults = CustomSounds.findByName(soundData.name).fetch();
 		}
