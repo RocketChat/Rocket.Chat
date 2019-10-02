@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Beëindig SAML-sessie",
   "SAML_Custom_Private_Key": "Privaat Sleutel Inhoud",
   "SAML_Custom_Provider": "Aangepaste Verskaffer",
+  "SAML_Custom_user_data_fieldmap": "Gebruiker data veld kaart",
   "SAML_Custom_Immutable_Property_Username": "Gebruikersnaam",
   "SAML_Custom_Public_Cert": "Publieke Sertifisering",
   "Saturday": "Saterdag",

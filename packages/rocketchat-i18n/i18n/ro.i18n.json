@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Termină sesiunea SAML",
   "SAML_Custom_Private_Key": "Conținut cheie privat",
   "SAML_Custom_Provider": "Custom Provider",
+  "SAML_Custom_user_data_fieldmap": "User Data Field Map",
   "SAML_Custom_Immutable_Property_Username": "Utilizator",
   "SAML_Custom_Public_Cert": "Conținut public",
   "Saturday": "Sâmbătă",

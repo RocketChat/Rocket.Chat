@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "SAML-session-г төгсгөнө үү",
   "SAML_Custom_Private_Key": "Хувийн түлхүүр агуулга",
   "SAML_Custom_Provider": "Гаалийн байгууллага",
+  "SAML_Custom_user_data_fieldmap": "Хэрэглэгчийн өгөгдлийн хээрийн газрын зураг",
   "SAML_Custom_Immutable_Property_Username": "Хэрэглэгчийн нэр",
   "SAML_Custom_Public_Cert": "Нийтийн гэрчилгээний агуулга",
   "Saturday": "Бямба",

@@ -2355,6 +2355,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Prekini SAML-sesiju",
   "SAML_Custom_Private_Key": "Sadržaj privatnog ključa",
   "SAML_Custom_Provider": "Prilagođeni Provider",
+  "SAML_Custom_user_data_fieldmap": "Mapa korisničkih podataka",
   "SAML_Custom_Immutable_Property_Username": "Korisničko ime",
   "SAML_Custom_Public_Cert": "Sadržaj javnog cert",
   "Saturday": "Subota",

@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "SAML- அமர்வை நிறுத்தவும்",
   "SAML_Custom_Private_Key": "தனிப்பட்ட விசை பொருளடக்கம்",
   "SAML_Custom_Provider": "விருப்ப வழங்குநர்",
+  "SAML_Custom_user_data_fieldmap": "பயனர் தகவல்கள் களம் வரைபடம்",
   "SAML_Custom_Immutable_Property_Username": "பயனர் பெயர்",
   "SAML_Custom_Public_Cert": "பொது சான்றிதழ்",
   "Saturday": "சனிக்கிழமை",
