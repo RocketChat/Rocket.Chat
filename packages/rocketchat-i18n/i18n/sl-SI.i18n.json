@@ -2670,7 +2670,7 @@
   "User_unmuted_by": "Uporabnik <em>__user_by__</em> je vključil zvok za uporabnika<em> __user_unmuted__ </em>",
   "User_unmuted_in_room": "Vključen zvok za uporabnika v sobi",
   "User_updated_successfully": "Uporabnik je bil uspešno posodobljen",
-  "User_uploaded_a_file_on_channel": "<strong>__username__</strong> je naložil datoteko v <strong>__channel__</strong>:",
+  "User_uploaded_a_file_on_channel": "<strong>__username__</strong> je naložil datoteko v <strong>__channel__</strong>",
   "User_uploaded_a_file_to_you": "<strong>__username__</strong> vam je poslal datoteko",
   "User_uploaded_file": "Naložil datoteko",
   "User_uploaded_image": "Naložil sliko",
