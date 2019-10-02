@@ -11,10 +11,10 @@ describe('LIVECHAT - departments', function() {
 	before((done) => {
 		updateSetting('Livechat_enabled', true).then(() => {
 			createDepartment()
-			.then((createdDepartment) => {
-				department = createdDepartment;
-				done();
-			}).catch(console.log);
+				.then((createdDepartment) => {
+					department = createdDepartment;
+					done();
+				}).catch(console.log);
 		});
 	});
 
