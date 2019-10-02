@@ -1,10 +1,11 @@
 import _ from 'underscore';
+import s from 'underscore.string';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
 import { Session } from 'meteor/session';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -79,6 +80,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
+		msg.msg = s.escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
@@ -209,6 +211,10 @@ Template.message.helpers({
 			return 'own';
 		}
 	},
+	t() {
+		const { msg } = this;
+		return msg.t;
+	},
 	timestamp() {
 		const { msg } = this;
 		return +msg.ts;
@@ -315,7 +321,7 @@ Template.message.helpers({
 				let usernames;
 
 				if (displayNames.length > 15) {
-					usernames = `${ selectedDisplayNames.join(', ') }${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
+					usernames = `${ selectedDisplayNames.join(', ') } ${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
 				} else if (displayNames.length > 1) {
 					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
 				} else {
@@ -411,8 +417,8 @@ Template.message.helpers({
 		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
-		const { msg: { tmid, t }, settings: { showreply } } = this;
-		return !!(tmid && showreply && (!t || t === 'e2e'));
+		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
+		return !(groupable || _groupable) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;

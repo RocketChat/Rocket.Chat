@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
 
 import { hasRole } from '../../../authorization';
@@ -13,17 +13,17 @@ import { getURL } from '../../../utils/lib/getURL';
 
 
 // DEPRECATED
-// Will be removed after v1.12.0
+// Will be removed after v3.0.0
 API.v1.addRoute('info', { authRequired: false }, {
 	get() {
-		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v1.12.0';
+		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v3.0.0';
 		console.warn(warningMessage);
 		const user = this.getLoggedInUser();
 
 		if (user && hasRole(user._id, 'admin')) {
 			return API.v1.success(this.deprecationWarning({
 				endpoint: 'info',
-				versionWillBeRemoved: '1.12.0',
+				versionWillBeRemoved: '3.0.0',
 				response: {
 					info: Info,
 				},
@@ -32,7 +32,7 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'info',
-			versionWillBeRemoved: '1.12.0',
+			versionWillBeRemoved: '3.0.0',
 			response: {
 				info: {
 					version: Info.version,

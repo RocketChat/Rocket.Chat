@@ -79,7 +79,15 @@ Meteor.startup(function() {
 	});
 
 	settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
-	settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
+	settings.add('Livechat_show_agent_info', true, {
+		type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_info' });
+	settings.add('Livechat_show_agent_email', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		enableQuery: { _id: 'Livechat_show_agent_info', value: true },
+		i18nLabel: 'Show_agent_email',
+	});
 
 	settings.add('Livechat_request_comment_when_closing_conversation', true, {
 		type: 'boolean',
@@ -272,6 +280,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Office_hours_enabled',
 	});
 
+	settings.add('Livechat_allow_online_agents_outside_office_hours', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Allow_Online_Agents_Outside_Office_Hours',
+		enableQuery: { _id: 'Livechat_enable_office_hours', value: true },
+	});
+
 	settings.add('Livechat_continuous_sound_notification_new_livechat_room', false, {
 		type: 'boolean',
 		group: 'Livechat',
@@ -354,25 +370,24 @@ Meteor.startup(function() {
 		i18nLabel: 'RDStation_Token',
 	});
 
-	settings.add('Livechat_Routing_Method', 'Least_Amount', {
+	settings.add('Livechat_Routing_Method', 'Auto_Selection', {
 		type: 'select',
 		group: 'Livechat',
 		public: true,
 		section: 'Routing',
 		values: [
 			{ key: 'External', i18nLabel: 'External_Service' },
-			{ key: 'Least_Amount', i18nLabel: 'Least_Amount' },
-			{ key: 'Guest_Pool', i18nLabel: 'Guest_Pool' },
+			{ key: 'Auto_Selection', i18nLabel: 'Auto_Selection' },
+			{ key: 'Manual_Selection', i18nLabel: 'Manual_Selection' },
 		],
 	});
 
-	settings.add('Livechat_guest_pool_with_no_agents', false, {
+	settings.add('Livechat_accept_chats_with_no_agents', false, {
 		type: 'boolean',
 		group: 'Livechat',
 		section: 'Routing',
 		i18nLabel: 'Accept_with_no_online_agents',
 		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
 	});
 
 	settings.add('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0, {
@@ -381,7 +396,7 @@ Meteor.startup(function() {
 		section: 'Routing',
 		i18nLabel: 'Max_number_incoming_livechats_displayed',
 		i18nDescription: 'Max_number_incoming_livechats_displayed_description',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Manual_Selection' },
 	});
 
 	settings.add('Livechat_show_queue_list_link', false, {
