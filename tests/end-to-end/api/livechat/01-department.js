@@ -9,19 +9,19 @@ describe('LIVECHAT - departments', function() {
 	before((done) => getCredentials(done));
 
 	before((done) => {
-		updateSetting('Livechat_enabled', true).then(() => {
-			createDepartment()
-				.then((createdDepartment) => {
-					department = createdDepartment;
-					done();
-				}).catch(console.log);
-		});
+		updateSetting('Livechat_enabled', true)
+			.then(() => createDepartment())
+			.then((createdDepartment) => {
+				department = createdDepartment;
+				done();
+			}).catch(console.log);
 	});
 
 	describe('livechat/department', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission ["view-livechat-departments", "view-l-room"]', (done) => {
-			updatePermission('view-l-room', []).then(() => {
-				updatePermission('view-livechat-departments', []).then(() => {
+			updatePermission('view-l-room', [])
+				.then(() => updatePermission('view-livechat-departments', []))
+				.then(() => {
 					request.get(api('livechat/department'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
@@ -32,11 +32,11 @@ describe('LIVECHAT - departments', function() {
 						})
 						.end(done);
 				});
-			});
 		});
 		it('should return an array of departments', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
-				updatePermission('view-livechat-departments', ['admin']).then(() => {
+			updatePermission('view-l-room', ['admin'])
+				.then(() => updatePermission('view-livechat-departments', ['admin']))
+				.then(() => {
 					request.get(api('livechat/department'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
@@ -50,14 +50,14 @@ describe('LIVECHAT - departments', function() {
 						})
 						.end(done);
 				});
-			});
 		});
 	});
 
 	describe('livechat/department/id', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission ["view-livechat-departments", "view-l-room"]', (done) => {
-			updatePermission('view-l-room', []).then(() => {
-				updatePermission('view-livechat-departments', []).then(() => {
+			updatePermission('view-l-room', [])
+				.then(() => updatePermission('view-livechat-departments', []))
+				.then(() => {
 					request.get(api(`livechat/department/${ department._id }`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
@@ -68,11 +68,11 @@ describe('LIVECHAT - departments', function() {
 						})
 						.end(done);
 				});
-			});
 		});
 		it('should return the created department', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
-				updatePermission('view-livechat-departments', ['admin']).then(() => {
+			updatePermission('view-l-room', ['admin'])
+				.then(() => updatePermission('view-livechat-departments', ['admin']))
+				.then(() => {
 					request.get(api(`livechat/department/${ department._id }`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
@@ -85,7 +85,6 @@ describe('LIVECHAT - departments', function() {
 						})
 						.end(done);
 				});
-			});
 		});
 	});
 });
