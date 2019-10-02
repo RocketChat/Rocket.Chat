@@ -15,6 +15,7 @@ export const createDepartment = () => new Promise((resolve, reject) => {
 		.set(credentials)
 		.end((err, res) => {
 			if (err) {
+				console.log(error);
 				return reject(err);
 			}
 			resolve(res.body.department);
