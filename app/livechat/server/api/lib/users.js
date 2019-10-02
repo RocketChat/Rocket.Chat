@@ -17,7 +17,14 @@ async function findUsers({ userId, role, pagination: { offset, count, sort } }) 
 	const users = await cursor.toArray();
 
 	return {
-		users: users.map((user) => Object.assign({}, { _id: user._id, username: user.username, name: user.name, status: user.status, statusLivechat: user.statusLivechat })),
+		users: users.map((user) => Object.assign({}, {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+			status: user.status,
+			statusLivechat: user.statusLivechat,
+			emails: user.emails,
+		})),
 		count: users.length,
 		offset,
 		total,

@@ -7,8 +7,8 @@ import toastr from 'toastr';
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
-import { AgentUsers } from '../../../collections/AgentUsers';
 import './visitorForward.html';
+import { APIClient } from '../../../../../utils/client';
 
 Template.visitorForward.helpers({
 	visitor() {
@@ -21,22 +21,21 @@ Template.visitorForward.helpers({
 		return LivechatDepartment.find({ enabled: true });
 	},
 	agents() {
-		const query = {
-			_id: { $ne: Meteor.userId() },
-			status: { $ne: 'offline' },
-			statusLivechat: 'available',
-		};
-
-		return AgentUsers.find(query, { sort: { name: 1, username: 1 } });
+		return Template
+			.instance()
+			.agents
+			.get()
+			.filter((agent) => agent._id !== Meteor.userId() && agent.status !== 'offline' && agent.statusLivechat === 'available');
 	},
 	agentName() {
 		return this.name || this.username;
 	},
 });
 
-Template.visitorForward.onCreated(function() {
+Template.visitorForward.onCreated(async function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
+	this.agents = new ReactiveVar([]);
 
 	this.autorun(() => {
 		this.visitor.set(Meteor.users.findOne({ _id: Template.currentData().visitorId }));
@@ -47,7 +46,8 @@ Template.visitorForward.onCreated(function() {
 	});
 
 	this.subscribe('livechat:departments');
-	this.subscribe('livechat:agents');
+	const { users } = await APIClient.v1.get('livechat/users/agent?sort={"name": 1, "username": 1}');
+	this.agents.set(users);
 });
 
 
