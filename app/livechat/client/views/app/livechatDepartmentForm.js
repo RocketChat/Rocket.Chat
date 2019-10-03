@@ -189,8 +189,11 @@ Template.livechatDepartmentForm.onCreated(function() {
 	this.subscribe('livechat:agents');
 
 	this.autorun(async () => {
-		const { department, agents } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
-		this.department.set(department);
-		this.selectedAgents.set(agents);
+		const id = FlowRouter.getParam('_id');
+		if (id) {
+			const { department, agents } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
+			this.department.set(department);
+			this.selectedAgents.set(agents);
+		}
 	});
 });

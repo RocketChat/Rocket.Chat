@@ -300,17 +300,22 @@ Template.visitorInfo.onCreated(function() {
 
 	if (rid) {
 		this.subscribe('livechat:rooms', { _id: rid });
-		this.autorun(async () => {
+		this.autorun(() => {
 			const room = LivechatRoom.findOne({ _id: rid });
 			this.visitorId.set(room && room.v && room.v._id);
 			this.departmentId.set(room && room.departmentId);
 			this.tags.set(room && room.tags);
-			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }`);
-			this.department.set(department);
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid });
 	}
+
+	this.autorun(async () => {
+		if (this.departmentId.get()) {
+			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }`);
+			this.department.set(department);
+		}
+	});
 
 	this.autorun(() => {
 		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));
