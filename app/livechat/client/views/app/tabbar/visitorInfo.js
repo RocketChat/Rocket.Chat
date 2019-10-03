@@ -312,7 +312,7 @@ Template.visitorInfo.onCreated(function() {
 
 	this.autorun(async () => {
 		if (this.departmentId.get()) {
-			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }`);
+			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }?includeAgents=false`);
 			this.department.set(department);
 		}
 	});

@@ -69,6 +69,39 @@ describe('LIVECHAT - departments', function() {
 						.end(done);
 				});
 		});
+		it('should return the created department without the agents if the user does not have the necessary permission', (done) => {
+			updatePermission('view-l-room', ['admin'])
+				.then(() => updatePermission('view-livechat-departments', []))
+				.then(() => {
+					request.get(api(`livechat/department/${ department._id }`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('department');
+							expect(res.body).to.not.have.property('agents');
+							expect(res.body.department._id).to.be.equal(department._id);
+						})
+						.end(done);
+				});
+		});
+		it('should return the created department without the agents if the user does have the permission but request to no include the agents', (done) => {
+			updatePermission('view-livechat-departments', ['admin'])
+				.then(() => {
+					request.get(api(`livechat/department/${ department._id }?includeAgents=false`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('department');
+							expect(res.body).to.not.have.property('agents');
+							expect(res.body.department._id).to.be.equal(department._id);
+						})
+						.end(done);
+				});
+		});
 		it('should return the created department', (done) => {
 			updatePermission('view-l-room', ['admin'])
 				.then(() => updatePermission('view-livechat-departments', ['admin']))

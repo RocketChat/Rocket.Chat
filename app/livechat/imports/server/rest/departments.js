@@ -55,12 +55,18 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			_id: String,
 		});
 
-		const { department, agents } = Promise.await(findDepartmentById({ userId: this.userId, departmentId: this.urlParams._id }));
+		const { department, agents } = Promise.await(findDepartmentById({
+			userId: this.userId,
+			departmentId: this.urlParams._id,
+			includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
+		}));
 
-		return API.v1.success({
-			department,
-			agents,
-		});
+		const result = { department };
+		if (agents) {
+			result.agents = agents;
+		}
+
+		return API.v1.success(result);
 	},
 	put() {
 		const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');
