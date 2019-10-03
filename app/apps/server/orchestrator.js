@@ -82,9 +82,9 @@ class AppServerOrchestrator {
 		return this._manager;
 	}
 
-	getEnabledGames() {
-		const { externalComponentManager: { providedComponents } } = this._manager;
-		return providedComponents;
+	getExternalComponents() {
+		const { externalComponentManager: { providedExternalComponents } } = this._manager;
+		return providedExternalComponents;
 	}
 
 	isInitialized() {
