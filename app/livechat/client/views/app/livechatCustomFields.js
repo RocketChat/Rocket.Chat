@@ -1,20 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../../ui-utils';
 import { t, handleError } from '../../../../utils';
-import { LivechatCustomField } from '../../collections/LivechatCustomField';
 import './livechatCustomFields.html';
+import { APIClient } from '../../../../utils/client';
+
+const loadCustomFields = async (instance) => {
+	const { customFields } = await APIClient.v1.get('livechat/custom-fields');
+	instance.customFields.set(customFields);
+};
 
 Template.livechatCustomFields.helpers({
 	customFields() {
-		return LivechatCustomField.find();
+		return Template.instance().customFields.get();
 	},
 });
 
 Template.livechatCustomFields.events({
-	'click .remove-custom-field'(e) {
+	'click .remove-custom-field'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -28,10 +34,11 @@ Template.livechatCustomFields.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeCustomField', this._id, function(error/* , result*/) {
+			Meteor.call('livechat:removeCustomField', this._id, async function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
+				await loadCustomFields(instance);
 				modal.open({
 					title: t('Removed'),
 					text: t('Field_removed'),
@@ -49,6 +56,7 @@ Template.livechatCustomFields.events({
 	},
 });
 
-Template.livechatCustomFields.onCreated(function() {
-	this.subscribe('livechat:customFields');
+Template.livechatCustomFields.onCreated(async function() {
+	this.customFields = new ReactiveVar([]);
+	await loadCustomFields(this);
 });
