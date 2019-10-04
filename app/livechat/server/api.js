@@ -5,3 +5,4 @@ import '../imports/server/rest/users.js';
 import '../imports/server/rest/upload.js';
 import '../imports/server/rest/inquiries.js';
 import '../imports/server/rest/rooms.js';
+import '../imports/server/rest/officeHour.js';
