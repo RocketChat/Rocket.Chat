@@ -7,8 +7,6 @@ import toastr from 'toastr';
 
 import { t, handleError } from '../../../../utils';
 import { hasPermission } from '../../../../authorization';
-import { LivechatDepartment } from '../../collections/LivechatDepartment';
-import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';
 import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatDepartmentForm.html';
 import { APIClient } from '../../../../utils/client';
@@ -195,22 +193,12 @@ Template.livechatDepartmentForm.onCreated(async function() {
 	const { users } = await APIClient.v1.get('livechat/users/agent');
 	this.agents.set(users);
 
-	this.autorun(() => {
-		const sub = this.subscribe('livechat:departments', FlowRouter.getParam('_id'));
-		if (sub.ready()) {
-			const department = LivechatDepartment.findOne({ _id: FlowRouter.getParam('_id') });
-			if (department) {
-				this.department.set(department);
-
-				const { _id: departmentId } = department;
-				this.subscribe('livechat:departmentAgents', departmentId, () => {
-					const newSelectedAgents = [];
-					LivechatDepartmentAgents.find({ departmentId }).forEach((agent) => {
-						newSelectedAgents.push(agent);
-					});
-					this.selectedAgents.set(newSelectedAgents);
-				});
-			}
+	this.autorun(async () => {
+		const id = FlowRouter.getParam('_id');
+		if (id) {
+			const { department, agents } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
+			this.department.set(department);
+			this.selectedAgents.set(agents);
 		}
 	});
 });
