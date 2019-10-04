@@ -256,7 +256,6 @@ Template.livechatCurrentChats.events({
 Template.livechatCurrentChats.onCreated(async function() {
 	this.ready = new ReactiveVar(false);
 	this.limit = new ReactiveVar(20);
-	this.filter = new ReactiveVar({});
 	this.selectedAgents = new ReactiveVar([]);
 	this.customFilters = new ReactiveVar([]);
 	this.customFields = new ReactiveVar([]);
