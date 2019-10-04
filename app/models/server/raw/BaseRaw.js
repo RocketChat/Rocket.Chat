@@ -11,6 +11,10 @@ export class BaseRaw {
 		return this.col.findOne(...args);
 	}
 
+	find(...args) {
+		return this.col.find(...args);
+	}
+
 	findUsersInRoles() {
 		throw new Error('overwrite-function', 'You must overwrite this function in the extended classes');
 	}

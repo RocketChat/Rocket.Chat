@@ -6,19 +6,19 @@ import toastr from 'toastr';
 
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
-import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import { AgentUsers } from '../../../collections/AgentUsers';
 import './visitorForward.html';
+import { APIClient } from '../../../../../utils/client';
 
 Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
 	},
 	hasDepartments() {
-		return LivechatDepartment.find({ enabled: true }).count() > 0;
+		return Template.instance().departments.get().filter((department) => department.enabled === true).length > 0;
 	},
 	departments() {
-		return LivechatDepartment.find({ enabled: true });
+		return Template.instance().departments.get().filter((department) => department.enabled === true);
 	},
 	agents() {
 		const query = {
@@ -34,9 +34,10 @@ Template.visitorForward.helpers({
 	},
 });
 
-Template.visitorForward.onCreated(function() {
+Template.visitorForward.onCreated(async function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
+	this.departments = new ReactiveVar([]);
 
 	this.autorun(() => {
 		this.visitor.set(Meteor.users.findOne({ _id: Template.currentData().visitorId }));
@@ -45,9 +46,9 @@ Template.visitorForward.onCreated(function() {
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
 	});
-
-	this.subscribe('livechat:departments');
 	this.subscribe('livechat:agents');
+	const { departments } = await APIClient.v1.get('livechat/department');
+	this.departments.set(departments);
 });
 
 
