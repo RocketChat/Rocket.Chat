@@ -53,6 +53,9 @@ Template.uploadedFilesList.helpers({
 			return getURL(this.url);
 		}
 	},
+
+	escapeCssUrl: (url) => url.replace(/(['"])/g, '\\$1'),
+
 	limit() {
 		return Template.instance().state.get('limit');
 	},
