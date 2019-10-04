@@ -59,7 +59,7 @@ const renderMessage = (message) => {
 		regexTokens = new RegExp(`(${ (message.tokens || []).map(({ token }) => RegExp.escape(token)) })`, 'g');
 		msgParts = message.html.split(regexTokens);
 	} else {
-		msgParts = [message.html];
+		msgParts = [message.msg];
 	}
 
 	message.html = msgParts
