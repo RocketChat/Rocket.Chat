@@ -5,9 +5,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import toastr from 'toastr';
 
 import { modal, call, popover } from '../../../../ui-utils';
-import { t } from '../../../../utils/client';
+import { t, handleError } from '../../../../utils/client';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatRoom } from '../../collections/LivechatRoom';
 import './livechatCurrentChats.html';
@@ -64,6 +65,10 @@ Template.livechatCurrentChats.helpers({
 	tagId() {
 		return this;
 	},
+	closedChats() {
+		const anyClosedRoom = Template.instance().livechatRoom.get().map((room) => !room.open);
+		return anyClosedRoom.includes(true);
+	},
 });
 
 Template.livechatCurrentChats.events({
@@ -72,6 +77,33 @@ Template.livechatCurrentChats.events({
 	},
 	'click .js-load-more'(event, instance) {
 		instance.limit.set(instance.limit.get() + 20);
+	},
+	'click .delete-all-closed-chats'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		modal.open({
+			title: t('Are_you_sure'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: true,
+			html: false,
+		}, () => {
+			instance.livechatRoom.get().forEach((room) => {
+				if (!room.open) {
+					Meteor.call('livechat:removeRoom', room._id, function(error/* , result*/) {
+						if (error) {
+							return handleError(error);
+						}
+					});
+				}
+			});
+			// Now all rooms Deleted, show success message
+			toastr.success(t('All closed rooms deleted'));
+		});
 	},
 	'click .add-filter-button'(event, instance) {
 		event.preventDefault();
@@ -251,6 +283,7 @@ Template.livechatCurrentChats.onCreated(function() {
 	this.ready = new ReactiveVar(false);
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
+	this.livechatRoom = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
 	this.customFilters = new ReactiveVar([]);
 	this.customFields = new ReactiveVar([]);

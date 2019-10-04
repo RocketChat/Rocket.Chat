@@ -107,7 +107,13 @@
 
 					<div class="livechat-current-chats-filters-buttons">
 						<div class="form-group">
-							<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+                                                      <button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+                                                      <br/>
+                                                      {{#if closedChats}}
+                                                              <button class="button danger delete-all-closed-chats">{{_ "Delete_all_closed_chats"}}</button>
+                                                      {{else}}
+                                                              <td>&nbsp;</td>
+                                                      {{/if}}
 						</div>
 					</div>
 				</div>
