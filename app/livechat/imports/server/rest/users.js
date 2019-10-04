@@ -132,7 +132,8 @@ API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
 				if (Livechat.removeAgent(user.username)) {
 					return API.v1.success();
 				}
-			} else if (this.urlParams.type === 'manager') {
+			}
+			if (this.urlParams.type === 'manager') {
 				if (Livechat.removeManager(user.username)) {
 					return API.v1.success();
 				}

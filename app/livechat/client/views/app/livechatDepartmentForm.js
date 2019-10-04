@@ -23,11 +23,7 @@ Template.livechatDepartmentForm.helpers({
 	},
 	availableAgents() {
 		const selected = _.pluck(Template.instance().selectedAgents.get(), 'username');
-		return Template
-			.instance()
-			.agents
-			.get()
-			.filter((agent) => agent.username !== selected);
+		return Template.instance().agents.get().filter((agent) => agent.username !== selected);
 	},
 	showOnRegistration(value) {
 		const department = Template.instance().department.get();

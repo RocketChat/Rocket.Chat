@@ -20,10 +20,7 @@ Template.visitorForward.helpers({
 		return Template.instance().departments.get().filter((department) => department.enabled === true);
 	},
 	agents() {
-		return Template
-			.instance()
-			.agents
-			.get()
+		return Template.instance().agents.get()
 			.filter((agent) => agent._id !== Meteor.userId() && agent.status !== 'offline' && agent.statusLivechat === 'available');
 	},
 	agentName() {

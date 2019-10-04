@@ -22,12 +22,4 @@ export class RolesRaw extends BaseRaw {
 		}
 		return false;
 	}
-
-	async findUsersInRoles(name, scope, options) {
-		const role = await this.findOne({ _id: name });
-		const roleScope = (role && role.scope) || 'Users';
-		const model = Models[roleScope];
-
-		return model && model.findUsersInRoles && model.findUsersInRoles(name, scope, options);
-	}
 }

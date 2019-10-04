@@ -19,12 +19,8 @@ const getUsername = (user) => user.username;
 Template.livechatAgents.helpers({
 	exceptionsAgents() {
 		const { selectedAgents } = Template.instance();
-		return Template
-			.instance()
-			.agents
-			.get()
-			.map(getUsername)
-			.concat(selectedAgents.get().map(getUsername));
+		return Template.instance().agents.get()
+			.map(getUsername).concat(selectedAgents.get().map(getUsername));
 	},
 	deleteLastAgent() {
 		const i = Template.instance();
@@ -188,9 +184,9 @@ Template.livechatAgents.onCreated(function() {
 		this.selectedAgents.set(this.selectedAgents.curValue.filter((user) => user.username !== username));
 	};
 
-	this.autorun(async function() {
+	this.autorun(function() {
 		const limit = instance.limit.get();
-		await loadAgents(instance, limit);
+		loadAgents(instance, limit);
 	});
 	this.getAgentsWithCriteria = function() {
 		let filter;
@@ -199,6 +195,9 @@ Template.livechatAgents.onCreated(function() {
 			filter = s.trim(instance.filter.get());
 		}
 		const regex = new RegExp(s.escapeRegExp(filter), 'i');
-		return instance.agents.get().filter((agent) => agent.name.match(regex) || agent.username.match(regex) || agent.emails.some((email) => email.address.match(regex)));
+		return instance.agents.get()
+			.filter((agent) => agent.name.match(regex)
+				|| agent.username.match(regex)
+				|| agent.emails.some((email) => email.address.match(regex)));
 	};
 });
