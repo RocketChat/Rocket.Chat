@@ -7,12 +7,12 @@ import moment from 'moment';
 
 import { t, handleError } from '../../../../utils';
 import { settings } from '../../../../settings';
-import { LivechatOfficeHour } from '../../collections/livechatOfficeHour';
 import './livechatOfficeHours.html';
+import { APIClient } from '../../../../utils/client';
 
 Template.livechatOfficeHours.helpers({
 	days() {
-		return LivechatOfficeHour.find({}, { sort: { code: 1 } });
+		return Template.instance().officeHours.get();
 	},
 	startName(day) {
 		return `${ day.day }_start`;
@@ -156,17 +156,16 @@ Template.livechatOfficeHours.onCreated(function() {
 			open: new ReactiveVar(false),
 		},
 	};
+	this.officeHours = new ReactiveVar([]);
 
-	this.autorun(() => {
-		this.subscribe('livechat:officeHour');
-
-		if (this.subscriptionsReady()) {
-			LivechatOfficeHour.find().forEach(function(d) {
-				Template.instance().dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
-				Template.instance().dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
-				Template.instance().dayVars[d.day].open.set(d.open);
-			});
-		}
+	this.autorun(async () => {
+		const { officeHours } = await APIClient.v1.get('livechat/office-hours');
+		this.officeHours.set(officeHours);
+		this.officeHours.get().forEach((d) => {
+			this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
+			this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
+			this.dayVars[d.day].open.set(d.open);
+		});
 	});
 
 	this.enableOfficeHours = new ReactiveVar(null);

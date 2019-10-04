@@ -7,6 +7,6 @@ export async function findLivechatOfficeHours({ userId }) {
 	}
 
 	return {
-		officeHours: await LivechatOfficeHour.find().toArray(),
+		officeHours: await LivechatOfficeHour.find({}, { sort: { code: 1 } }).toArray(),
 	};
 }
