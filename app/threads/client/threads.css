@@ -36,7 +36,6 @@
 
 .message {
 	& .thread-replied {
-
 		display: inline-flex;
 
 		display: flex;
@@ -59,6 +58,7 @@
 		width: 20px;
 
 		&--thread {
+			position: absolute;
 			left: 40px;
 
 			width: 20px;
@@ -78,15 +78,13 @@
 	}
 
 	& > .thread-quote {
-
 		display: flex;
 
-		margin: calc((var(--default-padding) /2) - 6px) 0 7px 0;
+		margin: calc((var(--default-padding) / 2) - 6px) 0 7px 0;
 		align-items: center;
 	}
 
 	.thread-quote__message {
-
 		display: flex;
 
 		overflow: hidden;
@@ -164,4 +162,10 @@
 .contextual-bar__content.thread,
 .contextual-bar__content.threads {
 	padding: 0;
+}
+
+.hide-avatars .message .thread-icons--thread {
+	position: static;
+
+	margin-right: 15px;
 }
