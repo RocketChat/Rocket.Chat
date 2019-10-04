@@ -1,15 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import moment from 'moment';
 
 import { ChatRoom } from '../../../../../models';
 import { Notifications } from '../../../../../notifications';
 import { t } from '../../../../../utils';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import { AgentUsers } from '../../../collections/AgentUsers';
+import { modal } from '../../../../../ui-utils';
+import { settings } from '../../../../../settings';
+
 import './visitorForward.html';
 
 Template.visitorForward.helpers({
@@ -120,9 +124,9 @@ Template.visitorForward.events({
 				title: t('Timeout'),
 				type: 'error',
 				timer: 2000,
-				text: TAPi18n.__('Username_did_not_accept_your_livechat_request', { username: userDeny.username }),
+				text: t('Username_did_not_accept_your_livechat_request', { username: userDeny.username }),
 				html: true,
-				confirmButtonText: TAPi18n.__('OK'),
+				confirmButtonText: t('OK'),
 			});
 		}, timeoutAgent);
 		transferData.timeout = instance.timeout;
@@ -157,19 +161,18 @@ Tracker.autorun(function() {
 		Notifications.onUser('forward-livechat', (type, data) => {
 			const user = Meteor.users.findOne(data.transferData.originalAgent);
 			switch (type) {
-
 				case 'handshake':
 					// Save transfer data collection, which will ensure that
 					// the chat is in forwarding state
 					Meteor.call('livechat:addForwardData', data.transferData);
 					modal.open({
-						title: TAPi18n.__('LiveChat'),
-						text: TAPi18n.__('Username_wants_to_forward_livechat_Do_you_want_to_accept', { username: user.username }),
+						title: t('LiveChat'),
+						text: t('Username_wants_to_forward_livechat_Do_you_want_to_accept', { username: user.username }),
 						html: true,
 						showCancelButton: true,
 						allowOutsideClick: false,
-						confirmButtonText: TAPi18n.__('Yes'),
-						cancelButtonText: TAPi18n.__('No'),
+						confirmButtonText: t('Yes'),
+						cancelButtonText: t('No'),
 					}, (isConfirm) => {
 						if (isConfirm) {
 							Meteor.call('livechat:checkLiveAgent', data.transferData.originalAgent, (error, result) => {
@@ -216,10 +219,10 @@ Tracker.autorun(function() {
 					const userDeny = Meteor.users.findOne(data.transferData.userId);
 					Meteor.clearTimeout(data.transferData.timeout);
 					modal.open({
-						title: TAPi18n.__('LiveChat'),
-						text: TAPi18n.__('Username_did_not_accept_your_livechat_request', { username: userDeny.username }),
+						title: t('LiveChat'),
+						text: t('Username_did_not_accept_your_livechat_request', { username: userDeny.username }),
 						html: true,
-						confirmButtonText: TAPi18n.__('OK'),
+						confirmButtonText: t('OK'),
 					});
 					break;
 
@@ -231,4 +234,3 @@ Tracker.autorun(function() {
 		});
 	}
 });
-

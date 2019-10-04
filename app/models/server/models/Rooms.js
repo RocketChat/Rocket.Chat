@@ -48,6 +48,40 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	findByRoomUpdateTransferHistory(transferData) {
+		const query = {
+			_id: transferData.roomId,
+		};
+
+		const transferDataFormat = {
+			requestedBy: transferData.originalAgent,
+			originalAgent: transferData.currentAgent,
+			targetAgent: transferData.userId,
+		};
+
+		const update = {
+			$push: {
+				transferHistory: transferDataFormat,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findByRoomAddTranferData(transferData) {
+		const query = { _id: transferData.roomId };
+		const options = { $set: { transferData } };
+
+		return this.update(query, options);
+	}
+
+	findByRoomRemoveTranferData(transferData) {
+		const query = { _id: transferData.roomId };
+		const options = { $unset: { transferData: '' } };
+
+		return this.update(query, options);
+	}
+
 	findByTokenpass(tokens) {
 		const query = {
 			'tokenpass.tokens.token': {
