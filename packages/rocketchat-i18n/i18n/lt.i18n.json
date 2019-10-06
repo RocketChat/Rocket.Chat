@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Panaikinti SAML sesiją",
   "SAML_Custom_Private_Key": "Privataus raktų turinys",
   "SAML_Custom_Provider": "Tinkintas teikėjas",
+  "SAML_Custom_user_data_fieldmap": "Vartotojo duomenų lauko žemėlapis",
   "SAML_Custom_Immutable_Property_Username": "Vartotojo vardas",
   "SAML_Custom_Public_Cert": "Viešojo rašto turinys",
   "Saturday": "Šeštadienis",

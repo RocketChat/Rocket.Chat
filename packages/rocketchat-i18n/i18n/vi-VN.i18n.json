@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Chấm dứt phiên SAML",
   "SAML_Custom_Private_Key": "Nội dung Private Key",
   "SAML_Custom_Provider": "Tùy chỉnh Provider",
+  "SAML_Custom_user_data_fieldmap": "FieldMap dữ liệu người dùng",
   "SAML_Custom_Immutable_Property_Username": "Tên đăng nhập",
   "SAML_Custom_Public_Cert": "Nội dung Cert Contents",
   "Saturday": "ngày thứ bảy",
