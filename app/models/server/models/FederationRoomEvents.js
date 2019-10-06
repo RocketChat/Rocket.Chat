@@ -1,8 +1,8 @@
-import { FederationEventsModel, contextDefinitions, eventTypes } from './FederationEvents';
+import { EventsModel, contextDefinitions, eventTypes } from './Events';
 
 const { type, contextQuery } = contextDefinitions.ROOM;
 
-class FederationRoomEventsModel extends FederationEventsModel {
+class FederationRoomEventsModel extends EventsModel {
 	constructor() {
 		super('federation_room_events');
 

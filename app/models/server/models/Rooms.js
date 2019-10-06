@@ -4,6 +4,8 @@ import s from 'underscore.string';
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
+import { RoomEvents } from './RoomEvents';
+import { dispatchEvent } from '../../../events/server/lib/dispatch';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -20,6 +22,29 @@ export class Rooms extends Base {
 		// Livechat - statistics
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 	}
+
+	//
+	// Overriding insert method to create the genesis event
+	//
+	insert(...args) {
+		let [room] = args;
+
+		const roomId = super.insert(...args);
+
+		room = {
+			_id: roomId,
+			...room,
+		};
+
+		const event = Promise.await(RoomEvents.createGenesisEvent({ room }));
+
+		dispatchEvent(event);
+
+		return roomId;
+	}
+	//
+	// ^^^
+	//
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {

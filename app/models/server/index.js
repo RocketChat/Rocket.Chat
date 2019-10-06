@@ -41,6 +41,8 @@ export { FederationDNSCache } from './models/FederationDNSCache';
 export { FederationRoomEvents } from './models/FederationRoomEvents';
 export { FederationKeys } from './models/FederationKeys';
 export { FederationServers } from './models/FederationServers';
+// Event system
+export { RoomEvents } from './models/RoomEvents';
 
 export {
 	Base,

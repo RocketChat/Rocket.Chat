@@ -5,10 +5,13 @@ import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
 import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
+import { RoomEvents } from './RoomEvents';
+import { dispatchEvent } from '../../../events/server/lib/dispatch';
+import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 
 export class Messages extends Base {
 	constructor() {
-		super('message');
+		super('message_old');
 
 		this.tryEnsureIndex({ rid: 1, ts: 1 });
 		this.tryEnsureIndex({ ts: 1 });
@@ -66,6 +69,86 @@ export class Messages extends Base {
 			multi: true,
 		});
 	}
+
+	//
+	// Overriding some methods to add V1<->V2 conversion
+	//
+	find(...args) {
+		const cursor = RoomEvents.find.apply(RoomEvents, args);
+
+		cursor._fetch = cursor.fetch;
+		cursor.fetch = function(...args) {
+			const results = this._fetch(args);
+
+			// Convert to V1
+			return results.map(RoomEvents.toV1);
+		}.bind(cursor);
+
+		return cursor;
+	}
+
+	_findOne(method, ...args) {
+		let result = RoomEvents[method].apply(RoomEvents, args);
+
+		if (result) {
+			result = RoomEvents.toV1(result);
+		}
+
+		return result;
+	}
+
+	findOne(...args) {
+		return this._findOne('findOne', ...args);
+	}
+
+	findOneById(...args) {
+		return this._findOne('findOneById', ...args);
+	}
+
+	findOneByIds(ids, options, ...args) {
+		return this._findOne('findOneByIds', [ids, options, ...args]);
+	}
+
+	insert(...args) {
+		const [message] = args;
+
+		const event = Promise.await(RoomEvents.createMessageEvent({ src: getLocalSrc(), roomId: message.rid, d: RoomEvents.fromV1Data(message) }));
+
+		dispatchEvent(event);
+
+		return RoomEvents.toV1(event);
+	}
+
+	update(...args) {
+		const [query, update] = args;
+
+		const event = RoomEvents.findOne(query);
+
+		const updatedEvent = { _id: event._id, d: {} };
+
+		updatedEvent.d = RoomEvents.fromV1Data(update.$set ? update.$set : update);
+
+		const editEvent = Promise.await(RoomEvents.createEditMessageEvent({ src: event.src, roomId: event.rid, updatedEvent }));
+
+		dispatchEvent(editEvent);
+
+		return RoomEvents.toV1(editEvent);
+	}
+
+	upsert(...args) {
+		const [query] = args;
+
+		const event = RoomEvents.findOne(query);
+
+		if (event) {
+			return this.update(...args);
+		}
+
+		return this.insert(...args);
+	}
+	//
+	// ^^^
+	//
 
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
