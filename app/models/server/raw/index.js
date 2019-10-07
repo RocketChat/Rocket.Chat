@@ -12,6 +12,10 @@ import RoomsModel from '../models/Rooms';
 import { RoomsRaw } from './Rooms';
 import LivechatCustomFieldModel from '../models/LivechatCustomField';
 import { LivechatCustomFieldRaw } from './LivechatCustomField';
+import LivechatDepartmentModel from '../models/LivechatDepartment';
+import { LivechatDepartmentRaw } from './LivechatDepartment';
+import LivechatDepartmentAgentsModel from '../models/LivechatDepartmentAgents';
+import { LivechatDepartmentAgentsRaw } from './LivechatDepartmentAgents';
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection());
 export const Roles = new RolesRaw(RolesModel.model.rawCollection());
@@ -20,3 +24,5 @@ export const Settings = new SettingsRaw(SettingsModel.model.rawCollection());
 export const Users = new UsersRaw(UsersModel.model.rawCollection());
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection());
 export const LivechatCustomField = new LivechatCustomFieldRaw(LivechatCustomFieldModel.model.rawCollection());
+export const LivechatDepartment = new LivechatDepartmentRaw(LivechatDepartmentModel.model.rawCollection());
+export const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(LivechatDepartmentAgentsModel.model.rawCollection());
