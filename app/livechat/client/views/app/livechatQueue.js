@@ -5,20 +5,14 @@ import { Template } from 'meteor/templating';
 import { settings } from '../../../../settings';
 import { hasPermission } from '../../../../authorization';
 import { Users } from '../../../../models';
-import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatQueueUser } from '../../collections/LivechatQueueUser';
 import { AgentUsers } from '../../collections/AgentUsers';
 import './livechatQueue.html';
+import { APIClient } from '../../../../utils/client';
 
 Template.livechatQueue.helpers({
 	departments() {
-		return LivechatDepartment.find({
-			enabled: true,
-		}, {
-			sort: {
-				name: 1,
-			},
-		});
+		return Template.instance().departments.get().filter((department) => department.enabled === true);
 	},
 
 	users() {
@@ -63,10 +57,12 @@ Template.livechatQueue.events({
 	},
 });
 
-Template.livechatQueue.onCreated(function() {
+Template.livechatQueue.onCreated(async function() {
 	this.showOffline = new ReactiveVar({});
+	this.departments = new ReactiveVar([]);
 
 	this.subscribe('livechat:queue');
 	this.subscribe('livechat:agents');
-	this.subscribe('livechat:departments');
+	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	this.departments.set(departments);
 });

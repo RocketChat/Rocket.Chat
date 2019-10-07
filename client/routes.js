@@ -1,3 +1,4 @@
+import mem from 'mem';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
@@ -9,7 +10,27 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 
-import { KonchatNotification } from '../../app/ui';
+import { KonchatNotification } from '../app/ui';
+import { ChatSubscription } from '../app/models';
+import { roomTypes, t } from '../app/utils';
+import { baseURI } from '../app/utils/client/lib/baseuri';
+import { call, modal } from '../app/ui-utils';
+
+const getRoomById = mem((rid) => call('getRoomById', rid));
+
+FlowRouter.goToRoomById = async (rid) => {
+	if (!rid) {
+		return;
+	}
+	const subscription = ChatSubscription.findOne({ rid });
+	if (subscription) {
+		return roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+	}
+
+	const room = await getRoomById(rid);
+	return roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+};
+
 
 BlazeLayout.setRoot('body');
 
@@ -80,7 +101,6 @@ FlowRouter.route('/', {
 		});
 	},
 });
-
 
 FlowRouter.route('/login', {
 	name: 'login',
@@ -193,14 +213,88 @@ FlowRouter.route('/register/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: async () => {
-		const { SetupWizard } = await import('../components/setupWizard/SetupWizard');
-		BlazeLayout.render(await createTemplateForComponent(SetupWizard));
+		const render = async () => {
+			const { SetupWizard } = await import('./components/setupWizard/SetupWizard');
+			BlazeLayout.render(await createTemplateForComponent(SetupWizard));
+		};
+		try {
+			await render();
+		} catch (_) {
+			Meteor.absoluteUrl.defaultOptions = { ...Meteor.absoluteUrl.defaultOptions, rootUrl: baseURI };
+			try {
+				await render();
+			} catch (_) {
+				modal.open({
+					title: t('Error_Site_URL'),
+					text: t('Error_Site_URL_description'),
+					confirmButtonText: t('Ok'),
+				});
+			}
+		}
+	},
+});
+
+FlowRouter.route('/admin/users', {
+	name: 'admin-users',
+	action() {
+		BlazeLayout.render('main', { center: 'adminUsers' });
+	},
+});
+
+FlowRouter.route('/admin/rooms', {
+	name: 'admin-rooms',
+	action() {
+		BlazeLayout.render('main', { center: 'adminRooms' });
+	},
+});
+
+FlowRouter.route('/admin/import', {
+	name: 'admin-import',
+	action() {
+		BlazeLayout.render('main', { center: 'adminImport' });
+	},
+});
+
+FlowRouter.route('/admin/import/history', {
+	name: 'admin-import-history',
+	action() {
+		BlazeLayout.render('main', { center: 'adminImportHistory' });
+	},
+});
+
+FlowRouter.route('/admin/import/prepare/:importer', {
+	name: 'admin-import-prepare',
+	action() {
+		BlazeLayout.render('main', { center: 'adminImportPrepare' });
+	},
+});
+
+FlowRouter.route('/admin/import/progress/:importer', {
+	name: 'admin-import-progress',
+	action() {
+		BlazeLayout.render('main', { center: 'adminImportProgress' });
+	},
+});
+
+FlowRouter.route('/admin/:group?', {
+	name: 'admin',
+	action: async ({ group = 'info' } = {}) => {
+		switch (group) {
+			case 'info': {
+				const { InformationPage } = await import('./components/admin/info/InformationPage');
+				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationPage) });
+				break;
+			}
+
+			default:
+				BlazeLayout.render('main', { center: 'admin' });
+		}
 	},
 });
 
 FlowRouter.notFound = {
 	action: async () => {
-		const { PageNotFound } = await import('../components/pageNotFound/PageNotFound');
+		const { PageNotFound } = await import('./components/pageNotFound/PageNotFound');
 		BlazeLayout.render(await createTemplateForComponent(PageNotFound));
 	},
 };

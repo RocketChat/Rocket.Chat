@@ -1,3 +1,4 @@
+import { Headline } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
@@ -8,6 +9,6 @@ export function StepHeader({ number, title }) {
 
 	return <header className='SetupWizard__StepHeader'>
 		<p className='SetupWizard__StepHeader-runningHead'>{t('Step')} {number}</p>
-		<h2 className='SetupWizard__StepHeader-title'>{title}</h2>
+		<Headline as='h2' className='SetupWizard__StepHeader-title'>{title}</Headline>
 	</header>;
 }
