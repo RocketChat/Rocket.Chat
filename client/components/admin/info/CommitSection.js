@@ -6,7 +6,7 @@ import { InformationEntry } from './InformationEntry';
 
 export function CommitSection({ info }) {
 	const t = useTranslation();
-	const { commit } = info;
+	const { commit = {} } = info;
 
 	return <>
 		<h3>{t('Commit')}</h3>

@@ -1312,6 +1312,8 @@
   "error-role-in-use": "Cannot delete role because it's in use",
   "error-role-name-required": "Role name is required",
   "error-room-is-not-closed": "Room is not closed",
+  "Error_Site_URL": "Invalid Site_Url",
+  "Error_Site_URL_description": "Please, update your \"Site_Url\" setting find more information <a target=\"_blank\" href=\"https://go.rocket.chat/i/invalid-site-url\">here</>",
   "error-the-field-is-required": "The field __field__ is required.",
   "error-this-is-not-a-livechat-room": "This is not a Livechat room",
   "error-personal-access-tokens-are-current-disabled": "Personal Access Tokens are currently disabled",

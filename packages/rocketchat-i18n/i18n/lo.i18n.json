@@ -2222,6 +2222,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "ສິ້ນສຸດລົງ SAML-session",
   "SAML_Custom_Private_Key": "ເນື້ອຫາທີ່ສໍາຄັນຂອງເອກະຊົນ",
   "SAML_Custom_Provider": "ຜູ້ໃຫ້ບໍລິການລູກຄ້າ",
+  "SAML_Custom_user_data_fieldmap": "ຜູ້ໃຊ້ຂໍ້ມູນພາກສະຫນາມແຜນທີ່",
   "SAML_Custom_Immutable_Property_Username": "ຊື່ຜູ້ໃຊ້",
   "SAML_Custom_Public_Cert": "Contents Public Cert",
   "Saturday": "ວັນເສົາ",

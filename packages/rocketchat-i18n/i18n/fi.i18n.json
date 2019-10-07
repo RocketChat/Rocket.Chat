@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Lopeta SAML-istunto",
   "SAML_Custom_Private_Key": "Yksityisen avaimen sisältö",
   "SAML_Custom_Provider": "Custom Provider",
+  "SAML_Custom_user_data_fieldmap": "Käyttäjätietojen kohdistus",
   "SAML_Custom_Immutable_Property_Username": "Käyttäjätunnus",
   "SAML_Custom_Public_Cert": "Julkisen sisällön sisältö",
   "Saturday": "Lauantai",

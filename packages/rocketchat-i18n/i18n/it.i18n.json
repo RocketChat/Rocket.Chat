@@ -2233,6 +2233,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Termina sessione SAML",
   "SAML_Custom_Private_Key": "Contenuto chiave privata",
   "SAML_Custom_Provider": "Custom Provider",
+  "SAML_Custom_user_data_fieldmap": "Campo Utente Dati Mappa",
   "SAML_Custom_Immutable_Property_Username": "Nome utente",
   "SAML_Custom_Public_Cert": "Public cert contents",
   "Saturday": "Sabato",
