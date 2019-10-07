@@ -7,7 +7,6 @@ import toastr from 'toastr';
 
 import { t, handleError } from '../../../../utils';
 import { hasPermission } from '../../../../authorization';
-import { AgentUsers } from '../../collections/AgentUsers';
 import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatDepartmentForm.html';
 import { APIClient } from '../../../../utils/client';
@@ -21,10 +20,6 @@ Template.livechatDepartmentForm.helpers({
 	},
 	selectedAgents() {
 		return _.sortBy(Template.instance().selectedAgents.get(), 'username');
-	},
-	availableAgents() {
-		const selected = _.pluck(Template.instance().selectedAgents.get(), 'username');
-		return AgentUsers.find({ username: { $nin: selected } }, { sort: { username: 1 } });
 	},
 	showOnRegistration(value) {
 		const department = Template.instance().department.get();
@@ -147,7 +142,7 @@ Template.livechatDepartmentForm.events({
 		}
 
 		input.value = '';
-		const agent = AgentUsers.findOne({ username });
+		const agent = Template.instance().agents.get().find((agent) => agent.username === username);
 		if (!agent) {
 			return toastr.error(t('The_selected_user_is_not_an_agent'));
 		}
@@ -182,11 +177,13 @@ Template.livechatDepartmentForm.events({
 	},
 });
 
-Template.livechatDepartmentForm.onCreated(function() {
+Template.livechatDepartmentForm.onCreated(async function() {
 	this.department = new ReactiveVar({ enabled: true });
 	this.selectedAgents = new ReactiveVar([]);
+	this.agents = new ReactiveVar([]);
 
-	this.subscribe('livechat:agents');
+	const { users } = await APIClient.v1.get('livechat/users/agent');
+	this.agents.set(users);
 
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
