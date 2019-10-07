@@ -24,7 +24,8 @@ API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 					sort,
 				},
 			})));
-		} if (this.urlParams.type === 'manager') {
+		}
+		if (this.urlParams.type === 'manager') {
 			return API.v1.success(Promise.await(findManagers({
 				userId: this.userId,
 				pagination: {
