@@ -40,9 +40,9 @@ export function UsageSection({ statistics, isLoading }) {
 			<InformationEntry label={t('Stats_Total_Uploads')}>{s(() => statistics.uploadsTotal)}</InformationEntry>
 			<InformationEntry label={t('Stats_Total_Uploads_Size')}>{s(() => formatMemorySize(statistics.uploadsTotalSize))}</InformationEntry>
 			{statistics.apps && <>
-					<InformationEntry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</InformationEntry>
-					<InformationEntry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</InformationEntry>
-				</>}
+				<InformationEntry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</InformationEntry>
+				<InformationEntry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</InformationEntry>
+			</>}
 			<InformationEntry label={t('Stats_Total_Integrations')}>{s(() => statistics.integrations.totalIntegrations)}</InformationEntry>
 			<InformationEntry label={t('Stats_Total_Incoming_Integrations')}>{s(() => statistics.integrations.totalIncoming)}</InformationEntry>
 			<InformationEntry label={t('Stats_Total_Active_Incoming_Integrations')}>{s(() => statistics.integrations.totalIncomingActive)}</InformationEntry>

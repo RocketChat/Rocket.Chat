@@ -4,7 +4,6 @@ import s from 'underscore.string';
 import { Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter, validateEmailDomain } from '../lib';
-
 import { checkEmailAvailability } from '.';
 
 const _setEmail = function(userId, email, shouldSendVerificationEmail = true) {

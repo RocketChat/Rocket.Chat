@@ -9,7 +9,6 @@ import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import PasswordPolicy from '../lib/PasswordPolicyClass';
 import { validateEmailDomain } from '../lib';
-
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusText } from '.';
 
 const passwordPolicy = new PasswordPolicy();

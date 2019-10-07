@@ -8,12 +8,11 @@ import { Template } from 'meteor/templating';
 import { Roles } from '../../../models';
 import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
-
-import { hasAtLeastOnePermission } from '..';
-
 import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 import { CONSTANTS } from '../../lib';
+
+import { hasAtLeastOnePermission } from '..';
 
 Template.permissions.helpers({
 	tabsData() {
