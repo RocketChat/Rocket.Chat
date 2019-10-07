@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api';
 import { findRooms } from '../../../server/api/lib/livechat';
+import { findRoomById } from '../../../server/api/lib/rooms';
 
 API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 	get() {
@@ -47,5 +48,19 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 		} catch (e) {
 			return API.v1.failure(e);
 		}
+	},
+});
+
+API.v1.addRoute('livechat/rooms/:_id', { authRequired: true }, {
+	get() {
+		check(this.urlParams, {
+			_id: String,
+		});
+		const { room } = Promise.await(findRoomById({
+			userId: this.userId,
+			roomId: this.urlParams._id,
+		}));
+
+		return API.v1.success({ room });
 	},
 });

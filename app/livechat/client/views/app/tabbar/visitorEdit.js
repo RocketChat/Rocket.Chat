@@ -7,8 +7,8 @@ import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
-import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorEdit.html';
+import { APIClient } from '../../../../../utils/client';
 
 Template.visitorEdit.helpers({
 	visitor() {
@@ -81,9 +81,8 @@ Template.visitorEdit.onCreated(function() {
 
 	const rid = Template.currentData().roomId;
 
-	this.subscribe('livechat:rooms', { _id: rid });
-	this.autorun(() => {
-		const room = LivechatRoom.findOne({ _id: rid });
+	this.autorun(async () => {
+		const { room } = await APIClient.v1.get(`livechat/rooms/${ rid }`);
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 	});
