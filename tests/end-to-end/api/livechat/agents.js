@@ -38,6 +38,21 @@ describe('LIVECHAT - Agents', function() {
 						.end(done);
 				});
 		});
+		it('should throw an error when the type is invalid', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => updatePermission('manage-livechat-agents', ['admin']))
+				.then(() => {
+					request.get(api('livechat/users/invalid-type'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.error).to.be.equal('Invalid type');
+						})
+						.end(done);
+				});
+		});
 		it('should return an array of agents', (done) => {
 			updatePermission('view-livechat-manager', ['admin'])
 				.then(() => updatePermission('manage-livechat-agents', ['admin']))

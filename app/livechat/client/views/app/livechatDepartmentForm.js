@@ -21,10 +21,6 @@ Template.livechatDepartmentForm.helpers({
 	selectedAgents() {
 		return _.sortBy(Template.instance().selectedAgents.get(), 'username');
 	},
-	availableAgents() {
-		const selected = _.pluck(Template.instance().selectedAgents.get(), 'username');
-		return Template.instance().agents.get().filter((agent) => agent.username !== selected);
-	},
 	showOnRegistration(value) {
 		const department = Template.instance().department.get();
 		return department.showOnRegistration === value || (department.showOnRegistration === undefined && value === true);
