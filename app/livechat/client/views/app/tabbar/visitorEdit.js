@@ -6,9 +6,9 @@ import toastr from 'toastr';
 import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
 import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorEdit.html';
+import { APIClient } from '../../../../../utils/client';
 
 Template.visitorEdit.helpers({
 	visitor() {
@@ -67,7 +67,7 @@ Template.visitorEdit.onRendered(function() {
 	});
 });
 
-Template.visitorEdit.onCreated(function() {
+Template.visitorEdit.onCreated(async function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
 	this.tags = new ReactiveVar([]);
@@ -89,13 +89,11 @@ Template.visitorEdit.onCreated(function() {
 	});
 
 	const uid = Meteor.userId();
-	this.subscribe('livechat:departmentAgents', null, uid, () => {
-		const departments = [];
-		LivechatDepartmentAgents.find({ agentId: uid }).forEach((dept) => {
-			departments.push(dept.departmentId);
-		});
-		this.agentDepartments.set(departments);
+	const { departments } = await APIClient.v1.get(`livechat/agents/${ uid }/departments`);
+	departments.forEach((dept) => {
+		departments.push(dept.departmentId);
 	});
+	this.agentDepartments.set(departments);
 });
 
 Template.visitorEdit.events({
