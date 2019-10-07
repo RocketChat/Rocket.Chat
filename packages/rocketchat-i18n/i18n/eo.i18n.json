@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Finu SAML-sesion",
   "SAML_Custom_Private_Key": "Privata Ŝlosila Enhavo",
   "SAML_Custom_Provider": "Propra Provizanto",
+  "SAML_Custom_user_data_fieldmap": "Mapo de Kampoj de Uzanto Datumoj",
   "SAML_Custom_Immutable_Property_Username": "Uzulnomo",
   "SAML_Custom_Public_Cert": "Publika Certa Enhavo",
   "Saturday": "Sabato",

@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Прекратете сесията SAML",
   "SAML_Custom_Private_Key": "Съдържание на частния ключ",
   "SAML_Custom_Provider": "Потребителски доставчик",
+  "SAML_Custom_user_data_fieldmap": "Карта на поле на потребителски данни",
   "SAML_Custom_Immutable_Property_Username": "Потребителско име",
   "SAML_Custom_Public_Cert": "Публично съдържание",
   "Saturday": "събота",

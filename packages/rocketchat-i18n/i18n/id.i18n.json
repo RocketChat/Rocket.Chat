@@ -2232,6 +2232,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Hentikan sesi SAML",
   "SAML_Custom_Private_Key": "Isi Kunci Pribadi",
   "SAML_Custom_Provider": "Custom Provider",
+  "SAML_Custom_user_data_fieldmap": "Peta Kolom Data User",
   "SAML_Custom_Immutable_Property_Username": "Nama pengguna",
   "SAML_Custom_Public_Cert": "Isi Cert Publik",
   "Saturday": "Sabtu",

@@ -15,9 +15,9 @@ import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
 import { hasRole, hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorInfo.html';
+import { APIClient } from '../../../../../utils/client';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -55,7 +55,7 @@ Template.visitorInfo.helpers({
 	},
 
 	department() {
-		return LivechatDepartment.findOne({ _id: Template.instance().departmentId.get() });
+		return Template.instance().department.get();
 	},
 
 	joinTags() {
@@ -283,6 +283,7 @@ Template.visitorInfo.onCreated(function() {
 	this.departmentId = new ReactiveVar(null);
 	this.tags = new ReactiveVar(null);
 	this.routingConfig = new ReactiveVar({});
+	this.department = new ReactiveVar({});
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -307,8 +308,14 @@ Template.visitorInfo.onCreated(function() {
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid });
-		this.subscribe('livechat:departments', { _id: this.departmentId.get() });
 	}
+
+	this.autorun(async () => {
+		if (this.departmentId.get()) {
+			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }?includeAgents=false`);
+			this.department.set(department);
+		}
+	});
 
 	this.autorun(() => {
 		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));

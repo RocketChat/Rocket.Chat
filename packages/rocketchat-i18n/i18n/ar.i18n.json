@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "إنهاء جلسة سامل",
   "SAML_Custom_Private_Key": "محتويات المفتاح الخاص",
   "SAML_Custom_Provider": "مزود مخصص",
+  "SAML_Custom_user_data_fieldmap": "العضو بيانات خريطة الميدان",
   "SAML_Custom_Immutable_Property_Username": "اسم المستخدم",
   "SAML_Custom_Public_Cert": "محتويات الشهادة العامة",
   "Saturday": "السبت",
