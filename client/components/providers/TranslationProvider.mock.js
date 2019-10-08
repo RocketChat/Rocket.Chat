@@ -7,6 +7,26 @@ export function TranslationProvider({ children }) {
 	const [contextValue, setContextValue] = useState();
 
 	useEffect(() => {
+
+		const translate = (key, ...replaces) => {
+			if (typeof replaces[0] === 'object') {
+				const [options] = replaces;
+				return i18next.t(key, options);
+			}
+
+			if (replaces.length === 0) {
+				return i18next.t(key);
+			}
+
+			return i18next.t(key, {
+				postProcess: 'sprintf',
+				sprintf: replaces,
+			});
+		};
+
+		const has = (key) => i18next.exists(key);
+		translate.has = has;
+
 		const initializeI18next = async () => {
 			await i18next.init({
 				fallbackLng: 'en',
@@ -21,24 +41,7 @@ export function TranslationProvider({ children }) {
 					suffix: '__',
 				},
 			});
-			setContextValue({
-				translate: (key, ...replaces) => {
-					if (typeof replaces[0] === 'object') {
-						const [options] = replaces;
-						return i18next.t(key, options);
-					}
-
-					if (replaces.length === 0) {
-						return i18next.t(key);
-					}
-
-					return i18next.t(key, {
-						postProcess: 'sprintf',
-						sprintf: replaces,
-					});
-				},
-				doKeyExists: (key) => i18next.exists(key),
-			});
+			setContextValue(translate);
 		};
 		initializeI18next();
 	}, []);

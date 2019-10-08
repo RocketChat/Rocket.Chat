@@ -27,9 +27,10 @@ const createContextValue = (language) => {
 		});
 	};
 
-	const doKeyExists = (key, { lng = language, ...options } = {}) => TAPi18next.exists(key, { ...options, lng });
+	const has = (key, { lng = language, ...options } = {}) => TAPi18next.exists(key, { ...options, lng });
 
-	return { translate, doKeyExists };
+	translate.has = has;
+	return translate;
 };
 
 export function TranslationProvider({ children }) {
