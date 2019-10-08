@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Прекините САМЛ-сесију",
   "SAML_Custom_Private_Key": "Садржај приватног кључа",
   "SAML_Custom_Provider": "цустом провајдера",
+  "SAML_Custom_user_data_fieldmap": "Корисник поља података Карта",
   "SAML_Custom_Immutable_Property_Username": "Корисничко име",
   "SAML_Custom_Public_Cert": "Публиц Церт Цонтентс",
   "Saturday": "Субота",

@@ -2222,6 +2222,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Ukončite reláciu SAML",
   "SAML_Custom_Private_Key": "Obsah súkromného kľúča",
   "SAML_Custom_Provider": "Vlastný poskytovateľ",
+  "SAML_Custom_user_data_fieldmap": "Mapová mapa používateľských údajov",
   "SAML_Custom_Immutable_Property_Username": "Používateľské meno",
   "SAML_Custom_Public_Cert": "Obsah verejného obsahu",
   "Saturday": "sobota",
