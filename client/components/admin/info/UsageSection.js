@@ -1,15 +1,14 @@
 import React from 'react';
 
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { SkeletonText } from './SkeletonText';
-import { useFormatters } from '../../../hooks/useFormatters';
+import { formatMemorySize } from './formatters';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
 
 export function UsageSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
 	const t = useTranslation();
-	const { formatMemorySize } = useFormatters();
 
 	if (!statistics) {
 		return null;
