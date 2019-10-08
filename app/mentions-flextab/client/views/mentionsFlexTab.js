@@ -1,16 +1,18 @@
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { MentionedMessage } from '../lib/MentionedMessage';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { APIClient } from '../../../utils/client';
+import { Messages } from '../../../models/client';
 
 Template.mentionsFlexTab.helpers({
 	hasMessages() {
-		return Template.instance().cursor.count() > 0;
+		return Template.instance().mentionedMessages.get().length > 0;
 	},
 	messages() {
-		return Template.instance().cursor;
+		return Template.instance().mentionedMessages.get();
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
@@ -18,23 +20,44 @@ Template.mentionsFlexTab.helpers({
 	messageContext,
 });
 
-Template.mentionsFlexTab.onCreated(function() {
-	this.cursor = MentionedMessage.find({
-		rid: this.data.rid,
-	}, {
-		sort: {
-			ts: -1,
+const listenForMessageChanges = (instance) => {
+	const query = {
+		_hidden: { $ne: true },
+		'mentions.username': Meteor.user().username,
+		rid: instance.data.rid,
+	};
+
+	Messages.find(query).observe({
+		added: (message) => {
+			instance.mentionedMessages.set(instance.mentionedMessages.curValue.concat(message));
+		},
+		changed: (message) => {
+			instance.mentionedMessages.set(instance.mentionedMessages.curValue.map((mentionedMessage) => {
+				if (message._id === mentionedMessage._id) {
+					mentionedMessage = message;
+				}
+				return mentionedMessage;
+			}));
+		},
+		removed: ({ _id }) => {
+			instance.mentionedMessages.set(instance.mentionedMessages.curValue.filter((message) => message._id !== _id));
 		},
 	});
+};
+
+Template.mentionsFlexTab.onCreated(function() {
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
-	return this.autorun(() => {
-		const mentionedMessageFind = MentionedMessage.find({ rid: this.data.rid });
-		return this.subscribe('mentionedMessages', this.data.rid, this.limit.get(), () => {
-			if (mentionedMessageFind.count() < this.limit.get()) {
-				return this.hasMore.set(false);
-			}
-		});
+	this.mentionedMessages = new ReactiveVar([]);
+
+	listenForMessageChanges(this);
+
+	return this.autorun(async () => {
+		const { messages, total } = await APIClient.v1.get(`chat.getMentionedMessages?roomId=${ this.data.rid }&count=${ this.limit.get() }`);
+		this.mentionedMessages.set(messages);
+		if (total < this.limit.get()) {
+			return this.hasMore.set(false);
+		}
 	});
 });
 
