@@ -300,7 +300,7 @@ Template.visitorInfo.onCreated(function() {
 
 	if (rid) {
 		this.autorun(async () => {
-			const { room } = await APIClient.v1.get(`livechat/rooms/${ rid }`);
+			const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
 			this.visitorId.set(room && room.v && room.v._id);
 			this.departmentId.set(room && room.departmentId);
 			this.tags.set(room && room.tags);

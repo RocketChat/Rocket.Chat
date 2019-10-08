@@ -82,7 +82,7 @@ Template.visitorEdit.onCreated(function() {
 	const rid = Template.currentData().roomId;
 
 	this.autorun(async () => {
-		const { room } = await APIClient.v1.get(`livechat/rooms/${ rid }`);
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 	});

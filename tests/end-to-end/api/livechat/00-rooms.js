@@ -133,33 +133,4 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 	});
-
-	describe('livechat/rooms/:_id', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request.get(api('livechat/rooms/id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
-					.end(done);
-			});
-		});
-		it('should return an empty room when the id is invalid', (done) => {
-			updatePermission('view-livechat-manager', ['admin']).then(() => {
-				request.get(api('livechat/rooms/invalid-id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room');
-					})
-					.end(done);
-			});
-		});
-	});
 });
