@@ -7,7 +7,6 @@ export function TranslationProvider({ children }) {
 	const [contextValue, setContextValue] = useState();
 
 	useEffect(() => {
-
 		const translate = (key, ...replaces) => {
 			if (typeof replaces[0] === 'object') {
 				const [options] = replaces;
