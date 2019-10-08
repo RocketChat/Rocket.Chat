@@ -15,7 +15,7 @@ import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
 import { hasRole, hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import { LivechatRoom } from '../../../collections/LivechatRoom';
+import { LivechatRoomInfo } from '../../../collections/LivechatRoomInfo';
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 
@@ -51,7 +51,7 @@ Template.visitorInfo.helpers({
 	},
 
 	room() {
-		return LivechatRoom.findOne({ _id: this.rid });
+		return LivechatRoomInfo.findOne({ _id: this.rid });
 	},
 
 	department() {
@@ -73,7 +73,7 @@ Template.visitorInfo.helpers({
 
 		const data = Template.currentData();
 		if (data && data.rid) {
-			const room = LivechatRoom.findOne(data.rid);
+			const room = LivechatRoomInfo.findOne(data.rid);
 			if (room) {
 				livechatData = _.extend(livechatData, room.livechatData);
 			}
@@ -148,7 +148,7 @@ Template.visitorInfo.helpers({
 	},
 
 	roomOpen() {
-		const room = LivechatRoom.findOne({ _id: this.rid });
+		const room = LivechatRoomInfo.findOne({ _id: this.rid });
 		const uid = Meteor.userId();
 		return room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
 	},
@@ -299,9 +299,9 @@ Template.visitorInfo.onCreated(function() {
 	});
 
 	if (rid) {
-		this.subscribe('livechat:rooms', { _id: rid });
+		this.subscribe('livechat:roomInfo', rid);
 		this.autorun(() => {
-			const room = LivechatRoom.findOne({ _id: rid });
+			const room = LivechatRoomInfo.findOne({ _id: rid });
 			this.visitorId.set(room && room.v && room.v._id);
 			this.departmentId.set(room && room.departmentId);
 			this.tags.set(room && room.tags);

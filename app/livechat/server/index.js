@@ -85,6 +85,7 @@ import './publications/livechatManagers';
 import './publications/livechatMonitoring';
 import './publications/livechatRooms';
 import './publications/livechatQueue';
+import './publications/livechatRoomInfo';
 import './publications/livechatTriggers';
 import './publications/livechatVisitors';
 import './publications/visitorHistory';

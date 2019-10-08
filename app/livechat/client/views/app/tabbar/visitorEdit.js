@@ -7,7 +7,7 @@ import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
-import { LivechatRoom } from '../../../collections/LivechatRoom';
+import { LivechatRoomInfo } from '../../../collections/LivechatRoomInfo';
 import './visitorEdit.html';
 
 Template.visitorEdit.helpers({
@@ -81,9 +81,9 @@ Template.visitorEdit.onCreated(function() {
 
 	const rid = Template.currentData().roomId;
 
-	this.subscribe('livechat:rooms', { _id: rid });
+	this.subscribe('livechat:roomInfo', rid);
 	this.autorun(() => {
-		const room = LivechatRoom.findOne({ _id: rid });
+		const room = LivechatRoomInfo.findOne({ _id: rid });
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 	});

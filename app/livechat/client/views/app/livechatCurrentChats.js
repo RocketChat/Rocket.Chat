@@ -8,18 +8,18 @@ import { Random } from 'meteor/random';
 
 import { modal, call, popover } from '../../../../ui-utils';
 import { t, APIClient } from '../../../../utils/client';
-import { LivechatRoom } from '../../collections/LivechatRoom';
+import { LivechatRooms } from '../../collections/LivechatRooms';
 import './livechatCurrentChats.html';
 
 Template.livechatCurrentChats.helpers({
 	hasMore() {
-		return Template.instance().ready.get() && LivechatRoom.find({ t: 'l' }, { sort: { ts: -1 } }).count() === Template.instance().limit.get();
+		return Template.instance().ready.get() && LivechatRooms.find({ t: 'l' }, { sort: { ts: -1 } }).count() === Template.instance().limit.get();
 	},
 	isReady() {
 		return Template.instance().ready.get();
 	},
 	livechatRoom() {
-		return LivechatRoom.find({ t: 'l' }, { sort: { ts: -1 } });
+		return LivechatRooms.find({ t: 'l' }, { sort: { ts: -1 } });
 	},
 	startedAt() {
 		return moment(this.ts).format('L LTS');
