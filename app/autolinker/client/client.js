@@ -1,33 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import s from 'underscore.string';
+import { Random } from 'meteor/random';
 import Autolinker from 'autolinker';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 
-const createAutolinker = () => {
-	const regUrls = new RegExp(settings.get('AutoLinker_UrlsRegExp'));
+let config = {};
 
-	const replaceAutolinkerMatch = (match) => {
-		if (match.getType() !== 'url') {
-			return null;
-		}
-
-		if (!regUrls.test(match.matchedText)) {
-			return null;
-		}
-
-		if (match.matchedText.indexOf(Meteor.absoluteUrl()) === 0) {
-			const tag = match.buildTag();
-			tag.setAttr('target', '');
-			return tag;
-		}
-
-		return true;
-	};
-
-	return new Autolinker({
+Tracker.autorun(() => {
+	config = {
 		stripPrefix: settings.get('AutoLinker_StripPrefix'),
 		urls: {
 			schemeMatches: settings.get('AutoLinker_Urls_Scheme'),
@@ -38,14 +21,7 @@ const createAutolinker = () => {
 		phone: settings.get('AutoLinker_Phone'),
 		twitter: false,
 		stripTrailingSlash: false,
-		replaceFn: replaceAutolinkerMatch,
-	});
-};
-
-let autolinker;
-
-Tracker.autorun(() => {
-	autolinker = createAutolinker();
+	}
 });
 
 const renderMessage = (message) => {
@@ -59,7 +35,7 @@ const renderMessage = (message) => {
 		regexTokens = new RegExp(`(${ (message.tokens || []).map(({ token }) => RegExp.escape(token)) })`, 'g');
 		msgParts = message.html.split(regexTokens);
 	} else {
-		msgParts = [message.msg];
+		msgParts = [message.html];
 	}
 
 	message.html = msgParts
@@ -68,7 +44,21 @@ const renderMessage = (message) => {
 				return msgPart;
 			}
 
-			return autolinker.link(msgPart);
+			return Autolinker.link(msgPart, {
+				...config, replaceFn: function (match) {
+					const token = `=!=${ Random.id() }=!=`;
+					const tag = match.buildTag();
+
+					if (~match.matchedText.indexOf(Meteor.absoluteUrl())) {
+						tag.setAttr('target', '');
+					}
+
+					message.tokens.push({
+						token,
+						text: tag.toAnchorString(),
+					});
+					return token;
+				} });
 		})
 		.join('');
 
@@ -79,5 +69,5 @@ Tracker.autorun(function() {
 	if (settings.get('AutoLinker') !== true) {
 		return callbacks.remove('renderMessage', 'autolinker');
 	}
-	callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'autolinker');
+	callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
 });

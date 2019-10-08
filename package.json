@@ -142,7 +142,7 @@
 		"archiver": "^3.0.0",
 		"arraybuffer-to-string": "^1.0.2",
 		"atlassian-crowd": "^0.5.0",
-		"autolinker": "^1.8.1",
+		"autolinker": "^3.11.1",
 		"aws-sdk": "^2.368.0",
 		"bad-words": "^3.0.2",
 		"bcrypt": "^3.0.2",
