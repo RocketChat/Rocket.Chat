@@ -4,6 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { APIClient } from '../../../utils/client';
 import { Messages, Users } from '../../../models/client';
 
@@ -11,10 +12,11 @@ const LIMIT_DEFAULT = 50;
 
 Template.mentionsFlexTab.helpers({
 	hasMessages() {
-		return Template.instance().mentionedMessages.get().length > 0;
+		return Template.instance().messages.find().count();
 	},
 	messages() {
-		return Template.instance().mentionedMessages.get().slice(0, Template.instance().limit.get());
+		const instance = Template.instance();
+		return instance.messages.find({}, { limit: instance.limit.get(), sort: { ts: -1 } });
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
@@ -23,9 +25,10 @@ Template.mentionsFlexTab.helpers({
 });
 
 Template.mentionsFlexTab.onCreated(function() {
+	this.messages = new Mongo.Collection(null);
+
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(LIMIT_DEFAULT);
-	this.mentionedMessages = new ReactiveVar([]);
 
 	this.autorun(() => {
 
@@ -42,20 +45,15 @@ Template.mentionsFlexTab.onCreated(function() {
 
 		this.limit.set(LIMIT_DEFAULT);
 
-		this.cursor = Messages.find(query, { sort: { ts : 1 } }).observe({
-			added: (message) => {
-				this.mentionedMessages.set(this.mentionedMessages.curValue.concat(message));
+		this.cursor = Messages.find(query).observe({
+			added: ({ _id, ...message }) => {
+				this.messages.upsert({_id}, message);
 			},
-			changed: (message) => {
-				this.mentionedMessages.set(this.mentionedMessages.curValue.map((mentionedMessage) => {
-					if (message._id === mentionedMessage._id) {
-						mentionedMessage = message;
-					}
-					return mentionedMessage;
-				}));
+			changed: ({ _id, ...message }) => {
+				this.messages.upsert({ _id }, message);
 			},
 			removed: ({ _id }) => {
-				this.mentionedMessages.set(this.mentionedMessages.curValue.filter((message) => message._id !== _id));
+				this.messages.remove({ _id });
 			},
 		});
 
@@ -65,7 +63,9 @@ Template.mentionsFlexTab.onCreated(function() {
 	this.autorun(async () => {
 		const limit = this.limit.get();
 		const { messages, total } = await APIClient.v1.get(`chat.getMentionedMessages?roomId=${ this.data.rid }&count=${ limit }`);
-		this.mentionedMessages.set(messages);
+
+		upsertMessageBulk({ msgs: messages }, this.messages);
+
 		this.hasMore.set(total > limit);
 	});
 });
