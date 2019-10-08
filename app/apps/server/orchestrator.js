@@ -82,9 +82,10 @@ class AppServerOrchestrator {
 		return this._manager;
 	}
 
-	getExternalComponents() {
-		const { externalComponentManager: { providedExternalComponents } } = this._manager;
-		return providedExternalComponents;
+	getRegisteredExternalComponents() {
+		const { externalComponentManager: { registeredExternalComponents } } = this._manager;
+
+		return registeredExternalComponents;
 	}
 
 	isInitialized() {

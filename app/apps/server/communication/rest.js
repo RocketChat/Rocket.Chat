@@ -251,11 +251,11 @@ export class AppsRestApi {
 
 		this.api.addRoute('externalComponents', { authRequired: false }, {
 			get() {
-				const externalComponentsMap = orchestrator.getExternalComponents();
+				const registeredExternalComponents = orchestrator.getRegisteredExternalComponents();
 				const externalComponents = [];
 
-				externalComponentsMap.forEach((components) => {
-					Array.from(components.values()).forEach((externalComponent) => {
+				registeredExternalComponents.forEach((appExternalComponents) => {
+					Array.from(appExternalComponents.values()).forEach((externalComponent) => {
 						externalComponents.push(externalComponent);
 					});
 				});
