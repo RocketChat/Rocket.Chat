@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
@@ -31,14 +32,13 @@ Template.mentionsFlexTab.onCreated(function() {
 	this.limit = new ReactiveVar(LIMIT_DEFAULT);
 
 	this.autorun(() => {
-
 		const query = {
 			_hidden: { $ne: true },
 			'mentions.username': Users.findOne(Meteor.userId(), { fields: { username: 1 } }).username,
 			rid: this.data.rid,
 			_updatedAt: {
 				$gt: new Date(),
-			}
+			},
 		};
 
 		this.cursor && this.cursor.stop();
@@ -56,9 +56,7 @@ Template.mentionsFlexTab.onCreated(function() {
 				this.messages.remove({ _id });
 			},
 		});
-
-	})
-
+	});
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
