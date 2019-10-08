@@ -47,7 +47,7 @@ Template.mentionsFlexTab.onCreated(function() {
 
 		this.cursor = Messages.find(query).observe({
 			added: ({ _id, ...message }) => {
-				this.messages.upsert({_id}, message);
+				this.messages.upsert({ _id }, message);
 			},
 			changed: ({ _id, ...message }) => {
 				this.messages.upsert({ _id }, message);
