@@ -5,14 +5,16 @@ import { Template } from 'meteor/templating';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { APIClient } from '../../../utils/client';
-import { Messages } from '../../../models/client';
+import { Messages, Users } from '../../../models/client';
+
+const LIMIT_DEFAULT = 50;
 
 Template.mentionsFlexTab.helpers({
 	hasMessages() {
 		return Template.instance().mentionedMessages.get().length > 0;
 	},
 	messages() {
-		return Template.instance().mentionedMessages.get();
+		return Template.instance().mentionedMessages.get().slice(0, Template.instance().limit.get());
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
@@ -20,43 +22,56 @@ Template.mentionsFlexTab.helpers({
 	messageContext,
 });
 
-const listenForMessageChanges = (instance) => {
-	const query = {
-		_hidden: { $ne: true },
-		'mentions.username': Meteor.user().username,
-		rid: instance.data.rid,
-	};
-
-	Messages.find(query).observe({
-		added: (message) => {
-			instance.mentionedMessages.set(instance.mentionedMessages.curValue.concat(message));
-		},
-		changed: (message) => {
-			instance.mentionedMessages.set(instance.mentionedMessages.curValue.map((mentionedMessage) => {
-				if (message._id === mentionedMessage._id) {
-					mentionedMessage = message;
-				}
-				return mentionedMessage;
-			}));
-		},
-		removed: ({ _id }) => {
-			instance.mentionedMessages.set(instance.mentionedMessages.curValue.filter((message) => message._id !== _id));
-		},
-	});
-};
-
 Template.mentionsFlexTab.onCreated(function() {
 	this.hasMore = new ReactiveVar(true);
-	this.limit = new ReactiveVar(50);
+	this.limit = new ReactiveVar(LIMIT_DEFAULT);
 	this.mentionedMessages = new ReactiveVar([]);
 
-	listenForMessageChanges(this);
+	this.autorun(() => {
 
-	return this.autorun(async () => {
-		const { messages, total } = await APIClient.v1.get(`chat.getMentionedMessages?roomId=${ this.data.rid }&count=${ this.limit.get() }`);
+		const query = {
+			_hidden: { $ne: true },
+			'mentions.username': Users.findOne(Meteor.userId(), { fields: { username: 1 } }).username,
+			rid: this.data.rid,
+			_updatedAt: {
+				$gt: new Date(),
+			}
+		};
+
+		this.cursor && this.cursor.stop();
+
+		this.limit.set(LIMIT_DEFAULT);
+
+		this.cursor = Messages.find(query, { sort: { ts : 1 } }).observe({
+			added: (message) => {
+				this.mentionedMessages.set(this.mentionedMessages.curValue.concat(message));
+			},
+			changed: (message) => {
+				this.mentionedMessages.set(this.mentionedMessages.curValue.map((mentionedMessage) => {
+					if (message._id === mentionedMessage._id) {
+						mentionedMessage = message;
+					}
+					return mentionedMessage;
+				}));
+			},
+			removed: ({ _id }) => {
+				this.mentionedMessages.set(this.mentionedMessages.curValue.filter((message) => message._id !== _id));
+			},
+		});
+
+	})
+
+
+	this.autorun(async () => {
+		const limit = this.limit.get();
+		const { messages, total } = await APIClient.v1.get(`chat.getMentionedMessages?roomId=${ this.data.rid }&count=${ limit }`);
 		this.mentionedMessages.set(messages);
-		this.hasMore.set(total > this.limit.get());
+		this.hasMore.set(total > limit);
 	});
+});
+
+Template.mentionsFlexTab.onDestroyed(function() {
+	this.cursor.stop();
 });
 
 Template.mentionsFlexTab.events({
