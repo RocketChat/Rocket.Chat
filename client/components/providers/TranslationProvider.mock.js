@@ -41,7 +41,7 @@ export function TranslationProvider({ children }) {
 					suffix: '__',
 				},
 			});
-			setContextValue(translate);
+			setContextValue(() => translate);
 		};
 		initializeI18next();
 	}, []);

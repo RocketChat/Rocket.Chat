@@ -4,7 +4,7 @@ const translate = function(key) {
 	return key;
 }
 
-translate.has =  () => true;
+translate.has = () => true;
 
 export const TranslationContext = createContext(translate);
 
