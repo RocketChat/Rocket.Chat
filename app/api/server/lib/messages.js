@@ -1,12 +1,12 @@
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Rooms, Messages, Users } from '../../../models/server/raw';
 
-export async function findMentionedMessages({ userId, roomId, pagination: { offset, count, sort } }) {
+export async function findMentionedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);
-	if (!await canAccessRoomAsync(room, { _id: userId })) {
+	if (!await canAccessRoomAsync(room, { _id: uid })) {
 		throw new Error('error-not-allowed');
 	}
-	const user = await Users.findOneById(userId, { fields: { username: 1 } });
+	const user = await Users.findOneById(uid, { fields: { username: 1 } });
 	if (!user) {
 		throw new Error('invalid-user');
 	}

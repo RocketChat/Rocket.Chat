@@ -405,9 +405,9 @@ export const FileUpload = {
 		}, settings.get('FileUpload_json_web_token_secret_for_files'));
 	},
 
-	removeFilesByRoomId(roomId) {
+	removeFilesByRoomId(rid) {
 		Messages.find({
-			rid: roomId,
+			rid,
 			'file._id': {
 				$exists: true,
 			},

@@ -610,7 +610,7 @@ API.v1.addRoute('chat.getMentionedMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 		}
 		const messages = Promise.await(findMentionedMessages({
-			userId: this.userId,
+			uid: this.userId,
 			roomId,
 			pagination: {
 				offset,

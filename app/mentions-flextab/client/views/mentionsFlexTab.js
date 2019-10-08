@@ -55,9 +55,7 @@ Template.mentionsFlexTab.onCreated(function() {
 	return this.autorun(async () => {
 		const { messages, total } = await APIClient.v1.get(`chat.getMentionedMessages?roomId=${ this.data.rid }&count=${ this.limit.get() }`);
 		this.mentionedMessages.set(messages);
-		if (total < this.limit.get()) {
-			return this.hasMore.set(false);
-		}
+		this.hasMore.set(total > this.limit.get());
 	});
 });
 
