@@ -7,7 +7,7 @@ import { InformationEntry } from './InformationEntry';
 
 export function InstancesSection({ instances }) {
 	const t = useTranslation();
-	const { formatDate } = useFormatters(t);
+	const { formatDate } = useFormatters();
 
 	if (!instances || !instances.length) {
 		return null;

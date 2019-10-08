@@ -9,7 +9,7 @@ import { InformationEntry } from './InformationEntry';
 export function RocketChatSection({ info, statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
 	const t = useTranslation();
-	const { formatDate, formatHumanReadableTime } = useFormatters(t);
+	const { formatDate, formatHumanReadableTime } = useFormatters();
 
 	const appsEngineVersion = info.marketplaceApiVersion;
 
@@ -25,7 +25,7 @@ export function RocketChatSection({ info, statistics, isLoading }) {
 			<InformationEntry label={t('DB_Migration')}>{s(() => statistics.migration.version)}</InformationEntry>
 			<InformationEntry label={t('DB_Migration_Date')}>{s(() => formatDate(statistics.migration.lockedAt))}</InformationEntry>
 			<InformationEntry label={t('Installed_at')}>{s(() => formatDate(statistics.installedAt))}</InformationEntry>
-			<InformationEntry label={t('Uptime')}>{s(() => formatHumanReadableTime(statistics.process.uptime))}</InformationEntry>
+			<InformationEntry label={t('Uptime')}>{s(() => formatHumanReadableTime(statistics.process.uptime, t))}</InformationEntry>
 			<InformationEntry label={t('Deployment_ID')}>{s(() => statistics.uniqueId)}</InformationEntry>
 			<InformationEntry label={t('PID')}>{s(() => statistics.process.pid)}</InformationEntry>
 			<InformationEntry label={t('Running_Instances')}>{s(() => statistics.instanceCount)}</InformationEntry>

@@ -9,7 +9,7 @@ import { InformationEntry } from './InformationEntry';
 export function UsageSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
 	const t = useTranslation();
-	const { formatMemorySize } = useFormatters(t);
+	const { formatMemorySize } = useFormatters();
 
 	if (!statistics) {
 		return null;

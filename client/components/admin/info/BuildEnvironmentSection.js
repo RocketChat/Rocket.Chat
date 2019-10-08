@@ -7,7 +7,7 @@ import { useFormatters } from './useFormatters';
 
 export function BuildEnvironmentSection({ info }) {
 	const t = useTranslation();
-	const { formatDate } = useFormatters(t);
+	const { formatDate } = useFormatters();
 	const build = info && (info.compile || info.build);
 
 	return <>
