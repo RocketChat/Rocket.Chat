@@ -3,11 +3,10 @@ import React from 'react';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
-import { useFormatters } from './useFormatters';
+import { formatDate } from './formatters';
 
 export function BuildEnvironmentSection({ info }) {
 	const t = useTranslation();
-	const { formatDate } = useFormatters();
 	const build = info && (info.compile || info.build);
 
 	return <>

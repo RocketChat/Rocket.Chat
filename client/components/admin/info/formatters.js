@@ -1,9 +1,9 @@
 import moment from 'moment';
 import s from 'underscore.string';
 
-const formatNumber = (number) => s.numberFormat(number, 2);
+export const formatNumber = (number) => s.numberFormat(number, 2);
 
-const formatMemorySize = (memorySize) => {
+export const formatMemorySize = (memorySize) => {
 	if (typeof memorySize !== 'number') {
 		return null;
 	}
@@ -24,7 +24,7 @@ const formatMemorySize = (memorySize) => {
 	return `${ s.numberFormat(memorySize / divider, decimalDigits) } ${ units[order] }`;
 };
 
-const formatDate = (date) => {
+export const formatDate = (date) => {
 	if (!date) {
 		return null;
 	}
@@ -32,7 +32,7 @@ const formatDate = (date) => {
 	return moment(date).format('LLL');
 };
 
-const formatHumanReadableTime = (time, t) => {
+export const formatHumanReadableTime = (time, t) => {
 	const days = Math.floor(time / 86400);
 	const hours = Math.floor((time % 86400) / 3600);
 	const minutes = Math.floor(((time % 86400) % 3600) / 60);
@@ -53,7 +53,7 @@ const formatHumanReadableTime = (time, t) => {
 	return out;
 };
 
-const formatCPULoad = (load) => {
+export const formatCPULoad = (load) => {
 	if (!load) {
 		return null;
 	}
@@ -61,14 +61,4 @@ const formatCPULoad = (load) => {
 	const [oneMinute, fiveMinutes, fifteenMinutes] = load;
 
 	return `${ formatNumber(oneMinute) }, ${ formatNumber(fiveMinutes) }, ${ formatNumber(fifteenMinutes) }`;
-};
-
-export const useFormatters = () => {
-	return {
-		formatNumber,
-		formatMemorySize,
-		formatDate,
-		formatHumanReadableTime,
-		formatCPULoad,
-	};
 };

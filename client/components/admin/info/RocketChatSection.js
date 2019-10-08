@@ -2,14 +2,13 @@ import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { SkeletonText } from './SkeletonText';
-import { useFormatters } from './useFormatters';
+import { formatDate, formatHumanReadableTime } from './formatters';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
 
 export function RocketChatSection({ info, statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
 	const t = useTranslation();
-	const { formatDate, formatHumanReadableTime } = useFormatters();
 
 	const appsEngineVersion = info.marketplaceApiVersion;
 
