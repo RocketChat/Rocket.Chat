@@ -99,7 +99,7 @@ describe('PasswordPolicyClass', () => {
 			assert.equal(passwordPolice.validate('1'), true);
 			assert.equal(passwordPolice.validate('12345'), true);
 			assert.equal(passwordPolice.validate('123456'), true);
-			assert.equal(passwordPolice.validate('      '), true);
+			assert.equal(passwordPolice.validate('      '), false);
 			assert.equal(passwordPolice.validate('11111111111111'), true);
 		});
 
