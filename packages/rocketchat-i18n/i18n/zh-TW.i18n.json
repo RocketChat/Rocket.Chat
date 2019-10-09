@@ -486,8 +486,6 @@
   "Browse_Files": "瀏覽檔案",
   "Bugsnag_api_key": "Bugsnag API密鑰",
   "Build_Environment": "構建環境",
-  "bulk-create-c": "批次建立 Channel",
-  "bulk-create-c_description": "有權限批次建立頻道",
   "bulk-register-user": "批次建立使用者",
   "bulk-register-user_description": "允許批次建立使用者",
   "Busiest_day": "最忙的日子",

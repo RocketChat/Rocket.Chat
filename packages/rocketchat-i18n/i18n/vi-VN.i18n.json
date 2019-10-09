@@ -391,8 +391,6 @@
   "Broadcast_Connected_Instances": "Broadcast Connected Instances",
   "Bugsnag_api_key": "Khóa API Bugsnag",
   "Build_Environment": "Xây dựng môi trường",
-  "bulk-create-c": "Tạo kênh hàng loạt",
-  "bulk-create-c_description": "Cho phép tạo các kênh với số lượng lớn",
   "bulk-register-user": "Tạo người dùng hành loạt",
   "bulk-register-user_description": "Cho phép tạo các kênh với số lượng lớn",
   "busy": "bận",
