@@ -258,7 +258,7 @@ Template.visitorInfo.events({
 		}, () => {
 			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/* , result*/) {
 				if (error) {
-					console.log(error);
+					handleError(error);
 				} else {
 					Session.set('openedRoom');
 					FlowRouter.go('/home');
@@ -298,13 +298,20 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
+	const loadRoomData = async (rid) => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+		this.visitorId.set(room && room.v && room.v._id);
+		this.departmentId.set(room && room.departmentId);
+		this.tags.set(room && room.tags);
+		this.room.set(room);
+	}
+
 	if (rid) {
 		this.autorun(async () => {
-			const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
-			this.visitorId.set(room && room.v && room.v._id);
-			this.departmentId.set(room && room.departmentId);
-			this.tags.set(room && room.tags);
-			this.room.set(room);
+			const action = this.action.get();
+			if (action === undefined) {
+				await loadRoomData(rid);
+			}
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid });

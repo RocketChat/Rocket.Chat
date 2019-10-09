@@ -448,6 +448,10 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
+		if (!room.open) {
+			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
 		if (!room.servedBy) {
 			return false;
 		}
