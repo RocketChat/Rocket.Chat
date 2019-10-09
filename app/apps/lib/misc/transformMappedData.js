@@ -64,7 +64,7 @@ import cloneDeep from 'lodash.clonedeep';
 
 export const transformMappedData = (data, map) => {
 	const originalData = cloneDeep(data);
-	const transformedData = {};
+	const transformData = {};
 
 	Object.entries(map).forEach(([to, from]) => {
 		if (typeof from === 'function') {
@@ -73,7 +73,8 @@ export const transformMappedData = (data, map) => {
 			if (typeof result !== 'undefined') {
 				transformedData[to] = result;
 			}
-		} else if (typeof from === 'string' && typeof originalData[from] !== 'undefined') {
+		} 
+		else if (typeof from === 'string' && typeof originalData[from] !== 'undefined') {
 			transformedData[to] = originalData[from];
 			delete originalData[from];
 		}
