@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Τερματίστε τη συνεδρία SAML",
   "SAML_Custom_Private_Key": "Περιεχόμενα ιδιωτικού κλειδιού",
   "SAML_Custom_Provider": "Προσαρμοσμένη Provider",
+  "SAML_Custom_user_data_fieldmap": "Πεδίου δεδομένων χρήστη Χάρτης",
   "SAML_Custom_Immutable_Property_Username": "Όνομα Χρήστη",
   "SAML_Custom_Public_Cert": "Δημόσια Περιεχόμενο Cert",
   "Saturday": "Σάββατο",

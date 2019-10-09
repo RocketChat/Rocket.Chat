@@ -2224,6 +2224,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Avslutt SAML-økten",
   "SAML_Custom_Private_Key": "Privat nøkkelinnhold",
   "SAML_Custom_Provider": "Tilpasset leverandør",
+  "SAML_Custom_user_data_fieldmap": "Brukerdatafeltkart",
   "SAML_Custom_Immutable_Property_Username": "Brukernavn",
   "SAML_Custom_Public_Cert": "Offentlig sertifisering",
   "Saturday": "lørdag",

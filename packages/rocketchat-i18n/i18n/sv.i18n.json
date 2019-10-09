@@ -2306,6 +2306,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Avsluta SAML-sessionen",
   "SAML_Custom_Private_Key": "Privat nyckelinnehåll",
   "SAML_Custom_Provider": "anpassade Provider",
+  "SAML_Custom_user_data_fieldmap": "Användardatafält Karta",
   "SAML_Custom_Immutable_Property_Username": "Användarnamn",
   "SAML_Custom_Public_Cert": "Certifikat för allmän certifiering",
   "Saturday": "lördag",

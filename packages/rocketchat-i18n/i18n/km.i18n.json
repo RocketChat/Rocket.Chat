@@ -2481,6 +2481,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "បញ្ចប់សម័យ SAML",
   "SAML_Custom_Private_Key": "មាតិកាកូនសោឯកជន",
   "SAML_Custom_Provider": "ក្រុមហ៊ុនផ្ដល់ផ្ទាល់ខ្លួន",
+  "SAML_Custom_user_data_fieldmap": "ចំណុចចងភ្ជាប់ទិន្នន័យអ្នកប្រើប្រាស់",
   "SAML_Custom_Immutable_Property_Username": "ឈ្មោះ​អ្នកប្រើប្រាស់",
   "SAML_Custom_Public_Cert": "មាតិកាសាធារណៈសាធារណៈ",
   "Saturday": "ថ្ងៃសៅរ៍",

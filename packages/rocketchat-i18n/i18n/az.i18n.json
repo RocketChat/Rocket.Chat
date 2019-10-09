@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "SAML-sessiyasını dayandırın",
   "SAML_Custom_Private_Key": "Şəxsi Açar İçindəkilər",
   "SAML_Custom_Provider": "Xüsusi təchizatçı",
+  "SAML_Custom_user_data_fieldmap": "İstifadəçi Məlumatın Sahəsi xəritəsi",
   "SAML_Custom_Immutable_Property_Username": "İstifadəçi adı",
   "SAML_Custom_Public_Cert": "İctimai Cert Contents",
   "Saturday": "Şənbə",

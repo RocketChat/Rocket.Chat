@@ -1,4 +1,3 @@
-import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import React, { useEffect, useState } from 'react';
 
 import { hasRole } from '../../../app/authorization';
@@ -6,6 +5,7 @@ import { Users } from '../../../app/models';
 import { useSetting } from '../../hooks/useSetting';
 import { useUserId } from '../../hooks/useUserId';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { useRoute } from '../contexts/RouterContext';
 
 export function StateChecker({ children }) {
 	const setupWizardState = useSetting('Show_Setup_Wizard');
@@ -13,6 +13,8 @@ export function StateChecker({ children }) {
 	const user = useReactiveValue(() => Users.findOne(userId, { fields: { status: true } }), [userId]);
 
 	const [renderAllowed, allowRender] = useState(false);
+
+	const goToHome = useRoute('home');
 
 	useEffect(() => {
 		if (!setupWizardState) {
@@ -30,9 +32,7 @@ export function StateChecker({ children }) {
 		const mustRedirect = isComplete || noUserLoggedInAndIsNotPending || userIsLoggedInButIsNotAdmin;
 
 		if (mustRedirect) {
-			FlowRouter.withReplaceState(() => {
-				FlowRouter.go('home');
-			});
+			goToHome.replacingState();
 			return;
 		}
 
