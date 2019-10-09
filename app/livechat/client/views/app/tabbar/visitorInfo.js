@@ -307,10 +307,10 @@ Template.visitorInfo.onCreated(function() {
 	};
 
 	if (rid) {
-		this.autorun(async () => {
+		this.autorun(() => {
 			const action = this.action.get();
 			if (action === undefined) {
-				await loadRoomData(rid);
+				loadRoomData(rid);
 			}
 		});
 
