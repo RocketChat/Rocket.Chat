@@ -53,7 +53,7 @@ API.v1.addRoute('livechat/message', {
 				agent,
 			};
 
-			const result = Livechat.sendMessage(sendMessage);
+			const result = Promise.await(Livechat.sendMessage(sendMessage));
 			if (result) {
 				const message = Messages.findOneById(_id);
 				return API.v1.success({ message });
