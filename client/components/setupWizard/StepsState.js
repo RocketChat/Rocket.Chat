@@ -1,7 +1,7 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useUserId } from '../../hooks/useUserId';
+import { useRouteParameter, useRoute } from '../contexts/RouterContext';
 
 const Context = createContext();
 
@@ -10,10 +10,11 @@ export const useSetupWizardStepsState = () => useContext(Context);
 export const finalStep = 'final';
 
 const useStepRouting = () => {
+	const param = useRouteParameter('step');
+	const goToSetupWizard = useRoute('setup-wizard');
+
 	const userId = useUserId();
 	const [currentStep, setCurrentStep] = useState(() => {
-		const param = FlowRouter.getParam('step');
-
 		if (param === finalStep) {
 			return finalStep;
 		}
@@ -33,10 +34,8 @@ const useStepRouting = () => {
 			setCurrentStep(2);
 		}
 
-		FlowRouter.withReplaceState(() => {
-			FlowRouter.go('setup-wizard', { step: String(currentStep) });
-		});
-	}, [userId, currentStep]);
+		goToSetupWizard.replacingState({ step: String(currentStep) });
+	}, [goToSetupWizard, userId, currentStep]);
 
 	return [currentStep, setCurrentStep];
 };
