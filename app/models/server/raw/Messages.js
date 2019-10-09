@@ -10,4 +10,14 @@ export class MessagesRaw extends BaseRaw {
 
 		return this.find(query, options);
 	}
+
+	findStarredByUserAtRoom(userId, roomId, options) {
+		const query = {
+			_hidden: { $ne: true },
+			'starred._id': userId,
+			rid: roomId,
+		};
+
+		return this.find(query, options);
+	}
 }
