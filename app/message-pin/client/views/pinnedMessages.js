@@ -30,7 +30,7 @@ Template.pinnedMessages.helpers({
 Template.pinnedMessages.onCreated(function() {
 	this.pinnedMessages = new ReactiveVar([]);
 	this.hasMore = new ReactiveVar(true);
-	this.limit = new ReactiveVar(50);
+	this.limit = new ReactiveVar(LIMIT_DEFAULT);
 	this.rid = this.data.rid;
 	this.messages = new Mongo.Collection(null);
 
