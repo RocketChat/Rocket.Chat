@@ -11,6 +11,7 @@ import { Logger } from '../../logger';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppDepartmentsConverter } from './converters/departments';
+import { AppRoomSubscriptionsConverter } from './converters/roomSubscriptions';
 
 class AppServerOrchestrator {
 	constructor() {
@@ -37,6 +38,7 @@ class AppServerOrchestrator {
 		this._converters.set('visitors', new AppVisitorsConverter(this));
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
+		this._converters.set('roomSubscriptions', new AppRoomSubscriptionsConverter(this));
 
 		this._bridges = new RealAppBridges(this);
 
