@@ -473,8 +473,6 @@
   "Browse_Files": "浏览文件",
   "Bugsnag_api_key": "Bugsnag API Key",
   "Build_Environment": "构建环境",
-  "bulk-create-c": "批量创建频道",
-  "bulk-create-c_description": "批量创建频道的权限",
   "bulk-register-user": "批量创建频道",
   "bulk-register-user_description": "批量创建频道的权限",
   "Busiest_day": "最忙的一天",

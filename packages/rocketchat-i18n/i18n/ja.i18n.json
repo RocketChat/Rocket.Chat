@@ -485,8 +485,6 @@
   "Browse_Files": "ファイルをブラウズ",
   "Bugsnag_api_key": "Bugsnag APIキー",
   "Build_Environment": "ビルド環境",
-  "bulk-create-c": "チャンネル一括作成",
-  "bulk-create-c_description": "チャンネルを一括で作成する権限",
   "bulk-register-user": "ユーザー一括登録",
   "bulk-register-user_description": "ユーザーを一括で登録する権限",
   "Busiest_day": "最も忙しい日",
