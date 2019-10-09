@@ -11,7 +11,7 @@ class PasswordPolicy {
 		mustContainAtLeastOneUppercase = false,
 		mustContainAtLeastOneNumber = false,
 		mustContainAtLeastOneSpecialCharacter = false,
-		throwError = false,
+		throwError = true,
 	} = {}) {
 		this.regex = {
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
