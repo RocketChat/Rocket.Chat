@@ -299,7 +299,7 @@ API.v1.addRoute('livechat/messages', { authRequired: true }, {
 					msg: message.msg,
 				},
 			};
-			const sentMessage = Livechat.sendMessage(sendMessage);
+			const sentMessage = Promise.await(Livechat.sendMessage(sendMessage));
 			return {
 				username: sentMessage.u.username,
 				msg: sentMessage.msg,
