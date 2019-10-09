@@ -1,7 +1,7 @@
 import React from 'react';
 
+import { useTranslation } from '../contexts/TranslationContext';
 import { BurgerMenuButton } from './BurgerMenuButton';
-import { useTranslation } from '../../hooks/useTranslation';
 
 export function Header({
 	children,

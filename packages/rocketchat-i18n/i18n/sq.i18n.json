@@ -2223,6 +2223,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Ndërpres SAML-session",
   "SAML_Custom_Private_Key": "Përmbajtja kryesore private",
   "SAML_Custom_Provider": "Custom Provider",
+  "SAML_Custom_user_data_fieldmap": "User Data Map Field",
   "SAML_Custom_Immutable_Property_Username": "Emri i përdoruesit",
   "SAML_Custom_Public_Cert": "Përmbajtja e Cert Publik",
   "Saturday": "e shtunë",

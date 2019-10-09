@@ -2222,6 +2222,7 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Pārtraukt SAML sesiju",
   "SAML_Custom_Private_Key": "Privātās atslēgas saturs",
   "SAML_Custom_Provider": "Pielāgots  pakalpojuma sniedzējs",
+  "SAML_Custom_user_data_fieldmap": "Lietotāja datu lauka karte",
   "SAML_Custom_Immutable_Property_Username": "Lietotājvārds",
   "SAML_Custom_Public_Cert": "Publiskā sertifikāta saturs",
   "Saturday": "Sestdiena",
