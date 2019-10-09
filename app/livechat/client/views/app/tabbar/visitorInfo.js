@@ -304,7 +304,7 @@ Template.visitorInfo.onCreated(function() {
 		this.departmentId.set(room && room.departmentId);
 		this.tags.set(room && room.tags);
 		this.room.set(room);
-	}
+	};
 
 	if (rid) {
 		this.autorun(async () => {
