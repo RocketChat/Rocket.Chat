@@ -35,6 +35,7 @@ import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
+import { FileUpload } from '../../../file-upload/server';
 
 export const Livechat = {
 	Analytics,
@@ -639,7 +640,7 @@ export const Livechat = {
 		check(token, String);
 
 		LivechatRooms.findByVisitorToken(token).forEach((room) => {
-			Messages.removeFilesByRoomId(room._id);
+			FileUpload.removeFilesByRoomId(room._id);
 			Messages.removeByRoomId(room._id);
 		});
 
