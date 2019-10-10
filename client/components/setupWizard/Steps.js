@@ -3,7 +3,7 @@ import React from 'react';
 import { AdminUserInformationStep } from './steps/AdminUserInformationStep';
 import { SettingsBasedStep } from './steps/SettingsBasedStep';
 import { RegisterServerStep } from './steps/RegisterServerStep';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useTranslation } from '../contexts/TranslationContext';
 import { Epilogue } from './Epilogue';
 import { SideBar } from './SideBar';
 import { useSetupWizardStepsState, finalStep } from './StepsState';

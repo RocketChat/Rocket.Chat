@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 
 import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { Icon } from '../../basic/Icon';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
