@@ -10,6 +10,8 @@ import UsersModel from '../models/Users';
 import { UsersRaw } from './Users';
 import RoomsModel from '../models/Rooms';
 import { RoomsRaw } from './Rooms';
+import LivechatTriggerModel from '../models/LivechatTrigger';
+import { LivechatTriggerRaw } from './LivechatTrigger';
 import LivechatDepartmentModel from '../models/LivechatDepartment';
 import { LivechatDepartmentRaw } from './LivechatDepartment';
 import LivechatDepartmentAgentsModel from '../models/LivechatDepartmentAgents';
@@ -25,6 +27,7 @@ export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCo
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection());
 export const Users = new UsersRaw(UsersModel.model.rawCollection());
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection());
+export const LivechatTrigger = new LivechatTriggerRaw(LivechatTriggerModel.model.rawCollection());
 export const LivechatDepartment = new LivechatDepartmentRaw(LivechatDepartmentModel.model.rawCollection());
 export const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(LivechatDepartmentAgentsModel.model.rawCollection());
 export const LivechatRooms = new LivechatRoomsRaw(LivechatRoomsModel.model.rawCollection());
