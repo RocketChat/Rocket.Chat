@@ -5,10 +5,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 
-import { t, handleError } from '../../../../utils';
+import { t, handleError, APIClient } from '../../../../utils/client';
 import { settings } from '../../../../settings';
 import './livechatOfficeHours.html';
-import { APIClient } from '../../../../utils/client';
 
 Template.livechatOfficeHours.helpers({
 	days() {
@@ -118,7 +117,7 @@ Template.livechatOfficeHours.events({
 	},
 });
 
-Template.livechatOfficeHours.onCreated(function() {
+Template.livechatOfficeHours.onCreated(async function() {
 	this.dayVars = {
 		Monday: {
 			start: new ReactiveVar('08:00'),
@@ -158,14 +157,12 @@ Template.livechatOfficeHours.onCreated(function() {
 	};
 	this.officeHours = new ReactiveVar([]);
 
-	this.autorun(async () => {
-		const { officeHours } = await APIClient.v1.get('livechat/office-hours');
-		this.officeHours.set(officeHours);
-		this.officeHours.get().forEach((d) => {
-			this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
-			this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
-			this.dayVars[d.day].open.set(d.open);
-		});
+	const { officeHours } = await APIClient.v1.get('livechat/office-hours');
+	this.officeHours.set(officeHours);
+	officeHours.forEach((d) => {
+		this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
+		this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
+		this.dayVars[d.day].open.set(d.open);
 	});
 
 	this.enableOfficeHours = new ReactiveVar(null);
