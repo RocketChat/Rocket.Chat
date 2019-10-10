@@ -50,6 +50,9 @@ settings.get('Support_Cordova_App', (key, value) => {
 });
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {
+	// XSS Protection for old browsers (IE)
+	res.setHeader('X-XSS-Protection', '1');
+
 	if (Support_Cordova_App !== true) {
 		return next();
 	}
