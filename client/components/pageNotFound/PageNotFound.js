@@ -1,22 +1,23 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
-import { useTranslation } from '../../hooks/useTranslation';
+import { useTranslation } from '../contexts/TranslationContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
+import { useRoute } from '../contexts/RouterContext';
 
 export function PageNotFound() {
 	useWipeInitialPageLoading();
 
 	const t = useTranslation();
+	const goToHome = useRoute('home');
 
 	const handleGoToPreviousPageClick = () => {
 		window.history.back();
 	};
 
 	const handleGoHomeClick = () => {
-		FlowRouter.go('home');
+		goToHome();
 	};
 
 	return <>
