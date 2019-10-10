@@ -473,8 +473,6 @@
   "Broadcast_Connected_Instances": "Трансляція пов'язаних випадків",
   "Bugsnag_api_key": "Ключ Bugsnag API",
   "Build_Environment": "Побудова середовища",
-  "bulk-create-c": "Масове створення каналів",
-  "bulk-create-c_description": "Дозвіл на створення каналів навалом",
   "bulk-register-user": "Масове створення каналів",
   "bulk-register-user_description": "Дозвіл на створення каналів навалом",
   "busy": "зайнятий",

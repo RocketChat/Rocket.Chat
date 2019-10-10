@@ -401,8 +401,6 @@
   "Broadcast_Connected_Instances": "Broadcast Connected Instances",
   "Bugsnag_api_key": "Bugsnag API-nøkkel",
   "Build_Environment": "Bygg miljø",
-  "bulk-create-c": "Bulk Create Channels",
-  "bulk-create-c_description": "Tillatelse til å lage kanaler i bulk",
   "bulk-register-user": "Bulk Create Channels",
   "bulk-register-user_description": "Tillatelse til å lage kanaler i bulk",
   "busy": "opptatt",
