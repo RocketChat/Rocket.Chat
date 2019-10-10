@@ -4,16 +4,23 @@ import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
+import { findDepartments, findDepartmentById } from '../../../server/api/lib/departments';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'view-livechat-departments')) {
-			return API.v1.unauthorized();
-		}
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
 
-		return API.v1.success({
-			departments: LivechatDepartment.find().fetch(),
-		});
+		const departments = Promise.await(findDepartments({
+			userId: this.userId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+
+		return API.v1.success(departments);
 	},
 	post() {
 		if (!hasPermission(this.userId, 'manage-livechat-departments')) {
@@ -44,22 +51,22 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 
 API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'view-livechat-departments')) {
-			return API.v1.unauthorized();
+		check(this.urlParams, {
+			_id: String,
+		});
+
+		const { department, agents } = Promise.await(findDepartmentById({
+			userId: this.userId,
+			departmentId: this.urlParams._id,
+			includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
+		}));
+
+		const result = { department };
+		if (agents) {
+			result.agents = agents;
 		}
 
-		try {
-			check(this.urlParams, {
-				_id: String,
-			});
-
-			return API.v1.success({
-				department: LivechatDepartment.findOneById(this.urlParams._id),
-				agents: LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
-			});
-		} catch (e) {
-			return API.v1.failure(e.error);
-		}
+		return API.v1.success(result);
 	},
 	put() {
 		const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');
