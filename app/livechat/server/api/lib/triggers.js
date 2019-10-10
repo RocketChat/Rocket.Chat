@@ -29,7 +29,5 @@ export async function findTriggerById({ userId, triggerId }) {
 		throw new Error('error-not-authorized');
 	}
 
-	return {
-		trigger: await LivechatTrigger.findOneById(triggerId),
-	};
+	return LivechatTrigger.findOneById(triggerId);
 }
