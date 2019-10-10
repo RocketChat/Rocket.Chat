@@ -1,7 +1,7 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatCustomField } from '../../../../models/server/raw';
 
-export async function findCustomFields({ userId, pagination: { offset, count, sort } }) {
+export async function findLivechatCustomFields({ userId, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}

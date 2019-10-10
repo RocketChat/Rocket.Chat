@@ -4,9 +4,8 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../../ui-utils';
-import { t, handleError } from '../../../../utils';
+import { t, handleError, APIClient } from '../../../../utils/client';
 import './livechatCustomFields.html';
-import { APIClient } from '../../../../utils/client';
 
 const loadCustomFields = async (instance) => {
 	const { customFields } = await APIClient.v1.get('livechat/custom-fields');
@@ -56,7 +55,7 @@ Template.livechatCustomFields.events({
 	},
 });
 
-Template.livechatCustomFields.onCreated(async function() {
+Template.livechatCustomFields.onCreated(function() {
 	this.customFields = new ReactiveVar([]);
-	await loadCustomFields(this);
+	loadCustomFields(this);
 });
