@@ -12,6 +12,7 @@ import { Rooms, Messages } from '../../../models/client';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 
 const LIST_SIZE = 50;
+const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 const getFileUrl = (attachments) => {
 	if (!attachments || !attachments.length) {
@@ -29,18 +30,26 @@ const mountFileObject = (message) => ({
 	_updatedAt: message.attachments && message.attachments[0].ts,
 });
 
-const loadFiles = async (instance, query, fields, room, roomTypes) => {
-	instance.state.set('loading', true);
-	const { files } = await APIClient.v1.get(`${ roomTypes[room.t] }.files?roomId=${ query.rid }&limit=${ instance.state.get('limit') }&query=${ JSON.stringify(query) }&fields=${ JSON.stringify(fields) }`);
-	upsertMessageBulk({ msgs: files }, instance.files);
-	instance.state.set('hasMore', instance.state.get('limit') <= instance.files.find({ rid: query.rid }).count());
-	instance.state.set('loading', false);
+const roomTypes = {
+	c: 'channels',
+	d: 'im',
+	p: 'groups',
+};
+
+const fields = {
+	_id: 1,
+	userId: 1,
+	rid: 1,
+	name: 1,
+	description: 1,
+	type: 1,
+	url: 1,
+	uploadedAt: 1,
 };
 
 Template.uploadedFilesList.onCreated(function() {
 	const { rid } = Template.currentData();
 	const room = Rooms.findOne({ _id: rid });
-	const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 	this.searchText = new ReactiveVar(null);
 	this.roomFiles = new ReactiveVar([]);
 	this.files = new Mongo.Collection(null);
@@ -48,34 +57,37 @@ Template.uploadedFilesList.onCreated(function() {
 		limit: LIST_SIZE,
 		hasMore: true,
 	});
-	this.autorun(() => {
-		const messageQuery = {
-			rid,
-			'file._id': { $exists: true },
-		};
 
-		this.cursor && this.cursor.stop();
+	const messageQuery = {
+		rid,
+		'file._id': { $exists: true },
+	};
 
-		this.state.set('limit', LIST_SIZE);
-
-		this.cursor = Messages.find(messageQuery).observe({
-			added: ({ ...message }) => {
-				this.files.upsert(message.file._id, mountFileObject(message));
-			},
-			changed: ({ ...message }) => {
-				this.files.upsert(message.file._id, mountFileObject(message));
-			},
-			removed: ({ ...message }) => {
-				this.files.remove(message.file._id);
-			},
-		});
+	this.cursor = Messages.find(messageQuery).observe({
+		added: ({ ...message }) => {
+			this.files.upsert(message.file._id, mountFileObject(message));
+		},
+		changed: ({ ...message }) => {
+			this.files.upsert(message.file._id, mountFileObject(message));
+		},
+		removed: ({ ...message }) => {
+			this.files.remove(message.file._id);
+		},
 	});
 
-	const roomTypes = {
-		c: 'channels',
-		d: 'im',
-		p: 'groups',
-	};
+	const loadFiles = _.debounce(async (query, limit) => {
+		this.state.set('loading', true);
+
+		const { files } = await APIClient.v1.get(`${ roomTypes[room.t] }.files?roomId=${ query.rid }&limit=${ limit }&query=${ JSON.stringify(query) }&fields=${ JSON.stringify(fields) }`);
+
+		upsertMessageBulk({ msgs: files }, this.files);
+
+		this.state.set({
+			hasMore: this.state.get('limit') <= files.length,
+			loading: false,
+		});
+	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
+
 	const query = {
 		rid,
 		complete: true,
@@ -84,31 +96,21 @@ Template.uploadedFilesList.onCreated(function() {
 			$ne: true,
 		},
 	};
-	const fields = {
-		_id: 1,
-		userId: 1,
-		rid: 1,
-		name: 1,
-		description: 1,
-		type: 1,
-		url: 1,
-		uploadedAt: 1,
-	};
 
-	this.searchFiles = _.debounce((query) => {
-		if (this.state.get('loading') === true) {
-			return;
-		}
-		loadFiles(this, query, fields, room, roomTypes);
-	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
 	this.autorun(() => {
+		this.searchText.get();
+		this.state.set('limit', LIST_SIZE);
+	});
+
+	this.autorun(() => {
+		const limit = this.state.get('limit');
 		const searchText = this.searchText.get();
-		if (searchText) {
-			this.files.remove({});
-			const regex = { $regex: searchText, $options: 'i' };
-			return this.searchFiles({ ...query, name: regex });
+		if (!searchText) {
+			return loadFiles(query, limit);
 		}
-		loadFiles(this, query, fields, room, roomTypes);
+		this.files.remove({});
+		const regex = { $regex: searchText, $options: 'i' };
+		return loadFiles({ ...query, name: regex }, limit);
 	});
 });
 
