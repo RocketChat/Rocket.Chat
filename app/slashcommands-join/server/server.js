@@ -42,4 +42,5 @@ function Join(command, params, item) {
 slashCommands.add('join', Join, {
 	description: 'Join_the_given_channel',
 	params: '#channel',
+	permission: 'view-c-room',
 });

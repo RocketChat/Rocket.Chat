@@ -1,17 +1,9 @@
-import { createContext, useMemo, useContext } from 'react';
+import { createContext, useContext } from 'react';
 
-export const TranslationContext = createContext({
-	language: null,
-	translate: (key) => key,
-	doKeyExists: () => true,
-});
+const translate = (key) => key;
 
-export const useTranslation = () => {
-	const { translate, doKeyExists } = useContext(TranslationContext);
+translate.has = () => true;
 
-	return useMemo(() => {
-		const t = translate.bind(null);
-		t.has = doKeyExists.bind(null);
-		return t;
-	}, [translate, doKeyExists]);
-};
+export const TranslationContext = createContext(translate);
+
+export const useTranslation = () => useContext(TranslationContext);
