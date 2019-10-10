@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Users, Messages } from '../../../models';
 
+console.warn('The publication "starredMessages" is deprecated and will be removed after version v3.0.0');
 Meteor.publish('starredMessages', function(rid, limit = 50) {
 	if (!this.userId) {
 		return this.ready();

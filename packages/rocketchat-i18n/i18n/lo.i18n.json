@@ -400,8 +400,6 @@
   "Broadcast_Connected_Instances": "ສະຖານີໂທລະພາບທີ່ເຊື່ອມຕໍ່",
   "Bugsnag_api_key": "Bugsnag API Key",
   "Build_Environment": "ສ້າງສະພາບແວດລ້ອມ",
-  "bulk-create-c": "Bulk Create Channels",
-  "bulk-create-c_description": "ການອະນຸຍາດສ້າງຊ່ອງທາງໃນຫລາຍໆຊະນິດ",
   "bulk-register-user": "Bulk Create Channels",
   "bulk-register-user_description": "ການອະນຸຍາດສ້າງຊ່ອງທາງໃນຫລາຍໆຊະນິດ",
   "busy": "ຄາ​ວຽກ",

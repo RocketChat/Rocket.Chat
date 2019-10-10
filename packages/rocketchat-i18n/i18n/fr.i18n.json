@@ -452,8 +452,6 @@
   "Broadcast_Connected_Instances": "Diffuser des instances connectées",
   "Bugsnag_api_key": "Clef d'API Bugsnag",
   "Build_Environment": "Construire l'environnement",
-  "bulk-create-c": "Créer des chaînes en vrac",
-  "bulk-create-c_description": "Permission de créer des canaux en vrac",
   "bulk-register-user": "Créer des chaînes en vrac",
   "bulk-register-user_description": "Permission de créer des canaux en vrac",
   "busy": "occupé",
