@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { Rooms, Subscriptions, Users } from '../../../models';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 
 export class AppRoomBridge {
@@ -83,6 +83,17 @@ export class AppRoomBridge {
 		}
 
 		return this.orch.getConverters().get('users').convertById(room.u._id);
+	}
+
+	async getMessages(roomId, appId) {
+		this.orch.debugLog(`The App ${ appId } is getting the room's messages by room id: "${ roomId }"`);
+
+		const room = Rooms.findOneById(roomId);
+		if (!room) {
+			throw new Error(`Room could not be found by id ${ roomId }`);
+		}
+
+		return Messages.findVisibleByRoomId(roomId).map((msgObj) => this.orch.getConverters().get('messages').convertMessage(msgObj));
 	}
 
 	async getMembers(roomId, appId) {
