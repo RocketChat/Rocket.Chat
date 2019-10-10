@@ -35,7 +35,7 @@ API.v1.addRoute('autotranslate.saveSettings', { authRequired: true }, {
 			return API.v1.failure('The bodyParam "autoTranslate" must be a boolean.');
 		}
 		if (field === 'autoTranslateLanguage' && typeof value !== 'string') {
-			return API.v1.failure('The bodyParam "autoTranslate" must be a string.');
+			return API.v1.failure('The bodyParam "autoTranslateLanguage" must be a string.');
 		}
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('autoTranslate.saveSettings', roomId, field, value === true ? '1' : String(value).valueOf(), { defaultLanguage }));
