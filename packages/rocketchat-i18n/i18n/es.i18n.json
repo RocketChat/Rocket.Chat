@@ -433,8 +433,6 @@
   "Broadcasting_enabled": " ",
   "Bugsnag_api_key": "Clave de la API Bugsnag",
   "Build_Environment": "Entorno de construcción",
-  "bulk-create-c": "Creación masiva de canales",
-  "bulk-create-c_description": "Permiso para crear canales a granel",
   "bulk-register-user": "Creación masiva de canales",
   "bulk-register-user_description": "Permiso para crear canales a granel",
   "Busiest_day": "Dia mas ocupado",

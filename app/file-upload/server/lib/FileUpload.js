@@ -24,6 +24,7 @@ import { hasPermission } from '../../../authorization/server/functions/hasPermis
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
+import { Messages } from '../../../models/server';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -402,6 +403,19 @@ export const FileUpload = {
 			userId,
 			fileId,
 		}, settings.get('FileUpload_json_web_token_secret_for_files'));
+	},
+
+	removeFilesByRoomId(rid) {
+		Messages.find({
+			rid,
+			'file._id': {
+				$exists: true,
+			},
+		}, {
+			fields: {
+				'file._id': 1,
+			},
+		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	},
 };
 
