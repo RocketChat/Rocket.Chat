@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl -SLf "https://releases.rocket.chat/#{RC_VERSION}/download/" -o rocket.chat.tgz
+curl -SLf "https://releases.rocket.chat/1.3.2/download/" -o rocket.chat.tgz
 
 tar xf rocket.chat.tgz --strip 1
 
@@ -29,4 +29,5 @@ execstack --clear-execstack npm/node_modules/sharp/vendor/lib/librsvg-2.so*
 # Having to manually remove because of latest warning
 rm -rf npm/node_modules/meteor/konecty_user-presence/node_modules/colors/lib/.colors.js.swp
 rm -rf node_modules/node-pre-gyp/node_modules/tar/lib/.mkdir.js.swp
-
+rm -rf npm/node_modules/sharp/node_modules/semver/bin/.semver.js.swp
+rm -rf npm/node_modules/tar/lib/.mkdir.js.swp

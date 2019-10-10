@@ -120,3 +120,12 @@ else
   fi
 fi
 
+# Obtain backup value
+backup="$(snapctl get backup-on-refresh)"
+# Validate it
+backup_regex='((enable)|(disable))'
+if ! [[ $backup =~ $backup_regex ]] ; then
+    echo "\"$backup\" should be enable or disable" >&2
+    exit 1
+fi
+

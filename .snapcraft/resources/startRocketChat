@@ -41,6 +41,11 @@ try_times=0
 
 function try_start {
 
+        refreshing="$(snapctl get snap-refreshing)"
+        if [ $refreshing == "true" ]; then
+            exit 0
+        fi
+
 	search=$(ps --pid $(cat $SNAP_COMMON/mongod.pid) -o comm=)
 
 	if [ $search ]
