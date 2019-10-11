@@ -305,7 +305,7 @@ jobs:
           region: AWS_DEFAULT_REGION
           tag: $(jq -r '.version' ~/repo/app/utils/rocketchat.info)
           dockerfile: /tmp/build/Dockerfile
-          path: "/tmp/build-pr"
+          path: "/tmp/build"
           checkout: false
             # WIDECHAT 
             # if [[ $CIRCLE_TAG ]]; then
