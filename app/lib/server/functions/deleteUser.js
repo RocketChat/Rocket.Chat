@@ -86,7 +86,7 @@ export const deleteUser = function(userId) {
 			// Remove DMs and non-channel rooms with only 1 user (the one being deleted)
 			if (roomData.t === 'd' || (roomData.t !== 'c' && roomData.subscribers === 1)) {
 				Subscriptions.removeByRoomId(roomData.rid);
-				Messages.removeFilesByRoomId(roomData.rid);
+				FileUpload.removeFilesByRoomId(roomData.rid);
 				Messages.removeByRoomId(roomData.rid);
 				Rooms.removeById(roomData.rid);
 			}

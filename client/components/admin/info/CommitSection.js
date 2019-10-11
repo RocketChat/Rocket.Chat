@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
 
