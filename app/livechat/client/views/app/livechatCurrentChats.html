@@ -106,14 +106,13 @@
 					</div>
 
 					<div class="livechat-current-chats-filters-buttons">
-						<div class="form-group">
-                                                      <button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
-                                                      <br/>
-                                                      {{#if closedChats}}
-                                                              <button class="button danger delete-all-closed-chats">{{_ "Delete_all_closed_chats"}}</button>
-                                                      {{else}}
-                                                              <td>&nbsp;</td>
-                                                      {{/if}}
+						<div class="rc-button__group">
+							<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+							{{#if hasPopoverPermissions}}
+								<button class="livechat-current-chats-extra-actions js-menu">
+									{{> icon icon="menu" block="rc-icon--default-size"}}
+								</button>
+							{{/if}}
 						</div>
 					</div>
 				</div>

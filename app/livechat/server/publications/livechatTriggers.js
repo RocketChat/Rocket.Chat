@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission } from '../../../authorization';
 import { LivechatTrigger } from '../../../models';
 
+console.warn('The publication "livechat:triggers" is deprecated and will be removed after version v3.0.0');
 Meteor.publish('livechat:triggers', function(_id) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:triggers' }));
