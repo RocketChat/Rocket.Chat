@@ -31,5 +31,6 @@ export const preferences = {
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
 		roomCounterSidebar: false,
+		discoverability: 'all',
 	},
 };
