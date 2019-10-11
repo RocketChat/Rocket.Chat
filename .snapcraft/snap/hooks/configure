@@ -129,3 +129,17 @@ if ! [[ $backup =~ $backup_regex ]] ; then
     exit 1
 fi
 
+# Obtain db featureCompatibilityVersion
+db_featureCompatibilityVersion="$(snapctl get db-feature-compatibility-version)"
+db_featureCompatibilityVersion_regex='^3\.[4,6]$'
+if ! [[ $db_featureCompatibilityVersion =~ $db_featureCompatibilityVersion_regex ]] ; then
+    echo "\"$db_featureCompatibilityVersion\" should be 3.4 or 3.6" >&2
+    exit 1
+else
+    db_version=$(mongo --eval "printjson(db.version())" |tail -1 |tr -d '"' |cut -d. -f1,2)
+    if [[ $db_version == "3.6" ]] && [[ $db_featureCompatibilityVersion == "3.4" ]]; then
+        mongo --eval "printjson(db.adminCommand ({ setFeatureCompatibilityVersion: \"3.4\" }))"
+    elif [[ $db_version == "3.6" ]] && [[ $db_featureCompatibilityVersion == "3.6" ]]; then
+        mongo --eval "printjson(db.adminCommand ({ setFeatureCompatibilityVersion: \"3.6\" }))"
+    fi
+fi

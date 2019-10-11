@@ -4,6 +4,14 @@ function start_rocketchat {
 	echo "Checking if oplog has been enabled, and enabling if not"
 	LC_ALL=C mongo $SNAP/bin/initreplset.js
 	
+	echo "Checking if mongo featureCompatibilityVersion is correct, changing if not"
+        db_version=$(mongo --eval "printjson(db.version())" |tail -1 |tr -d '"' |cut -d. -f1,2)
+        db_comp_version=$(mongo --eval "printjson(db.adminCommand ({getParameter: 1, featureCompatibilityVersion: 1}))"|grep '"version" :' |cut -d: -f3 |cut -d} -f1|tr -d '[:space:]'|tr -d '"')
+        db_featureCompatibilityVersion="$(snapctl get db-feature-compatibility-version)"
+        if [[ $db_version == "3.6" ]] && [[ $db_comp_version == "3.4" ]] && [[ $db_featureCompatibilityVersion == "3.6" ]]; then
+            LC_ALL=C mongo --eval "printjson(db.adminCommand ({ setFeatureCompatibilityVersion: \"3.6\" }))"
+        fi
+	
 	## For making fonts work for sharp
 	export XDG_DATA_HOME=$SNAP/usr/share
 

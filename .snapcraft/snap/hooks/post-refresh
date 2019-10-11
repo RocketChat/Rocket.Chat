@@ -31,8 +31,17 @@ if [ -z "$https" ]; then
 fi
 
 # Initialize backup to a default
-snapctl set backup-on-refresh=enable
+backup="$(snapctl get backup-on-refresh)"
+if [ -z "$backup" ]; then
+  snapctl set backup-on-refresh=disable
+fi
 
 # Set back snap-refreshing to false
 snapctl set snap-refreshing=false
+
+# Initialize db-feature-compatibility-version to a default
+db_featureCompatibilityVersion="$(snapctl get db-feature-compatibility-version)"
+if [ -z "$db_featureCompatibilityVersion" ]; then
+  snapctl set db-feature-compatibility-version=3.6
+fi
 
