@@ -180,7 +180,7 @@ Template.livechatCurrentChats.events({
 
 			const departments = instance.departments.get();
 			return departments && departments.map((d) => d._id);
-		}
+		};
 
 		const config = {
 			popoverClass: 'livechat-current-chats-add-filter',
