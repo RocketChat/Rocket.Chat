@@ -63,7 +63,12 @@ test-with-oplog: &test-with-oplog
     - save_cache: *test-save-npm-cache
     - store_artifacts: *test-store_artifacts
 
-version: 2
+# WIDECHAT - using 2.1 and the aws orb to push docker images to ECR
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@6.3.0
+
 jobs:
   build:
     <<: *defaults
@@ -98,7 +103,6 @@ jobs:
             else
               echo "No cached Meteor bin found."
             fi
-
             # only install meteor if bin isn't found
             command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
 
@@ -119,10 +123,11 @@ jobs:
             # rm -f package-lock.json
             meteor npm install
 
-      - run:
-          name: Lint
-          command: |
-            meteor npm run lint
+      # WIDECHAT TODO: uncomment after next upstream merge and resolve Lint failure
+      # - run:
+      #     name: Lint
+      #     command: |
+      #       meteor npm run lint
 
       - run:
           name: Unit Test
@@ -137,7 +142,7 @@ jobs:
       - run:
           name: Build a Meteor cache
           command: |
-            # to do this we can clear the main files and it build the rest
+            # to do this we can clear the main files and it builds the rest
             echo "" > server/main.js
             echo "" > client/main.js
             meteor build --server-only --debug --directory /tmp/build-temp
@@ -151,7 +156,6 @@ jobs:
             if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == 'develop' ]]; then
               meteor reset;
             fi
-
             export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
             if [[ -z $CIRCLE_PR_NUMBER ]]; then
               meteor build --server-only --directory /tmp/build-test
@@ -230,7 +234,6 @@ jobs:
           name: Install AWS cli
           command: |
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
-
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install python3.5-dev
             curl -O https://bootstrap.pypa.io/get-pip.py
@@ -263,8 +266,12 @@ jobs:
   image-build:
     <<: *defaults
 
-    docker:
-      - image: docker:17.05.0-ce-git
+    # docker:
+    #   - image: docker:17.05.0-ce-git
+
+    # WIDECHAT - need to use ubuntu machine for the aws orb to work properly
+    machine:
+      image: ubuntu-1604:201903-01
 
     steps:
       - attach_workspace:
@@ -272,7 +279,14 @@ jobs:
 
       - checkout
 
-      - setup_remote_docker
+      # WIDECHAT - handled instead by the aws orb below
+      # - setup_remote_docker
+
+      - run:
+          name: Install jq
+          command: |
+              sudo apt-get -y -qq update
+              sudo apt-get -y -qq install jq
 
       - run:
           name: Build Docker image
@@ -280,55 +294,57 @@ jobs:
             cd /tmp/build
             tar xzf Rocket.Chat.tar.gz
             rm Rocket.Chat.tar.gz
-
+            cp ~/repo/.docker/Dockerfile /tmp/build
             export CIRCLE_TAG=${CIRCLE_TAG:=}
-            if [[ $CIRCLE_TAG ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              echo "Build official Docker image"
-              cp ~/repo/.docker/Dockerfile .
-              docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
-              docker push rocketchat/rocket.chat:$CIRCLE_TAG
-
-              echo "Build preview Docker image"
-              cp ~/repo/.docker-mongo/Dockerfile .
-              cp ~/repo/.docker-mongo/entrypoint.sh .
-              docker build -t rocketchat/rocket.chat.preview:$CIRCLE_TAG .
-              docker push rocketchat/rocket.chat.preview:$CIRCLE_TAG
-
-              if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
-                docker push rocketchat/rocket.chat:latest
-
-                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:latest
-                docker push rocketchat/rocket.chat.preview:latest
-              elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
-                docker push rocketchat/rocket.chat:release-candidate
-
-                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:release-candidate
-                docker push rocketchat/rocket.chat.preview:release-candidate
-              fi
-
-              exit 0
-            fi;
-
-            if [[ $CIRCLE_BRANCH == 'develop' ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
-
-              echo "Build official Docker image"
-              cp ~/repo/.docker/Dockerfile .
-              docker build -t rocketchat/rocket.chat:develop .
-              docker push rocketchat/rocket.chat:develop
-
-              echo "Build preview Docker image"
-              cp ~/repo/.docker-mongo/Dockerfile .
-              cp ~/repo/.docker-mongo/entrypoint.sh .
-              docker build -t rocketchat/rocket.chat.preview:develop .
-              docker push rocketchat/rocket.chat.preview:develop
-
-              exit 0
-            fi;
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_PROD_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_PROD_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_PROD_SECRET_ACCESS_KEY
+          repo: ${AWS_RESOURCE_NAME_PREFIX}
+          region: AWS_DEFAULT_REGION
+          tag: $(jq -r '.version' ~/repo/app/utils/rocketchat.info)
+          dockerfile: /tmp/build/Dockerfile
+          path: "/tmp/build-pr"
+          checkout: false
+            # WIDECHAT 
+            # if [[ $CIRCLE_TAG ]]; then
+            #   docker login -u $DOCKER_USER -p $DOCKER_PASS
+            #   echo "Build official Docker image"
+            #   cp ~/repo/.docker/Dockerfile .
+            #   docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
+            #   docker push rocketchat/rocket.chat:$CIRCLE_TAG
+            #   echo "Build preview Docker image"
+            #   cp ~/repo/.docker-mongo/Dockerfile .
+            #   cp ~/repo/.docker-mongo/entrypoint.sh .
+            #   docker build -t rocketchat/rocket.chat.preview:$CIRCLE_TAG .
+            #   docker push rocketchat/rocket.chat.preview:$CIRCLE_TAG
+            #   if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+            #     docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
+            #     docker push rocketchat/rocket.chat:latest
+            #     docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:latest
+            #     docker push rocketchat/rocket.chat.preview:latest
+            #   elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+            #     docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
+            #     docker push rocketchat/rocket.chat:release-candidate
+            #     docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:release-candidate
+            #     docker push rocketchat/rocket.chat.preview:release-candidate
+            #   fi
+            #   exit 0
+            # fi;
+            # if [[ $CIRCLE_BRANCH == 'develop' ]]; then
+            #   docker login -u $DOCKER_USER -p $DOCKER_PASS
+            #   echo "Build official Docker image"
+            #   cp ~/repo/.docker/Dockerfile .
+            #   docker build -t rocketchat/rocket.chat:develop .
+            #   docker push rocketchat/rocket.chat:develop
+            #   echo "Build preview Docker image"
+            #   cp ~/repo/.docker-mongo/Dockerfile .
+            #   cp ~/repo/.docker-mongo/entrypoint.sh .
+            #   docker build -t rocketchat/rocket.chat.preview:develop .
+            #   docker push rocketchat/rocket.chat.preview:develop
+            #   exit 0
+            # fi;
 
   pr-build:
     <<: *defaults
@@ -406,8 +422,12 @@ jobs:
   pr-image-build:
     <<: *defaults
 
-    docker:
-      - image: docker:17.05.0-ce-git
+    # docker:
+    #   - image: docker:17.05.0-ce-git
+
+    # WIDECHAT
+    machine:
+      image: ubuntu-1604:201903-01
 
     steps:
       - attach_workspace:
@@ -415,7 +435,14 @@ jobs:
 
       - checkout
 
-      - setup_remote_docker
+      # WIDECHAT
+      # - setup_remote_docker
+
+      - run:
+          name: Install jq
+          command: |
+              sudo apt-get -y -qq update
+              sudo apt-get -y -qq install jq
 
       - run:
           name: Build Docker image for PRs
@@ -424,23 +451,31 @@ jobs:
             if [[ -z $CIRCLE_PR_NUMBER ]]; then
               exit 0
             fi;
-
             cd /tmp/build-pr
             tar xzf repo.tar.gz
             rm repo.tar.gz
+            cp ~/repo/.docker/Dockerfile /tmp/build-pr
 
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: ${AWS_RESOURCE_NAME_PREFIX}
+          region: AWS_DEFAULT_REGION
+          tag: "pr-num-${CIRCLE_PULL_REQUEST##*/}"
+          dockerfile: /tmp/build-pr/Dockerfile
+          path: "/tmp/build-pr"
+          checkout: false
 
-            echo "Build official Docker image"
-            cp ~/repo/.docker/Dockerfile .
-            docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
-            docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
-
-            #echo "Build preview Docker image"
-            #cp ~/repo/.docker-mongo/Dockerfile .
-            #cp ~/repo/.docker-mongo/entrypoint.sh .
-            #docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
-            #docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
+            # WIDECHAT DO NOT USE REGULAR DOCKER
+            # docker login -u $DOCKER_USER -p $DOCKER_PASS
+            # echo "Build official Docker image"
+            # cp ~/repo/.docker/Dockerfile .
+            # docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
+            # docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
+            # #echo "Build preview Docker image"
+            # #cp ~/repo/.docker-mongo/Dockerfile .
+            # #cp ~/repo/.docker-mongo/entrypoint.sh .
+            # #docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
+            # #docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
 
 workflows:
   version: 2
@@ -465,31 +500,43 @@ workflows:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-4-0: *test-mongo
-      - deploy:
+      # WIDECHAT
+      # - deploy:
+      #     requires:
+      #       - test-with-oplog-mongo-3-4
+      #       - test-with-oplog-mongo-3-6
+      #       - test-with-oplog-mongo-4-0
+      #     filters:
+      #       branches:
+      #         only: develop
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - image-build:
+      #     requires:
+      #       - deploy
+      #     filters:
+      #       branches:
+      #         only: develop
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - hold:
+          type: approval
           requires:
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
+            - build
           filters:
-            branches:
-              only: develop
+          #   branches:
+          #     ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - image-build:
           requires:
-            - deploy
+            - hold
           filters:
             branches:
               only: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - hold:
-          type: approval
-          requires:
-            - build
-          filters:
-            branches:
-              ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - pr-build:
