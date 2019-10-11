@@ -10,7 +10,7 @@ export const preferences = {
 		newRoomNotification: 'door',
 		newMessageNotification: 'chime',
 		muteFocusedConversations: true,
-		clockMode: 0,
+		clockMode: 1,
 		useEmojis: true,
 		convertAsciiEmoji: true,
 		saveMobileBandwidth: true,
@@ -31,5 +31,6 @@ export const preferences = {
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
 		roomCounterSidebar: false,
+		discoverability: 'all',
 	},
 };

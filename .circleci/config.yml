@@ -241,21 +241,27 @@ jobs:
             export PATH=~/.local/bin:$PATH
             pip install awscli --upgrade --user
 
-      - run:
-          name: Publish assets
-          command: |
-            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
-            export PATH=~/.local/bin:$PATH
-            export CIRCLE_TAG=${CIRCLE_TAG:=}
-            aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
-            source .circleci/setartname.sh
-            source .circleci/setdeploydir.sh
-            bash .circleci/setupsig.sh
-            bash .circleci/namefiles.sh
-            aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
-            bash .circleci/update-releases.sh
-            bash .circleci/snap.sh
-            bash .circleci/redhat-registry.sh
+      # - run:
+      #     name: Publish assets
+      #     command: |
+      #       if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+
+      #       export PATH=~/.local/bin:$PATH
+      #       export CIRCLE_TAG=${CIRCLE_TAG:=}
+
+      #       aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
+      #       source .circleci/setartname.sh
+      #       source .circleci/setdeploydir.sh
+      #       bash .circleci/setupsig.sh
+      #       bash .circleci/namefiles.sh
+      #       # echo ".circleci/sandstorm.sh"
+
+
+      #       aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
+
+      #       bash .circleci/update-releases.sh
+      #       bash .circleci/snap.sh
+      #       bash .circleci/redhat-registry.sh
 
   image-build:
     <<: *defaults
@@ -372,6 +378,7 @@ jobs:
             else
               echo "No cached Meteor bin found."
             fi
+
             # only install meteor if bin isn't found
             command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
 
@@ -394,7 +401,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }
 
       - run:
           name: Build Rocket.Chat
@@ -402,6 +409,7 @@ jobs:
             TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
             meteor build --server-only /tmp/build-pr
+
 
       - persist_to_workspace:
           root: /tmp/
@@ -457,7 +465,7 @@ jobs:
           path: "/tmp/build-pr"
           checkout: false
 
-            # WIDECHAT
+            # WIDECHAT DO NOT USE REGULAR DOCKER
             # docker login -u $DOCKER_USER -p $DOCKER_PASS
             # echo "Build official Docker image"
             # cp ~/repo/.docker/Dockerfile .
@@ -514,6 +522,9 @@ workflows:
       - hold:
           type: approval
           requires:
+            - test-with-oplog-mongo-3-4
+            - test-with-oplog-mongo-3-6
+            - test-with-oplog-mongo-4-0
             - build
           filters:
           #   branches:

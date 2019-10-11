@@ -132,6 +132,8 @@
 
 .message-body {
 	&--unstyled {
+		vertical-align: sub;
+
 		font: inherit;
 		line-height: initial;
 

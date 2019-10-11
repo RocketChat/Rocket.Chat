@@ -292,7 +292,7 @@ export default class RocketAdapter {
 
 					try {
 						const isPrivate = slackChannel.is_private;
-						const rocketChannel = createRoom(isPrivate ? 'p' : 'c', slackChannel.name, slackChannel.username, rocketUsers);
+						const rocketChannel = createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator.username, rocketUsers);
 						rocketChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {

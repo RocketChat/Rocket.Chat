@@ -12,9 +12,11 @@
 				</div>
 			{{/if}}
 
-			{{#if showToggleFavorite}}
+			{{#if isToggleFavoriteButtonVisible}}
 				<div class="rc-header__block rc-header__favorite rc-header__block--action">
-					<a href="#favorite" class="rc-header__toggle-favorite rc-header__first-icon {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
+					<button aria-label="{{toggleFavoriteButtonIconLabel}}" type="button" class="rc-header__toggle-favorite rc-header__first-icon js-favorite">
+						{{> icon block="rc-header__icon" icon=toggleFavoriteButtonIcon}}
+					</button>
 				</div>
 			{{/if}}
 
@@ -42,7 +44,7 @@
 					{{#if isDirect}}
 					<span class="rc-header__status">
 						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
-						<div class="rc-header__visual-status">{{_ userStatus}}</div>
+						<div class="rc-header__visual-status">{{userStatusText}}</div>
 					</span>
 					{{else}}
 					{{#if roomTopic}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}

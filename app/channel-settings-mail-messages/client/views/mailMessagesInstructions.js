@@ -129,7 +129,7 @@ Template.mailMessagesInstructions.events({
 			to_emails: selectedEmails.get().map((email) => email.text).toString(),
 			subject,
 			messages: selectedMessages.get(),
-			language: localStorage.getItem('userLanguage'),
+			language: Meteor._localStorage.getItem('userLanguage'),
 		};
 
 		Meteor.call('mailMessages', data, function(err, result) {

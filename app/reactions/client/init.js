@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-import { Rooms, Subscriptions } from '../../models';
+import { Rooms } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { EmojiPicker } from '../../emoji';
-import { tooltip } from '../../tooltip';
+import { tooltip } from '../../ui/client/components/tooltip';
 
 Template.room.events({
 	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
@@ -68,10 +68,7 @@ Meteor.startup(function() {
 			const { msg } = messageArgs(this);
 			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
 		},
-		condition(message) {
-			const room = Rooms.findOne({ _id: message.rid });
-			const user = Meteor.user();
-
+		condition({ msg: message, u: user, room, subscription }) {
 			if (!room) {
 				return false;
 			}
@@ -86,7 +83,7 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			if (!Subscriptions.findOne({ rid: message.rid })) {
+			if (!subscription) {
 				return false;
 			}
 

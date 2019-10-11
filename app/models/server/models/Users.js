@@ -15,11 +15,13 @@ export class Users extends Base {
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
+		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
+		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -168,6 +170,20 @@ export class Users extends Base {
 			};
 		}
 		return null;
+	}
+
+	setLastRoutingTime(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				lastRoutingTime: new Date(),
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	setLivechatStatus(userId, status) {
@@ -374,6 +390,16 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByUsernameAndServiceNameIgnoringCase(username, serviceName, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+
+		return this.findOne(query, options);
+	}
+
 	findOneByUsername(username, options) {
 		const query = { username };
 
@@ -432,6 +458,18 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findNotIdUpdatedFrom(uid, from, options) {
+		const query = {
+			_id: { $ne: uid },
+			username: {
+				$exists: 1,
+			},
+			_updatedAt: { $gte: from },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomId(rid, options) {
 		const data = Subscriptions.findByRoomId(rid).fetch().map((item) => item.u._id);
 		const query = {
@@ -447,6 +485,10 @@ export class Users extends Base {
 		const query = { username };
 
 		return this.find(query, options);
+	}
+
+	findActive(options = {}) {
+		return this.find({ active: true }, options);
 	}
 
 	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
@@ -532,22 +574,22 @@ export class Users extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [
 			{
 				$or: [
 					{ federation: { $exists: false } },
-					{ 'federation.peer': localPeer },
+					{ 'federation.origin': localDomain },
 				],
 			},
 		];
 		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [
 			{ federation: { $exists: true } },
-			{ 'federation.peer': { $ne: localPeer } },
+			{ 'federation.origin': { $ne: localDomain } },
 		];
 		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
@@ -672,6 +714,14 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findRemote(options = {}) {
+		return this.find({ isRemote: true }, options);
+	}
+
+	findActiveRemote(options = {}) {
+		return this.find({ active: true, isRemote: true }, options);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -687,6 +737,16 @@ export class Users extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	updateStatusText(_id, statusText) {
+		const update = {
+			$set: {
+				statusText,
+			},
+		};
+
+		return this.update(_id, update);
 	}
 
 	updateLastLoginById(_id) {
@@ -1042,6 +1102,17 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
+	updateDefaultStatus(_id, statusDefault) {
+		return this.update({
+			_id,
+			statusDefault: { $ne: statusDefault },
+		}, {
+			$set: {
+				statusDefault,
+			},
+		});
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
@@ -1091,6 +1162,20 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	getActiveLocalUserCount() {
+		return this.findActive().count() - this.findActiveRemote().count();
+	}
+
+	removeOlderResumeTokensByUserId(userId, fromDate) {
+		this.update(userId, {
+			$pull: {
+				'services.resume.loginTokens': {
+					when: { $lt: fromDate },
+				},
+			},
+		});
 	}
 }
 

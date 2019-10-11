@@ -1,4 +1,5 @@
 import moment from 'moment';
+import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -49,4 +50,4 @@ export const timeAgo = (date) => moment(date).calendar(null, {
 	sameElse,
 });
 
-export const formatDate = (time) => moment(time).format(settings.get('Message_DateFormat'));
+export const formatDate = mem((time) => moment(time).format(settings.get('Message_DateFormat')), { maxAge: 5000 });

@@ -66,7 +66,6 @@ import './methods/setUsername';
 import './methods/unarchiveRoom';
 import './methods/unblockUser';
 import './methods/updateMessage';
-import './publications/settings';
 
 export * from './lib';
 export * from './functions';

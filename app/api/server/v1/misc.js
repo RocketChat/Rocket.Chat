@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
 import { PhoneNumberUtil } from 'google-libphonenumber';
 
@@ -10,22 +10,23 @@ import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { API } from '../api';
 import * as Mailer from '../../../mailer';
-
+import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
+import { getURL } from '../../../utils/lib/getURL';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 // DEPRECATED
-// Will be removed after v1.12.0
+// Will be removed after v3.0.0
 API.v1.addRoute('info', { authRequired: false }, {
 	get() {
-		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v1.12.0';
+		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v3.0.0';
 		console.warn(warningMessage);
 		const user = this.getLoggedInUser();
 
 		if (user && hasRole(user._id, 'admin')) {
 			return API.v1.success(this.deprecationWarning({
 				endpoint: 'info',
-				versionWillBeRemoved: '1.12.0',
+				versionWillBeRemoved: '3.0.0',
 				response: {
 					info: Info,
 				},
@@ -34,7 +35,7 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'info',
-			versionWillBeRemoved: '1.12.0',
+			versionWillBeRemoved: '3.0.0',
 			response: {
 				info: {
 					version: Info.version,
@@ -46,14 +47,14 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId)));
+		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields: getDefaultUserFields() })));
 	},
 });
 
 let onlineCache = 0;
 let onlineCacheDate = 0;
 const cacheInvalid = 60000; // 1 minute
-API.v1.addRoute('shield.svg', { authRequired: false }, {
+API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRequestsAllowed: 60, intervalTimeInMS: 60000 } }, {
 	get() {
 		const { type, icon } = this.queryParams;
 		let { channel, name } = this.queryParams;
@@ -65,7 +66,6 @@ API.v1.addRoute('shield.svg', { authRequired: false }, {
 		if (type && (types !== '*' && !types.split(',').map((t) => t.trim()).includes(type))) {
 			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', { route: '/api/v1/shield.svg' });
 		}
-
 		const hideIcon = icon === 'false';
 		if (hideIcon && (!name || !name.trim())) {
 			return API.v1.failure('Name cannot be empty when icon is hidden');
@@ -143,7 +143,7 @@ API.v1.addRoute('shield.svg', { authRequired: false }, {
 						<path fill="${ backgroundColor }" d="M${ leftSize } 0h${ rightSize }v${ height }H${ leftSize }z"/>
 						<path fill="url(#b)" d="M0 0h${ width }v${ height }H0z"/>
 					</g>
-						${ hideIcon ? '' : '<image x="5" y="3" width="14" height="14" xlink:href="/assets/favicon.svg"/>' }
+						${ hideIcon ? '' : `<image x="5" y="3" width="14" height="14" xlink:href="${ getURL('/assets/favicon.svg', { full: true }) }"/>` }
 					<g fill="#fff" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
 						${ name ? `<text x="${ iconSize }" y="15" fill="#010101" fill-opacity=".3">${ name }</text>
 						<text x="${ iconSize }" y="14">${ name }</text>` : '' }
