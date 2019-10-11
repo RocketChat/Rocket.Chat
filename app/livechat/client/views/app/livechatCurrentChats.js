@@ -66,10 +66,6 @@ Template.livechatCurrentChats.helpers({
 	tagId() {
 		return this;
 	},
-	closedChats() {
-		const anyClosedRoom = Template.instance().livechatRoom.get().map((room) => !room.open);
-		return anyClosedRoom.includes(true);
-	},
 	hasPopoverPermissions() {
 		return hasAtLeastOnePermission(['remove-closed-livechat-rooms']);
 	},
@@ -210,7 +206,7 @@ Template.livechatCurrentChats.events({
 											}
 
 											if (result) {
-												toastr.success(TAPi18n.__('All_closed_rooms_have_been_removed'));
+												toastr.success(TAPi18n.__('All_closed_chats_have_been_removed'));
 											}
 										});
 									});
