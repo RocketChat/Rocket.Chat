@@ -31,7 +31,7 @@ if [ -z "$https" ]; then
 fi
 
 # Initialize backup to a default
-snapctl set backup-on-refresh=enable
+snapctl set backup-on-refresh=disable
 
 # Set back snap-refreshing to false
 snapctl set snap-refreshing=false

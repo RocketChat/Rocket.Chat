@@ -15,8 +15,11 @@ if ! [ $? == 0 ]; then
     echo "Failed to stop rocketchat service" > $SNAP_COMMON/refresh_${TIMESTAMP}.log
 fi
 
-backupdb
-if ! [ $? == 0 ]; then
-    echo "Failed rocketchat database backup before refresh" >> $SNAP_COMMON/refresh_${TIMESTAMP}.log
+backup="$(snapctl get backup-on-refresh)"
+if [ $backup == "enable" ]; then
+    backupdb
+    if ! [ $? == 0 ]; then
+        echo "Failed rocketchat database backup before refresh" >> $SNAP_COMMON/refresh_${TIMESTAMP}.log
+    fi
 fi
 
