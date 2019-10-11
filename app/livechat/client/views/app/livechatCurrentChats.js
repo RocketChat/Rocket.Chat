@@ -178,7 +178,8 @@ Template.livechatCurrentChats.events({
 				return;
 			}
 
-			return instance.departments.get();
+			const departments = instance.departments.get();
+			return departments && departments.map((d) => d._id);
 		}
 
 		const config = {
