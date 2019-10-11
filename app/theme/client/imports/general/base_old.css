@@ -4128,6 +4128,7 @@ rc-old select,
 
 .rc-old.full-page {
 	display: flex;
+	overflow: auto;
 
 	width: 100%;
 	min-height: 100%;
@@ -4140,7 +4141,7 @@ rc-old select,
 
 	background-position: center;
 	background-size: cover;
-	align-items: center;
+	align-items: flex-start;
 	flex-flow: row nowrap;
 
 	& .wrapper {
@@ -4148,6 +4149,7 @@ rc-old select,
 		z-index: 10;
 
 		width: 100%;
+		margin: auto;
 		padding: 20px;
 
 		text-align: center;
