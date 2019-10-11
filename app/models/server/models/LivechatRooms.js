@@ -241,9 +241,6 @@ export class LivechatRooms extends Base {
 			...Array.isArray(departmentIds) && departmentIds.length > 0 && { departmentId: { $in: departmentIds } },
 		};
 
-		console.log('query findClosedRooms');
-		console.log(query);
-
 		return this.find(query, options);
 	}
 
