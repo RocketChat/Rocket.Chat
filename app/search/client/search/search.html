@@ -20,7 +20,7 @@
 							<div class="rc-input__icon">
 								{{> icon block="rc-input__icon-svg" icon=provider.icon}}
 							</div>
-							<input value="{{text}}" type="text" class="rc-input__element" name="message-search" id="message-search" placeholder="{{_ 'Search_Messages'}}" autocomplete="off" aria-label="{{_ 'Search_Messages'}}" />
+							{{> InputRocketSearch}}
 						</div>
 					</label>
 				</div>
@@ -41,4 +41,8 @@
 		</div>
 	</div>
 	{{/unless}}
+</template>
+
+<template name="InputRocketSearch">
+	<input value="{{text}}" type="text" class="rc-input__element" name="message-search" id="message-search" placeholder="{{_ 'Search_Messages'}}" autocomplete="off" aria-label="{{_ 'Search_Messages'}}" />
 </template>

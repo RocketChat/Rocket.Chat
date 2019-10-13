@@ -182,3 +182,7 @@ Template.RocketSearch.onRendered(function() {
 Template.RocketSearch.onDestroyed(function() {
 	$(document).off(`click.suggestionclose.${ this.data.rid }`);
 });
+
+Template.InputRocketSearch.onRendered(() => {
+	this.$('input').focus();
+});
