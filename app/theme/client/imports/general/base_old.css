@@ -151,13 +151,6 @@
 	justify-content: center;
 }
 
-.rc-old .text-left {
-	display: flex;
-
-	text-align: left;
-	justify-content: start;
-}
-
 .connection-status > .alert {
 	position: absolute;
 	z-index: 1000000;
@@ -4135,6 +4128,7 @@ rc-old select,
 
 .rc-old.full-page {
 	display: flex;
+	overflow: auto;
 
 	width: 100%;
 	min-height: 100%;
@@ -4147,7 +4141,7 @@ rc-old select,
 
 	background-position: center;
 	background-size: cover;
-	align-items: center;
+	align-items: flex-start;
 	flex-flow: row nowrap;
 
 	& .wrapper {
@@ -4155,6 +4149,7 @@ rc-old select,
 		z-index: 10;
 
 		width: 100%;
+		margin: auto;
 		padding: 20px;
 
 		text-align: center;
@@ -4919,23 +4914,6 @@ rc-old select,
 
 .sweet-alert .sa-input-error {
 	top: 19px;
-}
-
-.rc-old .one-passsword {
-	position: absolute;
-	top: -5px;
-	right: -8px;
-
-	float: right;
-
-	width: 40px;
-	height: 40px;
-
-	opacity: 0.6;
-	background-image: url('/images/onepassword-button.png');
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: 23px;
 }
 
 .rc-old .collapse-switch {

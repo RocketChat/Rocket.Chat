@@ -29,9 +29,15 @@ export class LivechatDepartment extends Base {
 	}
 
 	createOrUpdateDepartment(_id, data = {}, agents) {
-		agents = [].concat(agents);
+		// We need to allow updating Departments without having to inform agents, so now we'll only
+		// update the agent/numAgents fields when the agent parameter is an Array, otherwise we skipp those fields
+		const hasAgents = agents && Array.isArray(agents);
+		const numAgents = hasAgents && agents.length;
 
-		const record = Object.assign(data, { numAgents: agents.length });
+		const record = {
+			...data,
+			...hasAgents && { numAgents },
+		};
 
 		if (_id) {
 			this.update({ _id }, { $set: record });
@@ -39,23 +45,25 @@ export class LivechatDepartment extends Base {
 			_id = this.insert(record);
 		}
 
-		const savedAgents = _.pluck(LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
-		const agentsToSave = _.pluck(agents, 'agentId');
+		if (hasAgents) {
+			const savedAgents = _.pluck(LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
+			const agentsToSave = _.pluck(agents, 'agentId');
 
-		// remove other agents
-		_.difference(savedAgents, agentsToSave).forEach((agentId) => {
-			LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(_id, agentId);
-		});
-
-		agents.forEach((agent) => {
-			LivechatDepartmentAgents.saveAgent({
-				agentId: agent.agentId,
-				departmentId: _id,
-				username: agent.username,
-				count: agent.count ? parseInt(agent.count) : 0,
-				order: agent.order ? parseInt(agent.order) : 0,
+			// remove other agents
+			_.difference(savedAgents, agentsToSave).forEach((agentId) => {
+				LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(_id, agentId);
 			});
-		});
+
+			agents.forEach((agent) => {
+				LivechatDepartmentAgents.saveAgent({
+					agentId: agent.agentId,
+					departmentId: _id,
+					username: agent.username,
+					count: agent.count ? parseInt(agent.count) : 0,
+					order: agent.order ? parseInt(agent.order) : 0,
+				});
+			});
+		}
 
 		return _.extend(record, { _id });
 	}
