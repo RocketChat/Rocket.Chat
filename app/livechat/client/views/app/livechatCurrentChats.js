@@ -262,6 +262,12 @@ Template.livechatCurrentChats.onCreated(async function() {
 	this.tagFilters = new ReactiveVar([]);
 	this.departments = new ReactiveVar([]);
 
+	if (localStorage.getItem('status')) {
+		this.filter = new ReactiveVar({ status: localStorage.getItem('status') });
+	} else {
+		this.filter = new ReactiveVar({ status: 'opened' });
+	}
+
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
 	};
