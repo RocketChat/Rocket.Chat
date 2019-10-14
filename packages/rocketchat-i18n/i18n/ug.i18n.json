@@ -920,6 +920,7 @@
   "SAML_Custom_Generate_Username": "ئەزا نامى ھاسىل بولۇش",
   "SAML_Custom_Issuer": "ئۆزى بېكىتىشIssuer",
   "SAML_Custom_Provider": "ئۆزلۈكىدىن بېكىتىش تەمىنلىگۈچى سودىگەر",
+  "SAML_Custom_user_data_fieldmap": "ئەزانىڭ سانلىق مەلۇمات بۆلىكىنى قايتۇرما ئەكس ئېتىش",
   "SAML_Custom_Immutable_Property_Username": "ئەزا ئىسمى",
   "Save": "ساقلاش",
   "Save_changes": "ئۆزگەرتىشنى ساقلاش",
