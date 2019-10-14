@@ -3,9 +3,11 @@
 		<section class="page-container page-home page-static page-settings">
 			{{#header sectionName="Connectivity_Services" hideHelp=true fixedHeight=true fullpage=true}}
 				<div class="rc-header__section-button">
-					<button class="rc-button rc-button--small rc-button--secondary js-register">
-						{{_ "Cloud_Register_manually"}}
-					</button>
+					{{#unless info.workspaceRegistered}}
+						<button class="rc-button rc-button--small rc-button--secondary js-register">
+							{{_ "Cloud_Register_manually"}}
+						</button>
+					{{/unless}}
 					<a href="https://cloud.rocket.chat" class="rc-button rc-button--primary action cloud-console-btn" target="_blank">{{_ "Cloud_console"}}</a>
 				</div>
 			{{/header}}

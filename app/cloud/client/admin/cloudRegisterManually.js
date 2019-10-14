@@ -2,8 +2,8 @@
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import Clipboard from 'clipboard';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import Clipboard from 'clipboard';
 import toastr from 'toastr';
 
 import './cloudRegisterManually.html';
@@ -67,8 +67,12 @@ Template.cloudRegisterManually.onCreated(function() {
 	this.cloudLink = new ReactiveVar();
 	this.state = new ReactiveDict({
 		step: CLOUD_STEPS.COPY,
-		clientKey: 'hdaur11cq90c908ud89fa8hya89w89h89a8hq89h8x9h8chdaur11cq90c908ud89fa8hya89hw89h89a8hq89h8x9h8chdaur11cq90c908ud89fa8hya89hw89h89a8hq89h8x9h8chdaur11cq90c908ud89fa8hya89hw89h89a8hq89h8x9h8chdaur11cq90c908ud89fa8hya89 hw89h89a8hq89h8x9h8c',
+		clientKey: '',
 		cloudKey: '',
 		error: '',
+	});
+
+	Meteor.call('cloud:getWorkspaceRegisterData', (error, result) => {
+		this.state.set('clientKey', result);
 	});
 });
