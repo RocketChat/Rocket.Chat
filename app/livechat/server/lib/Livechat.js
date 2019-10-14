@@ -365,6 +365,7 @@ export const Livechat = {
 			'Livechat_fileupload_enabled',
 			'FileUpload_Enabled',
 			'Livechat_conversation_finished_message',
+			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',
