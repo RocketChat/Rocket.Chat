@@ -458,6 +458,8 @@ jobs:
 
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_DEV_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_DEV_SECRET_ACCESS_KEY
           repo: ${AWS_RESOURCE_NAME_PREFIX}
           region: AWS_DEFAULT_REGION
           tag: "pr-num-${CIRCLE_PULL_REQUEST##*/}"
