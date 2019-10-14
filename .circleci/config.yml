@@ -532,7 +532,7 @@ workflows:
       #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - hold:
           type: approval
-          # requires:
+          requires:
             # - test-with-oplog-mongo-3-4
             # - test-with-oplog-mongo-3-6
             # - test-with-oplog-mongo-4-0
