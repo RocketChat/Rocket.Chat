@@ -492,10 +492,10 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      # - build:
-      #     filters:
-      #       tags:
-      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - build:
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       # - test-with-oplog-mongo-3-4: &test-mongo
       #     requires:
       #       - build
@@ -536,7 +536,7 @@ workflows:
             # - test-with-oplog-mongo-3-4
             # - test-with-oplog-mongo-3-6
             # - test-with-oplog-mongo-4-0
-            # - build
+            - build
           filters:
           #   branches:
           #     ignore: develop
