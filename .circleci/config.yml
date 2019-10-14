@@ -456,11 +456,22 @@ jobs:
             rm repo.tar.gz
             cp ~/repo/.docker/Dockerfile /tmp/build-pr
 
+      # - aws-ecr/build-and-push-image:
+      #     account-url: AWS_ECR_ACCOUNT_URL
+      #     repo: ${AWS_RESOURCE_NAME_PREFIX}
+      #     region: AWS_DEFAULT_REGION
+      #     tag: "pr-num-${CIRCLE_PULL_REQUEST##*/}"
+      #     dockerfile: /tmp/build-pr/Dockerfile
+      #     path: "/tmp/build-pr"
+      #     checkout: false
+
       - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL
+          account-url: AWS_PROD_ECR_ACCOUNT_URL
+          aws-access-key-id: ${AWS_PROD_ACCESS_KEY_ID}
+          aws-secret-access-key: ${AWS_PROD_SECRET_ACCESS_KEY}
           repo: ${AWS_RESOURCE_NAME_PREFIX}
           region: AWS_DEFAULT_REGION
-          tag: "pr-num-${CIRCLE_PULL_REQUEST##*/}"
+          tag: $(jq -r '.version' ~/repo/app/utils/rocketchat.info)
           dockerfile: /tmp/build-pr/Dockerfile
           path: "/tmp/build-pr"
           checkout: false
@@ -481,25 +492,25 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-4: &test-mongo
-          requires:
-            - build
-          filters:
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-6: &test-mongo-no-pr
-          requires:
-            - build
-          filters:
-            branches:
-              only: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - test-with-oplog-mongo-4-0: *test-mongo
+      # - build:
+      #     filters:
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - test-with-oplog-mongo-3-4: &test-mongo
+      #     requires:
+      #       - build
+      #     filters:
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - test-with-oplog-mongo-3-6: &test-mongo-no-pr
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: develop
+      #       tags:
+      #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      # - test-with-oplog-mongo-4-0: *test-mongo
       # WIDECHAT
       # - deploy:
       #     requires:
@@ -521,11 +532,11 @@ workflows:
       #         only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - hold:
           type: approval
-          requires:
-            - test-with-oplog-mongo-3-4
-            - test-with-oplog-mongo-3-6
-            - test-with-oplog-mongo-4-0
-            - build
+          # requires:
+            # - test-with-oplog-mongo-3-4
+            # - test-with-oplog-mongo-3-6
+            # - test-with-oplog-mongo-4-0
+            # - build
           filters:
           #   branches:
           #     ignore: develop
