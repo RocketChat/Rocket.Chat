@@ -251,17 +251,6 @@
 			}
 		}
 
-		&.multiline,
-		&.discussion-created {
-			& .message-body-wrapper {
-				flex-direction: column;
-
-				& .body {
-					margin-left: 0;
-				}
-			}
-		}
-
 		& blockquote iframe {
 			width: 266px;
 			height: 150px;
