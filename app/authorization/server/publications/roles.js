@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Roles } from '../../../models';
-import { clear } from '../functions/hasPermission';
+import { clearCache } from '../functions/hasPermission';
 
 Meteor.publish('roles', function() {
 	if (!this.userId) {
@@ -16,5 +16,5 @@ Roles.on('change', ({ diff }) => {
 		// avoid useless changes
 		return;
 	}
-	clear();
+	clearCache();
 });

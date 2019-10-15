@@ -2,7 +2,7 @@ import Settings from '../../../../models/server/models/Settings';
 import { Notifications } from '../../../../notifications/server';
 import { CONSTANTS } from '../../../lib';
 import Permissions from '../../../../models/server/models/Permissions';
-import { clear } from '../../functions/hasPermission';
+import { clearCache } from '../../functions/hasPermission';
 
 Permissions.on('change', ({ clientAction, id, data, diff }) => {
 	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
@@ -20,7 +20,7 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 			break;
 	}
 
-	clear();
+	clearCache();
 
 	Notifications.notifyLoggedInThisInstance(
 		'permissions-changed',

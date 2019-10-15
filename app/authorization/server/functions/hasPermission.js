@@ -24,7 +24,7 @@ const subscriptionHasPermission = mem(async (uid, permission, roles, rid) => {
 	return !!await Subscriptions.findOne(query, { fields: { roles: 1 } });
 }, { maxAge: 5000 });
 
-export const clear = () => {
+export const clearCache = () => {
 	mem.clear(getRole);
 	mem.clear(rolesHasPermission);
 	mem.clear(subscriptionHasPermission);
