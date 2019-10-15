@@ -51,10 +51,7 @@ const setFieldValue = function(settingId, value, type, editor) {
 
 Template.admin.onCreated(function() {
 	if (settings.cachedCollectionPrivate == null) {
-		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection({
-			name: 'private-settings',
-			eventType: 'onLogged',
-		});
+		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
 		settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
 		settings.cachedCollectionPrivate.init();
 	}
@@ -295,8 +292,8 @@ Template.admin.helpers({
 			readOnly,
 		};
 	},
-	setEditorOnBlur(_id) {
-		Meteor.defer(function() {
+	setEditorOnBlur() {
+		return function(_id) {
 			if (!$(`.code-mirror-box[data-editor-id="${ _id }"] .CodeMirror`)[0]) {
 				return;
 			}
@@ -311,7 +308,7 @@ Template.admin.helpers({
 			const onChangeDelayed = _.debounce(onChange, 500);
 			codeMirror.on('change', onChangeDelayed);
 			codeMirror.changeAdded = true;
-		});
+		};
 	},
 	assetAccept(fileConstraints) {
 		if (fileConstraints.extensions && fileConstraints.extensions.length) {
@@ -444,7 +441,7 @@ Template.admin.events({
 					handleError(error);
 				});
 			}
-			settings.forEach((setting) => {
+			rcSettings.forEach((setting) => {
 				if (!failedSettings.includes(setting._id)) {
 					TempSettings.update({ _id: setting._id }, { $unset: { changed: 1 } });
 				}

@@ -20,7 +20,7 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { statistics } from '../statisticsNamespace';
 import { Apps } from '../../../apps/server';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/methods/dashboard';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 
 const wizardFields = [
 	'Organization_Type',
@@ -145,9 +145,9 @@ statistics.get = function _getStatistics() {
 
 	statistics.apps = {
 		engineVersion: Info.marketplaceApiVersion,
-		enabled: Apps && Apps.isEnabled(),
-		totalInstalled: Apps && Apps.getManager().get().length,
-		totalActive: Apps && Apps.getManager().get({ enabled: true }).length,
+		enabled: Apps.isEnabled(),
+		totalInstalled: Apps.isInitialized() && Apps.getManager().get().length,
+		totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
 	};
 
 	const integrations = Integrations.find().fetch();

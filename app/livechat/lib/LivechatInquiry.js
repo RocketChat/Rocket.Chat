@@ -18,7 +18,6 @@ if (Meteor.isServer) {
 			this.tryEnsureIndex({ name: 1 }); // name of the inquiry (client name for now)
 			this.tryEnsureIndex({ message: 1 }); // message sent by the client
 			this.tryEnsureIndex({ ts: 1 }); // timestamp
-			this.tryEnsureIndex({ agents: 1 }); // Id's of the agents who can see the inquiry (handle departments)
 			this.tryEnsureIndex({ department: 1 });
 			this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
 		}
@@ -57,23 +56,6 @@ if (Meteor.isServer) {
 		}
 
 		/*
-		* mark the inquiry as closed
-		*/
-		closeByRoomId(roomId, closeInfo) {
-			return this.update({
-				rid: roomId,
-			}, {
-				$set: {
-					status: 'closed',
-					closer: closeInfo.closer,
-					closedBy: closeInfo.closedBy,
-					closedAt: closeInfo.closedAt,
-					'metrics.chatDuration': closeInfo.chatDuration,
-				},
-			});
-		}
-
-		/*
 		* mark inquiry as open
 		*/
 		openInquiry(inquiryId) {
@@ -92,20 +74,6 @@ if (Meteor.isServer) {
 				_id: inquiryId,
 			}, {
 				$set: { status: 'queued' },
-			});
-		}
-
-		/*
-		* mark inquiry as open and set agents
-		*/
-		queueInquiryWithAgents(inquiryId, agentIds) {
-			return this.update({
-				_id: inquiryId,
-			}, {
-				$set: {
-					status: 'queued',
-					agents: agentIds,
-				},
 			});
 		}
 
@@ -198,6 +166,13 @@ if (Meteor.isServer) {
 			}
 
 			return collectionObj.aggregate(aggregate).toArray();
+		}
+
+		/*
+		* remove the inquiry by roomId
+		*/
+		removeByRoomId(rid) {
+			return this.remove({ rid });
 		}
 	}
 

@@ -1,5 +1,5 @@
-import { Federation } from '../index';
-import { getNameAndDomain, isFullyQualified } from './helpers/federatedResources';
+import { getNameAndDomain, isFullyQualified } from '../functions/helpers';
+import { getFederationDomain } from '../lib/getFederationDomain';
 
 const denormalizeRoom = (originalResource) => {
 	const resource = { ...originalResource };
@@ -8,25 +8,25 @@ const denormalizeRoom = (originalResource) => {
 		resource.usernames = resource.usernames.map((u) => {
 			const [username, domain] = getNameAndDomain(u);
 
-			return domain === Federation.domain ? username : u;
+			return domain === getFederationDomain() ? username : u;
 		});
 	} else {
 		// Denormalize room name
 		const [roomName, roomDomain] = getNameAndDomain(resource.name);
 
-		resource.name = roomDomain === Federation.domain ? roomName : resource.name;
+		resource.name = roomDomain === getFederationDomain() ? roomName : resource.name;
 
 		// Denormalize room owner name
 		const [username, userDomain] = getNameAndDomain(resource.u.username);
 
-		resource.u.username = userDomain === Federation.domain ? username : resource.u.username;
+		resource.u.username = userDomain === getFederationDomain() ? username : resource.u.username;
 
 		// Denormalize muted users
 		if (resource.muted) {
 			resource.muted = resource.muted.map((u) => {
 				const [username, domain] = getNameAndDomain(u);
 
-				return domain === Federation.domain ? username : u;
+				return domain === getFederationDomain() ? username : u;
 			});
 		}
 
@@ -35,7 +35,7 @@ const denormalizeRoom = (originalResource) => {
 			resource.unmuted = resource.unmuted.map((u) => {
 				const [username, domain] = getNameAndDomain(u);
 
-				return domain === Federation.unmuted ? username : u;
+				return domain === getFederationDomain() ? username : u;
 			});
 		}
 	}
@@ -50,7 +50,7 @@ const normalizeRoom = (originalResource, users) => {
 
 	if (resource.t === 'd') {
 		// Handle user names, adding the Federation domain to local users
-		resource.usernames = resource.usernames.map((u) => (!isFullyQualified(u) ? `${ u }@${ Federation.domain }` : u));
+		resource.usernames = resource.usernames.map((u) => (!isFullyQualified(u) ? `${ u }@${ getFederationDomain() }` : u));
 
 		// Get the domains of the usernames
 		domains = resource.usernames.map((u) => getNameAndDomain(u)[1]);
@@ -59,28 +59,28 @@ const normalizeRoom = (originalResource, users) => {
 		resource.t = 'p';
 
 		// Normalize room name
-		resource.name = !isFullyQualified(resource.name) ? `${ resource.name }@${ Federation.domain }` : resource.name;
+		resource.name = !isFullyQualified(resource.name) ? `${ resource.name }@${ getFederationDomain() }` : resource.name;
 
 		// Get the users domains
 		domains = users.map((u) => u.federation.origin);
 
 		// Normalize the username
-		resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ Federation.domain }` : resource.u.username;
+		resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ getFederationDomain() }` : resource.u.username;
 
 		// Normalize the muted users
 		if (resource.muted) {
-			resource.muted = resource.muted.map((u) => (!isFullyQualified(u) ? `${ u }@${ Federation.domain }` : u));
+			resource.muted = resource.muted.map((u) => (!isFullyQualified(u) ? `${ u }@${ getFederationDomain() }` : u));
 		}
 
 		// Normalize the unmuted users
 		if (resource.unmuted) {
-			resource.unmuted = resource.unmuted.map((u) => (!isFullyQualified(u) ? `${ u }@${ Federation.domain }` : u));
+			resource.unmuted = resource.unmuted.map((u) => (!isFullyQualified(u) ? `${ u }@${ getFederationDomain() }` : u));
 		}
 	}
 
 	// Federation
 	resource.federation = resource.federation || {
-		origin: Federation.domain, // The origin of this resource, where it was created
+		origin: getFederationDomain(), // The origin of this resource, where it was created
 		domains, // The domains where this room exist (or will exist)
 	};
 
