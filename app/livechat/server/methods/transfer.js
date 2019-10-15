@@ -18,8 +18,12 @@ Meteor.methods({
 		});
 
 		const room = LivechatRooms.findOneById(transferData.roomId);
-		if (!room) {
+		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:transfer' });
+		}
+
+		if (!room.open) {
+			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:transfer' });
 		}
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), { fields: { _id: 1 } });
