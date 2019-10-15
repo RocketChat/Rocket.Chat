@@ -22,13 +22,20 @@ const subscriptionHasPermission = mem(async (uid, permission, roles, rid) => {
 	};
 
 	return !!await Subscriptions.findOne(query, { fields: { roles: 1 } });
-});
+}, { maxAge: 5000 });
+
+export const clear = () => {
+	mem.clear(getRole);
+	mem.clear(rolesHasPermission);
+	mem.clear(subscriptionHasPermission);
+};
 
 async function atLeastOne(uid, permissions = [], scope) {
 	const { roles: userRoles } = await Users.findOne({ _id: uid });
 
+	const sortedUsers = userRoles.sort((a, b) => a.localeCompare(b));
 
-	const roles = (await Promise.all(userRoles.map(getRole))).reduce((roles, role) => {
+	const roles = (await Promise.all(sortedUsers.map(getRole))).reduce((roles, role) => {
 		roles[role.scope || 'Users'] = [].concat([role._id]);
 		return roles;
 	}, {});
@@ -60,8 +67,9 @@ async function atLeastOne(uid, permissions = [], scope) {
 async function all(uid, permissions = [], scope) {
 	const { roles: userRoles } = await Users.findOne({ _id: uid });
 
+	const sortedUsers = userRoles.sort((a, b) => a.localeCompare(b));
 
-	const roles = (await Promise.all(userRoles.map(getRole))).reduce((roles, role) => {
+	const roles = (await Promise.all(sortedUsers.map(getRole))).reduce((roles, role) => {
 		roles[role.scope || 'Users'] = [].concat([role._id]);
 		return roles;
 	}, {});
