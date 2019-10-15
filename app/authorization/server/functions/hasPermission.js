@@ -30,18 +30,18 @@ export const clear = () => {
 	mem.clear(subscriptionHasPermission);
 };
 
+const groupRolesByScope = async (sortedUserRoles) => (await Promise.all(sortedUserRoles.map(getRole))).reduce((roles, role) => {
+	roles[role.scope || 'Users'] = roles[role.scope || 'Users'] ? roles[role.scope || 'Users'].concat([role._id]) : [].concat([role._id]);
+	return roles;
+}, {});
+
 async function atLeastOne(uid, permissions = [], scope) {
 	const { roles: userRoles } = await Users.findOne({ _id: uid });
 
-	const sortedUsers = userRoles.sort((a, b) => a.localeCompare(b));
+	const sortedUserRoles = userRoles.sort((a, b) => a.localeCompare(b));
 
-	const roles = (await Promise.all(sortedUsers.map(getRole))).reduce((roles, role) => {
-		roles[role.scope || 'Users'] = [].concat([role._id]);
-		return roles;
-	}, {});
-
+	const roles = await groupRolesByScope(sortedUserRoles);
 	const keys = Object.keys(roles);
-
 	for (let index = 0; index < keys.length; index++) {
 		const key = keys[index];
 		switch (key) {
@@ -67,12 +67,9 @@ async function atLeastOne(uid, permissions = [], scope) {
 async function all(uid, permissions = [], scope) {
 	const { roles: userRoles } = await Users.findOne({ _id: uid });
 
-	const sortedUsers = userRoles.sort((a, b) => a.localeCompare(b));
+	const sortedUserRoles = userRoles.sort((a, b) => a.localeCompare(b));
 
-	const roles = (await Promise.all(sortedUsers.map(getRole))).reduce((roles, role) => {
-		roles[role.scope || 'Users'] = [].concat([role._id]);
-		return roles;
-	}, {});
+	const roles = await groupRolesByScope(sortedUserRoles);
 
 	const keys = Object.keys(roles);
 
