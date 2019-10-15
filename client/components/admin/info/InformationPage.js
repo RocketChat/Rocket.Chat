@@ -9,7 +9,7 @@ import { SideNav } from '../../../../app/ui-utils/client/lib/SideNav';
 import { Header } from '../../header/Header';
 import { Link } from '../../basic/Link';
 import { ErrorAlert } from '../../basic/ErrorAlert';
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';
 import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';

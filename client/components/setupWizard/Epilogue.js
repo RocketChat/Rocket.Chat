@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { useSetting } from '../../hooks/useSetting';
 import { setSetting } from './functions';
 import './Epilogue.css';

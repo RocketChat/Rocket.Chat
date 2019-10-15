@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { useSetupWizardStepsState } from './StepsState';
 import './SideBar.css';
 

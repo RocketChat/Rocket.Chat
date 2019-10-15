@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { BurgerMenuButton } from './BurgerMenuButton';
 
 export function Header({
