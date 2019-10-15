@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 const translate = function(key) {
 	return key;
@@ -7,5 +7,3 @@ const translate = function(key) {
 translate.has = () => true;
 
 export const TranslationContext = createContext(translate);
-
-export const useTranslation = () => useContext(TranslationContext);

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { formatDate } from './formatters';
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
 

@@ -4,7 +4,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 
 import { handleError } from '../../../../app/utils/client';
 import { useFocus } from '../../../hooks/useFocus';
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { SkeletonText } from './SkeletonText';
 import { formatMemorySize, formatHumanReadableTime, formatCPULoad } from './formatters';
 import { InformationList } from './InformationList';

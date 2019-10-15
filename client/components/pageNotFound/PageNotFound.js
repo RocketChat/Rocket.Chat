@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
 import { useRoute } from '../contexts/RouterContext';

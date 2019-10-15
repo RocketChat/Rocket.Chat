@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
 import { formatDate } from './formatters';

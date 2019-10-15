@@ -8,7 +8,7 @@ import { handleError } from '../../../../app/utils/client';
 import { callbacks } from '../../../../app/callbacks/client';
 import { useFocus } from '../../../hooks/useFocus';
 import { useSetting } from '../../../hooks/useSetting';
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
