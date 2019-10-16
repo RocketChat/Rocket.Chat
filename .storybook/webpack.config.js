@@ -13,7 +13,12 @@ module.exports = async ({ config }) => {
 		require('postcss-selector-not')(),
 		require('postcss-nested')(),
 		require('autoprefixer')(),
-		require('postcss-url')({ url: 'inline', basePath: path.resolve(__dirname, '../public') }),
+		require('postcss-url')({ url: ({ absolutePath, relativePath, url }) => {
+			const absoluteDir = absolutePath.slice(0, -relativePath.length);
+			const relativeDir = path.relative(absoluteDir, path.resolve(__dirname, '../public'));
+			const newPath = path.join(relativeDir, url);
+			return newPath;
+		} }),
 	];
 
 	config.module.rules.push({
