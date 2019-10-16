@@ -1,90 +1,16 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { useMethod } from '../../../hooks/useMethod';
-import { useViewStatisticsPermission } from '../../../hooks/usePermissions';
-import { useRocketChatInformation } from '../../../hooks/useRocketChatInformation';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { Header } from '../../header/Header';
 import { Link } from '../../basic/Link';
 import { ErrorAlert } from '../../basic/ErrorAlert';
-import { useAdminSideNav } from '../hooks';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';
 import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';
 import { BuildEnvironmentSection } from './BuildEnvironmentSection';
 import { UsageSection } from './UsageSection';
 import { InstancesSection } from './InstancesSection';
-
-export const useInformationPage = () => {
-	useAdminSideNav();
-
-	const canViewStatistics = useViewStatisticsPermission();
-
-	const [isLoading, setLoading] = useState(true);
-	const [statistics, setStatistics] = useState({});
-	const [instances, setInstances] = useState([]);
-	const [fetchStatistics, setFetchStatistics] = useState(() => () => ({}));
-	const getStatistics = useMethod('getStatistics');
-	const getInstances = useMethod('instances/get');
-
-	useEffect(() => {
-		let didCancel = false;
-
-		const fetchStatistics = async () => {
-			if (!canViewStatistics) {
-				setStatistics(null);
-				setInstances(null);
-				return;
-			}
-
-			setLoading(true);
-
-			try {
-				const [statistics, instances] = await Promise.all([
-					getStatistics(),
-					getInstances(),
-				]);
-
-				if (didCancel) {
-					return;
-				}
-
-				setStatistics(statistics);
-				setInstances(instances);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		setFetchStatistics(() => fetchStatistics);
-
-		fetchStatistics();
-
-		return () => {
-			didCancel = true;
-		};
-	}, [canViewStatistics]);
-
-	const info = useRocketChatInformation();
-
-	const handleClickRefreshButton = () => {
-		if (isLoading) {
-			return;
-		}
-
-		fetchStatistics();
-	};
-
-	return {
-		canViewStatistics,
-		isLoading,
-		info,
-		statistics,
-		instances,
-		onClickRefreshButton: handleClickRefreshButton,
-	};
-};
 
 export function InformationPage({
 	canViewStatistics,

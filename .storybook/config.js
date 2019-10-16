@@ -20,8 +20,8 @@ addParameters({
 addDecorator(function RocketChatDecorator(fn) {
 	const linkElement = document.getElementById('theme-styles') || document.createElement('link');
 	if (linkElement.id !== 'theme-styles') {
-		require('@rocket.chat/icons/dist/font/RocketChat.minimal.css');
 		require('../app/theme/client/main.css');
+		require('../client/RocketChat.font.css');
 		linkElement.setAttribute('id', 'theme-styles');
 		linkElement.setAttribute('rel', 'stylesheet');
 		linkElement.setAttribute('href', 'https://open.rocket.chat/theme.css');

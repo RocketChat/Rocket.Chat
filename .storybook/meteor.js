@@ -10,7 +10,9 @@ export const Meteor = {
 };
 
 export const Tracker = {
-	autorun: () => {},
+	autorun: () => ({
+		stop: () => {},
+	}),
 	Dependency: () => {},
 };
 

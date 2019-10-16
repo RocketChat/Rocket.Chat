@@ -5,6 +5,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
 import { useRoute } from '../contexts/RouterContext';
+import './PageNotFound.css';
 
 export function PageNotFound() {
 	useWipeInitialPageLoading();

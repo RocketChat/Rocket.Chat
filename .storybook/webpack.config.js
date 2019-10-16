@@ -1,16 +1,11 @@
 'use strict';
 
+const path = require('path');
+
 const webpack = require('webpack');
 
 module.exports = async ({ config }) => {
 	const cssRule = config.module.rules.find(({ test }) => test.test('index.css'));
-	cssRule.use[1].options.url = (url) => {
-		if (/^(\.\/)?images\//.test(url)) {
-			return false;
-		}
-
-		return true;
-	};
 
 	cssRule.use[2].options.plugins = [
 		require('postcss-custom-properties')({ preserve: true }),
@@ -18,6 +13,7 @@ module.exports = async ({ config }) => {
 		require('postcss-selector-not')(),
 		require('postcss-nested')(),
 		require('autoprefixer')(),
+		require('postcss-url')({ url: 'inline', basePath: path.resolve(__dirname, '../public') }),
 	];
 
 	config.module.rules.push({
