@@ -98,7 +98,7 @@
 		"@babel/preset-react": "^7.0.0",
 		"@octokit/rest": "^16.1.0",
 		"@rocket.chat/eslint-config": "^0.3.0",
-		"@rocket.chat/livechat": "^1.1.6",
+		"@rocket.chat/livechat": "^1.2.2",
 		"@storybook/addon-actions": "^5.2.1",
 		"@storybook/addon-links": "^5.2.1",
 		"@storybook/addons": "^5.2.1",
