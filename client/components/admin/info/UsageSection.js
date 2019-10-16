@@ -10,10 +10,6 @@ export function UsageSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
 	const t = useTranslation();
 
-	if (!statistics) {
-		return null;
-	}
-
 	return <>
 		<h3>{t('Usage')}</h3>
 		<InformationList>
@@ -38,7 +34,7 @@ export function UsageSection({ statistics, isLoading }) {
 			<InformationEntry label={t('Stats_Total_Messages_Livechat')}>{s(() => statistics.totalLivechatMessages)}</InformationEntry>
 			<InformationEntry label={t('Stats_Total_Uploads')}>{s(() => statistics.uploadsTotal)}</InformationEntry>
 			<InformationEntry label={t('Stats_Total_Uploads_Size')}>{s(() => formatMemorySize(statistics.uploadsTotalSize))}</InformationEntry>
-			{statistics.apps && <>
+			{statistics && statistics.apps && <>
 					<InformationEntry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</InformationEntry>
 					<InformationEntry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</InformationEntry>
 				</>}

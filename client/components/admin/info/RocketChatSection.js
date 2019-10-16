@@ -10,11 +10,7 @@ export function RocketChatSection({ info, statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
 	const t = useTranslation();
 
-	const appsEngineVersion = info.marketplaceApiVersion;
-
-	if (!statistics) {
-		return null;
-	}
+	const appsEngineVersion = info && info.marketplaceApiVersion;
 
 	return <>
 		<h3>{t('Rocket.Chat')}</h3>

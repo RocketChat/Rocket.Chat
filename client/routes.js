@@ -35,6 +35,7 @@ BlazeLayout.setRoot('body');
 
 const createTemplateForComponent = async (
 	component,
+	hook = () => ({}),
 	props = {},
 	// eslint-disable-next-line new-cap
 	renderContainerView = () => HTML.DIV()
@@ -59,7 +60,7 @@ const createTemplateForComponent = async (
 
 			ReactDOM.render(
 				React.createElement(MeteorProvider, {
-					children: React.createElement(component, props),
+					children: React.createElement(() => React.createElement(component, { ...props, ...hook() })),
 				}), Template.instance().firstNode);
 		});
 	});
@@ -268,8 +269,8 @@ FlowRouter.route('/admin/:group?', {
 	action: async ({ group = 'info' } = {}) => {
 		switch (group) {
 			case 'info': {
-				const { InformationPage } = await import('./components/admin/info/InformationPage');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationPage) });
+				const { InformationPage, useInformationPage } = await import('./components/admin/info/InformationPage');
+				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationPage, useInformationPage) });
 				break;
 			}
 
