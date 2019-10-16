@@ -38,7 +38,7 @@ Template.livechatDepartments.helpers({
 const DEBOUNCE_TIME_FOR_SEARCH_DEPARTMENTS_IN_MS = 300;
 
 Template.livechatDepartments.events({
-	'click .remove-department'(e/* , instance*/) {
+	'click .remove-department'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -52,10 +52,11 @@ Template.livechatDepartments.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeDepartment', this._id, function(error/* , result*/) {
+			Meteor.call('livechat:removeDepartment', this._id, (error/* , result*/) => {
 				if (error) {
 					return handleError(error);
 				}
+				instance.departments.set(instance.departments.curValue.filter((department) => department._id !== this._id));
 				modal.open({
 					title: t('Removed'),
 					text: t('Department_removed'),
