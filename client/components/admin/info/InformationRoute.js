@@ -7,12 +7,6 @@ import { useAdminSideNav } from '../hooks';
 import { InformationPage } from './InformationPage';
 
 export function InformationRoute() {
-	useEffect(() => {
-		console.log('mount');
-		return () => {
-			console.log('unmount');
-		};
-	}, []);
 	useAdminSideNav();
 
 	const canViewStatistics = useViewStatisticsPermission();
