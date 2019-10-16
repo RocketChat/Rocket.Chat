@@ -7,8 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { modal, call, popover } from '../../../../ui-utils';
-import { t } from '../../../../utils/client';
-import { LivechatDepartment } from '../../collections/LivechatDepartment';
+import { t, APIClient } from '../../../../utils/client';
 import { LivechatRoom } from '../../collections/LivechatRoom';
 import './livechatCurrentChats.html';
 
@@ -52,14 +51,14 @@ Template.livechatCurrentChats.helpers({
 	onClickTagAgent() {
 		return Template.instance().onClickTagAgent;
 	},
-	departments() {
-		return LivechatDepartment.find({}, { sort: { name: 1 } });
-	},
 	customFilters() {
 		return Template.instance().customFilters.get();
 	},
 	tagFilters() {
 		return Template.instance().tagFilters.get();
+	},
+	departments() {
+		return Template.instance().departments.get();
 	},
 	tagId() {
 		return this;
@@ -247,7 +246,7 @@ Template.livechatCurrentChats.events({
 	},
 });
 
-Template.livechatCurrentChats.onCreated(function() {
+Template.livechatCurrentChats.onCreated(async function() {
 	this.ready = new ReactiveVar(false);
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
@@ -255,6 +254,7 @@ Template.livechatCurrentChats.onCreated(function() {
 	this.customFilters = new ReactiveVar([]);
 	this.customFields = new ReactiveVar([]);
 	this.tagFilters = new ReactiveVar([]);
+	this.departments = new ReactiveVar([]);
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
@@ -264,11 +264,12 @@ Template.livechatCurrentChats.onCreated(function() {
 		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
 	};
 
-	this.autorun(() => {
+	this.autorun(async () => {
 		this.ready.set(this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get()).ready());
 	});
 
-	this.subscribe('livechat:departments');
+	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	this.departments.set(departments);
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {

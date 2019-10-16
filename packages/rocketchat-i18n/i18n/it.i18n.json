@@ -410,8 +410,6 @@
   "Broadcast_Connected_Instances": "Trasmetti le istanze connesse",
   "Bugsnag_api_key": "Bugsnag API Key",
   "Build_Environment": "Costruisci l'ambiente",
-  "bulk-create-c": "Crea canali di massa",
-  "bulk-create-c_description": "Autorizzazione a creare canali alla rinfusa",
   "bulk-register-user": "Crea canali di massa",
   "bulk-register-user_description": "Autorizzazione a creare canali alla rinfusa",
   "busy": "occupato",
