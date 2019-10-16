@@ -7,7 +7,6 @@ export class ReadReceipts extends Base {
 		this.tryEnsureIndex({
 			roomId: 1,
 			userId: 1,
-			messageId: 1,
 		}, {
 			unique: 1,
 		});
