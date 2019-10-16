@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';
-import { InformationList } from './InformationList';
-import { InformationEntry } from './InformationEntry';
+import { DescriptionList } from './DescriptionList';
 
 export function CommitSection({ info }) {
 	const t = useTranslation();
@@ -10,13 +9,13 @@ export function CommitSection({ info }) {
 
 	return <>
 		<h3>{t('Commit')}</h3>
-		<InformationList>
-			<InformationEntry label={t('Hash')}>{commit.hash}</InformationEntry>
-			<InformationEntry label={t('Date')}>{commit.date}</InformationEntry>
-			<InformationEntry label={t('Branch')}>{commit.branch}</InformationEntry>
-			<InformationEntry label={t('Tag')}>{commit.tag}</InformationEntry>
-			<InformationEntry label={t('Author')}>{commit.author}</InformationEntry>
-			<InformationEntry label={t('Subject')}>{commit.subject}</InformationEntry>
-		</InformationList>
+		<DescriptionList>
+			<DescriptionList.Entry label={t('Hash')}>{commit.hash}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Date')}>{commit.date}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Branch')}>{commit.branch}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Tag')}>{commit.tag}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Author')}>{commit.author}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Subject')}>{commit.subject}</DescriptionList.Entry>
+		</DescriptionList>
 	</>;
 }
