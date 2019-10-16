@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import { settings } from '../../settings';
 
 
