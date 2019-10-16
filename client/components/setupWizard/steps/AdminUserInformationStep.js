@@ -1,4 +1,4 @@
-import { Input, InputGroup } from '@rocket.chat/fuselage';
+import { Input, Field, FieldGroup, Label } from '@rocket.chat/fuselage';
 import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
@@ -6,15 +6,15 @@ import toastr from 'toastr';
 import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
 import { callbacks } from '../../../../app/callbacks/client';
+import { useFocus } from '../../../hooks/useFocus';
 import { useSetting } from '../../../hooks/useSetting';
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
 import { loginWithPassword } from '../functions';
-import { useFocus } from '../../../hooks/useFocus';
 
 const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
 	await call('registerUser', { name, username, email, pass: password });
@@ -109,45 +109,57 @@ export function AdminUserInformationStep({ step, title }) {
 		<StepHeader number={step} title={title} />
 
 		<StepContent>
-			<InputGroup>
-				<Input
-					ref={autoFocusRef}
-					type='text'
-					label={t('Name')}
-					icon='user'
-					placeholder={t('Type_your_name')}
-					value={name}
-					onChange={({ currentTarget: { value } }) => setName(value)}
-					error={!isNameValid}
-				/>
-				<Input
-					type='text'
-					label={t('Username')}
-					icon='at'
-					placeholder={t('Type_your_username')}
-					value={username}
-					onChange={({ currentTarget: { value } }) => setUsername(value)}
-					error={!isUsernameValid && t('Invalid_username')}
-				/>
-				<Input
-					type='email'
-					label={t('Organization_Email')}
-					icon='mail'
-					placeholder={t('Type_your_email')}
-					value={email}
-					onChange={({ currentTarget: { value } }) => setEmail(value)}
-					error={!isEmailValid && t('Invalid_email')}
-				/>
-				<Input
-					type='password'
-					label={t('Password')}
-					icon='key'
-					placeholder={t('Type_your_password')}
-					value={password}
-					onChange={({ currentTarget: { value } }) => setPassword(value)}
-					error={!isPasswordValid}
-				/>
-			</InputGroup>
+			<FieldGroup>
+				<Field>
+					<Label text={t('Name')}>
+						<Input
+							ref={autoFocusRef}
+							type='text'
+							icon='user'
+							placeholder={t('Type_your_name')}
+							value={name}
+							onChange={({ currentTarget: { value } }) => setName(value)}
+							error={!isNameValid}
+						/>
+					</Label>
+				</Field>
+				<Field>
+					<Label text={t('Username')}>
+						<Input
+							type='text'
+							icon='at'
+							placeholder={t('Type_your_username')}
+							value={username}
+							onChange={({ currentTarget: { value } }) => setUsername(value)}
+							error={!isUsernameValid && t('Invalid_username')}
+						/>
+					</Label>
+				</Field>
+				<Field>
+					<Label text={t('Organization_Email')}>
+						<Input
+							type='email'
+							icon='mail'
+							placeholder={t('Type_your_email')}
+							value={email}
+							onChange={({ currentTarget: { value } }) => setEmail(value)}
+							error={!isEmailValid && t('Invalid_email')}
+						/>
+					</Label>
+				</Field>
+				<Field>
+					<Label text={t('Password')}>
+						<Input
+							type='password'
+							icon='key'
+							placeholder={t('Type_your_password')}
+							value={password}
+							onChange={({ currentTarget: { value } }) => setPassword(value)}
+							error={!isPasswordValid}
+						/>
+					</Label>
+				</Field>
+			</FieldGroup>
 		</StepContent>
 
 		<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />

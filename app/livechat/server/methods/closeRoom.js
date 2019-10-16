@@ -11,6 +11,15 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
 		}
 
+		const room = LivechatRooms.findOneById(roomId);
+		if (!room || room.t !== 'l') {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:closeRoom' });
+		}
+
+		if (!room.open) {
+			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:closeRoom' });
+		}
+
 		const user = Meteor.user();
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
