@@ -4196,20 +4196,6 @@ rc-old select,
 		}
 	}
 
-	& a.meteor {
-		position: fixed;
-		right: 30px;
-		bottom: 20px;
-
-		width: 100px;
-		height: 50px;
-
-		text-indent: -9999em;
-
-		background: url(images/meteor.png) no-repeat center center;
-		background-size: 100% auto;
-	}
-
 	& .share {
 		min-height: 40px;
 
