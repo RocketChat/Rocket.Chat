@@ -15,8 +15,25 @@ if (process.env.SETTINGS_HIDDEN) {
 	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => { hiddenSettings[settingId] = 1; });
 }
 
-settings._sorter = {};
+const SORTER = {};
+const getValue = (value, type) => {
+	if (value.toLowerCase() === 'true') {
+		return true;
+	}
 
+	if (value.toLowerCase() === 'false') {
+		return false;
+	}
+
+	if (type === 'int') {
+		return parseInt(value);
+	}
+};
+
+const prepare = (value) => ({
+	processEnvValue: getValue(value),
+	valueSource: 'processEnvValue',
+});
 
 /*
 * Add a setting
@@ -25,115 +42,81 @@ settings._sorter = {};
 * @param {Object} setting
 */
 
-settings.add = function(_id, value, options = {}) {
-	if (options == null) {
-		options = {};
-	}
+settings.add = function add(_id, value, { i18nDefaultQuery, force, enableQuery, sorter, editor, ...options } = {}) {
 	if (!_id || value == null) {
 		return false;
 	}
-	if (settings._sorter[options.group] == null) {
-		settings._sorter[options.group] = 0;
-	}
-	options.packageValue = value;
-	options.valueSource = 'packageValue';
-	options.hidden = options.hidden || false;
-	options.blocked = options.blocked || false;
-	options.secret = options.secret || false;
-	if (options.sorter == null) {
-		options.sorter = settings._sorter[options.group]++;
-	}
-	if (options.enableQuery != null) {
-		options.enableQuery = JSON.stringify(options.enableQuery);
-	}
-	if (options.i18nDefaultQuery != null) {
-		options.i18nDefaultQuery = JSON.stringify(options.i18nDefaultQuery);
-	}
-	if (typeof process !== 'undefined' && process.env && process.env[_id]) {
-		value = process.env[_id];
-		if (value.toLowerCase() === 'true') {
-			value = true;
-		} else if (value.toLowerCase() === 'false') {
-			value = false;
-		} else if (options.type === 'int') {
-			value = parseInt(value);
-		}
-		options.processEnvValue = value;
-		options.valueSource = 'processEnvValue';
-	} else if (Meteor.settings && typeof Meteor.settings[_id] !== 'undefined') {
-		if (Meteor.settings[_id] == null) {
-			return false;
-		}
 
-		value = Meteor.settings[_id];
-		options.meteorSettingsValue = value;
-		options.valueSource = 'meteorSettingsValue';
+	if (SORTER[options.group] == null) {
+		SORTER[options.group] = 0;
 	}
-	if (options.i18nLabel == null) {
-		options.i18nLabel = _id;
-	}
-	if (options.i18nDescription == null) {
-		options.i18nDescription = `${ _id }_Description`;
-	}
-	if (blockedSettings[_id] != null) {
-		options.blocked = true;
-	}
-	if (hiddenSettings[_id] != null) {
-		options.hidden = true;
-	}
-	if (options.autocomplete == null) {
-		options.autocomplete = true;
-	}
-	if (typeof process !== 'undefined' && process.env && process.env[`OVERWRITE_SETTING_${ _id }`]) {
-		let value = process.env[`OVERWRITE_SETTING_${ _id }`];
-		if (value.toLowerCase() === 'true') {
-			value = true;
-		} else if (value.toLowerCase() === 'false') {
-			value = false;
-		} else if (options.type === 'int') {
-			value = parseInt(value);
-		}
-		options.value = value;
-		options.processEnvValue = value;
-		options.valueSource = 'processEnvValue';
-	}
-	const updateOperations = {
-		$set: options,
-		$setOnInsert: {
-			createdAt: new Date(),
-		},
+
+	const ENV_VALUE = process.env[`OVERWRITE_SETTING_${ _id }`];
+
+	const op = {
+		secret: false,
+		autocomplete: true,
+		i18nLabel: _id,
+		i18nDescription: `${ _id }_Description`,
+		editor,
+		...options,
+		...enableQuery && { enableQuery: JSON.stringify(enableQuery) },
+		...i18nDefaultQuery && { i18nDefaultQuery: JSON.stringify(i18nDefaultQuery) },
+		...hiddenSettings[_id] !== null && { hidden: !!hiddenSettings[_id] },
+		...blockedSettings[_id] !== null && { blocked: !!blockedSettings[_id] },
+		packageValue: value,
+		valueSource: 'packageValue',
+		sorter: sorter || SORTER[options.group]++,
 	};
-	if (options.editor != null) {
-		updateOperations.$setOnInsert.editor = options.editor;
-		delete options.editor;
+
+	if (process.env[_id]) {
+		Object.assign(op, prepare(process.env[_id], options.type));
 	}
-	if (options.value == null) {
-		if (options.force === true) {
-			updateOperations.$set.value = options.packageValue;
-		} else {
-			updateOperations.$setOnInsert.value = value;
+
+	if (ENV_VALUE) {
+		Object.assign(op, prepare(ENV_VALUE, options.type), { value: ENV_VALUE });
+	}
+
+	const updateOperations = {
+		$set: {
+			...op,
+		},
+		...options.section == null && { $unset: { section: 1 } },
+	};
+
+	const $setOnInsert = {
+		ts: new Date(),
+		...op.value == null && { value },
+		createdAt: new Date(),
+		...editor && { editor },
+	};
+
+	if (op.value == null) {
+		if (force === true) {
+			updateOperations.$set.value = op.packageValue;
 		}
 	}
-	const query = _.extend({
+
+	const query = {
 		_id,
-	}, updateOperations.$set);
-	if (options.section == null) {
-		updateOperations.$unset = {
-			section: 1,
-		};
-		query.section = {
+		...updateOperations.$set,
+		...!options.section && { section: {
 			$exists: false,
-		};
+		} },
+	};
+
+	const existantSetting = Settings.findOne(query, { fields: { _id: 1 } });
+
+	if (existantSetting) {
+		return;
 	}
-	const existantSetting = Settings.db.findOne(query);
-	if (existantSetting != null) {
-		if (existantSetting.editor == null && updateOperations.$setOnInsert.editor != null) {
-			updateOperations.$set.editor = updateOperations.$setOnInsert.editor;
-			delete updateOperations.$setOnInsert.editor;
-		}
-	} else {
-		updateOperations.$set.ts = new Date();
+
+	if (!Settings.findOne({ _id }, { fields: { _id: 1 } })) {
+		return Settings.upsert({
+			_id,
+		}, { ...updateOperations, $setOnInsert });
 	}
+
 	return Settings.upsert({
 		_id,
 	}, updateOperations);
