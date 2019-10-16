@@ -5,6 +5,9 @@ import { UsageSection } from './UsageSection';
 export default {
 	title: 'admin/info/UsageSection',
 	component: UsageSection,
+	decorators: [
+		(fn) => <div className='rc-old'>{fn()}</div>,
+	],
 };
 
 const statistics = {

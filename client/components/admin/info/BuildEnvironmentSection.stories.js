@@ -6,6 +6,9 @@ import { BuildEnvironmentSection } from './BuildEnvironmentSection';
 export default {
 	title: 'admin/info/BuildEnvironmentSection',
 	component: BuildEnvironmentSection,
+	decorators: [
+		(fn) => <div className='rc-old'>{fn()}</div>,
+	],
 };
 
 const info = {

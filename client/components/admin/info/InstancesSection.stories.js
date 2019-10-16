@@ -6,6 +6,9 @@ import { InstancesSection } from './InstancesSection';
 export default {
 	title: 'admin/info/InstancesSection',
 	component: InstancesSection,
+	decorators: [
+		(fn) => <div className='rc-old'>{fn()}</div>,
+	],
 };
 
 const instances = [

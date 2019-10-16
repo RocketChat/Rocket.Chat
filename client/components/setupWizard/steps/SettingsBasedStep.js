@@ -3,16 +3,16 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { useEffect, useReducer, useState } from 'react';
 
 import { handleError } from '../../../../app/utils/client';
+import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useFocus } from '../../../hooks/useFocus';
-import { useTranslation } from '../../../hooks/useTranslation';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
-import { batchSetSettings } from '../functions';
 
 const useFields = () => {
 	const reset = 'RESET';
@@ -37,15 +37,13 @@ const useFields = () => {
 	return { fields, resetFields, setFieldValue };
 };
 
-export function SettingsBasedStep({ step, title }) {
+export function SettingsBasedStep({ step, title, active }) {
 	const { settings } = useSetupWizardParameters();
 	const { currentStep, goToPreviousStep, goToNextStep } = useSetupWizardStepsState();
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
 
-	const active = step === currentStep;
-
-	const languages = useReactiveValue(() => TAPi18n.getLanguages(), []);
+	const languages = useReactiveValue(() => TAPi18n && TAPi18n.getLanguages(), []);
 
 	useEffect(() => {
 		resetFields(
@@ -58,6 +56,8 @@ export function SettingsBasedStep({ step, title }) {
 	}, [settings, currentStep]);
 
 	const t = useTranslation();
+
+	const batchSetSettings = useBatchSetSettings();
 
 	const handleBackClick = () => {
 		goToPreviousStep();

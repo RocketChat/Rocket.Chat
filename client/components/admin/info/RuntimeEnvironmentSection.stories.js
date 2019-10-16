@@ -5,6 +5,9 @@ import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';
 export default {
 	title: 'admin/info/RuntimeEnvironmentSection',
 	component: RuntimeEnvironmentSection,
+	decorators: [
+		(fn) => <div className='rc-old'>{fn()}</div>,
+	],
 };
 
 const statistics = {

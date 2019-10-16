@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { useUserId } from '../../hooks/useUserId';
 import { useRouteParameter, useRoute } from '../contexts/RouterContext';
 
-const Context = createContext();
+const Context = createContext({});
 
 export const useSetupWizardStepsState = () => useContext(Context);
 
