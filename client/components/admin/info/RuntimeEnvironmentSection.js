@@ -10,10 +10,6 @@ export function RuntimeEnvironmentSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
 	const t = useTranslation();
 
-	if (!statistics) {
-		return null;
-	}
-
 	return <>
 		<h3>{t('Runtime_Environment')}</h3>
 		<InformationList>
