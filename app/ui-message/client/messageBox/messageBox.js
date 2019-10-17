@@ -110,7 +110,7 @@ Template.messageBox.onCreated(function() {
 
 Template.messageBox.onRendered(function() {
 	const $input = $(this.find('.js-input-message'));
-	this.input = $input[0];
+	this.source = $input[0];
 	$input.on('dataChange', () => {
 		const messages = $input.data('reply') || [];
 		this.replyMessageData.set(messages);
@@ -327,7 +327,7 @@ Template.messageBox.events({
 			return;
 		}
 
-		EmojiPicker.open(instance.input, (emoji) => {
+		EmojiPicker.open(instance.source, (emoji) => {
 			const emojiValue = `:${ emoji }: `;
 
 			const { input } = instance;
