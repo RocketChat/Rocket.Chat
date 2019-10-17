@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export const baseURI = (() => {
 	if (document.baseURI) { return document.baseURI; }
 
@@ -12,3 +14,5 @@ export const baseURI = (() => {
 	//   http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-baseURI
 	return document.URL;
 })();
+
+Meteor.absoluteUrl.defaultOptions = { ...Meteor.absoluteUrl.defaultOptions, rootUrl: baseURI };

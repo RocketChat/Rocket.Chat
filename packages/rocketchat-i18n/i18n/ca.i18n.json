@@ -480,8 +480,6 @@
   "Browse_Files": "Navega pels fitxers",
   "Bugsnag_api_key": "Clau API Bugsnag",
   "Build_Environment": "Entorn de compilació",
-  "bulk-create-c": "Crear canals en massa",
-  "bulk-create-c_description": "Permís per a crear canals en massa",
   "bulk-register-user": "Crear canals en massa",
   "bulk-register-user_description": "Permís per a crear canals en massa",
   "Busiest_day": "Dia més actiu",

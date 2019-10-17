@@ -412,8 +412,6 @@
   "Broadcast_Connected_Instances": "Вяшчанне Connected асобнікаў",
   "Bugsnag_api_key": "Bugsnag API Key",
   "Build_Environment": "будаўнічыя асяроддзя",
-  "bulk-create-c": "Групавое стварэнне каналаў",
-  "bulk-create-c_description": "Дазвол для стварэння каналаў у аб'ёме",
   "bulk-register-user": "Групавое стварэнне каналаў",
   "bulk-register-user_description": "Дазвол для стварэння каналаў у аб'ёме",
   "busy": "заняты",
