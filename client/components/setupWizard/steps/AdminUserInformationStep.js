@@ -3,10 +3,11 @@ import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
 
-import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
 import { callbacks } from '../../../../app/callbacks/client';
 import { useFocus } from '../../../hooks/useFocus';
+import { useLoginWithPassword } from '../../../hooks/useLoginWithPassword';
+import { useMethod } from '../../../hooks/useMethod';
 import { useSetting } from '../../../hooks/useSetting';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useSetupWizardStepsState } from '../StepsState';
@@ -14,33 +15,35 @@ import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
-import { loginWithPassword } from '../functions';
 
-const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
-	await call('registerUser', { name, username, email, pass: password });
-	callbacks.run('userRegistered');
+export function AdminUserInformationStep({ step, title, active }) {
+	const { goToNextStep } = useSetupWizardStepsState();
 
-	try {
-		await loginWithPassword(email, password);
-	} catch (error) {
-		if (error.error === 'error-invalid-email') {
-			onRegistrationEmailSent && onRegistrationEmailSent();
-			return;
+	const loginWithPassword = useLoginWithPassword();
+	const registerUser = useMethod('registerUser');
+	const defineUsername = useMethod('setUsername');
+
+	const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
+		await registerUser({ name, username, email, pass: password });
+		callbacks.run('userRegistered');
+
+		try {
+			await loginWithPassword(email, password);
+		} catch (error) {
+			if (error.error === 'error-invalid-email') {
+				onRegistrationEmailSent && onRegistrationEmailSent();
+				return;
+			}
+			handleError(error);
+			throw error;
 		}
-		handleError(error);
-		throw error;
-	}
 
-	Session.set('forceLogin', false);
+		Session.set('forceLogin', false);
 
-	await call('setUsername', username);
+		await defineUsername(username);
 
-	callbacks.run('usernameSet');
-};
-
-export function AdminUserInformationStep({ step, title }) {
-	const { currentStep, goToNextStep } = useSetupWizardStepsState();
-	const active = step === currentStep;
+		callbacks.run('usernameSet');
+	};
 
 	const regexpForUsernameValidation = useSetting('UTF8_Names_Validation');
 	const usernameRegExp = useMemo(() => new RegExp(`^${ regexpForUsernameValidation }$`), [regexpForUsernameValidation]);

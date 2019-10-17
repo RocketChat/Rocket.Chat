@@ -39,10 +39,10 @@ export function Steps() {
 		/>
 		<section className='SetupWizard__Steps'>
 			<div className='SetupWizard__Steps-wrapper'>
-				<AdminUserInformationStep step={1} title={t('Admin_Info')} />
-				<SettingsBasedStep step={2} title={t('Organization_Info')} />
-				<SettingsBasedStep step={3} title={t('Server_Info')} />
-				<RegisterServerStep step={4} title={t('Register_Server')} />
+				<AdminUserInformationStep step={1} title={t('Admin_Info')} active={currentStep === 1} />
+				<SettingsBasedStep step={2} title={t('Organization_Info')} active={currentStep === 2} />
+				<SettingsBasedStep step={3} title={t('Server_Info')} active={currentStep === 3} />
+				<RegisterServerStep step={4} title={t('Register_Server')} active={currentStep === 4} />
 			</div>
 		</section>
 	</>;

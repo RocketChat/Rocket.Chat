@@ -1,8 +1,10 @@
 import { CheckBox, Label, RadioButton, useMergedRefs } from '@rocket.chat/fuselage';
 import React, { useRef, useState } from 'react';
 
-import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
+import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
+import { useFocus } from '../../../hooks/useFocus';
+import { useMethod } from '../../../hooks/useMethod';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { Icon } from '../../basic/Icon';
 import { Pager } from '../Pager';
@@ -11,8 +13,7 @@ import { Step } from '../Step';
 import { StepContent } from '../StepContent';
 import { StepHeader } from '../StepHeader';
 import { useSetupWizardStepsState } from '../StepsState';
-import { batchSetSettings } from '../functions';
-import { useFocus } from '../../../hooks/useFocus';
+import './RegisterServerStep.css';
 
 const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) => {
 	const innerRef = useRef();
@@ -43,11 +44,9 @@ const Item = ({ children, icon, ...props }) =>
 		{children}
 	</li>;
 
-export function RegisterServerStep({ step, title }) {
+export function RegisterServerStep({ step, title, active }) {
 	const { canDeclineServerRegistration } = useSetupWizardParameters();
-	const { currentStep, goToPreviousStep, goToFinalStep } = useSetupWizardStepsState();
-
-	const active = step === currentStep;
+	const { goToPreviousStep, goToFinalStep } = useSetupWizardStepsState();
 
 	const [registerServer, setRegisterServer] = useState(true);
 	const [optInMarketingEmails, setOptInMarketingEmails] = useState(true);
@@ -55,6 +54,10 @@ export function RegisterServerStep({ step, title }) {
 	const t = useTranslation();
 
 	const [commiting, setComitting] = useState(false);
+
+	const batchSetSettings = useBatchSetSettings();
+
+	const registerCloudWorkspace = useMethod('cloud:registerWorkspace');
 
 	const handleBackClick = () => {
 		goToPreviousStep();
@@ -86,7 +89,7 @@ export function RegisterServerStep({ step, title }) {
 			]);
 
 			if (registerServer) {
-				await call('cloud:registerWorkspace');
+				await registerCloudWorkspace();
 			}
 
 			setComitting(false);

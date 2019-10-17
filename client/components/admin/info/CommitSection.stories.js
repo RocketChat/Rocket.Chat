@@ -5,6 +5,9 @@ import { CommitSection } from './CommitSection';
 export default {
 	title: 'admin/info/CommitSection',
 	component: CommitSection,
+	decorators: [
+		(fn) => <div className='rc-old'>{fn()}</div>,
+	],
 };
 
 const info = {

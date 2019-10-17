@@ -6,6 +6,7 @@ export default {
 	title: 'admin/info/DescriptionList',
 	component: DescriptionList,
 	decorators: [
+		(fn) => <div className='rc-old'>{fn()}</div>,
 		(fn) => <section className='page-container page-list'>
 			<div className='content'>
 				{fn()}

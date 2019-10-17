@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { useAutorun } from './useAutorun';
 
 export const useReactiveValue = (getValue, deps = []) => {
-	const [value, setValue] = useState(Tracker ? () => Tracker.nonreactive(getValue) : getValue);
+	const [value, setValue] = useState(() => Tracker.nonreactive(getValue));
 
 	useAutorun(() => {
 		setValue(getValue);

@@ -13,6 +13,7 @@ export const Tracker = {
 	autorun: () => ({
 		stop: () => {},
 	}),
+	nonreactive: (fn) => fn(),
 	Dependency: () => {},
 };
 

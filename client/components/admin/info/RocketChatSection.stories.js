@@ -6,6 +6,9 @@ import { RocketChatSection } from './RocketChatSection';
 export default {
 	title: 'admin/info/RocketChatSection',
 	component: RocketChatSection,
+	decorators: [
+		(fn) => <div className='rc-old'>{fn()}</div>,
+	],
 };
 
 const info = {

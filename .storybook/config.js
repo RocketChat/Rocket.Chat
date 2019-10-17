@@ -35,11 +35,9 @@ addDecorator(function RocketChatDecorator(fn) {
 					background-color: white;
 				}
 			`}</style>
-			<div className='rc-old'>
-				<div dangerouslySetInnerHTML={{ __html: require('!!raw-loader!../private/public/icons.svg').default }} />
-				<div className='global-font-family color-primary-font-color'>
-					{fn()}
-				</div>
+			<div dangerouslySetInnerHTML={{ __html: require('!!raw-loader!../private/public/icons.svg').default }} />
+			<div className='global-font-family color-primary-font-color'>
+				{fn()}
 			</div>
 		</TranslationProvider>
 	</ConnectionStatusProvider>;

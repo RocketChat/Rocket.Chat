@@ -8,6 +8,9 @@ import { InformationPage } from './InformationPage';
 export default {
 	title: 'admin/info/InformationPage',
 	component: InformationPage,
+	decorators: [
+		(fn) => <div className='rc-old'>{fn()}</div>,
+	],
 };
 
 const info = {
