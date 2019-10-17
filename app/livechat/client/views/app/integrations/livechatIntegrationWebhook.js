@@ -7,53 +7,56 @@ import toastr from 'toastr';
 
 import { modal } from '../../../../../ui-utils';
 import { t, handleError } from '../../../../../utils';
-import { LivechatIntegration } from '../../../collections/LivechatIntegration';
 import './livechatIntegrationWebhook.html';
+import { APIClient } from '../../../../../utils/client';
+
+const getIntegrationSettingById = (settings, id) => settings.find((setting) => setting._id === id);
 
 Template.livechatIntegrationWebhook.helpers({
 	webhookUrl() {
-		const setting = LivechatIntegration.findOne('Livechat_webhookUrl');
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhookUrl');
 		return setting && setting.value;
 	},
 	secretToken() {
-		const setting = LivechatIntegration.findOne('Livechat_secret_token');
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_secret_token');
 		return setting && setting.value;
 	},
 	disableTest() {
 		return Template.instance().disableTest.get();
 	},
 	sendOnCloseChecked() {
-		const setting = LivechatIntegration.findOne('Livechat_webhook_on_close');
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_close');
 		return setting && setting.value;
 	},
 	sendOnOfflineChecked() {
-		const setting = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_offline_msg');
 		return setting && setting.value;
 	},
 	sendOnVisitorMessageChecked() {
-		const setting = LivechatIntegration.findOne('Livechat_webhook_on_visitor_message');
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_visitor_message');
 		return setting && setting.value;
 	},
 	sendOnAgentMessageChecked() {
-		const setting = LivechatIntegration.findOne('Livechat_webhook_on_agent_message');
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_agent_message');
 		return setting && setting.value;
 	},
 });
 
-Template.livechatIntegrationWebhook.onCreated(function() {
+Template.livechatIntegrationWebhook.onCreated(async function() {
 	this.disableTest = new ReactiveVar(true);
+	this.settings = new ReactiveVar([]);
 
 	this.autorun(() => {
-		const webhook = LivechatIntegration.findOne('Livechat_webhookUrl');
+		const webhook = getIntegrationSettingById(this.settings.get(), 'Livechat_webhookUrl');
 		this.disableTest.set(!webhook || _.isEmpty(webhook.value));
 	});
-
-	this.subscribe('livechat:integration');
+	const { settings } = await APIClient.v1.get('livechat/integrations.settings');
+	this.settings.set(settings);
 });
 
 Template.livechatIntegrationWebhook.events({
 	'change #webhookUrl, blur #webhookUrl'(e, instance) {
-		const setting = LivechatIntegration.findOne('Livechat_webhookUrl');
+		const setting = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhookUrl');
 		instance.disableTest.set(!setting || e.currentTarget.value !== setting.value);
 	},
 	'click .test'(e, instance) {
@@ -73,12 +76,12 @@ Template.livechatIntegrationWebhook.events({
 	'click .reset-settings'(e, instance) {
 		e.preventDefault();
 
-		const webhookUrl = LivechatIntegration.findOne('Livechat_webhookUrl');
-		const secretToken = LivechatIntegration.findOne('Livechat_secret_token');
-		const webhookOnClose = LivechatIntegration.findOne('Livechat_webhook_on_close');
-		const webhookOnOfflineMsg = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
-		const webhookOnVisitorMessage = LivechatIntegration.findOne('Livechat_webhook_on_visitor_message');
-		const webhookOnAgentMessage = LivechatIntegration.findOne('Livechat_webhook_on_agent_message');
+		const webhookUrl = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhookUrl');
+		const secretToken = getIntegrationSettingById(instance.settings.get(), 'Livechat_secret_token');
+		const webhookOnClose = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_close');
+		const webhookOnOfflineMsg = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_offline_msg');
+		const webhookOnVisitorMessage = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_visitor_message');
+		const webhookOnAgentMessage = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_agent_message');
 
 		instance.$('#webhookUrl').val(webhookUrl && webhookUrl.value);
 		instance.$('#secretToken').val(secretToken && secretToken.value);
