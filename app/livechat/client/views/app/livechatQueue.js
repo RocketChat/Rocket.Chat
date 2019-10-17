@@ -5,7 +5,6 @@ import { Template } from 'meteor/templating';
 import { settings } from '../../../../settings';
 import { hasPermission } from '../../../../authorization';
 import { Users } from '../../../../models';
-import { LivechatQueueUser } from '../../collections/LivechatQueueUser';
 import './livechatQueue.html';
 import { APIClient } from '../../../../utils/client';
 
@@ -19,23 +18,17 @@ Template.livechatQueue.helpers({
 
 		const showOffline = Template.instance().showOffline.get();
 
-		LivechatQueueUser.find({
-			departmentId: this._id,
-		}, {
-			sort: {
-				count: 1,
-				order: 1,
-				username: 1,
-			},
-		}).forEach((user) => {
-			const options = { fields: { _id: 1 } };
-			const userFilter = { _id: user.agentId, status: { $ne: 'offline' } };
-			const agent = Template.instance().agents.get().find((agent) => agent._id === user.agentId && agent.statusLivechat === 'available');
+		Template.instance().queue.get()
+			.filter((user) => user.departmentId === this._id)
+			.forEach((user) => {
+				const options = { fields: { _id: 1 } };
+				const userFilter = { _id: user.agentId, status: { $ne: 'offline' } };
+				const agent = Template.instance().agents.get().find((agent) => agent._id === user.agentId && agent.statusLivechat === 'available');
 
-			if (showOffline[this._id] || (Meteor.users.findOne(userFilter, options) && agent)) {
-				users.push(user);
-			}
-		});
+				if (showOffline[this._id] || (Meteor.users.findOne(userFilter, options) && agent)) {
+					users.push(user);
+				}
+			});
 
 		return users;
 	},
@@ -60,11 +53,12 @@ Template.livechatQueue.onCreated(async function() {
 	this.showOffline = new ReactiveVar({});
 	this.agents = new ReactiveVar([]);
 	this.departments = new ReactiveVar([]);
+	this.queue = new ReactiveVar([]);
 
-	this.subscribe('livechat:queue');
 	const { users } = await APIClient.v1.get('livechat/users/agent');
 	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
-
+	const { users: queue } = await APIClient.v1.get('livechat/users.queue?=sort={"count": 1, "order": 1, "username": 1}');
 	this.agents.set(users);
 	this.departments.set(departments);
+	this.queue.set(queue);
 });

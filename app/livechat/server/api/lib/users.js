@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../../models/server/raw';
+import { Users, LivechatDepartmentAgents } from '../../../../models/server/raw';
 
 async function findUsers({ userId, role, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-manager') || !await hasPermissionAsync(userId, 'manage-livechat-agents')) {
@@ -52,4 +52,27 @@ export async function findManagers({ userId, pagination: { offset, count, sort }
 			sort,
 		},
 	});
+}
+
+export async function findUsersInQueue({ userId, pagination: { offset, count, sort } }) {
+	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+
+	const cursor = await LivechatDepartmentAgents.findUsersInQueue([], {
+		sort: sort || { departmentId: 1, count: 1, order: 1, username: 1 },
+		skip: offset,
+		limit: count,
+	});
+
+	const total = await cursor.count();
+
+	const users = await cursor.toArray();
+
+	return {
+		users,
+		count: users.length,
+		offset,
+		total,
+	};
 }
