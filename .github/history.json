@@ -35316,6 +35316,35 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "2.1.1": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15603",
+          "title": "[FIX] Read Recepts was not working",
+          "userLogin": "rodrigok",
+          "milestone": "2.1.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15598",
+          "title": "[FIX] Dynamic import of JS files were not working correctly",
+          "userLogin": "ggazzo",
+          "milestone": "2.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
