@@ -113,13 +113,14 @@ Template.visitorEdit.events({
 
 		userData.name = event.currentTarget.elements.name.value;
 		userData.email = event.currentTarget.elements.email.value;
-
-		if (sms) {
-			userData.phone = event.currentTarget.elements.phone.value;
-		}
+		userData.phone = event.currentTarget.elements.phone.value;
 
 		roomData.topic = event.currentTarget.elements.topic.value;
 		roomData.tags = instance.tags.get();
+
+		if (sms) {
+			delete userData.phone;
+		}
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
