@@ -2,57 +2,70 @@
 import 'babel-polyfill';
 import assert from 'assert';
 
-import Mentions from '../lib/Mentions';
-let mention;
+import { MentionsParser } from '../lib/MentionsParser';
+
+let mentionsParser;
 beforeEach(function functionName() {
-	mention = new Mentions({
+	mentionsParser = new MentionsParser({
 		pattern: '[0-9a-zA-Z-_.]+',
 		me: () => 'me',
 	});
 });
+
 describe('Mention', function() {
 	describe('get pattern', () => {
 		const regexp = '[0-9a-zA-Z-_.]+';
-		beforeEach(() => mention.pattern = () => regexp);
+		beforeEach(() => { mentionsParser.pattern = () => regexp; });
+
 		describe('by function', function functionName() {
 			it(`should be equal to ${ regexp }`, () => {
-				assert.equal(regexp, mention.pattern);
+				assert.equal(regexp, mentionsParser.pattern);
 			});
 		});
+
 		describe('by const', function functionName() {
 			it(`should be equal to ${ regexp }`, () => {
-				assert.equal(regexp, mention.pattern);
+				assert.equal(regexp, mentionsParser.pattern);
 			});
 		});
 	});
+
 	describe('get useRealName', () => {
-		beforeEach(() => mention.useRealName = () => true);
+		beforeEach(() => { mentionsParser.useRealName = () => true; });
+
 		describe('by function', function functionName() {
 			it('should be true', () => {
-				assert.equal(true, mention.useRealName);
+				assert.equal(true, mentionsParser.useRealName);
 			});
 		});
+
 		describe('by const', function functionName() {
 			it('should be true', () => {
-				assert.equal(true, mention.useRealName);
+				assert.equal(true, mentionsParser.useRealName);
 			});
 		});
 	});
+
 	describe('get me', () => {
 		const me = 'me';
+
 		describe('by function', function functionName() {
-			beforeEach(() => mention.me = () => me);
+			beforeEach(() => { mentionsParser.me = () => me; });
+
 			it(`should be equal to ${ me }`, () => {
-				assert.equal(me, mention.me);
+				assert.equal(me, mentionsParser.me);
 			});
 		});
+
 		describe('by const', function functionName() {
-			beforeEach(() => mention.me = me);
+			beforeEach(() => { mentionsParser.me = me; });
+
 			it(`should be equal to ${ me }`, () => {
-				assert.equal(me, mention.me);
+				assert.equal(me, mentionsParser.me);
 			});
 		});
 	});
+
 	describe('getUserMentions', function functionName() {
 		describe('for simple text, no mentions', () => {
 			const result = [];
@@ -62,10 +75,11 @@ describe('Mention', function() {
 			]
 				.forEach((text) => {
 					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-						assert.deepEqual(result, mention.getUserMentions(text));
+						assert.deepEqual(result, mentionsParser.getUserMentions(text));
 					});
 				});
 		});
+
 		describe('for one user', () => {
 			const result = ['@rocket.cat'];
 			[
@@ -79,19 +93,23 @@ describe('Mention', function() {
 			]
 				.forEach((text) => {
 					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-						assert.deepEqual(result, mention.getUserMentions(text));
+						assert.deepEqual(result, mentionsParser.getUserMentions(text));
 					});
 				});
+
 			it.skip('should return without the "." from "@rocket.cat."', () => {
-				assert.deepEqual(result, mention.getUserMentions('@rocket.cat.'));
+				assert.deepEqual(result, mentionsParser.getUserMentions('@rocket.cat.'));
 			});
+
 			it.skip('should return without the "_" from "@rocket.cat_"', () => {
-				assert.deepEqual(result, mention.getUserMentions('@rocket.cat_'));
+				assert.deepEqual(result, mentionsParser.getUserMentions('@rocket.cat_'));
 			});
-			it.skip('should return without the "-" from "@rocket.cat."', () => {
-				assert.deepEqual(result, mention.getUserMentions('@rocket.cat-'));
+
+			it.skip('should return without the "-" from "@rocket.cat-"', () => {
+				assert.deepEqual(result, mentionsParser.getUserMentions('@rocket.cat-'));
 			});
 		});
+
 		describe('for two users', () => {
 			const result = ['@rocket.cat', '@all'];
 			[
@@ -103,7 +121,7 @@ describe('Mention', function() {
 			]
 				.forEach((text) => {
 					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-						assert.deepEqual(result, mention.getUserMentions(text));
+						assert.deepEqual(result, mentionsParser.getUserMentions(text));
 					});
 				});
 		});
@@ -118,10 +136,11 @@ describe('Mention', function() {
 			]
 				.forEach((text) => {
 					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-						assert.deepEqual(result, mention.getChannelMentions(text));
+						assert.deepEqual(result, mentionsParser.getChannelMentions(text));
 					});
 				});
 		});
+
 		describe('for one channel', () => {
 			const result = ['#general'];
 			[
@@ -132,19 +151,23 @@ describe('Mention', function() {
 				'hello #general, how are you?',
 			].forEach((text) => {
 				it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-					assert.deepEqual(result, mention.getChannelMentions(text));
+					assert.deepEqual(result, mentionsParser.getChannelMentions(text));
 				});
 			});
+
 			it.skip('should return without the "." from "#general."', () => {
-				assert.deepEqual(result, mention.getUserMentions('#general.'));
+				assert.deepEqual(result, mentionsParser.getUserMentions('#general.'));
 			});
+
 			it.skip('should return without the "_" from "#general_"', () => {
-				assert.deepEqual(result, mention.getUserMentions('#general_'));
+				assert.deepEqual(result, mentionsParser.getUserMentions('#general_'));
 			});
+
 			it.skip('should return without the "-" from "#general."', () => {
-				assert.deepEqual(result, mention.getUserMentions('#general-'));
+				assert.deepEqual(result, mentionsParser.getUserMentions('#general-'));
 			});
 		});
+
 		describe('for two channels', () => {
 			const result = ['#general', '#other'];
 			[
@@ -155,124 +178,137 @@ describe('Mention', function() {
 				'hello #general #other, how are you?',
 			].forEach((text) => {
 				it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-					assert.deepEqual(result, mention.getChannelMentions(text));
+					assert.deepEqual(result, mentionsParser.getChannelMentions(text));
 				});
 			});
 		});
+
 		describe('for url with fragments', () => {
 			const result = [];
 			[
 				'http://localhost/#general',
 			].forEach((text) => {
 				it(`should return nothing from "${ text }"`, () => {
-					assert.deepEqual(result, mention.getChannelMentions(text));
+					assert.deepEqual(result, mentionsParser.getChannelMentions(text));
 				});
 			});
 		});
+
 		describe('for messages with url and channels', () => {
 			const result = ['#general'];
 			[
 				'http://localhost/#general #general',
 			].forEach((text) => {
 				it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-					assert.deepEqual(result, mention.getChannelMentions(text));
+					assert.deepEqual(result, mentionsParser.getChannelMentions(text));
 				});
 			});
 		});
 	});
-
 });
+
 const message = {
 	mentions: [{ username: 'rocket.cat', name: 'Rocket.Cat' }, { username: 'admin', name: 'Admin' }, { username: 'me', name: 'Me' }, { username: 'specialchars', name: '<img onerror=alert(hello)>' }],
 	channels: [{ name: 'general', _id: '42' }, { name: 'rocket.cat', _id: '169' }],
 };
+
 describe('replace methods', function() {
 	describe('replaceUsers', () => {
 		it('should render for @all', () => {
-			const result = mention.replaceUsers('@all', message, 'me');
-			assert.equal('<a class="mention-link mention-link-me mention-link-all">@all</a>', result);
+			const result = mentionsParser.replaceUsers('@all', message, 'me');
+			assert.equal(result, '<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
-		const str2 = '@rocket.cat';
-		it(`should render for ${ str2 }`, () => {
-			const result = mention.replaceUsers('@rocket.cat', message, 'me');
-			assert.equal(result, `<a class="mention-link " data-username="${ str2.replace('@', '') }" title="">${ str2 }</a>`);
+
+		const str2 = 'rocket.cat';
+
+		it(`should render for "@${ str2 }"`, () => {
+			const result = mentionsParser.replaceUsers(`@${ str2 }`, message, 'me');
+			assert.equal(result, `<a class="mention-link mention-link--user" data-username="${ str2 }" title="${ str2 }">${ str2 }</a>`);
 		});
 
 		it(`should render for "hello ${ str2 }"`, () => {
-			const result = mention.replaceUsers(`hello ${ str2 }`, message, 'me');
-			assert.equal(result, `hello <a class="mention-link " data-username="${ str2.replace('@', '') }" title="">${ str2 }</a>`);
+			const result = mentionsParser.replaceUsers(`hello @${ str2 }`, message, 'me');
+			assert.equal(result, `hello <a class="mention-link mention-link--user" data-username="${ str2 }" title="${ str2 }">${ str2 }</a>`);
 		});
+
 		it('should render for unknow/private user "hello @unknow"', () => {
-			const result = mention.replaceUsers('hello @unknow', message, 'me');
+			const result = mentionsParser.replaceUsers('hello @unknow', message, 'me');
 			assert.equal(result, 'hello @unknow');
 		});
+
 		it('should render for me', () => {
-			const result = mention.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link-me" data-username="me" title="">@me</a>');
+			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
+			assert.equal(result, 'hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">me</a>');
 		});
 	});
 
 	describe('replaceUsers (RealNames)', () => {
 		beforeEach(() => {
-			mention.useRealName = () => true;
+			mentionsParser.useRealName = () => true;
 		});
+
 		it('should render for @all', () => {
-			const result = mention.replaceUsers('@all', message, 'me');
-			assert.equal('<a class="mention-link mention-link-me mention-link-all">@all</a>', result);
+			const result = mentionsParser.replaceUsers('@all', message, 'me');
+			assert.equal(result, '<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
-		const str2 = '@rocket.cat';
+		const str2 = 'rocket.cat';
 		const str2Name = 'Rocket.Cat';
-		it(`should render for ${ str2 }`, () => {
-			const result = mention.replaceUsers('@rocket.cat', message, 'me');
-			assert.equal(result, `<a class="mention-link " data-username="${ str2.replace('@', '') }" title="${ str2.replace('@', '') }">${ str2Name }</a>`);
-		});
-		it(`should render for "hello ${ str2 }"`, () => {
-			const result = mention.replaceUsers(`hello ${ str2 }`, message, 'me');
-			assert.equal(result, `hello <a class="mention-link " data-username="${ str2.replace('@', '') }" title="${ str2.replace('@', '') }">${ str2Name }</a>`);
+
+		it(`should render for "@${ str2 }"`, () => {
+			const result = mentionsParser.replaceUsers(`@${ str2 }`, message, 'me');
+			assert.equal(result, `<a class="mention-link mention-link--user" data-username="${ str2 }" title="${ str2 }">${ str2Name }</a>`);
 		});
 
-		const specialchars = '@specialchars';
+		it(`should render for "hello @${ str2 }"`, () => {
+			const result = mentionsParser.replaceUsers(`hello @${ str2 }`, message, 'me');
+			assert.equal(result, `hello <a class="mention-link mention-link--user" data-username="${ str2 }" title="${ str2 }">${ str2Name }</a>`);
+		});
+
+		const specialchars = 'specialchars';
 		const specialcharsName = '&lt;img onerror=alert(hello)&gt;';
-		it(`should escape special characters in "hello ${ specialchars }"`, () => {
-			const result = mention.replaceUsers(`hello ${ specialchars }`, message, 'me');
-			assert.equal(result, `hello <a class="mention-link " data-username="${ specialchars.replace('@', '') }" title="${ specialchars.replace('@', '') }">${ specialcharsName }</a>`);
+
+		it(`should escape special characters in "hello @${ specialchars }"`, () => {
+			const result = mentionsParser.replaceUsers(`hello @${ specialchars }`, message, 'me');
+			assert.equal(result, `hello <a class="mention-link mention-link--user" data-username="${ specialchars }" title="${ specialchars }">${ specialcharsName }</a>`);
 		});
 
-		it(`should render for "hello<br>${ str2 } <br>"`, () => {
-			const result = mention.replaceUsers(`hello<br>${ str2 } <br>`, message, 'me');
-			const replaced = str2.replace('@', '');
-			const expected = `hello<br><a class="mention-link " data-username="${ replaced }" title="${ replaced }">${ str2Name }</a> <br>`;
-
-			assert.equal(result, expected);
+		it(`should render for "hello<br>@${ str2 } <br>"`, () => {
+			const result = mentionsParser.replaceUsers(`hello<br>@${ str2 } <br>`, message, 'me');
+			assert.equal(result, `hello<br><a class="mention-link mention-link--user" data-username="${ str2 }" title="${ str2 }">${ str2Name }</a> <br>`);
 		});
 
 		it('should render for unknow/private user "hello @unknow"', () => {
-			const result = mention.replaceUsers('hello @unknow', message, 'me');
+			const result = mentionsParser.replaceUsers('hello @unknow', message, 'me');
 			assert.equal(result, 'hello @unknow');
 		});
+
 		it('should render for me', () => {
-			const result = mention.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link-me" data-username="me" title="me">Me</a>');
+			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
+			assert.equal(result, 'hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">Me</a>');
 		});
 	});
 
 	describe('replaceChannels', () => {
 		it('should render for #general', () => {
-			const result = mention.replaceChannels('#general', message);
-			assert.equal('<a class="mention-link" data-channel="42">#general</a>', result);
+			const result = mentionsParser.replaceChannels('#general', message);
+			assert.equal('<a class="mention-link mention-link--room" data-channel="42">#general</a>', result);
 		});
+
 		const str2 = '#rocket.cat';
+
 		it(`should render for ${ str2 }`, () => {
-			const result = mention.replaceChannels(str2, message);
-			assert.equal(result, `<a class="mention-link" data-channel="169">${ str2 }</a>`);
+			const result = mentionsParser.replaceChannels(str2, message);
+			assert.equal(result, `<a class="mention-link mention-link--room" data-channel="169">${ str2 }</a>`);
 		});
+
 		it(`should render for "hello ${ str2 }"`, () => {
-			const result = mention.replaceChannels(`hello ${ str2 }`, message);
-			assert.equal(result, `hello <a class="mention-link" data-channel="169">${ str2 }</a>`);
+			const result = mentionsParser.replaceChannels(`hello ${ str2 }`, message);
+			assert.equal(result, `hello <a class="mention-link mention-link--room" data-channel="169">${ str2 }</a>`);
 		});
+
 		it('should render for unknow/private channel "hello #unknow"', () => {
-			const result = mention.replaceChannels('hello #unknow', message);
+			const result = mentionsParser.replaceChannels('hello #unknow', message);
 			assert.equal(result, 'hello #unknow');
 		});
 	});
@@ -280,49 +316,56 @@ describe('replace methods', function() {
 	describe('parse all', () => {
 		it('should render for #general', () => {
 			message.html = '#general';
-			const result = mention.parse(message, 'me');
-			assert.equal('<a class="mention-link" data-channel="42">#general</a>', result.html);
+			const result = mentionsParser.parse(message, 'me');
+			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
+
 		it('should render for "#general and @rocket.cat', () => {
 			message.html = '#general and @rocket.cat';
-			const result = mention.parse(message, 'me');
-			assert.equal('<a class="mention-link" data-channel="42">#general</a> and <a class="mention-link " data-username="rocket.cat" title="">@rocket.cat</a>', result.html);
+			const result = mentionsParser.parse(message, 'me');
+			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a> and <a class="mention-link mention-link--user" data-username="rocket.cat" title="rocket.cat">rocket.cat</a>');
 		});
+
 		it('should render for "', () => {
 			message.html = '';
-			const result = mention.parse(message, 'me');
-			assert.equal('', result.html);
+			const result = mentionsParser.parse(message, 'me');
+			assert.equal(result.html, '');
 		});
+
 		it('should render for "simple text', () => {
 			message.html = 'simple text';
-			const result = mention.parse(message, 'me');
-			assert.equal('simple text', result.html);
+			const result = mentionsParser.parse(message, 'me');
+			assert.equal(result.html, 'simple text');
 		});
 	});
 
 	describe('parse all (RealNames)', () => {
 		beforeEach(() => {
-			mention.useRealName = () => true;
+			mentionsParser.useRealName = () => true;
 		});
+
 		it('should render for #general', () => {
 			message.html = '#general';
-			const result = mention.parse(message, 'me');
-			assert.equal('<a class="mention-link" data-channel="42">#general</a>', result.html);
+			const result = mentionsParser.parse(message, 'me');
+			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
+
 		it('should render for "#general and @rocket.cat', () => {
 			message.html = '#general and @rocket.cat';
-			const result = mention.parse(message, 'me');
-			assert.equal('<a class="mention-link" data-channel="42">#general</a> and <a class="mention-link " data-username="rocket.cat" title="rocket.cat">Rocket.Cat</a>', result.html);
+			const result = mentionsParser.parse(message, 'me');
+			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a> and <a class="mention-link mention-link--user" data-username="rocket.cat" title="rocket.cat">Rocket.Cat</a>');
 		});
+
 		it('should render for "', () => {
 			message.html = '';
-			const result = mention.parse(message, 'me');
-			assert.equal('', result.html);
+			const result = mentionsParser.parse(message, 'me');
+			assert.equal(result.html, '');
 		});
+
 		it('should render for "simple text', () => {
 			message.html = 'simple text';
-			const result = mention.parse(message, 'me');
-			assert.equal('simple text', result.html);
+			const result = mentionsParser.parse(message, 'me');
+			assert.equal(result.html, 'simple text');
 		});
 	});
 });

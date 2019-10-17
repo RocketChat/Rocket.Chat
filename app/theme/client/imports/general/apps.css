@@ -24,10 +24,6 @@
 		}
 	}
 
-	&-marketplace {
-		padding: 0 24px;
-	}
-
 	&-details {
 		display: flex;
 

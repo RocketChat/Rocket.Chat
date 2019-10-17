@@ -1,11 +1,13 @@
+import http from 'http';
+import URL from 'url';
+
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+
 import { Logger } from '../../../logger';
 import { isDocker } from '../../../utils';
-import http from 'http';
-import URL from 'url';
 
 const logger = new Logger('UploadProxy');
 

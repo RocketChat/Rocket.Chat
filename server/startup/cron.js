@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Logger } from '../../app/logger';
-import { getWorkspaceAccessToken } from '../../app/cloud';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+
+import { Logger } from '../../app/logger';
+import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics';
 import { settings } from '../../app/settings';
 

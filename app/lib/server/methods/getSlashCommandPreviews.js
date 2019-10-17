@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { slashCommands } from '../../../utils';
 
 Meteor.methods({

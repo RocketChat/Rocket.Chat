@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
-import { Subscriptions, Rooms } from '../../../models';
-import { settings } from '../../../settings';
+
+import { WEB_RTC_EVENTS } from '../../../webrtc';
+import { Subscriptions, Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
@@ -175,9 +177,10 @@ const notifications = new Notifications();
 notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
 	const [roomId, e] = eventName.split('/');
 
-	if (e === 'webrtc') {
+	if (isNaN(e) ? e === WEB_RTC_EVENTS.WEB_RTC : parseFloat(e) === WEB_RTC_EVENTS.WEB_RTC) {
 		return true;
 	}
+
 	if (e === 'typing') {
 		const key = settings.get('UI_Use_Real_Name') ? 'name' : 'username';
 		// typing from livechat widget

@@ -1,26 +1,22 @@
 import _ from 'underscore';
+import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { PinnedMessage } from '../lib/PinnedMessage';
+
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { APIClient } from '../../../utils/client';
+import { Messages } from '../../../models/client';
+
+const LIMIT_DEFAULT = 50;
 
 Template.pinnedMessages.helpers({
 	hasMessages() {
-		return PinnedMessage.find({
-			rid: this.rid,
-		}, {
-			sort: {
-				ts: -1,
-			},
-		}).count() > 0;
+		return Template.instance().messages.find().count();
 	},
 	messages() {
-		return PinnedMessage.find({
-			rid: this.rid,
-		}, {
-			sort: {
-				ts: -1,
-			},
-		});
+		const instance = Template.instance();
+		return instance.messages.find({}, { limit: instance.limit.get(), sort: { ts: -1 } });
 	},
 	message() {
 		return _.extend(this, { customClass: 'pinned', actionContext: 'pinned' });
@@ -28,21 +24,56 @@ Template.pinnedMessages.helpers({
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
+	messageContext,
 });
 
 Template.pinnedMessages.onCreated(function() {
+	this.pinnedMessages = new ReactiveVar([]);
 	this.hasMore = new ReactiveVar(true);
-	this.limit = new ReactiveVar(50);
-	return this.autorun(() => {
-		const data = Template.currentData();
-		return this.subscribe('pinnedMessages', data.rid, this.limit.get(), () => {
-			if (PinnedMessage.find({
-				rid: data.rid,
-			}).count() < this.limit.get()) {
-				return this.hasMore.set(false);
-			}
+	this.limit = new ReactiveVar(LIMIT_DEFAULT);
+	this.rid = this.data.rid;
+	this.messages = new Mongo.Collection(null);
+
+	this.autorun(() => {
+		const query = {
+			t: { $ne: 'rm' },
+			_hidden: { $ne: true },
+			pinned: true,
+			rid: this.data.rid,
+			_updatedAt: {
+				$gt: new Date(),
+			},
+		};
+
+		this.cursor && this.cursor.stop();
+
+		this.limit.set(LIMIT_DEFAULT);
+
+		this.cursor = Messages.find(query).observe({
+			added: ({ _id, ...message }) => {
+				this.messages.upsert({ _id }, message);
+			},
+			changed: ({ _id, ...message }) => {
+				this.messages.upsert({ _id }, message);
+			},
+			removed: ({ _id }) => {
+				this.messages.remove({ _id });
+			},
 		});
 	});
+
+	this.autorun(async () => {
+		const limit = this.limit.get();
+		const { messages, total } = await APIClient.v1.get(`chat.getPinnedMessages?roomId=${ this.rid }&count=${ limit }`);
+
+		upsertMessageBulk({ msgs: messages }, this.messages);
+
+		this.hasMore.set(total > limit);
+	});
+});
+
+Template.mentionsFlexTab.onDestroyed(function() {
+	this.cursor.stop();
 });
 
 Template.pinnedMessages.events({

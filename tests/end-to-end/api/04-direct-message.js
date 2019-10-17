@@ -7,8 +7,8 @@ import {
 	apiUsername,
 	apiEmail,
 } from '../../data/api-data.js';
-import { password } from '../../data/user.js';
-import { adminUsername } from '../../data/user';
+import { password, adminUsername } from '../../data/user.js';
+
 
 describe('[Direct Messages]', function() {
 	this.retries(0);
@@ -33,19 +33,37 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
-	it('/im.setTopic', (done) => {
-		request.post(api('im.setTopic'))
-			.set(credentials)
-			.send({
-				roomId: directMessage._id,
-				topic: 'a direct message with rocket.cat',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
+	describe('/im.setTopic', () => {
+		it('should set the topic of the DM with a string', (done) => {
+			request.post(api('im.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: directMessage._id,
+					topic: 'a direct message with rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', 'a direct message with rocket.cat');
+				})
+				.end(done);
+		});
+		it('should set the topic of DM with an empty string(remove the topic)', (done) => {
+			request.post(api('im.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: directMessage._id,
+					topic: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', '');
+				})
+				.end(done);
+		});
 	});
 
 	describe('Testing DM info', () => {

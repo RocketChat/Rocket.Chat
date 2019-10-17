@@ -1,4 +1,5 @@
 import { Session } from 'meteor/session';
+
 import { TabBar } from '../../ui-utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';
@@ -9,7 +10,7 @@ TabBar.addButton({
 	i18nTitle: 'Search_Messages',
 	icon: 'magnifier',
 	template: 'RocketSearch',
-	order: 1,
+	order: 2,
 });
 
 TabBar.addButton({

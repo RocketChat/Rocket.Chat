@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Livechat } from 'meteor/rocketchat:livechat';
+
 import { MessageTypes } from '../../ui-utils';
 import { actionLinks } from '../../action-links';
 import { Notifications } from '../../notifications';
-import { Messages, Rooms } from '../../models';
+import { Messages, LivechatRooms } from '../../models';
 import { settings } from '../../settings';
-import { Livechat } from 'meteor/rocketchat:livechat';
 
 MessageTypes.registerType({
 	id: 'livechat_navigation_history',
@@ -44,7 +45,7 @@ actionLinks.register('denyLivechatCall', function(message/* , params*/) {
 
 		Livechat.closeRoom({
 			user,
-			room: Rooms.findOneById(message.rid),
+			room: LivechatRooms.findOneById(message.rid),
 			comment: TAPi18n.__('Videocall_declined', { lng: language }),
 		});
 		Meteor.defer(() => {

@@ -1,16 +1,18 @@
+import url from 'url';
+
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
-import { settings } from '../../settings';
 import { RoutePolicy } from 'meteor/routepolicy';
-import { Rooms, Subscriptions, CredentialTokens } from '../../models';
-import { _setRealName } from '../../lib';
-import { logger } from './cas_rocketchat';
 import _ from 'underscore';
 import fiber from 'fibers';
-import url from 'url';
 import CAS from 'cas';
+
+import { logger } from './cas_rocketchat';
+import { settings } from '../../settings';
+import { Rooms, Subscriptions, CredentialTokens } from '../../models';
+import { _setRealName } from '../../lib';
 
 RoutePolicy.declare('/_cas/', 'network');
 
@@ -21,7 +23,6 @@ const closePopup = function(res) {
 };
 
 const casTicket = function(req, token, callback) {
-
 	// get configuration
 	if (!settings.get('CAS_enabled')) {
 		logger.error('Got ticket validation request, but CAS is not enabled');
@@ -61,8 +62,6 @@ const casTicket = function(req, token, callback) {
 
 		callback();
 	}));
-
-	return;
 };
 
 const middleware = function(req, res, next) {
@@ -90,7 +89,6 @@ const middleware = function(req, res, next) {
 		casTicket(req, credentialToken, function() {
 			closePopup(res);
 		});
-
 	} catch (err) {
 		logger.error(`Unexpected error : ${ err.message }`);
 		closePopup(res);
@@ -112,7 +110,6 @@ WebApp.connectHandlers.use(function(req, res, next) {
  *
  */
 Accounts.registerLoginHandler(function(options) {
-
 	if (!options.cas) {
 		return undefined;
 	}
@@ -127,6 +124,7 @@ Accounts.registerLoginHandler(function(options) {
 	const syncUserDataFieldMap = settings.get('CAS_Sync_User_Data_FieldMap').trim();
 	const cas_version = parseFloat(settings.get('CAS_version'));
 	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
+	const trustUsername = settings.get('CAS_trust_username');
 
 	// We have these
 	const ext_attrs = {
@@ -153,7 +151,6 @@ Accounts.registerLoginHandler(function(options) {
 
 	// Source internal attributes
 	if (syncUserDataFieldMap) {
-
 		// Our mapping table: key(int_attr) -> value(ext_attr)
 		// Spoken: Source this internal attribute from these external attributes
 		const attr_map = JSON.parse(syncUserDataFieldMap);
@@ -183,11 +180,13 @@ Accounts.registerLoginHandler(function(options) {
 	if (!user) {
 		// If that user was not found, check if there's any CAS user that is currently using that username on Rocket.Chat
 		// With this, CAS login will continue to work if the user is renamed on both sides and also if the user is renamed only on Rocket.Chat.
-		const username = new RegExp(`^${ result.username }$`, 'i');
-		user = Meteor.users.findOne({ 'services.cas.external_id': { $exists: true }, username });
-		if (user) {
-			// Update the user's external_id to reflect this new username.
-			Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
+		if (trustUsername) {
+			const username = new RegExp(`^${ result.username }$`, 'i');
+			user = Meteor.users.findOne({ 'services.cas.external_id': { $exists: true }, username });
+			if (user) {
+				// Update the user's external_id to reflect this new username.
+				Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
+			}
 		}
 	}
 
@@ -206,7 +205,6 @@ Accounts.registerLoginHandler(function(options) {
 			}
 		}
 	} else {
-
 		// Define new user
 		const newUser = {
 			username: result.username,
@@ -267,7 +265,6 @@ Accounts.registerLoginHandler(function(options) {
 				}
 			});
 		}
-
 	}
 
 	return { userId: user._id };

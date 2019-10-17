@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Accounts } from 'meteor/accounts-base';
+
 import { hasPermission } from '../../../../../app/authorization';
 import { Users } from '../../../../../app/models';
 

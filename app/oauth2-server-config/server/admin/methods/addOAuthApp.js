@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import _ from 'underscore';
+
 import { hasPermission } from '../../../../authorization';
 import { Users, OAuthApps } from '../../../../models';
-import _ from 'underscore';
+import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({
 	addOAuthApp(application) {
@@ -18,9 +20,16 @@ Meteor.methods({
 		if (!_.isBoolean(application.active)) {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', { method: 'addOAuthApp' });
 		}
+
+		application.redirectUri = parseUriList(application.redirectUri);
+
+		if (application.redirectUri.length === 0) {
+			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', { method: 'addOAuthApp' });
+		}
+
 		application.clientId = Random.id();
 		application.clientSecret = Random.secret();
-		application._createdAt = new Date;
+		application._createdAt = new Date();
 		application._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 		application._id = OAuthApps.insert(application);
 		return application;

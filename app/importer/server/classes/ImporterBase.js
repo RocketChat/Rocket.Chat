@@ -1,20 +1,22 @@
+import http from 'http';
+import fs from 'fs';
+import https from 'https';
+
 import { Meteor } from 'meteor/meteor';
+import AdmZip from 'adm-zip';
+import getFileType from 'file-type';
+
 import { Progress } from './ImporterProgress';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Selection } from './ImporterSelection';
+import { ImporterWebsocket } from './ImporterWebsocket';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
-import { ImporterWebsocket } from './ImporterWebsocket';
 import { Settings } from '../../../models';
 import { Logger } from '../../../logger';
 import { FileUpload } from '../../../file-upload';
 import { sendMessage } from '../../../lib';
-import http from 'http';
-import fs from 'fs';
-import https from 'https';
-import AdmZip from 'adm-zip';
-import getFileType from 'file-type';
 
 /**
  * Base class for all of the importers.
@@ -58,11 +60,11 @@ export class Base {
 	 */
 	static getBSONSafeArraysFromAnArray(theArray) {
 		const BSONSize = Base.getBSONSize(theArray);
-		const maxSize = Math.floor(theArray.length / (Math.ceil(BSONSize / Base.getMaxBSONSize())));
+		const maxSize = Math.floor(theArray.length / Math.ceil(BSONSize / Base.getMaxBSONSize()));
 		const safeArrays = [];
 		let i = 0;
 		while (i < theArray.length) {
-			safeArrays.push(theArray.slice(i, (i += maxSize)));
+			safeArrays.push(theArray.slice(i, i += maxSize));
 		}
 		return safeArrays;
 	}

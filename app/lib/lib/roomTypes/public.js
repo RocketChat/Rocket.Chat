@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+
 import { openRoom } from '../../../ui-utils';
 import { ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -116,5 +118,11 @@ export class PublicRoomType extends RoomTypeConfig {
 			default:
 				return '';
 		}
+	}
+
+	getAvatarPath(roomData) {
+		// TODO: change to always get avatar from _id when rooms have avatars
+
+		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
 	}
 }

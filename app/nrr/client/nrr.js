@@ -7,27 +7,23 @@ import { HTML } from 'meteor/htmljs';
 import { Spacebars } from 'meteor/spacebars';
 import { Tracker } from 'meteor/tracker';
 
-Blaze.toHTMLWithDataNonReactive = function(content, data) {
-	const makeCursorReactive = function(obj) {
-		if (obj instanceof Meteor.Collection.Cursor) {
-			return obj._depend({
-				added: true,
-				removed: true,
-				changed: true,
-			});
-		}
-	};
+const makeCursorReactive = function(obj) {
+	if (obj instanceof Meteor.Collection.Cursor) {
+		return obj._depend({
+			added: true,
+			removed: true,
+			changed: true,
+		});
+	}
+};
 
+Blaze.toHTMLWithDataNonReactive = function(content, data) {
 	makeCursorReactive(data);
 
 	if (data instanceof Spacebars.kw && Object.keys(data.hash).length > 0) {
-		Object.keys(data.hash).forEach((key) => {
-			makeCursorReactive(data.hash[key]);
-		});
-
-		data = data.hash;
+		Object.entries(data.hash).forEach(([, value]) => makeCursorReactive(value));
+		return Tracker.nonreactive(() => Blaze.toHTMLWithData(content, data.hash));
 	}
-
 	return Tracker.nonreactive(() => Blaze.toHTMLWithData(content, data));
 };
 

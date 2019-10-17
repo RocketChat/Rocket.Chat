@@ -3,8 +3,9 @@ import { Match } from 'meteor/check';
 import { Blaze } from 'meteor/blaze';
 import { Deps } from 'meteor/deps';
 import _ from 'underscore';
-import AutoCompleteRecords from './collection';
 import { getCaretCoordinates } from 'meteor/dandv:caret-position';
+
+import AutoCompleteRecords from './collection';
 
 const isServerSearch = function(rule) {
 	return _.isString(rule.collection);
@@ -29,10 +30,9 @@ const getRegExp = function(rule) {
 	if (!isWholeField(rule)) {
 		// Expressions for the range from the last word break to the current cursor position
 		return new RegExp(`(^|\\b|\\s)${ rule.token }([\\w.]*)$`);
-	} else {
-		// Whole-field behavior - word characters or spaces
-		return new RegExp('(^)(.*)$');
 	}
+	// Whole-field behavior - word characters or spaces
+	return new RegExp('(^)(.*)$');
 };
 
 const getFindParams = function(rule, filter, limit) {
@@ -101,9 +101,9 @@ export default class AutoComplete {
 		this.loaded = true;
 
 		// Reactive dependencies for current matching rule and filter
-		this.ruleDep = new Deps.Dependency;
-		this.filterDep = new Deps.Dependency;
-		this.loadingDep = new Deps.Dependency;
+		this.ruleDep = new Deps.Dependency();
+		this.filterDep = new Deps.Dependency();
+		this.loadingDep = new Deps.Dependency();
 
 		// Autosubscribe to the record set published by the server based on the filter
 		// This will tear down server subscriptions when they are no longer being used.
@@ -145,9 +145,8 @@ export default class AutoComplete {
 		this.ruleDep.depend();
 		if (this.matched >= 0) {
 			return this.rules[this.matched];
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	setMatchedRule(i) {
@@ -183,41 +182,51 @@ export default class AutoComplete {
 		if (!this.$element) {
 			return; // Don't try to do this while loading
 		}
-		const startpos = this.element.selectionStart;
-		const val = this.getText().substring(0, startpos);
 
-		/*
-      Matching on multiple expressions.
-      We always go from a matched state to an unmatched one
-      before going to a different matched one.
-     */
-		let i = 0;
-		let breakLoop = false;
-		while (i < this.expressions.length) {
-			const matches = val.match(this.expressions[i]);
-
-			// matching -> not matching
-			if (!matches && this.matched === i) {
-				this.setMatchedRule(-1);
-				breakLoop = true;
-			}
-
-			// not matching -> matching
-			if (matches && this.matched === -1) {
-				this.setMatchedRule(i);
-				breakLoop = true;
-			}
-
-			// Did filter change?
-			if (matches && this.filter !== matches[2]) {
-				this.setFilter(matches[2]);
-				breakLoop = true;
-			}
-			if (breakLoop) {
-				break;
-			}
-			i++;
+		if (this._timeoutHandler) {
+			clearTimeout(this._timeoutHandler);
 		}
+
+		this._timeoutHandler = setTimeout(() => {
+			this._timeoutHandler = 0;
+
+
+			const startpos = this.element.selectionStart;
+			const val = this.getText().substring(0, startpos);
+
+			/*
+				Matching on multiple expressions.
+				We always go from a matched state to an unmatched one
+				before going to a different matched one.
+			 */
+			let i = 0;
+			let breakLoop = false;
+			while (i < this.expressions.length) {
+				const matches = val.match(this.expressions[i]);
+
+				// matching -> not matching
+				if (!matches && this.matched === i) {
+					this.setMatchedRule(-1);
+					breakLoop = true;
+				}
+
+				// not matching -> matching
+				if (matches && this.matched === -1) {
+					this.setMatchedRule(i);
+					breakLoop = true;
+				}
+
+				// Did filter change?
+				if (matches && this.filter !== matches[2]) {
+					this.setFilter(matches[2]);
+					breakLoop = true;
+				}
+				if (breakLoop) {
+					break;
+				}
+				i++;
+			}
+		}, 300);
 	}
 
 	onKeyDown(e) {
@@ -320,7 +329,6 @@ export default class AutoComplete {
 		const doc = Blaze.getData(node);
 		if (!doc) {
 			return false; // Don't select if nothing matched
-
 		}
 		this.processSelection(doc, this.rules[this.matched]);
 		return true;
@@ -332,7 +340,6 @@ export default class AutoComplete {
 			this.replace(replacement, rule);
 			this.hideList();
 		} else {
-
 			// Empty string or doesn't exist?
 			// Single-field replacement: replace whole field
 			this.setText(replacement);
@@ -354,7 +361,7 @@ export default class AutoComplete {
 		let val = fullStuff.substring(0, startpos);
 		val = val.replace(this.expressions[this.matched], `$1${ this.rules[this.matched].token }${ replacement }`);
 		const posfix = fullStuff.substring(startpos, fullStuff.length);
-		const separator = (posfix.match(/^\s/) ? '' : ' ');
+		const separator = posfix.match(/^\s/) ? '' : ' ';
 		const finalFight = val + separator + posfix;
 		this.setText(finalFight);
 		const newPosition = val.length + 1;
@@ -379,8 +386,8 @@ export default class AutoComplete {
 
 
 	/*
-    Rendering functions
-   */
+		Rendering functions
+	 */
 
 	positionContainer() {
 		// First render; Pick the first item and set css whenever list gets shown
@@ -393,6 +400,10 @@ export default class AutoComplete {
 		}
 
 		const position = element.position();
+		if (!position) {
+			return;
+		}
+
 		const rule = this.matchedRule();
 		const offset = getCaretCoordinates(this.element, this.element.selectionStart);
 
@@ -402,7 +413,6 @@ export default class AutoComplete {
 			pos.left = position.left;
 			if (rule.doNotChangeWidth !== false) {
 				pos.width = element.outerWidth(); // position.offsetWidth
-
 			}
 		} else { // Normal positioning, at token word
 			pos = { left: position.left + offset.left };
@@ -462,5 +472,4 @@ export default class AutoComplete {
 	currentTemplate() {
 		return this.rules[this.matched].template;
 	}
-
 }

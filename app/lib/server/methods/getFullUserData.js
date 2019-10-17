@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { getFullUserData } from '../functions';
 
 Meteor.methods({

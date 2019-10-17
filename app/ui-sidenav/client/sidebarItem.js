@@ -2,19 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { t, getUserPreference, roomTypes } from '../../utils';
-import moment from 'moment';
-import { popover, renderMessageBody } from '../../ui-utils';
+import { popover, renderMessageBody, menu } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
-import { menu } from '../../ui-utils';
+import { timeAgo } from '../../lib/client/lib/formatDate';
 
 Template.sidebarItem.helpers({
-	or(...args) {
-		args.pop();
-		return args.some((arg) => arg);
-	},
 	streaming() {
 		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},
@@ -36,18 +32,31 @@ Template.sidebarItem.helpers({
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
 	},
+	showUnread() {
+		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
+	},
+	badgeClass() {
+		const { t, unread, userMentions, groupMentions } = this;
+
+		const badges = ['badge'];
+
+		if (unread) {
+			badges.push('badge--unread');
+			if (t === 'd') {
+				badges.push('badge--dm');
+			}
+		}
+
+		if (userMentions) {
+			badges.push('badge--user-mentions');
+		} else if (groupMentions) {
+			badges.push('badge--group-mentions');
+		}
+
+		return badges.join(' ');
+	},
 });
 
-function timeAgo(time) {
-	const now = new Date();
-	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-
-	return (
-		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
-		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
-		moment(time).format('L')
-	);
-}
 function setLastMessageTs(instance, ts) {
 	if (instance.timeAgoInterval) {
 		clearInterval(instance.timeAgoInterval);
@@ -64,9 +73,6 @@ Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
 	this.lastMessageTs = new ReactiveVar();
-	this.timeAgoInterval;
-
-	// console.log('sidebarItem.onCreated');
 
 	this.autorun(() => {
 		const currentData = Template.currentData();
@@ -76,18 +82,20 @@ Template.sidebarItem.onCreated(function() {
 		}
 
 		if (!currentData.lastMessage._id) {
-			return this.renderedMessage = currentData.lastMessage.msg;
+			this.renderedMessage = currentData.lastMessage.msg;
+			return;
 		}
 
 		setLastMessageTs(this, currentData.lastMessage.ts);
 
 		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
-			return this.renderedMessage = '******';
+			this.renderedMessage = '******';
+			return;
 		}
 
 		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
 		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
-		const sender = this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
+		const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
 		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
@@ -102,6 +110,7 @@ Template.sidebarItem.events({
 		return menu.close();
 	},
 	'click .sidebar-item__menu'(e) {
+		e.stopPropagation(); // to not close the menu
 		e.preventDefault();
 
 		const canLeave = () => {
@@ -112,7 +121,7 @@ Template.sidebarItem.events({
 			if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
 			if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
 
-			return !(((roomData.cl != null) && !roomData.cl) || (['d', 'l'].includes(roomData.t)));
+			return !(((roomData.cl != null) && !roomData.cl) || ['d', 'l'].includes(roomData.t));
 		};
 
 		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
@@ -134,14 +143,14 @@ Template.sidebarItem.events({
 		if (this.alert) {
 			items.push({
 				icon: 'flag',
-				name: t('Mark_as_read'),
+				name: t('Mark_read'),
 				type: 'sidebar-item',
 				id: 'read',
 			});
 		} else {
 			items.push({
 				icon: 'flag',
-				name: t('Mark_as_unread'),
+				name: t('Mark_unread'),
 				type: 'sidebar-item',
 				id: 'unread',
 			});

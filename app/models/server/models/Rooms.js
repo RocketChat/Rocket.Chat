@@ -1,26 +1,24 @@
-import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
-import Settings from './Settings';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 export class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 
-		this.tryEnsureIndex({ name: 1 }, { unique: 1, sparse: 1 });
+		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
 		this.tryEnsureIndex({ default: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
-		this.tryEnsureIndex({ open: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ departmentId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ ts: 1 });
-
 		// discussions
-		this.tryEnsureIndex({ prid: 1 });
+		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
+		// Livechat - statistics
+		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -35,346 +33,6 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	updateSurveyFeedbackById(_id, surveyFeedback) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				surveyFeedback,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	updateLivechatDataByToken(token, key, value, overwrite = true) {
-		const query = {
-			'v.token': token,
-			open: true,
-		};
-
-		if (!overwrite) {
-			const room = this.findOne(query, { fields: { livechatData: 1 } });
-			if (room.livechatData && typeof room.livechatData[key] !== 'undefined') {
-				return true;
-			}
-		}
-
-		const update = {
-			$set: {
-				[`livechatData.${ key }`]: value,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	findLivechat(filter = {}, offset = 0, limit = 20) {
-		const query = _.extend(filter, {
-			t: 'l',
-		});
-
-		return this.find(query, { sort: { ts: - 1 }, offset, limit });
-	}
-
-	findLivechatById(_id, fields) {
-		const options = {};
-
-		if (fields) {
-			options.fields = fields;
-		}
-
-		const query = {
-			t: 'l',
-			_id,
-		};
-
-		return this.find(query, options);
-	}
-
-	findLivechatByIdAndVisitorToken(_id, visitorToken, fields) {
-		const options = {};
-
-		if (fields) {
-			options.fields = fields;
-		}
-
-		const query = {
-			t: 'l',
-			_id,
-			'v.token': visitorToken,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findLivechatByVisitorToken(visitorToken, fields) {
-		const options = {};
-
-		if (fields) {
-			options.fields = fields;
-		}
-
-		const query = {
-			t: 'l',
-			'v.token': visitorToken,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	updateLivechatRoomCount = function() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
-		const query = {
-			_id: 'Livechat_Room_Count',
-		};
-
-		const update = {
-			$inc: {
-				value: 1,
-			},
-		};
-
-		const livechatCount = findAndModify(query, null, update);
-
-		return livechatCount.value.value;
-	}
-
-	findOpenByVisitorToken(visitorToken, options) {
-		const query = {
-			open: true,
-			'v.token': visitorToken,
-		};
-
-		return this.find(query, options);
-	}
-
-	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
-		const query = {
-			open: true,
-			'v.token': visitorToken,
-			departmentId,
-		};
-
-		return this.find(query, options);
-	}
-
-	findByVisitorToken(visitorToken) {
-		const query = {
-			'v.token': visitorToken,
-		};
-
-		return this.find(query);
-	}
-
-	findByVisitorId(visitorId) {
-		const query = {
-			'v._id': visitorId,
-		};
-
-		return this.find(query);
-	}
-
-	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
-		const query = {
-			_id: roomId,
-			open: true,
-			'v.token': visitorToken,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	setResponseByRoomId(roomId, response) {
-		return this.update({
-			_id: roomId,
-		}, {
-			$set: {
-				responseBy: {
-					_id: response.user._id,
-					username: response.user.username,
-				},
-			},
-			$unset: {
-				waitingResponse: 1,
-			},
-		});
-	}
-
-	saveAnalyticsDataByRoomId(room, message, analyticsData) {
-		const update = {
-			$set: {},
-		};
-
-		if (analyticsData) {
-			update.$set['metrics.response.avg'] = analyticsData.avgResponseTime;
-
-			update.$inc = {};
-			update.$inc['metrics.response.total'] = 1;
-			update.$inc['metrics.response.tt'] = analyticsData.responseTime;
-			update.$inc['metrics.reaction.tt'] = analyticsData.reactionTime;
-		}
-
-		if (analyticsData && analyticsData.firstResponseTime) {
-			update.$set['metrics.response.fd'] = analyticsData.firstResponseDate;
-			update.$set['metrics.response.ft'] = analyticsData.firstResponseTime;
-			update.$set['metrics.reaction.fd'] = analyticsData.firstReactionDate;
-			update.$set['metrics.reaction.ft'] = analyticsData.firstReactionTime;
-		}
-
-		// livechat analytics : update last message timestamps
-		const visitorLastQuery = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;
-		const agentLastReply = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
-
-		if (message.token) {	// update visitor timestamp, only if its new inquiry and not continuing message
-			if (agentLastReply >= visitorLastQuery) {		// if first query, not continuing query from visitor
-				update.$set['metrics.v.lq'] = message.ts;
-			}
-		} else if (visitorLastQuery > agentLastReply) {		// update agent timestamp, if first response, not continuing
-			update.$set['metrics.servedBy.lr'] = message.ts;
-		}
-
-		return this.update({
-			_id: room._id,
-		}, update);
-	}
-
-	getTotalConversationsBetweenDate(t, date) {
-		const query = {
-			t,
-			ts: {
-				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-				$lt: new Date(date.lt),	// ISODate, ts < date.lt
-			},
-		};
-
-		return this.find(query).count();
-	}
-
-	getAnalyticsMetricsBetweenDate(t, date) {
-		const query = {
-			t,
-			ts: {
-				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-				$lt: new Date(date.lt),	// ISODate, ts < date.lt
-			},
-		};
-
-		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
-	}
-
-	closeByRoomId(roomId, closeInfo) {
-		return this.update({
-			_id: roomId,
-		}, {
-			$set: {
-				closer: closeInfo.closer,
-				closedBy: closeInfo.closedBy,
-				closedAt: closeInfo.closedAt,
-				'metrics.chatDuration': closeInfo.chatDuration,
-				'v.status': 'offline',
-			},
-			$unset: {
-				open: 1,
-			},
-		});
-	}
-
-	findOpenByAgent(userId) {
-		const query = {
-			open: true,
-			'servedBy._id': userId,
-		};
-
-		return this.find(query);
-	}
-
-	changeAgentByRoomId(roomId, newAgent) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$set: {
-				servedBy: {
-					_id: newAgent.agentId,
-					username: newAgent.username,
-					ts: new Date(),
-				},
-			},
-		};
-
-		if (newAgent.ts) {
-			update.$set.servedBy.ts = newAgent.ts;
-		}
-
-		this.update(query, update);
-	}
-
-	changeDepartmentIdByRoomId(roomId, departmentId) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$set: {
-				departmentId,
-			},
-		};
-
-		this.update(query, update);
-	}
-
-	saveCRMDataByRoomId(roomId, crmData) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$set: {
-				crmData,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	updateVisitorStatus(token, status) {
-		const query = {
-			'v.token': token,
-			open: true,
-		};
-
-		const update = {
-			$set: {
-				'v.status': status,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	removeAgentByRoomId(roomId) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$unset: {
-				servedBy: 1,
-			},
-		};
-
-		this.update(query, update);
-	}
-
-	removeByVisitorToken(token) {
-		const query = {
-			'v.token': token,
-		};
-
-		this.remove(query);
-	}
 
 	setJitsiTimeout(_id, time) {
 		const query = {
@@ -423,7 +81,7 @@ export class Rooms extends Base {
 	}
 
 	setReactionsInLastMessage(roomId, lastMessage) {
-		return this.update({ _id: roomId }, { $set: { lastMessage } });
+		return this.update({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
 	}
 
 	unsetReactionsInLastMessage(roomId) {
@@ -460,7 +118,7 @@ export class Rooms extends Base {
 			$set: {
 				'lastMessage.msg': msg,
 				'lastMessage.snippeted': snippeted,
-				'lastMessage.snippetedAt': snippetedAt || new Date,
+				'lastMessage.snippetedAt': snippetedAt || new Date(),
 				'lastMessage.snippetedBy': snippetedBy,
 				'lastMessage.snippetName': snippetName,
 			},
@@ -475,12 +133,22 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				'lastMessage.pinned': pinned,
-				'lastMessage.pinnedAt': pinnedAt || new Date,
+				'lastMessage.pinnedAt': pinnedAt || new Date(),
 				'lastMessage.pinnedBy': pinnedBy,
 			},
 		};
 
 		return this.update(query, update);
+	}
+
+	setLastMessageAsRead(roomId) {
+		return this.update({
+			_id: roomId,
+		}, {
+			$unset: {
+				'lastMessage.unread': 1,
+			},
+		});
 	}
 
 	setSentiment(roomId, sentiment) {
@@ -528,25 +196,8 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				ro: readOnly,
-				muted: [],
 			},
 		};
-		if (readOnly) {
-			Subscriptions.findByRoomIdWhenUsernameExists(_id, { fields: { 'u._id': 1, 'u.username': 1 } }).forEach(function({ u: user }) {
-				if (hasPermission(user._id, 'post-readonly')) {
-					return;
-				}
-				return update.$set.muted.push(user.username);
-			});
-		} else {
-			update.$unset = {
-				muted: '',
-			};
-		}
-
-		if (update.$set.muted.length === 0) {
-			delete update.$set.muted;
-		}
 
 		return this.update(query, update);
 	}
@@ -652,13 +303,13 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByTypes(types, options) {
+	findByTypes(types, discussion = false, options = {}) {
 		const query = {
 			t: {
 				$in: types,
 			},
+			prid: { $exists: discussion },
 		};
-
 		return this.find(query, options);
 	}
 
@@ -711,10 +362,11 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, options) {
+	findByNameContaining(name, discussion = false, options = {}) {
 		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
 
 		const query = {
+			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
 				{
@@ -723,17 +375,17 @@ export class Rooms extends Base {
 				},
 			],
 		};
-
 		return this.find(query, options);
 	}
 
-	findByNameContainingAndTypes(name, types, options) {
+	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
 		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
 
 		const query = {
 			t: {
 				$in: types,
 			},
+			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
 				{
@@ -742,7 +394,6 @@ export class Rooms extends Base {
 				},
 			],
 		};
-
 		return this.find(query, options);
 	}
 
@@ -1161,6 +812,9 @@ export class Rooms extends Base {
 			$addToSet: {
 				muted: username,
 			},
+			$pull: {
+				unmuted: username,
+			},
 		};
 
 		return this.update(query, update);
@@ -1172,6 +826,9 @@ export class Rooms extends Base {
 		const update = {
 			$pull: {
 				muted: username,
+			},
+			$addToSet: {
+				unmuted: username,
 			},
 		};
 
@@ -1269,43 +926,6 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setTopicAndTagsById(_id, topic, tags) {
-		const setData = {};
-		const unsetData = {};
-
-		if (topic != null) {
-			if (!_.isEmpty(s.trim(topic))) {
-				setData.topic = s.trim(topic);
-			} else {
-				unsetData.topic = 1;
-			}
-		}
-
-		if (tags != null) {
-			if (!_.isEmpty(s.trim(tags))) {
-				setData.tags = s.trim(tags).split(',').map((tag) => s.trim(tag));
-			} else {
-				unsetData.tags = 1;
-			}
-		}
-
-		const update = {};
-
-		if (!_.isEmpty(setData)) {
-			update.$set = setData;
-		}
-
-		if (!_.isEmpty(unsetData)) {
-			update.$unset = unsetData;
-		}
-
-		if (_.isEmpty(update)) {
-			return;
-		}
-
-		return this.update({ _id }, update);
-	}
-
 	// INSERT
 	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
@@ -1350,7 +970,6 @@ export class Rooms extends Base {
 		room._id = this.insert(room);
 		return room;
 	}
-
 
 	// REMOVE
 	removeById(_id) {
@@ -1397,6 +1016,10 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	countDiscussions() {
+		return this.find({ prid: { $exists: true } }).count();
 	}
 }
 

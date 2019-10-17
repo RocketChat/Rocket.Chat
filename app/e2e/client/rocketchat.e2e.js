@@ -4,12 +4,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Rooms, Subscriptions, Messages } from '../../models';
-import { promises } from '../../promises';
-import { settings } from '../../settings';
-import { Notifications } from '../../notifications';
-import { Layout, call, modal, alerts } from '../../ui-utils';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
 	Deferred,
@@ -25,6 +21,11 @@ import {
 	importRawKey,
 	deriveKey,
 } from './helper';
+import { Rooms, Subscriptions, Messages } from '../../models';
+import { promises } from '../../promises/client';
+import { settings } from '../../settings';
+import { Notifications } from '../../notifications';
+import { Layout, call, modal, alerts } from '../../ui-utils';
 
 import './events.js';
 import './accountEncryption.html';
@@ -103,8 +104,8 @@ class E2E {
 		}
 
 		this.started = true;
-		let public_key = localStorage.getItem('public_key');
-		let private_key = localStorage.getItem('private_key');
+		let public_key = Meteor._localStorage.getItem('public_key');
+		let private_key = Meteor._localStorage.getItem('private_key');
 
 		await this.loadKeysFromDB();
 
@@ -142,12 +143,12 @@ class E2E {
 		// TODO: Split in 2 methods to persist keys
 		if (!this.db_public_key || !this.db_private_key) {
 			await call('e2e.setUserPublicAndPivateKeys', {
-				public_key: localStorage.getItem('public_key'),
-				private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), this.createRandomPassword()),
+				public_key: Meteor._localStorage.getItem('public_key'),
+				private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), this.createRandomPassword()),
 			});
 		}
 
-		const randomPassword = localStorage.getItem('e2e.randomPassword');
+		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
 			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text', {
 				postProcess: 'sprintf',
@@ -173,7 +174,7 @@ class E2E {
 						if (!confirm) {
 							return;
 						}
-						localStorage.removeItem('e2e.randomPassword');
+						Meteor._localStorage.removeItem('e2e.randomPassword');
 						this.closeAlert();
 					});
 				},
@@ -195,8 +196,8 @@ class E2E {
 			alerts.close();
 		}
 
-		localStorage.removeItem('public_key');
-		localStorage.removeItem('private_key');
+		Meteor._localStorage.removeItem('public_key');
+		Meteor._localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = null;
 		this.enabled.set(false);
@@ -210,7 +211,7 @@ class E2E {
 	}
 
 	setupListeners() {
-		Notifications.onUser('e2ekeyRequest', async(roomId, keyId) => {
+		Notifications.onUser('e2ekeyRequest', async (roomId, keyId) => {
 			const e2eRoom = await this.getInstanceByRoomId(roomId);
 			if (!e2eRoom) {
 				return;
@@ -227,23 +228,17 @@ class E2E {
 			this.decryptSubscription(doc);
 		});
 
-		Messages.after.update((userId, doc) => {
-			this.decryptMessage(doc);
-		});
-
-		Messages.after.insert((userId, doc) => {
-			this.decryptMessage(doc);
-		});
+		promises.add('onClientMessageReceived', (msg) => this.decryptMessage(msg), promises.priority.HIGH);
 	}
 
 	async changePassword(newPassword) {
 		await call('e2e.setUserPublicAndPivateKeys', {
-			public_key: localStorage.getItem('public_key'),
-			private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), newPassword),
+			public_key: Meteor._localStorage.getItem('public_key'),
+			private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), newPassword),
 		});
 
-		if (localStorage.getItem('e2e.randomPassword')) {
-			localStorage.setItem('e2e.randomPassword', newPassword);
+		if (Meteor._localStorage.getItem('e2e.randomPassword')) {
+			Meteor._localStorage.setItem('e2e.randomPassword', newPassword);
 		}
 	}
 
@@ -259,12 +254,12 @@ class E2E {
 	}
 
 	async loadKeys({ public_key, private_key }) {
-		localStorage.setItem('public_key', public_key);
+		Meteor._localStorage.setItem('public_key', public_key);
 
 		try {
 			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
 
-			localStorage.setItem('private_key', private_key);
+			Meteor._localStorage.setItem('private_key', private_key);
 		} catch (error) {
 			return console.error('E2E -> Error importing private key: ', error);
 		}
@@ -283,7 +278,7 @@ class E2E {
 		try {
 			const publicKey = await exportJWKKey(key.publicKey);
 
-			localStorage.setItem('public_key', JSON.stringify(publicKey));
+			Meteor._localStorage.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			return console.error('E2E -> Error exporting public key: ', error);
 		}
@@ -291,7 +286,7 @@ class E2E {
 		try {
 			const privateKey = await exportJWKKey(key.privateKey);
 
-			localStorage.setItem('private_key', JSON.stringify(privateKey));
+			Meteor._localStorage.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
 			return console.error('E2E -> Error exporting private key: ', error);
 		}
@@ -305,7 +300,7 @@ class E2E {
 
 	createRandomPassword() {
 		const randomPassword = `${ Random.id(3) }-${ Random.id(3) }-${ Random.id(3) }`.toLowerCase();
-		localStorage.setItem('e2e.randomPassword', randomPassword);
+		Meteor._localStorage.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}
 
@@ -407,30 +402,30 @@ class E2E {
 
 	async decryptMessage(message) {
 		if (!this.isEnabled()) {
-			return;
+			return message;
 		}
 
 		if (message.t !== 'e2e' || message.e2e === 'done') {
-			return;
+			return message;
 		}
 
 		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
-			return;
+			return message;
 		}
 
 		const data = await e2eRoom.decrypt(message.msg);
+
 		if (!data) {
-			return;
+			return message;
 		}
 
-		Messages.direct.update({ _id: message._id }, {
-			$set: {
-				msg: data.text,
-				e2e: 'done',
-			},
-		});
+		return {
+			...message,
+			msg: data.text,
+			e2e: 'done',
+		};
 	}
 
 	async decryptPendingMessages() {
@@ -438,8 +433,8 @@ class E2E {
 			return;
 		}
 
-		return await Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
-			await this.decryptMessage(item);
+		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
+			Messages.direct.update({ _id }, await this.decryptMessage(msg));
 		});
 	}
 
@@ -505,6 +500,7 @@ Meteor.startup(function() {
 				e2e.enabled.set(true);
 			} else {
 				e2e.enabled.set(false);
+				e2e.closeAlert();
 			}
 		}
 	});

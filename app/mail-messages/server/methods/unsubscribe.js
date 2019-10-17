@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+
 import { Mailer } from '../lib/Mailer';
 
 Meteor.methods({

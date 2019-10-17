@@ -1,35 +1,37 @@
-import _ from 'underscore';
-import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from '../../../settings';
-import '../../ufs/GoogleStorage/server.js';
 import http from 'http';
 import https from 'https';
 
+import _ from 'underscore';
+
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+import { settings } from '../../../settings';
+import '../../ufs/GoogleStorage/server.js';
+
 const get = function(file, req, res) {
-	this.store.getRedirectURL(file, (err, fileUrl) => {
+	const forceDownload = typeof req.query.download !== 'undefined';
+
+	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
 		if (err) {
-			console.error(err);
+			return console.error(err);
 		}
 
-		if (fileUrl) {
-			const storeType = file.store.split(':').pop();
-			if (settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
-				const request = /^https:/.test(fileUrl) ? https : http;
-				request.get(fileUrl, (fileRes) => fileRes.pipe(res));
-			} else {
-				res.removeHeader('Content-Length');
-				res.setHeader('Location', fileUrl);
-				res.writeHead(302);
-				res.end();
-			}
-		} else {
-			res.end();
+		if (!fileUrl) {
+			return res.end();
 		}
+
+		const storeType = file.store.split(':').pop();
+		if (settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
+			const request = /^https:/.test(fileUrl) ? https : http;
+
+			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
+		}
+
+		return FileUpload.redirectToFile(fileUrl, req, res);
 	});
 };
 
 const copy = function(file, out) {
-	this.store.getRedirectURL(file, (err, fileUrl) => {
+	this.store.getRedirectURL(file, false, (err, fileUrl) => {
 		if (err) {
 			console.error(err);
 		}

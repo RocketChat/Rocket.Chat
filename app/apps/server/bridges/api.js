@@ -14,7 +14,7 @@ export class AppApisBridge {
 		this.appRouters = new Map();
 
 		// apiServer.use('/api/apps', (req, res, next) => {
-		// 	console.log({
+		// 	this.orch.debugLog({
 		// 		method: req.method.toLowerCase(),
 		// 		url: req.url,
 		// 		query: req.query,
@@ -50,7 +50,7 @@ export class AppApisBridge {
 	}
 
 	registerApi({ api, computedPath, endpoint }, appId) {
-		console.log(`The App ${ appId } is registering the api: "${ endpoint.path }" (${ computedPath })`);
+		this.orch.debugLog(`The App ${ appId } is registering the api: "${ endpoint.path }" (${ computedPath })`);
 
 		this._verifyApi(api, endpoint);
 
@@ -71,7 +71,7 @@ export class AppApisBridge {
 	}
 
 	unregisterApis(appId) {
-		console.log(`The App ${ appId } is unregistering all apis`);
+		this.orch.debugLog(`The App ${ appId } is unregistering all apis`);
 
 		if (this.appRouters.get(appId)) {
 			this.appRouters.delete(appId);

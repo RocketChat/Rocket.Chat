@@ -1,10 +1,14 @@
-import { RocketChatImportFileInstance } from '../startup/store';
-import { Meteor } from 'meteor/meteor';
-import { Importers } from '../..';
-import { hasRole } from '../../../authorization';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
 import path from 'path';
 import fs from 'fs';
+
+import { Meteor } from 'meteor/meteor';
+
+import { RocketChatImportFileInstance } from '../startup/store';
+
+import { Importers } from '..';
+
+import { hasRole } from '../../../authorization';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
 
 Meteor.methods({
 	getImportFileData(importerKey) {
@@ -38,9 +42,8 @@ Meteor.methods({
 		if (waitingSteps.indexOf(importer.instance.progress.step) >= 0) {
 			if (importer.instance.importRecord && importer.instance.importRecord.valid) {
 				return { waiting: true };
-			} else {
-				throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', { method: 'getImportFileData' });
 			}
+			throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', { method: 'getImportFileData' });
 		}
 
 		const readySteps = [
@@ -71,13 +74,11 @@ Meteor.methods({
 				console.error(e);
 				throw new Meteor.Error(e);
 			});
-
-		} else {
-			importer.instance.updateRecord({
-				fileData: results,
-			});
-
-			return results;
 		}
+		importer.instance.updateRecord({
+			fileData: results,
+		});
+
+		return results;
 	},
 });

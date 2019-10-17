@@ -1,22 +1,49 @@
-import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
+
+import { Meteor } from 'meteor/meteor';
 import streamBuffers from 'stream-buffers';
-import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { settings } from '../../../settings';
-import * as Models from '../../../models';
-import { FileUpload as _FileUpload } from '../../lib/FileUpload';
-import { roomTypes } from '../../../utils';
-import { hasPermission } from '../../../authorization';
+import { Match } from 'meteor/check';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import filesize from 'filesize';
+
+import { settings } from '../../../settings/server';
+import Uploads from '../../../models/server/models/Uploads';
+import UserDataFiles from '../../../models/server/models/UserDataFiles';
+import Avatars from '../../../models/server/models/Avatars';
+import Users from '../../../models/server/models/Users';
+import Rooms from '../../../models/server/models/Rooms';
+import Settings from '../../../models/server/models/Settings';
+import { mime } from '../../../utils/lib/mimeTypes';
+import { roomTypes } from '../../../utils/server/lib/roomTypes';
+import { hasPermission } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
+import { Messages } from '../../../models/server';
 
 const cookie = new Cookies();
+let maxFileSize = 0;
 
-export const FileUpload = Object.assign(_FileUpload, {
+settings.get('FileUpload_MaxFileSize', function(key, value) {
+	try {
+		maxFileSize = parseInt(value);
+	} catch (e) {
+		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+	}
+});
+
+
+export const FileUpload = {
 	handlers: {},
+
+	getPath(path = '') {
+		return `/file-upload/${ path }`;
+	},
 
 	configureUploadsStore(store, name, options) {
 		const type = name.split(':').pop();
@@ -28,9 +55,50 @@ export const FileUpload = Object.assign(_FileUpload, {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
+	validateFileUpload(file) {
+		if (!Match.test(file.rid, String)) {
+			return false;
+		}
+
+		// livechat users can upload files but they don't have an userId
+		const user = file.userId ? Meteor.users.findOne(file.userId) : null;
+
+		const room = Rooms.findOneById(file.rid);
+		const directMessageAllow = settings.get('FileUpload_Enabled_Direct');
+		const fileUploadAllowed = settings.get('FileUpload_Enabled');
+		if (canAccessRoom(room, user, file) !== true) {
+			return false;
+		}
+		const language = user ? user.language : 'en';
+		if (!fileUploadAllowed) {
+			const reason = TAPi18n.__('FileUpload_Disabled', language);
+			throw new Meteor.Error('error-file-upload-disabled', reason);
+		}
+
+		if (!directMessageAllow && room.t === 'd') {
+			const reason = TAPi18n.__('File_not_allowed_direct_messages', language);
+			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
+		}
+
+		// -1 maxFileSize means there is no limit
+		if (maxFileSize > -1 && file.size > maxFileSize) {
+			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(maxFileSize),
+			}, language);
+			throw new Meteor.Error('error-file-too-large', reason);
+		}
+
+		if (!fileUploadIsValidContentType(file.type)) {
+			const reason = TAPi18n.__('File_type_is_not_accepted', language);
+			throw new Meteor.Error('error-invalid-file-type', reason);
+		}
+
+		return true;
+	},
+
 	defaultUploads() {
 		return {
-			collection: Models.Uploads.model,
+			collection: Uploads.model,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateFileUpload,
 			}),
@@ -52,7 +120,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 
 	defaultAvatars() {
 		return {
-			collection: Models.Avatars.model,
+			collection: Avatars.model,
 			// filter: new UploadFS.Filter({
 			// 	onCheck: FileUpload.validateFileUpload
 			// }),
@@ -66,7 +134,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 
 	defaultUserDataFiles() {
 		return {
-			collection: Models.UserDataFiles.model,
+			collection: UserDataFiles.model,
 			getPath(file) {
 				return `${ settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
 			},
@@ -140,7 +208,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 	},
 
 	resizeImagePreview(file) {
-		file = Models.Uploads.findOneById(file._id);
+		file = Uploads.findOneById(file._id);
 		file = FileUpload.addExtensionTo(file);
 		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
@@ -193,8 +261,6 @@ export const FileUpload = Object.assign(_FileUpload, {
 						console.error(err);
 						fut.return();
 					});
-
-				return;
 			};
 
 			reorientation(() => {
@@ -215,12 +281,12 @@ export const FileUpload = Object.assign(_FileUpload, {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 		// update file record to match user's username
-		const user = Models.Users.findOneById(file.userId);
-		const oldAvatar = Models.Avatars.findOneByName(user.username);
+		const user = Users.findOneById(file.userId);
+		const oldAvatar = Avatars.findOneByName(user.username);
 		if (oldAvatar) {
-			Models.Avatars.deleteFile(oldAvatar._id);
+			Avatars.deleteFile(oldAvatar._id);
 		}
-		Models.Avatars.updateFileNameById(file._id, user.username);
+		Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
 	},
 
@@ -230,6 +296,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 		}
 
 		let { rc_uid, rc_token, rc_rid, rc_room_type } = query;
+		const { token } = query;
 
 		if (!rc_uid && headers.cookie) {
 			rc_uid = cookie.get('rc_uid', headers.cookie);
@@ -238,10 +305,11 @@ export const FileUpload = Object.assign(_FileUpload, {
 			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		const isAuthorizedByCookies = rc_uid && rc_token && Models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
-		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Models.Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
+		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
 		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
+		const isAuthorizedByJWT = !settings.get('FileUpload_Enable_json_web_token_for_files') || (token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files')));
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
@@ -251,7 +319,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 		// This file type can be pretty much anything, so it's better if we don't mess with the file extension
 		if (file.type !== 'application/octet-stream') {
 			const ext = mime.extension(file.type);
-			if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
+			if (ext && new RegExp(`\.${ ext }$`, 'i').test(file.name) === false) {
 				file.name = `${ file.name }.${ ext }`;
 			}
 		}
@@ -311,7 +379,45 @@ export const FileUpload = Object.assign(_FileUpload, {
 
 		return false;
 	},
-});
+
+	redirectToFile(fileUrl, req, res) {
+		res.removeHeader('Content-Length');
+		res.removeHeader('Cache-Control');
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
+		res.end();
+	},
+
+	proxyFile(fileName, fileUrl, forceDownload, request, req, res) {
+		res.setHeader('Content-Disposition', `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(fileName) }"`);
+
+		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
+	},
+
+	generateJWTToFileUrls({ rid, userId, fileId }) {
+		if (!settings.get('FileUpload_ProtectFiles') || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
+			return;
+		}
+		return generateJWT({
+			rid,
+			userId,
+			fileId,
+		}, settings.get('FileUpload_json_web_token_secret_for_files'));
+	},
+
+	removeFilesByRoomId(rid) {
+		Messages.find({
+			rid,
+			'file._id': {
+				$exists: true,
+			},
+		}, {
+			fields: {
+				'file._id': 1,
+			},
+		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
+	},
+};
 
 export class FileUploadClass {
 	constructor({ name, model, store, get, insert, getStore, copy }) {
@@ -345,7 +451,16 @@ export class FileUploadClass {
 	}
 
 	getModelFromName() {
-		return Models[this.name.split(':')[1]];
+		const modelsAvailable = {
+			Avatars,
+			Uploads,
+			UserDataFiles,
+		};
+		const modelName = this.name.split(':')[1];
+		if (!modelsAvailable[modelName]) {
+			throw new Error('Invalid Model for FileUpload');
+		}
+		return modelsAvailable[modelName];
 	}
 
 	delete(fileId) {

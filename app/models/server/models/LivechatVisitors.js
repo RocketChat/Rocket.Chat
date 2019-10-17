@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Base } from './_Base';
-import Settings from './Settings';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { Base } from './_Base';
+import Settings from './Settings';
 
 export class LivechatVisitors extends Base {
 	constructor() {
@@ -31,6 +32,17 @@ export class LivechatVisitors extends Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	/**
+	 * Find One visitor by _id
+	 */
+	findOneById(_id, options) {
+		const query = {
+			_id,
+		};
+
+		return this.findOne(query, options);
 	}
 
 	/**

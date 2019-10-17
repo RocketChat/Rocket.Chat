@@ -1,17 +1,25 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Base } from './_Base';
 import Users from './Users';
-import _ from 'underscore';
 /**
  * Livechat Department model
  */
 export class LivechatDepartmentAgents extends Base {
 	constructor() {
 		super('livechat_department_agents');
+
+		this.tryEnsureIndex({ departmentId: 1 });
+		this.tryEnsureIndex({ agentId: 1 });
 	}
 
 	findByDepartmentId(departmentId) {
 		return this.find({ departmentId });
+	}
+
+	findByAgentId(agentId) {
+		return this.find({ agentId });
 	}
 
 	saveAgent(agent) {
@@ -69,16 +77,15 @@ export class LivechatDepartmentAgents extends Base {
 				agentId: agent.value.agentId,
 				username: agent.value.username,
 			};
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	getOnlineForDepartment(departmentId) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
-			return [];
+			return;
 		}
 
 		const onlineUsers = Users.findOnlineUserFromList(_.pluck(agents, 'username'));
@@ -92,13 +99,7 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		const depAgents = this.find(query);
-
-		if (depAgents) {
-			return depAgents;
-		} else {
-			return [];
-		}
+		return this.find(query);
 	}
 
 	findUsersInQueue(usersList) {

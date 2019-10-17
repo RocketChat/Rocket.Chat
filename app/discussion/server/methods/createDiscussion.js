@@ -38,6 +38,9 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 	let message = false;
 	if (pmid) {
 		message = Messages.findOne({ _id: pmid });
+		if (!message) {
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'DiscussionCreation' });
+		}
 		if (prid) {
 			if (prid !== getParentRoom(message.rid)._id) {
 				throw new Meteor.Error('error-invalid-arguments', { method: 'DiscussionCreation' });
@@ -52,7 +55,9 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 	}
 
 	const p_room = Rooms.findOne(prid);
-
+	if (!p_room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'DiscussionCreation' });
+	}
 	if (p_room.prid) {
 		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', { method: 'DiscussionCreation' });
 	}
@@ -87,6 +92,9 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 		description: message.msg, // TODO discussions remove
 		topic: p_room.name, // TODO discussions remove
 		prid,
+	}, {
+		// overrides name validation to allow anything, because discussion's name is randomly generated
+		nameValidationRegex: /.*/,
 	});
 
 	if (pmid) {
@@ -114,7 +122,6 @@ Meteor.methods({
 	* @param {string[]} users - users to be added
 	*/
 	createDiscussion({ prid, pmid, t_name, reply, users }) {
-
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}

@@ -1,9 +1,10 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { t, UiTextContext, roomTypes, handleError } from '../../../utils';
+
 import { modal } from './modal';
 import { call } from './callMethod';
 import { RoomManager } from './RoomManager';
+import { t, UiTextContext, roomTypes, handleError } from '../../../utils';
 
 export function hide(type, rid, name) {
 	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
@@ -81,7 +82,7 @@ export function erase(rid) {
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
 		html: false,
-	}, async() => {
+	}, async () => {
 		await call('eraseRoom', rid);
 		modal.open({
 			title: t('Deleted'),

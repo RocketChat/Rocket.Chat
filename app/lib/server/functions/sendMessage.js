@@ -1,10 +1,36 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
-import { Apps } from '../../../apps';
-import { Markdown } from '../../../markdown';
+import { Apps } from '../../../apps/server';
+import { Markdown } from '../../../markdown/server';
+import { isURL } from '../../../utils/lib/isURL';
+import { FileUpload } from '../../../file-upload/server';
+
+/**
+ * IMPORTANT
+ *
+ * This validator prevents malicious href values
+ * intending to run arbitrary js code in anchor tags.
+ * You should use it whenever the value you're checking
+ * is going to be rendered in the href attribute of a
+ * link.
+ */
+const ValidLinkParam = Match.Where((value) => {
+	check(value, String);
+
+	if (!isURL(value) && !value.startsWith(FileUpload.getPath())) {
+		throw new Error('Invalid href value provided');
+	}
+
+	if (/^javascript:/i.test(value)) {
+		throw new Error('Invalid href value provided');
+	}
+
+	return true;
+});
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
@@ -25,21 +51,20 @@ const validateAttachmentsFields = (attachmentField) => {
 	check(attachmentField, objectMaybeIncluding({
 		short: Boolean,
 		title: String,
-		value: Match.OneOf(String, Match.Integer, Boolean),
+		value: Match.OneOf(String, Number, Boolean),
 	}));
 
 	if (typeof attachmentField.value !== 'undefined') {
 		attachmentField.value = String(attachmentField.value);
 	}
-
 };
 
 const validateAttachmentsActions = (attachmentActions) => {
 	check(attachmentActions, objectMaybeIncluding({
 		type: String,
 		text: String,
-		url: String,
-		image_url: String,
+		url: ValidLinkParam,
+		image_url: ValidLinkParam,
 		is_webview: Boolean,
 		webview_height_ratio: String,
 		msg: String,
@@ -52,26 +77,26 @@ const validateAttachment = (attachment) => {
 		color: String,
 		text: String,
 		ts: Match.OneOf(String, Match.Integer),
-		thumb_url: String,
+		thumb_url: ValidLinkParam,
 		button_alignment: String,
 		actions: [Match.Any],
-		message_link: String,
+		message_link: ValidLinkParam,
 		collapsed: Boolean,
 		author_name: String,
-		author_link: String,
-		author_icon: String,
+		author_link: ValidLinkParam,
+		author_icon: ValidLinkParam,
 		title: String,
-		title_link: String,
+		title_link: ValidLinkParam,
 		title_link_download: Boolean,
 		image_dimensions: Object,
-		image_url: String,
+		image_url: ValidLinkParam,
 		image_preview: String,
 		image_type: String,
 		image_size: Number,
-		audio_url: String,
+		audio_url: ValidLinkParam,
 		audio_type: String,
 		audio_size: Number,
-		video_url: String,
+		video_url: ValidLinkParam,
 		video_type: String,
 		video_size: Number,
 		fields: [Match.Any],
@@ -88,24 +113,28 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const sendMessage = function(user, message, room, upsert = false) {
-	if (!user || !message || !room._id) {
-		return false;
-	}
-
+const validateMessage = (message) => {
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
 		text: String,
 		alias: String,
 		emoji: String,
-		avatar: String,
+		avatar: ValidLinkParam,
 		attachments: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
 		validateBodyAttachments(message.attachments);
 	}
+};
+
+export const sendMessage = function(user, message, room, upsert = false) {
+	if (!user || !message || !room._id) {
+		return false;
+	}
+
+	validateMessage(message);
 
 	if (!message.ts) {
 		message.ts = new Date();
@@ -143,6 +172,9 @@ export const sendMessage = function(user, message, room, upsert = false) {
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
+
+			// Some app may have inserted malicious/invalid values in the message, let's check it again
+			validateMessage(message);
 		}
 	}
 
@@ -172,6 +204,10 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			}, message);
 			message._id = _id;
 		} else {
+			const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
+			if (messageAlreadyExists) {
+				return;
+			}
 			message._id = Messages.insert(message);
 		}
 
