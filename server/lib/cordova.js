@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { SystemLogger } from '../../app/logger';
-import { getWorkspaceAccessToken } from '../../app/cloud';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Push } from 'meteor/rocketchat:push';
+
+import { SystemLogger } from '../../app/logger';
+import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { hasRole } from '../../app/authorization';
 import { settings } from '../../app/settings';
 
@@ -78,7 +79,7 @@ Meteor.methods({
 	},
 });
 
-function sendPush(service, token, options, tries = 0) {
+function sendPush(gateway, service, token, options, tries = 0) {
 	options.uniqueId = settings.get('uniqueID');
 
 	const data = {
@@ -94,7 +95,7 @@ function sendPush(service, token, options, tries = 0) {
 		data.headers.Authorization = `Bearer ${ workspaceAccesstoken }`;
 	}
 
-	return HTTP.post(`${ settings.get('Push_gateway') }/push/${ service }/send`, data, function(error, response) {
+	return HTTP.post(`${ gateway }/push/${ service }/send`, data, function(error, response) {
 		if (response && response.statusCode === 406) {
 			console.log('removing push token', token);
 			Push.appCollection.remove({
@@ -119,7 +120,7 @@ function sendPush(service, token, options, tries = 0) {
 			SystemLogger.log('Trying sending push to gateway again in', milli, 'milliseconds');
 
 			return Meteor.setTimeout(function() {
-				return sendPush(service, token, options, tries + 1);
+				return sendPush(gateway, service, token, options, tries + 1);
 			}, milli);
 		}
 	});
@@ -181,47 +182,51 @@ function configurePush() {
 
 		if (settings.get('Push_enable_gateway') === true) {
 			Push.serverSend = function(options = { badge: 0 }) {
-				if (options.from !== String(options.from)) {
-					throw new Error('Push.send: option "from" not a string');
-				}
-				if (options.title !== String(options.title)) {
-					throw new Error('Push.send: option "title" not a string');
-				}
-				if (options.text !== String(options.text)) {
-					throw new Error('Push.send: option "text" not a string');
-				}
-				if (settings.get('Push_debug')) {
-					console.log(`Push: send message "${ options.title }" via query`, options.query);
-				}
+				const gateways = settings.get('Push_gateway').split('\n');
 
-				const query = {
-					$and: [options.query, {
-						$or: [{
-							'token.apn': {
-								$exists: true,
-							},
-						}, {
-							'token.gcm': {
-								$exists: true,
-							},
-						}],
-					}],
-				};
-
-				return Push.appCollection.find(query).forEach((app) => {
+				for (const gateway of gateways) {
+					if (options.from !== String(options.from)) {
+						throw new Error('Push.send: option "from" not a string');
+					}
+					if (options.title !== String(options.title)) {
+						throw new Error('Push.send: option "title" not a string');
+					}
+					if (options.text !== String(options.text)) {
+						throw new Error('Push.send: option "text" not a string');
+					}
 					if (settings.get('Push_debug')) {
-						console.log('Push: send to token', app.token);
+						console.log(`Push: send message "${ options.title }" via query`, options.query);
 					}
 
-					if (app.token.apn) {
-						options.topic = app.appName;
-						return sendPush('apn', app.token.apn, options);
-					}
+					const query = {
+						$and: [options.query, {
+							$or: [{
+								'token.apn': {
+									$exists: true,
+								},
+							}, {
+								'token.gcm': {
+									$exists: true,
+								},
+							}],
+						}],
+					};
 
-					if (app.token.gcm) {
-						return sendPush('gcm', app.token.gcm, options);
-					}
-				});
+					Push.appCollection.find(query).forEach((app) => {
+						if (settings.get('Push_debug')) {
+							console.log('Push: send to token', app.token);
+						}
+
+						if (app.token.apn) {
+							options.topic = app.appName;
+							return sendPush(gateway, 'apn', app.token.apn, options);
+						}
+
+						if (app.token.gcm) {
+							return sendPush(gateway, 'gcm', app.token.gcm, options);
+						}
+					});
+				}
 			};
 		}
 

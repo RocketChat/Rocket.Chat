@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+
 import {
 	Importers,
 	ProgressStep,
-} from '../..';
+} from '..';
+
 import { hasPermission } from '../../../authorization';
 
 Meteor.methods({

@@ -1,17 +1,27 @@
 import path from 'path';
-import shell from 'shelljs';
+import { execSync } from 'child_process';
 import fs from 'fs';
+
 import UglifyJS from 'uglify-js';
 
-const result = UglifyJS.minify(path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocket-livechat.js'));
+const livechatSource = path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocket-livechat.js');
+const livechatTarget = path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocketchat-livechat.min.js');
 
-fs.writeFileSync(path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocketchat-livechat.min.js'), result.code);
+if (process.env.CIRCLE_PR_NUMBER) {
+	fs.writeFileSync(livechatTarget, fs.readFileSync(livechatSource));
+} else {
+	fs.writeFileSync(livechatTarget, UglifyJS.minify(livechatSource).code);
+}
 
 const packagePath = path.join(path.resolve('.'), 'packages', 'rocketchat-livechat');
 const pluginPath = path.join(packagePath, 'plugin');
 
+const options = {
+	env: process.env,
+};
+
 if (process.platform === 'win32') {
-	shell.exec(`${ pluginPath }/build.bat`);
+	execSync(`${ pluginPath }/build.bat`, options);
 } else {
-	shell.exec(`sh ${ pluginPath }/build.sh`);
+	execSync(`sh ${ pluginPath }/build.sh`, options);
 }

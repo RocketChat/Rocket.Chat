@@ -1,4 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
+
 import { Users } from '../../../models';
 import { API } from '../api';
 

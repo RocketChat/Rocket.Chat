@@ -2,15 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
-import * as Mailer from '../../../mailer';
 import { Gravatar } from 'meteor/jparker:gravatar';
+
+import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import PasswordPolicy from '../lib/PasswordPolicyClass';
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername } from '.';
+import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 
-const passwordPolicy = new PasswordPolicy();
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusText } from '.';
 
 let html = '';
 Meteor.startup(() => {
@@ -50,7 +50,7 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (!userData._id && !s.trim(userData.name)) {
+	if (settings.get('Accounts_RequireNameForSignUp') && !userData._id && !s.trim(userData.name)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Name',
@@ -131,6 +131,13 @@ function validateUserEditing(userId, userData) {
 		});
 	}
 
+	if (userData.statusText && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit user status is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
 	if (userData.name && !settings.get('Accounts_AllowRealNameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 			method: 'insertOrUpdateUser',
@@ -173,11 +180,14 @@ export const saveUser = function(userId, userData) {
 
 		const updateUser = {
 			$set: {
-				name: userData.name,
 				roles: userData.roles || ['user'],
 				settings: userData.settings || {},
 			},
 		};
+
+		if (typeof userData.name !== 'undefined') {
+			updateUser.$set.name = userData.name;
+		}
 
 		if (typeof userData.requirePasswordChange !== 'undefined') {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
@@ -198,11 +208,14 @@ export const saveUser = function(userId, userData) {
 				subject,
 				html,
 				data: {
-					name: s.escapeHTML(userData.name),
 					email: s.escapeHTML(userData.email),
 					password: s.escapeHTML(userData.password),
 				},
 			};
+
+			if (typeof userData.name !== 'undefined') {
+				email.data.name = s.escapeHTML(userData.name);
+			}
 
 			try {
 				Mailer.send(email);
@@ -236,8 +249,12 @@ export const saveUser = function(userId, userData) {
 		setUsername(userData._id, userData.username);
 	}
 
-	if (userData.name) {
+	if (userData.hasOwnProperty('name')) {
 		setRealName(userData._id, userData.name);
+	}
+
+	if (typeof userData.statusText === 'string') {
+		setStatusText(userData._id, userData.statusText);
 	}
 
 	if (userData.email) {

@@ -5,8 +5,6 @@ packages/meteor-timesync/
 app/emoji-emojione/generateEmojiIndex.js
 app/favico/favico.js
 app/katex/client/katex/katex.min.js
-packages/rocketchat-livechat/.app/node_modules
-packages/rocketchat-livechat/.app/.meteor
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js
 app/theme/client/minicolors/jquery.minicolors.js
@@ -20,5 +18,5 @@ packages/tap-i18n/lib/tap_i18next/tap_i18next-1.7.3.js
 private/moment-locales/
 public/livechat/
 !.scripts
-!packages/rocketchat-livechat/.app
 public/pdf.worker.min.js
+imports/client/

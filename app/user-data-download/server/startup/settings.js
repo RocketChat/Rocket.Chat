@@ -1,7 +1,6 @@
 import { settings } from '../../../settings';
 
 settings.addGroup('UserDataDownload', function() {
-
 	this.add('UserData_EnableDownload', true, {
 		type: 'boolean',
 		public: true,
@@ -20,17 +19,15 @@ settings.addGroup('UserDataDownload', function() {
 		i18nLabel: 'UserData_FileSystemZipPath',
 	});
 
-	this.add('UserData_ProcessingFrequency', 15, {
+	this.add('UserData_ProcessingFrequency', 2, {
 		type: 'int',
 		public: true,
 		i18nLabel: 'UserData_ProcessingFrequency',
 	});
 
-	this.add('UserData_MessageLimitPerRequest', 100, {
+	this.add('UserData_MessageLimitPerRequest', 1000, {
 		type: 'int',
 		public: true,
 		i18nLabel: 'UserData_MessageLimitPerRequest',
 	});
-
-
 });

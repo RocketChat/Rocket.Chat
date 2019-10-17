@@ -1,4 +1,4 @@
-
+import './RocketChat.font.css';
 import '../app/chatpal-search/client/style.css';
 import '../app/theme/client/main.css';
 import '../app/theme/client/vendor/photoswipe.css';
@@ -13,11 +13,10 @@ import '../app/dolphin/client/login-button.css';
 import '../app/drupal/client/login-button.css';
 import '../app/e2e/client/stylesheets/e2e.less';
 import '../app/emoji-custom/assets/stylesheets/emojiCustomAdmin.css';
-import '../app/emoji-emojione/client/sprites.css';
+import '../app/emoji-emojione/client/emojione-sprites.css';
 import '../app/github-enterprise/client/github-enterprise-login-button.css';
 import '../app/gitlab/client/gitlab-login-button.css';
 import '../app/integrations/client/stylesheets/integrations.css';
-import '../app/katex/client/style.css';
 import '../app/livechat/client/stylesheets/livechat.less';
 import '../app/livestream/client/styles/liveStreamTab.css';
 import '../app/message-action/client/stylesheets/messageAction.css';
@@ -33,9 +32,7 @@ import '../app/search/client/style/style.css';
 import '../app/tokenpass/client/login-button.css';
 import '../app/tokenpass/client/channelSettings.css';
 import '../app/tokenpass/client/styles.css';
-import '../app/tooltip/client/tooltip.css';
 import '../app/ui-clean-history/client/views/stylesheets/cleanHistory.css';
 import '../app/ui-vrecord/client/vrecord.css';
 import '../app/videobridge/client/stylesheets/video.less';
 import '../app/wordpress/client/wordpress-login-button.css';
-import '../app/katex/katex.min.css';

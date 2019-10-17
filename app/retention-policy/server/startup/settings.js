@@ -1,7 +1,6 @@
 import { settings } from '../../../settings';
 
 settings.addGroup('RetentionPolicy', function() {
-
 	this.add('RetentionPolicy_Enabled', false, {
 		type: 'boolean',
 		public: true,

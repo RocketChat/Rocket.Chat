@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Rooms, LivechatVisitors, LivechatCustomField } from '../../../../models';
+
+import { LivechatRooms, LivechatVisitors, LivechatCustomField } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api';
-import { findGuest } from '../lib/livechat';
+import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/visitor', {
@@ -34,11 +35,12 @@ API.v1.addRoute('livechat/visitor', {
 				guest.phone = { number: this.bodyParams.visitor.phone };
 			}
 
+			guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 			const visitorId = Livechat.registerGuest(guest);
 
 			let visitor = LivechatVisitors.getVisitorByToken(token);
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const cursor = Rooms.findOpenByVisitorToken(token);
+			const cursor = LivechatRooms.findOpenByVisitorToken(token);
 			cursor.forEach((room) => {
 				Livechat.saveRoomInfo(room, visitor);
 			});
@@ -112,7 +114,7 @@ API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const rooms = Rooms.findOpenByVisitorToken(this.urlParams.token, {
+		const rooms = LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
 			fields: {
 				name: 1,
 				t: 1,

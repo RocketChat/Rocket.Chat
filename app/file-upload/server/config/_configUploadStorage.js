@@ -1,6 +1,7 @@
 import { UploadFS } from 'meteor/jalik:ufs';
-import { settings } from '../../../settings';
 import _ from 'underscore';
+
+import { settings } from '../../../settings';
 import './AmazonS3.js';
 import './FileSystem.js';
 import './GoogleStorage.js';

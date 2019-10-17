@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { Statistics } from '../../../models';
-import { statistics } from '../../lib/rocketchat';
+import { statistics } from '../statisticsNamespace';
 
 Meteor.methods({
 	getStatistics(refresh) {
@@ -15,8 +16,7 @@ Meteor.methods({
 
 		if (refresh) {
 			return statistics.save();
-		} else {
-			return Statistics.findLast();
 		}
+		return Statistics.findLast();
 	},
 });

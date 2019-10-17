@@ -1,7 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { API } from '../../../api/server/api';
 import Busboy from 'busboy';
+
+import { API } from '../../../api/server';
+import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
+import { settings } from '../../../settings';
+import { Info } from '../../../utils';
+import { Settings, Users } from '../../../models/server';
+import { Apps } from '../orchestrator';
+
+const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
+const getDefaultHeaders = () => ({
+	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
+});
+
+const purchaseTypes = new Set(['buy', 'subscription']);
 
 export class AppsRestApi {
 	constructor(orch, manager) {
@@ -49,6 +62,82 @@ export class AppsRestApi {
 
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
+				const baseUrl = orchestrator.getMarketplaceUrl();
+
+				// Gets the Apps from the marketplace
+				if (this.queryParams.marketplace) {
+					const headers = getDefaultHeaders();
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/apps`, {
+							headers,
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the Apps:', e.response.data);
+						return API.v1.internalError();
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the Apps:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success(result.data);
+				}
+
+				if (this.queryParams.categories) {
+					const headers = getDefaultHeaders();
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/categories`, {
+							headers,
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
+						return API.v1.internalError();
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success(result.data);
+				}
+
+				if (this.queryParams.buildExternalUrl && this.queryParams.appId) {
+					const workspaceId = settings.get('Cloud_Workspace_Id');
+
+					if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
+						return API.v1.failure({ error: 'Invalid purchase type' });
+					}
+
+					const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+					if (!token) {
+						return API.v1.failure({ error: 'Unauthorized' });
+					}
+
+					const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
+
+					const seats = Users.getActiveLocalUserCount();
+
+					return API.v1.success({
+						url: `${ baseUrl }/apps/${ this.queryParams.appId }/${
+							this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
+						}?workspaceId=${ workspaceId }&token=${ token }&seats=${ seats }`,
+					});
+				}
+
 				const apps = manager.get().map((prl) => {
 					const info = prl.getInfo();
 					info.languages = prl.getStorageItem().languageContent;
@@ -61,16 +150,77 @@ export class AppsRestApi {
 			},
 			post() {
 				let buff;
+				let marketplaceInfo;
 
 				if (this.bodyParams.url) {
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
+						return API.v1.failure({ error: 'Installation from url is disabled.' });
+					}
+
+					let result;
+					try {
+						result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: null } });
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
+						return API.v1.internalError();
+					}
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'base64');
+					buff = result.content;
+				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = getDefaultHeaders();
+
+					const downloadPromise = new Promise((resolve, reject) => {
+						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
+
+						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
+							headers,
+							npmRequestOptions: { encoding: null },
+						}, (error, result) => {
+							if (error) { reject(error); }
+
+							resolve(result);
+						});
+					});
+
+					const marketplacePromise = new Promise((resolve, reject) => {
+						const token = getWorkspaceAccessToken();
+
+						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }?appVersion=${ this.bodyParams.version }`, {
+							headers: {
+								Authorization: `Bearer ${ token }`,
+								...headers,
+							},
+						}, (error, result) => {
+							if (error) { reject(error); }
+
+							resolve(result);
+						});
+					});
+
+
+					try {
+						const [downloadResult, marketplaceResult] = Promise.await(Promise.all([downloadPromise, marketplacePromise]));
+
+						if (!downloadResult.headers['content-type'] || downloadResult.headers['content-type'] !== 'application/zip') {
+							throw new Error('Invalid url. It doesn\'t exist or is not "application/zip".');
+						}
+
+						buff = downloadResult.content;
+						marketplaceInfo = marketplaceResult.data[0];
+					} catch (err) {
+						return API.v1.failure(err.message);
+					}
 				} else {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
+						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
+					}
+
 					buff = fileHandler(this.request, 'app');
 				}
 
@@ -78,20 +228,23 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff.toString('base64'), false));
+				const aff = Promise.await(manager.add(buff.toString('base64'), true, marketplaceInfo));
 				const info = aff.getAppInfo();
 
-				// If there are compiler errors, there won't be an App to get the status of
-				if (aff.getApp()) {
-					info.status = aff.getApp().getStatus();
-				} else {
-					info.status = 'compiler_error';
+				if (aff.hasStorageError()) {
+					return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
 				}
+
+				if (aff.getCompilerErrors().length) {
+					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
+				}
+
+				info.status = aff.getApp().getStatus();
 
 				return API.v1.success({
 					app: info,
 					implemented: aff.getImplementedInferfaces(),
-					compilerErrors: aff.getCompilerErrors(),
+					licenseValidation: aff.getLicenseValidationResult(),
 				});
 			},
 		});
@@ -107,35 +260,169 @@ export class AppsRestApi {
 			},
 		});
 
+		this.api.addRoute('bundles/:id/apps', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+			get() {
+				const baseUrl = orchestrator.getMarketplaceUrl();
+
+				const headers = {};
+				const token = getWorkspaceAccessToken();
+				if (token) {
+					headers.Authorization = `Bearer ${ token }`;
+				}
+
+				let result;
+				try {
+					result = HTTP.get(`${ baseUrl }/v1/bundles/${ this.urlParams.id }/apps`, {
+						headers,
+					});
+				} catch (e) {
+					orchestrator.getRocketChatLogger().error('Error getting the Bundle\'s Apps from the Marketplace:', e.response.data);
+					return API.v1.internalError();
+				}
+
+				if (!result || result.statusCode !== 200 || result.data.length === 0) {
+					orchestrator.getRocketChatLogger().error('Error getting the Bundle\'s Apps from the Marketplace:', result.data);
+					return API.v1.failure();
+				}
+
+				return API.v1.success({ apps: result.data });
+			},
+		});
+
+		const handleError = (message, e) => {
+			orchestrator.getRocketChatLogger().error(message, e.response.data);
+
+			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+				return API.v1.internalError();
+			}
+
+			if (e.response.statusCode === 404) {
+				return API.v1.notFound();
+			}
+
+			return API.v1.failure();
+		};
+
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log('Getting:', this.urlParams.id);
+				if (this.queryParams.marketplace && this.queryParams.version) {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }?appVersion=${ this.queryParams.version }`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Error getting the App information from the Marketplace:', e);
+					}
+
+					if (!result || result.statusCode !== 200 || result.data.length === 0) {
+						orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success({ app: result.data[0] });
+				}
+
+				if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = getDefaultHeaders();
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ appsEngineVersionForMarketplace }`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Error getting the App update info from the Marketplace:', e);
+					}
+
+					if (result.statusCode !== 200 || result.data.length === 0) {
+						orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success({ app: result.data });
+				}
+
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
 					const info = prl.getInfo();
-					info.status = prl.getStatus();
 
-					return API.v1.success({ app: info });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return API.v1.success({
+						app: {
+							...info,
+							status: prl.getStatus(),
+							licenseValidation: prl.getLatestLicenseValidationResult(),
+						},
+					});
 				}
+
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
-				console.log('Updating:', this.urlParams.id);
-				// TODO: Verify permissions
-
 				let buff;
 
 				if (this.bodyParams.url) {
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
+						return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
+					}
+
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: null } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'base64');
+					buff = result.content;
+				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = getDefaultHeaders();
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+							headers,
+							npmRequestOptions: { encoding: null },
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
+						return API.v1.internalError();
+					}
+
+					if (result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+					}
+
+					buff = result.content;
 				} else {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
+						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
+					}
+
 					buff = fileHandler(this.request, 'app');
 				}
 
@@ -160,7 +447,6 @@ export class AppsRestApi {
 				});
 			},
 			delete() {
-				console.log('Uninstalling:', this.urlParams.id);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -170,45 +456,72 @@ export class AppsRestApi {
 					info.status = prl.getStatus();
 
 					return API.v1.success({ app: info });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+			},
+		});
+
+		this.api.addRoute(':id/sync', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+			post() {
+				const baseUrl = orchestrator.getMarketplaceUrl();
+
+				const headers = getDefaultHeaders();
+				const token = getWorkspaceAccessToken();
+				if (token) {
+					headers.Authorization = `Bearer ${ token }`;
+				}
+
+				const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
+
+				let result;
+				try {
+					result = HTTP.get(`${ baseUrl }/v1/workspaces/${ workspaceIdSetting.value }/apps/${ this.urlParams.id }`, {
+						headers,
+					});
+				} catch (e) {
+					orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', e.response.data);
+					return API.v1.internalError();
+				}
+
+				if (result.statusCode !== 200) {
+					orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', result.data);
+					return API.v1.failure();
+				}
+
+				Promise.await(Apps.updateAppsMarketplaceInfo([result.data]));
+
+				return API.v1.success({ app: result.data });
 			},
 		});
 
 		this.api.addRoute(':id/icon', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log('Getting the App\'s Icon:', this.urlParams.id);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
 					const info = prl.getInfo();
 
 					return API.v1.success({ iconFileContent: info.iconFileContent });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
 		this.api.addRoute(':id/languages', { authRequired: false }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s languages..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
 					const languages = prl.getStorageItem().languageContent || {};
 
 					return API.v1.success({ languages });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
 		this.api.addRoute(':id/logs', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s logs..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -217,7 +530,7 @@ export class AppsRestApi {
 
 					const ourQuery = Object.assign({}, query, { appId: prl.getID() });
 					const options = {
-						sort: sort ? sort : { _updatedAt: -1 },
+						sort: sort || { _updatedAt: -1 },
 						skip: offset,
 						limit: count,
 						fields,
@@ -226,15 +539,13 @@ export class AppsRestApi {
 					const logs = Promise.await(orchestrator.getLogStorage().find(ourQuery, options));
 
 					return API.v1.success({ logs });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
 		this.api.addRoute(':id/settings', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s settings..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -247,12 +558,10 @@ export class AppsRestApi {
 					});
 
 					return API.v1.success({ settings });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
-				console.log(`Updating ${ this.urlParams.id }'s settings..`);
 				if (!this.bodyParams || !this.bodyParams.settings) {
 					return API.v1.failure('The settings to update must be present.');
 				}
@@ -280,8 +589,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/settings/:settingId', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting the App ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
-
 				try {
 					const setting = manager.getSettingsManager().getAppSetting(this.urlParams.id, this.urlParams.settingId);
 
@@ -289,16 +596,13 @@ export class AppsRestApi {
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
 						return API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
-					} else if (e.message.includes('No App found')) {
+					} if (e.message.includes('No App found')) {
 						return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
-					} else {
-						return API.v1.failure(e.message);
 					}
+					return API.v1.failure(e.message);
 				}
 			},
 			post() {
-				console.log(`Updating the App ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
-
 				if (!this.bodyParams.setting) {
 					return API.v1.failure('Setting to update to must be present on the posted body.');
 				}
@@ -310,56 +614,50 @@ export class AppsRestApi {
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
 						return API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
-					} else if (e.message.includes('No App found')) {
+					} if (e.message.includes('No App found')) {
 						return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
-					} else {
-						return API.v1.failure(e.message);
 					}
+					return API.v1.failure(e.message);
 				}
 			},
 		});
 
 		this.api.addRoute(':id/apis', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s apis..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
 					return API.v1.success({
 						apis: manager.apiManager.listApis(this.urlParams.id),
 					});
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 		});
 
 		this.api.addRoute(':id/status', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s status..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
 					return API.v1.success({ status: prl.getStatus() });
-				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 			},
 			post() {
 				if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
 					return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 				}
 
-				console.log(`Updating ${ this.urlParams.id }'s status...`, this.bodyParams.status);
 				const prl = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
-
-					return API.v1.success({ status: result.getStatus() });
-				} else {
+				if (!prl) {
 					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
+
+				const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
+
+				return API.v1.success({ status: result.getStatus() });
 			},
 		});
 	}

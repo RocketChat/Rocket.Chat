@@ -1,7 +1,9 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { AccountBox } from '../../ui-utils';
 
-const livechatManagerRoutes = FlowRouter.group({
+import { AccountBox } from '../../ui-utils';
+import './views/app/livechatDashboard.html';
+
+export const livechatManagerRoutes = FlowRouter.group({
 	prefix: '/livechat-manager',
 	name: 'livechat-manager',
 });
@@ -39,11 +41,19 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
-	name: 'livechat-users',
-	path: '/users',
+	name: 'livechat-managers',
+	path: '/managers',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_Users',
-	pageTemplate: 'livechatUsers',
+	i18nPageTitle: 'Livechat_managers',
+	pageTemplate: 'livechatManagers',
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-agents',
+	path: '/agents',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Livechat_agents',
+	pageTemplate: 'livechatAgents',
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({

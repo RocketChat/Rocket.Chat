@@ -1,89 +1,123 @@
 <template name="apps">
-	<section class="rc-directory rc-apps-marketplace">
+	<section class="rc-apps-section">
 		{{#header sectionName="Apps" hideHelp=true fixedHeight=true fullpage=true}}
-			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus" data-button="install">{{> icon icon="plus"}}</button>
-		{{/header}}
-		<div class="rc-table-content">
-			{{>tabs tabs=tabsData}}
-			<div class="rc-input rc-input--small rc-directory-search">
-				<label class="rc-input__label">
-					<div class="rc-input__wrapper">
-						{{> icon icon="magnifier" block="rc-input__icon" }}
-						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
-					</div>
-				</label>
+			<div class="rc-header__section-button">
+				<button class="rc-button rc-button--small rc-button--primary js-marketplace">
+					{{> icon icon="cloud-plus" block="rc-icon--default-size"}} {{_ "Marketplace_view_marketplace"}}
+				</button>
+				{{#if isDevelopmentModeEnabled}}
+					<button class="rc-button rc-button--small rc-button--primary rc-button--outline js-upload">
+						{{> icon icon="upload" block="rc-icon--default-size"}} {{_ "Upload_app"}}
+					</button>
+				{{/if}}
 			</div>
+		{{/header}}
+
+		<div class="rc-table-content">
+			<form class="rc-form-filters js-search-form" role="form">
+				<div class="rc-input">
+					<div class="rc-input__icon">
+						{{#if isLoading}}
+							{{> loading }}
+						{{else}}
+							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+						{{/if}}
+					</div>
+					<input
+						type="text"
+						class="rc-input__element js-search"
+						name="message-search"
+						id="message-search"
+						placeholder="{{_ "Search_Apps"}}"
+						autocomplete="off">
+				</div>
+			</form>
+
 			{{#requiresPermission 'manage-apps'}}
-				{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+				{{#table fixed='true' onScroll=handleTableScroll onResize=handleTableResize onSort=handleTableSort}}
 					<thead>
 						<tr>
-							<th class="js-sort rc-table-td--medium {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
+							<th class="rc-table-td--medium {{#if isSortingBy 'name'}}is-sorting{{/if}} js-sort" data-sort="name">
 								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</div>
 							</th>
-							<th class="js-sort rc-table-td--medium {{#if searchSortBy 'category'}}is-sorting{{/if}}" data-sort="category">>
-								<div class="table-fake-th">{{_ "Category"}} {{> icon icon=(sortIcon 'category') }}</div>
-							</th>
 							<th class="rc-table-td">
-								<div class="table-fake-th">{{_ "Details"}} </div>
+								<div class="table-fake-th">{{_ "Details"}}</div>
 							</th>
-							<th class="rc-table-td--small">
+							<th class="rc-apps-marketplace__status-column">
+								<div class="table-fake-th">{{_ "Status"}}</div>
 							</th>
 						</tr>
 					</thead>
 					<tbody>
-						{{#each apps}}
-							<tr class="rc-table-tr manage" data-name="{{latest.name}}">
+						{{#each app in apps}}
+							<tr class="rc-table-tr js-manage" data-id="{{app.id}}">
 								<td>
 									<div class="rc-table-wrapper">
-										{{#if latest.iconFileData}}
-											<div class="rc-table-avatar" style="background-image:url(data:image/png;base64,{{latest.iconFileData}})"></div>
+										{{#if app.iconFileData}}
+											<div class="rc-table-avatar" style="background-image:url(data:image/png;base64,{{app.iconFileData}})"></div>
 										{{else}}
-											<div class="rc-table-avatar" style="background-image:url({{latest.iconFileContent}})"></div>
+											<div class="rc-table-avatar" style="background-image:url({{app.iconFileContent}})"></div>
 										{{/if}}
 										<div class="rc-table-info">
 											<span class="rc-table-title">
-												{{latest.name}}
+												{{app.name}}
 											</span>
-											{{#if latest.author.name}}
-												<span class="rc-table-subtitle">by {{latest.author.name}}</span>
+											{{#if app.author.name}}
+												<span class="rc-table-subtitle">by {{app.author.name}}</span>
 											{{/if}}
 										</div>
 									</div>
 								</td>
-								<td>{{latest.categories}}</td>
 								<td>
-									<p class="rc-table-title">
-										{{#if latest.summary}}
-											{{latest.summary}}
-										{{else}}
-											{{latest.description}}
-										{{/if}}
-									</p>
-									{{#if latest.summary}}
-										<p>
-											{{latest.description}}
-										</p>
-									{{/if}}
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{#if app.summary}}
+													{{app.summary}}
+												{{else}}
+													{{app.description}}
+												{{/if}}
+											</span>
+											<span class="rc-table-subtitle rc-apps-categories">
+												{{#each category in app.categories}}
+												<span class="rc-apps-category">{{category}}</span>
+												{{/each}}
+											</span>
+										</div>
+									</div>
 								</td>
 								<td>
+									<div class="rc-table-wrapper">
+										{{#let buttonProps=(appButtonProps app) statusSpanProps=(appStatusSpanProps app)}}
+											{{#if buttonProps}}
+												<button
+													class="rc-button rc-button--primary {{#unless $eq buttonProps.action 'update'}}rc-apps-section__table-button--hideable{{/unless}} {{#if app.working}}rc-apps-section__table-button--working{{/if}} js-{{buttonProps.action}}"
+													disabled={{app.working}}
+													data-id={{app.id}}
+												>
+													{{#if app.working}}
+														{{> icon icon="loading" block="rc-icon--default-size rc-apps-section__spinning-icon"}}
+													{{/if}}
+													{{_ buttonProps.label}}
+												</button>
+											{{else if statusSpanProps}}
+												<span class="rc-apps-section__status {{#if statusSpanProps.type}}rc-apps-section__status--{{statusSpanProps.type}}{{/if}}">
+													{{> icon icon=statusSpanProps.icon block="rc-icon--default-size"}}
+													{{_ statusSpanProps.label}}
+												</span>
+											{{/if}}
+										{{/let}}
 
-									{{#if $eq latest._installed true}}
-										{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
-									{{/if}}
-									{{#if renderDownloadButton latest}}
-										<div class="rc-apps-marketplace__wrap-actions">
-											{{> icon block="rc-icon--default-size rc-icon" icon="loading"}}
-											<button class="js-install apps-installer" data-app="{{appId}}">
-												{{> icon block="installer rc-icon--default-size" icon="circled-arrow-down"}}
-											</button>
-										</div>
-									{{/if}}
+										<button class="rc-apps-section__app-menu-trigger js-menu" data-id="{{app.id}}">
+											{{> icon icon="menu" block="rc-icon--default-size"}}
+										</button>
+									</div>
 								</td>
 							</tr>
 						{{/each}}
 						{{#if isLoading}}
 							<tr>
-								<td colspan="3" style="position: relative;">{{> loading}}</td>
+								<td colspan="3" style="position: relative">{{> loading}}</td>
 							</tr>
 						{{/if}}
 					</tbody>

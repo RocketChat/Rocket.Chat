@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+
 import { settings } from '../../../settings';
 
 let userAgent = 'Meteor';

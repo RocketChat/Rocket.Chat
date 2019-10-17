@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import moment from 'moment';
+
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { hasPermission } from '../../../authorization';
-import moment from 'moment';
 import { updateMessage } from '../functions';
 
 Meteor.methods({
 	updateMessage(message) {
-
-		check(message, Match.ObjectIncluding({ _id:String }));
+		check(message, Match.ObjectIncluding({ _id: String }));
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });

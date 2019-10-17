@@ -19,6 +19,8 @@
 
 		background-color: var(--color-white);
 
+		will-change: transform;
+
 		&.animated {
 			transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s, -webkit-transform 0.45s cubic-bezier(0.5, 0, 0, 1);
 		}
@@ -85,6 +87,8 @@
 	}
 
 	&__username {
+		padding: 0.1rem 0;
+
 		color: var(--color-gray);
 
 		font-size: 14px;
@@ -112,7 +116,9 @@
 			flex: 1;
 
 			margin: 0 5px;
+		}
 
+		&:not(.rc-user-info__room) > .rc-button {
 			&:first-child {
 				margin-left: 0;
 			}
@@ -129,6 +135,14 @@
 
 		border-top: 1px solid #d7d7d7;
 		border-bottom: 1px solid #d7d7d7;
+	}
+
+	&__room {
+		flex-wrap: wrap;
+
+		& > .rc-button {
+			margin: 5px;
+		}
 	}
 
 	&__row {

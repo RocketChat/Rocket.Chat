@@ -94,7 +94,6 @@
 		border-color: var(--message-box-container-border-color);
 		border-radius: var(--message-box-container-border-radius);
 
-		line-height: 20px;
 		align-items: center;
 
 		&.editing {
@@ -106,9 +105,9 @@
 		overflow-y: auto;
 
 		width: 100%;
-		height: 15px;
+		height: 23px;
 
-		min-height: 21px;
+		min-height: 23px;
 		max-height: 155px;
 		padding: 0;
 
@@ -119,6 +118,8 @@
 
 		font-family: inherit;
 		font-size: var(--message-box-text-size);
+
+		line-height: 21px;
 
 		&::placeholder {
 			color: var(--message-box-placeholder-color);
@@ -262,7 +263,11 @@
 	&__join-button {
 		flex: 0;
 
-		margin: 0 0.25rem;
+		margin: -1rem 0.15rem;
+	}
+
+	&__take-it-button {
+		margin: 0 0.5rem;
 	}
 }
 

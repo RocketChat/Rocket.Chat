@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+
 import {
 	Importers,
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '../..';
+} from '..';
+
 import { hasPermission } from '../../../authorization';
 
 Meteor.methods({

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { Settings } from '../../../models';
 
@@ -16,6 +17,7 @@ Meteor.publish('livechat:appearance', function() {
 			$in: [
 				'Livechat_title',
 				'Livechat_title_color',
+				'Livechat_show_agent_info',
 				'Livechat_show_agent_email',
 				'Livechat_display_offline_form',
 				'Livechat_offline_form_unavailable',

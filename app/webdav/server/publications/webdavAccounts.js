@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { WebdavAccounts } from '../../../models';
 
 Meteor.publish('webdavAccounts', function() {
@@ -8,7 +9,7 @@ Meteor.publish('webdavAccounts', function() {
 
 	return WebdavAccounts.findWithUserId(this.userId, {
 		fields: {
-			_id:1,
+			_id: 1,
 			username: 1,
 			server_url: 1,
 			name: 1,

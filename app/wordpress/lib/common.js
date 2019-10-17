@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '../../settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from '../../custom-oauth';
 import _ from 'underscore';
+
+import { settings } from '../../settings';
+import { CustomOAuth } from '../../custom-oauth';
 
 const config = {
 	serverURL: '',
@@ -13,6 +14,7 @@ const config = {
 		forLoggedInUser: ['services.wordpress'],
 		forOtherUsers: ['services.wordpress.user_login'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const WordPress = new CustomOAuth('wordpress', config);

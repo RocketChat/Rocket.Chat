@@ -1,9 +1,10 @@
 import limax from 'limax';
+
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 
 function slug(text) {
-	return limax(text, { replacement: '.' }).replace(/[^0-9a-z-_.]/g, '');
+	return limax(text, { replacement: '.', separateNumbers: false }).replace(/[^0-9a-z-_.]/g, '');
 }
 
 function usernameIsAvaliable(username) {
@@ -15,7 +16,7 @@ function usernameIsAvaliable(username) {
 		return false;
 	}
 
-	return !Users.findOneByUsername(username);
+	return !Users.findOneByUsernameIgnoringCase(username);
 }
 
 
@@ -25,7 +26,6 @@ export function generateUsernameSuggestion(user) {
 	let usernames = [];
 
 	if (user.name) {
-
 		usernames.push(name(user.name));
 
 		const nameParts = user.name.split(' ');

@@ -5,7 +5,6 @@ Migrations.add({
 	version: 65,
 	up() {
 		if (Settings) {
-
 			// New color settings - start with old settings as defaults
 			const replace1 = Settings.findOne({ _id: 'theme-color-quaternary-font-color' });
 			const replace2 = Settings.findOne({ _id: 'theme-color-input-font-color' });

@@ -1,6 +1,7 @@
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
+import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -27,6 +28,10 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	if (message.file) {
+		message = normalizeMessageFileUpload(message);
+	}
+
 	OmniChannel.reply({
 		page: room.facebook.page.id,
 		token: room.v.token,
@@ -34,5 +39,4 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	});
 
 	return message;
-
 }, callbacks.priority.LOW, 'sendMessageToFacebook');

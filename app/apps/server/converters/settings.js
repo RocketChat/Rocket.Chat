@@ -1,5 +1,6 @@
-import { Settings } from '../../../models';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
+
+import { Settings } from '../../../models';
 
 export class AppSettingsConverter {
 	constructor(orch) {
