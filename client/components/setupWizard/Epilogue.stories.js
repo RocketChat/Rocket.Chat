@@ -8,4 +8,4 @@ export default {
 };
 
 export const _default = () =>
-	<Epilogue />;
+	<Epilogue logoSrc='https://open.rocket.chat/images/logo/logo.svg' />;

@@ -33,7 +33,7 @@ export function InformationPage({
 			{canViewStatistics
 				&& <div className='rc-header__block rc-header__block-action'>
 					<Button disabled={isLoading} primary type='button' onClick={onClickRefreshButton}>
-						<Icon iconName='reload' /> {t('Refresh')}
+						<Icon name='reload' /> {t('Refresh')}
 					</Button>
 				</div>}
 		</Header>

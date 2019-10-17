@@ -36,6 +36,7 @@ export function Steps() {
 					title: t('Register_Server'),
 				},
 			]}
+			currentStep={currentStep}
 		/>
 		<section className='SetupWizard__Steps'>
 			<div className='SetupWizard__Steps-wrapper'>

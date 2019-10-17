@@ -1,4 +1,5 @@
-import { CheckBox, Label, RadioButton, useMergedRefs } from '@rocket.chat/fuselage';
+import { CheckBox, Label, RadioButton } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
 import { handleError } from '../../../../app/utils/client';

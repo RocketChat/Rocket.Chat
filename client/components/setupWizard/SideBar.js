@@ -1,17 +1,18 @@
 import React from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
-import { useSetupWizardStepsState } from './StepsState';
 import './SideBar.css';
 
-export function SideBar({ steps = [] }) {
-	const { currentStep } = useSetupWizardStepsState();
-
+export function SideBar({
+	logoSrc = 'images/logo/logo.svg',
+	currentStep = 1,
+	steps = [],
+}) {
 	const t = useTranslation();
 
 	return <aside className='SetupWizard__SideBar'>
 		<header className='SetupWizard__SideBar-header'>
-			<img className='SetupWizard__SideBar-headerLogo' src='images/logo/logo.svg' />
+			<img className='SetupWizard__SideBar-headerLogo' src={logoSrc} />
 			<span className='SetupWizard__SideBar-headerTag'>{t('Setup_Wizard')}</span>
 		</header>
 

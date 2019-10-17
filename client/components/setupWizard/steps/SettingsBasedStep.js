@@ -1,4 +1,4 @@
-import { Input, Field, FieldGroup, Label } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, Label, SelectInput, TextInput } from '@rocket.chat/fuselage';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { useEffect, useReducer, useState } from 'react';
 
@@ -89,7 +89,7 @@ export function SettingsBasedStep({ step, title, active }) {
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
 					<Field key={i}>
 						<Label text={t(i18nLabel)}>
-							{type === 'string' && <Input
+							{type === 'string' && <TextInput
 								type='text'
 								name={_id}
 								ref={i === 0 ? autoFocusRef : undefined}
@@ -97,7 +97,7 @@ export function SettingsBasedStep({ step, title, active }) {
 								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
 							/>}
 
-							{type === 'select' && <Input
+							{type === 'select' && <SelectInput
 								type='select'
 								name={_id}
 								placeholder={t('Select_an_option')}
@@ -107,10 +107,10 @@ export function SettingsBasedStep({ step, title, active }) {
 							>
 								{values
 									.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
-									.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
-							</Input>}
+									.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+							</SelectInput>}
 
-							{type === 'language' && <Input
+							{type === 'language' && <SelectInput
 								type='select'
 								name={_id}
 								placeholder={t('Default')}
@@ -121,8 +121,8 @@ export function SettingsBasedStep({ step, title, active }) {
 								{Object.entries(languages)
 									.map(([key, { name }]) => ({ label: name, value: key }))
 									.sort((a, b) => a.key - b.key)
-									.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
-							</Input>}
+									.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+							</SelectInput>}
 						</Label>
 					</Field>
 				)}
