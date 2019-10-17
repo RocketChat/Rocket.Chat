@@ -1,4 +1,20 @@
 
+# 2.1.1
+`2019-10-17  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.15.1`
+- NPM: `6.9.0`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Read Recepts was not working ([#15603](https://github.com/RocketChat/Rocket.Chat/pull/15603))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+
 # 2.1.0
 `2019-09-27  ·  1 ️️️⚠️  ·  13 🎉  ·  12 🚀  ·  22 🐛  ·  22 🔍  ·  20 👩‍💻👨‍💻`
 
