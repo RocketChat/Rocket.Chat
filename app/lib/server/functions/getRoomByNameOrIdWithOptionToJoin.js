@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Users, Subscriptions } from '../../../models';
 import _ from 'underscore';
+
+import { Rooms, Users, Subscriptions } from '../../../models';
 
 export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type = '', tryDirectByUserIdOnly = false, joinChannel = true, errorOnEmpty = true }) {
 	let room;

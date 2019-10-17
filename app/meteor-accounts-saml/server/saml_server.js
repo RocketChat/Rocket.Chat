@@ -3,23 +3,27 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
+import bodyParser from 'body-parser';
+import fiber from 'fibers';
+import _ from 'underscore';
+
+import { SAML } from './saml_utils';
 import { CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
-import bodyParser from 'body-parser';
-import { SAML } from './saml_utils';
-import _ from 'underscore';
+import { _setUsername } from '../../lib/server/functions';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
 		settings: {
 			debug: false,
 			generateUsername: false,
+			nameOverwrite: false,
+			mailOverwrite: false,
 			providers: [],
 		},
 	};
 }
 
-import fiber from 'fibers';
 RoutePolicy.declare('/_saml/', 'network');
 
 /**
@@ -32,7 +36,7 @@ function getSamlProviderConfig(provider) {
 			{ method: 'getSamlProviderConfig' });
 	}
 	const samlProvider = function(element) {
-		return (element.provider === provider);
+		return element.provider === provider;
 	};
 	return Accounts.saml.settings.providers.filter(samlProvider)[0];
 }
@@ -91,15 +95,78 @@ Meteor.methods({
 	},
 });
 
+Accounts.normalizeUsername = function(name) {
+	switch (Accounts.saml.settings.usernameNormalize) {
+		case 'Lowercase':
+			name = name.toLowerCase();
+			break;
+	}
+
+	return name;
+};
+
+function debugLog(content) {
+	if (Accounts.saml.settings.debug) {
+		console.log(content);
+	}
+}
+
+function getUserDataMapping() {
+	const { userDataFieldMap } = Accounts.saml.settings;
+
+	let map;
+
+	try {
+		map = JSON.parse(userDataFieldMap);
+	} catch (e) {
+		map = {};
+	}
+
+	let emailField = 'email';
+	let usernameField = 'username';
+	let nameField = 'cn';
+	const newMapping = {};
+
+	for (const field in map) {
+		if (!map.hasOwnProperty(field)) {
+			continue;
+		}
+
+		if (map[field] === 'email') {
+			emailField = field;
+			continue;
+		}
+
+		if (map[field] === 'username') {
+			usernameField = field;
+			continue;
+		}
+
+		if (map[field] === 'name') {
+			nameField = field;
+			continue;
+		}
+
+		newMapping[field] = map[field];
+	}
+
+	return { emailField, usernameField, nameField, userDataFieldMap: newMapping };
+}
+
+const guessNameFromUsername = (username) =>
+	username
+		.replace(/\W/g, ' ')
+		.replace(/\s(.)/g, (u) => u.toUpperCase())
+		.replace(/^(.)/, (u) => u.toLowerCase())
+		.replace(/^\w/, (u) => u.toUpperCase());
+
 Accounts.registerLoginHandler(function(loginRequest) {
-	if (!loginRequest.saml) {
+	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
 
-	const loginResult = Accounts.saml.retrieveCredential(this.connection.id);
-	if (Accounts.saml.settings.debug) {
-		console.log(`RESULT :${ JSON.stringify(loginResult) }`);
-	}
+	const loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
+	debugLog(`RESULT :${ JSON.stringify(loginResult) }`);
 
 	if (loginResult === undefined) {
 		return {
@@ -108,35 +175,93 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 	}
 
-	if (loginResult && loginResult.profile && loginResult.profile.email) {
-		const emailList = Array.isArray(loginResult.profile.email) ? loginResult.profile.email : [loginResult.profile.email];
+	const { emailField, usernameField, nameField, userDataFieldMap } = getUserDataMapping();
+	const { defaultUserRole = 'user', roleAttributeName } = Accounts.saml.settings;
+
+	if (loginResult && loginResult.profile && loginResult.profile[emailField]) {
+		const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
 		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
-		let user = Meteor.users.findOne({
-			'emails.address': emailRegex,
-		});
+
+		const eduPersonPrincipalName = loginResult.profile.eppn;
+		const fullName = loginResult.profile[nameField] || loginResult.profile.displayName || loginResult.profile.username;
+
+		let eppnMatch = false;
+		let user = null;
+
+		// Check eppn
+		if (eduPersonPrincipalName) {
+			user = Meteor.users.findOne({
+				eppn: eduPersonPrincipalName,
+			});
+
+			if (user) {
+				eppnMatch = true;
+			}
+		}
+
+		let username;
+		if (loginResult.profile[usernameField]) {
+			username = Accounts.normalizeUsername(loginResult.profile[usernameField]);
+		}
+
+		// If eppn is not exist
+		if (!user) {
+			if (Accounts.saml.settings.immutableProperty === 'Username') {
+				if (username) {
+					user = Meteor.users.findOne({
+						username,
+					});
+				}
+			} else {
+				user = Meteor.users.findOne({
+					'emails.address': emailRegex,
+				});
+			}
+		}
+
+		const emails = emailList.map((email) => ({
+			address: email,
+			verified: true,
+		}));
+
+		let globalRoles;
+		if (roleAttributeName && loginResult.profile[roleAttributeName]) {
+			globalRoles = [].concat(loginResult.profile[roleAttributeName]);
+		} else {
+			globalRoles = [].concat(defaultUserRole.split(','));
+		}
 
 		if (!user) {
 			const newUser = {
-				name: loginResult.profile.displayName || loginResult.profile.cn || loginResult.profile.username,
+				name: fullName,
 				active: true,
-				globalRoles: ['user'],
-				emails: emailList.map((email) => ({
-					address: email,
-					verified: true,
-				})),
+				eppn: eduPersonPrincipalName,
+				globalRoles,
+				emails,
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
-				const username = generateUsernameSuggestion(newUser);
-				if (username) {
-					newUser.username = username;
-				}
-			} else if (loginResult.profile.username) {
-				newUser.username = loginResult.profile.username;
+				username = generateUsernameSuggestion(newUser);
+			}
+
+			if (username) {
+				newUser.username = username;
+				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
+		}
+
+		// If eppn is not exist then update
+		if (eppnMatch === false) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					eppn: eduPersonPrincipalName,
+				},
+			});
 		}
 
 		// creating the token and adding to the user
@@ -154,14 +279,60 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			nameID: loginResult.profile.nameID,
 		};
 
+		const updateData = {
+			// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
+			'services.saml': samlLogin,
+		};
+
+		for (const field in userDataFieldMap) {
+			if (!userDataFieldMap.hasOwnProperty(field)) {
+				continue;
+			}
+
+			if (loginResult.profile[field]) {
+				const rcField = userDataFieldMap[field];
+				updateData[`customFields.${ rcField }`] = loginResult.profile[field];
+			}
+		}
+
+		if (Accounts.saml.settings.immutableProperty !== 'EMail') {
+			updateData.emails = emails;
+		}
+
 		Meteor.users.update({
 			_id: user._id,
 		}, {
-			$set: {
-				// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
-				'services.saml': samlLogin,
-			},
+			$set: updateData,
 		});
+
+		if (username) {
+			_setUsername(user._id, username);
+		}
+
+		// Overwrite fullname if needed
+		if (Accounts.saml.settings.nameOverwrite === true) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					name: fullName,
+				},
+			});
+		}
+
+		// Overwrite mail if needed
+		if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
+			Meteor.users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					emails: emailList.map((email) => ({
+						address: email,
+						verified: true,
+					})),
+				},
+			});
+		}
 
 		// sending token along with the userId
 		const result = {
@@ -170,10 +341,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 
 		return result;
-
-	} else {
-		throw new Error('SAML Profile did not contain an email address');
 	}
+	throw new Error('SAML Profile did not contain an email address');
 });
 
 Accounts.saml.hasCredential = function(credentialToken) {
@@ -229,6 +398,28 @@ const samlUrlToObject = function(url) {
 	return result;
 };
 
+const logoutRemoveTokens = function(userId) {
+	if (Accounts.saml.settings.debug) {
+		console.log(`Found user ${ userId }`);
+	}
+
+	Meteor.users.update({
+		_id: userId,
+	}, {
+		$set: {
+			'services.resume.loginTokens': [],
+		},
+	});
+
+	Meteor.users.update({
+		_id: userId,
+	}, {
+		$unset: {
+			'services.saml': '',
+		},
+	});
+};
+
 const middleware = function(req, res, next) {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
@@ -268,35 +459,23 @@ const middleware = function(req, res, next) {
 			case 'logout':
 				// This is where we receive SAML LogoutResponse
 				_saml = new SAML(service);
-				_saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
-					if (!err) {
-						const logOutUser = function(inResponseTo) {
-							if (Accounts.saml.settings.debug) {
-								console.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
-							}
+				if (req.query.SAMLRequest) {
+					_saml.validateLogoutRequest(req.query.SAMLRequest, function(err, result) {
+						if (err) {
+							console.error(err);
+							throw new Meteor.Error('Unable to Validate Logout Request');
+						}
+
+						const logOutUser = function(samlInfo) {
 							const loggedOutUser = Meteor.users.find({
-								'services.saml.inResponseTo': inResponseTo,
+								$or: [
+									{ 'services.saml.nameID': samlInfo.nameID },
+									{ 'services.saml.idpSession': samlInfo.idpSession },
+								],
 							}).fetch();
+
 							if (loggedOutUser.length === 1) {
-								if (Accounts.saml.settings.debug) {
-									console.log(`Found user ${ loggedOutUser[0]._id }`);
-								}
-								Meteor.users.update({
-									_id: loggedOutUser[0]._id,
-								}, {
-									$set: {
-										'services.resume.loginTokens': [],
-									},
-								});
-								Meteor.users.update({
-									_id: loggedOutUser[0]._id,
-								}, {
-									$unset: {
-										'services.saml': '',
-									},
-								});
-							} else {
-								throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
+								logoutRemoveTokens(loggedOutUser[0]._id);
 							}
 						};
 
@@ -304,16 +483,55 @@ const middleware = function(req, res, next) {
 							logOutUser(result);
 						}).run();
 
-
-						res.writeHead(302, {
-							Location: req.query.RelayState,
+						const { response } = _saml.generateLogoutResponse({
+							nameID: result.nameID,
+							sessionIndex: result.idpSession,
 						});
-						res.end();
-					}
-					//  else {
-					// 	// TBD thinking of sth meaning full.
-					// }
-				});
+
+						_saml.logoutResponseToUrl(response, function(err, url) {
+							if (err) {
+								console.error(err);
+								throw new Meteor.Error('Unable to generate SAML logout Response Url');
+							}
+
+							res.writeHead(302, {
+								Location: url,
+							});
+							res.end();
+						});
+					});
+				} else {
+					_saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
+						if (!err) {
+							const logOutUser = function(inResponseTo) {
+								if (Accounts.saml.settings.debug) {
+									console.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
+								}
+								const loggedOutUser = Meteor.users.find({
+									'services.saml.inResponseTo': inResponseTo,
+								}).fetch();
+								if (loggedOutUser.length === 1) {
+									logoutRemoveTokens(loggedOutUser[0]._id);
+								} else {
+									throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
+								}
+							};
+
+							fiber(function() {
+								logOutUser(result);
+							}).run();
+
+
+							res.writeHead(302, {
+								Location: req.query.RelayState,
+							});
+							res.end();
+						}
+						//  else {
+						// 	// TBD thinking of sth meaning full.
+						// }
+					});
+				}
 				break;
 			case 'sloRedirect':
 				res.writeHead(302, {
@@ -366,7 +584,6 @@ const middleware = function(req, res, next) {
 				break;
 			default:
 				throw new Error(`Unexpected SAML action ${ samlObject.actionName }`);
-
 		}
 	} catch (err) {
 		closePopup(res, err);

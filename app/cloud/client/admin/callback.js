@@ -3,10 +3,12 @@ import './callback.html';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-
+import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-
 import queryString from 'query-string';
+
+import { SideNav } from '../../../ui-utils/client';
+
 
 Template.cloudCallback.onCreated(function() {
 	const instance = this;
@@ -34,4 +36,11 @@ Template.cloudCallback.helpers({
 	callbackError() {
 		return Template.instance().callbackError.get();
 	},
+});
+
+Template.cloudCallback.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

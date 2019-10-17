@@ -1,1 +1,1 @@
-export * from './server/index';
+import './server/index';

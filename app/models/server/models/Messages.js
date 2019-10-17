@@ -1,11 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import _ from 'underscore';
+
 import { Base } from './_Base';
 import Rooms from './Rooms';
-import Users from './Users';
 import { settings } from '../../../settings/server/functions/settings';
-import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
-import _ from 'underscore';
 
 export class Messages extends Base {
 	constructor() {
@@ -32,7 +30,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
-
+		// livechat
+		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {
@@ -207,13 +206,25 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomId(roomId, options) {
+	findVisibleByRoomId(rid, options) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 
-			rid: roomId,
+			rid,
+		};
+
+		return this.find(query, options);
+	}
+
+	findVisibleThreadByThreadId(tmid, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			tmid,
 		};
 
 		return this.find(query, options);
@@ -229,8 +240,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t =			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -342,8 +352,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t =			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -362,8 +371,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t =			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -493,15 +501,14 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	cloneAndSaveAsHistoryById(_id) {
-		const me = Users.findOneById(Meteor.userId());
+	cloneAndSaveAsHistoryById(_id, user) {
 		const record = this.findOneById(_id);
 		record._hidden = true;
 		record.parent = record._id;
-		record.editedAt = new Date;
+		record.editedAt = new Date();
 		record.editedBy = {
-			_id: Meteor.userId(),
-			username: me.username,
+			_id: user._id,
+			username: user.username,
 		};
 		delete record._id;
 		return this.insert(record);
@@ -551,7 +558,7 @@ export class Messages extends Base {
 		const update = {
 			$set: {
 				pinned,
-				pinnedAt: pinnedAt || new Date,
+				pinnedAt: pinnedAt || new Date(),
 				pinnedBy,
 			},
 		};
@@ -570,7 +577,7 @@ export class Messages extends Base {
 			$set: {
 				msg,
 				snippeted,
-				snippetedAt: snippetedAt || new Date,
+				snippetedAt: snippetedAt || new Date(),
 				snippetedBy,
 				snippetName,
 			},
@@ -644,7 +651,7 @@ export class Messages extends Base {
 		} else {
 			update = {
 				$pull: {
-					starred: { _id: Meteor.userId() },
+					starred: { _id: userId },
 				},
 			};
 		}
@@ -698,8 +705,8 @@ export class Messages extends Base {
 			$set: {
 				alias: newNameAlias,
 				'u._id': newUserId,
-				'u.username' : newUsername,
-				'u.name' : undefined,
+				'u.username': newUsername,
+				'u.name': undefined,
 			},
 		};
 
@@ -715,7 +722,7 @@ export class Messages extends Base {
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date,
+			ts: new Date(),
 			msg: message,
 			u: {
 				_id: user._id,
@@ -731,7 +738,7 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-		Rooms.incMsgCountById(room._id, 1);
+		Rooms.incMsgCountById(roomId, 1);
 		return record;
 	}
 
@@ -744,7 +751,7 @@ export class Messages extends Base {
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date,
+			ts: new Date(),
 			msg: message,
 			u: {
 				_id: user._id,
@@ -842,16 +849,6 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
 	}
 
-	createRejectedMessageByPeer(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('rejected-message-by-peer', roomId, message, user, extraData);
-	}
-
-	createPeerDoesNotExist(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('peer-does-not-exist', roomId, message, user, extraData);
-	}
-
 	// REMOVE
 	removeById(_id) {
 		const query =	{ _id };
@@ -905,19 +902,6 @@ export class Messages extends Base {
 		const query =	{ 'u._id': userId };
 
 		return this.remove(query);
-	}
-
-	async removeFilesByRoomId(roomId) {
-		this.find({
-			rid: roomId,
-			'file._id': {
-				$exists: true,
-			},
-		}, {
-			fields: {
-				'file._id': 1,
-			},
-		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {

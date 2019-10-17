@@ -1,7 +1,13 @@
+import { Readable } from 'stream';
+import path from 'path';
+import fs from 'fs';
+
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+import TurndownService from 'turndown';
+
 import {
 	Base,
 	ProgressStep,
@@ -12,10 +18,6 @@ import {
 } from '../../importer/server';
 import { Messages, Users, Subscriptions, Rooms } from '../../models';
 import { insertMessage } from '../../lib';
-import { Readable } from 'stream';
-import path from 'path';
-import fs from 'fs';
-import TurndownService from 'turndown';
 
 const turndownService = new TurndownService({
 	strongDelimiter: '*',
@@ -105,7 +107,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 			tempUsers.push(userData);
 			if (tempUsers.length >= 100) {
-				await this.storeTempUsers(tempUsers);
+				await this.storeTempUsers(tempUsers); // eslint-disable-line no-await-in-loop
 				tempUsers = [];
 			}
 		}
@@ -158,7 +160,7 @@ export class HipChatEnterpriseImporter extends Base {
 			count++;
 
 			if (tempRooms.length >= 100) {
-				await this.storeTempRooms(tempRooms);
+				await this.storeTempRooms(tempRooms); // eslint-disable-line no-await-in-loop
 				tempRooms = [];
 			}
 		}
@@ -235,7 +237,7 @@ export class HipChatEnterpriseImporter extends Base {
 			}
 
 			if (msgs.length >= 500) {
-				await this.storeUserTempMessages(msgs, roomIdentifier, index);
+				await this.storeUserTempMessages(msgs, roomIdentifier, index); // eslint-disable-line no-await-in-loop
 				msgs = [];
 			}
 		}
@@ -277,7 +279,7 @@ export class HipChatEnterpriseImporter extends Base {
 			if (m.UserMessage) {
 				const newId = `hipchatenterprise-${ id }-user-${ m.UserMessage.id }`;
 				const skipMessage = this._checkIfMessageExists(newId);
-				const skipAttachment = (skipMessage && (m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true));
+				const skipAttachment = skipMessage && (m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
 
 				if (!skipMessage || !skipAttachment) {
 					roomMsgs.push({
@@ -335,7 +337,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 			if (roomMsgs.length >= 500) {
 				subIndex++;
-				await this.storeTempMessages(roomMsgs, roomIdentifier, index, subIndex, id);
+				await this.storeTempMessages(roomMsgs, roomIdentifier, index, subIndex, id); // eslint-disable-line no-await-in-loop
 				roomMsgs = [];
 			}
 		}
@@ -385,7 +387,7 @@ export class HipChatEnterpriseImporter extends Base {
 				await this.prepareRoomsFile(file);
 				break;
 			case 'history.json':
-				return await this.prepareMessagesFile(file, info);
+				return this.prepareMessagesFile(file, info);
 			case 'emoticons.json':
 				this.logger.error('HipChat Enterprise importer doesn\'t import emoticons.', info);
 				break;
@@ -407,7 +409,7 @@ export class HipChatEnterpriseImporter extends Base {
 				this.logger.info(`new entry from import folder: ${ fileName }`);
 
 				if (fs.statSync(fullFilePath).isDirectory()) {
-					await this._prepareFolderEntry(fullFilePath, fullRelativePath);
+					await this._prepareFolderEntry(fullFilePath, fullRelativePath); // eslint-disable-line no-await-in-loop
 					continue;
 				}
 
@@ -429,7 +431,7 @@ export class HipChatEnterpriseImporter extends Base {
 					});
 				});
 
-				await promise.catch((error) => {
+				await promise.catch((error) => { // eslint-disable-line no-await-in-loop
 					this.logger.error(error);
 					fileData = null;
 				});
@@ -441,7 +443,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 				this.logger.info(`Processing the file: ${ fileName }`);
 				const info = this.path.parse(fullRelativePath);
-				await this.prepareFile(info, fileData, fileName);
+				await this.prepareFile(info, fileData, fileName); // eslint-disable-line no-await-in-loop
 
 				this.logger.debug('moving to next import folder entry');
 			} catch (e) {
@@ -710,7 +712,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 	_importUser(userToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			let existingUser = Users.findOneByUsername(userToImport.username);
+			let existingUser = Users.findOneByUsernameIgnoringCase(userToImport.username);
 			if (!existingUser) {
 				// If there's no user with that username, but there's an imported user with the same original ID and no username, use that
 				existingUser = Users.findOne({
@@ -1110,7 +1112,7 @@ export class HipChatEnterpriseImporter extends Base {
 			let msgCount = 0;
 			try {
 				for (const msg of list.messages) {
-					await this._importSingleMessage(msg, roomIdentifier, room);
+					await this._importSingleMessage(msg, roomIdentifier, room); // eslint-disable-line no-await-in-loop
 					msgCount++;
 					if (msgCount >= 50) {
 						super.addCountCompleted(msgCount);
@@ -1125,7 +1127,6 @@ export class HipChatEnterpriseImporter extends Base {
 				super.addCountCompleted(msgCount);
 			}
 		});
-
 	}
 
 	async _importMessages(startedByUserId) {
@@ -1136,7 +1137,7 @@ export class HipChatEnterpriseImporter extends Base {
 		}, { fields: { _id: true } }).fetch();
 
 		for (const item of messageListIds) {
-			await this._importMessageList(startedByUserId, item._id);
+			await this._importMessageList(startedByUserId, item._id); // eslint-disable-line no-await-in-loop
 		}
 	}
 

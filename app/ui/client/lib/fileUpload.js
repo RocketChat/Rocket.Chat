@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
-import { fileUploadHandler } from '../../../file-upload';
 import { Handlebars } from 'meteor/ui';
+
+import { fileUploadHandler } from '../../../file-upload';
 import { t, fileUploadIsValidContentType } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 
@@ -37,7 +38,7 @@ const showUploadPreview = (file, callback) => {
 const getAudioUploadPreview = (file, preview) => `\
 <div class='upload-preview'>
 	<audio style="width: 100%;" controls="controls">
-		<source src="${ preview }" type="audio/wav">
+		<source src="${ preview }" type="${ file.file.type }">
 		Your browser does not support the audio element.
 	</audio>
 </div>

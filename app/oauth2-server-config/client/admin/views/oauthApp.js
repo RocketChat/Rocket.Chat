@@ -2,12 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
+
 import { hasAllPermission } from '../../../../authorization';
-import { modal } from '../../../../ui-utils';
+import { modal, SideNav } from '../../../../ui-utils/client';
 import { t, handleError } from '../../../../utils';
 import { ChatOAuthApps } from '../collection';
-import toastr from 'toastr';
 
 Template.oauthApp.onCreated(function() {
 	this.subscribe('oauthApps');
@@ -29,6 +31,10 @@ Template.oauthApp.helpers({
 				if (data) {
 					data.authorization_url = Meteor.absoluteUrl('oauth/authorize');
 					data.access_token_url = Meteor.absoluteUrl('oauth/token');
+					if (Array.isArray(data.redirectUri)) {
+						data.redirectUri = data.redirectUri.join('\n');
+					}
+
 					Template.instance().record.set(data);
 					return data;
 				}
@@ -99,4 +105,11 @@ Template.oauthApp.events({
 			FlowRouter.go('admin-oauth-app', { id: data._id });
 		});
 	},
+});
+
+Template.oauthApp.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

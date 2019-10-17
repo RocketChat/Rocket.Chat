@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -29,7 +30,7 @@ export const updateMessage = function(message, user, originalMessage) {
 
 	// If we keep history of edits, insert a new message to store history information
 	if (settings.get('Message_KeepHistory')) {
-		Messages.cloneAndSaveAsHistoryById(message._id);
+		Messages.cloneAndSaveAsHistoryById(message._id, user);
 	}
 
 	message.editedAt = new Date();

@@ -1,16 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
-import { EJSON } from 'meteor/ejson';
-import { Log } from 'meteor/logging';
 import { EventEmitter } from 'events';
-import { settings } from '../../settings';
-import { hasPermission } from '../../authorization';
+
 import _ from 'underscore';
 import s from 'underscore.string';
 
-let Logger;
-
-const LoggerManager = new class extends EventEmitter {
+export const LoggerManager = new class extends EventEmitter {
 	constructor() {
 		super();
 		this.enabled = false;
@@ -20,22 +13,27 @@ const LoggerManager = new class extends EventEmitter {
 		this.showFileAndLine = false;
 		this.logLevel = 0;
 	}
+
 	register(logger) {
-		if (!logger instanceof Logger) {
+		// eslint-disable-next-line no-use-before-define
+		if (!(logger instanceof Logger)) {
 			return;
 		}
 		this.loggers[logger.name] = logger;
 		this.emit('register', logger);
 	}
+
 	addToQueue(logger, args) {
 		this.queue.push({
 			logger, args,
 		});
 	}
+
 	dispatchQueue() {
 		_.each(this.queue, (item) => item.logger._log.apply(item.logger, item.args));
 		this.clearQueue();
 	}
+
 	clearQueue() {
 		this.queue = [];
 	}
@@ -46,9 +44,9 @@ const LoggerManager = new class extends EventEmitter {
 
 	enable(dispatchQueue = false) {
 		this.enabled = true;
-		return (dispatchQueue === true) ? this.dispatchQueue() : this.clearQueue();
+		return dispatchQueue === true ? this.dispatchQueue() : this.clearQueue();
 	}
-};
+}();
 
 const defaultTypes = {
 	debug: {
@@ -81,9 +79,14 @@ const defaultTypes = {
 		color: 'red',
 		level: 0,
 	},
+	deprecation: {
+		name: 'warn',
+		color: 'magenta',
+		level: 0,
+	},
 };
 
-class _Logger {
+export class Logger {
 	constructor(name, config = {}) {
 		const self = this;
 		this.name = name;
@@ -160,6 +163,7 @@ class _Logger {
 
 		LoggerManager.register(this);
 	}
+
 	getPrefix(options) {
 		let prefix = `${ this.name } ➔ ${ options.method }`;
 		if (options.section) {
@@ -191,6 +195,7 @@ class _Logger {
 		}
 		return prefix;
 	}
+
 	_getCallerDetails() {
 		const getStack = () => {
 			// We do NOT use Error.prepareStackTrace here (a V8 extension that gets us a
@@ -207,7 +212,7 @@ class _Logger {
 		// looking for the first line outside the logging package (or an
 		// eval if we find that first)
 		let line = lines[0];
-		for (let index = 0, len = lines.length; index < len, index++; line = lines[index]) {
+		for (let index = 0, len = lines.length; index < len; index++, line = lines[index]) {
 			if (line.match(/^\s*at eval \(eval/)) {
 				return { file: 'eval' };
 			}
@@ -236,6 +241,7 @@ class _Logger {
 		}
 		return details;
 	}
+
 	makeABox(message, title) {
 		if (!_.isArray(message)) {
 			message = message.split('\n');
@@ -275,6 +281,11 @@ class _Logger {
 			return;
 		}
 
+		// Deferred logging
+		if (typeof options.arguments[0] === 'function') {
+			options.arguments[0] = options.arguments[0]();
+		}
+
 		const prefix = this.getPrefix(options);
 
 		if (options.box === true && _.isString(options.arguments[0])) {
@@ -293,7 +304,6 @@ class _Logger {
 			box.forEach((line) => {
 				console.log(subPrefix, color ? line[color] : line);
 			});
-
 		} else {
 			options.arguments.unshift(prefix);
 			console.log.apply(console, options.arguments);
@@ -301,26 +311,7 @@ class _Logger {
 	}
 }
 
-Logger = _Logger;
-const processString = function(string, date) {
-	let obj;
-	try {
-		if (string[0] === '{') {
-			obj = EJSON.parse(string);
-		} else {
-			obj = {
-				message: string,
-				time: date,
-				level: 'info',
-			};
-		}
-		return Log.format(obj, { color: true });
-	} catch (error) {
-		return string;
-	}
-};
-
-const SystemLogger = new Logger('System', {
+export const SystemLogger = new Logger('System', {
 	methods: {
 		startup: {
 			type: 'success',
@@ -328,56 +319,3 @@ const SystemLogger = new Logger('System', {
 		},
 	},
 });
-
-
-const StdOut = new class extends EventEmitter {
-	constructor() {
-		super();
-		const { write } = process.stdout;
-		this.queue = [];
-		process.stdout.write = (...args) => {
-			write.apply(process.stdout, args);
-			const date = new Date;
-			const string = processString(args[0], date);
-			const item = {
-				id: Random.id(),
-				string,
-				ts: date,
-			};
-			this.queue.push(item);
-
-			if (typeof settings !== 'undefined') {
-				const limit = settings.get('Log_View_Limit');
-				if (limit && this.queue.length > limit) {
-					this.queue.shift();
-				}
-			}
-			this.emit('write', string, item);
-		};
-	}
-};
-
-
-Meteor.publish('stdout', function() {
-	if (!this.userId || hasPermission(this.userId, 'view-logs') !== true) {
-		return this.ready();
-	}
-
-	StdOut.queue.forEach((item) => {
-		this.added('stdout', item.id, {
-			string: item.string,
-			ts: item.ts,
-		});
-	});
-
-	this.ready();
-	StdOut.on('write', (string, item) => {
-		this.added('stdout', item.id, {
-			string: item.string,
-			ts: item.ts,
-		});
-	});
-});
-
-
-export { SystemLogger, StdOut, LoggerManager, processString, Logger };

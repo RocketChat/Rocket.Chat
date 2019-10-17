@@ -1,57 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Rooms, Subscriptions } from '../../../models';
-import { callbacks } from '../../../callbacks';
-import { hasPermission, addUserRoles } from '../../../authorization';
-import { getValidRoomName } from '../../../utils';
-import { Apps } from '../../../apps/server';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-function createDirectRoom(source, target, extraData, options) {
-	const rid = [source._id, target._id].sort().join('');
-
-	Rooms.upsert({ _id: rid }, {
-		$setOnInsert: Object.assign({
-			t: 'd',
-			usernames: [source.username, target.username],
-			msgs: 0,
-			ts: new Date(),
-		}, extraData),
-	});
-
-	Subscriptions.upsert({ rid, 'u._id': target._id }, {
-		$setOnInsert: Object.assign({
-			name: source.username,
-			t: 'd',
-			open: true,
-			alert: true,
-			unread: 0,
-			u: {
-				_id: target._id,
-				username: target.username,
-			},
-		}, options.subscriptionExtra),
-	});
-
-	Subscriptions.upsert({ rid, 'u._id': source._id }, {
-		$setOnInsert: Object.assign({
-			name: target.username,
-			t: 'd',
-			open: true,
-			alert: true,
-			unread: 0,
-			u: {
-				_id: source._id,
-				username: source.username,
-			},
-		}, options.subscriptionExtra),
-	});
-
-	return {
-		_id: rid,
-		t: 'd',
-	};
-}
+import { Users, Rooms, Subscriptions } from '../../../models';
+import { callbacks } from '../../../callbacks';
+import { addUserRoles } from '../../../authorization';
+import { getValidRoomName } from '../../../utils';
+import { Apps } from '../../../apps/server';
+import { createDirectRoom } from './createDirectRoom';
 
 export const createRoom = function(type, name, owner, members, readOnly, extraData = {}, options = {}) {
 	if (type === 'd') {
@@ -66,7 +22,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
 	}
 
-	owner = Users.findOneByUsername(owner, { fields: { username: 1 } });
+	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
@@ -131,14 +87,8 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 
 	for (const username of members) {
 		const member = Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });
-		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
-		}
-
-		// make all room members (Except the owner) muted by default, unless they have the post-readonly permission
-		if (readOnly === true && !hasPermission(member._id, 'post-readonly') && !isTheOwner) {
-			Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
 		const extra = options.subscriptionExtra || {};

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
+
 import * as Mailer from '../../../../mailer';
 import { settings } from '../../../../settings';
 import { roomTypes } from '../../../../utils';
@@ -31,6 +32,10 @@ function getEmailContent({ message, user, room }) {
 	});
 
 	if (message.msg !== '') {
+		if (!settings.get('Email_notification_show_message')) {
+			return header;
+		}
+
 		let messageContent = s.escapeHTML(message.msg);
 
 		if (message.t === 'e2e') {
@@ -44,7 +49,7 @@ function getEmailContent({ message, user, room }) {
 				messageContent = messageContent.replace(token.token, token.text);
 			});
 		}
-		return `${ header }<br/><br/>${ messageContent.replace(/\n/gm, '<br/>') }`;
+		return `${ header }:<br/><br/>${ messageContent.replace(/\n/gm, '<br/>') }`;
 	}
 
 	if (message.file) {
@@ -54,13 +59,21 @@ function getEmailContent({ message, user, room }) {
 			lng,
 		});
 
+		if (!settings.get('Email_notification_show_message')) {
+			return fileHeader;
+		}
+
 		let content = `${ s.escapeHTML(message.file.name) }`;
 
 		if (message.attachments && message.attachments.length === 1 && message.attachments[0].description !== '') {
 			content += `<br/><br/>${ s.escapeHTML(message.attachments[0].description) }`;
 		}
 
-		return `${ fileHeader }<br/><br/>${ content }`;
+		return `${ fileHeader }:<br/><br/>${ content }`;
+	}
+
+	if (!settings.get('Email_notification_show_message')) {
+		return header;
 	}
 
 	if (message.attachments.length > 0) {
@@ -75,14 +88,14 @@ function getEmailContent({ message, user, room }) {
 			content += `${ s.escapeHTML(attachment.text) }<br/>`;
 		}
 
-		return `${ header }<br/><br/>${ content }`;
+		return `${ header }:<br/><br/>${ content }`;
 	}
 
 	return header;
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
-	const username = settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
+	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
 	if (room.t === 'd') {
@@ -137,6 +150,10 @@ export function shouldNotifyEmail({
 	hasReplyToThread,
 	roomType,
 }) {
+	// email notifications are disabled globally
+	if (!settings.get('Accounts_AllowEmailNotifications')) {
+		return false;
+	}
 
 	// use connected (don't need to send him an email)
 	if (statusConnection === 'online') {

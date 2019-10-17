@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { LivechatVisitors } from '../../../models';
 
 Meteor.methods({
