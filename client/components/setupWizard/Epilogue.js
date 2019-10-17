@@ -2,11 +2,13 @@ import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useSetSetting } from '../../hooks/useSetSetting';
-import { useTranslation } from '../../hooks/useTranslation';
 import { useSetting } from '../../hooks/useSetting';
+import { useTranslation } from '../../hooks/useTranslation';
 import './Epilogue.css';
 
-export function Epilogue() {
+export function Epilogue({
+	logoSrc = 'images/logo/logo.svg',
+}) {
 	const t = useTranslation();
 	const siteUrl = useSetting('Site_Url');
 	const setShowSetupWizard = useSetSetting('Show_Setup_Wizard');
@@ -17,7 +19,7 @@ export function Epilogue() {
 
 	return <section className='SetupWizard__Epilogue'>
 		<header className='SetupWizard__Epilogue-header'>
-			<img className='SetupWizard__Epilogue-headerLogo' src='images/logo/logo.svg' />
+			<img className='SetupWizard__Epilogue-headerLogo' src={logoSrc} />
 		</header>
 
 		<main className='SetupWizard__Epilogue-content'>

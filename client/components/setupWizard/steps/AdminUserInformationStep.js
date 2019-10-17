@@ -1,4 +1,12 @@
-import { Input, Field, FieldGroup, Label } from '@rocket.chat/fuselage';
+import {
+	EmailInput,
+	Field,
+	FieldGroup,
+	Icon,
+	Label,
+	PasswordInput,
+	TextInput,
+} from '@rocket.chat/fuselage';
 import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
@@ -115,10 +123,9 @@ export function AdminUserInformationStep({ step, title, active }) {
 			<FieldGroup>
 				<Field>
 					<Label text={t('Name')}>
-						<Input
+						<TextInput
 							ref={autoFocusRef}
-							type='text'
-							icon='user'
+							addon={<Icon name='user' />}
 							placeholder={t('Type_your_name')}
 							value={name}
 							onChange={({ currentTarget: { value } }) => setName(value)}
@@ -127,34 +134,32 @@ export function AdminUserInformationStep({ step, title, active }) {
 					</Label>
 				</Field>
 				<Field>
-					<Label text={t('Username')}>
-						<Input
-							type='text'
-							icon='at'
+					<Label text={t('Username')} error={!isUsernameValid && t('Invalid_username')}>
+						<TextInput
+							addon={<Icon name='at' />}
 							placeholder={t('Type_your_username')}
 							value={username}
 							onChange={({ currentTarget: { value } }) => setUsername(value)}
-							error={!isUsernameValid && t('Invalid_username')}
+							error={!isUsernameValid}
 						/>
 					</Label>
 				</Field>
 				<Field>
-					<Label text={t('Organization_Email')}>
-						<Input
-							type='email'
-							icon='mail'
+					<Label text={t('Organization_Email')} error={!isEmailValid && t('Invalid_email')}>
+						<EmailInput
+							addon={<Icon name='mail' />}
 							placeholder={t('Type_your_email')}
 							value={email}
 							onChange={({ currentTarget: { value } }) => setEmail(value)}
-							error={!isEmailValid && t('Invalid_email')}
+							error={!isEmailValid}
 						/>
 					</Label>
 				</Field>
 				<Field>
 					<Label text={t('Password')}>
-						<Input
+						<PasswordInput
 							type='password'
-							icon='key'
+							addon={<Icon name='key' />}
 							placeholder={t('Type_your_password')}
 							value={password}
 							onChange={({ currentTarget: { value } }) => setPassword(value)}

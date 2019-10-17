@@ -48,7 +48,7 @@ export function ConnectionStatusAlert() {
 
 	return <div className='ConnectionStatusAlert' role='alert'>
 		<strong>
-			<Icon iconName='warning' /> {t('meteor_status', { context: status })}
+			<Icon name='warning' /> {t('meteor_status', { context: status })}
 		</strong>
 
 		{status === 'waiting' && <>
