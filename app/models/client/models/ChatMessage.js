@@ -9,3 +9,5 @@ ChatMessage.setReactions = function(messageId, reactions) {
 ChatMessage.unsetReactions = function(messageId) {
 	return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 };
+
+new PersistentMinimongo2(ChatMessage, 'Message');
