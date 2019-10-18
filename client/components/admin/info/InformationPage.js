@@ -31,11 +31,11 @@ export function InformationPage({
 	return <section className='page-container'>
 		<Header rawSectionName={t('Info')} hideHelp>
 			{canViewStatistics
-				&& <div className='rc-header__block rc-header__block-action'>
+				&& <Header.ActionBlock>
 					<Button disabled={isLoading} primary type='button' onClick={onClickRefreshButton}>
 						<Icon name='reload' /> {t('Refresh')}
 					</Button>
-				</div>}
+				</Header.ActionBlock>}
 		</Header>
 
 		<div className='content'>

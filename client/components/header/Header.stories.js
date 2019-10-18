@@ -24,9 +24,9 @@ export const withSectionName = () =>
 
 export const withButton = () =>
 	<Header rawSectionName='Welcome to Rocket.Chat' hideHelp>
-		<div className='rc-header__block rc-header__block-action'>
+		<Header.ActionBlock>
 			<Button primary type='button'>
 				Hooray!
 			</Button>
-		</div>
+		</Header.ActionBlock>
 	</Header>;

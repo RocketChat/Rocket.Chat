@@ -39,3 +39,7 @@ export function Header({
 		</div>
 	</header>;
 }
+
+Header.ActionBlock = (props) => <div className='rc-header__block rc-header__block-action' {...props} />;
+
+Header.ButtonSection = (props) => <div className='rc-header__section-button' {...props} />;
