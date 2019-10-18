@@ -1,12 +1,12 @@
+import { Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../providers/TranslationProvider';
-import { SkeletonText } from './SkeletonText';
 import { formatDate, formatHumanReadableTime } from './formatters';
 import { DescriptionList } from './DescriptionList';
 
 export function RocketChatSection({ info, statistics, isLoading }) {
-	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
+	const s = (fn) => (isLoading ? <Text.Skeleton animated width={'1/2'} /> : fn());
 	const t = useTranslation();
 
 	const appsEngineVersion = info && info.marketplaceApiVersion;
