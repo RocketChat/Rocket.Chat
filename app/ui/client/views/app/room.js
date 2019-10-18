@@ -953,9 +953,7 @@ Template.room.events({
 
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
-	
 	// this.typing = new msgTyping this.data._id
-	
 
 	lazyloadtick();
 	const rid = this.data._id;
@@ -969,12 +967,11 @@ Template.room.onCreated(function() {
 	this.subscription = new ReactiveVar();
 	this.state = new ReactiveDict();
 
-
 	this.autorun(() => {
 		const rid = Template.currentData()._id;
 		this.state.set('announcement', Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } }).announcement);
 	});
-	
+
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid });
 		this.subscription.set(subscription);
