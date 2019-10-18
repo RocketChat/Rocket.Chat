@@ -7,21 +7,7 @@ export class RoomsRaw extends BaseRaw {
 			'u._id': uid,
 		};
 
-		return this.col.findOne(query, options);
-	}
-
-	isUserInRole(uid, roleName, rid) {
-		if (rid == null) {
-			return;
-		}
-
-		const query = {
-			'u._id': uid,
-			rid,
-			roles: roleName,
-		};
-
-		return this.findOne(query, { fields: { roles: 1 } });
+		return this.findOne(query, options);
 	}
 
 	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {

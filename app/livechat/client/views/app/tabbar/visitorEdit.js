@@ -49,6 +49,11 @@ Template.visitorEdit.helpers({
 	canRemoveTag(availableUserTags, tag) {
 		return hasRole(Meteor.userId(), ['admin', 'livechat-manager']) || (Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1));
 	},
+
+	isSmsIntegration() {
+		const room = Template.instance().room.get();
+		return !!(room && room.sms);
+	},
 });
 
 Template.visitorEdit.onRendered(function() {
@@ -101,7 +106,10 @@ Template.visitorEdit.events({
 	'submit form'(event, instance) {
 		event.preventDefault();
 		const userData = { _id: instance.visitor.get()._id };
-		const roomData = { _id: instance.room.get()._id };
+
+		const room = instance.room.get();
+		const { _id, sms } = room;
+		const roomData = { _id };
 
 		userData.name = event.currentTarget.elements.name.value;
 		userData.email = event.currentTarget.elements.email.value;
@@ -109,6 +117,10 @@ Template.visitorEdit.events({
 
 		roomData.topic = event.currentTarget.elements.topic.value;
 		roomData.tags = instance.tags.get();
+
+		if (sms) {
+			delete userData.phone;
+		}
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
