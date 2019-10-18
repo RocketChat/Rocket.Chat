@@ -3,12 +3,13 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 import _ from 'underscore';
 
 import { SAML } from './saml_utils';
-import { CredentialTokens } from '../../models';
+import { Rooms, Subscriptions, CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
 import { _setUsername } from '../../lib/server/functions';
 
@@ -238,6 +239,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				eppn: eduPersonPrincipalName,
 				globalRoles,
 				emails,
+				services: {},
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
@@ -249,8 +251,18 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
 
+			const languages = TAPi18n.getLanguages();
+			if (languages[loginResult.profile.language]) {
+				newUser.language = loginResult.profile.language;
+			}
+
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
+
+			if (loginResult.profile.channels) {
+				const channels = loginResult.profile.channels.split(',');
+				Accounts.saml.subscribeToSAMLChannels(channels, user);
+			}
 		}
 
 		// If eppn is not exist then update
@@ -344,6 +356,35 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 	throw new Error('SAML Profile did not contain an email address');
 });
+
+Accounts.saml.subscribeToSAMLChannels = function(channels, user) {
+	try {
+		for (let roomName of channels) {
+			roomName = roomName.trim();
+			if (!roomName) {
+				continue;
+			}
+
+			let room = Rooms.findOneByNameAndType(roomName, 'c');
+			if (!room) {
+				room = Rooms.createWithIdTypeAndName(Random.id(), 'c', roomName);
+			}
+
+			if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
+				Subscriptions.createWithRoomAndUser(room, user, {
+					ts: new Date(),
+					open: true,
+					alert: true,
+					unread: 1,
+					userMentions: 1,
+					groupMentions: 0,
+				});
+			}
+		}
+	}	catch (err) {
+		console.error(err);
+	}
+};
 
 Accounts.saml.hasCredential = function(credentialToken) {
 	return CredentialTokens.findOneById(credentialToken) != null;
