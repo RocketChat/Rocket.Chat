@@ -145,7 +145,7 @@ Template.livechatAppearance.onCreated(async function() {
 	const livechatConversationFinishedMessage = getSettingFromAppearance(this, 'Livechat_conversation_finished_message');
 	const livechatRegistrationFormMessage = getSettingFromAppearance(this, 'Livechat_registration_form_message');
 	const livechatRegistrationForm = getSettingFromAppearance(this, 'Livechat_registration_form');
-	const livechatNameFieldRegistrrationForm = getSettingFromAppearance(this, 'Livechat_name_field_registration_form');
+	const livechatNameFieldRegistrationForm = getSettingFromAppearance(this, 'Livechat_name_field_registration_form');
 	const livechatEmailFieldRegistrationForm = getSettingFromAppearance(this, 'Livechat_email_field_registration_form');
 	const conversationFinishedText = getSettingFromAppearance(this, 'Livechat_conversation_finished_text');
 
@@ -163,7 +163,7 @@ Template.livechatAppearance.onCreated(async function() {
 	this.conversationFinishedMessage.set(livechatConversationFinishedMessage && livechatConversationFinishedMessage.value);
 	this.registrationFormMessage.set(livechatRegistrationFormMessage && livechatRegistrationFormMessage.value);
 	this.registrationFormEnabled.set(livechatRegistrationForm && livechatRegistrationForm.value);
-	this.registrationFormNameFieldEnabled.set(livechatNameFieldRegistrrationForm && livechatNameFieldRegistrrationForm.value);
+	this.registrationFormNameFieldEnabled.set(livechatNameFieldRegistrationForm && livechatNameFieldRegistrationForm.value);
 	this.registrationFormEmailFieldEnabled.set(livechatEmailFieldRegistrationForm && livechatEmailFieldRegistrationForm.value);
 	this.conversationFinishedText.set(conversationFinishedText && conversationFinishedText.value);
 });
