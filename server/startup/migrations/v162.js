@@ -1,28 +1,16 @@
-import { Migrations } from '../../../app/migrations';
-import { Uploads } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Permissions } from '../../../app/models/server';
 
 Migrations.add({
 	version: 162,
 	up() {
-		/*
-		 * Migrate existing `rocketchat_uploads` documents to include the typeGroup
-		 */
+		const bulkCreateC = Permissions.findOne({ _id: 'bulk-create-c' });
 
-		Uploads.find({
-			type: {
-				$exists: true,
-			},
-			typeGroup: {
-				$exists: false,
-			},
-		}).forEach((upload) => {
-			Uploads.model.direct.update({
-				_id: upload._id,
-			}, {
-				$set: {
-					typeGroup: upload.type.split('/').shift(),
-				},
-			});
-		});
+		if (bulkCreateC) {
+			Permissions.remove({ _id: 'bulk-create-c' });
+		}
+	},
+	down() {
+		Permissions.upsert({ _id: 'bulk-create-c' }, { _id: 'bulk-create-c', roles: [] });
 	},
 });

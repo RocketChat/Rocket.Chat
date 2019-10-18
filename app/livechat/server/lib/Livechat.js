@@ -35,6 +35,7 @@ import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
+import { FileUpload } from '../../../file-upload/server';
 
 export const Livechat = {
 	Analytics,
@@ -364,6 +365,7 @@ export const Livechat = {
 			'Livechat_fileupload_enabled',
 			'FileUpload_Enabled',
 			'Livechat_conversation_finished_message',
+			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',
@@ -446,6 +448,10 @@ export const Livechat = {
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
+		if (!room.open) {
+			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
 		if (!room.servedBy) {
@@ -635,7 +641,7 @@ export const Livechat = {
 		check(token, String);
 
 		LivechatRooms.findByVisitorToken(token).forEach((room) => {
-			Messages.removeFilesByRoomId(room._id);
+			FileUpload.removeFilesByRoomId(room._id);
 			Messages.removeByRoomId(room._id);
 		});
 
