@@ -1,3 +1,4 @@
+import { Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
@@ -31,7 +32,11 @@ export function Header({
 				/>
 			</div>
 
-			<span className='rc-header__block'>{rawSectionName || t(sectionName)}</span>
+			<span className='rc-header__block'>
+				<Text is='h1' headline defaultColor>
+					{rawSectionName || t(sectionName)}
+				</Text>
+			</span>
 
 			{children}
 

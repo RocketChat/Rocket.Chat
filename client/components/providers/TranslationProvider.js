@@ -37,7 +37,11 @@ const createContextValue = (language) => {
 	const has = (key, { lng = language, ...options } = {}) => TAPi18next.exists(key, { ...options, lng });
 
 	translate.has = has;
-	return translate;
+
+	return {
+		language,
+		translate,
+	};
 };
 
 export function TranslationProvider({ children }) {
@@ -50,4 +54,6 @@ export function TranslationProvider({ children }) {
 	</TranslationContext.Provider>;
 }
 
-export const useTranslation = () => useContext(TranslationContext);
+export const useTranslation = () => useContext(TranslationContext).translate;
+
+export const useLanguage = () => useContext(TranslationContext).language;

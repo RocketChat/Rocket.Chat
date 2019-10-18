@@ -152,7 +152,7 @@
 		"@google-cloud/vision": "^0.23.0",
 		"@rocket.chat/apps-engine": "^1.7.0",
 		"@rocket.chat/fuselage": "^0.2.0-dev.30",
-		"@rocket.chat/fuselage-hooks": "^0.2.0-dev.28",
+		"@rocket.chat/fuselage-hooks": "^0.2.0-dev.32",
 		"@rocket.chat/icons": "^0.2.0-alpha.9",
 		"@slack/client": "^4.8.0",
 		"adm-zip": "^0.4.13",
