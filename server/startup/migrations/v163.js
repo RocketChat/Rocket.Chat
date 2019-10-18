@@ -2,7 +2,7 @@ import { Migrations } from '../../../app/migrations';
 import { Uploads } from '../../../app/models';
 
 Migrations.add({
-	version: 162,
+	version: 163,
 	up() {
 		/*
 		 * Migrate existing `rocketchat_uploads` documents to include the typeGroup
