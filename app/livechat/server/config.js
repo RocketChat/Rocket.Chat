@@ -169,7 +169,6 @@ Meteor.startup(function() {
 	settings.add('Livechat_enabled_when_agent_idle', true, {
 		type: 'boolean',
 		group: 'Livechat',
-		public: true,
 		i18nLabel: 'Accept_new_livechats_when_agent_is_idle',
 	});
 
