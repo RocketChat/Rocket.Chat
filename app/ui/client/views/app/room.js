@@ -333,8 +333,7 @@ Template.room.helpers({
 	},
 
 	announcement() {
-		const announcement = Template.instance().state.get('announcement');
-		return announcement != null && announcement !== '' && announcement;
+		return Template.instance().state.get('announcement');
 	},
 
 	messageboxData() {
