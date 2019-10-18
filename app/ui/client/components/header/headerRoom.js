@@ -14,6 +14,8 @@ import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
 
+import './headerRoom.html';
+
 const getUserStatus = (id) => {
 	const roomData = Session.get(`roomData${ id }`);
 	return roomTypes.getUserStatus(roomData.t, id);
@@ -27,6 +29,7 @@ const getUserStatusText = (id) => {
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
+	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
 
@@ -145,6 +148,7 @@ Template.headerRoom.events({
 	'click .js-favorite'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
+		event.currentTarget.blur();
 
 		return Meteor.call(
 			'toggleFavorite',

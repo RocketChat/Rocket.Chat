@@ -40,7 +40,6 @@ import './messageBoxReadOnly';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
-	EmojiPicker.init();
 	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar();
 	this.isMicrophoneDenied = new ReactiveVar(true);
@@ -111,6 +110,7 @@ Template.messageBox.onCreated(function() {
 
 Template.messageBox.onRendered(function() {
 	const $input = $(this.find('.js-input-message'));
+	this.source = $input[0];
 	$input.on('dataChange', () => {
 		const messages = $input.data('reply') || [];
 		this.replyMessageData.set(messages);
@@ -327,7 +327,7 @@ Template.messageBox.events({
 			return;
 		}
 
-		EmojiPicker.open(event.currentTarget, (emoji) => {
+		EmojiPicker.open(instance.source, (emoji) => {
 			const emojiValue = `:${ emoji }: `;
 
 			const { input } = instance;
