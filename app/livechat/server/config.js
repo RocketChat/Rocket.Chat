@@ -398,6 +398,14 @@ Meteor.startup(function() {
 		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
 	});
 
+	settings.add('Livechat_assign_new_conversation_to_bot', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'Routing',
+		i18nLabel: 'Assign_new_conversations_to_bot_agent',
+		i18nDescription: 'Assign_new_conversations_to_bot_agent_description',
+	});
+
 	settings.add('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0, {
 		type: 'int',
 		group: 'Livechat',
