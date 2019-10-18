@@ -4,6 +4,14 @@ import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import { Base } from './_Base';
 
+const fillTypeGroup = (fileData) => {
+	if (!fileData.type) {
+		return;
+	}
+
+	fileData.typeGroup = fileData.type.split('/').shift();
+};
+
 export class Uploads extends Base {
 	constructor() {
 		super('uploads');
@@ -57,15 +65,15 @@ export class Uploads extends Base {
 	}
 
 	insert(fileData, ...args) {
-		this._fillTypeGroup(fileData);
+		fillTypeGroup(fileData);
 		return super.insert(fileData, ...args);
 	}
 
 	update(filter, update, ...args) {
 		if (update.$set) {
-			this._fillTypeGroup(update.$set);
+			fillTypeGroup(update.$set);
 		} else if (update.type) {
-			this._fillTypeGroup(update);
+			fillTypeGroup(update);
 		}
 
 		return super.update(filter, update, ...args);
@@ -85,21 +93,13 @@ export class Uploads extends Base {
 		_.extend(fileData, file, extra);
 
 		if (this.model.direct && this.model.direct.insert != null) {
-			this._fillTypeGroup(fileData);
+			fillTypeGroup(fileData);
 			file = this.model.direct.insert(fileData);
 		} else {
 			file = this.insert(fileData);
 		}
 
 		return file;
-	}
-
-	_fillTypeGroup(fileData) {
-		if (!fileData.type) {
-			return;
-		}
-
-		fileData.typeGroup = fileData.type.split('/').shift();
 	}
 
 	updateFileComplete(fileId, userId, file) {
@@ -124,7 +124,7 @@ export class Uploads extends Base {
 		update.$set = _.extend(file, update.$set);
 
 		if (this.model.direct && this.model.direct.update != null) {
-			this._fillTypeGroup(update.$set);
+			fillTypeGroup(update.$set);
 
 			result = this.model.direct.update(filter, update);
 		} else {
