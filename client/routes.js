@@ -40,10 +40,6 @@ const createTemplateForComponent = async (
 	// eslint-disable-next-line new-cap
 	renderContainerView = () => HTML.DIV()
 ) => {
-	const React = await import('react');
-	const ReactDOM = await import('react-dom');
-	const { MeteorProvider } = await import('./components/providers/MeteorProvider');
-
 	const name = component.displayName || component.name;
 
 	if (!name) {
@@ -59,6 +55,14 @@ const createTemplateForComponent = async (
 
 	Template[name].props = new ReactiveVar(props);
 
+	const React = await import('react');
+	const ReactDOM = await import('react-dom');
+	const { MeteorProvider } = await import('./components/providers/MeteorProvider');
+
+	function TemplateComponent() {
+		return React.createElement(component, Template[name].props.get());
+	}
+
 	Template[name].onRendered(() => {
 		Template.instance().autorun((computation) => {
 			if (computation.firstRun) {
@@ -67,7 +71,7 @@ const createTemplateForComponent = async (
 
 			ReactDOM.render(
 				React.createElement(MeteorProvider, {
-					children: React.createElement(() => React.createElement(component, Template[name].props.get())),
+					children: React.createElement(TemplateComponent),
 				}), Template.instance().firstNode);
 		});
 	});
