@@ -14,6 +14,7 @@
   "%_of_conversations": "% of Conversations",
   "Accept": "Accept",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Accept incoming livechat requests even if there are no online agents",
+  "Accept_new_livechats_when_agent_is_idle": "Accept new livechat requests when the agent is idle",
   "Accept_with_no_online_agents": "Accept with No Online Agents",
   "access-mailer": "Access Mailer Screen",
   "access-mailer_description": "Permission to send mass email to all users.",
