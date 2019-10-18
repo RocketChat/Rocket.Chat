@@ -314,7 +314,7 @@ export class Users extends Base {
 		return { _id: userId };
 	}
 
-	setE2EPublicAndPivateKeysByUserId(userId, { public_key, private_key }) {
+	setE2EPublicAndPrivateKeysByUserId(userId, { public_key, private_key }) {
 		this.update({ _id: userId }, {
 			$set: {
 				'e2e.public_key': public_key,
