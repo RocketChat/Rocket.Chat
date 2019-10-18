@@ -26,6 +26,7 @@ import {
 	RocketChatTabBar,
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
+import { renderMessageBody } from '../../../../ui-utils/client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { getConfig } from '../../../../ui-utils/client/config';
 import { call } from '../../../../ui-utils/client/lib/callMethod';
@@ -901,9 +902,10 @@ Template.room.events({
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return callbacks.run(roomData.announcementDetails.callback, this._id);
 		}
+
 		modal.open({
 			title: t('Announcement'),
-			text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
+			text: renderMessageBody({ msg: roomData.announcement }),
 			html: true,
 			showConfirmButton: false,
 			showCancelButton: true,
