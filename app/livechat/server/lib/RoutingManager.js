@@ -35,19 +35,28 @@ export const RoutingManager = {
 		return this.getMethod().config || {};
 	},
 
+	async getNextAgent(department) {
+		let agent = callbacks.run('livechat.beforeGetNextAgent', department);
+
+		if (!agent) {
+			agent = await this.getMethod().getNextAgent(department);
+		}
+
+		return agent;
+	},
+
 	async delegateInquiry(inquiry, agent) {
 		// return Room Object
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
-			agent = await this.getMethod().getNextAgent(department);
+			agent = await this.getNextAgent(department);
 		}
 
 		if (!agent) {
 			return LivechatRooms.findOneById(rid);
 		}
 
-		const room = this.takeInquiry(inquiry, agent);
-		return room;
+		return this.takeInquiry(inquiry, agent);
 	},
 
 	assignAgent(inquiry, agent) {
