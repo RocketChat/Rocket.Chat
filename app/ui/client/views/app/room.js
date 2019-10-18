@@ -331,10 +331,9 @@ Template.room.helpers({
 		return roomTypes.getRouteLink('d', { name: this.username });
 	},
 
-	showAnnouncement() {
-		const { room } = Template.instance();
-		if (!room) { return false; }
-		return room.announcement != null && room.announcement !== '';
+	announcement() {
+		const announcement = Template.instance().state.get('announcement');
+		return announcement != null && announcement !== '' && announcement;
 	},
 
 	messageboxData() {
@@ -360,12 +359,6 @@ Template.room.helpers({
 			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
 			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
 		};
-	},
-
-	roomAnnouncement() {
-		const { room } = Template.instance();
-		if (!room) { return ''; }
-		return room.announcement;
 	},
 
 	getAnnouncementStyle() {
@@ -960,7 +953,10 @@ Template.room.events({
 
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
+	
 	// this.typing = new msgTyping this.data._id
+	
+
 	lazyloadtick();
 	const rid = this.data._id;
 
@@ -972,6 +968,12 @@ Template.room.onCreated(function() {
 
 	this.subscription = new ReactiveVar();
 	this.state = new ReactiveDict();
+
+
+	this.autorun(() => {
+		const rid = Template.currentData()._id;
+		this.state.set('announcement', Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } }).announcement);
+	})
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid });
 		this.subscription.set(subscription);
