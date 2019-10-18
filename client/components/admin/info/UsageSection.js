@@ -1,12 +1,12 @@
+import { Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../providers/TranslationProvider';
-import { SkeletonText } from './SkeletonText';
-import { formatMemorySize } from './formatters';
 import { DescriptionList } from './DescriptionList';
+import { formatMemorySize } from './formatters';
 
 export function UsageSection({ statistics, isLoading }) {
-	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
+	const s = (fn) => (isLoading ? <Text.Skeleton animated width={'1/2'} /> : fn());
 	const t = useTranslation();
 
 	return <>
