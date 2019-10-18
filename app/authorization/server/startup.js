@@ -22,7 +22,6 @@ Meteor.startup(function() {
 		{ _id: 'assign-admin-role',             roles: ['admin'] },
 		{ _id: 'assign-roles',                  roles: ['admin'] },
 		{ _id: 'ban-user',                      roles: ['admin', 'owner', 'moderator'] },
-		{ _id: 'bulk-create-c',                 roles: ['admin'] },
 		{ _id: 'bulk-register-user',            roles: ['admin'] },
 		{ _id: 'create-c',                      roles: ['admin', 'user', 'bot'] },
 		{ _id: 'create-d',                      roles: ['admin', 'user', 'bot'] },

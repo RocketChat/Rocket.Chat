@@ -443,8 +443,6 @@
   "Broadcasting_media_server_url": "Udsenders medieserver-url",
   "Bugsnag_api_key": "Bugsnag API nøgle",
   "Build_Environment": "Byg miljø",
-  "bulk-create-c": "Bulk Opret kanaler",
-  "bulk-create-c_description": "Tilladelse til at oprette kanaler i bulk",
   "bulk-register-user": "Bulk Opret kanaler",
   "bulk-register-user_description": "Tilladelse til at oprette kanaler i bulk",
   "Busiest_day": "Travleste dag",

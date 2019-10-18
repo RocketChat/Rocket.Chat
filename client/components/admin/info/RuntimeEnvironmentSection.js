@@ -1,15 +1,14 @@
 import React from 'react';
 
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { SkeletonText } from './SkeletonText';
-import { useFormatters } from '../../../hooks/useFormatters';
+import { formatMemorySize, formatHumanReadableTime, formatCPULoad } from './formatters';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
 
 export function RuntimeEnvironmentSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());
 	const t = useTranslation();
-	const { formatMemorySize, formatHumanReadableTime, formatCPULoad } = useFormatters();
 
 	if (!statistics) {
 		return null;
@@ -25,7 +24,7 @@ export function RuntimeEnvironmentSection({ statistics, isLoading }) {
 			<InformationEntry label={t('Node_version')}>{s(() => statistics.process.nodeVersion)}</InformationEntry>
 			<InformationEntry label={t('Mongo_version')}>{s(() => statistics.mongoVersion)}</InformationEntry>
 			<InformationEntry label={t('Mongo_storageEngine')}>{s(() => statistics.mongoStorageEngine)}</InformationEntry>
-			<InformationEntry label={t('OS_Uptime')}>{s(() => formatHumanReadableTime(statistics.os.uptime))}</InformationEntry>
+			<InformationEntry label={t('OS_Uptime')}>{s(() => formatHumanReadableTime(statistics.os.uptime, t))}</InformationEntry>
 			<InformationEntry label={t('OS_Loadavg')}>{s(() => formatCPULoad(statistics.os.loadavg))}</InformationEntry>
 			<InformationEntry label={t('OS_Totalmem')}>{s(() => formatMemorySize(statistics.os.totalmem))}</InformationEntry>
 			<InformationEntry label={t('OS_Freemem')}>{s(() => formatMemorySize(statistics.os.freemem))}</InformationEntry>
