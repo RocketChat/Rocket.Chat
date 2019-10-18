@@ -953,7 +953,10 @@ Template.room.events({
 
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
+	
 	// this.typing = new msgTyping this.data._id
+	
+
 	lazyloadtick();
 	const rid = this.data._id;
 
