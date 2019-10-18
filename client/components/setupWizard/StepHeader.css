@@ -15,14 +15,3 @@
 
 	line-height: 1.125rem;
 }
-
-.SetupWizard__StepHeader-title {
-	letter-spacing: 0.05rem;
-
-	color: var(--color-dark-90);
-
-	font-size: 1.25rem;
-	font-weight: 500;
-
-	line-height: 1.75rem;
-}

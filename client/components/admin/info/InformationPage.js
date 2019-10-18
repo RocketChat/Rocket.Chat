@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react';
 
 import { call } from '../../../../app/ui-utils/client/lib/callMethod';
 import { useViewStatisticsPermission } from '../../../hooks/usePermissions';
-import { useTranslation } from '../../../hooks/useTranslation';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Info } from '../../../../app/utils';
 import { SideNav } from '../../../../app/ui-utils/client/lib/SideNav';
 import { Header } from '../../header/Header';
 import { Link } from '../../basic/Link';
 import { ErrorAlert } from '../../basic/ErrorAlert';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';
 import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';
@@ -103,7 +103,7 @@ export function InformationPage() {
 			{canViewStatistics
 				&& <div className='rc-header__block rc-header__block-action'>
 					<Button primary type='button' onClick={handleRefreshClick}>
-						<Icon name='reload' /> {t('Refresh')}
+						<Icon iconName='reload' /> {t('Refresh')}
 					</Button>
 				</div>}
 		</Header>

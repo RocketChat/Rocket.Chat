@@ -1,6 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { Rooms, Users, LivechatVisitors, LivechatDepartment } from '../../../models';
+import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 export class AppRoomsConverter {
 	constructor(orch) {
@@ -67,7 +68,7 @@ export class AppRoomsConverter {
 			};
 		}
 
-		return {
+		const newRoom = {
 			_id: room.id,
 			fname: room.displayName,
 			name: room.slugifiedName,
@@ -90,6 +91,8 @@ export class AppRoomsConverter {
 			lm: room.lastModifiedAt,
 			customFields: room.customFields,
 		};
+
+		return Object.assign(newRoom, room._unmappedProperties_);
 	}
 
 	convertRoom(room) {
@@ -97,54 +100,103 @@ export class AppRoomsConverter {
 			return undefined;
 		}
 
-		let creator;
-		if (room.u) {
-			creator = this.orch.getConverters().get('users').convertById(room.u._id);
-		}
+		const map = {
+			id: '_id',
+			displayName: 'fname',
+			slugifiedName: 'name',
+			members: 'members',
+			messageCount: 'msgs',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			closedAt: 'closedAt',
+			lastModifiedAt: 'lm',
+			customFields: 'customFields',
+			isWaitingResponse: 'waitingResponse',
+			isOpen: 'open',
+			isDefault: (room) => {
+				const result = !!room.default;
+				delete room.default;
+				return result;
+			},
+			isReadOnly: (room) => {
+				const result = !!room.ro;
+				delete room.ro;
+				return result;
+			},
+			displaySystemMessages: (room) => {
+				const { sysMes } = room;
 
-		let visitor;
-		if (room.v) {
-			visitor = this.orch.getConverters().get('visitors').convertById(room.v._id);
-		}
+				if (typeof sysMes === 'undefined') {
+					return true;
+				}
 
-		let department;
-		if (room.departmentId) {
-			department = this.orch.getConverters().get('departments').convertById(room.departmentId);
-		}
+				delete room.sysMes;
+				return sysMes;
+			},
+			type: (room) => {
+				const result = this._convertTypeToApp(room.t);
+				delete room.t;
+				return result;
+			},
+			creator: (room) => {
+				const { u } = room;
 
-		let servedBy;
-		if (room.servedBy) {
-			servedBy = this.orch.getConverters().get('users').convertById(room.servedBy._id);
-		}
+				if (!u) {
+					return undefined;
+				}
 
-		let responseBy;
-		if (room.responseBy) {
-			responseBy = this.orch.getConverters().get('users').convertById(room.responseBy._id);
-		}
+				delete room.u;
 
-		return {
-			id: room._id,
-			displayName: room.fname,
-			slugifiedName: room.name,
-			type: this._convertTypeToApp(room.t),
-			creator,
-			visitor,
-			department,
-			servedBy,
-			responseBy,
-			members: room.members,
-			isDefault: typeof room.default === 'undefined' ? false : room.default,
-			isReadOnly: typeof room.ro === 'undefined' ? false : room.ro,
-			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
-			isWaitingResponse: typeof room.waitingResponse === 'undefined' ? undefined : !!room.waitingResponse,
-			isOpen: typeof room.open === 'undefined' ? undefined : !!room.open,
-			messageCount: room.msgs,
-			createdAt: room.ts,
-			updatedAt: room._updatedAt,
-			closedAt: room.closedAt,
-			lastModifiedAt: room.lm,
-			customFields: room.customFields,
+				return this.orch.getConverters().get('users').convertById(u._id);
+			},
+			visitor: (room) => {
+				const { v } = room;
+
+				if (!v) {
+					return undefined;
+				}
+
+				delete room.v;
+
+				return this.orch.getConverters().get('visitors').convertById(v._id);
+			},
+			department: (room) => {
+				const { departmentId } = room;
+
+				if (!departmentId) {
+					return undefined;
+				}
+
+				delete room.departmentId;
+
+				return this.orch.getConverters().get('departments').convertById(room.departmentId);
+			},
+			servedBy: (room) => {
+				const { servedBy } = room;
+
+				if (!servedBy) {
+					return undefined;
+				}
+
+				delete room.servedBy;
+
+				return this.orch.getConverters().get('users').convertById(servedBy._id);
+			},
+			responseBy: (room) => {
+				const { responseBy } = room;
+
+				if (!responseBy) {
+					return undefined;
+				}
+
+				delete room.responseBy;
+
+				return this.orch.getConverters().get('users').convertById(responseBy._id);
+			},
+
 		};
+
+		return transformMappedData(room, map);
 	}
 
 	_convertTypeToApp(typeChar) {
