@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 
 import _ from 'underscore';
 import s from 'underscore.string';
+import './publish.js';
 
 export const LoggerManager = new class extends EventEmitter {
 	constructor() {
