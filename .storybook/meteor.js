@@ -2,12 +2,15 @@ export const Meteor = {
 	isClient: true,
 	isServer: false,
 	_localStorage: window.localStorage,
+	absoluteUrl: () => {},
 	userId: () => {},
 	Streamer: () => {},
 	startup: () => {},
 	methods: () => {},
 	call: () => {},
 };
+
+Meteor.absoluteUrl.defaultOptions = {};
 
 export const Tracker = {
 	autorun: () => ({
