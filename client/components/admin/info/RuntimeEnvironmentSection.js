@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { useTranslation } from '../../../hooks/useTranslation';
-import { formatMemorySize, formatHumanReadableTime, formatCPULoad } from './formatters';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { DescriptionList } from './DescriptionList';
 import { SkeletonText } from './SkeletonText';
+import { formatMemorySize, formatHumanReadableTime, formatCPULoad } from './formatters';
 
 export function RuntimeEnvironmentSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <SkeletonText /> : fn());

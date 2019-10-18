@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../hooks/useTranslation';
+import { useTranslation } from '../providers/TranslationProvider';
 
 export function Pager({ disabled, onBackClick, isContinueEnabled = true }) {
 	const t = useTranslation();

@@ -17,7 +17,7 @@ import { useFocus } from '../../../hooks/useFocus';
 import { useLoginWithPassword } from '../../../hooks/useLoginWithPassword';
 import { useMethod } from '../../../hooks/useMethod';
 import { useSetting } from '../../../hooks/useSetting';
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';

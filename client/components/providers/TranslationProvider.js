@@ -1,8 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 
-import { TranslationContext } from '../contexts/TranslationContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
+
+const translate = function(key) {
+	return key;
+};
+
+translate.has = () => true;
+
+export const TranslationContext = createContext(translate);
 
 const createContextValue = (language) => {
 	const translate = (key, ...replaces) => {
@@ -42,3 +49,5 @@ export function TranslationProvider({ children }) {
 		{children}
 	</TranslationContext.Provider>;
 }
+
+export const useTranslation = () => useContext(TranslationContext);

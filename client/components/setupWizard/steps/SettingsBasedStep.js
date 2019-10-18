@@ -6,7 +6,7 @@ import { handleError } from '../../../../app/utils/client';
 import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useFocus } from '../../../hooks/useFocus';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
 import { useSetupWizardStepsState } from '../StepsState';

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { useTranslation } from '../../hooks/useTranslation';
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { useTranslation } from '../providers/TranslationProvider';
 import { BurgerMenuButton } from './BurgerMenuButton';
 import { useSidebarState, useUnreadMessagesBadge } from './hooks';
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 
 export function Header({
 	children,
