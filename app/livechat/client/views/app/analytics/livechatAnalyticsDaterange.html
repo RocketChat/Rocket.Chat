@@ -1,0 +1,48 @@
+<template name="livechatAnalyticsDaterange">
+	<div class="rc-popover__column">
+		<ul class="rc-popover__list">
+			<li class="rc-popover__item {{bold 'today'}}">
+				<label class="rc-popover__label">
+					<input type="radio" name="lc-daterange" value="today" class="hidden">
+					<span class="rc-popover__item-text">{{_ "Today"}}</span>
+				</label>
+			</li>
+			<li class="rc-popover__item {{bold 'yesterday'}}">
+				<label class="rc-popover__label">
+					<input type="radio" name="lc-daterange" value="yesterday" class="hidden">
+					<span class="rc-popover__item-text">{{_ "Yesterday"}}</span>
+				</label>
+			</li>
+			<li class="rc-popover__item {{bold 'this-week'}}">
+				<label class="rc-popover__label">
+					<input type="radio" name="lc-daterange" value="this-week" class="hidden">
+					<span class="rc-popover__item-text">{{_ "This_week"}}</span>
+				</label>
+			</li>
+			<li class="rc-popover__item {{bold 'prev-week'}}">
+				<label class="rc-popover__label">
+					<input type="radio" name="lc-daterange" value="prev-week" class="hidden">
+					<span class="rc-popover__item-text">{{_ "Previous_week"}}</span>
+				</label>
+			</li>
+			<li class="rc-popover__item {{bold 'this-month'}}">
+				<label class="rc-popover__label">
+					<input type="radio" name="lc-daterange" value="this-month" class="hidden">
+					<span class="rc-popover__item-text">{{_ "This_month"}}</span>
+				</label>
+			</li>
+			<li class="rc-popover__item {{bold 'prev-month'}}">
+				<label class="rc-popover__label">
+					<input type="radio" name="lc-daterange" value="prev-month" class="hidden">
+					<span class="rc-popover__item-text">{{_ "Previous_month"}}</span>
+				</label>
+			</li>
+			<li class="rc-popover__item {{bold 'custom'}}">
+				<label class="rc-popover__label">
+					<input type="radio" name="lc-daterange" value="custom" class="hidden">
+					<span class="rc-popover__item-text">{{_ "Custom_dates"}}</span>
+				</label>
+			</li>
+		</ul>
+	</div>
+</template>

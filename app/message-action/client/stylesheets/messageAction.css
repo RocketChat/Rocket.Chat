@@ -1,0 +1,64 @@
+.attachment {
+	& .action {
+		margin-top: 2px;
+	}
+
+	& .text-button {
+
+		position: relative;
+
+		display: inline-flex;
+
+		min-width: 0;
+		max-width: 220px;
+
+		height: 28px;
+		margin: 2px 2px 2px 0;
+		padding: 0 10px;
+
+		cursor: pointer;
+		user-select: none;
+
+		text-align: center;
+
+		vertical-align: middle;
+		white-space: nowrap;
+
+		text-decoration: none;
+
+		color: #2c2d30;
+
+		border: 2px solid lightgray;
+		border-radius: 4px;
+
+		outline: none;
+
+		background: rgb(250, 250, 250);
+
+		font-size: 13px;
+
+		font-weight: 500;
+		align-items: center;
+		-webkit-appearance: none;
+		justify-content: center;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	& .overflow-ellipsis {
+		display: block;
+
+		overflow: hidden;
+
+		white-space: nowrap;
+
+		text-overflow: ellipsis;
+	}
+
+	& .image-button {
+		max-height: 200px;
+	}
+
+	& .horizontal-buttons {
+		display: inline;
+	}
+}

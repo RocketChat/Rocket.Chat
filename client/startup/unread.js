@@ -1,48 +1,48 @@
-/* globals fireGlobalEvent, readMessage, Favico, favico, menu */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 
-Meteor.startup(function() {
-	Tracker.autorun(function() {
-		let unreadCount = 0;
+import { Favico } from '../../app/favico';
+import { ChatSubscription } from '../../app/models';
+import { menu, fireGlobalEvent } from '../../app/ui-utils';
+import { getUserPreference } from '../../app/utils';
+import { settings } from '../../app/settings';
+
+const fetchSubscriptions = () => ChatSubscription.find({
+	open: true,
+	hideUnreadStatus: { $ne: true },
+}, {
+	fields: {
+		unread: 1,
+		alert: 1,
+		rid: 1,
+		t: 1,
+		name: 1,
+		ls: 1,
+		unreadAlert: 1,
+	},
+}).fetch();
+
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
+
 		let unreadAlert = false;
 
-		const subscriptions = ChatSubscription.find({open: true, hideUnreadStatus: { $ne: true }}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
-
-		let openedRoomId = undefined;
-		Tracker.nonreactive(function() {
-			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-				openedRoomId = Session.get('openedRoom');
-			}
-		});
-
-		for (const subscription of subscriptions.fetch()) {
+		const unreadCount = fetchSubscriptions().reduce((ret, subscription) => {
 			fireGlobalEvent('unread-changed-by-subscription', subscription);
 
 			if (subscription.alert || subscription.unread > 0) {
-				// This logic is duplicated in /client/notifications/notification.coffee.
-				const hasFocus = readMessage.isEnable();
-				const subscriptionIsTheOpenedRoom = openedRoomId === subscription.rid;
-				if (hasFocus && subscriptionIsTheOpenedRoom) {
-					// The user has probably read all messages in this room.
-					// TODO: readNow() should return whether it has actually marked the room as read.
-					Meteor.setTimeout(function() {
-						readMessage.readNow();
-					}, 500);
-				}
-
 				// Increment the total unread count.
-				unreadCount += subscription.unread;
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					const userUnreadAlert = RocketChat.getUserPreference(Meteor.user(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 						unreadAlert = '•';
 					}
 				}
+				return ret + subscription.unread;
 			}
-
-			if (RoomManager.openedRooms[subscription.t + subscription.name]) {
-				readMessage.refreshUnreadMark(subscription.rid);
-			}
-		}
+			return ret;
+		}, 0);
 
 		menu.updateUnreadBars();
 
@@ -60,21 +60,23 @@ Meteor.startup(function() {
 	});
 });
 
-Meteor.startup(function() {
-	window.favico = new Favico({
+Meteor.startup(() => {
+	const favicon = new Favico({
 		position: 'up',
-		animation: 'none'
+		animation: 'none',
 	});
 
+	window.favico = favicon;
+
 	Tracker.autorun(function() {
-		const siteName = RocketChat.settings.get('Site_Name') || '';
+		const siteName = settings.get('Site_Name') || '';
 
 		const unread = Session.get('unread');
 		fireGlobalEvent('unread-changed', unread);
 
-		if (favico) {
-			favico.badge(unread, {
-				bgColor: typeof unread !== 'number' ? '#3d8a3a' : '#ac1b1b'
+		if (favicon) {
+			favicon.badge(unread, {
+				bgColor: typeof unread !== 'number' ? '#3d8a3a' : '#ac1b1b',
 			});
 		}
 

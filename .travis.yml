@@ -53,7 +53,6 @@ before_script:
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
 - meteor npm run lint
 - meteor npm run testunit
-- meteor npm run stylelint
 - travis_retry meteor build --headless /tmp/build
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
@@ -72,7 +71,6 @@ before_deploy:
 - source ".travis/setdeploydir.sh"
 - ".travis/setupsig.sh"
 - ".travis/namefiles.sh"
-- echo ".travis/sandstorm.sh"
 deploy:
   - provider: s3
     access_key_id: AKIAIKIA7H7D47KUHYCA

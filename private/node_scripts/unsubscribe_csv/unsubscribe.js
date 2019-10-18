@@ -1,11 +1,13 @@
+/* eslint import/no-unresolved: 0 */
+
 import lineReader from 'line-reader';
 import program from 'commander';
 import wait from 'wait.for';
-import {MongoClient} from 'mongodb';
+import { MongoClient } from 'mongodb';
 
-program.usage('[options]').option('-v, --verbose', 'Verbose', (function(v, total) {
+program.usage('[options]').option('-v, --verbose', 'Verbose', function(v, total) {
 	return total + 1;
-}), 0).option('-M, --mongo-db [mongo db]', 'Mongo DB', 'localhost:27017').option('-N, --db-name [db name]', 'DB Name', 'meteor').on('--help', function() {
+}, 0).option('-M, --mongo-db [mongo db]', 'Mongo DB', 'localhost:27017').option('-N, --db-name [db name]', 'DB Name', 'meteor').on('--help', function() {
 	console.log('  Example:');
 	console.log('');
 	console.log('    $ node unsubscribe.js');
@@ -16,9 +18,9 @@ wait.launchFiber(function() {
 	const db = wait.forMethod(MongoClient, 'connect', `mongodb://${ program.mongoDb }/${ program.dbName }`, {
 		replSet: {
 			socketOptions: {
-				connectTimeoutMS: 300000
-			}
-		}
+				connectTimeoutMS: 300000,
+			},
+		},
 	});
 
 	const User = db.collection('users');
@@ -29,11 +31,11 @@ wait.launchFiber(function() {
 		}
 		return wait.launchFiber(function() {
 			wait.forMethod(User, 'update', {
-				'emails.address': row[0]
+				'emails.address': row[0],
 			}, {
 				$set: {
-					'mailer.unsubscribed': true
-				}
+					'mailer.unsubscribed': true,
+				},
 			});
 
 			if (last) {

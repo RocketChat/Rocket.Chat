@@ -6,31 +6,33 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
+	api.use([
+		'check',
+		'tracker',
+		'http',
+	], 'client');
+
+	api.use([
+		'webapp',
+	], 'server');
+
   api.use([
-    'check',
-    'tracker',
-    'http'
-  ], 'client');
-
-  api.use('webapp', 'server');
-
-  // Our files
-  api.addFiles('server/timesync-server.js', 'server');
-  api.addFiles('client/timesync-client.js', 'client');
-
-  api.export('TimeSync', 'client');
-  api.export('SyncInternals', 'client', {testOnly: true} );
+		'ecmascript',
+	]);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
 
 Package.onTest(function (api) {
-  api.use([
-    'tinytest',
-    'test-helpers'
-  ]);
+	api.use([
+		'ecmascript',
+		'tinytest',
+		'test-helpers'
+	]);
 
-  api.use(['tracker'], 'client');
+	api.use(['tracker'], 'client');
 
-  api.use('mizzao:timesync');
+	api.use('mizzao:timesync');
 
-  api.addFiles('tests/client.js', 'client');
+	api.addFiles('tests/client.js', 'client');
 });

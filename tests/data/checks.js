@@ -20,23 +20,23 @@ export function setDirectMessageCreated(status) {
 
 export function checkIfUserIsValid(username, email, password) {
 	if (!sideNav.sidebarHeader.isVisible()) {
-		//if the user is not logged in.
+		// if the user is not logged in.
 		console.log('	User not logged. logging in...');
 		loginPage.open();
-		loginPage.login({email, password});
+		loginPage.login({ email, password });
 		try {
 			mainContent.mainContent.waitForExist(5000);
 		} catch (e) {
-			//if the user dont exist.
+			// if the user dont exist.
 			console.log('	User dont exist. Creating user...');
 			loginPage.gotToRegister();
-			loginPage.registerNewUser({username, email, password});
+			loginPage.registerNewUser({ username, email, password });
 			browser.waitForExist('form#login-card input#username', 5000);
 			browser.click('.submit > button');
 			mainContent.mainContent.waitForExist(5000);
 		}
 	} else if (browser.execute(() => Meteor.user().username).value !== username) {
-		//if the logged user is not the right one
+		// if the logged user is not the right one
 		console.log('	Wrong logged user. Changing user...');
 		sideNav.sidebarUserMenu.waitForVisible(5000);
 		sideNav.sidebarUserMenu.click();
@@ -44,7 +44,7 @@ export function checkIfUserIsValid(username, email, password) {
 		sideNav.logout.click();
 
 		loginPage.open();
-		loginPage.loginSucceded({email, password});
+		loginPage.loginSucceded({ email, password });
 		mainContent.mainContent.waitForExist(5000);
 	} else {
 		console.log('	User already logged');
@@ -53,23 +53,23 @@ export function checkIfUserIsValid(username, email, password) {
 
 export function checkIfUserIsAdmin(username, email, password) {
 	if (!sideNav.sidebarHeader.isVisible()) {
-		//if the user is not logged in.
+		// if the user is not logged in.
 		console.log('	User not logged. logging in...');
 		loginPage.open();
-		loginPage.login({email, password});
+		loginPage.login({ email, password });
 		try {
 			mainContent.mainContent.waitForExist(5000);
 		} catch (e) {
-			//if the user dont exist.
+			// if the user dont exist.
 			console.log('	Admin User dont exist. Creating user...');
 			loginPage.gotToRegister();
-			loginPage.registerNewUser({username, email, password});
+			loginPage.registerNewUser({ username, email, password });
 			browser.waitForExist('form#login-card input#username', 5000);
 			browser.click('.submit > button');
 			mainContent.mainContent.waitForExist(5000);
 		}
 	} else if (browser.execute(() => Meteor.user().username).value !== username) {
-		//if the logged user is not the right one
+		// if the logged user is not the right one
 		console.log('	Wrong logged user. Changing user...');
 		sideNav.sidebarUserMenu.waitForVisible(5000);
 		sideNav.sidebarUserMenu.click();
@@ -77,7 +77,7 @@ export function checkIfUserIsAdmin(username, email, password) {
 		sideNav.logout.click();
 
 		loginPage.open();
-		loginPage.loginSucceded({email, password});
+		loginPage.loginSucceded({ email, password });
 	} else {
 		console.log('	User already logged');
 	}

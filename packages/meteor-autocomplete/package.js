@@ -2,27 +2,22 @@ Package.describe({
 	name: 'mizzao:autocomplete',
 	summary: 'Client/server autocompletion designed for Meteor\'s collections and reactivity',
 	version: '0.5.1',
-	git: 'https://github.com/mizzao/meteor-autocomplete.git'
+	git: 'https://github.com/mizzao/meteor-autocomplete.git',
 });
 
 Package.onUse(function(api) {
-	api.use(['blaze', 'templating', 'jquery'], 'client');
-	api.use(['ecmascript']); // both
-	api.use(['mongo', 'ddp']);
-
-	api.use('dandv:caret-position@2.1.0-3', 'client');
-
-	// Our files
-	api.addFiles([
-		'client/autocomplete.css',
-		'client/inputs.html',
-		'client/autocomplete-client.js',
-		'client/templates.js'
+	api.use([
+		'ecmascript',
+		'mongo',
+		'ddp',
+	]);
+	api.use([
+		'blaze',
+		'templating',
+		'jquery',
+		'dandv:caret-position@2.1.0-3',
 	], 'client');
-
-	api.addFiles([
-		'server/autocomplete-server.js'
-	], 'server');
-
-	api.export('Autocomplete', 'server');
+	api.addFiles('client/autocomplete.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

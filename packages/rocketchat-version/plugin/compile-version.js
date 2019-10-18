@@ -1,11 +1,14 @@
-import {exec} from 'child_process';
+import { exec } from 'child_process';
 import os from 'os';
+import fs from 'fs';
+import path from 'path';
+
 import Future from 'fibers/future';
 import async from 'async';
 
 class VersionCompiler {
 	processFilesForTarget(files) {
-		const future = new Future;
+		const future = new Future();
 		const processFile = function(file, cb) {
 			if (!file.getDisplayPath().match(/rocketchat\.info$/)) {
 				return cb();
@@ -20,14 +23,14 @@ class VersionCompiler {
 				osRelease: os.release(),
 				totalMemory: os.totalmem(),
 				freeMemory: os.freemem(),
-				cpus: os.cpus().length
+				cpus: os.cpus().length,
 			};
 
 			if (process.env.TRAVIS_BUILD_NUMBER) {
 				output.travis = {
 					buildNumber: process.env.TRAVIS_BUILD_NUMBER,
 					branch: process.env.TRAVIS_BRANCH,
-					tag: process.env.TRAVIS_TAG
+					tag: process.env.TRAVIS_TAG,
 				};
 			}
 
@@ -38,7 +41,7 @@ class VersionCompiler {
 						hash: result.shift(),
 						date: result.shift(),
 						author: result.shift(),
-						subject: result.join('\n')
+						subject: result.join('\n'),
 					};
 				}
 
@@ -46,15 +49,18 @@ class VersionCompiler {
 					if (err == null && output.commit != null) {
 						output.commit.tag = result.replace('\n', '');
 					}
-
 					exec('git rev-parse --abbrev-ref HEAD', function(err, result) {
 						if (err == null && output.commit != null) {
 							output.commit.branch = result.replace('\n', '');
 						}
-						output = `RocketChat.Info = ${ JSON.stringify(output, null, 4) };`;
+
+						const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
+						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/^[^0-9]/g, '');
+
+						output = `exports.Info = ${ JSON.stringify(output, null, 4) };`;
 						file.addJavaScript({
 							data: output,
-							path: `${ file.getPathInPackage() }.js`
+							path: `${ file.getPathInPackage() }.js`,
 						});
 						cb();
 					});
@@ -68,7 +74,7 @@ class VersionCompiler {
 }
 
 Plugin.registerCompiler({
-	extensions: ['info']
+	extensions: ['info'],
 }, function() {
 	return new VersionCompiler();
 });

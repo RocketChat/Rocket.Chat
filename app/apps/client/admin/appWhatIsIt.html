@@ -1,0 +1,26 @@
+<template name="appWhatIsIt">
+	<section class="page-container page-home page-static content-background-color">
+		{{> header sectionName="Apps_WhatIsIt" hideHelp=true fixedHeight=true}}
+		<div class="content">
+			{{#if isLoading}}
+				{{> loading}}
+			{{else if hasError}}
+				<div class="apps-error error-color">
+					<i class="icon-attention"></i>
+					<p>Sadly, an error has occured while loading this page.</p>
+				</div>
+			{{else}}
+				<p>{{_ "Apps_WhatIsIt_paragraph1"}}</p>
+				<p>{{_ "Apps_WhatIsIt_paragraph2"}}</p>
+				<p>
+					{{_ "Apps_WhatIsIt_paragraph3"}}
+					<a href="https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md" target="_blank">https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md</a>
+				</p>
+				<p>
+					{{_ "Apps_WhatIsIt_paragraph4"}}
+					<button class="rc-button rc-button--primary js-enable">{{_ "Enable" }}</button>
+				</p>
+			{{/if}}
+		</div>
+	</section>
+</template>
