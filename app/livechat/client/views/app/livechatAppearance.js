@@ -136,7 +136,7 @@ Template.livechatAppearance.onCreated(async function() {
 	const livechatShowAgentInfo = getSettingFromAppearance(this, 'Livechat_show_agent_info');
 	const livechatShowAgentEmail = getSettingFromAppearance(this, 'Livechat_show_agent_email');
 	const livechatDisplayOfflineForm = getSettingFromAppearance(this, 'Livechat_display_offline_form');
-	const livechatOfflineFOrmUnavailable = getSettingFromAppearance(this, 'Livechat_offline_form_unavailable');
+	const livechatOfflineFormUnavailable = getSettingFromAppearance(this, 'Livechat_offline_form_unavailable');
 	const livechatOfflineMessage = getSettingFromAppearance(this, 'Livechat_offline_message');
 	const livechatOfflineSuccessMessage = getSettingFromAppearance(this, 'Livechat_offline_success_message');
 	const livechatOfflineTitle = getSettingFromAppearance(this, 'Livechat_offline_title');
@@ -154,7 +154,7 @@ Template.livechatAppearance.onCreated(async function() {
 	this.showAgentInfo.set(livechatShowAgentInfo && livechatShowAgentInfo.value);
 	this.showAgentEmail.set(livechatShowAgentEmail && livechatShowAgentEmail.value);
 	this.displayOfflineForm.set(livechatDisplayOfflineForm && livechatDisplayOfflineForm.value);
-	this.offlineUnavailableMessage.set(livechatOfflineFOrmUnavailable && livechatOfflineFOrmUnavailable.value);
+	this.offlineUnavailableMessage.set(livechatOfflineFormUnavailable && livechatOfflineFormUnavailable.value);
 	this.offlineMessage.set(livechatOfflineMessage && livechatOfflineMessage.value);
 	this.offlineSuccessMessage.set(livechatOfflineSuccessMessage && livechatOfflineSuccessMessage.value);
 	this.titleOffline.set(livechatOfflineTitle && livechatOfflineTitle.value);
