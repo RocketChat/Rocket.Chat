@@ -28,23 +28,13 @@ Meteor.methods({
 			},
 		});
 
-		if (!originalMessage) {
+		if (!originalMessage || !canDeleteMessage(uid, originalMessage)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'deleteMessage',
 				action: 'Delete_message',
 			});
 		}
 
-		try {
-			if (!canDeleteMessage(uid, originalMessage)) {
-				return;
-			}
-			return deleteMessage(originalMessage, Meteor.user());
-		} catch (error) {
-			throw new Meteor.Error('Not allowed', {
-				method: 'deleteMessage',
-				action: 'Delete_message',
-			});
-		}
+		return deleteMessage(originalMessage, Meteor.user());
 	},
 });
