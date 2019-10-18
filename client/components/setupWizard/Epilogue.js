@@ -3,7 +3,7 @@ import React from 'react';
 
 import { useSetSetting } from '../../hooks/useSetSetting';
 import { useSetting } from '../../hooks/useSetting';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useTranslation } from '../providers/TranslationProvider';
 import './Epilogue.css';
 
 export function Epilogue({

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { formatDate } from './formatters';
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { DescriptionList } from './DescriptionList';
+import { formatDate } from './formatters';
 
 export function InstancesSection({ instances }) {
 	const t = useTranslation();

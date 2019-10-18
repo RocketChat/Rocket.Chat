@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslation } from '../../hooks/useTranslation';
+import { useTranslation } from '../providers/TranslationProvider';
 import './SideBar.css';
 
 export function SideBar({

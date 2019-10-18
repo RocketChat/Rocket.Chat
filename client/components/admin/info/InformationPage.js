@@ -1,10 +1,10 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../../hooks/useTranslation';
-import { Header } from '../../header/Header';
 import { Link } from '../../basic/Link';
 import { ErrorAlert } from '../../basic/ErrorAlert';
+import { Header } from '../../header/Header';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';
 import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';

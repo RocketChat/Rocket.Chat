@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslation } from '../../hooks/useTranslation';
+import { useTranslation } from '../providers/TranslationProvider';
 import { AdminUserInformationStep } from './steps/AdminUserInformationStep';
 import { SettingsBasedStep } from './steps/SettingsBasedStep';
 import { RegisterServerStep } from './steps/RegisterServerStep';
