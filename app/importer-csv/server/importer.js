@@ -11,6 +11,7 @@ import {
 import { RocketChatFile } from '../../file';
 import { Users, Rooms } from '../../models';
 import { sendMessage } from '../../lib';
+import { t } from '../../utils';
 
 export class CsvImporter extends Base {
 	constructor(info) {
@@ -29,6 +30,7 @@ export class CsvImporter extends Base {
 
 		let tempChannels = [];
 		let tempUsers = [];
+		let hasDirectMessages = false;
 		const tempMessages = new Map();
 		for (const entry of zipEntries) {
 			this.logger.debug(`Entry: ${ entry.entryName }`);
@@ -71,7 +73,6 @@ export class CsvImporter extends Base {
 			if (entry.entryName.indexOf('/') > -1) {
 				const item = entry.entryName.split('/'); // random/messages.csv
 				const channelName = item[0]; // random
-				const msgGroupData = item[1].split('.')[0]; // 2015-10-04
 
 				if (!tempMessages.get(channelName)) {
 					tempMessages.set(channelName, new Map());
@@ -86,8 +87,16 @@ export class CsvImporter extends Base {
 					continue;
 				}
 
-				tempMessages.get(channelName).set(msgGroupData, msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] })));
-				continue;
+				if (channelName.toLowerCase() === 'directmessages') {
+					hasDirectMessages = true;
+					const fileName = item[1];
+					const data = msgs.map((m) => ({ username: m[0], ts: m[2], text: m[3], otherUsername: m[1], isDirect: true }));
+
+					tempMessages.get(channelName).set(fileName, data);
+				} else {
+					const msgGroupData = item[1].split('.')[0]; // messages
+					tempMessages.get(channelName).set(msgGroupData, msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] })));
+				}
 			}
 		}
 
@@ -97,6 +106,17 @@ export class CsvImporter extends Base {
 		this.users = this.collection.findOne(usersId);
 		super.updateRecord({ 'count.users': tempUsers.length });
 		super.addCountToTotal(tempUsers.length);
+
+		if (hasDirectMessages) {
+			tempChannels.push({
+				id: '#directmessages#',
+				name: t('Direct_Messages'),
+				creator: 'rocket.cat',
+				isPrivate: false,
+				isDirect: true,
+				members: [],
+			});
+		}
 
 		// Insert the channels records.
 		const channelsId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'channels', channels: tempChannels });
@@ -114,15 +134,18 @@ export class CsvImporter extends Base {
 
 			for (const [msgGroupData, msgs] of messagesMap.entries()) {
 				messagesCount += msgs.length;
-				super.updateRecord({ messagesstatus: `${ channel }/${ msgGroupData }` });
+				const channelName = `${ channel }/${ msgGroupData }`;
+
+				super.updateRecord({ messagesstatus: channelName });
+
 
 				if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
 					Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
-						const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ msgGroupData }.${ i }`, messages: splitMsg });
+						const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channelName }.${ i }`, messages: splitMsg });
 						this.messages.get(channel).set(`${ msgGroupData }.${ i }`, this.collection.findOne(messagesId));
 					});
 				} else {
-					const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ msgGroupData }`, messages: msgs });
+					const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: channelName, messages: msgs });
 					this.messages.get(channel).set(msgGroupData, this.collection.findOne(messagesId));
 				}
 			}
@@ -139,7 +162,7 @@ export class CsvImporter extends Base {
 		}
 
 		const selectionUsers = tempUsers.map((u) => new SelectionUser(u.id, u.username, u.email, false, false, true));
-		const selectionChannels = tempChannels.map((c) => new SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionChannels = tempChannels.map((c) => new SelectionChannel(c.id, c.name, false, true, c.isPrivate, undefined, c.isDirect));
 		const selectionMessages = this.importRecord.count.messages;
 
 		super.updateProgress(ProgressStep.USER_SELECTION);
@@ -212,6 +235,11 @@ export class CsvImporter extends Base {
 				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				for (const c of this.channels.channels) {
 					if (!c.do_import) {
+						continue;
+					}
+
+					if (c.isDirect) {
+						super.addCountCompleted(1);
 						continue;
 					}
 
@@ -294,6 +322,15 @@ export class CsvImporter extends Base {
 						continue;
 					}
 
+					if (csvChannel.isDirect) {
+						this._importDirectMessagesFile(messagesMap, startedByUserId);
+						continue;
+					}
+
+					if (ch.toLowerCase() === 'directmessages') {
+						continue;
+					}
+
 					const room = Rooms.findOneById(csvChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 					Meteor.runAsUser(startedByUserId, () => {
 						const timestamps = {};
@@ -349,6 +386,75 @@ export class CsvImporter extends Base {
 		return super.getProgress();
 	}
 
+	_importDirectMessagesFile(messagesMap, startedByUserId) {
+		const dmUsers = {};
+
+		const findUser = (username) => {
+			if (!dmUsers[username]) {
+				const user = this.getUserFromUsername(username) || Users.findOneByUsername(username, { fields: { username: 1 } });
+				dmUsers[username] = user;
+			}
+
+			return dmUsers[username];
+		};
+
+		Meteor.runAsUser(startedByUserId, () => {
+			const timestamps = {};
+			for (const [msgGroupData, msgs] of messagesMap.entries()) {
+				let room;
+				let rid;
+				super.updateRecord({ messagesstatus: `${ t('Direct_Messagest') }/${ msgGroupData }.${ msgs.messages.length }` });
+				for (const msg of msgs.messages) {
+					if (isNaN(new Date(parseInt(msg.ts)))) {
+						this.logger.warn(`Timestamp on a message in ${ t('Direct_Messagest') }/${ msgGroupData } is invalid`);
+						super.addCountCompleted(1);
+						continue;
+					}
+
+					const creator = findUser(msg.username);
+					const targetUser = findUser(msg.otherUsername);
+
+					if (creator && targetUser) {
+						if (!rid) {
+							const roomInfo = Meteor.runAsUser(creator._id, () => Meteor.call('createDirectMessage', targetUser.username));
+							rid = roomInfo.rid;
+							room = Rooms.findOneById(rid, { fields: { usernames: 1, t: 1, name: 1 } });
+						}
+
+						if (!room) {
+							this.logger.warn(`DM room not found for users ${ msg.username } and ${ msg.otherUsername }`);
+							super.addCountCompleted(1);
+							continue;
+						}
+
+						let suffix = '';
+						if (timestamps[msg.ts] === undefined) {
+							timestamps[msg.ts] = 1;
+						} else {
+							suffix = `-${ timestamps[msg.ts] }`;
+							timestamps[msg.ts] += 1;
+						}
+
+						const msgObj = {
+							_id: `csv-${ rid }-${ msg.ts }${ suffix }`,
+							ts: new Date(parseInt(msg.ts)),
+							msg: msg.text,
+							rid: room._id,
+							u: {
+								_id: creator._id,
+								username: creator.username,
+							},
+						};
+
+						sendMessage(creator, msgObj, room, true);
+					}
+
+					super.addCountCompleted(1);
+				}
+			}
+		});
+	}
+
 	getSelection() {
 		const selectionUsers = this.users.users.map((u) => new SelectionUser(u.id, u.username, u.email, false, false, true));
 		const selectionChannels = this.channels.channels.map((c) => new SelectionChannel(c.id, c.name, false, true, c.isPrivate));
@@ -358,8 +464,20 @@ export class CsvImporter extends Base {
 	}
 
 	getChannelFromName(channelName) {
+		if (channelName.toLowerCase() === 'directmessages') {
+			return this.getDirectMessagesChannel();
+		}
+
 		for (const ch of this.channels.channels) {
 			if (ch.name === channelName) {
+				return ch;
+			}
+		}
+	}
+
+	getDirectMessagesChannel() {
+		for (const ch of this.channels.channels) {
+			if (ch.is_direct || ch.isDirect) {
 				return ch;
 			}
 		}

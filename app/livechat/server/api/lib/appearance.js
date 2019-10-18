@@ -24,6 +24,7 @@ export async function findAppearance({ userId }) {
 				'Livechat_name_field_registration_form',
 				'Livechat_email_field_registration_form',
 				'Livechat_registration_form_message',
+				'Livechat_conversation_finished_text',
 			],
 		},
 	};

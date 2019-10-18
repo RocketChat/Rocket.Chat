@@ -19,8 +19,15 @@ Meteor.methods({
 		callbacks.run('beforeReadMessages', rid, userId);
 
 		// TODO: move this calls to an exported function
-		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
 		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { ls: 1 } });
+
+		if (!userSubscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+				method: 'readMessages',
+			});
+		}
+
+		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
 
 		Meteor.defer(() => {
 			callbacks.run('afterReadMessages', rid, { userId, lastSeen: userSubscription.ls });

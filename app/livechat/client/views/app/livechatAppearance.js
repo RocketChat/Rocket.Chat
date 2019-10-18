@@ -84,6 +84,9 @@ Template.livechatAppearance.helpers({
 	conversationFinishedMessage() {
 		return Template.instance().conversationFinishedMessage.get();
 	},
+	conversationFinishedText() {
+		return Template.instance().conversationFinishedText.get();
+	},
 	registrationFormEnabled() {
 		if (Template.instance().registrationFormEnabled.get()) {
 			return 'checked';
@@ -119,6 +122,7 @@ Template.livechatAppearance.onCreated(async function() {
 	this.colorOffline = new ReactiveVar(null);
 	this.offlineEmail = new ReactiveVar(null);
 	this.conversationFinishedMessage = new ReactiveVar(null);
+	this.conversationFinishedText = new ReactiveVar(null);
 	this.registrationFormEnabled = new ReactiveVar(null);
 	this.registrationFormNameFieldEnabled = new ReactiveVar(null);
 	this.registrationFormEmailFieldEnabled = new ReactiveVar(null);
@@ -143,6 +147,7 @@ Template.livechatAppearance.onCreated(async function() {
 	const livechatRegistrationForm = getSettingFromAppearance(this, 'Livechat_registration_form');
 	const livechatNameFieldRegistrrationForm = getSettingFromAppearance(this, 'Livechat_name_field_registration_form');
 	const livechatEmailFieldRegistrationForm = getSettingFromAppearance(this, 'Livechat_email_field_registration_form');
+	const conversationFinishedText = getSettingFromAppearance(this, 'Livechat_conversation_finished_text');
 
 	this.title.set(livechatTitle && livechatTitle.value);
 	this.color.set(livechatTitleColor && livechatTitleColor.value);
@@ -160,6 +165,7 @@ Template.livechatAppearance.onCreated(async function() {
 	this.registrationFormEnabled.set(livechatRegistrationForm && livechatRegistrationForm.value);
 	this.registrationFormNameFieldEnabled.set(livechatNameFieldRegistrrationForm && livechatNameFieldRegistrrationForm.value);
 	this.registrationFormEmailFieldEnabled.set(livechatEmailFieldRegistrationForm && livechatEmailFieldRegistrationForm.value);
+	this.conversationFinishedText.set(conversationFinishedText && conversationFinishedText.value);
 });
 
 Template.livechatAppearance.events({
@@ -208,6 +214,9 @@ Template.livechatAppearance.events({
 
 		const settingConversationFinishedMessage = getSettingFromAppearance(instance, 'Livechat_conversation_finished_message');
 		instance.conversationFinishedMessage.set(settingConversationFinishedMessage && settingConversationFinishedMessage.value);
+
+		const settingConversationFinishedText = getSettingFromAppearance(instance, 'Livechat_conversation_finished_text');
+		instance.conversationFinishedText.set(settingConversationFinishedText && settingConversationFinishedText.value);
 
 		const settingRegistrationFormEnabled = getSettingFromAppearance(instance, 'Livechat_registration_form');
 		instance.registrationFormEnabled.set(settingRegistrationFormEnabled && settingRegistrationFormEnabled.value);
@@ -271,6 +280,10 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_conversation_finished_message',
 				value: s.trim(instance.conversationFinishedMessage.get()),
+			},
+			{
+				_id: 'Livechat_conversation_finished_text',
+				value: s.trim(instance.conversationFinishedText.get()),
 			},
 			{
 				_id: 'Livechat_registration_form',
