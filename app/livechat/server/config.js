@@ -103,6 +103,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Conversation_finished_message',
 	});
 
+	settings.add('Livechat_conversation_finished_text', '', {
+		type: 'string',
+		multiline: true,
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Conversation_finished_text',
+	});
+
 	settings.add('Livechat_registration_form', true, {
 		type: 'boolean',
 		group: 'Livechat',

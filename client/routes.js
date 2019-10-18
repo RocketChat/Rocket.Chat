@@ -12,9 +12,8 @@ import { Session } from 'meteor/session';
 
 import { KonchatNotification } from '../app/ui';
 import { ChatSubscription } from '../app/models';
-import { roomTypes, t } from '../app/utils';
-import { baseURI } from '../app/utils/client/lib/baseuri';
-import { call, modal } from '../app/ui-utils';
+import { roomTypes } from '../app/utils';
+import { call } from '../app/ui-utils';
 
 const getRoomById = mem((rid) => call('getRoomById', rid));
 
@@ -217,24 +216,8 @@ FlowRouter.route('/register/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: async () => {
-		const render = async () => {
-			const { SetupWizard } = await import('./components/setupWizard/SetupWizard');
-			BlazeLayout.render(await createTemplateForComponent(SetupWizard));
-		};
-		try {
-			await render();
-		} catch (_) {
-			Meteor.absoluteUrl.defaultOptions = { ...Meteor.absoluteUrl.defaultOptions, rootUrl: baseURI };
-			try {
-				await render();
-			} catch (_) {
-				modal.open({
-					title: t('Error_Site_URL'),
-					text: t('Error_Site_URL_description'),
-					confirmButtonText: t('Ok'),
-				});
-			}
-		}
+		const { SetupWizard } = await import('./components/setupWizard/SetupWizard');
+		BlazeLayout.render(await createTemplateForComponent(SetupWizard));
 	},
 });
 
