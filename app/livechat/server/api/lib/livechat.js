@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
+import { normalizeAgent } from '../../lib/Helper';
 
 export function online() {
 	return Livechat.online();
@@ -80,7 +81,7 @@ export function getRoom({ guest, rid, roomInfo, agent }) {
 }
 
 export function findAgent(agentId) {
-	return Users.getAgentInfo(agentId);
+	return normalizeAgent(agentId);
 }
 
 export function normalizeHttpHeaderData(headers = {}) {
@@ -109,6 +110,7 @@ export function settings() {
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
+			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
@@ -125,6 +127,7 @@ export function settings() {
 			offlineSuccessMessage: initSettings.Livechat_offline_success_message,
 			offlineUnavailableMessage: initSettings.Livechat_offline_form_unavailable,
 			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
+			conversationFinishedText: initSettings.Livechat_conversation_finished_text,
 			transcriptMessage: initSettings.Livechat_transcript_message,
 			registrationFormMessage: initSettings.Livechat_registration_form_message,
 			dataProcessingConsentText: initSettings.Livechat_data_processing_consent_text,

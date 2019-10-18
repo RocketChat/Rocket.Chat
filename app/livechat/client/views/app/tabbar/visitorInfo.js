@@ -10,13 +10,13 @@ import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
 import { modal } from '../../../../../ui-utils';
-import { Rooms, Subscriptions } from '../../../../../models';
+import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
 import { hasRole, hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import './visitorInfo.html';
+import { APIClient } from '../../../../../utils/client';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -54,7 +54,7 @@ Template.visitorInfo.helpers({
 	},
 
 	department() {
-		return LivechatDepartment.findOne({ _id: Template.instance().departmentId.get() });
+		return Template.instance().department.get();
 	},
 
 	joinTags() {
@@ -72,7 +72,7 @@ Template.visitorInfo.helpers({
 
 		const data = Template.currentData();
 		if (data && data.rid) {
-			const room = Rooms.findOne(data.rid);
+			const room = Template.instance().room.get();
 			if (room) {
 				livechatData = _.extend(livechatData, room.livechatData);
 			}
@@ -258,7 +258,7 @@ Template.visitorInfo.events({
 		}, () => {
 			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/* , result*/) {
 				if (error) {
-					console.log(error);
+					handleError(error);
 				} else {
 					Session.set('openedRoom');
 					FlowRouter.go('/home');
@@ -281,8 +281,9 @@ Template.visitorInfo.onCreated(function() {
 	this.user = new ReactiveVar();
 	this.departmentId = new ReactiveVar(null);
 	this.tags = new ReactiveVar(null);
-	this.room = new ReactiveVar(null);
 	this.routingConfig = new ReactiveVar({});
+	this.department = new ReactiveVar({});
+	this.room = new ReactiveVar({});
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -297,18 +298,31 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
+	const loadRoomData = async (rid) => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+		this.visitorId.set(room && room.v && room.v._id);
+		this.departmentId.set(room && room.departmentId);
+		this.tags.set(room && room.tags);
+		this.room.set(room);
+	};
+
 	if (rid) {
 		this.autorun(() => {
-			const room = Rooms.findOne({ _id: rid });
-			this.room.set(room);
-			this.visitorId.set(room && room.v && room.v._id);
-			this.departmentId.set(room && room.departmentId);
-			this.tags.set(room && room.tags);
+			const action = this.action.get();
+			if (action === undefined) {
+				loadRoomData(rid);
+			}
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid });
-		this.subscribe('livechat:departments', { _id: this.departmentId.get() });
 	}
+
+	this.autorun(async () => {
+		if (this.departmentId.get()) {
+			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }?includeAgents=false`);
+			this.department.set(department);
+		}
+	});
 
 	this.autorun(() => {
 		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));

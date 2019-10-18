@@ -1230,13 +1230,18 @@ Template.room.onRendered(function() {
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
 		readMessage.read();
-		return (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
+		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
 	});
 
 	this.autorun(() => {
 		const lastMessage = this.state.get('lastMessage');
 
 		const subscription = Subscriptions.findOne({ rid }, { fields: { ls: 1 } });
+		if (!subscription) {
+			this.unreadCount.set(0);
+			return;
+		}
+
 		const count = ChatMessage.find({ rid, ts: { $lte: lastMessage, $gt: subscription && subscription.ls } }).count();
 
 		this.unreadCount.set(count);
