@@ -34,6 +34,7 @@ import './methods/loginByToken';
 import './methods/pageVisited';
 import './methods/registerGuest';
 import './methods/removeAgent';
+import './methods/removeAllClosedRooms';
 import './methods/removeCustomField';
 import './methods/removeDepartment';
 import './methods/removeManager';
