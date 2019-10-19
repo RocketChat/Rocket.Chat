@@ -251,9 +251,9 @@ export class AppsRestApi {
 
 		this.api.addRoute('externalComponents', { authRequired: false }, {
 			get() {
-				const providedComponents = orchestrator.getProvidedComponents();
+				const externalComponents = orchestrator.getProvidedComponents();
 
-				return API.v1.success({ providedComponents });
+				return API.v1.success({ externalComponents });
 			},
 		});
 
