@@ -92,7 +92,7 @@ Template.visitorEdit.onCreated(async function() {
 	});
 
 	const uid = Meteor.userId();
-	const { departments } = await APIClient.v1.get(`livechat/agents/${ uid }/departments`);
+	const { departments } = await APIClient.v1.get(`livechat/agent/${ uid }/departments`);
 	departments.forEach((dept) => {
 		departments.push(dept.departmentId);
 	});

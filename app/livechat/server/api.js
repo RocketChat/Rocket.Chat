@@ -6,3 +6,4 @@ import '../imports/server/rest/upload.js';
 import '../imports/server/rest/inquiries.js';
 import '../imports/server/rest/rooms.js';
 import '../imports/server/rest/triggers.js';
+import '../imports/server/rest/agent.js';

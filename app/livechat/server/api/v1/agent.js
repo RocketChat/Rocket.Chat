@@ -4,7 +4,6 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../../../api';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
-import { findAgentDepartments } from '../lib/agents';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	get() {
@@ -75,27 +74,5 @@ API.v1.addRoute('livechat/agent.next/:token', {
 		} catch (e) {
 			return API.v1.failure(e);
 		}
-	},
-});
-
-API.v1.addRoute('livechat/agents/:agentId/departments', { authRequired: true }, {
-	get() {
-		check(this.urlParams, {
-			agentId: String,
-		});
-		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
-
-		const departments = Promise.await(findAgentDepartments({
-			userId: this.userId,
-			agentId: this.urlParams.agentId,
-			pagination: {
-				offset,
-				count,
-				sort,
-			},
-		}));
-
-		return API.v1.success(departments);
 	},
 });
