@@ -7,6 +7,23 @@ import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
+const queryStatusAgentOnline = (extraFilters = {}) => {
+	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
+		extraFilters = Object.assign(extraFilters, { statusConnection: { $ne: 'away' } });
+	}
+
+	const query = {
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		statusLivechat: 'available',
+		roles: 'livechat-agent',
+		...extraFilters,
+	};
+
+	return query;
+};
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
@@ -74,14 +91,7 @@ export class Users extends Base {
 	}
 
 	findOnlineAgents() {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-		};
+		const query = queryStatusAgentOnline();
 
 		return this.find(query);
 	}
@@ -112,29 +122,13 @@ export class Users extends Base {
 	}
 
 	findOneOnlineAgentByUsername(username) {
-		const query = {
-			username,
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-		};
+		const query = queryStatusAgentOnline({ username });
 
 		return this.findOne(query);
 	}
 
 	findOneOnlineAgentById(_id) {
-		const query = {
-			_id,
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-		};
+		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
 	}
@@ -148,30 +142,17 @@ export class Users extends Base {
 	}
 
 	findOnlineUserFromList(userList) {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-			username: {
-				$in: [].concat(userList),
-			},
+		const username = {
+			$in: [].concat(userList),
 		};
+
+		const query = queryStatusAgentOnline({ username });
 
 		return this.find(query);
 	}
 
 	getNextAgent() {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-		};
+		const query = queryStatusAgentOnline();
 
 		const collectionObj = this.model.rawCollection();
 		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
