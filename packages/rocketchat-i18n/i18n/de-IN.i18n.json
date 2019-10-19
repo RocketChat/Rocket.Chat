@@ -463,8 +463,6 @@
   "Browse_Files": "Dateien durchsuchen",
   "Bugsnag_api_key": "Bugsnag API-Schlüssel",
   "Build_Environment": "Buildumgebung",
-  "bulk-create-c": "Massen-Anlage von Kanälen",
-  "bulk-create-c_description": "Berechtigung zur Massen-Anlage von Kanälen",
   "bulk-register-user": "Massen-Registrierung von Benutzern",
   "bulk-register-user_description": "Berechtigung zur Massen-Registrierung von Benutzern",
   "Busiest_day": "Geschäftigster Tag",

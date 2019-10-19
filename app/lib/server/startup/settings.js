@@ -760,6 +760,18 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		secret: true,
 	});
+	this.add('Iframe_Restrict_Access', true, {
+		type: 'boolean',
+		secret: true,
+	});
+	this.add('Iframe_X_Frame_Options', 'sameorigin', {
+		type: 'string',
+		secret: true,
+		enableQuery: {
+			_id: 'Iframe_Restrict_Access',
+			value: true,
+		},
+	});
 	this.add('Favorite_Rooms', true, {
 		type: 'boolean',
 		public: true,

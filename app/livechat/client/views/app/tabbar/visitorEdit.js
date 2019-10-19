@@ -6,7 +6,6 @@ import toastr from 'toastr';
 import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
 
@@ -49,6 +48,11 @@ Template.visitorEdit.helpers({
 	canRemoveTag(availableUserTags, tag) {
 		return hasRole(Meteor.userId(), ['admin', 'livechat-manager']) || (Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1));
 	},
+
+	isSmsIntegration() {
+		const room = Template.instance().room.get();
+		return !!(room && room.sms);
+	},
 });
 
 Template.visitorEdit.onRendered(function() {
@@ -81,9 +85,8 @@ Template.visitorEdit.onCreated(async function() {
 
 	const rid = Template.currentData().roomId;
 
-	this.subscribe('livechat:rooms', { _id: rid });
-	this.autorun(() => {
-		const room = LivechatRoom.findOne({ _id: rid });
+	this.autorun(async () => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 	});
@@ -100,7 +103,10 @@ Template.visitorEdit.events({
 	'submit form'(event, instance) {
 		event.preventDefault();
 		const userData = { _id: instance.visitor.get()._id };
-		const roomData = { _id: instance.room.get()._id };
+
+		const room = instance.room.get();
+		const { _id, sms } = room;
+		const roomData = { _id };
 
 		userData.name = event.currentTarget.elements.name.value;
 		userData.email = event.currentTarget.elements.email.value;
@@ -108,6 +114,10 @@ Template.visitorEdit.events({
 
 		roomData.topic = event.currentTarget.elements.topic.value;
 		roomData.tags = instance.tags.get();
+
+		if (sms) {
+			delete userData.phone;
+		}
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {

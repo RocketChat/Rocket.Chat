@@ -14,9 +14,9 @@ Meteor.methods({
 
 		let currentIntegration;
 
-		if (hasPermission(this.userId, 'manage-integrations')) {
+		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
 			currentIntegration = Integrations.findOne(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-integrations')) {
+		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
 			currentIntegration = Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'updateOutgoingIntegration' });
@@ -24,6 +24,17 @@ Meteor.methods({
 
 		if (!currentIntegration) {
 			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
+		}
+		if (integration.scriptCompiled) {
+			Integrations.update(integrationId, {
+				$set: { scriptCompiled: integration.scriptCompiled },
+				$unset: { scriptError: 1 },
+			});
+		} else {
+			Integrations.update(integrationId, {
+				$set: { scriptError: integration.scriptError },
+				$unset: { scriptCompiled: 1 },
+			});
 		}
 
 		Integrations.update(integrationId, {
@@ -43,8 +54,6 @@ Meteor.methods({
 				token: integration.token,
 				script: integration.script,
 				scriptEnabled: integration.scriptEnabled,
-				scriptCompiled: integration.scriptCompiled,
-				scriptError: integration.scriptError,
 				triggerWords: integration.triggerWords,
 				retryFailedCalls: integration.retryFailedCalls,
 				retryCount: integration.retryCount,

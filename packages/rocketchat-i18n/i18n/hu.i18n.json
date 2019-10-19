@@ -475,8 +475,6 @@
   "Browse_Files": "Fájlok tallózása",
   "Bugsnag_api_key": "Bugsnag API kulcs",
   "Build_Environment": "Környezet építése",
-  "bulk-create-c": "Tömeges csatornák létrehozása",
-  "bulk-create-c_description": "Engedély a csatornák tömeges létrehozásához",
   "bulk-register-user": "Felhasználók tömeges létrehozása",
   "bulk-register-user_description": "Engedély az ömlesztett csatornák létrehozásához",
   "Busiest_day": "Legelfoglaltabb nap",
