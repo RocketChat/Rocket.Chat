@@ -307,6 +307,7 @@ Template.livechatAppearance.events({
 			if (err) {
 				return handleError(err);
 			}
+			instance.appearance.set(settings);
 			toastr.success(t('Settings_updated'));
 		});
 	},
