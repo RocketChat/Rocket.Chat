@@ -343,7 +343,7 @@
 					</div>
 				</div>
 
-				{{#if alexaServerEnabled}}
+				{{#if alexaServerSettingEnabled}}
 				<div class="section">
 					<h1>{{_ "Register With Alexa"}}</h1>
 					<div class="section-content border-component-color">
@@ -353,7 +353,7 @@
 									<input type="text" class="rc-input__element" name="alexaServerName" id="alexaServerName" placeholder="{{_ "Register_Alexa_Servername" }}" value="{{alexaServerName}}">
 									<div class="settings-description secondary-font-color">{{_ "Register_Alexa_Servername_Description"}}</div>
 							</div>
-							<button name="add" class="rc-button rc-button--primary setting-action add">{{_ "Add"}}</button>
+							<button name="alexa-token-generate" class="rc-button rc-button--primary setting-action alexa-token-generate">{{_ "Add"}}</button>
 						</div>
 					</div>
 				</div>

@@ -8,7 +8,6 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-
 import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
@@ -78,7 +77,7 @@ Template.accountPreferences.helpers({
 		const userHighlights = getUserPreference(Meteor.userId(), 'highlights');
 		return userHighlights ? userHighlights.join(',\n') : undefined;
 	},
-	alexaServerEnabled() {
+	alexaServerSettingEnabled() {
 		return settings.get('Register_Alexa_Enable_Server') !== false;
 	},
 	alexaServerName() {
@@ -307,7 +306,6 @@ Template.accountPreferences.onRendered(function() {
 	});
 });
 
-
 Template.accountPreferences.events({
 	'click .rc-header__section-button .save'(e, t) {
 		t.save();
@@ -355,8 +353,7 @@ Template.accountPreferences.events({
 
 		selectEl.remove(optionIndex);
 	},
-	// 'click .add'(e, tmpl) {
-	'click .add'(e, instance) {
+	'click .alexa-token-generate'(e, instance) {
 		e.preventDefault();
 
 		const serverName = instance.find('#alexaServerName').value.trim();
