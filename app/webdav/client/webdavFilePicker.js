@@ -25,27 +25,51 @@ function sortTable(data, sortBy, sortDirection) {
 	return data;
 }
 
+async function showFilePreviews(accountId, nodes) {
+	if (!Array.isArray(nodes) || !nodes.length) { return; }
+	const promises = nodes.map((node, index) => {
+		if (node.type !== 'file') { return; }
+		return call('getWebdavFilePreview', accountId, node.filename)
+			.then((res) => {
+				const blob = new Blob([res.data], { type: 'image/png' });
+				const imgURL = URL.createObjectURL(blob);
+				nodes[index].preview = imgURL;
+			})
+			.catch((e) => e);
+	}).filter(Boolean);
+
+	return Promise.all(promises)
+		.then(() => nodes)
+		.catch((e) => e);
+}
+
 async function showWebdavFileList() {
 	const instance = Template.instance();
 	const { accountId } = instance.data;
 
 	const directory = instance.state.get('webdavCurrentFolder');
+	let unfilteredWebdavNodes;
 	instance.isLoading.set(true);
 	instance.state.set({
 		webdavNodes: [],
 	});
 	try {
-		const response = await call('getWebdavFileList', accountId, directory);
-		if (!response.success) {
+		const response = await call('getWebdavFileList', accountId, directory).catch((err) => console.log(err));
+		if (!response || !response.success) {
+			instance.isLoading.set(false);
 			modal.close();
-			toastr.error(t(response.message));
+			return;
 		}
-
-		instance.state.set({ unfilteredWebdavNodes: response.data });
+		unfilteredWebdavNodes = response.data;
+		instance.state.set({ unfilteredWebdavNodes });
 		$('.js-webdav-search-input').val('');
 		instance.searchText.set('');
 	} finally {
 		instance.isLoading.set(false);
+		const nodesWithPreviews = await showFilePreviews(accountId, unfilteredWebdavNodes);
+		if (Array.isArray(nodesWithPreviews) && nodesWithPreviews.length) {
+			instance.state.set({ unfilteredWebdavNodes: nodesWithPreviews });
+		}
 	}
 }
 
@@ -78,6 +102,9 @@ Template.webdavFilePicker.helpers({
 			type = 'ppt';
 		}
 		return { icon, type, extension };
+	},
+	filePreview() {
+		return this.preview;
 	},
 	isLoading() {
 		return Template.instance().isLoading.get();
@@ -206,9 +233,9 @@ Template.webdavFilePicker.events({
 		const { accountId } = instance.data;
 		instance.isLoading.set(true);
 		const file = this;
-		const response = await call('getFileFromWebdav', accountId, file);
+		const response = await call('getFileFromWebdav', accountId, file).catch((error) => { console.log(error); });
 		instance.isLoading.set(false);
-		if (!response.success) {
+		if (!response || !response.success) {
 			modal.close();
 			return toastr.error(t('Failed_to_get_webdav_file'));
 		}
