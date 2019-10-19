@@ -31,6 +31,7 @@ export function startRegisterWorkspace(resend = false) {
 		result = HTTP.post(`${ cloudUrl }/api/v2/register/workspace?resend=${ resend }`, {
 			data: regInfo,
 		});
+        console.log(result);
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
 			console.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
