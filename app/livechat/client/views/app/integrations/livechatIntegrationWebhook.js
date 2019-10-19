@@ -107,6 +107,11 @@ Template.livechatIntegrationWebhook.events({
 			if (err) {
 				return handleError(err);
 			}
+			const savedValues = instance.settings.get().map((setting) => {
+				setting.value = settings[setting._id];
+				return setting;
+			});
+			instance.settings.set(savedValues);
 			toastr.success(t('Saved'));
 		});
 	},
