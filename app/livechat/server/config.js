@@ -103,6 +103,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Conversation_finished_message',
 	});
 
+	settings.add('Livechat_conversation_finished_text', '', {
+		type: 'string',
+		multiline: true,
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Conversation_finished_text',
+	});
+
 	settings.add('Livechat_registration_form', true, {
 		type: 'boolean',
 		group: 'Livechat',
@@ -156,6 +164,12 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		enableQuery: { _id: 'Livechat_agent_leave_action', value: 'close' },
 		i18nLabel: 'Comment_to_leave_on_closing_session',
+	});
+
+	settings.add('Livechat_enabled_when_agent_idle', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		i18nLabel: 'Accept_new_livechats_when_agent_is_idle',
 	});
 
 	settings.add('Livechat_webhookUrl', false, {
@@ -388,6 +402,14 @@ Meteor.startup(function() {
 		section: 'Routing',
 		i18nLabel: 'Accept_with_no_online_agents',
 		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
+	});
+
+	settings.add('Livechat_assign_new_conversation_to_bot', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'Routing',
+		i18nLabel: 'Assign_new_conversations_to_bot_agent',
+		i18nDescription: 'Assign_new_conversations_to_bot_agent_description',
 	});
 
 	settings.add('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0, {

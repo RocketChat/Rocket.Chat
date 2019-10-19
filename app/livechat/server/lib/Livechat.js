@@ -48,12 +48,23 @@ export const Livechat = {
 	}),
 
 	online() {
+		if (settings.get('Livechat_accept_chats_with_no_agents')) {
+			return true;
+		}
+
+		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
+			const botAgents = Livechat.getBotAgents();
+			if (botAgents && botAgents.count() > 0) {
+				return true;
+			}
+		}
+
 		const onlineAgents = Livechat.getOnlineAgents();
 		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
 	},
 
 	getNextAgent(department) {
-		return RoutingManager.getMethod().getNextAgent(department);
+		return RoutingManager.getNextAgent(department);
 	},
 
 	getAgents(department) {
@@ -62,12 +73,22 @@ export const Livechat = {
 		}
 		return Users.findAgents();
 	},
+
 	getOnlineAgents(department) {
 		if (department) {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
 		return Users.findOnlineAgents();
 	},
+
+	getBotAgents(department) {
+		if (department) {
+			return LivechatDepartmentAgents.getBotsForDepartment(department);
+		}
+
+		return Users.findBotAgents();
+	},
+
 	getRequiredDepartment(onlineRequired = true) {
 		const departments = LivechatDepartment.findEnabledWithAgents();
 
@@ -365,6 +386,7 @@ export const Livechat = {
 			'Livechat_fileupload_enabled',
 			'FileUpload_Enabled',
 			'Livechat_conversation_finished_message',
+			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',

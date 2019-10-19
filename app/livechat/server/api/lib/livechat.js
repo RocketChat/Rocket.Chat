@@ -127,6 +127,7 @@ export function settings() {
 			offlineSuccessMessage: initSettings.Livechat_offline_success_message,
 			offlineUnavailableMessage: initSettings.Livechat_offline_form_unavailable,
 			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
+			conversationFinishedText: initSettings.Livechat_conversation_finished_text,
 			transcriptMessage: initSettings.Livechat_transcript_message,
 			registrationFormMessage: initSettings.Livechat_registration_form_message,
 			dataProcessingConsentText: initSettings.Livechat_data_processing_consent_text,

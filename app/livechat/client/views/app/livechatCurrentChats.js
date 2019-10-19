@@ -5,10 +5,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import toastr from 'toastr';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { modal, call, popover } from '../../../../ui-utils';
-import { t, APIClient } from '../../../../utils/client';
+import { t, handleError, APIClient } from '../../../../utils/client';
 import { LivechatRoom } from '../../collections/LivechatRoom';
+import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../authorization';
 import './livechatCurrentChats.html';
 
 Template.livechatCurrentChats.helpers({
@@ -19,7 +22,7 @@ Template.livechatCurrentChats.helpers({
 		return Template.instance().ready.get();
 	},
 	livechatRoom() {
-		return LivechatRoom.find({ t: 'l' }, { sort: { ts: -1 } });
+		return Template.instance().livechatRoom.get();
 	},
 	startedAt() {
 		return moment(this.ts).format('L LTS');
@@ -65,6 +68,9 @@ Template.livechatCurrentChats.helpers({
 	},
 	tagId() {
 		return this;
+	},
+	hasPopoverPermissions() {
+		return hasAtLeastOnePermission(['remove-closed-livechat-rooms']);
 	},
 });
 
@@ -129,6 +135,65 @@ Template.livechatCurrentChats.events({
 			],
 			currentTarget: event.currentTarget,
 			offsetVertical: event.currentTarget.clientHeight,
+		};
+
+		popover.open(config);
+	},
+	'click .livechat-current-chats-extra-actions'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+		const { currentTarget } = event;
+
+		const canRemoveAllClosedRooms = hasPermission('remove-closed-livechat-rooms');
+		const allowedDepartments = () => {
+			if (hasRole(Meteor.userId(), ['admin', 'livechat-manager'])) {
+				return;
+			}
+
+			const departments = instance.departments.get();
+			return departments && departments.map((d) => d._id);
+		};
+
+		const config = {
+			popoverClass: 'livechat-current-chats-add-filter',
+			columns: [{
+				groups: [
+					{
+						items: [
+							canRemoveAllClosedRooms
+							&& {
+								icon: 'trash',
+								name: t('Delete_all_closed_chats'),
+								modifier: 'alert',
+								action: () => {
+									modal.open({
+										title: t('Are_you_sure'),
+										type: 'warning',
+										showCancelButton: true,
+										confirmButtonColor: '#DD6B55',
+										confirmButtonText: t('Yes'),
+										cancelButtonText: t('Cancel'),
+										closeOnConfirm: true,
+										html: false,
+									}, () => {
+										Meteor.call('livechat:removeAllClosedRooms', allowedDepartments(), (err, result) => {
+											if (err) {
+												return handleError(err);
+											}
+
+											if (result) {
+												toastr.success(TAPi18n.__('All_closed_chats_have_been_removed'));
+											}
+										});
+									});
+								},
+							},
+						],
+					},
+				],
+			}],
+			currentTarget,
+			offsetVertical: currentTarget.clientHeight,
 		};
 
 		popover.open(config);
@@ -256,6 +321,7 @@ Template.livechatCurrentChats.events({
 Template.livechatCurrentChats.onCreated(async function() {
 	this.ready = new ReactiveVar(false);
 	this.limit = new ReactiveVar(20);
+	this.livechatRoom = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
 	this.customFilters = new ReactiveVar([]);
 	this.customFields = new ReactiveVar([]);
@@ -288,6 +354,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 			this.customFields.set(customFields);
 		}
 	});
+
+	this.livechatRoom.set(LivechatRoom.find({ t: 'l' }, { sort: { ts: -1 } }));
 });
 
 Template.livechatCurrentChats.onRendered(function() {
