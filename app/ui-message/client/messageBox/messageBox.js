@@ -141,7 +141,7 @@ Template.messageBox.onRendered(function() {
 	});
 
 	this.autorun(() => {
-		const { rid, onInputChanged, onResize } = Template.currentData();
+		const { rid, tmid, onInputChanged, onResize } = Template.currentData();
 
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message');
@@ -156,6 +156,7 @@ Template.messageBox.onRendered(function() {
 			if (input && rid) {
 				this.popupConfig.set({
 					rid,
+					tmid,
 					getInput: () => input,
 				});
 			} else {
