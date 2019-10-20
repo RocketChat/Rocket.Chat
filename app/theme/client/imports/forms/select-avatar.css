@@ -10,10 +10,11 @@
 		margin-right: 1rem;
 
 		background-color: transparent;
-		background-image: linear-gradient(45deg, var(--color-gray) 25%, transparent 25%, transparent 75%, var(--color-gray) 75%, var(--color-gray)),
+		background-image:
+			linear-gradient(45deg, var(--color-gray) 25%, transparent 25%, transparent 75%, var(--color-gray) 75%, var(--color-gray)),
 			linear-gradient(45deg, var(--color-gray) 25%, transparent 25%, transparent 75%, var(--color-gray) 75%, var(--color-gray));
-		background-size: 10px 10px;
 		background-position: 0 0, 5px 5px;
+		background-size: 10px 10px;
 	}
 
 	&__loading::after {
