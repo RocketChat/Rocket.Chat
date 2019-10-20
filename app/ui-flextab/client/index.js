@@ -1,0 +1,12 @@
+import './flexTabBar.html';
+import './tabs/inviteUsers.html';
+import './tabs/membersList.html';
+import './tabs/uploadedFilesList.html';
+import './tabs/userEdit.html';
+import './flexTabBar';
+import './tabs/inviteUsers';
+import './tabs/membersList';
+import './tabs/uploadedFilesList';
+import './tabs/userEdit';
+import './tabs/userInfo';
+import './tabs/keyboardShortcuts.html';

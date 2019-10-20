@@ -1,6 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 import moment from 'moment';
+
+import { t } from '../../../app/utils';
+import { modal, SideNav } from '../../../app/ui-utils';
+import { hasAllPermission } from '../../../app/authorization';
 
 import './personalAccessTokens.html';
 
@@ -8,7 +16,7 @@ const PersonalAccessTokens = new Mongo.Collection('personal_access_tokens');
 
 Template.accountTokens.helpers({
 	isAllowed() {
-		return RocketChat.settings.get('API_Enable_Personal_Access_Tokens');
+		return hasAllPermission(['create-personal-access-tokens']);
 	},
 	tokens() {
 		return (PersonalAccessTokens.find({}).fetch()[0] && PersonalAccessTokens.find({}).fetch()[0].tokens) || [];
@@ -42,7 +50,7 @@ Template.accountTokens.events({
 				return toastr.error(t(error.error));
 			}
 			showSuccessModal(token);
-			instance.find('#input-token-name').value = '';
+			instance.find('#tokenName').value = '';
 		});
 	},
 	'click .remove-personal-access-token'() {

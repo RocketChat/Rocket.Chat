@@ -1,0 +1,122 @@
+#!/bin/bash
+
+export PATH="$SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/lib/x86_64-linux-gnu:$SNAP/usr/lib/x86_64-linux-gnu"
+export LD_LIBRARY_PATH=$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
+
+# Obtain caddyurl value
+caddyurl="$(snapctl get caddy-url)"
+# Validate it
+#caddyurl_regex='^https?:\/\/([0-9A-Za-z\.-]+){1,}(\.[a-z\.]{2,6})?([\/\da-z\.-]+)?$' #(supporting path)
+caddyurl_regex='^https?:\/\/([0-9A-Za-z\.-]+){1,}(\.[a-z\.]{2,6})?$'
+if [ -n "$caddyurl" ]; then
+  if ! [[ $caddyurl =~ $caddyurl_regex ]]; then
+    echo "\"$caddyurl\" is not a valid url" >&2
+    exit 1
+  fi
+#else
+#  if [[ $siteurl =~ ^http: ]] && [[ $siteurl =~ ^http:\/\/([0-9A-Za-z\.-]+){1,}?(\.[a-z\.]{2,6})?\/([\/\da-z\.-]+){1,}$ ]]; then
+#    path=${siteurl#http://*/}
+#    site=${siteurl#"http://"}
+#    site=${site%%/*}
+#    site=http://$site
+#  elif [[ $siteurl =~ ^https: ]] && [[ $siteurl =~ ^https:\/\/([0-9A-Za-z\.-]+){1,}?(\.[a-z\.]{2,6})?\/([\/\da-z\.-]+){1,}$ ]]; then
+#    path=${siteurl#https://*/}
+#    site=${siteurl#"https://"}
+#    site=${site%%/*}
+#    site=https://$site
+#  else
+#    path=""
+#    site=$siteurl
+#  fi
+#  snapctl set path=$path
+#  snapctl set site=$site
+fi
+
+# Obtain caddy value
+caddy="$(snapctl get caddy)"
+# Validate it
+caddy_regex='((enable)|(disable))'
+if ! [[ $caddy =~ $caddy_regex ]]; then
+    echo "\"$caddy_regex\" is not a valid, set to enable or disable" >&2  
+    exit 1
+else
+  if [[ $caddy == enable ]]; then
+    caddyurl="$(snapctl get caddy-url)"
+    if [ -z "$caddyurl" ]; then
+      echo "You tried to enable caddy but caddy-url is not set yet, please set up caddy-url first and then enable caddy again" >&2
+      snapctl set caddy=disable
+      exit 1
+    else
+      snapctl set siteurl=$caddyurl
+    fi
+  else
+    siteurl="$(snapctl get siteurl)"
+    if [ -n "$siteurl" ]; then
+      snapctl set siteurl=
+    fi
+  fi
+fi
+
+# Obtain port value
+port="$(snapctl get port)"
+# Validate it
+port_regex='^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
+if ! [[ $port =~ $port_regex ]]; then
+    echo "\"$port\" is not a valid port" >&2
+    exit 1
+fi
+
+# Obtain mongourl value
+mongourl="$(snapctl get mongo-url)"
+# Validate it
+mongourl_regex='^mongodb:\/\/([0-9A-Za-z\.\-\_]+){1,}(([a-z\.\-\_]+){2,6})?(:[0-9]{2,5})?\/([0-9A-Za-z\_\-]+)$'
+if ! [[ $mongourl =~ $mongourl_regex ]] ; then
+    echo "\"$mongourl\" is not a valid url" >&2
+    exit 1
+fi
+
+# Obtain mongooplogurl value
+mongooplogurl="$(snapctl get mongo-oplog-url)"
+# Validate it
+mongooplogurl_regex='^mongodb:\/\/([0-9A-Za-z\.\-\_]+){1,}(([a-z\.\-\_]+){2,6})?(:[0-9]{2,5})?\/local$'
+if ! [[ $mongooplogurl =~ $mongooplogurl_regex ]] ; then
+    echo "\"$mongooplogurl\" is not a valid url" >&2
+    exit 1
+fi
+
+# Obtain site protocol
+https="$(snapctl get https)"
+# Validate it
+https_regex='((enable)|(disable))'
+if ! [[ $https =~ $https_regex ]]; then
+    echo "\"$https\" should be enable or disable" >&2
+    exit 1
+else
+  if [[ $https == enable ]] && [[ $caddyurl =~ ^http: ]]; then
+    echo "Error: You enabled https but your site URL starts with http, disabling https ..."
+    snapctl set https=disable
+    exit 1
+  elif [[ $https == enable ]] && [[ $caddyurl =~ ^https: ]]; then
+    domain=${caddyurl#"https://"}
+    domain=${domain%%/*}
+    pubip=$(dig $domain |grep -A1 ";; ANSWER SECTION:" |tail -1 | awk '{print $5}')
+    if [ -z "$pubip" ]; then
+      echo "Error: Can't resove DNS query for $domain, check your DNS configuration, disabling https ..."
+      snapctl set https=disable
+      exit 1
+    else
+      ip=$(curl ipinfo.io/ip 2>/dev/null)
+      if [[ $ip != $pubip ]]; then
+        echo "Error: Your public IP doesn't match the one resolved for caddy-url, disabling https ..."
+        snapctl set https=disable
+        exit 1
+      fi
+    fi
+  elif [[ $https == enable ]] && [ -z "$caddyurl" ]; then
+    echo "Error: You enabled https but your site URL is empty, please set caddy-url=<your_site_url>, disabling https ..."
+    snapctl set https=disable
+    exit 1
+  fi
+fi
+

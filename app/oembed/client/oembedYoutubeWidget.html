@@ -1,0 +1,14 @@
+<template name="oembedYoutubeWidget">
+	{{#if parsedUrl}}
+		<blockquote class="message-oembed background-transparent-darker-before">
+			<a href="{{url}}" rel="noopener noreferrer" target="_blank">{{parsedUrl.host}}</a>
+			{{#if collapsed}}
+				<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span><br>
+			{{else}}
+				<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span><br>
+				<iframe width="270" height="200" src="{{meta.twitterPlayer}}" rel="noopener noreferrer" frameborder="0" allowfullscreen></iframe><br>
+				{{{meta.description}}}
+			{{/if}}
+		</blockquote>
+	{{/if}}
+</template>

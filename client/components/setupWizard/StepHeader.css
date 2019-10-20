@@ -1,0 +1,17 @@
+.SetupWizard__StepHeader {
+	margin-bottom: 2rem;
+}
+
+.SetupWizard__StepHeader-runningHead {
+	margin-bottom: 3px;
+
+	letter-spacing: 0.05rem;
+
+	text-transform: uppercase;
+
+	color: var(--color-dark-20);
+
+	font-size: 0.75rem;
+
+	line-height: 1.125rem;
+}
