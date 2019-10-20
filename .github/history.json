@@ -35345,6 +35345,749 @@
           ]
         }
       ]
+    },
+    "2.2.0-rc.0": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15622",
+          "title": "Merge master into develop & Set version to 2.2.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "11385",
+          "title": "[NEW] Accept GIFs and SVGs for Avatars converting them to PNG and keep transparency of PNGs",
+          "userLogin": "tassoevan",
+          "milestone": "2.2.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15574",
+          "title": "[NEW] Thread support to apps slashcommands and slashcommand previews",
+          "userLogin": "d-gubert",
+          "milestone": "2.2.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "13821",
+          "title": "[FEATURE] Rest API upload file returns message object",
+          "userLogin": "knrt10",
+          "milestone": "2.2.0",
+          "contributors": [
+            "knrt10",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15607",
+          "title": "[IMPROVE] Replace livechat:integration publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15510",
+          "title": "[IMPROVE] Replace livechat:appearance pub to REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13991",
+          "title": "[NEW] Remove all closed Livechat chats",
+          "userLogin": "knrt10",
+          "milestone": "2.2.0",
+          "contributors": [
+            "knrt10",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13902",
+          "title": "[NEW] Separate integration roles",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15428",
+          "title": "[FIX] Issues saving audio notifications",
+          "userLogin": "scrivna",
+          "milestone": "2.2.0",
+          "contributors": [
+            "scrivna",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14428",
+          "title": "[NEW] Add users.requestDataDownload API endpoint",
+          "userLogin": "ubarsaiyan",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ubarsaiyan",
+            "Hudell",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15451",
+          "title": "[NEW] Check if agent can receive new livechat conversations when its status is away/idle",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14203",
+          "title": "[NEW] Import SAML language and auto join SAML channels",
+          "userLogin": "unixtam",
+          "milestone": "2.2.0",
+          "contributors": [
+            "unixtam",
+            "Hudell",
+            "web-flow",
+            "pierre-lehnen-rc",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14698",
+          "title": "[NEW] Add option to enable X-Frame-options header to avoid loading inside any Iframe",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "9058",
+          "title": "New: Add dev dependency david badge to README",
+          "userLogin": "robbyoconnor",
+          "milestone": "2.2.0",
+          "contributors": [
+            "robbyoconnor",
+            "ggazzo",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13334",
+          "title": "[FIX] Fix a typo on Alpha API `e2e.setUserPublicAndPivateKeys` renaming to `e2e.setUserPublicAndPrivateKeys`",
+          "userLogin": "Montel",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15317",
+          "title": "[NEW] Assign new Livechat conversations to bot agents first",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker",
+            "d-gubert",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15289",
+          "title": "[NEW]Added file type filter to RoomFiles",
+          "userLogin": "juanpetterson",
+          "milestone": "2.2.0",
+          "contributors": [
+            "juanpetterson",
+            "tassoevan",
+            "web-flow",
+            "ggazzo",
+            "pierre-lehnen-rc",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15614",
+          "title": "Regression: add stdout publication back",
+          "userLogin": "ggazzo",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15615",
+          "title": "[FIX] Showing announcement back",
+          "userLogin": "ggazzo",
+          "milestone": "2.1.2",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14635",
+          "title": "[FIX] Link in Announcement popup",
+          "userLogin": "knrt10",
+          "contributors": [
+            "knrt10",
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15473",
+          "title": "Livechat Issues",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "2.2.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15577",
+          "title": "[NEW] Add new Livechat appearance setting to set the conversation finished message",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14084",
+          "title": "[FIX] adjustments for tooltips to show room name instead of id",
+          "userLogin": "mohamedar97",
+          "contributors": [
+            "mohamedar97"
+          ]
+        },
+        {
+          "pr": "15603",
+          "title": "[FIX] Read Recepts was not working",
+          "userLogin": "rodrigok",
+          "milestone": "2.1.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15589",
+          "title": "[IMPROVE] Cache hasPermissions",
+          "userLogin": "ggazzo",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13956",
+          "title": "[NEW] close emoji box using Keyboard Escape key",
+          "userLogin": "mohamedar97",
+          "milestone": "2.2.0",
+          "contributors": [
+            "mohamedar97",
+            "ggazzo",
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15598",
+          "title": "[FIX] Dynamic import of JS files were not working correctly",
+          "userLogin": "ggazzo",
+          "milestone": "2.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15602",
+          "title": "[FIX] Deny editing visitor's phone number in SMS conversations",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15593",
+          "title": "[IMPROVE] Disable edit visitor's phone number in SMS conversations",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15600",
+          "title": "[NEW] Update livechat widget version to 1.2.5",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15599",
+          "title": "Regression: Fix broken message formatting box",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15594",
+          "title": "[FIX]  Incorrect display of the button \"Invite users\"",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15416",
+          "title": "[FIX] Compact view",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15398",
+          "title": "[IMPROVE] Lazyload Katex Package",
+          "userLogin": "ggazzo",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15596",
+          "title": "[CHORE] Update latest Livechat widget version to 1.2.4",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15483",
+          "title": "Remove unneeded nginx file",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15591",
+          "title": "[REGRESSION] Fix remove department from list",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15592",
+          "title": "[CHORE] Update latest Livechat widget version to 1.2.2",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15586",
+          "title": "[FIX] leak on stdout listeners",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15534",
+          "title": "[NEW] Import DMs from CSV files",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15564",
+          "title": "[FIX] Self-XSS in validation functionality",
+          "userLogin": "ggazzo",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15563",
+          "title": "Revert fix package-lock.json",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15561",
+          "title": "Regression: Fix package-lock.json",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15559",
+          "title": "[CHORE] Split logger classes to avoid cyclic dependencies",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15520",
+          "title": "[FIX] Registration/login page now mobile friendly (#15422)",
+          "userLogin": "nstseek",
+          "milestone": "2.2.0",
+          "contributors": [
+            "nstseek",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15477",
+          "title": "docs: remove rocket chat launcher link",
+          "userLogin": "RafaelGSS",
+          "contributors": [
+            "RafaelGSS",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15546",
+          "title": "[FIX] Update apps engine rooms converter to use transformMappedData",
+          "userLogin": "d-gubert",
+          "milestone": "2.2.0",
+          "contributors": [
+            "d-gubert",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15507",
+          "title": "[IMPROVE] Replace `livechat:triggers` publication by REST calls",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15506",
+          "title": "[FIX] Missing ending slash on publicFilePath of fileUpload",
+          "userLogin": "rodrigok",
+          "milestone": "2.2.0",
+          "contributors": [
+            "rodrigok",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15515",
+          "title": "[FIX] Japanese translation for run import",
+          "userLogin": "yusukeh0710",
+          "contributors": [
+            "yusukeh0710"
+          ]
+        },
+        {
+          "pr": "15556",
+          "title": "[FIX] Add a header for the createAt column in the Directory",
+          "userLogin": "antkaz",
+          "milestone": "2.2.0",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "15550",
+          "title": "[IMPROVE] Replace roomFilesWithSearchText subscription",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15445",
+          "title": "[FIX] Method saveUser is not using password policy",
+          "userLogin": "ggazzo",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15548",
+          "title": "[IMPROVE] Replace starred messages subscription",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15532",
+          "title": "[IMPROVE] Replace some livechat:rooms subscriptions",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15525",
+          "title": "[FIX] Add permissions for slashCommands",
+          "userLogin": "antkaz",
+          "milestone": "2.2.0",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "15517",
+          "title": "[CHORE] remove 'bulk-create-c' permission",
+          "userLogin": "antkaz",
+          "milestone": "2.2.0",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "15544",
+          "title": "[IMPROVE] Replace pinned messages subscription",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15540",
+          "title": "[IMPROVE] Replace mentionedMessages publication to REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15344",
+          "title": "[FIX] Typo in autotranslate method",
+          "userLogin": "Montel",
+          "milestone": "2.2.0",
+          "contributors": [
+            "Montel",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15541",
+          "title": "[FIX] Adding \"Promise.await\" in \"livechat/message\" endpoint",
+          "userLogin": "rodrigokamada",
+          "milestone": "2.2.0",
+          "contributors": [
+            "rodrigokamada",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15444",
+          "title": "[FIX] Reset password was allowing empty values leading to an impossibility to login",
+          "userLogin": "ggazzo",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15516",
+          "title": "[FIX] Emoji are rendered in URL",
+          "userLogin": "oguhpereira",
+          "milestone": "2.2.0",
+          "contributors": [
+            "oguhpereira"
+          ]
+        },
+        {
+          "pr": "15460",
+          "title": "[FIX] Promise await for sendMessage in livechat/messages endpoint",
+          "userLogin": "hmagarotto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "hmagarotto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15482",
+          "title": "[IMPROVE] Detach React components from Meteor API",
+          "userLogin": "tassoevan",
+          "milestone": "2.2.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15514",
+          "title": "[FIX] Exposing some fields on server logs at debug level",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15490",
+          "title": "[IMPROVE] Replace livechat:agents pub by REST calls",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15478",
+          "title": "[IMPROVE] Replace `livechat:departments` publication by REST Calls",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15500",
+          "title": "[IMPROVE] Secure cookies when using HTTPS connection",
+          "userLogin": "rodrigok",
+          "milestone": "2.2.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15498",
+          "title": "Reply HTTP requests with `X-XSS-Protection: 1` header",
+          "userLogin": "rodrigok",
+          "milestone": "2.2.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15476",
+          "title": "Updating license term",
+          "userLogin": "mar-v",
+          "contributors": [
+            "mar-v",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15487",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15457",
+          "title": "[IMPROVE] Update Fuselage components on SetupWizard",
+          "userLogin": "tassoevan",
+          "milestone": "2.2.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15469",
+          "title": "Merge master into develop & Set version to 2.2.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
