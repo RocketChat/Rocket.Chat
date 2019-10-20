@@ -370,9 +370,8 @@ Template.accountPreferences.events({
 			}
 
 			const serverURL = `${ window.location.protocol }//${ window.location.hostname }`;
-			const userID = Meteor.userId();
 
-			Meteor.call('registerAlexaUser', serverURL, serverName, userID, token, function(err, res) {
+			Meteor.call('registerAlexaUser', serverURL, serverName, token, function(err, res) {
 				if (err) {
 					return toastr.error(t(err.error));
 				}
