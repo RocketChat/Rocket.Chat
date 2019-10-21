@@ -1,12 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { check } from 'meteor/check';
 
 import { settings } from '../../app/settings';
 
 Meteor.methods({
 	registerAlexaUser(serverurl, servername, token) {
-		const apiUrl = settings.get('Register_Alexa_Enable_Server_Proxy_URL');
+		check(serverurl, String);
+		check(servername, String);
+		check(token, String);
+
 		const userid = Meteor.userId();
+
+		if (!userid) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'registerAlexaUser',
+			});
+		}
+
+		const apiUrl = settings.get('Register_Alexa_Enable_Server_Proxy_URL');
 		const body = { serverurl, servername, userid, token };
 		try {
 			const result = HTTP.call('POST', apiUrl, {
