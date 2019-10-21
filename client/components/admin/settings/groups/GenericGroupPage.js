@@ -8,6 +8,6 @@ export function GenericGroupPage() {
 	const group = useGroup();
 
 	return <GroupPage>
-		{group.sections.map((section) => <Section key={section.name} section={section} />)}
+		{group.sections.map((section) => <Section key={section.name} section={section} solo={group.sections.length === 1} />)}
 	</GroupPage>;
 }
