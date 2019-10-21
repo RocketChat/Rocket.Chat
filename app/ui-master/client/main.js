@@ -171,9 +171,16 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const routerReady = FlowRouter.subsReady('userData');
+		let routerReady = FlowRouter.subsReady('userData');
+		const status = Meteor.status();
+		if (!routerReady && Meteor.user() && status && (status.status !== 'connected' || status.status !== 'connecting')) {
+			routerReady = true;
+		}
+
 		const subscriptionsReady = CachedChatSubscription.ready.get();
+
 		const settingsReady = settings.cachedCollection.ready.get();
+
 
 		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
 
