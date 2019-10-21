@@ -1,5 +1,7 @@
 import 'url-polyfill';
 
+import './importServiceWorker';
+
 import './importsCss';
 import './importPackages';
 import '../imports/startup/client';
