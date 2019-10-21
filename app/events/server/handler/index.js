@@ -3,7 +3,7 @@ const typesHandler = {
 
 	// Room
 	msg: require('./types/room_message'), // ROOM_MESSAGE
-	// emsg: require('./types/room_edit_message'), // ROOM_EDIT_MESSAGE
+	emsg: require('./types/room_edit_message'), // ROOM_EDIT_MESSAGE
 };
 
 export async function handleEvents(events) {

@@ -58,7 +58,7 @@ export class EventsModel extends Base {
 		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ JSON.stringify(event.d) }`);
 	}
 
-	async createEvent(src, contextQuery, t, d) {
+	async createEvent(src, contextQuery, { _cid, t, d }) {
 		let _pids = []; // Previous ids
 
 		// If it is not a GENESIS event, we need to get the previous events
@@ -72,6 +72,7 @@ export class EventsModel extends Base {
 		}
 
 		const event = {
+			_cid,
 			_pids: _pids || [],
 			v: 2,
 			ts: new Date(),
@@ -90,7 +91,7 @@ export class EventsModel extends Base {
 		return event;
 	}
 
-	async createGenesisEvent(src, contextQuery, d) {
+	async createGenesisEvent(src, contextQuery, { d }) {
 		// Check if genesis event already exists, if so, do not create
 		const genesisEvent = await this.model
 			.rawCollection()
@@ -100,7 +101,7 @@ export class EventsModel extends Base {
 			throw new Error(`A GENESIS event for this context query already exists: ${ JSON.stringify(contextQuery, null, 2) }`);
 		}
 
-		return this.createEvent(src, contextQuery, eventTypes.GENESIS, d);
+		return this.createEvent(src, contextQuery, { t: eventTypes.GENESIS, d });
 	}
 
 	async addEvent(contextQuery, event) {
@@ -138,6 +139,16 @@ export class EventsModel extends Base {
 		return {
 			success: true,
 		};
+	}
+
+	async updateEventData(contextQuery, event) {
+		const existingEvent = await this.model
+			.rawCollection()
+			.findOne({ ...contextQuery, _cid: event._cid, _d: { $exists: false } });
+
+		if (existingEvent) {
+			await this.model.rawCollection().update({ _id: existingEvent._id }, { $set: { d: event.d, _d: existingEvent.d } });
+		}
 	}
 
 	async getEventById(contextQuery, eventId) {

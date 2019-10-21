@@ -102,17 +102,17 @@ export class Messages extends Base {
 	}
 
 	findOneById(...args) {
-		return this._findOne('findOneById', ...args);
+		return this._findOne('findOne', { _cid: args[0] });
 	}
 
 	findOneByIds(ids, options, ...args) {
-		return this._findOne('findOneByIds', [ids, options, ...args]);
+		return this._findOne('findOne', [{ _cid: { $in: ids } }, options, ...args]);
 	}
 
 	insert(...args) {
 		const [message] = args;
 
-		const event = Promise.await(RoomEvents.createMessageEvent({ src: getLocalSrc(), roomId: message.rid, d: RoomEvents.fromV1Data(message) }));
+		const event = Promise.await(RoomEvents.createMessageEvent({ src: getLocalSrc(), roomId: message.rid, _cid: message._id, d: RoomEvents.fromV1Data(message) }));
 
 		dispatchEvent(event);
 
@@ -122,13 +122,18 @@ export class Messages extends Base {
 	update(...args) {
 		const [query, update] = args;
 
+		const _cid = query._id;
+
+		query._cid = _cid;
+		delete query._id;
+
 		const event = RoomEvents.findOne(query);
 
-		const updatedEvent = { _id: event._id, d: {} };
+		const d = RoomEvents.fromV1Data(update.$set ? update.$set : update);
 
-		updatedEvent.d = RoomEvents.fromV1Data(update.$set ? update.$set : update);
+		d._oid = event._id; // Original id
 
-		const editEvent = Promise.await(RoomEvents.createEditMessageEvent({ src: event.src, roomId: event.rid, updatedEvent }));
+		const editEvent = Promise.await(RoomEvents.createEditMessageEvent({ src: event.src, roomId: event.rid, _cid, d }));
 
 		dispatchEvent(editEvent);
 

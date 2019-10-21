@@ -3,7 +3,7 @@ import { RoomEvents, Rooms } from '../../../../models/server';
 // import { normalizers } from '../../../../federation/server/normalizers';
 
 module.exports = async (event) => {
-	const eventContext = contextDefinitions.ROOM.getContext(event);
+	const eventContext = contextDefinitions.ROOM.context(event);
 
 	let eventResult;
 

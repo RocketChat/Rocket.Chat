@@ -6,5 +6,10 @@ const { ROOM: { context, contextQuery } } = contextDefinitions;
 module.exports = async (event) => {
 	const eventContext = contextQuery(context(event));
 
-	return RoomEvents.addEvent(eventContext, event);
+	const eventResult = await RoomEvents.addEvent(eventContext, event);
+
+	// Update the parent event
+	await RoomEvents.updateEventData(eventContext, event);
+
+	return eventResult;
 };

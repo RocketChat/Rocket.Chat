@@ -48,7 +48,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 
 			let eventResult;
 
-			const eventContext = contextDefinitions.ROOM.getContext(event);
+			const eventContext = contextDefinitions.ROOM.context(event);
 
 			switch (event.type) {
 				//

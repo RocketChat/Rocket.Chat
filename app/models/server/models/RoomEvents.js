@@ -1,5 +1,3 @@
-import { Match } from 'meteor/check';
-
 import { EventsModel, contextDefinitions, eventTypes } from './Events';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 
@@ -19,24 +17,19 @@ class RoomEventsModel extends EventsModel {
 	async createGenesisEvent({ src, room }) {
 		src = this.ensureSrc(src);
 
-		return super.createGenesisEvent(src, contextQuery(room._id), { contextType: type, room });
+		return super.createGenesisEvent(src, contextQuery(room._id), { d: { contextType: type, room } });
 	}
 
-	async createMessageEvent({ src, roomId, d }) {
+	async createMessageEvent({ src, roomId, _cid, d }) {
 		src = this.ensureSrc(src);
 
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_MESSAGE, d);
+		return super.createEvent(src, contextQuery(roomId), { _cid, t: eventTypes.ROOM_MESSAGE, d });
 	}
 
-	async createEditMessageEvent({ src, roomId, editedMessage }) {
+	async createEditMessageEvent({ src, roomId, _cid, d }) {
 		src = this.ensureSrc(src);
 
-		const d = {
-			_id: editedMessage._id,
-			d: editedMessage.d,
-		};
-
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_EDIT_MESSAGE, d);
+		return super.createEvent(src, contextQuery(roomId), { _cid, t: eventTypes.ROOM_EDIT_MESSAGE, d });
 	}
 
 	async createDeleteRoomEvent(src, roomId) {
@@ -89,7 +82,7 @@ class RoomEventsModel extends EventsModel {
 
 	toV1(event) {
 		return {
-			_id: event._id,
+			_id: event._cid,
 			v: 1,
 			rid: event.rid,
 			u: event.d.u,
@@ -101,39 +94,6 @@ class RoomEventsModel extends EventsModel {
 			channels: event.d.channels,
 			_updatedAt: event._updatedAt,
 		};
-	}
-
-	//
-	// Messages
-	//
-	findVisibleByRoomIdNotContainingTypes(roomId, types, options) {
-		const query = {
-			rid: roomId,
-		};
-
-		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$lt: timestamp,
-			},
-		};
-
-		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
 	}
 }
 
