@@ -1,8 +1,10 @@
-import { Mongo } from 'meteor/mongo';
+import { CachedCollection } from '../../../ui-cached-collection';
 
 import * as Models from '..';
 
-const Roles = new Mongo.Collection('rocketchat_roles');
+const CachedRoles = new CachedCollection({ name: 'roles' });
+
+const Roles = CachedRoles.collection;
 
 Object.assign(Roles, {
 	findUsersInRole(name, scope, options) {

@@ -75,6 +75,7 @@ import './publications/roomFilesWithSearchText';
 import './publications/settings';
 import './publications/spotlight';
 import './publications/subscription';
+import './publications/roles';
 import './publications/userAutocomplete';
 import './publications/userChannels';
 import './publications/userData';
