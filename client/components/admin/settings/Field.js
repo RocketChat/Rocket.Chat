@@ -92,8 +92,13 @@ export function Field({ field }) {
 			</div>}
 		</div>
 
-		{hasResetButton && <Button aria-label={t('Reset')} data-setting={_id} cancel onClick={onResetButtonClick}>
-			<Icon icon='icon-ccw' className='color-error-contrast' />
-		</Button>}
+		{hasResetButton && <Button
+			aria-label={t('Reset')}
+			children={<Icon icon='icon-ccw' className='color-error-contrast' />}
+			className='reset-setting'
+			data-setting={_id}
+			cancel
+			onClick={onResetButtonClick}
+		/>}
 	</div>;
 }
