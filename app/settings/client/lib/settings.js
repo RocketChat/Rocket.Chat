@@ -7,7 +7,7 @@ import { settings } from '../../lib/settings';
 settings.cachedCollection = new CachedCollection({
 	name: 'public-settings',
 	eventType: 'onAll',
-	userRelated: false,
+	userRelated: true,
 	listenChangesForLoggedUsersOnly: true,
 });
 
