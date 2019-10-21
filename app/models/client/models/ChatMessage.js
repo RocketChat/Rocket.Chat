@@ -1,4 +1,5 @@
 import { Mongo } from 'meteor/mongo';
+import { PersistentMinimongo2 } from 'meteor/frozeman:persistent-minimongo2';
 
 export const ChatMessage = new Mongo.Collection(null);
 
