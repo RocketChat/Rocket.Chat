@@ -1,4 +1,4 @@
-import { Button, Paragraph } from '@rocket.chat/fuselage';
+import { Accordion, Button, Paragraph } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { Header } from '../../header/Header';
@@ -51,7 +51,9 @@ export function GroupPage({ children, headerButtons }) {
 			{t.has(group.i18nDescription) && <Paragraph hintColor>{t(group.i18nDescription)}</Paragraph>}
 
 			<div className='page-settings rocket-form'>
-				{children}
+				<Accordion>
+					{children}
+				</Accordion>
 			</div>
 		</div>
 	</form>;
