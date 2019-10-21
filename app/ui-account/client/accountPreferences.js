@@ -362,34 +362,26 @@ Template.accountPreferences.events({
 			return toastr.error(t('Register_Alexa_Servername_Error'));
 		}
 
-		const tokenName = `alexa-${ serverName }`;
+		const serverURL = `${ window.location.protocol }//${ window.location.hostname }`;
 
-		Meteor.call('personalAccessTokens:generateToken', { tokenName }, (error, token) => {
-			if (error) {
-				return toastr.error(t(error.error));
+		Meteor.call('registerAlexaUser', serverURL, serverName, function(err, res) {
+			if (err) {
+				return toastr.error(t(err.error));
+			}
+			if (res === false) {
+				return toastr.error(t('Register_Alexa_Server_Error'));
 			}
 
-			const serverURL = `${ window.location.protocol }//${ window.location.hostname }`;
+			const alexaPinCode = res.code;
 
-			Meteor.call('registerAlexaUser', serverURL, serverName, token, function(err, res) {
-				if (err) {
-					return toastr.error(t(err.error));
-				}
-				if (res === false) {
-					return toastr.error(t('Register_Alexa_Server_Error'));
-				}
-
-				const alexaPinCode = res.code;
-
-				modal.open({
-					title: t('Register_Alexa_Token_Generated'),
-					text: t('Register_Alexa_Token_Generated_Modal', { pinCode: alexaPinCode }),
-					type: 'success',
-					confirmButtonColor: '#DD6B55',
-					confirmButtonText: 'Ok',
-					closeOnConfirm: true,
-					html: true,
-				});
+			modal.open({
+				title: t('Register_Alexa_Token_Generated'),
+				text: t('Register_Alexa_Token_Generated_Modal', { pinCode: alexaPinCode }),
+				type: 'success',
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: 'Ok',
+				closeOnConfirm: true,
+				html: true,
 			});
 		});
 	},

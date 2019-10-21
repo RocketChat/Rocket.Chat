@@ -5,10 +5,9 @@ import { check } from 'meteor/check';
 import { settings } from '../../app/settings';
 
 Meteor.methods({
-	registerAlexaUser(serverurl, servername, token) {
+	registerAlexaUser(serverurl, servername) {
 		check(serverurl, String);
 		check(servername, String);
-		check(token, String);
 
 		const userid = Meteor.userId();
 
@@ -17,6 +16,9 @@ Meteor.methods({
 				method: 'registerAlexaUser',
 			});
 		}
+
+		const tokenName = `alexa-${ servername }`;
+		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName }));
 
 		const apiUrl = settings.get('Register_Alexa_Enable_Server_Proxy_URL');
 		const body = { serverurl, servername, userid, token };
