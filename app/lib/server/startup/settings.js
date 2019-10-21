@@ -2770,7 +2770,6 @@ settings.addGroup('Alexa', function() {
 	});
 	this.add('Register_Alexa_Enable_Server_Proxy_URL', '', {
 		type: 'string',
-		public: true,
 		enableQuery: {
 			_id: 'Register_Alexa_Enable_Server',
 			value: true,

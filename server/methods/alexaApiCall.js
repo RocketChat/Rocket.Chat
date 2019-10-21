@@ -18,7 +18,7 @@ Meteor.methods({
 		}
 
 		const tokenName = `alexa-${ servername }`;
-		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName }));
+		const token = Meteor.call('personalAccessTokens:generateToken', { tokenName });
 
 		const apiUrl = settings.get('Register_Alexa_Enable_Server_Proxy_URL');
 		const body = { serverurl, servername, userid, token };
