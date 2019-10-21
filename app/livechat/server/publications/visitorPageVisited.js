@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission } from '../../../authorization';
 import { LivechatRooms, Messages } from '../../../models';
 
+console.warn('The publication "livechat:visitorPageVisited" is deprecated and will be removed after version v3.0.0');
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorPageVisited' }));

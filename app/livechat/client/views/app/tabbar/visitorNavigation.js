@@ -1,23 +1,22 @@
-import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import './visitorNavigation.html';
-
-const visitorNavigationHistory = new Mongo.Collection('visitor_navigation_history');
+import { APIClient } from '../../../../../utils/client';
 
 Template.visitorNavigation.helpers({
 	loadingNavigation() {
-		return !Template.instance().pageVisited.ready();
+		return Template.instance().isLoading.get();
 	},
 
 	pages() {
 		const room = ChatRoom.findOne({ _id: this.rid }, { fields: { 'v.token': 1 } });
 
 		if (room) {
-			return visitorNavigationHistory.find({ rid: room._id }, { sort: { ts: -1 } });
+			return Template.instance().pages.get();
 		}
 	},
 
@@ -30,10 +29,14 @@ Template.visitorNavigation.helpers({
 	},
 });
 
-Template.visitorNavigation.onCreated(function() {
+Template.visitorNavigation.onCreated(async function() {
 	const currentData = Template.currentData();
+	this.isLoading = new ReactiveVar(true);
+	this.pages = new ReactiveVar([]);
 
 	if (currentData && currentData.rid) {
-		this.pageVisited = this.subscribe('livechat:visitorPageVisited', { rid: currentData.rid });
+		const { pages } = await APIClient.v1.get(`livechat/visitors.pagesVisited?roomId=${ currentData.rid }`);
+		this.isLoading.set(false);
+		this.pages.set(pages);
 	}
 });

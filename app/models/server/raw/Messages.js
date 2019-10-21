@@ -20,4 +20,15 @@ export class MessagesRaw extends BaseRaw {
 
 		return this.find(query, options);
 	}
+
+	findByRoomIdAndType(roomId, type, options) {
+		const query = {
+			rid: roomId,
+			t: type,
+		};
+
+		if (options == null) { options = {}; }
+
+		return this.find(query, options);
+	}
 }
