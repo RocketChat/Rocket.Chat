@@ -12,4 +12,4 @@ Meteor.methods({
 
 		return records;
 	},
- });
+});
