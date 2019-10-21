@@ -55,22 +55,6 @@ Template.visitorEdit.helpers({
 	},
 });
 
-Template.visitorEdit.onRendered(function() {
-	Meteor.call('livechat:getTagsList', (err, tagsList) => {
-		this.availableTags.set(tagsList);
-
-		const uid = Meteor.userId();
-		const agentDepartments = this.agentDepartments.get();
-		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
-		const tags = this.availableTags.get() || [];
-		const availableTags = tags
-			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
-			.map(({ name }) => name);
-
-		this.availableUserTags.set(availableTags);
-	});
-});
-
 Template.visitorEdit.onCreated(async function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
@@ -95,6 +79,17 @@ Template.visitorEdit.onCreated(async function() {
 	const { departments } = await APIClient.v1.get(`livechat/agent/${ uid }/departments`);
 	const agentDepartments = departments.map((dept) => dept.departmentId);
 	this.agentDepartments.set(agentDepartments);
+	Meteor.call('livechat:getTagsList', (err, tagsList) => {
+		this.availableTags.set(tagsList);
+		const uid = Meteor.userId();
+		const agentDepartments = this.agentDepartments.get();
+		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
+		const tags = this.availableTags.get() || [];
+		const availableTags = tags
+			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
+			.map(({ name }) => name);
+		this.availableUserTags.set(availableTags);
+	});
 });
 
 Template.visitorEdit.events({
