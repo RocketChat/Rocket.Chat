@@ -65,7 +65,6 @@ import './methods/saveOfficeHours';
 import './methods/sendTranscript';
 import './methods/getFirstRoomMessage';
 import './methods/getTagsList';
-import '../lib/LivechatExternalMessage';
 import '../lib/LivechatInquiry';
 import './lib/Analytics';
 import './lib/QueueManager';

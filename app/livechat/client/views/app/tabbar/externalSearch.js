@@ -1,11 +1,12 @@
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 
-import { LivechatExternalMessage } from '../../../../lib/LivechatExternalMessage';
 import './externalSearch.html';
+import { APIClient } from '../../../../../utils/client';
 
 Template.externalSearch.helpers({
 	messages() {
-		return LivechatExternalMessage.findByRoomId(this.rid, { ts: 1 });
+		return Template.instance().externalMessages.get();
 	},
 });
 
@@ -13,15 +14,19 @@ Template.externalSearch.events({
 	'click button.pick-message'(event, instance) {
 		event.preventDefault();
 
-		$(`#chat-window-${ instance.roomId } .input-message`).val(this.msg).focus();
+		$(`#chat-window-${instance.roomId} .input-message`).val(this.msg).focus();
 	},
 });
 
-Template.externalSearch.onCreated(function() {
+Template.externalSearch.onCreated(function () {
 	this.roomId = null;
-	// console.log('externalSearch.this ->',this);
-	this.autorun(() => {
+	this.externalMessages = new ReactiveVar([]);
+
+	this.autorun(async () => {
 		this.roomId = Template.currentData().rid;
-		this.subscribe('livechat:externalMessages', Template.currentData().rid);
+		if (this.roomId) {
+			const { messages } = await APIClient.v1.get(`livechat/messages.external?roomId=${this.roomId}`);
+			this.externalMessages.set(messages);
+		}
 	});
 });
