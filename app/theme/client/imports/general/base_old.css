@@ -5032,19 +5032,6 @@ rc-old select,
 	.rc-old .messages-container .message-form > .formatting-tips {
 		display: none;
 	}
-	
-	.cms-page {
-		padding: 0;
-
-		&__content {
-			margin: 0;
-			padding: 0rem 1rem 1rem;
-		}
-
-		& .cms-page-close {
-			margin-top: 10px;
-		}
-	}
 }
 
 @media (height <= 480px) {
