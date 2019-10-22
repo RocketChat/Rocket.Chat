@@ -10,6 +10,8 @@ const rolesHasPermission = mem(async (permission, roles) => {
 	return !!result;
 });
 
+const exists = (item) => !!item;
+
 const subscriptionHasPermission = mem(async (uid, permission, roles, rid) => {
 	if (rid == null) {
 		return;
@@ -30,7 +32,7 @@ export const clearCache = () => {
 	mem.clear(subscriptionHasPermission);
 };
 
-const groupRolesByScope = async (sortedUserRoles) => (await Promise.all(sortedUserRoles.map(getRole))).reduce((roles, role) => {
+const groupRolesByScope = async (sortedUserRoles) => (await Promise.all(sortedUserRoles.map(getRole))).filter(exists).reduce((roles, role) => {
 	roles[role.scope || 'Users'] = roles[role.scope || 'Users'] ? roles[role.scope || 'Users'].concat([role._id]) : [].concat([role._id]);
 	return roles;
 }, {});
