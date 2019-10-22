@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { API } from '../../../../api';
 import { findVisitorInfo } from '../../../server/api/lib/visitors';
 
-API.v1.addRoute('livechat/visitorInfo', { authRequired: true }, {
+API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	get() {
 		check(this.queryParams, {
 			visitorId: String,

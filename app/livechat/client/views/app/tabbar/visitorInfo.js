@@ -324,7 +324,7 @@ Template.visitorInfo.onCreated(function() {
 	this.autorun(async () => {
 		const visitorId = this.visitorId.get();
 		if (visitorId) {
-			const { visitor } = await APIClient.v1.get(`livechat/visitorInfo?visitorId=${ visitorId }`);
+			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
 			this.user.set(visitor);
 		}
 	});

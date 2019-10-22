@@ -17,10 +17,10 @@ describe('LIVECHAT - visitors', function() {
 			});
 	});
 
-	describe('livechat/visitorInfo', () => {
+	describe('livechat/visitors.info', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-l-room', []).then(() => {
-				request.get(api('livechat/visitorInfo?visitorId=invalid'))
+				request.get(api('livechat/visitors.info?visitorId=invalid'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -33,7 +33,7 @@ describe('LIVECHAT - visitors', function() {
 		});
 		it('should return an "visitor not found error" when the visitor doe snot exists', (done) => {
 			updatePermission('view-l-room', ['admin']).then(() => {
-				request.get(api('livechat/visitorInfo?visitorId=invalid'))
+				request.get(api('livechat/visitors.info?visitorId=invalid'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -45,7 +45,7 @@ describe('LIVECHAT - visitors', function() {
 			});
 		});
 		it('should return the visitor info', (done) => {
-			request.get(api(`livechat/visitorInfo?visitorId=${ visitor._id }`))
+			request.get(api(`livechat/visitors.info?visitorId=${ visitor._id }`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

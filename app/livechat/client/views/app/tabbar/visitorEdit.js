@@ -82,7 +82,7 @@ Template.visitorEdit.onCreated(function() {
 	this.autorun(async () => {
 		const { visitorId } = Template.currentData();
 		if (visitorId) {
-			const { visitor } = await APIClient.v1.get(`livechat/visitorInfo?visitorId=${ visitorId }`);
+			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
 			this.visitor.set(visitor);
 		}
 	});
