@@ -143,6 +143,19 @@ export const MessageAction = new class {
 
 Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
+
+	const getChatMessagesFrom = (msg) => {
+		const { rid, tmid } = msg;
+
+		if (rid) {
+			if (tmid) {
+				return chatMessages[`${ rid }-${ tmid }`];
+			}
+			return chatMessages[rid];
+		}
+		return chatMessages[Session.get('openedRoom')];
+	};
+
 	MessageAction.addButton({
 		id: 'reply-directly',
 		icon: 'reply-directly',
@@ -247,7 +260,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg } = messageArgs(this);
-			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
+			getChatMessagesFrom(msg).edit(document.getElementById(msg.tmid ? `thread-${ msg._id }` : msg._id));
 		},
 		condition({ msg: message, subscription, settings }) {
 			if (subscription == null) {
@@ -284,8 +297,8 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		color: 'alert',
 		action() {
-			const { msg: message } = messageArgs(this);
-			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
+			const { msg } = messageArgs(this);
+			getChatMessagesFrom(msg).confirmDeleteMsg(msg);
 		},
 		condition({ msg: message, subscription }) {
 			if (!subscription) {
