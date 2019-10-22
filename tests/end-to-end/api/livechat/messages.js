@@ -1,7 +1,7 @@
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - messages', function () {
+describe('LIVECHAT - messages', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
