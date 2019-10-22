@@ -718,7 +718,7 @@ settings.addGroup('General', function() {
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
-		blocked: true,
+		hidden: true,
 		values: [
 			{
 				key: 'pending',
