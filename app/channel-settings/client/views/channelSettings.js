@@ -493,7 +493,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			showingValue: new ReactiveVar(false),
 			realValue: null,
 			canView() {
-				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.JOIN_CODE) && hasAllPermission('edit-room', room._id);
+				return room.t !== 'p' && roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.JOIN_CODE) && hasAllPermission('edit-room', room._id);
 			},
 			canEdit() {
 				return hasAllPermission('edit-room', room._id);
