@@ -9,6 +9,7 @@ import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
 import { settings } from '../../../settings';
+import { findMentionedMessages, findStarredMessages } from '../lib/messages';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -392,6 +393,37 @@ API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+		}
+		const room = Meteor.call('canAccessRoom', roomId, this.userId);
+		if (!room) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		const cursor = Messages.findPinnedByRoom(room._id, {
+			skip: offset,
+			limit: count,
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
+	},
+});
+
 API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 	get() {
 		const { rid } = this.queryParams;
@@ -566,5 +598,48 @@ API.v1.addRoute('chat.unfollowMessage', { authRequired: true }, {
 		}
 		Meteor.runAsUser(this.userId, () => Meteor.call('unfollowMessage', { mid }));
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('chat.getMentionedMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { sort } = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+		}
+		const messages = Promise.await(findMentionedMessages({
+			uid: this.userId,
+			roomId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+		return API.v1.success(messages);
+	},
+});
+
+API.v1.addRoute('chat.getStarredMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { sort } = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+		}
+		const messages = Promise.await(findStarredMessages({
+			uid: this.userId,
+			roomId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+		return API.v1.success(messages);
 	},
 });

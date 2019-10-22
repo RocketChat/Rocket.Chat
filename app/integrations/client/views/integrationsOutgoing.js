@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
@@ -57,11 +57,12 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			if (sub.ready()) {
 				let intRecord;
 
-				if (hasAllPermission('manage-integrations')) {
+				if (hasAllPermission('manage-outgoing-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id });
-				} else if (hasAllPermission('manage-own-integrations')) {
+				} else if (hasAllPermission('manage-own-outgoing-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
 				}
+				intRecord.hasScriptError = intRecord.scriptEnabled && intRecord.scriptError;
 
 				if (intRecord) {
 					this.record.set(intRecord);
@@ -91,7 +92,10 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission([
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+		]);
 	},
 
 	data() {

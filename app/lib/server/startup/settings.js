@@ -44,6 +44,10 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Accounts_AllowUserStatusMessageChange', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		public: true,
@@ -53,6 +57,10 @@ settings.addGroup('Accounts', function() {
 		public: true,
 	});
 	this.add('Accounts_AllowPasswordChange', true, {
+		type: 'boolean',
+		public: true,
+	});
+	this.add('Accounts_AllowEmailNotifications', true, {
 		type: 'boolean',
 		public: true,
 	});
@@ -235,7 +243,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'mentions', {
+		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -253,7 +261,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'mentions', {
+		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -752,6 +760,18 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		secret: true,
 	});
+	this.add('Iframe_Restrict_Access', true, {
+		type: 'boolean',
+		secret: true,
+	});
+	this.add('Iframe_X_Frame_Options', 'sameorigin', {
+		type: 'string',
+		secret: true,
+		enableQuery: {
+			_id: 'Iframe_Restrict_Access',
+			value: true,
+		},
+	});
 	this.add('Favorite_Rooms', true, {
 		type: 'boolean',
 		public: true,
@@ -811,6 +831,11 @@ settings.addGroup('General', function() {
 	this.add('Force_SSL', false, {
 		type: 'boolean',
 		public: true,
+	});
+	this.add('Support_Cordova_App', false, {
+		type: 'boolean',
+		i18nDescription: 'Support_Cordova_App_Description',
+		alert: 'Support_Cordova_App_Alert',
 	});
 	this.add('GoogleTagManager_id', '', {
 		type: 'string',
@@ -1144,7 +1169,9 @@ settings.addGroup('Push', function() {
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
+		i18nDescription: 'Push_gateway_description',
 		alert: 'Push_Setting_Requires_Restart_Alert',
+		multiline: true,
 		enableQuery: [
 			{
 				_id: 'Push_enable',
@@ -1263,7 +1290,7 @@ settings.addGroup('Layout', function() {
 			multiline: true,
 			public: true,
 		});
-		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo"/></a>', {
+		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
 			type: 'code',
 			code: 'text/html',
 			public: true,
@@ -2650,6 +2677,17 @@ settings.addGroup('Setup_Wizard', function() {
 		});
 
 		this.add('Cloud_Workspace_Registration_Client_Uri', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+			secret: true,
+		});
+
+		this.add('Cloud_Workspace_PublicKey', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,

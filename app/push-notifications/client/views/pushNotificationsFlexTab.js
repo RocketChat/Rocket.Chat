@@ -176,7 +176,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 					await call('saveDesktopNotificationDuration', rid, value);
 					break;
 				case 'audioNotificationValue':
-					await call('saveAudioNotificationValue', rid, value);
+					await call('saveAudioNotificationValue', rid, value.split(' ')[0]);
 					break;
 				default:
 					await call('saveNotificationSettings', rid, field, value);
@@ -207,12 +207,9 @@ Template.pushNotificationsFlexTab.events({
 
 		if (value && value[0] !== 'none') {
 			const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
-			const $audio = $(`audio#${ value[0] }`);
-
-			if ($audio && $audio[0] && $audio[0].play) {
-				$audio[0].volume = Number((audioVolume / 100).toPrecision(2));
-				$audio[0].play();
-			}
+			CustomSounds.play(value[0], {
+				volume: Number((audioVolume / 100).toPrecision(2)),
+			});
 		}
 	},
 

@@ -23,53 +23,47 @@ export const readMessage = new class extends EventEmitter {
 	constructor() {
 		super();
 		this.debug = false;
-		this.read = _.debounce((force) => this.readNow(force), 1000);
-		this.canReadMessage = false;
+		this.read = _.debounce((force) => this.readNow(force), 2000);
+		this.enable();
 	}
 
 	readNow(force) {
-		if (force == null) { force = false; }
-		if (this.debug) { console.log('--------------'); }
-		if (this.debug) { console.log('readMessage -> readNow init process force:', force); }
+		this.log('--------------');
+		this.log('readMessage -> readNow init process force:', force);
 
-		const self = this;
-
-		self.refreshUnreadMark();
-
-		if ((force !== true) && (this.canReadMessage === false)) {
-			if (this.debug) { console.log('readMessage -> readNow canceled by canReadMessage: false'); }
+		if ((force !== true) && (this.enabled === false)) {
+			this.log('readMessage -> readNow canceled by enabled: false');
 			return;
 		}
 
 		const rid = Session.get('openedRoom');
 		if (rid == null) {
-			if (this.debug) { console.log('readMessage -> readNow canceled, no rid informed'); }
+			this.log('readMessage -> readNow canceled, no rid informed');
 			return;
 		}
 
 		if (force === true) {
-			if (this.debug) { console.log('readMessage -> readNow via force rid:', rid); }
+			this.log('readMessage -> readNow via force rid:', rid);
 			return Meteor.call('readMessages', rid, () => {
 				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-				this.refreshUnreadMark();
 				return this.emit(rid);
 			});
 		}
 
 		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription == null) {
-			if (this.debug) { console.log('readMessage -> readNow canceled, no subscription found for rid:', rid); }
+			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
 			return;
 		}
 
 		if ((subscription.alert === false) && (subscription.unread === 0)) {
-			if (this.debug) { console.log('readMessage -> readNow canceled, alert', subscription.alert, 'and unread', subscription.unread); }
+			this.log('readMessage -> readNow canceled, alert', subscription.alert, 'and unread', subscription.unread);
 			return;
 		}
 
 		const room = RoomManager.getOpenedRoomByRid(rid);
 		if (room == null) {
-			if (this.debug) { console.log('readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name); }
+			this.log('readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name);
 			return;
 		}
 
@@ -78,8 +72,8 @@ export const readMessage = new class extends EventEmitter {
 		if (unreadMark.length > 0) {
 			const position = unreadMark.position();
 			const visible = (position != null ? position.top : undefined) >= 0;
-			if (!visible && (room.unreadSince.get() != null)) {
-				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get() != null); }
+			if (!visible && room.unreadSince.get()) {
+				this.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get() != null);
 				return;
 			}
 		// if unread mark is not visible and there is more more not loaded unread messages
@@ -87,28 +81,30 @@ export const readMessage = new class extends EventEmitter {
 			return;
 		}
 
-		if (this.debug) { console.log('readMessage -> readNow rid:', rid); }
+		this.log('readMessage -> readNow rid:', rid);
 		Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-			this.refreshUnreadMark();
 			return this.emit(rid);
 		});
 	}
 
+	log(...args) {
+		return this.debug && console.log(...args);
+	}
+
 	disable() {
-		this.canReadMessage = false;
+		this.enabled = false;
 	}
 
 	enable() {
-		this.canReadMessage = document.hasFocus();
+		this.enabled = document.hasFocus();
 	}
 
 	isEnable() {
-		return this.canReadMessage === true;
+		return this.enabled === true;
 	}
 
-	refreshUnreadMark(rid, force) {
-		if (rid == null) { rid = Session.get('openedRoom'); }
+	refreshUnreadMark(rid) {
 		if (rid == null) {
 			return;
 		}
@@ -124,14 +120,11 @@ export const readMessage = new class extends EventEmitter {
 		}
 
 		if (!subscription.alert && (subscription.unread === 0)) {
+			const roomDom = $(room.dom);
+			roomDom.find('.message.first-unread').removeClass('first-unread');
 			room.unreadSince.set(undefined);
 			return;
 		}
-
-		if ((force == null) && (subscription.rid === Session.get('openedRoom')) && document.hasFocus()) {
-			return;
-		}
-
 
 		let lastReadRecord = ChatMessage.findOne({
 			rid: subscription.rid,
@@ -143,66 +136,56 @@ export const readMessage = new class extends EventEmitter {
 				ts: -1,
 			},
 		});
+		const { unreadNotLoaded } = RoomHistoryManager.getRoom(rid);
 
-		if ((lastReadRecord == null) && (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() === 0)) {
-			lastReadRecord =				{ ts: new Date(0) };
+		if (lastReadRecord == null && unreadNotLoaded.get() === 0) {
+			lastReadRecord = { ts: new Date(0) };
 		}
 
-		if ((lastReadRecord != null) || (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() > 0)) {
-			room.unreadSince.set(subscription.ls);
-		} else {
-			room.unreadSince.set(undefined);
+		room.unreadSince.set((lastReadRecord || unreadNotLoaded.get() > 0) && subscription.ls);
+
+		if (!lastReadRecord) {
+			return;
 		}
 
-		if (lastReadRecord != null) {
-			const firstUnreadRecord = ChatMessage.findOne({
-				rid: subscription.rid,
-				ts: {
-					$gt: lastReadRecord.ts,
-				},
-				'u._id': {
-					$ne: Meteor.userId(),
-				},
-			}, {
-				sort: {
-					ts: 1,
-				},
-			});
+		const firstUnreadRecord = ChatMessage.findOne({
+			rid: subscription.rid,
+			ts: {
+				$gt: lastReadRecord.ts,
+			},
+			'u._id': {
+				$ne: Meteor.userId(),
+			},
+		}, {
+			sort: {
+				ts: 1,
+			},
+		});
 
-			if (firstUnreadRecord != null) {
-				room.unreadFirstId = firstUnreadRecord._id;
-				$(room.dom).find(`.message.first-unread:not(#${ firstUnreadRecord._id })`).removeClass('first-unread');
-				$(room.dom).find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
-			}
+		if (firstUnreadRecord) {
+			room.unreadFirstId = firstUnreadRecord._id;
+			const roomDom = $(room.dom);
+			roomDom.find('.message.first-unread').removeClass('first-unread');
+			roomDom.find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
 		}
 	}
 }();
 
 
 Meteor.startup(function() {
-	$(window).on('blur', () => readMessage.disable());
-
-	$(window).on('focus', () => {
-		readMessage.enable();
-		return readMessage.read();
-	});
-
-	$(window).on('click', () => {
-		readMessage.enable();
-		return readMessage.read();
-	});
-
-	$(window).on('touchend', () => {
-		readMessage.enable();
-		return readMessage.read();
-	});
-
-	$(window).on('keyup', (e) => {
-		const key = e.which;
-		if (key === 27) {
+	$(window)
+		.on('blur', () => readMessage.disable())
+		.on('focus', () => {
 			readMessage.enable();
-			readMessage.readNow(true);
-			return $('.message.first-unread').removeClass('first-unread');
-		}
-	});
+			readMessage.readNow();
+		})
+		.on('touchend', () => {
+			readMessage.enable();
+		})
+		.on('keyup', (e) => {
+			const key = e.which;
+			if (key === 27) { // ESCAPE KEY
+				readMessage.readNow(true);
+			}
+		});
 });

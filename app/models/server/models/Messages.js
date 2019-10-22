@@ -4,7 +4,6 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
-import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
 
 export class Messages extends Base {
 	constructor() {
@@ -31,6 +30,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+		// livechat
+		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {
@@ -848,16 +849,6 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
 	}
 
-	createRejectedMessageByPeer(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('rejected-message-by-peer', roomId, message, user, extraData);
-	}
-
-	createPeerDoesNotExist(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('peer-does-not-exist', roomId, message, user, extraData);
-	}
-
 	// REMOVE
 	removeById(_id) {
 		const query =	{ _id };
@@ -913,21 +904,26 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	async removeFilesByRoomId(roomId) {
-		this.find({
-			rid: roomId,
-			'file._id': {
-				$exists: true,
-			},
-		}, {
-			fields: {
-				'file._id': 1,
-			},
-		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
-	}
-
 	getMessageByFileId(fileID) {
 		return this.findOne({ 'file._id': fileID });
+	}
+
+	getMessageByFileIdAndUsername(fileID, userId) {
+		const query = {
+			'file._id': fileID,
+			'u._id': userId,
+		};
+
+		const options = {
+			fields: {
+				unread: 0,
+				mentions: 0,
+				channels: 0,
+				groupable: 0,
+			},
+		};
+
+		return this.findOne(query, options);
 	}
 
 	setAsRead(rid, until) {

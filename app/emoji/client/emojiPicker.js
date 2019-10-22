@@ -7,13 +7,15 @@ import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
 
+const ESCAPE = 27;
+
 const emojiListByCategory = new ReactiveDict('emojiList');
 
 const getEmojiElement = (emoji, image) => image && `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
 
 const createEmojiList = (category, actualTone) => {
 	const html = Object.values(emoji.packages).map((emojiPackage) => {
-		if (!emojiPackage.emojisByCategory[category]) {
+		if (!emojiPackage.emojisByCategory || !emojiPackage.emojisByCategory[category]) {
 			return;
 		}
 
@@ -226,6 +228,13 @@ Template.emojiPicker.events({
 		EmojiPicker.pickEmoji(_emoji + tone);
 	},
 	'keyup .js-emojipicker-search, change .js-emojipicker-search'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (event.keyCode === ESCAPE) {
+			return EmojiPicker.close();
+		}
+
 		const value = event.target.value.trim();
 		const cst = instance.currentSearchTerm;
 		if (value === cst.get()) {
