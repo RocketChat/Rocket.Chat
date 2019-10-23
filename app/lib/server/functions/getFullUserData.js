@@ -55,15 +55,14 @@ settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
-export const getFullUserData = function({ userId, filter, limit: l }) {
+export const getFullUserData = function({ userId, filter, userIdToGetData, limit: l }) {
 	const username = s.trim(filter);
 	const userToRetrieveFullUserData = Users.findOneByUsername(username, { fields: { username: 1 } });
 
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
 	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
 	const limit = !viewFullOtherUserInfo ? 1 : l;
-
-	if (!username && limit <= 1) {
+	if (!username && limit <= 1 && !userIdToGetData) {
 		return undefined;
 	}
 
@@ -81,12 +80,14 @@ export const getFullUserData = function({ userId, filter, limit: l }) {
 		sort: { username: 1 },
 	};
 
-	if (!username) {
+	if (!username && !userIdToGetData) {
 		return Users.find({}, options);
 	}
 
 	if (limit === 1) {
-		return Users.findByUsername(userToRetrieveFullUserData.username, options);
+		return userToRetrieveFullUserData
+			? Users.findByUsername(userToRetrieveFullUserData.username, options)
+			: Users.findById(userIdToGetData, options);
 	}
 
 	const usernameReg = new RegExp(s.escapeRegExp(username), 'i');
