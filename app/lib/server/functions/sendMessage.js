@@ -6,7 +6,7 @@ import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
-import { isURL } from '../../../utils/lib/isURL';
+import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
 
 /**
@@ -21,7 +21,7 @@ import { FileUpload } from '../../../file-upload/server';
 const ValidLinkParam = Match.Where((value) => {
 	check(value, String);
 
-	if (!isURL(value) && !value.startsWith(FileUpload.getPath())) {
+	if (!isRelativeURL(value) && !isURL(value) && !value.startsWith(FileUpload.getPath())) {
 		throw new Error('Invalid href value provided');
 	}
 
