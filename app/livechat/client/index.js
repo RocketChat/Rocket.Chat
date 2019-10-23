@@ -33,6 +33,7 @@ import './views/app/tabbar/visitorForward';
 import './views/app/tabbar/visitorInfo';
 import './views/app/tabbar/visitorHistory';
 import './views/app/tabbar/visitorNavigation';
+import './views/app/tabs/livechatAgentInfo';
 import './views/app/triggers/livechatTriggerAction';
 import './views/app/triggers/livechatTriggerCondition';
 import './views/sideNav/livechat';

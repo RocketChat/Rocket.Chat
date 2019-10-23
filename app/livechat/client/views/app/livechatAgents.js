@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import s from 'underscore.string';
 import _ from 'underscore';
 
-import { modal, call } from '../../../../ui-utils';
+import { modal, call, RocketChatTabBar } from '../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../utils/client';
 import './livechatAgents.html';
 
@@ -78,6 +79,13 @@ Template.livechatAgents.helpers({
 			}
 		};
 	},
+	flexData() {
+		console.log('a');
+		return {
+			tabBar: Template.instance().tabBar,
+			data: Template.instance().tabBarData.get(),
+		};
+	},
 });
 
 const DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS = 300;
@@ -138,23 +146,28 @@ Template.livechatAgents.events({
 			state.set('loading', false);
 		}
 	},
+
 	'keydown #agents-filter'(e) {
 		if (e.which === 13) {
 			e.stopPropagation();
 			e.preventDefault();
 		}
 	},
+
 	'keyup #agents-filter': _.debounce((e, t) => {
-		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	}, DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS),
-	/*
-	'click .agent-info'(e, instance) {
+
+	'click .user-info'(e, instance) {
+		e.stopPropagation();
 		e.preventDefault();
-		instance.tabBarData.set(FullUser.findOne(this._id));
-		instance.tabBar.open('admin-user-info');
+		instance.tabBarData.set(this);
+		instance.tabBar.setTemplate('livechatAgentInfo');
+		// instance.tabBar.setData({ label: t('Agent_Info'), icon: 'info-circled' });
+		instance.tabBar.open();
 	},
+	/*
 	'click .info-tabs button'(e) {
 		e.preventDefault();
 		$('.info-tabs button').removeClass('active');
@@ -175,6 +188,9 @@ Template.livechatAgents.onCreated(function() {
 	this.ready = new ReactiveVar(true);
 	this.selectedAgents = new ReactiveVar([]);
 	this.agents = new ReactiveVar([]);
+	this.tabBar = new RocketChatTabBar();
+	this.tabBar.showGroup(FlowRouter.current().route.name);
+	this.tabBarData = new ReactiveVar();
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([...this.selectedAgents.curValue, agent]);
