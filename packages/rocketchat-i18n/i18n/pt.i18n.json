@@ -1783,7 +1783,7 @@
   "LDAP_Import_Users_Description": "O processo True Sync será importar todos os utilizadores LDAP<br/>* Cuidado! * Especifique o filtro de pesquisa para não importar utilizadores em excesso.",
   "LDAP_Internal_Log_Level": "Nível de registo interno",
   "LDAP_Login_Fallback": "Login Fallback",
-  "LDAP_Login_Fallback_Description": "Se o login no LDAP não for bem-sucedido, tente fazer login no sistema de conta padrão / local. Ajuda por causa do LDAP por algum motivo.",
+  "LDAP_Login_Fallback_Description": "Se o login no LDAP não for bem-sucedido, tente fazer login no sistema de conta padrão / local. Ajuda se o LDAP por algum motivo cair.",
   "LDAP_Merge_Existing_Users": "Unir utilizadores existentes",
   "LDAP_Merge_Existing_Users_Description": "* Cuidado! * Ao importar um utilizador do LDAP e um utilizador com o mesmo nome de utilizador já existe, as informações LDAP e a senha serão definidas no utilizador existente.",
   "LDAP_Port": "Porta",
