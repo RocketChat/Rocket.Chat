@@ -421,17 +421,21 @@ Template.admin.events({
 			});
 		});
 	},
-	'click .rc-header__section-button .save'() {
+	'click .rc-header__section-button .save'(e) {
+		e.target.disabled = true;
+		e.target.innerText = TAPi18n.__('Saving');
 		const group = FlowRouter.getParam('group');
 		const query = { group, changed: true };
 		const rcSettings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 } }).fetch() || [];
 		if (rcSettings.length === 0) {
+			e.target.innerText = TAPi18n.__('Save_changes');
 			return;
 		}
 
 		const failedSettings = [];
 
 		settings.batchSet(rcSettings, (err) => {
+			e.target.innerText = TAPi18n.__('Save_changes');
 			if (err) {
 				// Handle error for every settings failed.
 				err.details.settingIds.forEach((settingId) => {
@@ -451,8 +455,10 @@ Template.admin.events({
 				const lng = Meteor.user().language
 					|| rcSettings.filter(({ _id }) => _id === 'Language').shift().value
 					|| 'en';
+
 				return TAPi18n._loadLanguage(lng).then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })));
 			}
+
 			toastr.success(TAPi18n.__('Settings_updated'));
 		});
 	},
