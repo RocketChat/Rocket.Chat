@@ -245,7 +245,7 @@ Template.pushNotificationsFlexTab.events({
 					{
 						id: 'audioNotificationValueDefault',
 						name: 'audioNotificationValue',
-						label: 'Default',
+						label: 'Use_account_preference',
 						value: '0 Default',
 					},
 					...audioAssetsArray,
@@ -255,7 +255,7 @@ Template.pushNotificationsFlexTab.events({
 				options = [{
 					id: 'desktopNotificationDuration',
 					name: 'desktopNotificationDuration',
-					label: 'Default',
+					label: 'Use_account_preference',
 					value: 0,
 				},
 				{
@@ -293,7 +293,7 @@ Template.pushNotificationsFlexTab.events({
 				options = [{
 					id: 'desktopNotificationsDefault',
 					name: 'desktopNotifications',
-					label: 'Default',
+					label: 'Use_account_preference',
 					value: 'default',
 				},
 				{
