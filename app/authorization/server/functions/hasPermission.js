@@ -46,7 +46,7 @@ async function atLeastOne(uid, permissions = [], scope) {
 
 async function all(uid, permissions = [], scope) {
 	const { roles: userRoles = [] } = await Users.findOne({ _id: uid });
-	const { roles: subscriptionsRoles = [] } = scope ? await Subscriptions.findOne({ rid: scope, 'u._id': uid }) : {};
+	const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid })) || {};
 	const sortedRoles = [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 
 	for (const permission of permissions) {
