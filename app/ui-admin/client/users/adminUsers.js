@@ -3,10 +3,11 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import s from 'underscore.string';
 
 import { SideNav, TabBar, RocketChatTabBar } from '../../../ui-utils';
-import FullUser from '../../../models/client/models/FullUser';
+import { APIClient } from '../../../utils/client';
+
+const USERS_COUNT = 50;
 
 Template.adminUsers.helpers({
 	searchText() {
@@ -18,7 +19,7 @@ Template.adminUsers.helpers({
 		return instance.ready && instance.ready.get();
 	},
 	users() {
-		return Template.instance().users();
+		return Template.instance().users.get();
 	},
 	isLoading() {
 		const instance = Template.instance();
@@ -29,8 +30,8 @@ Template.adminUsers.helpers({
 	hasMore() {
 		const instance = Template.instance();
 		const users = instance.users();
-		if (instance.limit && instance.limit.get() && users && users.length) {
-			return instance.limit.get() === users.length;
+		if (instance.offset && instance.offset.get() && users && users.length) {
+			return instance.offset.get() === users.length;
 		}
 	},
 	emailAddress() {
@@ -49,7 +50,7 @@ Template.adminUsers.helpers({
 				currentTarget.offsetHeight + currentTarget.scrollTop
 				>= currentTarget.scrollHeight - 100
 			) {
-				return instance.limit.set(instance.limit.get() + 50);
+				return instance.offset.set(instance.offset.get() + USERS_COUNT);
 			}
 		};
 	},
@@ -66,12 +67,14 @@ Template.adminUsers.helpers({
 
 Template.adminUsers.onCreated(function() {
 	const instance = this;
-	this.limit = new ReactiveVar(50);
+	this.offset = new ReactiveVar(0);
 	this.filter = new ReactiveVar('');
 	this.ready = new ReactiveVar(true);
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
+	this.users = new ReactiveVar([]);
+
 	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'invite-user',
@@ -96,33 +99,29 @@ Template.adminUsers.onCreated(function() {
 		template: 'adminUserInfo',
 		order: 3,
 	});
-	this.autorun(function() {
+	this.autorun(async () => {
+		this.ready.set(false);
 		const filter = instance.filter.get();
-		const limit = instance.limit.get();
-		const subscription = instance.subscribe('fullUserData', filter, limit);
-		instance.ready.set(subscription.ready());
-	});
-	this.users = function() {
-		let filter;
-		let query;
-
-		if (instance.filter && instance.filter.get()) {
-			filter = s.trim(instance.filter.get());
-		}
-
-		if (filter) {
-			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] };
-		} else {
-			query = {};
-		}
-		query.type = {
-			$in: ['user', 'bot'],
+		const offset = instance.offset.get();
+		const query = {
+			$or: [
+				{ 'emails.address': { $regex: filter, $options: 'i' } },
+				{ username: { $regex: filter, $options: 'i' } },
+				{ name: { $regex: filter, $options: 'i' } },
+			],
 		};
-
-		const limit = instance.limit && instance.limit.get();
-		return FullUser.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
-	};
+		let url = `users.list?count=${ USERS_COUNT }&offset=${ offset }`;
+		if (filter) {
+			url += `&query=${ JSON.stringify(query) }`;
+		}
+		const { users } = await APIClient.v1.get(url);
+		if (offset === 0) {
+			this.users.set(users);
+		} else {
+			this.users.set(this.users.get().concat(users));
+		}
+		this.ready.set(true);
+	});
 });
 
 Template.adminUsers.onRendered(function() {
@@ -145,10 +144,11 @@ Template.adminUsers.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
+		t.offset.set(0);
 	}, DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS),
 	'click .user-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(FullUser.findOne(this._id));
+		instance.tabBarData.set(instance.users.get().find((user) => user._id === this._id));
 		instance.tabBar.open('admin-user-info');
 	},
 	'click .info-tabs button'(e) {
@@ -161,6 +161,6 @@ Template.adminUsers.events({
 	'click .load-more'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
+		t.offset.set(t.offset.get() + USERS_COUNT);
 	},
 });
