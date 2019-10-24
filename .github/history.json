@@ -36088,6 +36088,80 @@
           ]
         }
       ]
+    },
+    "2.2.0-rc.1": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15652",
+          "title": "Regression: hasPermission ignoring subscription roles",
+          "userLogin": "ggazzo",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15656",
+          "title": "[FIX] Read Receipts were not working properly with subscriptions without ls",
+          "userLogin": "rodrigok",
+          "milestone": "2.1.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15657",
+          "title": "[FIX] Exception when sending email of messages attachments undefined",
+          "userLogin": "rodrigok",
+          "milestone": "2.1.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15646",
+          "title": "Regression: AppRoomsConverter on Livechat rooms",
+          "userLogin": "renatobecker",
+          "milestone": "2.2.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15641",
+          "title": "Regression: fix unknown role breaking hasPermission",
+          "userLogin": "ggazzo",
+          "milestone": "2.2.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15628",
+          "title": "Regression: Move import to avoid circular dependencies",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15625",
+          "title": "Chore: Add Client Setup Information to Issue Template",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
