@@ -100,7 +100,7 @@ Meteor.methods({
 			return;
 		}
 
-		const exceptions = [user.username];
+		const exceptions = [];
 
 		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
