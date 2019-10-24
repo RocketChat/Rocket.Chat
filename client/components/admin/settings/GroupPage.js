@@ -32,7 +32,7 @@ export function GroupPage({ children, headerButtons }) {
 		save(group);
 	};
 
-	return <form action='#' className='page-container page-static page-settings' method='post' onSubmit={handleSubmit}>
+	return <form action='#' className='page-container' method='post' onSubmit={handleSubmit}>
 		<Header rawSectionName={t(group.i18nLabel)}>
 			<Header.ButtonSection>
 				{group.changed && <Button danger primary type='reset' onClick={handleCancelClick}>{t('Cancel')}</Button>}
@@ -50,11 +50,9 @@ export function GroupPage({ children, headerButtons }) {
 		<div className='content'>
 			{t.has(group.i18nDescription) && <Paragraph hintColor>{t(group.i18nDescription)}</Paragraph>}
 
-			<div className='page-settings rocket-form'>
-				<Accordion>
-					{children}
-				</Accordion>
-			</div>
+			<Accordion className='page-settings'>
+				{children}
+			</Accordion>
 		</div>
 	</form>;
 }
