@@ -1,6 +1,33 @@
 
 # 2.2.0 (Under Release Candidate Process)
 
+## 2.2.0-rc.1
+`2019-10-24  ·  2 🐛  ·  5 🔍  ·  5 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Read Receipts were not working properly with subscriptions without ls ([#15656](https://github.com/RocketChat/Rocket.Chat/pull/15656))
+- Exception when sending email of messages attachments undefined ([#15657](https://github.com/RocketChat/Rocket.Chat/pull/15657))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: hasPermission ignoring subscription roles ([#15652](https://github.com/RocketChat/Rocket.Chat/pull/15652))
+- Regression: AppRoomsConverter on Livechat rooms ([#15646](https://github.com/RocketChat/Rocket.Chat/pull/15646))
+- Regression: fix unknown role breaking hasPermission ([#15641](https://github.com/RocketChat/Rocket.Chat/pull/15641))
+- Regression: Move import to avoid circular dependencies ([#15628](https://github.com/RocketChat/Rocket.Chat/pull/15628))
+- Chore: Add Client Setup Information to Issue Template ([#15625](https://github.com/RocketChat/Rocket.Chat/pull/15625))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 2.2.0-rc.0
 `2019-10-20  ·  14 🎉  ·  16 🚀  ·  23 🐛  ·  19 🔍  ·  27 👩‍💻👨‍💻`
 
