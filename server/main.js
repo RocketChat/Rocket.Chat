@@ -22,6 +22,7 @@ import './methods/afterVerifyEmail';
 import './methods/browseChannels';
 import './methods/canAccessRoom';
 import './methods/channelsList';
+import './methods/comparePassword';
 import './methods/createDirectMessage';
 import './methods/deleteFileMessage';
 import './methods/deleteUser';

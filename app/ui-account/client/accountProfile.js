@@ -230,6 +230,27 @@ Template.accountProfile.onCreated(function() {
 			instance.clearForm();
 		}
 	};
+	this.checkNewPassword = function(callback) {
+		const newPassword = self.password.get();
+		if (s.trim(newPassword) && settings.get('Accounts_AllowPasswordChange')) {
+			Meteor.call('comparePassword', newPassword, function(error, result) {
+				if (!result) {
+					toastr.remove();
+					// TODO: add support for all languages
+					toastr.error('Could not change password. The provided password is same as the current.');
+				}
+				if (error) {
+					toastr.remove();
+					handleError(error);
+				}
+				callback(result);
+			});
+
+			return;
+		}
+		// If we haven't new password just call the cb
+		callback(true);
+	};
 	this.save = function(typedPassword, cb) {
 		const avatar = self.avatar.get();
 		if (avatar) {
@@ -422,23 +443,31 @@ Template.accountProfile.events({
 		if (!reqPass) {
 			return instance.save(undefined, () => setTimeout(() => send.removeClass('loading'), 1000));
 		}
-		modal.open({
-			title: t('Please_enter_your_password'),
-			text: t('For_your_security_you_must_enter_your_current_password_to_continue'),
-			type: 'input',
-			inputType: 'password',
-			showCancelButton: true,
-			closeOnConfirm: false,
-			confirmButtonText: t('Save'),
-			cancelButtonText: t('Cancel'),
-		}, (typedPassword) => {
-			if (typedPassword) {
-				toastr.remove();
-				toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
-				instance.save(SHA256(typedPassword), () => send.removeClass('loading'));
+		// Before the modal we check if the password is not the same
+		instance.checkNewPassword((result) => {
+			// Then we call the modal
+			if (result) {
+				modal.open({
+					title: t('Please_enter_your_password'),
+					text: t('For_your_security_you_must_enter_your_current_password_to_continue'),
+					type: 'input',
+					inputType: 'password',
+					showCancelButton: true,
+					closeOnConfirm: false,
+					confirmButtonText: t('Save'),
+					cancelButtonText: t('Cancel'),
+				}, (typedPassword) => {
+					if (typedPassword) {
+						toastr.remove();
+						toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
+						instance.save(SHA256(typedPassword), () => send.removeClass('loading'));
+					} else {
+						modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
+						return false;
+					}
+				});
 			} else {
-				modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
-				return false;
+				send.removeClass('loading');
 			}
 		});
 	},
