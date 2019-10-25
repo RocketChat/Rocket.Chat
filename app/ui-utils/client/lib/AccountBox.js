@@ -62,8 +62,9 @@ export const AccountBox = (function() {
 		if (router == null) {
 			router = FlowRouter;
 		}
+		const container = newRoute.customContainer ? 'pageCustomContainer' : 'pageContainer';
 		const routeConfig = {
-			center: 'pageContainer',
+			center: container,
 			pageTemplate: newRoute.pageTemplate,
 		};
 		if (newRoute.i18nPageTitle != null) {

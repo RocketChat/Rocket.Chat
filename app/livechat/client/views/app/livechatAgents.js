@@ -6,7 +6,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import s from 'underscore.string';
 import _ from 'underscore';
 
-import { modal, call, RocketChatTabBar } from '../../../../ui-utils';
+import { modal, call, TabBar, RocketChatTabBar } from '../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../utils/client';
 import './livechatAgents.html';
 
@@ -80,7 +80,6 @@ Template.livechatAgents.helpers({
 		};
 	},
 	flexData() {
-		console.log('a');
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
@@ -112,7 +111,13 @@ Template.livechatAgents.events({
 					if (error) {
 						return handleError(error);
 					}
+
+					if (instance.tabBar.getState() === 'opened') {
+						instance.tabBar.close();
+					}
+
 					await loadAgents(instance);
+
 					modal.open({
 						title: t('Removed'),
 						text: t('Agent_removed'),
@@ -160,12 +165,14 @@ Template.livechatAgents.events({
 	}, DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS),
 
 	'click .user-info'(e, instance) {
-		e.stopPropagation();
 		e.preventDefault();
-		instance.tabBarData.set(this);
-		instance.tabBar.setTemplate('livechatAgentInfo');
-		// instance.tabBar.setData({ label: t('Agent_Info'), icon: 'info-circled' });
-		instance.tabBar.open();
+		instance.tabBarData.set({
+			agentId: this._id,
+			onRemoveAgent: () => loadAgents(instance),
+		});
+
+		instance.tabBar.setData({ label: t('Agent_Info'), icon: 'livechat' });
+		instance.tabBar.open('livechat-agent-info');
 	},
 	/*
 	'click .info-tabs button'(e) {
@@ -191,6 +198,15 @@ Template.livechatAgents.onCreated(function() {
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
+
+	TabBar.addButton({
+		groups: ['livechat-agent-users'],
+		id: 'livechat-agent-info',
+		i18nTitle: 'Agent_Info',
+		icon: 'livechat',
+		template: 'agentInfo',
+		order: 1,
+	});
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([...this.selectedAgents.curValue, agent]);

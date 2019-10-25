@@ -52,8 +52,8 @@ AccountBox.addRoute({
 	name: 'livechat-agents',
 	path: '/agents',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_agents',
 	pageTemplate: 'livechatAgents',
+	customContainer: true,
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
