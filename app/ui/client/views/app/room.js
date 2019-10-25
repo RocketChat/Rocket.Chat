@@ -26,6 +26,7 @@ import {
 	RocketChatTabBar,
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
+import { renderMessageBody } from '../../../../ui-utils/client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { getConfig } from '../../../../ui-utils/client/config';
 import { call } from '../../../../ui-utils/client/lib/callMethod';
@@ -331,10 +332,8 @@ Template.room.helpers({
 		return roomTypes.getRouteLink('d', { name: this.username });
 	},
 
-	showAnnouncement() {
-		const { room } = Template.instance();
-		if (!room) { return false; }
-		return room.announcement != null && room.announcement !== '';
+	announcement() {
+		return Template.instance().state.get('announcement');
 	},
 
 	messageboxData() {
@@ -360,12 +359,6 @@ Template.room.helpers({
 			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
 			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
 		};
-	},
-
-	roomAnnouncement() {
-		const { room } = Template.instance();
-		if (!room) { return ''; }
-		return room.announcement;
 	},
 
 	getAnnouncementStyle() {
@@ -909,9 +902,10 @@ Template.room.events({
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return callbacks.run(roomData.announcementDetails.callback, this._id);
 		}
+
 		modal.open({
 			title: t('Announcement'),
-			text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
+			text: renderMessageBody({ msg: roomData.announcement }),
 			html: true,
 			showConfirmButton: false,
 			showCancelButton: true,
@@ -961,6 +955,7 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+
 	lazyloadtick();
 	const rid = this.data._id;
 
@@ -972,6 +967,12 @@ Template.room.onCreated(function() {
 
 	this.subscription = new ReactiveVar();
 	this.state = new ReactiveDict();
+
+	this.autorun(() => {
+		const rid = Template.currentData()._id;
+		this.state.set('announcement', Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } }).announcement);
+	});
+
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid });
 		this.subscription.set(subscription);
