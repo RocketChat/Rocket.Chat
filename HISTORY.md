@@ -1,13 +1,24 @@
 
 # 2.2.0 (Under Release Candidate Process)
 
+## 2.2.0-rc.2
+`2019-10-26  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Move publication deprecation warnings ([#15676](https://github.com/RocketChat/Rocket.Chat/pull/15676))
+- Regression: Remove reference to obsolete template helper ([#15675](https://github.com/RocketChat/Rocket.Chat/pull/15675))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 2.2.0-rc.1
-`2019-10-24  ·  2 🐛  ·  5 🔍  ·  5 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Read Receipts were not working properly with subscriptions without ls ([#15656](https://github.com/RocketChat/Rocket.Chat/pull/15656))
-- Exception when sending email of messages attachments undefined ([#15657](https://github.com/RocketChat/Rocket.Chat/pull/15657))
+`2019-10-24  ·  5 🔍  ·  4 👩‍💻👨‍💻`
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -26,10 +37,9 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@ggazzo](https://github.com/ggazzo)
 - [@renatobecker](https://github.com/renatobecker)
-- [@rodrigok](https://github.com/rodrigok)
 
 ## 2.2.0-rc.0
-`2019-10-20  ·  14 🎉  ·  16 🚀  ·  23 🐛  ·  19 🔍  ·  27 👩‍💻👨‍💻`
+`2019-10-20  ·  14 🎉  ·  16 🚀  ·  22 🐛  ·  19 🔍  ·  27 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -72,7 +82,6 @@
 - Issues saving audio notifications ([#15428](https://github.com/RocketChat/Rocket.Chat/pull/15428) by [@scrivna](https://github.com/scrivna))
 - Fix a typo on Alpha API `e2e.setUserPublicAndPivateKeys` renaming to `e2e.setUserPublicAndPrivateKeys` ([#13334](https://github.com/RocketChat/Rocket.Chat/pull/13334))
 - Showing announcement back ([#15615](https://github.com/RocketChat/Rocket.Chat/pull/15615))
-- Link in Announcement popup ([#14635](https://github.com/RocketChat/Rocket.Chat/pull/14635) by [@knrt10](https://github.com/knrt10))
 - adjustments for tooltips to show room name instead of id ([#14084](https://github.com/RocketChat/Rocket.Chat/pull/14084) by [@mohamedar97](https://github.com/mohamedar97))
 - Deny editing visitor's phone number in SMS conversations ([#15602](https://github.com/RocketChat/Rocket.Chat/pull/15602))
 - Incorrect display of the button "Invite users" ([#15594](https://github.com/RocketChat/Rocket.Chat/pull/15594))
@@ -149,6 +158,37 @@
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
+# 2.1.2
+`2019-10-25  ·  3 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.15.1`
+- NPM: `6.9.0`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Read Receipts were not working properly with subscriptions without ls ([#15656](https://github.com/RocketChat/Rocket.Chat/pull/15656))
+- Exception when sending email of messages attachments undefined ([#15657](https://github.com/RocketChat/Rocket.Chat/pull/15657))
+- Channel Announcements not working ([#14635](https://github.com/RocketChat/Rocket.Chat/pull/14635) by [@knrt10](https://github.com/knrt10))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 2.1.2 ([#15667](https://github.com/RocketChat/Rocket.Chat/pull/15667) by [@knrt10](https://github.com/knrt10))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@knrt10](https://github.com/knrt10)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
 - [@tassoevan](https://github.com/tassoevan)
 
 # 2.1.1
