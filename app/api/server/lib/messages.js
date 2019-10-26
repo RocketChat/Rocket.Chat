@@ -1,5 +1,6 @@
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Rooms, Messages, Users } from '../../../models/server/raw';
+import { getValue } from '../../../settings/server/raw';
 
 export async function findMentionedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);
@@ -54,5 +55,31 @@ export async function findStarredMessages({ uid, roomId, pagination: { offset, c
 		count: messages.length,
 		offset,
 		total,
+	};
+}
+
+export async function findSnippetedMessageById({ uid, messageId }) {
+	if (!await getValue('Message_AllowSnippeting')) {
+		throw new Error('error-not-allowed');
+	}
+	const user = await Users.findOneById(uid, { fields: { username: 1 } });
+	if (!user) {
+		throw new Error('invalid-user');
+	}
+
+	const snippet = await Messages.findOne({ _id: messageId, snippeted: true });
+	if (!snippet) {
+		throw new Error('invalid-message');
+	}
+	const room = await Rooms.findOneById(snippet.rid);
+	if (!room) {
+		throw new Error('invalid-message');
+	}
+	if (!await canAccessRoomAsync(room, { _id: uid })) {
+		throw new Error('error-not-allowed');
+	}
+
+	return {
+		message: snippet,
 	};
 }
