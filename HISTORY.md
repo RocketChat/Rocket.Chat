@@ -1,6 +1,24 @@
 
 # 2.2.0 (Under Release Candidate Process)
 
+## 2.2.0-rc.3
+`2019-10-27  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Merge master into develop ([#15680](https://github.com/RocketChat/Rocket.Chat/pull/15680) by [@knrt10](https://github.com/knrt10))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@knrt10](https://github.com/knrt10)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 2.2.0-rc.2
 `2019-10-26  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
