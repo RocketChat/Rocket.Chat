@@ -116,7 +116,9 @@
 			flex: 1;
 
 			margin: 0 5px;
+		}
 
+		&:not(.rc-user-info__room) > .rc-button {
 			&:first-child {
 				margin-left: 0;
 			}
@@ -133,6 +135,14 @@
 
 		border-top: 1px solid #d7d7d7;
 		border-bottom: 1px solid #d7d7d7;
+	}
+
+	&__room {
+		flex-wrap: wrap;
+
+		& > .rc-button {
+			margin: 5px;
+		}
 	}
 
 	&__row {

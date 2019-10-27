@@ -54,4 +54,5 @@ function Msg(command, params, item) {
 slashCommands.add('msg', Msg, {
 	description: 'Direct_message_someone',
 	params: '@username <message>',
+	permission: 'create-d',
 });
