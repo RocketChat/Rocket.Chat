@@ -8,12 +8,12 @@ import _ from 'underscore';
 
 import { modal } from '../../../../ui-utils';
 import { t, handleError } from '../../../../utils';
-import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import './livechatDepartments.html';
+import { APIClient } from '../../../../utils/client';
 
 Template.livechatDepartments.helpers({
 	departments() {
-		return Template.instance().departments();
+		return Template.instance().getDepartmentsWithCriteria();
 	},
 	isLoading() {
 		return Template.instance().state.get('loading');
@@ -38,7 +38,7 @@ Template.livechatDepartments.helpers({
 const DEBOUNCE_TIME_FOR_SEARCH_DEPARTMENTS_IN_MS = 300;
 
 Template.livechatDepartments.events({
-	'click .remove-department'(e/* , instance*/) {
+	'click .remove-department'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -52,10 +52,11 @@ Template.livechatDepartments.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeDepartment', this._id, function(error/* , result*/) {
+			Meteor.call('livechat:removeDepartment', this._id, (error/* , result*/) => {
 				if (error) {
 					return handleError(error);
 				}
+				instance.departments.set(instance.departments.curValue.filter((department) => department._id !== this._id));
 				modal.open({
 					title: t('Removed'),
 					text: t('Department_removed'),
@@ -93,25 +94,21 @@ Template.livechatDepartments.onCreated(function() {
 		loading: false,
 	});
 	this.ready = new ReactiveVar(true);
+	this.departments = new ReactiveVar([]);
 
-	this.autorun(function() {
+	this.autorun(async function() {
 		const limit = instance.limit.get();
-		const subscription = instance.subscribe('livechat:departments', null, limit);
-		instance.ready.set(subscription.ready());
+		const { departments } = await APIClient.v1.get(`livechat/department?count=${ limit }`);
+		instance.departments.set(departments);
+		instance.ready.set(true);
 	});
-	this.departments = function() {
+	this.getDepartmentsWithCriteria = function() {
 		let filter;
-		let query = {};
 
 		if (instance.filter && instance.filter.get()) {
 			filter = s.trim(instance.filter.get());
 		}
-
-		if (filter) {
-			query = { name: new RegExp(s.escapeRegExp(filter), 'i') };
-		}
-
-		const limit = instance.limit && instance.limit.get();
-		return LivechatDepartment.find(query, { limit, sort: { name: 1 } }).fetch();
+		const regex = new RegExp(s.escapeRegExp(filter), 'i');
+		return instance.departments.get().filter((department) => department.name.match(regex));
 	};
 });
