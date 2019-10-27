@@ -1,63 +1,11 @@
 
-# 2.2.0 (Under Release Candidate Process)
+# 2.2.0
+`2019-10-27  ·  14 🎉  ·  16 🚀  ·  22 🐛  ·  27 🔍  ·  27 👩‍💻👨‍💻`
 
-## 2.2.0-rc.3
-`2019-10-27  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Merge master into develop ([#15680](https://github.com/RocketChat/Rocket.Chat/pull/15680) by [@knrt10](https://github.com/knrt10))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@knrt10](https://github.com/knrt10)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@rodrigok](https://github.com/rodrigok)
-
-## 2.2.0-rc.2
-`2019-10-26  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Move publication deprecation warnings ([#15676](https://github.com/RocketChat/Rocket.Chat/pull/15676))
-- Regression: Remove reference to obsolete template helper ([#15675](https://github.com/RocketChat/Rocket.Chat/pull/15675))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 2.2.0-rc.1
-`2019-10-24  ·  5 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: hasPermission ignoring subscription roles ([#15652](https://github.com/RocketChat/Rocket.Chat/pull/15652))
-- Regression: AppRoomsConverter on Livechat rooms ([#15646](https://github.com/RocketChat/Rocket.Chat/pull/15646))
-- Regression: fix unknown role breaking hasPermission ([#15641](https://github.com/RocketChat/Rocket.Chat/pull/15641))
-- Regression: Move import to avoid circular dependencies ([#15628](https://github.com/RocketChat/Rocket.Chat/pull/15628))
-- Chore: Add Client Setup Information to Issue Template ([#15625](https://github.com/RocketChat/Rocket.Chat/pull/15625))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@ggazzo](https://github.com/ggazzo)
-- [@renatobecker](https://github.com/renatobecker)
-
-## 2.2.0-rc.0
-`2019-10-20  ·  14 🎉  ·  16 🚀  ·  22 🐛  ·  19 🔍  ·  27 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.15.1`
+- NPM: `6.9.0`
+- MongoDB: `3.4, 3.6, 4.0`
 
 ### 🎉 New features
 
@@ -142,6 +90,14 @@
 - Updating license term ([#15476](https://github.com/RocketChat/Rocket.Chat/pull/15476))
 - LingoHub based on develop ([#15487](https://github.com/RocketChat/Rocket.Chat/pull/15487))
 - Merge master into develop & Set version to 2.2.0-develop ([#15469](https://github.com/RocketChat/Rocket.Chat/pull/15469))
+- Regression: hasPermission ignoring subscription roles ([#15652](https://github.com/RocketChat/Rocket.Chat/pull/15652))
+- Regression: AppRoomsConverter on Livechat rooms ([#15646](https://github.com/RocketChat/Rocket.Chat/pull/15646))
+- Regression: fix unknown role breaking hasPermission ([#15641](https://github.com/RocketChat/Rocket.Chat/pull/15641))
+- Regression: Move import to avoid circular dependencies ([#15628](https://github.com/RocketChat/Rocket.Chat/pull/15628))
+- Chore: Add Client Setup Information to Issue Template ([#15625](https://github.com/RocketChat/Rocket.Chat/pull/15625))
+- Move publication deprecation warnings ([#15676](https://github.com/RocketChat/Rocket.Chat/pull/15676))
+- Regression: Remove reference to obsolete template helper ([#15675](https://github.com/RocketChat/Rocket.Chat/pull/15675))
+- Merge master into develop ([#15680](https://github.com/RocketChat/Rocket.Chat/pull/15680) by [@knrt10](https://github.com/knrt10))
 
 </details>
 
