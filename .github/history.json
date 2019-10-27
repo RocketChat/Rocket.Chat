@@ -36301,6 +36301,16 @@
           ]
         }
       ]
+    },
+    "2.2.0": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }
