@@ -36241,6 +36241,66 @@
           ]
         }
       ]
+    },
+    "2.2.0-rc.3": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15680",
+          "title": "Merge master into develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "knrt10",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15667",
+          "title": "Release 2.1.2",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "knrt10",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15656",
+          "title": "[FIX] Read Receipts were not working properly with subscriptions without ls",
+          "userLogin": "rodrigok",
+          "milestone": "2.1.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15657",
+          "title": "[FIX] Exception when sending email of messages attachments undefined",
+          "userLogin": "rodrigok",
+          "milestone": "2.1.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14635",
+          "title": "[FIX] Channel Announcements not working",
+          "userLogin": "knrt10",
+          "milestone": "2.1.2",
+          "contributors": [
+            "knrt10",
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
