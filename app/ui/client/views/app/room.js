@@ -234,11 +234,13 @@ async function createFileFromUrl(url) {
 		}
 		throw error;
 	}
+	const fileExtension = url.split('.').pop().split(/\#|\?/)[0] || 'jpg';
+
 	const data = await response.blob();
 	const metadata = {
-		type: 'image/jpeg',
+		type: `image/${ fileExtension }`,
 	};
-	const file = new File([data], 'test.jpg', metadata);
+	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ fileExtension }`, metadata);
 	return file;
 }
 
@@ -588,15 +590,22 @@ export const dropzoneEvents = {
 		if (files.length < 1) {
 			const transferData = e.dataTransfer.getData('text') !== '' ? e.dataTransfer.getData('text') : e.dataTransfer.getData('url');
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const file = await createFileFromUrl(transferData);
+				const dropContext = $('<div>').append(e.dataTransfer.getData('text/html'));
+				const imgURL = $(dropContext).find('img').attr('src');
+
+				if (!imgURL) {
+					return addToInput($(dropContext).find('a').attr('href'));
+				}
+
+				const file = await createFileFromUrl(imgURL);
 				if (typeof file === 'string') {
 					return addToInput(file);
 				}
 				files = [file];
-			} else if (e.dataTransfer.types.includes('text/plain')) {
+			}
+			if (e.dataTransfer.types.includes('text/plain')) {
 				return addToInput(transferData.trim());
 			}
-			return;
 		}
 
 		const filesToUpload = Array.from(files).map((file) => {
