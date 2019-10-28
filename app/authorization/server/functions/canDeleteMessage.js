@@ -1,7 +1,7 @@
 import { hasPermissionAsync } from './hasPermission';
 import { getValue } from '../../../settings/server/raw';
 
-const diff = (ts) => {
+const elapsedTime = (ts) => {
 	const dif = Date.now() - ts;
 	return Math.round((dif / 1000) / 60);
 };
@@ -13,7 +13,7 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 		return true;
 	}
 
-	if (ts == null) {
+	if (!ts) {
 		return false;
 	}
 	const deleteAllowed = await getValue('Message_AllowDeleting');
@@ -35,7 +35,8 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 	}
 
 	const currentTsDiff = diff(ts);
-	return currentTsDiff <= blockDeleteInMinutes;
+	const timeElapsedForMessage = elapsedTime(ts);
+	return timeElapsedForMessage <= blockDeleteInMinutes;
 };
 
 export const canDeleteMessage = (uid, { u, rid, ts }) => Promise.await(canDeleteMessageAsync(uid, { u, rid, ts }));
