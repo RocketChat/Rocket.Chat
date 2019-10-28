@@ -82,7 +82,7 @@ Template.messageBox.onCreated(function() {
 		autogrow.update();
 	};
 
-	let isSending = false;
+	// let isSending = false;
 
 	this.send = (event) => {
 		const { input } = this;
@@ -95,15 +95,16 @@ Template.messageBox.onCreated(function() {
 		const { value } = input;
 		this.set('');
 
-		if (!onSend || isSending) {
+		// TODO: add offline messages without deprecating the binary semaphore
+		if (!onSend) { // || isSending) {
 			return;
 		}
 
-		isSending = true;
+		// isSending = true;
 		onSend.call(this.data, event, { rid, tmid, value }, () => {
 			autogrow.update();
 			input.focus();
-			isSending = false;
+			// isSending = false;
 		});
 	};
 });

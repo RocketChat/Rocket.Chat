@@ -38,6 +38,7 @@ Meteor.methods({
 			return false;
 		}
 
+		message.tempReact = true;
 		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
 			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
 

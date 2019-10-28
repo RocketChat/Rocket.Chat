@@ -12,17 +12,22 @@ Meteor.methods({
 		// We're now only passed in the `_id` property to lower the amount of data sent to the server
 		const message = ChatMessage.findOne({ _id: msg._id });
 
-		if (!canDeleteMessage({
+		if (!message || !canDeleteMessage({
 			rid: message.rid,
 			ts: message.ts,
 			uid: message.u._id,
 		})) {
 			return false;
 		}
+		const messageObject = { tempDelete: true };
 
-		ChatMessage.remove({
+		// ChatMessage.remove({
+		// 	_id: message._id,
+		// 	'u._id': Meteor.userId(),
+		// });
+		ChatMessage.update({
 			_id: message._id,
 			'u._id': Meteor.userId(),
-		});
+		}, { $set: messageObject });
 	},
 });

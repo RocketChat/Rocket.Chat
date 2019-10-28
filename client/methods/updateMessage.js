@@ -63,7 +63,7 @@ Meteor.methods({
 			};
 
 			message = callbacks.run('beforeSaveMessage', message);
-			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg };
+			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg, tempEdit: true };
 
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {

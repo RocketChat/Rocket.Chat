@@ -24,6 +24,7 @@ import './routes';
 import './startup/emailVerification';
 import './startup/i18n';
 import './startup/loginViaQuery';
+import './startup/offlineMessages';
 import './startup/roomObserve';
 import './startup/startup';
 import './startup/unread';
