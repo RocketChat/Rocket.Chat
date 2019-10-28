@@ -1,6 +1,10 @@
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import toastr from 'toastr';
 
+import { handleError } from '../../../../app/utils/client/lib/handleError';
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
 import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
@@ -142,12 +146,28 @@ export function EditingState({ children, groupId }) {
 			.map(({ _id, value, editor }) => ({ _id, value, editor }));
 
 		if (changes.length === 0) {
-			return false;
+			return;
 		}
 
-		await batchSetSettings(changes);
+		try {
+			await batchSetSettings(changes);
 
-		return true;
+			if (changes.some(({ _id }) => _id === 'Language')) {
+				const lng = Meteor.user().language
+					|| changes.filter(({ _id }) => _id === 'Language').shift().value
+					|| 'en';
+
+				TAPi18n._loadLanguage(lng)
+					.then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })))
+					.catch(handleError);
+
+				return;
+			}
+
+			toastr.success(TAPi18n.__('Settings_updated'));
+		} catch (error) {
+			handleError(error);
+		}
 	};
 
 	const cancel = ({ fields }) => {
