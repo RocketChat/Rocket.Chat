@@ -13,7 +13,7 @@ export function Section({ children, hasReset = true, help, section, solo }) {
 		reset(section);
 	};
 
-	return <Accordion.Item noncollapsible={solo || !section.name} title={t(section.name)}>
+	return <Accordion.Item noncollapsible={solo || !section.name} title={section.name && t(section.name)}>
 		{help && <Paragraph hintColor>{help}</Paragraph>}
 
 		<div className='section-content border-component-color'>
