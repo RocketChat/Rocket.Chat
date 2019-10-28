@@ -1,9 +1,16 @@
 import { Accordion, Button, Paragraph } from '@rocket.chat/fuselage';
 import React from 'react';
+import styled from 'styled-components';
 
 import { Header } from '../../header/Header';
 import { useTranslation } from '../../providers/TranslationProvider';
 import { useGroup, useBulkActions } from './EditingState';
+
+const Wrapper = styled.div`
+	margin: 0 auto;
+	width: 100%;
+	max-width: 590px;
+`;
 
 export function GroupPage({ children, headerButtons }) {
 	const t = useTranslation();
@@ -48,11 +55,13 @@ export function GroupPage({ children, headerButtons }) {
 		</Header>
 
 		<div className='content'>
-			{t.has(group.i18nDescription) && <Paragraph hintColor>{t(group.i18nDescription)}</Paragraph>}
+			<Wrapper>
+				{t.has(group.i18nDescription) && <Paragraph hintColor>{t(group.i18nDescription)}</Paragraph>}
 
-			<Accordion className='page-settings'>
-				{children}
-			</Accordion>
+				<Accordion className='page-settings'>
+					{children}
+				</Accordion>
+			</Wrapper>
 		</div>
 	</form>;
 }
