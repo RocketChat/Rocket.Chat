@@ -356,7 +356,7 @@ export class CustomOAuth {
 			return {
 				...result,
 				[name]: value,
-			}
+			};
 		}, {});
 	}
 
