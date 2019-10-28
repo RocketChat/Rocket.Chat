@@ -18,6 +18,8 @@ export function Section({ children, hasReset = true, help, section, solo }) {
 		reset(section);
 	};
 
+	const canReset = section.fields.some(({ value, packageValue }) => value !== packageValue);
+
 	return <Accordion.Item noncollapsible={solo || !section.name} title={section.name && t(section.name)}>
 		<Wrapper>
 			{help && <Paragraph hintColor>{help}</Paragraph>}
@@ -25,7 +27,7 @@ export function Section({ children, hasReset = true, help, section, solo }) {
 			<FieldGroup>
 				{section.fields.map((field) => <SettingField key={field._id} field={field} />)}
 
-				{hasReset && section.changed && <Button
+				{hasReset && canReset && <Button
 					children={t('Reset_section_settings')}
 					className='reset-group'
 					danger
