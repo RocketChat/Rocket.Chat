@@ -118,6 +118,50 @@ const normalizers = {
 	},
 };
 
+const getNestedValue = (propertyPath, source) =>
+	propertyPath.split('.').reduce((prev, curr) => (prev ? prev[curr] : undefined), source);
+
+// /^(.+)@/::email
+const REGEXP_FROM_FORMULA = /^\/((?!\/::).*)\/::(.+)/;
+const getRegexpMatch = (formula, data) => {
+	const regexAndPath = REGEXP_FROM_FORMULA.exec(formula);
+	if (!regexAndPath) {
+		return getNestedValue(formula, data);
+	}
+	if (regexAndPath.length !== 3) {
+		throw new Error(`expected array of length 3, got ${ regexAndPath.length }`);
+	}
+
+	const [, regexString, path] = regexAndPath;
+	const nestedValue = getNestedValue(path, data);
+	try {
+		const regex = new RegExp(regexString);
+		const matches = regex.exec(nestedValue);
+
+		// regexp does not match nested value
+		if (!matches) {
+			return undefined;
+		}
+
+		// we only support regular expressions with a single capture group
+		const [, value] = matches;
+
+		// this could mean we return `undefined` (e.g. when capture group is empty)
+		return value;
+	} catch (error) {
+		throw new Meteor.Error('CustomOAuth: Failed to extract identity value', error.message);
+	}
+};
+
+const templateStringRegex = /{{((?:(?!}}).)+)}}/g;
+const fromTemplate = (template, data) => {
+	if (!templateStringRegex.test(template)) {
+		return getNestedValue(template, data);
+	}
+
+	return template.replace(templateStringRegex, (fullMatch, match) => getRegexpMatch(match, data));
+};
+
 export class CustomOAuth {
 	constructor(name, options) {
 		logger.debug('Init CustomOAuth', name, options);
@@ -365,55 +409,40 @@ export class CustomOAuth {
 	}
 
 	getUsername(data) {
-		let username = '';
+		const value = fromTemplate(this.usernameField, data);
 
-		username = this.usernameField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined;
-		}, data);
-
-		if (!username) {
+		if (!value) {
 			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
 		}
-		return username;
+		return value;
 	}
 
 	getEmail(data) {
-		let username = '';
+		const value = fromTemplate(this.emailField, data);
 
-		username = this.emailField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined;
-		}, data);
-
-		if (!username) {
-			throw new Meteor.Error('field_not_found', `Username field "${ this.emailField }" not found in data`, data);
+		if (!value) {
+			throw new Meteor.Error('field_not_found', `Email field "${ this.emailField }" not found in data`, data);
 		}
-		return username;
+		return value;
 	}
 
 	getCustomName(data) {
-		let customName = '';
+		const value = fromTemplate(this.nameField, data);
 
-		customName = this.nameField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined;
-		}, data);
-
-		if (!customName) {
+		if (!value) {
 			return this.getName(data);
 		}
 
-		return customName;
+		return value;
 	}
 
 	getAvatarUrl(data) {
-		const avatarUrl = this.avatarField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined;
-		}, data);
+		const value = fromTemplate(this.avatarField, data);
 
-		if (!avatarUrl) {
-			logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
+		if (!value) {
+			throw new Meteor.Error('field_not_found', `Avatar field "${ this.avatarField }" not found in data`, data);
 		}
-
-		return avatarUrl;
+		return value;
 	}
 
 	getName(identity) {
