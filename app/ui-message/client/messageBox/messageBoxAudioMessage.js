@@ -86,19 +86,36 @@ const uploadRecord = async ({ rid, tmid, blob }) => {
 const recordingInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
 
-Template.messageBoxAudioMessage.onCreated(function() {
+Template.messageBoxAudioMessage.onCreated(async function() {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
 	this.isMicrophoneDenied = new ReactiveVar(false);
 
 	if (navigator.permissions) {
-		navigator.permissions.query({ name: 'microphone' })
-			.then((permissionStatus) => {
+		try {
+			const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+			this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+			permissionStatus.onchange = () => {
 				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
-				permissionStatus.onchange = () => {
-					this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
-				};
-			});
+			};
+			return;
+		} catch (error) {
+			console.warn(error);
+		}
+	}
+
+	if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+		this.isMicrophoneDenied.set(true);
+		return;
+	}
+
+	try {
+		if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')) {
+			this.isMicrophoneDenied.set(true);
+			return;
+		}
+	} catch (error) {
+		console.warn(error);
 	}
 });
 
@@ -149,6 +166,8 @@ Template.messageBoxAudioMessage.events({
 			}, 1000));
 			recordingRoomId.set(this.rid);
 		} catch (error) {
+			console.log(error);
+			instance.isMicrophoneDenied.set(true);
 			instance.state.set(null);
 		}
 	},
