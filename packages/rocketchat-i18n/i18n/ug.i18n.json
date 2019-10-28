@@ -78,6 +78,8 @@
   "Accounts_OAuth_Meteor_callback_url": "قايتۇرۇپ يۆتكەش ئادرېسى Meteor",
   "Accounts_OAuth_Meteor_id": "Meteor ID",
   "Accounts_OAuth_Meteor_secret": "ئاچقۇچى Meteor",
+  "Accounts_OAuth_Nextcloud": "باشلاندى OAuth",
+  "Accounts_OAuth_Nextcloud_secret": "Secret تېرمىنال",
   "Accounts_OAuth_Twitter": "ھېسابات نومۇرى بىلەن كىرىش Twitter",
   "Accounts_OAuth_Twitter_callback_url": "قايتۇرۇپ يۆتكەش ئادرېسى Twitter",
   "Accounts_OAuth_Twitter_id": "Twitter ID",
