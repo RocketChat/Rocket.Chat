@@ -125,6 +125,8 @@
   "Accounts_OAuth_Meteor_callback_url": "Meteor कॉलबैक URL",
   "Accounts_OAuth_Meteor_id": "Meteor Id",
   "Accounts_OAuth_Meteor_secret": "Meteor Secret",
+  "Accounts_OAuth_Nextcloud": "OAuth सक्षम",
+  "Accounts_OAuth_Nextcloud_secret": "क्लाइंट Secret",
   "Accounts_OAuth_Proxy_host": "प्रॉक्सी होस्ट",
   "Accounts_OAuth_Proxy_services": "प्रॉक्सी सेवाएँ",
   "Accounts_OAuth_Tokenpass": "Tokenpass लॉगइन",
