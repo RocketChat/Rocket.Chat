@@ -174,6 +174,7 @@ export class CustomOAuth {
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
+		this.emailField = (options.emailField || '').trim();
 		this.nameField = (options.nameField || '').trim();
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
@@ -334,6 +335,10 @@ export class CustomOAuth {
 			identity.username = this.getUsername(identity);
 		}
 
+		if (this.emailField) {
+			identity.email = this.getEmail(identity);
+		}
+
 		if (this.avatarField) {
 			identity.avatarUrl = this.getAvatarUrl(identity);
 		}
@@ -360,6 +365,19 @@ export class CustomOAuth {
 
 		if (!username) {
 			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
+		}
+		return username;
+	}
+
+	getEmail(data) {
+		let username = '';
+
+		username = this.emailField.split('.').reduce(function(prev, curr) {
+			return prev ? prev[curr] : undefined;
+		}, data);
+
+		if (!username) {
+			throw new Meteor.Error('field_not_found', `Username field "${ this.emailField }" not found in data`, data);
 		}
 		return username;
 	}
@@ -439,6 +457,10 @@ export class CustomOAuth {
 
 			if (this.usernameField) {
 				user.username = this.getUsername(user.services[this.name]);
+			}
+
+			if (this.emailField) {
+				user.email = this.getEmail(user.services[this.name]);
 			}
 
 			if (this.nameField) {
