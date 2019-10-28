@@ -349,7 +349,15 @@ export class CustomOAuth {
 			identity.name = this.getName(identity);
 		}
 
-		return identity;
+		return Object.entries(identity).reduce((result, [name, value]) => {
+			if (IDENTITY_PROPNAME_FILTER.test(name)) {
+				return result;
+			}
+			return {
+				...result,
+				[name]: value,
+			}
+		}, {});
 	}
 
 	retrieveCredential(credentialToken, credentialSecret) {
