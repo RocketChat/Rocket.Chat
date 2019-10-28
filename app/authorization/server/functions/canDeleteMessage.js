@@ -34,7 +34,6 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 		return true;
 	}
 
-	const currentTsDiff = diff(ts);
 	const timeElapsedForMessage = elapsedTime(ts);
 	return timeElapsedForMessage <= blockDeleteInMinutes;
 };
