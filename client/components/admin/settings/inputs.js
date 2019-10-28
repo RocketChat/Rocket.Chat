@@ -10,20 +10,19 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Button } from '../../basic/Button';
 import { handleError } from '../../../../app/utils/client';
 
-export function StringSettingInput({ setting, onUpdate }) {
-	const {
-		_id,
-		multiline,
-		value,
-		placeholder,
-		readonly,
-		autocomplete,
-		disabled,
-	} = setting;
-
+export function StringSettingInput({
+	_id,
+	multiline,
+	value,
+	placeholder,
+	readonly,
+	autocomplete,
+	disabled,
+	onChange,
+}) {
 	const handleChange = (event) => {
 		const { value } = event.currentTarget;
-		onUpdate({ value });
+		onChange({ value });
 	};
 
 	if (multiline) {
@@ -53,74 +52,70 @@ export function StringSettingInput({ setting, onUpdate }) {
 	/>;
 }
 
-export function RelativeUrlSettingInput({ setting, onUpdate }) {
-	const {
-		_id,
-		value,
-		placeholder,
-		readonly,
-		autocomplete,
-		disabled,
-	} = setting;
-
+export function RelativeUrlSettingInput({
+	_id,
+	value,
+	placeholder,
+	readonly,
+	autocomplete,
+	disabled,
+	onChange,
+}) {
 	const handleChange = (event) => {
 		const { value } = event.currentTarget;
-		onUpdate({ value });
+		onChange({ value });
 	};
 
 	return <input type='url' className='rc-input__element' name={_id} value={Meteor.absoluteUrl(value)} placeholder={placeholder} disabled={disabled} readOnly={readonly} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />;
 }
 
-export function PasswordSettingInput({ setting, onUpdate }) {
-	const {
-		_id,
-		value,
-		placeholder,
-		readonly,
-		autocomplete,
-		disabled,
-	} = setting;
-
+export function PasswordSettingInput({
+	_id,
+	value,
+	placeholder,
+	readonly,
+	autocomplete,
+	disabled,
+	onChange,
+}) {
 	const handleChange = (event) => {
 		const { value } = event.currentTarget;
-		onUpdate({ value });
+		onChange({ value });
 	};
 
 	return <input type='password' className='rc-input__element' name={_id} value={value} placeholder={placeholder} disabled={disabled} readOnly={readonly} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />;
 }
 
-export function IntSettingInput({ setting, onUpdate }) {
-	const {
-		_id,
-		value,
-		placeholder,
-		readonly,
-		autocomplete,
-		disabled,
-	} = setting;
-
+export function IntSettingInput({
+	_id,
+	value,
+	placeholder,
+	readonly,
+	autocomplete,
+	disabled,
+	onChange,
+}) {
 	const handleChange = (event) => {
 		const value = parseInt(event.currentTarget.value, 10);
-		onUpdate({ value });
+		onChange({ value });
 	};
 
 	return <input type='number' className='rc-input__element' name={_id} value={value} placeholder={placeholder} disabled={disabled} readOnly={readonly} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />;
 }
 
-export function SelectSettingInput({ setting, onUpdate }) {
-	const {
-		_id,
-		value,
-		readonly,
-		values,
-		disabled,
-	} = setting;
-
+export function SelectSettingInput({
+	_id,
+	value,
+	readonly,
+	values,
+	disabled,
+	onChange,
+}) {
 	const t = useTranslation();
 
 	const handleChange = (event) => {
 		const { value } = event.currentTarget;
-		onUpdate({ value });
+		onChange({ value });
 	};
 
 	return <div className='rc-select'>
@@ -133,14 +128,13 @@ export function SelectSettingInput({ setting, onUpdate }) {
 	</div>;
 }
 
-export function LanguageSettingInput({ setting, onUpdate }) {
-	const {
-		_id,
-		value,
-		readonly,
-		disabled,
-	} = setting;
-
+export function LanguageSettingInput({
+	_id,
+	value,
+	readonly,
+	disabled,
+	onChange,
+}) {
 	const languages = useReactiveValue(() => {
 		const languages = TAPi18n.getLanguages();
 
@@ -159,7 +153,7 @@ export function LanguageSettingInput({ setting, onUpdate }) {
 
 	const handleChange = (event) => {
 		const { value } = event.currentTarget;
-		onUpdate({ value });
+		onChange({ value });
 	};
 
 	return <div className='rc-select'>
@@ -172,26 +166,25 @@ export function LanguageSettingInput({ setting, onUpdate }) {
 	</div>;
 }
 
-export function ColorSettingInput({ setting, onUpdate }) {
-	const {
-		_id,
-		value,
-		editor,
-		allowedTypes,
-		autocomplete,
-		disabled,
-	} = setting;
-
+export function ColorSettingInput({
+	_id,
+	value,
+	editor,
+	allowedTypes,
+	autocomplete,
+	disabled,
+	onChange,
+}) {
 	const t = useTranslation();
 
 	const handleChange = (event) => {
 		const { value } = event.currentTarget;
-		onUpdate({ value });
+		onChange({ value });
 	};
 
 	const handleEditorTypeChange = (event) => {
 		const editor = event.currentTarget.value.trim();
-		onUpdate({ editor });
+		onChange({ editor });
 	};
 
 	return <>
@@ -214,31 +207,28 @@ export function ColorSettingInput({ setting, onUpdate }) {
 	</>;
 }
 
-export function FontSettingInput({ setting, onUpdate }) {
-	const {
-		_id,
-		value,
-		placeholder,
-		readonly,
-		autocomplete,
-		disabled,
-	} = setting;
-
+export function FontSettingInput({
+	_id,
+	value,
+	placeholder,
+	readonly,
+	autocomplete,
+	disabled,
+	onChange,
+}) {
 	const handleChange = (event) => {
 		const { value } = event.currentTarget;
-		onUpdate({ value });
+		onChange({ value });
 	};
 
 	return <input type='text' className='rc-input__element' name={_id} value={value} placeholder={placeholder} disabled={disabled} readOnly={readonly} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />;
 }
 
-export function CodeSettingInput({ setting }) {
-	const {
-		_id,
-		i18nLabel,
-		disabled,
-	} = setting;
-
+export function CodeSettingInput({
+	_id,
+	i18nLabel,
+	disabled,
+}) {
 	const t = useTranslation();
 
 	return disabled
@@ -254,13 +244,12 @@ export function CodeSettingInput({ setting }) {
 		</div>;
 }
 
-export function ActionSettingInput({ setting, didSectionChange }) {
-	const {
-		value,
-		actionText,
-		disabled,
-	} = setting;
-
+export function ActionSettingInput({
+	value,
+	actionText,
+	disabled,
+	didSectionChange,
+}) {
 	const t = useTranslation();
 
 	const handleClick = async () => {
@@ -283,12 +272,10 @@ export function ActionSettingInput({ setting, didSectionChange }) {
 		: <Button primary disabled={disabled} onClick={handleClick}>{t(actionText)}</Button>;
 }
 
-export function AssetSettingInput({ setting }) {
-	const {
-		value,
-		fileConstraints,
-	} = setting;
-
+export function AssetSettingInput({
+	value,
+	fileConstraints,
+}) {
 	const t = useTranslation();
 	return value.url
 		? <div className='settings-file-preview'>
@@ -309,11 +296,7 @@ export function AssetSettingInput({ setting }) {
 		</div>;
 }
 
-export function RoomPickSettingInput({ setting }) {
-	const {
-		_id,
-	} = setting;
-
+export function RoomPickSettingInput({ _id }) {
 	// const collection = usePrivateSettingsCollection();
 	const [selectedRooms] = useState({});
 

@@ -1,9 +1,14 @@
-import { Accordion, Button, Paragraph } from '@rocket.chat/fuselage';
+import { Accordion, Button, FieldGroup, Paragraph } from '@rocket.chat/fuselage';
 import React from 'react';
+import styled from 'styled-components';
 
 import { useTranslation } from '../../providers/TranslationProvider';
 import { useBulkActions } from './EditingState';
-import { Field } from './Field';
+import { SettingField } from './SettingField';
+
+const Wrapper = styled.div`
+	max-width: 543px;
+`;
 
 export function Section({ children, hasReset = true, help, section, solo }) {
 	const t = useTranslation();
@@ -14,21 +19,23 @@ export function Section({ children, hasReset = true, help, section, solo }) {
 	};
 
 	return <Accordion.Item noncollapsible={solo || !section.name} title={section.name && t(section.name)}>
-		{help && <Paragraph hintColor>{help}</Paragraph>}
+		<Wrapper>
+			{help && <Paragraph hintColor>{help}</Paragraph>}
 
-		<div className='section-content border-component-color'>
-			{section.fields.map((field) => <Field key={field._id} field={field} />)}
+			<FieldGroup>
+				{section.fields.map((field) => <SettingField key={field._id} field={field} />)}
 
-			{hasReset && <Button
-				children={t('Reset_section_settings')}
-				className='reset-group'
-				danger
-				data-section={section.name}
-				ghost
-				onClick={handleResetSectionClick}
-			/>}
+				{hasReset && section.changed && <Button
+					children={t('Reset_section_settings')}
+					className='reset-group'
+					danger
+					data-section={section.name}
+					ghost
+					onClick={handleResetSectionClick}
+				/>}
 
-			{children}
-		</div>
+				{children}
+			</FieldGroup>
+		</Wrapper>
 	</Accordion.Item>;
 }
