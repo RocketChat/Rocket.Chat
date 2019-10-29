@@ -121,7 +121,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 
 		<StepContent>
 			<FieldGroup>
-				<Field style={{ width: '100%' }}>
+				<Field>
 					<Label text={t('Name')} />
 					<TextInput
 						ref={autoFocusRef}
@@ -132,7 +132,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 						error={!isNameValid}
 					/>
 				</Field>
-				<Field style={{ width: '100%' }}>
+				<Field>
 					<Field.Row>
 						<Label text={t('Username')} />
 						{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
@@ -145,7 +145,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 						error={!isUsernameValid}
 					/>
 				</Field>
-				<Field style={{ width: '100%' }}>
+				<Field>
 					<Field.Row>
 						<Label text={t('Organization_Email')} />
 						{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
@@ -158,7 +158,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 						error={!isEmailValid}
 					/>
 				</Field>
-				<Field style={{ width: '100%' }}>
+				<Field>
 					<Label text={t('Password')} />
 					<PasswordInput
 						type='password'

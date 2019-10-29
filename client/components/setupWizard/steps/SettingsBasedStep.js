@@ -87,7 +87,7 @@ export function SettingsBasedStep({ step, title, active }) {
 		<StepContent>
 			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
-					<Field key={i} style={{ width: '100%' }}>
+					<Field key={i}>
 						<Label text={t(i18nLabel)} />
 						{type === 'string' && <TextInput
 							type='text'
