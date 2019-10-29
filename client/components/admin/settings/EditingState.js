@@ -11,29 +11,6 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
 const EditingContext = createContext({});
 
-const stateReducer = (state, { type, payload }) => {
-	switch (type) {
-		case 'add':
-			return [...state, payload];
-
-		case 'change':
-			return state.map((field) => (field._id !== payload._id ? field : payload));
-
-		case 'remove':
-			return state.filter((field) => field._id !== payload);
-
-		case 'hydrate': {
-			const map = {};
-			payload.forEach((field) => {
-				map[field._id] = field;
-			});
-			return state.map((field) => ({ ...field, ...map[field._id] || {} }));
-		}
-	}
-
-	return state;
-};
-
 const compareValues = (a, b) => {
 	if (a === b) {
 		return 0;
@@ -52,6 +29,39 @@ const compareValues = (a, b) => {
 	}
 
 	return a > b ? 1 : -1;
+};
+
+const stateReducer = (state, { type, payload }) => {
+	switch (type) {
+		case 'add':
+			return [...state, ...payload].sort((a, b) =>
+				compareValues(a.section, b.section)
+				|| compareValues(a.sorter, b.sorter)
+				|| compareValues(a.i18nLabel, b.i18nLabel));
+
+		case 'change':
+			return state.map((field) => (field._id !== payload._id ? field : payload));
+
+		case 'remove':
+			return state.filter((field) => field._id !== payload);
+
+		case 'hydrate': {
+			const map = {};
+			payload.forEach((field) => {
+				map[field._id] = field;
+			});
+
+			return state.map((field) => {
+				if (!map[field._id]) {
+					return field;
+				}
+
+				return { ...field, ...map[field._id] };
+			});
+		}
+	}
+
+	return state;
 };
 
 export function EditingState({ children, groupId }) {
@@ -79,27 +89,37 @@ export function EditingState({ children, groupId }) {
 			return;
 		}
 
+		const dispatch = (action) => {
+			dispatchToState(action);
+			dispatchToPersistedState(action);
+		};
+
+		const addedQueue = [];
+		let dispatchAddedTimer;
+
 		const persistedFieldsQueryHandle = persistedCollection.find()
 			.observe({
 				added: (data) => {
 					collection.insert(data);
-					dispatchToState({ type: 'add', payload: data });
-					dispatchToPersistedState({ type: 'add', payload: data });
+					addedQueue.push(data);
+					clearTimeout(dispatchAddedTimer);
+					dispatchAddedTimer = setTimeout(() => {
+						dispatch({ type: 'add', payload: addedQueue });
+					}, 70);
 				},
 				changed: (data) => {
 					collection.update(data._id, data);
-					dispatchToState({ type: 'change', payload: data });
-					dispatchToPersistedState({ type: 'change', payload: data });
+					dispatch({ type: 'change', payload: data });
 				},
 				removed: ({ _id }) => {
 					collection.remove(_id);
-					dispatchToState({ type: 'remove', payload: _id });
-					dispatchToPersistedState({ type: 'remove', payload: _id });
+					dispatch({ type: 'remove', payload: _id });
 				},
 			});
 
 		return () => {
 			persistedFieldsQueryHandle.stop();
+			clearTimeout(dispatchAddedTimer);
 		};
 	}, [isLoading]);
 
@@ -113,30 +133,32 @@ export function EditingState({ children, groupId }) {
 	};
 
 	const group = useMemo(() => {
-		const fields = state.filter(({ group }) => group === groupId)
-			.sort((a, b) => compareValues(a.section, b.section)
-				|| compareValues(a.sorter, b.sorter)
-				|| compareValues(a.i18nLabel, b.i18nLabel));
+		console.time();
+		try {
+			const fields = state.filter(({ group }) => group === groupId);
 
-		const sectionsMap = {};
-		fields.forEach((field) => {
-			const name = field.section || '';
-			const section = sectionsMap[name] || { name };
-			section.changed = section.changed || field.changed;
-			section.fields = (section.fields || []).concat(field);
-			sectionsMap[name] = section;
-		});
+			const sectionsMap = {};
+			fields.forEach((field) => {
+				const name = field.section || '';
+				const section = sectionsMap[name] || { name };
+				section.changed = section.changed || field.changed;
+				section.fields = (section.fields || []).concat(field);
+				sectionsMap[name] = section;
+			});
 
-		const sections = Object.values(sectionsMap);
+			const sections = Object.values(sectionsMap);
 
-		return state.filter(({ _id, type }) => _id === groupId && type === 'group')
-			.map((group) => ({
-				...group,
-				changed: fields.some(({ changed }) => changed),
-				sections,
-				fields,
-			}))
-			.shift();
+			return state.filter(({ _id, type }) => _id === groupId && type === 'group')
+				.map((group) => ({
+					...group,
+					changed: fields.some(({ changed }) => changed),
+					sections,
+					fields,
+				}))
+				.shift();
+		} finally {
+			console.timeEnd();
+		}
 	}, [groupId, state]);
 
 	const batchSetSettings = useBatchSetSettings();
@@ -239,8 +261,6 @@ export function EditingState({ children, groupId }) {
 }
 
 export const useGroup = () => useContext(EditingContext).group;
-
-export const useSection = () => useContext(EditingContext).section;
 
 export const useBulkActions = () => {
 	const { save, cancel, reset, update } = useContext(EditingContext);
