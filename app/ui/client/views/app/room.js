@@ -590,11 +590,14 @@ export const dropzoneEvents = {
 			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const dropContext = $('<div>').append(e.dataTransfer.getData('text/html'));
-				const imgURL = $(dropContext).find('img').attr('src');
+				const dropContext = document.createDocumentFragment();
+				const dropContextContent = document.createElement('div');
+				dropContextContent.innerHTML = e.dataTransfer.getData('text/html');
+				dropContext.appendChild(dropContextContent);
+				const imgURL = dropContext.querySelector('img').src;
 
 				if (!imgURL) {
-					return addToInput($(dropContext).find('a').attr('href'));
+					return addToInput(dropContext.querySelector('a').href);
 				}
 
 				const file = await createFileFromUrl(imgURL);
