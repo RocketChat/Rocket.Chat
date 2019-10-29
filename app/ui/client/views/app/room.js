@@ -234,13 +234,12 @@ async function createFileFromUrl(url) {
 		}
 		throw error;
 	}
-	const fileExtension = url.split('.').pop().split(/\#|\?/)[0] || 'jpg';
 
 	const data = await response.blob();
 	const metadata = {
-		type: `image/${ fileExtension }`,
+		type: data.type,
 	};
-	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ fileExtension }`, metadata);
+	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
 	return file;
 }
 
@@ -585,10 +584,11 @@ export const dropzoneEvents = {
 
 		e.stopPropagation();
 
-		let files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
+		let files = (e.dataTransfer && e.dataTransfer.files) || [];
 
 		if (files.length < 1) {
-			const transferData = e.dataTransfer.getData('text') !== '' ? e.dataTransfer.getData('text') : e.dataTransfer.getData('url');
+			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
+
 			if (e.dataTransfer.types.includes('text/uri-list')) {
 				const dropContext = $('<div>').append(e.dataTransfer.getData('text/html'));
 				const imgURL = $(dropContext).find('img').attr('src');
