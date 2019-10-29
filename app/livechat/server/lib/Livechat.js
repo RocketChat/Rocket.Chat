@@ -29,7 +29,7 @@ import {
 	LivechatOfficeHour,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { addUserRoles, removeUserFromRoles } from '../../../authorization';
+import { addUserRoles, hasRole, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
@@ -616,6 +616,7 @@ export const Livechat = {
 
 		if (removeUserFromRoles(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, false);
+			Users.removeLivechatData(user._id);
 			this.setUserStatusLivechat(user._id, 'not-available');
 			return true;
 		}
@@ -723,6 +724,27 @@ export const Livechat = {
 		}
 
 		return LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
+	},
+
+	saveAgentInfo(_id, agentData, agentDepartments) {
+		check(_id, Match.Maybe(String));
+		check(agentData, Object);
+		check(agentDepartments, [String]);
+
+
+		const user = Users.findOneById(_id);
+		if (!user || !hasRole(_id, 'livechat-agent')) {
+			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', { method: 'livechat:saveAgentInfo' });
+		}
+
+		try {
+			Users.setLivechatData(_id, agentData);
+			LivechatDepartmentAgents.saveDepartmentsByAgent(user, agentDepartments);
+		} catch (e) {
+			// throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', { method: 'livechat:saveAgentInfo' });
+		}
+
+		return true;
 	},
 
 	removeDepartment(_id) {

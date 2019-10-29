@@ -1261,6 +1261,7 @@
   "error-user-has-no-roles": "O utilizador não tem funções",
   "error-user-is-not-activated": "O utilizador não está activo",
   "error-user-limit-exceeded": "O número de utilizadores que está a tentar convidar para #channel_name excede o limite definido pelo administrador",
+  "error-user-is-not-agent": "O usuário não é um agente de livechat",
   "error-user-not-in-room": "O utilizador não está nesta sala",
   "error-logged-user-not-in-room": "Não está na sala `%s`",
   "error-user-registration-disabled": "O registo de utilizadores está desabilitado",
