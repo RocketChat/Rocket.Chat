@@ -87,43 +87,42 @@ export function SettingsBasedStep({ step, title, active }) {
 		<StepContent>
 			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
-					<Field key={i}>
-						<Label text={t(i18nLabel)}>
-							{type === 'string' && <TextInput
-								type='text'
-								name={_id}
-								ref={i === 0 ? autoFocusRef : undefined}
-								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							/>}
+					<Field key={i} style={{ width: '100%' }}>
+						<Label text={t(i18nLabel)} />
+						{type === 'string' && <TextInput
+							type='text'
+							name={_id}
+							ref={i === 0 ? autoFocusRef : undefined}
+							value={value}
+							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+						/>}
 
-							{type === 'select' && <SelectInput
-								type='select'
-								name={_id}
-								placeholder={t('Select_an_option')}
-								ref={i === 0 ? autoFocusRef : undefined}
-								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							>
-								{values
-									.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
-									.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
-							</SelectInput>}
+						{type === 'select' && <SelectInput
+							type='select'
+							name={_id}
+							placeholder={t('Select_an_option')}
+							ref={i === 0 ? autoFocusRef : undefined}
+							value={value}
+							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+						>
+							{values
+								.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
+								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+						</SelectInput>}
 
-							{type === 'language' && <SelectInput
-								type='select'
-								name={_id}
-								placeholder={t('Default')}
-								ref={i === 0 ? autoFocusRef : undefined}
-								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							>
-								{Object.entries(languages)
-									.map(([key, { name }]) => ({ label: name, value: key }))
-									.sort((a, b) => a.key - b.key)
-									.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
-							</SelectInput>}
-						</Label>
+						{type === 'language' && <SelectInput
+							type='select'
+							name={_id}
+							placeholder={t('Default')}
+							ref={i === 0 ? autoFocusRef : undefined}
+							value={value}
+							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+						>
+							{Object.entries(languages)
+								.map(([key, { name }]) => ({ label: name, value: key }))
+								.sort((a, b) => a.key - b.key)
+								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+						</SelectInput>}
 					</Field>
 				)}
 			</FieldGroup>

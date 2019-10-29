@@ -121,51 +121,53 @@ export function AdminUserInformationStep({ step, title, active }) {
 
 		<StepContent>
 			<FieldGroup>
-				<Field>
-					<Label text={t('Name')}>
-						<TextInput
-							ref={autoFocusRef}
-							addon={<Icon name='user' />}
-							placeholder={t('Type_your_name')}
-							value={name}
-							onChange={({ currentTarget: { value } }) => setName(value)}
-							error={!isNameValid}
-						/>
-					</Label>
+				<Field style={{ width: '100%' }}>
+					<Label text={t('Name')} />
+					<TextInput
+						ref={autoFocusRef}
+						addon={<Icon name='user' />}
+						placeholder={t('Type_your_name')}
+						value={name}
+						onChange={({ currentTarget: { value } }) => setName(value)}
+						error={!isNameValid}
+					/>
 				</Field>
-				<Field>
-					<Label text={t('Username')} error={!isUsernameValid && t('Invalid_username')}>
-						<TextInput
-							addon={<Icon name='at' />}
-							placeholder={t('Type_your_username')}
-							value={username}
-							onChange={({ currentTarget: { value } }) => setUsername(value)}
-							error={!isUsernameValid}
-						/>
-					</Label>
+				<Field style={{ width: '100%' }}>
+					<Field.Row>
+						<Label text={t('Username')} />
+						{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
+					</Field.Row>
+					<TextInput
+						addon={<Icon name='at' />}
+						placeholder={t('Type_your_username')}
+						value={username}
+						onChange={({ currentTarget: { value } }) => setUsername(value)}
+						error={!isUsernameValid}
+					/>
 				</Field>
-				<Field>
-					<Label text={t('Organization_Email')} error={!isEmailValid && t('Invalid_email')}>
-						<EmailInput
-							addon={<Icon name='mail' />}
-							placeholder={t('Type_your_email')}
-							value={email}
-							onChange={({ currentTarget: { value } }) => setEmail(value)}
-							error={!isEmailValid}
-						/>
-					</Label>
+				<Field style={{ width: '100%' }}>
+					<Field.Row>
+						<Label text={t('Organization_Email')} />
+						{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
+					</Field.Row>
+					<EmailInput
+						addon={<Icon name='mail' />}
+						placeholder={t('Type_your_email')}
+						value={email}
+						onChange={({ currentTarget: { value } }) => setEmail(value)}
+						error={!isEmailValid}
+					/>
 				</Field>
-				<Field>
-					<Label text={t('Password')}>
-						<PasswordInput
-							type='password'
-							addon={<Icon name='key' />}
-							placeholder={t('Type_your_password')}
-							value={password}
-							onChange={({ currentTarget: { value } }) => setPassword(value)}
-							error={!isPasswordValid}
-						/>
-					</Label>
+				<Field style={{ width: '100%' }}>
+					<Label text={t('Password')} />
+					<PasswordInput
+						type='password'
+						addon={<Icon name='key' />}
+						placeholder={t('Type_your_password')}
+						value={password}
+						onChange={({ currentTarget: { value } }) => setPassword(value)}
+						error={!isPasswordValid}
+					/>
 				</Field>
 			</FieldGroup>
 		</StepContent>
