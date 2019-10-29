@@ -739,7 +739,7 @@ export const Livechat = {
 
 		try {
 			Users.setLivechatData(_id, agentData);
-			LivechatDepartmentAgents.saveDepartmentsByAgent(user, agentDepartments);
+			LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
 		} catch (e) {
 			// throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', { method: 'livechat:saveAgentInfo' });
 		}

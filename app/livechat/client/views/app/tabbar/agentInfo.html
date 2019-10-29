@@ -18,14 +18,18 @@
 					</div>
 
 					<div class="rc-user-info-action">
-						<button class="js-action rc-user-info-action__item edit-agent">
-							{{> icon block="rc-user-info-action__icon" icon="edit" }}
-							{{_ "Edit"}}
-						</button>
-						<button class="js-action rc-user-info-action__item delete-agent">
-							{{> icon block="rc-user-info-action__icon" icon="trash" }}
-							{{_ "Delete"}}
-						</button>
+						{{#if canEdit}}
+							<button class="js-action rc-user-info-action__item edit-agent">
+								{{> icon block="rc-user-info-action__icon" icon="edit" }}
+								{{_ "Edit"}}
+							</button>
+						{{/if}}
+						{{#if canRemove}}
+							<button class="js-action rc-user-info-action__item delete-agent">
+								{{> icon block="rc-user-info-action__icon" icon="trash" }}
+								{{_ "Delete"}}
+							</button>
+						{{/if}}
 					</div>
 					<div class="rc-user-info-details">
 						{{#if hasEmails}}
@@ -43,6 +47,9 @@
 									{{/each}}
 								</ul>
 							</div>
+						{{/if}}
+						{{#if customFieldsTemplate}}
+							{{> Template.dynamic template=customFieldsTemplate data=agentDataContext }}
 						{{/if}}
 					</div>
 				</div>

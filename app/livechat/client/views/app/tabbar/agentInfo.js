@@ -6,14 +6,25 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 
+import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentInfo.html';
 import { modal } from '../../../../../ui-utils';
 import { t, handleError } from '../../../../../utils/client';
+import { hasPermission } from '../../../../../authorization';
 import { AgentUsers } from '../../../collections/AgentUsers';
 import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 
 Template.agentInfo.helpers({
+	canEdit() {
+		const availableDepartments = [...Template.instance().avaliableDepartments.get()];
+		return availableDepartments.length > 0 && hasPermission('add-livechat-department-agents');
+	},
+
+	canRemove() {
+		return hasPermission('manage-livechat-agents');
+	},
+
 	name() {
 		const agent = Template.instance().agent.get();
 		return agent && agent.name ? agent.name : TAPi18n.__('Unnamed');
@@ -73,6 +84,16 @@ Template.agentInfo.helpers({
 	agentDepartments() {
 		return Template.instance().agentDepartments.get();
 	},
+
+	customFieldsTemplate() {
+		return getCustomFormTemplate('livechatAgentInfoForm');
+	},
+
+	agentDataContext() {
+		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
+		// because only the dynamic template data will be reloaded
+		return Template.instance().agent;
+	},
 });
 
 Template.agentInfo.events({
@@ -119,13 +140,16 @@ Template.agentInfo.events({
 
 Template.agentInfo.onCreated(function() {
 	this.agent = new ReactiveVar();
+	this.avaliableDepartments = new ReactiveVar([]);
 	this.agentDepartments = new ReactiveVar([]);
 	this.editingAgent = new ReactiveVar();
 	this.tabBar = Template.currentData().tabBar;
 	this.onRemoveAgent = Template.currentData().onRemoveAgent;
 
 	this.subscribe('livechat:agents');
-	this.subscribe('livechat:departments');
+	this.subscribe('livechat:departments', () => {
+		this.avaliableDepartments.set(LivechatDepartment.find({ enabled: true }, { sort: { name: 1 } }).fetch());
+	});
 
 	this.autorun(() => {
 		const { agentId } = Template.currentData();

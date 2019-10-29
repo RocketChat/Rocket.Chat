@@ -73,7 +73,7 @@
 				</ul>
 			</div>
 			{{#if customFieldsTemplate}}
-				{{> Template.dynamic template=customFieldsTemplate data=data }}
+				{{> Template.dynamic template=customFieldsTemplate data=agentDataContext }}
 			{{/if}}
 			<div class="rc-user-info__flex rc-user-info__row">
 				<button class='rc-button rc-button--cancel cancel' type="button"><span>{{_ "Cancel"}}</span></button>

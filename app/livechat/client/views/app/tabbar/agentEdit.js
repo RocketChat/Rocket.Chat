@@ -39,10 +39,10 @@ Template.agentEdit.helpers({
 	},
 
 	customFieldsTemplate() {
-		return getCustomFormTemplate('livechatAgentForm');
+		return getCustomFormTemplate('livechatAgentEditForm');
 	},
 
-	data() {
+	agentDataContext() {
 		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
 		// because only the dynamic template data will be reloaded
 		return Template.instance().agent;
