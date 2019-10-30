@@ -40,9 +40,6 @@ export class AppListenerBridge {
 	async externalComponentEvent(inte, externalComponent) {
 		const result = await this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
 
-		if (typeof result === 'boolean') {
-			return result;
-		}
 		return result;
 	}
 }

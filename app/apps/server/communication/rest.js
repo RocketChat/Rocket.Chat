@@ -268,6 +268,27 @@ export class AppsRestApi {
 			},
 		});
 
+		this.api.addRoute('externalComponentEvent', { authRequired: true }, {
+			post() {
+				if (this.bodyParams.event && this.bodyParams.externalComponent
+					&& ['IExternalComponentOpened', 'IExternalComponentClosed'].includes(this.bodyParams.event)
+				) {
+					let result;
+					try {
+						const { event } = this.bodyParams;
+						const { externalComponent } = this.bodyParams;
+
+						result = Apps.getBridges().getListenerBridge().externalComponentEvent(event, externalComponent);
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error(`Error triggering exxternal components' events ${ e.response.data }`);
+						return API.v1.internalError();
+					}
+					return API.v1.success({ result });
+				}
+				return API.v1.failure({ error: 'Event and externalComponent must be provided.' });
+			},
+		});
+
 		this.api.addRoute('bundles/:id/apps', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				const baseUrl = orchestrator.getMarketplaceUrl();
