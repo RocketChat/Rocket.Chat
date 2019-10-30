@@ -31,7 +31,9 @@ export function shouldNotifyAudio({
 
 export function notifyAudioUser(userId, message, room) {
 	metrics.notificationsSent.inc({ notification_type: 'audio' });
-	Notifications.notifyUser(userId, 'audioNotification', {
+
+	Notifications.notifyUser(userId, 'notification', {
+		audioOnly: true,
 		payload: {
 			_id: message._id,
 			rid: message.rid,

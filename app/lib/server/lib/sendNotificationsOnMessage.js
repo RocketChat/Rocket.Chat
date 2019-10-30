@@ -71,7 +71,7 @@ export const sendNotification = async ({
 	} = subscription;
 
 	// busy users don't receive audio notification
-	if (shouldNotifyAudio({
+	const notifyAudio = shouldNotifyAudio({
 		disableAllMessageNotifications,
 		status: receiver.status,
 		statusConnection: receiver.statusConnection,
@@ -82,9 +82,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
-	})) {
-		notifyAudioUser(subscription.u._id, message, room);
-	}
+	});
 
 	// busy users don't receive desktop notification
 	if (shouldNotifyDesktop({
@@ -106,7 +104,10 @@ export const sendNotification = async ({
 			message,
 			room,
 			duration: subscription.desktopNotificationDuration,
+			notifyAudio,
 		});
+	} else if (notifyAudio) {
+		notifyAudioUser(subscription.u._id, message, room);
 	}
 
 	if (shouldNotifyMobile({
