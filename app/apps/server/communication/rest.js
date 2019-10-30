@@ -271,7 +271,7 @@ export class AppsRestApi {
 		this.api.addRoute('externalComponentEvent', { authRequired: true }, {
 			post() {
 				if (this.bodyParams.event && this.bodyParams.externalComponent
-					&& ['IPostExternalComponentClosed', 'IPostExternalComponentClosed'].includes(this.bodyParams.event)
+					&& ['IPostExternalComponentOpened', 'IPostExternalComponentClosed'].includes(this.bodyParams.event)
 				) {
 					let result;
 					try {
