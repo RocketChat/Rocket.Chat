@@ -1,138 +1,142 @@
-import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import React, { createContext, useContext, useEffect, useMemo, useReducer, useState, useRef, useCallback } from 'react';
-import toastr from 'toastr';
+import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react';
 
-import { handleError } from '../../../../app/utils/client/lib/handleError';
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 
 const SettingsContext = createContext({});
 
+let privateSettingsCachedCollection; // Remove this singleton (╯°□°)╯︵ ┻━┻
+
 const compareValues = (a, b) => {
-	if (a === b) {
-		return 0;
-	}
-
-	if (a && !b) {
-		return 1;
-	}
-
-	if (!a && b) {
-		return -1;
-	}
-
-	if (!a && !b) {
+	if (a === b || (!a && !b)) {
 		return 0;
 	}
 
 	return a > b ? 1 : -1;
 };
 
+const compareSettings = (a, b) =>
+	compareValues(a.section, b.section)
+	|| compareValues(a.sorter, b.sorter)
+	|| compareValues(a.i18nLabel, b.i18nLabel);
+
 const stateReducer = (state, { type, payload }) => {
 	switch (type) {
 		case 'add':
-			return [...state, ...payload].sort((a, b) =>
-				compareValues(a.section, b.section)
-				|| compareValues(a.sorter, b.sorter)
-				|| compareValues(a.i18nLabel, b.i18nLabel));
+			return [...state, ...payload].sort(compareSettings);
 
 		case 'change':
-			return state.map((field) => (field._id !== payload._id ? field : payload));
+			return state.map((setting) => (setting._id !== payload._id ? setting : payload));
 
 		case 'remove':
-			return state.filter((field) => field._id !== payload);
+			return state.filter((setting) => setting._id !== payload);
 
 		case 'hydrate': {
 			const map = {};
-			payload.forEach((field) => {
-				map[field._id] = field;
+			payload.forEach((setting) => {
+				map[setting._id] = setting;
 			});
 
-			return state.map((field) => {
-				if (!map[field._id]) {
-					return field;
-				}
-
-				return { ...field, ...map[field._id] };
-			});
+			return state.map((setting) => (map[setting._id] ? { ...setting, ...map[setting._id] } : setting));
 		}
 	}
 
 	return state;
 };
 
-const usePrivateSettings = () => {
-	const [state, dispatchToState] = useReducer(stateReducer, []);
-	const [persistedState, dispatchToPersistedState] = useReducer(stateReducer, []);
+export function SettingsState({ children }) {
+	const [state, updateState] = useReducer(stateReducer, []);
+	const [persistedState, updatePersistedState] = useReducer(stateReducer, []);
 	const [isLoading, setLoading] = useState(true);
 
-	const collection = useMemo(() => new Mongo.Collection(null), []);
+	const updateStates = (action) => {
+		updateState(action);
+		updatePersistedState(action);
+	};
 
-	const persistedCollection = useMemo(() => {
-		const cachedCollection = new PrivateSettingsCachedCollection();
-		const { collection: persistedCollection } = cachedCollection;
+	const stopLoading = () => {
+		setLoading(false);
+	};
 
-		const didLoad = () => {
-			setLoading(false);
-		};
+	const persistedCollectionRef = useRef();
 
-		cachedCollection.init().then(didLoad, didLoad);
+	useEffect(() => {
+		if (!privateSettingsCachedCollection) {
+			privateSettingsCachedCollection = new PrivateSettingsCachedCollection();
+			privateSettingsCachedCollection.init().then(stopLoading, stopLoading);
+		}
 
-		return persistedCollection;
+		persistedCollectionRef.current = privateSettingsCachedCollection.collection;
 	}, []);
+
+	const { current: persistedCollection } = persistedCollectionRef;
+
+	const [collection] = useState(() => new Mongo.Collection(null));
 
 	useEffect(() => {
 		if (isLoading) {
 			return;
 		}
 
-		const dispatch = (action) => {
-			dispatchToState(action);
-			dispatchToPersistedState(action);
+		const addedQueue = [];
+		let addedActionTimer;
+
+		const added = (data) => {
+			collection.insert(data);
+			addedQueue.push(data);
+			clearTimeout(addedActionTimer);
+			addedActionTimer = setTimeout(() => {
+				updateStates({ type: 'add', payload: addedQueue });
+			}, 70);
 		};
 
-		const addedQueue = [];
-		let dispatchAddedTimer;
+		const changed = (data) => {
+			collection.update(data._id, data);
+			updateStates({ type: 'change', payload: data });
+		};
+
+		const removed = ({ _id }) => {
+			collection.remove(_id);
+			updateStates({ type: 'remove', payload: _id });
+		};
 
 		const persistedFieldsQueryHandle = persistedCollection.find()
 			.observe({
-				added: (data) => {
-					collection.insert(data);
-					addedQueue.push(data);
-					clearTimeout(dispatchAddedTimer);
-					dispatchAddedTimer = setTimeout(() => {
-						dispatch({ type: 'add', payload: addedQueue });
-					}, 70);
-				},
-				changed: (data) => {
-					collection.update(data._id, data);
-					dispatch({ type: 'change', payload: data });
-				},
-				removed: ({ _id }) => {
-					collection.remove(_id);
-					dispatch({ type: 'remove', payload: _id });
-				},
+				added,
+				changed,
+				removed,
 			});
 
 		return () => {
 			persistedFieldsQueryHandle.stop();
-			clearTimeout(dispatchAddedTimer);
+			clearTimeout(addedActionTimer);
 		};
 	}, [isLoading]);
 
 	const updateTimersRef = useRef({});
 
-	const updateAtCollection = useCallback(({ _id, ...data }) => {
+	const updateAtCollection = ({ _id, ...data }) => {
 		const { current: updateTimers } = updateTimersRef;
-
 		clearTimeout(updateTimers[_id]);
-
 		updateTimers[_id] = setTimeout(() => {
 			collection.update(_id, { $set: data });
 		}, 70);
-	}, [collection]);
+	};
+
+	const collectionRef = useRef();
+	const updateAtCollectionRef = useRef();
+	const updateStateRef = useRef();
+
+	collectionRef.current = collection;
+	updateAtCollectionRef.current = updateAtCollection;
+	updateStateRef.current = updateState;
+
+	const hydrate = useCallback((changes) => {
+		const { current: updateAtCollection } = updateAtCollectionRef;
+		const { current: updateState } = updateStateRef;
+		changes.forEach(updateAtCollection);
+		updateState({ type: 'hydrate', payload: changes });
+	}, []);
 
 	const isDisabled = useCallback(({ blocked, enableQuery }) => {
 		if (blocked) {
@@ -143,119 +147,19 @@ const usePrivateSettings = () => {
 			return false;
 		}
 
-		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
-		return !queries.map((query) => collection.findOne(query)).every(Boolean);
-	}, [collection]);
+		const { current: collection } = collectionRef;
 
-	return {
+		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
+		return !queries.every((query) => !!collection.findOne(query));
+	}, []);
+
+	const contextValue = {
 		isLoading,
 		state,
 		persistedState,
-		dispatch: dispatchToState,
-		updateAtCollection,
+		hydrate,
 		isDisabled,
 	};
-};
-
-export function SettingsState({ children }) {
-	const {
-		isLoading,
-		state,
-		persistedState,
-		dispatch,
-		updateAtCollection,
-		isDisabled,
-	} = usePrivateSettings();
-
-	const batchSetSettings = useBatchSetSettings();
-
-	const save = useCallback(async ({ fields }) => {
-		const changes = fields.filter(({ changed }) => changed)
-			.map(({ _id, value, editor }) => ({ _id, value, editor }));
-
-		if (changes.length === 0) {
-			return;
-		}
-
-		try {
-			await batchSetSettings(changes);
-
-			if (changes.some(({ _id }) => _id === 'Language')) {
-				const lng = Meteor.user().language
-					|| changes.filter(({ _id }) => _id === 'Language').shift().value
-					|| 'en';
-
-				TAPi18n._loadLanguage(lng)
-					.then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })))
-					.catch(handleError);
-
-				return;
-			}
-
-			toastr.success(TAPi18n.__('Settings_updated'));
-		} catch (error) {
-			handleError(error);
-		}
-	}, [batchSetSettings]);
-
-	const cancel = useCallback(({ fields }) => {
-		const changes = fields.filter(({ changed }) => changed)
-			.map((field) => {
-				const { _id, value, editor } = persistedState.find(({ _id }) => _id === field._id);
-				return { _id, value, editor, changed: false };
-			});
-
-		changes.forEach(updateAtCollection);
-		dispatch({ type: 'hydrate', payload: changes });
-	}, [persistedState, updateAtCollection]);
-
-	const reset = useCallback(({ fields }) => {
-		const changes = fields.map((field) => {
-			const { _id, value, packageValue, editor } = persistedState.find(({ _id }) => _id === field._id);
-			return {
-				_id,
-				value: packageValue,
-				editor,
-				changed: packageValue !== value,
-			};
-		});
-
-		changes.forEach(updateAtCollection);
-		dispatch({ type: 'hydrate', payload: changes });
-	}, [persistedState, updateAtCollection]);
-
-	const update = useCallback(({ fields }) => {
-		const changes = fields.map((field) => {
-			const persistedField = persistedState.find(({ _id }) => _id === field._id);
-			return {
-				_id: field._id,
-				value: field.value,
-				editor: field.editor,
-				changed: (field.value !== persistedField.value) || (field.editor !== persistedField.editor),
-			};
-		});
-
-		changes.forEach(updateAtCollection);
-		dispatch({ type: 'hydrate', payload: changes });
-	}, [persistedState, updateAtCollection]);
-
-	const contextValue = useMemo(() => ({
-		isLoading,
-		state,
-		save,
-		cancel,
-		reset,
-		update,
-		isDisabled,
-	}), [
-		isLoading,
-		state,
-		save,
-		cancel,
-		reset,
-		update,
-		isDisabled,
-	]);
 
 	return <SettingsContext.Provider children={children} value={contextValue} />;
 }

@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useContext, useRef, useCallback } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useRef } from 'react';
 
 import { useSettingsState } from './SettingsState';
 import { useGroup } from './GroupState';
@@ -6,7 +6,7 @@ import { useGroup } from './GroupState';
 const SectionContext = createContext({});
 
 export function SectionState({ children, section: name }) {
-	const { state, reset } = useSettingsState();
+	const { state, persistedState, hydrate } = useSettingsState();
 	const { _id: groupId } = useGroup();
 
 	name = name || '';
@@ -17,15 +17,27 @@ export function SectionState({ children, section: name }) {
 	const canReset = settings.some(({ value, packageValue }) => value !== packageValue);
 	const settingsIds = settings.map(({ _id }) => _id);
 
-	const resetRef = useRef(reset);
-	const settingsRef = useRef(settings);
-	resetRef.current = reset;
-	settingsRef.current = settings;
+	const settingsRef = useRef();
+	const persistedStateRef = useRef();
 
-	const resetSection = useCallback(() => {
-		const { current: reset } = resetRef;
-		const { current: fields } = settingsRef;
-		reset({ fields });
+	settingsRef.current = settings;
+	persistedStateRef.current = persistedState;
+
+	const reset = useCallback(() => {
+		const { current: settings } = settingsRef;
+		const { current: persistedState } = persistedStateRef;
+
+		const changes = settings.map((setting) => {
+			const { _id, value, packageValue, editor } = persistedState.find(({ _id }) => _id === setting._id);
+			return {
+				_id,
+				value: packageValue,
+				editor,
+				changed: packageValue !== value,
+			};
+		});
+
+		hydrate(changes);
 	}, []);
 
 	const contextValue = useMemo(() => ({
@@ -33,8 +45,13 @@ export function SectionState({ children, section: name }) {
 		changed,
 		canReset,
 		settings: settingsIds,
-		reset: resetSection,
-	}), [groupId, changed, canReset, settingsIds.join(',')]);
+		reset,
+	}), [
+		name,
+		changed,
+		canReset,
+		settingsIds.join(','),
+	]);
 
 	return <SectionContext.Provider children={children} value={contextValue} />;
 }
