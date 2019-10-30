@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import React, { createContext, useCallback, useContext, useMemo, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import toastr from 'toastr';
 
 import { handleError } from '../../../../app/utils/client/lib/handleError';
@@ -26,9 +26,11 @@ export function GroupState({ groupId }) {
 	const persistedStateRef = useRef();
 	const hydrateRef = useRef();
 
-	settingsRef.current = settings;
-	persistedStateRef.current = persistedState;
-	hydrateRef.current = hydrate;
+	useEffect(() => {
+		settingsRef.current = settings;
+		persistedStateRef.current = persistedState;
+		hydrateRef.current = hydrate;
+	});
 
 	const save = useCallback(async () => {
 		const { current: settings } = settingsRef;

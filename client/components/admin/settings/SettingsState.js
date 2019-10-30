@@ -127,9 +127,11 @@ export function SettingsState({ children }) {
 	const updateAtCollectionRef = useRef();
 	const updateStateRef = useRef();
 
-	collectionRef.current = collection;
-	updateAtCollectionRef.current = updateAtCollection;
-	updateStateRef.current = updateState;
+	useEffect(() => {
+		collectionRef.current = collection;
+		updateAtCollectionRef.current = updateAtCollection;
+		updateStateRef.current = updateState;
+	});
 
 	const hydrate = useCallback((changes) => {
 		const { current: updateAtCollection } = updateAtCollectionRef;

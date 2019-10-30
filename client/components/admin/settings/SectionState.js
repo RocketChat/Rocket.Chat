@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useMemo, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 
 import { useSettingsState } from './SettingsState';
 import { useGroup } from './GroupState';
@@ -20,8 +20,10 @@ export function SectionState({ children, section: name }) {
 	const settingsRef = useRef();
 	const persistedStateRef = useRef();
 
-	settingsRef.current = settings;
-	persistedStateRef.current = persistedState;
+	useEffect(() => {
+		settingsRef.current = settings;
+		persistedStateRef.current = persistedState;
+	});
 
 	const reset = useCallback(() => {
 		const { current: settings } = settingsRef;
