@@ -614,10 +614,13 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeAgent' });
 		}
 
-		if (removeUserFromRoles(user._id, 'livechat-agent')) {
-			Users.setOperator(user._id, false);
-			Users.removeLivechatData(user._id);
-			this.setUserStatusLivechat(user._id, 'not-available');
+		const { _id } = user;
+
+		if (removeUserFromRoles(_id, 'livechat-agent')) {
+			Users.setOperator(_id, false);
+			Users.removeLivechatData(_id);
+			this.setUserStatusLivechat(_id, 'not-available');
+			LivechatDepartmentAgents.removeByAgentId(_id);
 			return true;
 		}
 

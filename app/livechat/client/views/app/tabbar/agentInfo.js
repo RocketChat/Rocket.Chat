@@ -63,20 +63,17 @@ Template.agentInfo.helpers({
 	},
 
 	editingAgent() {
-		return Template.instance().editingAgent.get();
+		return Template.instance().action.get() === 'edit';
 	},
 
 	agentToEdit() {
 		const instance = Template.instance();
 		const agent = instance.agent.get();
-
 		return {
 			agentId: agent && agent._id,
-			back(success) {
-				instance.editingAgent.set();
-				if (success) {
-					console.log(instance.agentDepartments.get());
-				}
+			back(agentId) {
+				instance.action.set();
+				instance.agentEdited.set(agentId);
 			},
 		};
 	},
@@ -139,17 +136,18 @@ Template.agentInfo.events({
 	},
 	'click .edit-agent'(e, instance) {
 		e.preventDefault();
-		instance.editingAgent.set(this._id);
+		instance.action.set('edit');
 	},
 });
 
 Template.agentInfo.onCreated(async function() {
 	this.agent = new ReactiveVar();
 	this.ready = new ReactiveVar(false);
+	this.agentEdited = new ReactiveVar();
 	this.departments = new ReactiveVar([]);
 	this.availableDepartments = new ReactiveVar([]);
 	this.agentDepartments = new ReactiveVar([]);
-	this.editingAgent = new ReactiveVar();
+	this.action = new ReactiveVar();
 	this.tabBar = Template.currentData().tabBar;
 	this.onRemoveAgent = Template.currentData().onRemoveAgent;
 
@@ -157,19 +155,30 @@ Template.agentInfo.onCreated(async function() {
 	this.departments.set(departments);
 	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
-	this.autorun(async () => {
-		const { agentId } = Template.currentData();
+	const loadAgentData = async (agentId) => {
+		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
+		this.agent.set(user);
 
-		if (agentId) {
-			const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
-			this.agent.set(user);
-
-			// TODO: Need to replace the following subscribe by the REST approach
-			this.subscribe('livechat:departmentAgents', null, agentId, () => {
-				this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
-			});
-		}
+		// TODO: Need to replace the following subscribe by the REST approach
+		this.subscribe('livechat:departmentAgents', null, agentId, () => {
+			this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
+		});
 
 		this.ready.set(true);
+	};
+
+	this.autorun(() => {
+		const { agentId } = Template.currentData();
+		if (agentId) {
+			loadAgentData(agentId);
+		}
+	});
+
+	this.autorun(() => {
+		const agentEdited = this.agentEdited.get();
+		if (agentEdited) {
+			loadAgentData(agentEdited);
+			this.agentEdited.set();
+		}
 	});
 });
