@@ -45,8 +45,9 @@ Template.pushNotificationsFlexTab.helpers({
 		return Template.instance().form.audioNotifications.get();
 	},
 	audioNotificationValue() {
-		const value = Template.instance().form.audioNotificationValue.get().split(' ');
-		if (value[0] === '0') {
+		const audioNotificationValue = Template.instance().form.audioNotificationValue.get();
+		const value = audioNotificationValue && audioNotificationValue.split(' ');
+		if (!value || value[0] === '0') {
 			return t('Use_account_preference');
 		}
 

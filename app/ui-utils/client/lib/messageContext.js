@@ -30,6 +30,7 @@ export function messageContext({ rid } = Template.instance()) {
 			showreply: true,
 			showReplyButton: true,
 			hasPermissionDeleteMessage: hasPermission('delete-message', rid),
+			hasPermissionDeleteOwnMessage: hasPermission('delete-own-message'),
 			hideRoles: !settings.get('UI_DisplayRoles') || getUserPreference(uid, 'hideRoles'),
 			UI_Use_Real_Name: settings.get('UI_Use_Real_Name'),
 			Chatops_Username: settings.get('Chatops_Username'),

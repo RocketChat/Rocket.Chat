@@ -2173,7 +2173,6 @@ describe('Threads', () => {
 					.end(done);
 			});
 		});
-
 		it('should return an error when the required "messageId" parameter is not sent', (done) => {
 			updateSetting('Message_AllowSnippeting', true).then(() => {
 				request.get(api('chat.getSnippetedMessageById'))
@@ -2183,6 +2182,63 @@ describe('Threads', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.errorType).to.be.equal('error-invalid-params');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.getSnippetedMessages]', () => {
+		it('should return an error when the required "roomId" parameter is not sent', (done) => {
+			request.get(api('chat.getSnippetedMessages'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the roomId is invalid', (done) => {
+			request.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('error-not-allowed');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the snippeted messages is disabled', (done) => {
+			updateSetting('Message_AllowSnippeting', false).then(() => {
+				request.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-allowed');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return the snippeted messages', (done) => {
+			updateSetting('Message_AllowSnippeting', true).then(() => {
+				request.get(api('chat.getSnippetedMessages?roomId=GENERAL'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.messages).to.be.an('array');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
 					})
 					.end(done);
 			});
