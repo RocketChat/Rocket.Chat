@@ -2159,6 +2159,35 @@ describe('Threads', () => {
 		});
 	});
 
+	describe('[/chat.getSnippetedMessageById]', () => {
+		it('should return an error when the snippeted messages is disabled', (done) => {
+			updateSetting('Message_AllowSnippeting', false).then(() => {
+				request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-allowed');
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required "messageId" parameter is not sent', (done) => {
+			updateSetting('Message_AllowSnippeting', true).then(() => {
+				request.get(api('chat.getSnippetedMessageById'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('error-invalid-params');
+					})
+					.end(done);
+			});
+		});
+	});
+
 	describe('[/chat.getSnippetedMessages]', () => {
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
 			request.get(api('chat.getSnippetedMessages'))
@@ -2213,6 +2242,18 @@ describe('Threads', () => {
 					})
 					.end(done);
 			});
+		});
+
+		it('should return an error when the messageId is invalid', (done) => {
+			request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('invalid-message');
+				})
+				.end(done);
 		});
 	});
 });
