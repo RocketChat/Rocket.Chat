@@ -66,10 +66,6 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 	if (!await canAccessRoomAsync(room, { _id: uid })) {
 		throw new Error('error-not-allowed');
 	}
-	const user = await Users.findOneById(uid, { fields: { username: 1 } });
-	if (!user) {
-		throw new Error('invalid-user');
-	}
 
 	const cursor = await Messages.findSnippetedByRoom(roomId, {
 		sort: sort || { ts: -1 },
