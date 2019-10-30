@@ -7,14 +7,14 @@ import React from 'react';
 import { MarkdownText } from '../../basic/MarkdownText';
 import { RawText } from '../../basic/RawText';
 import { useTranslation } from '../../providers/TranslationProvider';
-import { useFieldActions } from './SettingsState';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
 import { StringSettingInput } from './inputs/StringSettingInput';
+import { useSetting } from './SettingState';
 
-export function SettingField({ field }) {
+export function Setting() {
+	const setting = useSetting();
 	const t = useTranslation();
-	const { update, reset, disabled } = useFieldActions(field);
 
 	const {
 		_id,
@@ -27,7 +27,7 @@ export function SettingField({ field }) {
 		i18nLabel,
 		i18nDescription,
 		alert,
-	} = field;
+	} = setting;
 
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
 	const hint = t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>;
@@ -35,14 +35,13 @@ export function SettingField({ field }) {
 
 	const hasResetButton = !disableReset && !readonly && type !== 'asset' && value !== packageValue && !blocked;
 	const onResetButtonClick = () => {
-		reset();
+		setting.reset();
 	};
 
 	const inputProps = {
-		...field,
+		...setting,
 		label,
-		disabled,
-		onChange: update,
+		onChange: setting.update,
 		hasResetButton,
 		onResetButtonClick,
 	};

@@ -7,7 +7,6 @@ import toastr from 'toastr';
 import { handleError } from '../../../../app/utils/client/lib/handleError';
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
 import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
 const SettingsContext = createContext({});
 
@@ -262,20 +261,3 @@ export function SettingsState({ children }) {
 }
 
 export const useSettingsState = () => useContext(SettingsContext);
-
-export const useBulkActions = () => {
-	const { reset, update } = useContext(SettingsContext);
-	return { reset, update };
-};
-
-export const useFieldActions = (field) => {
-	const { update, reset } = useBulkActions();
-	const { isDisabled } = useContext(SettingsContext);
-	const disabled = useReactiveValue(() => isDisabled(field), [field.blocked, field.enableQuery]);
-
-	return {
-		update: (data) => update({ fields: [{ ...field, ...data }] }),
-		reset: () => reset({ fields: [field] }),
-		disabled,
-	};
-};

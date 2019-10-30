@@ -13,7 +13,7 @@ export function GroupState({ groupId }) {
 	const group = state.find(({ _id, type }) => _id === groupId && type === 'group');
 	const settings = state.filter(({ group }) => group === groupId);
 	const changed = settings.some(({ changed }) => changed);
-	const sections = Array.from(new Set(settings.map(({ section }) => section)));
+	const sections = Array.from(new Set(settings.map(({ section }) => section || '')));
 
 	const saveRef = useRef(save);
 	const cancelRef = useRef(cancel);
