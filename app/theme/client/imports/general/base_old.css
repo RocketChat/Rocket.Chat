@@ -383,7 +383,7 @@
 
 /* input & form styles */
 
-.rc-old input:focus {
+.rc-old :not(.rcx-input-control):focus {
 	outline: none;
 	box-shadow: 0 0 0;
 }
