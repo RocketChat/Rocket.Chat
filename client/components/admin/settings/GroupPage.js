@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { Header } from '../../header/Header';
 import { useTranslation } from '../../providers/TranslationProvider';
-import { useGroup, useBulkActions } from './SettingsState';
+import { useGroup } from './GroupState';
 
 const Wrapper = styled.div`
 	margin: 0 auto;
@@ -15,7 +15,21 @@ const Wrapper = styled.div`
 export function GroupPage({ children, headerButtons }) {
 	const t = useTranslation();
 	const group = useGroup();
-	const { save, cancel } = useBulkActions();
+
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		group.save();
+	};
+
+	const handleCancelClick = (event) => {
+		event.preventDefault();
+		group.cancel();
+	};
+
+	const handleSaveClick = (event) => {
+		event.preventDefault();
+		group.save();
+	};
 
 	if (!group) {
 		return <section className='page-container page-static page-settings'>
@@ -23,21 +37,6 @@ export function GroupPage({ children, headerButtons }) {
 			<div className='content' />
 		</section>;
 	}
-
-	const handleSubmit = (event) => {
-		event.preventDefault();
-		save(group);
-	};
-
-	const handleCancelClick = (event) => {
-		event.preventDefault();
-		cancel(group);
-	};
-
-	const handleSaveClick = (event) => {
-		event.preventDefault();
-		save(group);
-	};
 
 	return <form action='#' className='page-container' method='post' onSubmit={handleSubmit}>
 		<Header rawSectionName={t(group.i18nLabel)}>

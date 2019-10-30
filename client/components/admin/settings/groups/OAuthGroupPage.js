@@ -5,12 +5,14 @@ import s from 'underscore.string';
 
 import { RawText } from '../../../basic/RawText';
 import { useTranslation } from '../../../providers/TranslationProvider';
-import { useGroup } from '../SettingsState';
 import { GroupPage } from '../GroupPage';
+import { useGroup } from '../GroupState';
 import { Section } from '../Section';
+import { SectionState } from '../SectionState';
 
 export function OAuthGroupPage() {
 	const group = useGroup();
+	const solo = group.sections.length === 1;
 	const t = useTranslation();
 
 	const sectionIsCustomOAuth = (sectionName) => sectionName && /^Custom OAuth:\s.+/.test(sectionName);
@@ -24,17 +26,17 @@ export function OAuthGroupPage() {
 		<Button className='refresh-oauth'>{t('Refresh_oauth_services')}</Button>
 		<Button className='add-custom-oauth'>{t('Add_custom_oauth')}</Button>
 	</>}>
-		{group.sections.map((section) => (sectionIsCustomOAuth(section.name)
-			? <Section
-				key={section.name}
-				help={<RawText>{t('Custom_oauth_helper', callbackURL(section.name))}</RawText>}
-				section={section}
-				solo={group.sections.length === 1}
-			>
-				<div className='submit'>
-					<Button cancel className='remove-custom-oauth'>{t('Remove_custom_oauth')}</Button>
-				</div>
-			</Section>
-			: <Section key={section.name} section={section} solo={group.sections.length === 1} />))}
+		{group.sections.map((section) => <SectionState key={section} section={section}>
+			{(sectionIsCustomOAuth(section)
+				? <Section
+					help={<RawText>{t('Custom_oauth_helper', callbackURL(section))}</RawText>}
+					solo={solo}
+				>
+					<div className='submit'>
+						<Button cancel className='remove-custom-oauth'>{t('Remove_custom_oauth')}</Button>
+					</div>
+				</Section>
+				: <Section solo={solo} />)}
+		</SectionState>)}
 	</GroupPage>;
 }

@@ -9,7 +9,7 @@ import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client
 import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
-const EditingContext = createContext({});
+const SettingsContext = createContext({});
 
 const compareValues = (a, b) => {
 	if (a === b) {
@@ -64,7 +64,7 @@ const stateReducer = (state, { type, payload }) => {
 	return state;
 };
 
-export function SettingsState({ children, groupId }) {
+const usePrivateSettings = () => {
 	const [state, dispatchToState] = useReducer(stateReducer, []);
 	const [persistedState, dispatchToPersistedState] = useReducer(stateReducer, []);
 	const [isLoading, setLoading] = useState(true);
@@ -135,34 +135,38 @@ export function SettingsState({ children, groupId }) {
 		}, 70);
 	}, [collection]);
 
-	const group = useMemo(() => {
-		console.time();
-		try {
-			const fields = state.filter(({ group }) => group === groupId);
-
-			const sectionsMap = {};
-			fields.forEach((field) => {
-				const name = field.section || '';
-				const section = sectionsMap[name] || { name };
-				section.changed = section.changed || field.changed;
-				section.fields = (section.fields || []).concat(field);
-				sectionsMap[name] = section;
-			});
-
-			const sections = Object.values(sectionsMap);
-
-			return state.filter(({ _id, type }) => _id === groupId && type === 'group')
-				.map((group) => ({
-					...group,
-					changed: fields.some(({ changed }) => changed),
-					sections,
-					fields,
-				}))
-				.shift();
-		} finally {
-			console.timeEnd();
+	const isDisabled = useCallback(({ blocked, enableQuery }) => {
+		if (blocked) {
+			return true;
 		}
-	}, [groupId, state]);
+
+		if (!enableQuery) {
+			return false;
+		}
+
+		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
+		return !queries.map((query) => collection.findOne(query)).every(Boolean);
+	}, [collection]);
+
+	return {
+		isLoading,
+		state,
+		persistedState,
+		dispatch: dispatchToState,
+		updateAtCollection,
+		isDisabled,
+	};
+};
+
+export function SettingsState({ children }) {
+	const {
+		isLoading,
+		state,
+		persistedState,
+		dispatch,
+		updateAtCollection,
+		isDisabled,
+	} = usePrivateSettings();
 
 	const batchSetSettings = useBatchSetSettings();
 
@@ -203,7 +207,7 @@ export function SettingsState({ children, groupId }) {
 			});
 
 		changes.forEach(updateAtCollection);
-		dispatchToState({ type: 'hydrate', payload: changes });
+		dispatch({ type: 'hydrate', payload: changes });
 	}, [persistedState, updateAtCollection]);
 
 	const reset = useCallback(({ fields }) => {
@@ -218,7 +222,7 @@ export function SettingsState({ children, groupId }) {
 		});
 
 		changes.forEach(updateAtCollection);
-		dispatchToState({ type: 'hydrate', payload: changes });
+		dispatch({ type: 'hydrate', payload: changes });
 	}, [persistedState, updateAtCollection]);
 
 	const update = useCallback(({ fields }) => {
@@ -233,25 +237,12 @@ export function SettingsState({ children, groupId }) {
 		});
 
 		changes.forEach(updateAtCollection);
-		dispatchToState({ type: 'hydrate', payload: changes });
+		dispatch({ type: 'hydrate', payload: changes });
 	}, [persistedState, updateAtCollection]);
-
-	const isDisabled = useCallback(({ blocked, enableQuery }) => {
-		if (blocked) {
-			return true;
-		}
-
-		if (!enableQuery) {
-			return false;
-		}
-
-		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
-		return !queries.map((query) => collection.findOne(query)).every(Boolean);
-	}, [collection]);
 
 	const contextValue = useMemo(() => ({
 		isLoading,
-		group,
+		state,
 		save,
 		cancel,
 		reset,
@@ -259,7 +250,7 @@ export function SettingsState({ children, groupId }) {
 		isDisabled,
 	}), [
 		isLoading,
-		group,
+		state,
 		save,
 		cancel,
 		reset,
@@ -267,19 +258,19 @@ export function SettingsState({ children, groupId }) {
 		isDisabled,
 	]);
 
-	return <EditingContext.Provider children={children} value={contextValue} />;
+	return <SettingsContext.Provider children={children} value={contextValue} />;
 }
 
-export const useGroup = () => useContext(EditingContext).group;
+export const useSettingsState = () => useContext(SettingsContext);
 
 export const useBulkActions = () => {
-	const { save, cancel, reset, update } = useContext(EditingContext);
-	return { save, cancel, reset, update };
+	const { reset, update } = useContext(SettingsContext);
+	return { reset, update };
 };
 
 export const useFieldActions = (field) => {
 	const { update, reset } = useBulkActions();
-	const { isDisabled } = useContext(EditingContext);
+	const { isDisabled } = useContext(SettingsContext);
 	const disabled = useReactiveValue(() => isDisabled(field), [field.blocked, field.enableQuery]);
 
 	return {
