@@ -9,7 +9,7 @@ import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
 import { settings } from '../../../settings';
-import { findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { findMentionedMessages, findStarredMessages, findSnippetedMessages } from '../lib/messages';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -632,6 +632,29 @@ API.v1.addRoute('chat.getStarredMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 		}
 		const messages = Promise.await(findStarredMessages({
+			uid: this.userId,
+			roomId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+		return API.v1.success(messages);
+	},
+});
+
+
+API.v1.addRoute('chat.getSnippetedMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { sort } = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+		}
+		const messages = Promise.await(findSnippetedMessages({
 			uid: this.userId,
 			roomId,
 			pagination: {
