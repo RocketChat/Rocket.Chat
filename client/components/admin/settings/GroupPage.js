@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { Header } from '../../header/Header';
 import { useTranslation } from '../../providers/TranslationProvider';
-import { useGroup, useBulkActions } from './EditingState';
+import { useGroup, useBulkActions } from './SettingsState';
 
 const Wrapper = styled.div`
 	margin: 0 auto;

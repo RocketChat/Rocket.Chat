@@ -7,7 +7,7 @@ import React from 'react';
 import { MarkdownText } from '../../basic/MarkdownText';
 import { RawText } from '../../basic/RawText';
 import { useTranslation } from '../../providers/TranslationProvider';
-import { useFieldActions } from './EditingState';
+import { useFieldActions } from './SettingsState';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
 import { StringSettingInput } from './inputs/StringSettingInput';

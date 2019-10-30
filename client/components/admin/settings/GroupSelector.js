@@ -3,7 +3,7 @@ import React from 'react';
 import { AssetsGroupPage } from './groups/AssetsGroupPage';
 import { OAuthGroupPage } from './groups/OAuthGroupPage';
 import { GenericGroupPage } from './groups/GenericGroupPage';
-import { useGroup } from './EditingState';
+import { useGroup } from './SettingsState';
 
 export function GroupSelector() {
 	const group = useGroup();

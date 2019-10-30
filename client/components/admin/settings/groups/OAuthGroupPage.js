@@ -5,7 +5,7 @@ import s from 'underscore.string';
 
 import { RawText } from '../../../basic/RawText';
 import { useTranslation } from '../../../providers/TranslationProvider';
-import { useGroup } from '../EditingState';
+import { useGroup } from '../SettingsState';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 

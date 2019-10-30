@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useState, useRef, useCallback } from 'react';
 import toastr from 'toastr';
 
 import { handleError } from '../../../../app/utils/client/lib/handleError';
@@ -64,7 +64,7 @@ const stateReducer = (state, { type, payload }) => {
 	return state;
 };
 
-export function EditingState({ children, groupId }) {
+export function SettingsState({ children, groupId }) {
 	const [state, dispatchToState] = useReducer(stateReducer, []);
 	const [persistedState, dispatchToPersistedState] = useReducer(stateReducer, []);
 	const [isLoading, setLoading] = useState(true);
@@ -123,14 +123,17 @@ export function EditingState({ children, groupId }) {
 		};
 	}, [isLoading]);
 
-	const updateTimers = useMemo(() => ({}), []);
+	const updateTimersRef = useRef({});
 
-	const updateAtCollection = ({ _id, ...data }) => {
+	const updateAtCollection = useCallback(({ _id, ...data }) => {
+		const { current: updateTimers } = updateTimersRef;
+
 		clearTimeout(updateTimers[_id]);
+
 		updateTimers[_id] = setTimeout(() => {
 			collection.update(_id, { $set: data });
 		}, 70);
-	};
+	}, [collection]);
 
 	const group = useMemo(() => {
 		console.time();
@@ -163,7 +166,7 @@ export function EditingState({ children, groupId }) {
 
 	const batchSetSettings = useBatchSetSettings();
 
-	const save = async ({ fields }) => {
+	const save = useCallback(async ({ fields }) => {
 		const changes = fields.filter(({ changed }) => changed)
 			.map(({ _id, value, editor }) => ({ _id, value, editor }));
 
@@ -190,9 +193,9 @@ export function EditingState({ children, groupId }) {
 		} catch (error) {
 			handleError(error);
 		}
-	};
+	}, [batchSetSettings]);
 
-	const cancel = ({ fields }) => {
+	const cancel = useCallback(({ fields }) => {
 		const changes = fields.filter(({ changed }) => changed)
 			.map((field) => {
 				const { _id, value, editor } = persistedState.find(({ _id }) => _id === field._id);
@@ -201,9 +204,9 @@ export function EditingState({ children, groupId }) {
 
 		changes.forEach(updateAtCollection);
 		dispatchToState({ type: 'hydrate', payload: changes });
-	};
+	}, [persistedState, updateAtCollection]);
 
-	const reset = ({ fields }) => {
+	const reset = useCallback(({ fields }) => {
 		const changes = fields.map((field) => {
 			const { _id, value, packageValue, editor } = persistedState.find(({ _id }) => _id === field._id);
 			return {
@@ -216,9 +219,9 @@ export function EditingState({ children, groupId }) {
 
 		changes.forEach(updateAtCollection);
 		dispatchToState({ type: 'hydrate', payload: changes });
-	};
+	}, [persistedState, updateAtCollection]);
 
-	const update = ({ fields }) => {
+	const update = useCallback(({ fields }) => {
 		const changes = fields.map((field) => {
 			const persistedField = persistedState.find(({ _id }) => _id === field._id);
 			return {
@@ -231,9 +234,9 @@ export function EditingState({ children, groupId }) {
 
 		changes.forEach(updateAtCollection);
 		dispatchToState({ type: 'hydrate', payload: changes });
-	};
+	}, [persistedState, updateAtCollection]);
 
-	const isDisabled = ({ blocked, enableQuery }) => {
+	const isDisabled = useCallback(({ blocked, enableQuery }) => {
 		if (blocked) {
 			return true;
 		}
@@ -244,20 +247,27 @@ export function EditingState({ children, groupId }) {
 
 		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
 		return !queries.map((query) => collection.findOne(query)).every(Boolean);
-	};
+	}, [collection]);
 
-	return <EditingContext.Provider
-		children={children}
-		value={{
-			isLoading,
-			group,
-			save,
-			cancel,
-			reset,
-			update,
-			isDisabled,
-		}}
-	/>;
+	const contextValue = useMemo(() => ({
+		isLoading,
+		group,
+		save,
+		cancel,
+		reset,
+		update,
+		isDisabled,
+	}), [
+		isLoading,
+		group,
+		save,
+		cancel,
+		reset,
+		update,
+		isDisabled,
+	]);
+
+	return <EditingContext.Provider children={children} value={contextValue} />;
 }
 
 export const useGroup = () => useContext(EditingContext).group;

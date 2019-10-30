@@ -2,7 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../providers/TranslationProvider';
-import { useGroup } from '../EditingState';
+import { useGroup } from '../SettingsState';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 

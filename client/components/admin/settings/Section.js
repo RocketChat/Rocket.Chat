@@ -2,7 +2,7 @@ import { Accordion, Button, FieldGroup, Paragraph } from '@rocket.chat/fuselage'
 import React from 'react';
 
 import { useTranslation } from '../../providers/TranslationProvider';
-import { useBulkActions } from './EditingState';
+import { useBulkActions } from './SettingsState';
 import { SettingField } from './SettingField';
 
 export function Section({ children, hasReset = true, help, section, solo }) {
