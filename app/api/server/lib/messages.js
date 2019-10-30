@@ -62,8 +62,8 @@ export async function findSnippetedMessageById({ uid, messageId }) {
 	if (!await getValue('Message_AllowSnippeting')) {
 		throw new Error('error-not-allowed');
 	}
-	const user = await Users.findOneById(uid, { fields: { username: 1 } });
-	if (!user) {
+
+	if (!uid) {
 		throw new Error('invalid-user');
 	}
 
