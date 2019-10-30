@@ -748,14 +748,6 @@ describe('[Administration]', () => {
 					admin.accountsNotificationDuration.getValue().should.equal('0');
 				});
 
-				it('it should show the audio notifications select field', () => {
-					admin.accountsAudioNotifications.click();
-					admin.accountsAudioNotifications.isVisible().should.be.true;
-				});
-				it('the audio notifications field value should be mentions', () => {
-					admin.accountsAudioNotifications.getValue().should.equal('mentions');
-				});
-
 				it('it should show the desktop audio notifications select field', () => {
 					admin.accountsDesktopNotifications.click();
 					admin.accountsDesktopNotifications.isVisible().should.be.true;

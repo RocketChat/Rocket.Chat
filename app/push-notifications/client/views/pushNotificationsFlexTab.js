@@ -41,9 +41,6 @@ Template.pushNotificationsFlexTab.helpers({
 	hideUnreadStatus() {
 		return Template.instance().form.hideUnreadStatus.get();
 	},
-	audioNotifications() {
-		return Template.instance().form.audioNotifications.get();
-	},
 	audioNotificationValue() {
 		const audioNotificationValue = Template.instance().form.audioNotificationValue.get();
 		const value = audioNotificationValue && audioNotificationValue.split(' ');
@@ -82,13 +79,6 @@ Template.pushNotificationsFlexTab.helpers({
 			}
 		}
 	},
-	defaultAudioNotification() {
-		let preference = getUserPreference(Meteor.userId(), 'audioNotifications');
-		if (preference === 'default') {
-			preference = settings.get('Accounts_Default_User_Preferences_audioNotifications');
-		}
-		return notificationLabels[preference];
-	},
 	defaultDesktopNotification() {
 		let preference = getUserPreference(Meteor.userId(), 'desktopNotifications');
 		if (preference === 'default') {
@@ -115,7 +105,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		fields: {
 			disableNotifications: 1,
 			hideUnreadStatus: 1,
-			audioNotifications: 1,
 			desktopNotifications: 1,
 			mobilePushNotifications: 1,
 			emailNotifications: 1,
@@ -128,7 +117,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 	const {
 		disableNotifications = false,
 		hideUnreadStatus = false,
-		audioNotifications = 'default',
 		desktopNotifications = 'default',
 		mobilePushNotifications = 'default',
 		emailNotifications = 'default',
@@ -140,7 +128,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 	this.original = {
 		disableNotifications: new ReactiveVar(disableNotifications),
 		hideUnreadStatus: new ReactiveVar(hideUnreadStatus),
-		audioNotifications: new ReactiveVar(audioNotifications),
 		desktopNotifications: new ReactiveVar(desktopNotifications),
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
@@ -152,7 +139,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 	this.form = {
 		disableNotifications: new ReactiveVar(disableNotifications),
 		hideUnreadStatus: new ReactiveVar(hideUnreadStatus),
-		audioNotifications: new ReactiveVar(audioNotifications),
 		desktopNotifications: new ReactiveVar(desktopNotifications),
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),

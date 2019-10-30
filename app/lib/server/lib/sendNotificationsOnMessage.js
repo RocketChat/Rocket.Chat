@@ -10,7 +10,6 @@ import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replac
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
 import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
-import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
 export const sendNotification = async ({
 	subscription,
@@ -64,25 +63,10 @@ export const sendNotification = async ({
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
 	const {
-		audioNotifications,
 		desktopNotifications,
 		mobilePushNotifications,
 		emailNotifications,
 	} = subscription;
-
-	// busy users don't receive audio notification
-	const notifyAudio = shouldNotifyAudio({
-		disableAllMessageNotifications,
-		status: receiver.status,
-		statusConnection: receiver.statusConnection,
-		audioNotifications,
-		hasMentionToAll,
-		hasMentionToHere,
-		isHighlighted,
-		hasMentionToUser,
-		hasReplyToThread,
-		roomType,
-	});
 
 	// busy users don't receive desktop notification
 	if (shouldNotifyDesktop({
@@ -104,10 +88,7 @@ export const sendNotification = async ({
 			message,
 			room,
 			duration: subscription.desktopNotificationDuration,
-			notifyAudio,
 		});
-	} else if (notifyAudio) {
-		notifyAudioUser(subscription.u._id, message, room);
 	}
 
 	if (shouldNotifyMobile({
@@ -154,7 +135,6 @@ export const sendNotification = async ({
 
 const project = {
 	$project: {
-		audioNotifications: 1,
 		desktopNotificationDuration: 1,
 		desktopNotifications: 1,
 		emailNotifications: 1,

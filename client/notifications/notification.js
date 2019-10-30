@@ -50,10 +50,6 @@ Meteor.startup(function() {
 		}
 
 		Notifications.onUser('notification', function(notification) {
-			if (notification.audioOnly) {
-				return notifyNewMessageAudio(notification);
-			}
-
 			let openedRoomId = undefined;
 			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
 				openedRoomId = Session.get('openedRoom');
@@ -79,9 +75,7 @@ Meteor.startup(function() {
 				KonchatNotification.showDesktop(notification);
 			}
 
-			if (notification.payload.audio) {
-				notifyNewMessageAudio(notification);
-			}
+			notifyNewMessageAudio(notification);
 		});
 
 		CachedChatSubscription.onSyncData = function(action, sub) {

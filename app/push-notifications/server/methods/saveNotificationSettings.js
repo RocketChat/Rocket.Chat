@@ -14,9 +14,6 @@ Meteor.methods({
 		check(value, String);
 
 		const notifications = {
-			audioNotifications: {
-				updateMethod: (subscription, value) => Subscriptions.updateAudioNotificationsById(subscription._id, value),
-			},
 			desktopNotifications: {
 				updateMethod: (subscription, value) => {
 					if (value === 'default') {
@@ -68,7 +65,7 @@ Meteor.methods({
 		};
 		const isInvalidNotification = !Object.keys(notifications).includes(field);
 		const basicValuesForNotifications = ['all', 'mentions', 'nothing', 'default'];
-		const fieldsMustHaveBasicValues = ['emailNotifications', 'audioNotifications', 'mobilePushNotifications', 'desktopNotifications'];
+		const fieldsMustHaveBasicValues = ['emailNotifications', 'mobilePushNotifications', 'desktopNotifications'];
 
 		if (isInvalidNotification) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });

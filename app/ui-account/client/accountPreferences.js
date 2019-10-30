@@ -167,7 +167,7 @@ Template.accountPreferences.onCreated(function() {
 		data.messageViewMode = parseInt($('#messageViewMode').find('select').val());
 		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
 		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
-		data.sidebarHideAvatars = JSON.parse($('#sidebarHideAvatars').find('input:checked').val());
+		data.sidebarHideAvatars = JSON.parse($('#sidebarHideAvatar').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();

@@ -257,10 +257,6 @@ class Administration extends Page {
 
 	get accountsNotificationDurationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
 
-	get accountsAudioNotifications() { return browser.element('[name="Accounts_Default_User_Preferences_audioNotifications"]'); }
-
-	get accountsAudioNotificationsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_audioNotifications"]'); }
-
 	get accountsDesktopNotifications() { return browser.element('[name="Accounts_Default_User_Preferences_desktopNotifications"]'); }
 
 	get accountsDesktopNotificationsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_desktopNotifications"]'); }

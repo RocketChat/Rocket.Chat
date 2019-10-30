@@ -107,7 +107,6 @@ describe('miscellaneous', function() {
 			.expect(200)
 			.expect((res) => {
 				const allUserPreferencesKeys = [
-					'audioNotifications',
 					// 'language',
 					'newRoomNotification',
 					'newMessageNotification',

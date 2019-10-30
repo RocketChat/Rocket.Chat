@@ -225,24 +225,6 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Notification_Duration',
 		});
-		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
-			type: 'select',
-			values: [
-				{
-					key: 'all',
-					i18nLabel: 'All_messages',
-				},
-				{
-					key: 'mentions',
-					i18nLabel: 'Mentions',
-				},
-				{
-					key: 'nothing',
-					i18nLabel: 'Nothing',
-				},
-			],
-			public: true,
-		});
 		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
