@@ -740,12 +740,8 @@ export const Livechat = {
 			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', { method: 'livechat:saveAgentInfo' });
 		}
 
-		try {
-			Users.setLivechatData(_id, agentData);
-			LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
-		} catch (e) {
-			// throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', { method: 'livechat:saveAgentInfo' });
-		}
+		Users.setLivechatData(_id, agentData);
+		LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
 
 		return true;
 	},
