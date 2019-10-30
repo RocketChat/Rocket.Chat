@@ -9,7 +9,7 @@ import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
 import { settings } from '../../../settings';
-import { findMentionedMessages, findStarredMessages, findSnippetedMessages } from '../lib/messages';
+import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages } from '../lib/messages';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -644,6 +644,20 @@ API.v1.addRoute('chat.getStarredMessages', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('chat.getSnippetedMessageById', { authRequired: true }, {
+	get() {
+		const { messageId } = this.queryParams;
+
+		if (!messageId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "messageId" query param is missing.');
+		}
+		const message = Promise.await(findSnippetedMessageById({
+			uid: this.userId,
+			messageId,
+		}));
+		return API.v1.success(message);
+	},
+});
 
 API.v1.addRoute('chat.getSnippetedMessages', { authRequired: true }, {
 	get() {
