@@ -9,20 +9,17 @@ import s from 'underscore.string';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentInfo.html';
 import { modal } from '../../../../../ui-utils';
-import { t, handleError } from '../../../../../utils/client';
+import { t, handleError, APIClient } from '../../../../../utils/client';
 import { hasPermission } from '../../../../../authorization';
-import { AgentUsers } from '../../../collections/AgentUsers';
 import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
-import { LivechatDepartment } from '../../../collections/LivechatDepartment';
+
+const customFieldsTemplate = () => getCustomFormTemplate('livechatAgentInfoForm');
 
 Template.agentInfo.helpers({
 	canEdit() {
-		const availableDepartments = [...Template.instance().avaliableDepartments.get()];
-		return availableDepartments.length > 0 && hasPermission('add-livechat-department-agents');
-	},
-
-	canRemove() {
-		return hasPermission('manage-livechat-agents');
+		const availableDepartments = [...Template.instance().availableDepartments.get()];
+		const hasCustomFields = customFieldsTemplate() !== null;
+		return (availableDepartments.length > 0 && hasPermission('add-livechat-department-agents')) || hasCustomFields;
 	},
 
 	name() {
@@ -75,24 +72,32 @@ Template.agentInfo.helpers({
 
 		return {
 			agentId: agent && agent._id,
-			back() {
+			back(success) {
 				instance.editingAgent.set();
+				if (success) {
+					console.log(instance.agentDepartments.get());
+				}
 			},
 		};
 	},
 
 	agentDepartments() {
-		return Template.instance().agentDepartments.get();
+		const deptIds = Template.instance().agentDepartments.get();
+		const departments = Template.instance().departments.get();
+		return departments.filter(({ _id }) => deptIds.includes(_id));
 	},
 
-	customFieldsTemplate() {
-		return getCustomFormTemplate('livechatAgentInfoForm');
-	},
+	customFieldsTemplate,
 
 	agentDataContext() {
 		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
 		// because only the dynamic template data will be reloaded
 		return Template.instance().agent;
+	},
+
+	isReady() {
+		const instance = Template.instance();
+		return instance.ready && instance.ready.get();
 	},
 });
 
@@ -138,31 +143,33 @@ Template.agentInfo.events({
 	},
 });
 
-Template.agentInfo.onCreated(function() {
+Template.agentInfo.onCreated(async function() {
 	this.agent = new ReactiveVar();
-	this.avaliableDepartments = new ReactiveVar([]);
+	this.ready = new ReactiveVar(false);
+	this.departments = new ReactiveVar([]);
+	this.availableDepartments = new ReactiveVar([]);
 	this.agentDepartments = new ReactiveVar([]);
 	this.editingAgent = new ReactiveVar();
 	this.tabBar = Template.currentData().tabBar;
 	this.onRemoveAgent = Template.currentData().onRemoveAgent;
 
-	this.subscribe('livechat:agents');
-	this.subscribe('livechat:departments', () => {
-		this.avaliableDepartments.set(LivechatDepartment.find({ enabled: true }, { sort: { name: 1 } }).fetch());
-	});
+	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	this.departments.set(departments);
+	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
-	this.autorun(() => {
+	this.autorun(async () => {
 		const { agentId } = Template.currentData();
 
 		if (agentId) {
-			const agent = AgentUsers.findOne(agentId);
+			const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
+			this.agent.set(user);
 
+			// TODO: Need to replace the following subscribe by the REST approach
 			this.subscribe('livechat:departmentAgents', null, agentId, () => {
-				const deptIds = LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId);
-				this.agentDepartments.set(LivechatDepartment.find({ _id: { $in: deptIds } }).fetch());
+				this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
 			});
-
-			this.agent.set(agent);
 		}
+
+		this.ready.set(true);
 	});
 });

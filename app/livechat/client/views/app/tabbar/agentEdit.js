@@ -5,11 +5,9 @@ import toastr from 'toastr';
 
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentEdit.html';
-import { AgentUsers } from '../../../collections/AgentUsers';
 import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
-import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import { hasPermission } from '../../../../../authorization';
-import { t, handleError } from '../../../../../utils';
+import { t, handleError, APIClient } from '../../../../../utils/client';
 
 Template.agentEdit.helpers({
 	canEditDepartment() {
@@ -21,7 +19,7 @@ Template.agentEdit.helpers({
 	},
 
 	availableDepartments() {
-		return Template.instance().avaliableDepartments.get();
+		return Template.instance().availableDepartments.get();
 	},
 
 	hasAvailableDepartments() {
@@ -29,13 +27,19 @@ Template.agentEdit.helpers({
 			return;
 		}
 
-		const availableDepartments = [...Template.instance().avaliableDepartments.get()];
+		const availableDepartments = [...Template.instance().availableDepartments.get()];
 		return availableDepartments.length > 0;
 	},
 
 	agentDepartments() {
 		const deptIds = Template.instance().agentDepartments.get();
-		return LivechatDepartment.find({ _id: { $in: deptIds } }).fetch();
+		const departments = Template.instance().departments.get();
+		return departments.filter(({ _id }) => deptIds.includes(_id));
+	},
+
+	hasAgentDepartments() {
+		const agentDepartments = [...Template.instance().agentDepartments.get()];
+		return agentDepartments.length > 0;
 	},
 
 	customFieldsTemplate() {
@@ -46,6 +50,11 @@ Template.agentEdit.helpers({
 		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
 		// because only the dynamic template data will be reloaded
 		return Template.instance().agent;
+	},
+
+	isReady() {
+		const instance = Template.instance();
+		return instance.ready && instance.ready.get();
 	},
 });
 
@@ -75,7 +84,7 @@ Template.agentEdit.events({
 			}
 
 			toastr.success(t('Saved'));
-			return this.back && this.back();
+			return this.back && this.back(_id);
 		});
 	},
 
@@ -112,28 +121,31 @@ Template.agentEdit.events({
 	},
 });
 
-Template.agentEdit.onCreated(function() {
+Template.agentEdit.onCreated(async function() {
 	this.agent = new ReactiveVar();
+	this.ready = new ReactiveVar(false);
 	this.agentDepartments = new ReactiveVar([]);
-	this.avaliableDepartments = new ReactiveVar([]);
+	this.departments = new ReactiveVar([]);
+	this.availableDepartments = new ReactiveVar([]);
 	this.back = Template.currentData().back;
 
-	this.subscribe('livechat:agents');
-	this.subscribe('livechat:departments', () => {
-		this.avaliableDepartments.set(LivechatDepartment.find({ enabled: true }, { sort: { name: 1 } }).fetch());
-	});
+	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	this.departments.set(departments);
+	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
-	this.autorun(() => {
+	this.autorun(async () => {
 		const { agentId } = Template.currentData();
 
 		if (agentId) {
-			const agent = AgentUsers.findOne(agentId);
+			const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
+			this.agent.set(user);
+
 
 			this.subscribe('livechat:departmentAgents', null, agentId, () => {
 				this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
 			});
-
-			this.agent.set(agent);
 		}
+
+		this.ready.set(true);
 	});
 });
