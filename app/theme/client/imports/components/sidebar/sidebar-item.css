@@ -14,6 +14,9 @@
 	}
 }
 
+.selected-bg-shade {
+	background-color: var(--sidebar-background-light-active) !important;
+}
 .sidebar--hide-avatar .sidebar-item__picture {
 	display: none;
 }

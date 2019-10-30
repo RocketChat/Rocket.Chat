@@ -106,7 +106,19 @@ Template.sidebarItem.onCreated(function() {
 });
 
 Template.sidebarItem.events({
-	'click [data-id], click .sidebar-item__link'() {
+	'click [data-id], click .sidebar-item__link'(e) {
+		const element = e.currentTarget;
+		const sidebarElements = document.getElementsByClassName('sidebar-item');
+		for (let i = 0; i < sidebarElements.length; i++) {
+			const nonSelectedElement = sidebarElements[i].getElementsByTagName('a')[0];
+			if (!sidebarElements[i].hasAttribute('data-id')) {
+				if (nonSelectedElement.getAttribute('aria-label') === element.getAttribute('aria-label')) {
+					sidebarElements[i].classList.add('selected-bg-shade');
+				} else {
+					sidebarElements[i].classList.remove('selected-bg-shade');
+				}
+			}
+		}
 		return menu.close();
 	},
 	'click .sidebar-item__menu'(e) {
