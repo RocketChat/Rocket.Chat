@@ -1,18 +1,24 @@
-import axios from 'axios';
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../ui-utils';
-import { randomString } from '../utils';
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { RealAppClientUIHost } from '../RealAppClientUIHost';
+import { APIClient } from '../../../utils/client';
 
 import './gameContainer.html';
 
-const SESSION_ID_LENGTH = 80;
-let sessionId;
+const getExternalComponent = async () => {
+	const { data: { game: externalComponent } } = Template.instance();
+	const realAppClientUIHost = new RealAppClientUIHost();
+	const currentUser = await realAppClientUIHost.getClientUserInfo();
+	const currentRoom = await realAppClientUIHost.getClientRoomInfo();
 
-Template.GameContainer.currentExternalComponent = new ReactiveVar();
+	externalComponent.state = {
+		currentUser,
+		currentRoom,
+	};
+
+	return externalComponent;
+};
 
 Template.GameContainer.helpers({
 	isContextualBar() {
@@ -40,61 +46,24 @@ Template.GameContainer.events({
 	},
 });
 
-Template.GameContainer.onCreated(function() {
-	const { data: { game } } = Template.instance();
-	const { options } = game;
-	const { username, _id } = Meteor.user();
-	const avatarUrl = `${ document.baseURI }${ getUserAvatarURL(username) }`;
+Template.GameContainer.onCreated(async () => {
+	const externalComponent = await getExternalComponent();
 
-	Template.GameContainer.currentExternalComponent = game;
-	sessionId = randomString(SESSION_ID_LENGTH);
+	const result = await APIClient.post('apps/externalComponentEvent', {
+		event: 'IExternalComponentOpened',
+		externalComponent,
+	});
 
-	if (options.webhooks) {
-		const { sessionStarts = null } = options.webhooks;
-
-		if (sessionStarts) {
-			axios.post(sessionStarts, {
-				event: 'sessionStarts',
-				sessionId,
-				player: {
-					userId: _id,
-					username,
-					avatarUrl,
-				},
-			}, {
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			});
-		}
-	}
+	console.log(result);
 });
 
-Template.GameContainer.onDestroyed(function() {
-	const { data: { game } } = Template.instance();
-	const { options } = game;
-	const { username, _id } = Meteor.user();
-	const avatarUrl = `${ document.baseURI }${ getUserAvatarURL(username) }`;
+Template.GameContainer.onDestroyed(async () => {
+	const externalComponent = await getExternalComponent();
 
-	Template.GameContainer.currentExternalComponent = null;
+	const result = await APIClient.post('apps/externalComponentEvent', {
+		event: 'IExternalComponentClosed',
+		externalComponent,
+	});
 
-	if (options.webhooks) {
-		const { sessionEnds = null } = options.webhooks;
-
-		if (sessionEnds) {
-			axios.post(sessionEnds, {
-				event: 'sessionEnds',
-				sessionId,
-				player: {
-					userId: _id,
-					username,
-					avatarUrl,
-				},
-			}, {
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			});
-		}
-	}
+	console.log(result);
 });
