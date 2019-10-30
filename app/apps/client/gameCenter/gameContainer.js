@@ -50,7 +50,7 @@ Template.GameContainer.onCreated(async () => {
 	const externalComponent = await getExternalComponent();
 
 	await APIClient.post('apps/externalComponentEvent', {
-		event: 'IExternalComponentOpened',
+		event: 'IPostExternalComponentClosed',
 		externalComponent,
 	});
 });
@@ -59,7 +59,7 @@ Template.GameContainer.onDestroyed(async () => {
 	const externalComponent = await getExternalComponent();
 
 	await APIClient.post('apps/externalComponentEvent', {
-		event: 'IExternalComponentClosed',
+		event: 'IPostExternalComponentClosed',
 		externalComponent,
 	});
 });
