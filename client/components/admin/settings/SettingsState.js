@@ -7,7 +7,7 @@ const SettingsContext = createContext({});
 
 let privateSettingsCachedCollection; // Remove this singleton (╯°□°)╯︵ ┻━┻
 
-const compareValues = (a, b) => {
+const compareStrings = (a = '', b = '') => {
 	if (a === b || (!a && !b)) {
 		return 0;
 	}
@@ -16,9 +16,9 @@ const compareValues = (a, b) => {
 };
 
 const compareSettings = (a, b) =>
-	compareValues(a.section, b.section)
-	|| compareValues(a.sorter, b.sorter)
-	|| compareValues(a.i18nLabel, b.i18nLabel);
+	compareStrings(a.section, b.section)
+	|| compareStrings(a.sorter, b.sorter)
+	|| compareStrings(a.i18nLabel, b.i18nLabel);
 
 const stateReducer = (state, { type, payload }) => {
 	switch (type) {
