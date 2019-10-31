@@ -33,7 +33,6 @@ import '../app/grant';
 import '../app/grant-facebook';
 import '../app/grant-github';
 import '../app/grant-google';
-import '../app/graphql';
 import '../app/iframe-login/server';
 import '../app/importer/server';
 import '../app/importer-csv/server';
