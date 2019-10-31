@@ -15,7 +15,7 @@
 	flex-direction: column;
 }
 
-.SetupWizard__RegisterServerStep-option {
+.SetupWizard__RegisterServerStep-option.SetupWizard__RegisterServerStep-option {
 	display: block;
 
 	padding: 1.5rem;
@@ -76,6 +76,17 @@
 		&--circle {
 			height: 6px;
 			margin: 7px 0.5rem;
+		}
+	}
+}
+
+/* TODO: remove this dirty hack */
+.SetupWizard__RegisterServerStep__optIn.SetupWizard__RegisterServerStep__optIn {
+	& > div {
+		flex-basis: 0;
+
+		& > span {
+			white-space: normal;
 		}
 	}
 }

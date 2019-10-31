@@ -64,6 +64,9 @@ Template.accountPreferences.helpers({
 		const languageKey = Meteor.user().language;
 		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
+	ifThenElse(condition, val, not = '') {
+		return condition ? val : not;
+	},
 	checked(property, value, defaultValue = undefined) {
 		return checkedSelected(property, value, defaultValue);
 	},
@@ -110,6 +113,9 @@ Template.accountPreferences.helpers({
 	},
 	notificationsSoundVolume() {
 		return getUserPreference(Meteor.userId(), 'notificationsSoundVolume');
+	},
+	emailNotificationsAllowed() {
+		return settings.get('Accounts_AllowEmailNotifications');
 	},
 	dontAskAgainList() {
 		return getUserPreference(Meteor.userId(), 'dontAskAgainList');
@@ -161,6 +167,7 @@ Template.accountPreferences.onCreated(function() {
 		data.messageViewMode = parseInt($('#messageViewMode').find('select').val());
 		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
 		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
+		data.sidebarHideAvatars = JSON.parse($('#sidebarHideAvatars').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();

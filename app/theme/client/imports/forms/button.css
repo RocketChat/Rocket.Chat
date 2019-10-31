@@ -20,6 +20,8 @@
 
 	height: 40px;
 
+	min-height: 40px;
+
 	padding: 0 1.5rem;
 
 	cursor: pointer;
@@ -128,6 +130,7 @@
 
 	&--small {
 		height: var(--button-height-small);
+		min-height: var(--button-height-small);
 		padding: var(--button-padding-small);
 
 		font-size: var(--button-text-size-small);

@@ -1,7 +1,13 @@
 import { Settings, Subscriptions, Users } from '../../../models/server';
+import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
 export const getNameAndDomain = (fullyQualifiedName) => fullyQualifiedName.split('@');
 export const isFullyQualified = (name) => name.indexOf('@') !== -1;
+
+export function isRegisteringOrEnabled() {
+	const status = Settings.findOneById('FEDERATION_Status');
+	return [STATUS_ENABLED, STATUS_REGISTERING].includes(status && status.value);
+}
 
 export function updateStatus(status) {
 	Settings.updateValueById('FEDERATION_Status', status);
