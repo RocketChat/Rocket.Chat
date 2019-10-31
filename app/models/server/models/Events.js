@@ -85,9 +85,6 @@ export class EventsModel extends Base {
 
 		event._id = this.getEventHash(contextQuery, event);
 
-		// Clear the "hasChildren" of the parent events
-		await this.update({ _id: { $in: _pids } }, { $unset: { hasChildren: '' } }, { multi: 1 });
-
 		return event;
 	}
 
@@ -144,11 +141,38 @@ export class EventsModel extends Base {
 	async updateEventData(contextQuery, event) {
 		const existingEvent = await this.model
 			.rawCollection()
-			.findOne({ ...contextQuery, _cid: event._cid, _d: { $exists: false } });
+			.findOne({ ...contextQuery, _cid: event._cid });
 
-		if (existingEvent) {
-			await this.model.rawCollection().update({ _id: existingEvent._id }, { $set: { d: event.d, _d: existingEvent.d } });
+		const updateQuery = {};
+
+		if (event.d.set) {
+			updateQuery.$set = {};
+
+			for (const k of Object.keys(event.d.set)) {
+				updateQuery.$set[`d.${ k }`] = event.d.set[k];
+			}
 		}
+
+		if (event.d.unset) {
+			updateQuery.$unset = {};
+
+			for (const k of Object.keys(event.d.unset)) {
+				updateQuery.$unset[`d.${ k }`] = event.d.unset[k];
+			}
+		}
+
+		if (!event.d.set && !event.d.unset) {
+			updateQuery.$set = {};
+
+			updateQuery.$set.d = event.d;
+		}
+
+		// If there is no _d (original data), create it
+		if (!existingEvent._d) {
+			updateQuery.$set._d = existingEvent.d;
+		}
+
+		await this.model.rawCollection().update({ _id: existingEvent._id }, updateQuery);
 	}
 
 	async getEventById(contextQuery, eventId) {

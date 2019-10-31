@@ -5,8 +5,8 @@ import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
 import { RoomEvents } from './RoomEvents';
-import { dispatchEvent } from '../../../events/server/lib/dispatch';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
+import { eventTypes } from './Events';
 
 export class Messages extends Base {
 	constructor() {
@@ -73,6 +73,11 @@ export class Messages extends Base {
 	// Overriding some methods to add V1<->V2 conversion
 	//
 	find(...args) {
+		if (args[0]) {
+			// Add a `t: msg`
+			args[0].t = eventTypes.ROOM_MESSAGE;
+		}
+
 		const cursor = RoomEvents.find.apply(RoomEvents, args);
 
 		cursor._fetch = cursor.fetch;
@@ -113,7 +118,7 @@ export class Messages extends Base {
 
 		const event = Promise.await(RoomEvents.createMessageEvent({ src: getLocalSrc(), roomId: message.rid, _cid: message._id, d: RoomEvents.fromV1Data(message) }));
 
-		dispatchEvent(event);
+		this.emit('dispatchEvent', event);
 
 		return RoomEvents.toV1(event);
 	}
@@ -128,13 +133,21 @@ export class Messages extends Base {
 
 		const event = RoomEvents.findOne(query);
 
-		const d = RoomEvents.fromV1Data(update.$set ? update.$set : update);
+		let d = {};
+
+		if (update.$set) {
+			d.set = RoomEvents.fromV1Data(update.$set);
+		} else if (update.$unset) {
+			d.unset = update.$unset;
+		} else {
+			d = update;
+		}
 
 		d._oid = event._id; // Original id
 
 		const editEvent = Promise.await(RoomEvents.createEditMessageEvent({ src: event.src, roomId: event.rid, _cid, d }));
 
-		dispatchEvent(editEvent);
+		this.emit('dispatchEvent', editEvent);
 
 		return RoomEvents.toV1(editEvent);
 	}

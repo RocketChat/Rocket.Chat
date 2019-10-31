@@ -1,23 +1,26 @@
 import { getLocalSrc } from './getLocalSrc';
-// import { logger } from './logger';
+import { logger } from './logger';
+import { dispatchEvents as federationDispatchEvents } from '../../../federation/server/handler';
 import { handleEvents } from '../handler';
+import { Messages } from '../../../models/server';
+import { isFederationEnabled } from '../../../federation/server/lib/isFederationEnabled';
 
-export function dispatchEvents(events, domains) {
+export async function dispatchEvents(events, domains) {
 	domains = domains || [getLocalSrc()];
 
-	// logger.dispatcher.debug(() => `dispatchEvents => domains=${ domains.join(', ') } events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
+	logger.dispatcher.debug(() => `dispatchEvents => domains=${ domains.join(', ') } events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
 
-	for (const domain of domains) {
-		if (domain !== getLocalSrc()) {
-			// Federated - handle dispatching the events
-			continue;
-		}
-
-		// Local - directly handle the events
-		handleEvents(events);
+	if (isFederationEnabled()) {
+		// Dispatch federated events
+		await federationDispatchEvents(domains.filter((d) => d !== getLocalSrc()));
 	}
+
+	// Handle the local events
+	await handleEvents(events);
 }
 
-export function dispatchEvent(event, domains) {
-	dispatchEvents([event], domains);
+export async function dispatchEvent(event, domains) {
+	await dispatchEvents([event], domains);
 }
+
+Messages.on('dispatchEvent', dispatchEvent);

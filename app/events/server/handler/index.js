@@ -8,7 +8,8 @@ const typesHandler = {
 
 export async function handleEvents(events) {
 	for (const event of events) {
-		// eslint-disable-next-line no-await-in-loop
+		/* eslint-disable no-await-in-loop */
 		await typesHandler[event.t](event);
+		/* eslint-enable no-await-in-loop */
 	}
 }

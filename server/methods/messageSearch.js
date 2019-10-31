@@ -209,11 +209,11 @@ Meteor.methods({
 
 		if (Object.keys(query).length > 0) {
 			query.t = {
-				$ne: 'rm', // hide removed messages (useful when searching for user messages)
+				$in: ['msg'], // only the ones we believe should be searched for
 			};
-			query._hidden = {
-				$ne: true, // don't return _hidden messages
-			};
+			// query._hidden = {
+			// 	$ne: true, // don't return _hidden messages
+			// };
 
 			if (rid) {
 				query.rid = rid;

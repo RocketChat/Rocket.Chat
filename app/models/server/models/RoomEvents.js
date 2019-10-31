@@ -8,6 +8,7 @@ class RoomEventsModel extends EventsModel {
 		super('message');
 
 		this.tryEnsureIndex({ 'context.roomId': 1 });
+		this.tryEnsureIndex({ 'd.msg': 'text' }, { sparse: true });
 	}
 
 	ensureSrc(src) {
@@ -75,13 +76,14 @@ class RoomEventsModel extends EventsModel {
 		return {
 			u: message.u,
 			msg: message.msg,
-			mentions: message.mentions || [],
-			channels: message.channels || [],
+			mentions: message.mentions,
+			channels: message.channels,
+			reactions: message.reactions,
 		};
 	}
 
 	toV1(event) {
-		return {
+		const v1Data = {
 			_id: event._cid,
 			v: 1,
 			rid: event.rid,
@@ -94,6 +96,12 @@ class RoomEventsModel extends EventsModel {
 			channels: event.d.channels,
 			_updatedAt: event._updatedAt,
 		};
+
+		if (event.d.reactions) {
+			v1Data.reactions = event.d.reactions;
+		}
+
+		return v1Data;
 	}
 }
 
