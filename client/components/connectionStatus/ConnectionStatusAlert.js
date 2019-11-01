@@ -1,16 +1,17 @@
-import { Meteor } from 'meteor/meteor';
+import { Icon } from '@rocket.chat/fuselage';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { useTranslation } from '../../hooks/useTranslation';
-import { Icon } from '../basic/Icon';
+import { useConnectionStatus, useReconnect } from '../contexts/ConnectionStatusContext';
+import { useTranslation } from '../contexts/TranslationContext';
+import './ConnectionStatusAlert.css';
 
 export function ConnectionStatusAlert() {
 	const {
 		connected,
 		retryTime,
 		status,
-	} = useReactiveValue(() => ({ ...Meteor.status() }));
+	} = useConnectionStatus();
+	const reconnect = useReconnect();
 	const reconnectionTimerRef = useRef();
 	const [reconnectCountdown, setReconnectCountdown] = useState(0);
 	const t = useTranslation();
@@ -42,12 +43,12 @@ export function ConnectionStatusAlert() {
 
 	const handleRetryClick = (event) => {
 		event.preventDefault();
-		Meteor.reconnect();
+		reconnect();
 	};
 
 	return <div className='ConnectionStatusAlert' role='alert'>
 		<strong>
-			<Icon icon='warning' /> {t('meteor_status', { context: status })}
+			<Icon iconName='warning' /> {t('meteor_status', { context: status })}
 		</strong>
 
 		{status === 'waiting' && <>

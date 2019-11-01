@@ -23,7 +23,7 @@ describe('[Users]', function() {
 
 	it('enabling E2E in server and generating keys to user...', (done) => {
 		updateSetting('E2E_Enable', true).then(() => {
-			request.post(api('e2e.setUserPublicAndPivateKeys'))
+			request.post(api('e2e.setUserPublicAndPrivateKeys'))
 				.set(credentials)
 				.send({
 					private_key: 'test',
@@ -884,7 +884,7 @@ describe('[Users]', function() {
 
 		it('enabling E2E in server and generating keys to user...', (done) => {
 			updateSetting('E2E_Enable', true).then(() => {
-				request.post(api('e2e.setUserPublicAndPivateKeys'))
+				request.post(api('e2e.setUserPublicAndPrivateKeys'))
 					.set(userCredentials)
 					.send({
 						private_key: 'test',
@@ -1656,6 +1656,48 @@ describe('[Users]', function() {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[/users.requestDataDownload]', () => {
+		it('should return the request data with fullExport false when no query parameter was send', (done) => {
+			request.get(api('users.requestDataDownload'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', false);
+				})
+				.end(done);
+		});
+		it('should return the request data with fullExport false when the fullExport query parameter is false', (done) => {
+			request.get(api('users.requestDataDownload?fullExport=false'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', false);
+				})
+				.end(done);
+		});
+		it('should return the request data with fullExport true when the fullExport query parameter is true', (done) => {
+			request.get(api('users.requestDataDownload?fullExport=true'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', true);
+				})
+				.end(done);
 		});
 	});
 });

@@ -7,6 +7,23 @@ import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
+const queryStatusAgentOnline = (extraFilters = {}) => {
+	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
+		extraFilters = Object.assign(extraFilters, { statusConnection: { $ne: 'away' } });
+	}
+
+	const query = {
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		statusLivechat: 'available',
+		roles: 'livechat-agent',
+		...extraFilters,
+	};
+
+	return query;
+};
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
@@ -74,42 +91,44 @@ export class Users extends Base {
 	}
 
 	findOnlineAgents() {
+		const query = queryStatusAgentOnline();
+
+		return this.find(query);
+	}
+
+	findBotAgents(usernameList) {
 		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
+			roles: {
+				$all: ['bot', 'livechat-agent'],
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
+			...usernameList && {
+				username: {
+					$in: [].concat(usernameList),
+				},
+			},
 		};
 
 		return this.find(query);
 	}
 
-	findOneOnlineAgentByUsername(username) {
+	findOneBotAgent() {
 		const query = {
-			username,
-			status: {
-				$exists: true,
-				$ne: 'offline',
+			roles: {
+				$all: ['bot', 'livechat-agent'],
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
 		};
 
 		return this.findOne(query);
 	}
 
+	findOneOnlineAgentByUsername(username) {
+		const query = queryStatusAgentOnline({ username });
+
+		return this.findOne(query);
+	}
+
 	findOneOnlineAgentById(_id) {
-		const query = {
-			_id,
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-		};
+		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
 	}
@@ -123,29 +142,47 @@ export class Users extends Base {
 	}
 
 	findOnlineUserFromList(userList) {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-			username: {
-				$in: [].concat(userList),
-			},
+		const username = {
+			$in: [].concat(userList),
 		};
+
+		const query = queryStatusAgentOnline({ username });
 
 		return this.find(query);
 	}
 
 	getNextAgent() {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
+		const query = queryStatusAgentOnline();
+
+		const collectionObj = this.model.rawCollection();
+		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+
+		const sort = {
+			livechatCount: 1,
+			username: 1,
+		};
+
+		const update = {
+			$inc: {
+				livechatCount: 1,
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
+		};
+
+		const user = findAndModify(query, sort, update);
+		if (user && user.value) {
+			return {
+				agentId: user.value._id,
+				username: user.value.username,
+			};
+		}
+		return null;
+	}
+
+	getNextBotAgent() {
+		const query = {
+			roles: {
+				$all: ['bot', 'livechat-agent'],
+			},
 		};
 
 		const collectionObj = this.model.rawCollection();
@@ -258,7 +295,7 @@ export class Users extends Base {
 		return { _id: userId };
 	}
 
-	setE2EPublicAndPivateKeysByUserId(userId, { public_key, private_key }) {
+	setE2EPublicAndPrivateKeysByUserId(userId, { public_key, private_key }) {
 		this.update({ _id: userId }, {
 			$set: {
 				'e2e.public_key': public_key,

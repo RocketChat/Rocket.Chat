@@ -493,12 +493,8 @@ export class ChatMessages {
 			}
 		}
 
-		try {
-			await call('deleteMessage', { _id });
-		} catch (error) {
-			console.error(error);
-			handleError(error);
-		}
+
+		await call('deleteMessage', { _id });
 	}
 
 	keydown(event) {

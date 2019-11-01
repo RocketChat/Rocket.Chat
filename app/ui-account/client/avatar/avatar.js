@@ -10,7 +10,7 @@ const getUsername = ({ userId, username }) => {
 	}
 
 	if (userId) {
-		const user = Meteor.users.findOne(this.userId, { fields: { username: 1 } });
+		const user = Meteor.users.findOne(userId, { fields: { username: 1 } });
 		return user && user.username;
 	}
 };
