@@ -195,17 +195,4 @@ Template.livechatAgents.onCreated(function() {
 		const filter = instance.filter.get();
 		loadAgents(instance, limit, filter);
 	});
-	/*
-	this.getAgentsWithCriteria = function() {
-		let filter;
-
-		if (instance.filter && instance.filter.get()) {
-			filter = s.trim(instance.filter.get());
-		}
-		const regex = new RegExp(s.escapeRegExp(filter), 'i');
-		return instance.agents.get()
-			.filter((agent) => agent.name.match(regex)
-				|| agent.username.match(regex)
-				|| agent.emails.some((email) => email.address.match(regex)));
-	};*/
 });
