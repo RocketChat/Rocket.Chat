@@ -24,8 +24,8 @@ describe('LIVECHAT - Agents', function() {
 
 	describe('livechat/users/:type', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', [])
-				.then(() => updatePermission('manage-livechat-agents', []))
+			updatePermission('view-l-room', [])
+				.then(() => updatePermission('transfer-livechat-guest', []))
 				.then(() => {
 					request.get(api('livechat/users/agent'))
 						.set(credentials)
@@ -54,8 +54,8 @@ describe('LIVECHAT - Agents', function() {
 				});
 		});
 		it('should return an array of agents', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => updatePermission('manage-livechat-agents', ['admin']))
+			updatePermission('view-l-room', ['admin'])
+				.then(() => updatePermission('transfer-livechat-guest', ['admin']))
 				.then(() => {
 					request.get(api('livechat/users/agent'))
 						.set(credentials)

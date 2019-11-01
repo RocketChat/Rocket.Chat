@@ -1,6 +1,6 @@
 import s from 'underscore.string';
 
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server/raw';
 
 async function findUsers({ role, text, pagination: { offset, count, sort } }) {
@@ -35,7 +35,7 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 	};
 }
 export async function findAgents({ userId, text, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!await hasAllPermissionAsync(userId, ['view-l-room', 'transfer-livechat-guest'])) {
 		throw new Error('error-not-authorized');
 	}
 
@@ -52,7 +52,7 @@ export async function findAgents({ userId, text, pagination: { offset, count, so
 }
 
 export async function findManagers({ userId, text, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-livechat-manager') || !await hasPermissionAsync(userId, 'manage-livechat-agents')) {
+	if (!await hasAllPermissionAsync(userId, ['view-livechat-manager', 'manage-livechat-agents'])) {
 		throw new Error('error-not-authorized');
 	}
 
