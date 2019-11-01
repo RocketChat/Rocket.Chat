@@ -19,20 +19,42 @@ Template.visitorForward.helpers({
 	departments() {
 		return Template.instance().departments.get().filter((department) => department.enabled === true);
 	},
-	agents() {
-		return Template.instance().agents.get()
-			.filter((agent) => agent._id !== Meteor.userId() && agent.status !== 'offline' && agent.statusLivechat === 'available');
-	},
 	agentName() {
 		return this.name || this.username;
+	},
+	onSelectAgents() {
+		return Template.instance().onSelectAgents;
+	},
+	agentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	agentConditions() {
+		return { _id: { $ne: Meteor.userId() }, status: { $ne: 'offline' }, statusLivechat: 'available' };
+	},
+	selectedAgents() {
+		return Template.instance().selectedAgents.get();
+	},
+	onClickTagAgent() {
+		return Template.instance().onClickTagAgent;
 	},
 });
 
 Template.visitorForward.onCreated(async function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
-	this.agents = new ReactiveVar([]);
 	this.departments = new ReactiveVar([]);
+	this.selectedAgents = new ReactiveVar([]);
+
+	this.onSelectAgents = ({ item: agent }) => {
+		this.selectedAgents.set([agent]);
+	};
+
+	this.onClickTagAgent = ({ username }) => {
+		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
+	};
 
 	this.autorun(() => {
 		this.visitor.set(Meteor.users.findOne({ _id: Template.currentData().visitorId }));
@@ -42,9 +64,7 @@ Template.visitorForward.onCreated(async function() {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
 	});
 
-	const { users } = await APIClient.v1.get('livechat/users/agent?sort={"name": 1, "username": 1}');
 	const { departments } = await APIClient.v1.get('livechat/department');
-	this.agents.set(users);
 	this.departments.set(departments);
 });
 
@@ -57,8 +77,9 @@ Template.visitorForward.events({
 			roomId: instance.room.get()._id,
 		};
 
-		if (instance.find('#forwardUser').value) {
-			transferData.userId = instance.find('#forwardUser').value;
+		const [user] = instance.selectedAgents.get();
+		if (user) {
+			transferData.userId = user._id;
 		} else if (instance.find('#forwardDepartment').value) {
 			transferData.departmentId = instance.find('#forwardDepartment').value;
 		}
