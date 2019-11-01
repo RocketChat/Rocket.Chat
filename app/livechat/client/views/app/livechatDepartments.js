@@ -3,7 +3,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import s from 'underscore.string';
 import _ from 'underscore';
 
 import { modal } from '../../../../ui-utils';
