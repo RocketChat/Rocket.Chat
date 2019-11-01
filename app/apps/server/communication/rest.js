@@ -3,10 +3,12 @@ import { HTTP } from 'meteor/http';
 import Busboy from 'busboy';
 
 import { API } from '../../../api/server';
+import { findPrivateGroupByIdOrName } from '../../../api/server/v1/groups';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
+import { hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
-import { Settings, Users } from '../../../models/server';
+import { Subscriptions, Settings, Users, Rooms } from '../../../models/server';
 import { Apps } from '../orchestrator';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -265,6 +267,33 @@ export class AppsRestApi {
 				}));
 
 				return API.v1.success({ apps });
+			},
+		});
+
+		this.api.addRoute('groupMembers', { authRequired: true }, {
+			get() {
+				const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+				const room = Rooms.findOneById(findResult.rid, { fields: { broadcast: 1 } });
+
+				if (room.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list')) {
+					return API.v1.unauthorized();
+				}
+
+				const { offset } = this.getPaginationItems();
+				const { sort = {} } = this.parseJsonQuery();
+				const subscriptions = Subscriptions.findByRoomId(findResult.rid, {
+					fields: { 'u._id': 1 },
+					sort: { 'u.username': sort.username != null ? sort.username : 1 },
+					skip: offset,
+					limit: 0,
+				});
+				const members = subscriptions.fetch().map((s) => s.u && s.u._id);
+				const users = Users.find({ _id: { $in: members } }, {
+					fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
+					sort: { username: sort.username != null ? sort.username : 1 },
+				}).fetch();
+
+				return API.v1.success({ members: users });
 			},
 		});
 
