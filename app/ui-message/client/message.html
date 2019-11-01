@@ -88,7 +88,7 @@
 					{{injectIndex . @index}} {{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{#each msg.attachments}}.
+			{{#each msg.attachments}}
 				{{injectSettings . ../settings}}
 				{{injectIndex . @index}}
 				{{> messageAttachment}}
