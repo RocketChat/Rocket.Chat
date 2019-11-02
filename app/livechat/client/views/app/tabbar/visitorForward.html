@@ -9,34 +9,7 @@
 				</div>
 			{{/with}}
 			<form>
-				<div class="input-line">
-						<label for="agent">{{_ "Forward_to_user"}}</label>
-						<div class="form-group">
-							{{> livechatAutocompleteUser
-								onClickTag=onClickTagAgent
-								list=selectedAgents
-								onSelect=onSelectAgents
-								collection='UserAndRoom'
-								subscription='userAutocomplete'
-								field='username'
-								sort='username'
-								label="Select_a_user"
-								placeholder="Select_a_user"
-								name="agent"
-								icon="at"
-								noMatchTemplate="userSearchEmpty"
-								templateItem="popupList_item_default"
-								modifier=agentModifier
-								conditions=agentConditions
-							}}
-						</div>
-					</div>
-
 				{{#if hasDepartments}}
-					<div class="form-divisor">
-						<span>{{_ "or"}}</span>
-					</div>
-
 					<div class="input-line">
 						<label for="forwardDepartment">{{_ "Forward_to_department"}}</label>
 						<div class="rc-select">
@@ -49,8 +22,33 @@
 							{{> icon block="rc-select__arrow" icon="arrow-down" }}
 						</div>
 					</div>
-				{{/if}}
 
+					<div class="form-divisor">
+						<span>{{_ "or"}}</span>
+					</div>
+				{{/if}}
+				<div class="input-line">
+					<label for="agent">{{_ "Forward_to_user"}}</label>
+					<div class="form-group">
+						{{> livechatAutocompleteUser
+							onClickTag=onClickTagAgent
+							list=selectedAgents
+							onSelect=onSelectAgents
+							collection='UserAndRoom'
+							subscription='userAutocomplete'
+							field='username'
+							sort='username'
+							label="Select_a_user"
+							placeholder="Select_a_user"
+							name="agent"
+							icon="at"
+							noMatchTemplate="userSearchEmpty"
+							templateItem="popupList_item_default"
+							modifier=agentModifier
+							conditions=agentConditions
+						}}
+					</div>
+				</div>
 				<div class="rc-user-info__flex rc-user-info__row">
 					<button class='rc-button cancel' type="button"><span>{{_ "Cancel"}}</span></button>
 					<button class='rc-button rc-button--primary save'><span>{{_ "Forward"}}</span></button>
