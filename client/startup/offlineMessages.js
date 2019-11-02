@@ -2,28 +2,57 @@ import { Meteor } from 'meteor/meteor';
 
 import { call } from '../../app/ui-utils/client';
 
+const action = {
+	clean: (msg) => {
+		delete msg.temp;
+		delete msg.tempActions;
+		return msg;
+	},
+
+	send: (msg) => {
+		msg.ts = new Date();
+		call('sendMessage', msg);
+	},
+
+	update: (msg) => {
+		msg.editedAt = new Date();
+		call('updateMessage', msg);
+	},
+
+	react: ({ _id }, reaction) => {
+		call('setReaction', reaction, _id);
+	},
+
+	delete: ({ _id }) => call('deleteMessage', { _id }),
+};
+
+function trigger(msg) {
+	const tempActions = msg.tempActions || {};
+	msg = action.clean(msg);
+
+	if (tempActions.send) {
+		action.send(msg);
+		return;
+	}
+
+	if (tempActions.delete) {
+		action.delete(msg);
+		return;
+	}
+
+	if (tempActions.update) {
+		action.update(msg);
+	}
+
+	if (tempActions.react && tempActions.reactions) {
+		tempActions.reactions.forEach((reaction) => {
+			action.react(msg, reaction);
+		});
+	}
+}
+
+
 Meteor.startup(() => {
-	function sendOfflineMessage(message) {
-		message.ts = new Date();
-		delete message.temp;
-		call('sendMessage', message);
-	}
-
-	function updateOfflineMessage(message) {
-		message.editedAt = new Date();
-		delete message.tempEdit;
-		call('updateMessage', message);
-	}
-
-	// function reactionOfflineMessage({_id, msg}) {
-	//     const reaction = msg.slice(1).trim();
-	//     call('setReaction', reaction, _id);
-	// }
-
-	function deleteOfflineMessage({ _id }) {
-		call('deleteMessage', { _id });
-	}
-
 	if ('indexedDB' in window) {
 		const db = indexedDB.open('persistent-minimongo2-Message');
 		let dbExist = true;
@@ -42,17 +71,7 @@ Meteor.startup(() => {
 				const cursor = event.target.result;
 				if (cursor) {
 					if (cursor.value.temp) {
-						console.log(cursor.value);
-						sendOfflineMessage(cursor.value);
-					} else if (cursor.value.tempEdit) {
-						console.log(cursor.value);
-						updateOfflineMessage(cursor.value);
-						// } else if (cursor.value.tempReact) {
-						//     console.log(cursor.value);
-						//     reactionOfflineMessage(cursor.value);
-					} else if (cursor.value.tempDelete) {
-						console.log(cursor.value);
-						deleteOfflineMessage(cursor.value);
+						trigger(cursor.value);
 					}
 					cursor.continue();
 				}

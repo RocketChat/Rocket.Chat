@@ -53,6 +53,7 @@ export class FileUploadBase {
 	}
 
 	start(callback) {
+		console.log('heree client');
 		this.handler = new UploadFS.Uploader({
 			store: this.store,
 			data: this.file,

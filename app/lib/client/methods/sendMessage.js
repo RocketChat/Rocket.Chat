@@ -28,6 +28,7 @@ Meteor.methods({
 			message.u.name = user.name;
 		}
 		message.temp = true;
+		message.tempActions = { send: true };
 		if (settings.get('Message_Read_Receipt_Enabled')) {
 			message.unread = true;
 		}

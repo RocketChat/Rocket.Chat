@@ -215,6 +215,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			};
 
 			upload.start((error, file, storage) => {
+				console.log('start');
 				if (error) {
 					const uploads = Session.get('uploading') || [];
 					uploads.filter((u) => u.id === upload.id).forEach((u) => {
