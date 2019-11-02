@@ -19,15 +19,19 @@ Meteor.methods({
 		})) {
 			return false;
 		}
-		const messageObject = { tempDelete: true };
 
-		// ChatMessage.remove({
-		// 	_id: message._id,
-		// 	'u._id': Meteor.userId(),
-		// });
-		ChatMessage.update({
-			_id: message._id,
-			'u._id': Meteor.userId(),
-		}, { $set: messageObject });
+		if (message.temp && message.tempActions.send) {
+			ChatMessage.remove({
+				_id: message._id,
+				'u._id': Meteor.userId(),
+			});
+		} else {
+			const messageObject = { temp: true, msg: 'Message deleted', tempActions: { delete: true } };
+
+			ChatMessage.update({
+				_id: message._id,
+				'u._id': Meteor.userId(),
+			}, { $set: messageObject, $unset: { reactions: 1, file: 1 } });
+		}
 	},
 });
