@@ -32,7 +32,10 @@ Template.visitorForward.helpers({
 		};
 	},
 	agentConditions() {
-		return { _id: { $ne: Meteor.userId() }, status: { $ne: 'offline' }, statusLivechat: 'available' };
+		const room = Template.instance().room.get();
+		const { servedBy: { _id: agentId } = {} } = room || {};
+		const _id = agentId && { $ne: agentId };
+		return { _id, status: { $ne: 'offline' }, statusLivechat: 'available' };
 	},
 	selectedAgents() {
 		return Template.instance().selectedAgents.get();
