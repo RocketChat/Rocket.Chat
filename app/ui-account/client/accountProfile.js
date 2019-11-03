@@ -416,11 +416,10 @@ Template.accountProfile.events({
 		const password = instance.password.get();
 
 		const send = $(e.target.send);
-		send.addClass('loading');
 		const reqPass = ((email !== getUserEmailAddress(user))
 			|| s.trim(password)) && (user && user.services && user.services.password && s.trim(user.services.password.bcrypt));
 		if (!reqPass) {
-			return instance.save(undefined, () => setTimeout(() => send.removeClass('loading'), 1000));
+			return instance.save(undefined, () => setTimeout();
 		}
 		modal.open({
 			title: t('Please_enter_your_password'),
