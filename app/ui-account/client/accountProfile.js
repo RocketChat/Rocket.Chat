@@ -419,7 +419,7 @@ Template.accountProfile.events({
 		const reqPass = ((email !== getUserEmailAddress(user))
 			|| s.trim(password)) && (user && user.services && user.services.password && s.trim(user.services.password.bcrypt));
 		if (!reqPass) {
-			return instance.save(undefined, () => setTimeout();
+			return instance.save();
 		}
 		modal.open({
 			title: t('Please_enter_your_password'),
