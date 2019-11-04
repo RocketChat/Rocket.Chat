@@ -393,6 +393,7 @@ export class CustomOAuth {
 			identity.name = this.getName(identity);
 		}
 
+		// remove all properties with names that don't match the RegExp in `IDENTITY_PROPNAME_FILTER`
 		return Object.entries(identity).reduce((result, [name, value]) => {
 			if (IDENTITY_PROPNAME_FILTER.test(name)) {
 				return result;
