@@ -12,7 +12,7 @@ const loadAgents = async (instance, limit = 50, text) => {
 	let baseUrl = `livechat/users/agent?count=${ limit }`;
 
 	if (text) {
-		baseUrl = baseUrl.concat(`&text=${ encodeURIComponent(text) }`);
+		baseUrl += `&text=${ encodeURIComponent(text) }`;
 	}
 
 	const { users } = await APIClient.v1.get(baseUrl);

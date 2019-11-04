@@ -101,7 +101,7 @@ Template.livechatDepartments.onCreated(function() {
 		let baseUrl = `livechat/department?count=${ limit }`;
 
 		if (filter) {
-			baseUrl = baseUrl.concat(`&text=${ encodeURIComponent(filter) }`);
+			baseUrl += `&text=${ encodeURIComponent(filter) }`;
 		}
 
 		const { departments } = await APIClient.v1.get(baseUrl);
