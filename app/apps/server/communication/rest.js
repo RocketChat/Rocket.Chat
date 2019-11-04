@@ -9,8 +9,9 @@ import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
 
+const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
-	'X-Apps-Engine-Version': Info.marketplaceApiVersion,
+	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
 });
 
 const purchaseTypes = new Set(['buy', 'subscription']);
@@ -341,7 +342,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ Info.marketplaceApiVersion }`, {
+						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ appsEngineVersionForMarketplace }`, {
 							headers,
 						});
 					} catch (e) {

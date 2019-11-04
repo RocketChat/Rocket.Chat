@@ -106,12 +106,16 @@
 					</div>
 
 					<div class="livechat-current-chats-filters-buttons">
-						<div class="form-group">
+						<div class="rc-button__group">
 							<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+							{{#if hasPopoverPermissions}}
+								<button class="livechat-current-chats-extra-actions">
+									{{> icon icon="menu" block="rc-icon--default-size"}}
+								</button>
+							{{/if}}
 						</div>
 					</div>
 				</div>
-
 			</form>
 		</fieldset>
 		<div class="rc-table-content">
