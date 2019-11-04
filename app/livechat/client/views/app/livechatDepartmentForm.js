@@ -149,14 +149,14 @@ Template.livechatDepartmentForm.events({
 				return toastr.error(t('The_selected_user_is_not_an_agent'));
 			}
 
-			const agentId = result._id;
+			const { _id } = result;
 			const selectedAgents = instance.selectedAgents.get();
-			if (selectedAgents.find(({ agentId: selectedAgentId }) => selectedAgentId === agentId)) {
+			if (selectedAgents.find(({ agentId }) => agentId === _id)) {
 				return toastr.error(t('This_agent_was_already_selected'));
 			}
 
 			const newAgent = _.clone(result);
-			newAgent.agentId = agentId;
+			newAgent.agentId = _id;
 			delete newAgent._id;
 			selectedAgents.push(newAgent);
 			instance.selectedAgents.set(selectedAgents);
