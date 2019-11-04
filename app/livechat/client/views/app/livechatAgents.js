@@ -2,15 +2,20 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import s from 'underscore.string';
 import _ from 'underscore';
 
 import { modal, call } from '../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../utils/client';
 import './livechatAgents.html';
 
-const loadAgents = async (instance, limit = 50) => {
-	const { users } = await APIClient.v1.get(`livechat/users/agent?count=${ limit }`);
+const loadAgents = async (instance, limit = 50, text) => {
+	let baseUrl = `livechat/users/agent?count=${ limit }`;
+
+	if (text) {
+		baseUrl += `&text=${ encodeURIComponent(text) }`;
+	}
+
+	const { users } = await APIClient.v1.get(baseUrl);
 	instance.agents.set(users);
 	instance.ready.set(true);
 };
@@ -34,7 +39,7 @@ Template.livechatAgents.helpers({
 		return Template.instance().state.get('loading');
 	},
 	agents() {
-		return Template.instance().getAgentsWithCriteria();
+		return Template.instance().agents.get();
 	},
 	emailAddress() {
 		if (this.emails && this.emails.length > 0) {
@@ -119,7 +124,7 @@ Template.livechatAgents.events({
 
 	async 'submit #form-agent'(e, instance) {
 		e.preventDefault();
-		const { selectedAgents, state } = instance;
+		const { selectedAgents, state, limit, filter } = instance;
 
 		const users = selectedAgents.get();
 
@@ -132,7 +137,8 @@ Template.livechatAgents.events({
 			await Promise.all(
 				users.map(({ username }) => call('livechat:addAgent', username))
 			);
-			await loadAgents(instance);
+
+			await loadAgents(instance, limit.get(), filter.get());
 			selectedAgents.set([]);
 		} finally {
 			state.set('loading', false);
@@ -186,18 +192,7 @@ Template.livechatAgents.onCreated(function() {
 
 	this.autorun(function() {
 		const limit = instance.limit.get();
-		loadAgents(instance, limit);
+		const filter = instance.filter.get();
+		loadAgents(instance, limit, filter);
 	});
-	this.getAgentsWithCriteria = function() {
-		let filter;
-
-		if (instance.filter && instance.filter.get()) {
-			filter = s.trim(instance.filter.get());
-		}
-		const regex = new RegExp(s.escapeRegExp(filter), 'i');
-		return instance.agents.get()
-			.filter((agent) => agent.name.match(regex)
-				|| agent.username.match(regex)
-				|| agent.emails.some((email) => email.address.match(regex)));
-	};
 });
