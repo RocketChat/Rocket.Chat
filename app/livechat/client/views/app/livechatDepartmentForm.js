@@ -142,25 +142,25 @@ Template.livechatDepartmentForm.events({
 		}
 
 		input.value = '';
-		const agent = Template.instance().agents.get().find((agent) => agent.username === username);
-		if (!agent) {
-			return toastr.error(t('The_selected_user_is_not_an_agent'));
-		}
 
-		const agentId = agent._id;
+		Meteor.call('livechat:getAgentInfo', username, (error, result) => {
+			if (error) {
+				console.warn(error);
+				return toastr.error(t('The_selected_user_is_not_an_agent'));
+			}
 
-		const selectedAgents = instance.selectedAgents.get();
-		for (const oldAgent of selectedAgents) {
-			if (oldAgent.agentId === agentId) {
+			const agentId = result._id;
+			const selectedAgents = instance.selectedAgents.get();
+			if (selectedAgents.find(({ agentId: selectedAgentId }) => selectedAgentId === agentId)) {
 				return toastr.error(t('This_agent_was_already_selected'));
 			}
-		}
 
-		const newAgent = _.clone(agent);
-		newAgent.agentId = agentId;
-		delete newAgent._id;
-		selectedAgents.push(newAgent);
-		instance.selectedAgents.set(selectedAgents);
+			const newAgent = _.clone(result);
+			newAgent.agentId = agentId;
+			delete newAgent._id;
+			selectedAgents.push(newAgent);
+			instance.selectedAgents.set(selectedAgents);
+		});
 	},
 
 	'click button.back'(e/* , instance*/) {
@@ -180,10 +180,6 @@ Template.livechatDepartmentForm.events({
 Template.livechatDepartmentForm.onCreated(async function() {
 	this.department = new ReactiveVar({ enabled: true });
 	this.selectedAgents = new ReactiveVar([]);
-	this.agents = new ReactiveVar([]);
-
-	const { users } = await APIClient.v1.get('livechat/users/agent');
-	this.agents.set(users);
 
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');

@@ -130,7 +130,7 @@ export const RoutingManager = {
 
 		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
 		if (!agent) {
-			return room;
+			return null;
 		}
 
 		LivechatInquiry.takeInquiry(_id);

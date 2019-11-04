@@ -87,7 +87,6 @@ Template.visitorEdit.onCreated(async function() {
 		const availableTags = tags
 			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
 			.map(({ name }) => name);
-
 		this.availableUserTags.set(availableTags);
 	});
 });
