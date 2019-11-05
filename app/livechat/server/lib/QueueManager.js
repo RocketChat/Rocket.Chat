@@ -36,7 +36,7 @@ export const QueueManager = {
 			agent = RoutingManager.getMethod().delegateAgent(agent, inquiry);
 		}
 
-		inquiry = await callbacks.run('livechat.beforeRouteChat', inquiry);
+		inquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, agent);
 		if (inquiry.status !== 'ready') {
 			return room;
 		}

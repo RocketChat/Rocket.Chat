@@ -52,8 +52,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 	template.fetchPreviews = _.debounce(function _previewFetcher(cmd, args) {
 		const command = cmd;
 		const params = args;
-		const { rid } = template.data;
-		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid } }, function(err, preview) {
+		const { rid, tmid } = template.data;
+		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid, tmid } }, function(err, preview) {
 			if (err) {
 				return;
 			}
@@ -103,8 +103,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 			return;
 		}
 
-		const { rid } = template.data;
-		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid } }, item, function(err) {
+		const { rid, tmid } = template.data;
+		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid, tmid } }, item, function(err) {
 			if (err) {
 				console.warn(err);
 			}

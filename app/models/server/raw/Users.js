@@ -13,6 +13,14 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findUsersInRolesWithQuery(roles, query, options) {
+		roles = [].concat(roles);
+
+		Object.assign(query, { roles: { $in: roles } });
+
+		return this.find(query, options);
+	}
+
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,

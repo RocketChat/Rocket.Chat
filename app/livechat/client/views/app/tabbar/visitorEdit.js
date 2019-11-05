@@ -6,9 +6,8 @@ import toastr from 'toastr';
 import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
-import { LivechatRoom } from '../../../collections/LivechatRoom';
 import './visitorEdit.html';
+import { APIClient } from '../../../../../utils/client';
 
 Template.visitorEdit.helpers({
 	visitor() {
@@ -49,25 +48,14 @@ Template.visitorEdit.helpers({
 	canRemoveTag(availableUserTags, tag) {
 		return hasRole(Meteor.userId(), ['admin', 'livechat-manager']) || (Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1));
 	},
+
+	isSmsIntegration() {
+		const room = Template.instance().room.get();
+		return !!(room && room.sms);
+	},
 });
 
-Template.visitorEdit.onRendered(function() {
-	Meteor.call('livechat:getTagsList', (err, tagsList) => {
-		this.availableTags.set(tagsList);
-
-		const uid = Meteor.userId();
-		const agentDepartments = this.agentDepartments.get();
-		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
-		const tags = this.availableTags.get() || [];
-		const availableTags = tags
-			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
-			.map(({ name }) => name);
-
-		this.availableUserTags.set(availableTags);
-	});
-});
-
-Template.visitorEdit.onCreated(function() {
+Template.visitorEdit.onCreated(async function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
 	this.tags = new ReactiveVar([]);
@@ -81,20 +69,26 @@ Template.visitorEdit.onCreated(function() {
 
 	const rid = Template.currentData().roomId;
 
-	this.subscribe('livechat:rooms', { _id: rid });
-	this.autorun(() => {
-		const room = LivechatRoom.findOne({ _id: rid });
+	this.autorun(async () => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 	});
 
 	const uid = Meteor.userId();
-	this.subscribe('livechat:departmentAgents', null, uid, () => {
-		const departments = [];
-		LivechatDepartmentAgents.find({ agentId: uid }).forEach((dept) => {
-			departments.push(dept.departmentId);
-		});
-		this.agentDepartments.set(departments);
+	const { departments } = await APIClient.v1.get(`livechat/agent/${ uid }/departments`);
+	const agentDepartments = departments.map((dept) => dept.departmentId);
+	this.agentDepartments.set(agentDepartments);
+	Meteor.call('livechat:getTagsList', (err, tagsList) => {
+		this.availableTags.set(tagsList);
+		const uid = Meteor.userId();
+		const agentDepartments = this.agentDepartments.get();
+		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
+		const tags = this.availableTags.get() || [];
+		const availableTags = tags
+			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
+			.map(({ name }) => name);
+		this.availableUserTags.set(availableTags);
 	});
 });
 
@@ -102,7 +96,10 @@ Template.visitorEdit.events({
 	'submit form'(event, instance) {
 		event.preventDefault();
 		const userData = { _id: instance.visitor.get()._id };
-		const roomData = { _id: instance.room.get()._id };
+
+		const room = instance.room.get();
+		const { _id, sms } = room;
+		const roomData = { _id };
 
 		userData.name = event.currentTarget.elements.name.value;
 		userData.email = event.currentTarget.elements.email.value;
@@ -110,6 +107,10 @@ Template.visitorEdit.events({
 
 		roomData.topic = event.currentTarget.elements.topic.value;
 		roomData.tags = instance.tags.get();
+
+		if (sms) {
+			delete userData.phone;
+		}
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {

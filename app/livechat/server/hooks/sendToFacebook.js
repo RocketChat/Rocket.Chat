@@ -1,7 +1,7 @@
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
-import { normalizeMessageAttachments } from '../../../utils/server/functions/normalizeMessageAttachments';
+import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -29,7 +29,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	if (message.file) {
-		message = normalizeMessageAttachments(message);
+		message = normalizeMessageFileUpload(message);
 	}
 
 	OmniChannel.reply({

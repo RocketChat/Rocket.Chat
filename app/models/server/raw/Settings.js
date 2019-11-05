@@ -6,4 +6,16 @@ export class SettingsRaw extends BaseRaw {
 
 		return setting.value;
 	}
+
+	findByIds(_id = []) {
+		_id = [].concat(_id);
+
+		const query = {
+			_id: {
+				$in: _id,
+			},
+		};
+
+		return this.find(query);
+	}
 }
