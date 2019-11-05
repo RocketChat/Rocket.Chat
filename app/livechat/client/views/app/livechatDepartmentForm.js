@@ -158,7 +158,7 @@ Template.livechatDepartmentForm.events({
 			delete newAgent._id;
 			departmentAgents.push(newAgent);
 			instance.departmentAgents.set(departmentAgents);
-			instance.selectedAgents.set(instance.selectedAgents.curValue.filter((user) => user.username !== username));
+			instance.selectedAgents.set(instance.selectedAgents.get().filter((user) => user.username !== username));
 		});
 	},
 
