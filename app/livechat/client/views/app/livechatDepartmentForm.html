@@ -62,10 +62,31 @@
 
 							<fieldset>
 								<label>{{_ "Add_agent"}}</label>
-								<span>
-									{{> inputAutocomplete settings=agentAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
-									<button name="add" class="button secondary add-agent">{{_ "Add"}}</button>
-								</span>
+								<div class="input-line form-inline">
+									<div class="form-group">
+										{{> livechatAutocompleteUser
+											onClickTag=onClickTagAgents
+											list=selectedAgents
+											deleteLastItem=deleteLastAgent
+											onSelect=onSelectAgents
+											collection='UserAndRoom'
+											subscription='userAutocomplete'
+											field='username'
+											sort='username'
+											label="Search_by_username"
+											placeholder="Search_by_username"
+											name="username"
+											exceptions=exceptionsAgents
+											icon="at"
+											noMatchTemplate="userSearchEmpty"
+											templateItem="popupList_item_default"
+											modifier=agentModifier
+										}}
+									</div>
+									<div class="form-group">
+										<button name="add" class="rc-button rc-button--primary add-agent">{{_ "Add"}}</button>
+									</div>
+								</div>
 							</fieldset>
 
 							<fieldset>
@@ -82,7 +103,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											{{#each selectedAgents}}
+											{{#each departmentAgents}}
 												<tr class="agent-info">
 													<td>
 														<div class="rc-table-wrapper">

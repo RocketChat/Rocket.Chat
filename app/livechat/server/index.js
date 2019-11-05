@@ -21,7 +21,6 @@ import './methods/changeLivechatStatus';
 import './methods/closeByVisitor';
 import './methods/closeRoom';
 import './methods/facebook';
-import './methods/getAgentInfo';
 import './methods/getCustomFields';
 import './methods/getAgentData';
 import './methods/getAgentOverviewData';
