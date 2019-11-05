@@ -1,15 +1,15 @@
 {
-	"extends": ["@rocket.chat/eslint-config"],
-	"parser": "babel-eslint",
-	"globals": {
-		"__meteor_bootstrap__"        : false,
-		"__meteor_runtime_config__"   : false,
-		"Assets"                      : false,
-		"chrome"                      : false,
-		"jscolor"                     : false
+  "extends": ["@rocket.chat/eslint-config"],
+  "parser": "babel-eslint",
+  "globals": {
+    "__meteor_bootstrap__"        : false,
+    "__meteor_runtime_config__"   : false,
+    "Assets"                      : false,
+    "chrome"                      : false,
+    "jscolor"                     : false
   },
-  "plugins": ["react"],
-	"rules": {
+  "plugins": ["react", "@typescript-eslint"],
+  "rules": {
     "jsx-quotes": ["error", "prefer-single"],
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
@@ -17,6 +17,14 @@
     "react/jsx-fragments": ["error", "syntax"],
   },
   "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.config.js"
+      },
+      "node": {
+        "extensions": [".js", ".ts"]
+      }
+    },
     "react": {
       "version": "detect",
     },

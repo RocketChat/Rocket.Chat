@@ -1,3 +1,5 @@
+import { IEvent } from '../../definitions/IEvent';
+
 const typesHandler = {
 	genesis: require('./types/genesis'), // GENESIS
 
@@ -6,10 +8,10 @@ const typesHandler = {
 	emsg: require('./types/room_edit_message'), // ROOM_EDIT_MESSAGE
 };
 
-export async function handleEvents(events) {
+export async function handleEvents(events: [IEvent]) {
 	for (const event of events) {
-		/* eslint-disable no-await-in-loop */
+		// /* eslint-disable no-await-in-loop */
 		await typesHandler[event.t](event);
-		/* eslint-enable no-await-in-loop */
+		// /* eslint-enable no-await-in-loop */
 	}
 }
