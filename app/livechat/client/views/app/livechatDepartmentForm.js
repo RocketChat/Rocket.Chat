@@ -38,14 +38,6 @@ Template.livechatDepartmentForm.helpers({
 	exceptionsAgents() {
 		return _.pluck(Template.instance().departmentAgents.get(), 'username');
 	},
-	deleteLastAgent() {
-		const i = Template.instance();
-		return () => {
-			const arr = i.selectedAgents.curValue;
-			arr.pop();
-			i.selectedAgents.set(arr);
-		};
-	},
 	agentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
@@ -178,9 +170,7 @@ Template.livechatDepartmentForm.events({
 	'click .remove-agent'(e, instance) {
 		e.preventDefault();
 
-		let departmentAgents = instance.departmentAgents.get();
-		departmentAgents = _.reject(departmentAgents, (agent) => agent._id === this._id);
-		instance.departmentAgents.set(departmentAgents);
+		instance.departmentAgents.set(instance.departmentAgents.get().filter((agent) => agent.agentId !== this.agentId));
 	},
 });
 
@@ -190,11 +180,11 @@ Template.livechatDepartmentForm.onCreated(async function() {
 	this.selectedAgents = new ReactiveVar([]);
 
 	this.onSelectAgents = ({ item: agent }) => {
-		this.selectedAgents.set([...this.selectedAgents.curValue, agent]);
+		this.selectedAgents.set([agent]);
 	};
 
-	this.onClickTagAgents = ({ username }) => {
-		this.selectedAgents.set(this.selectedAgents.curValue.filter((user) => user.username !== username));
+	this.onClickTagAgent = ({ username }) => {
+		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
 	};
 
 	this.autorun(async () => {
