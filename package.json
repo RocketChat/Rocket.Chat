@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "2.2.0-develop",
+	"version": "2.3.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -212,7 +212,7 @@
 		"mime-type": "^3.0.7",
 		"mkdirp": "^0.5.1",
 		"moment": "^2.22.2",
-		"moment-timezone": "^0.5.23",
+		"moment-timezone": "^0.5.27",
 		"node-dogstatsd": "^0.0.7",
 		"node-rsa": "^1.0.5",
 		"object-path": "^0.11.4",

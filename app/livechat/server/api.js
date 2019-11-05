@@ -8,3 +8,4 @@ import '../imports/server/rest/rooms.js';
 import '../imports/server/rest/appearance.js';
 import '../imports/server/rest/triggers.js';
 import '../imports/server/rest/integrations.js';
+import '../imports/server/rest/agent.js';
