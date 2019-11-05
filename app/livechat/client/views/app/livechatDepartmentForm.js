@@ -59,6 +59,9 @@ Template.livechatDepartmentForm.helpers({
 			}`;
 		};
 	},
+	agentConditions() {
+		return { roles: 'livechat-agent' };
+	},
 	onSelectAgents() {
 		return Template.instance().onSelectAgents;
 	},
@@ -152,18 +155,13 @@ Template.livechatDepartmentForm.events({
 
 		users.forEach(async (user) => {
 			const { _id, username } = user;
-			const { user: agent } = await APIClient.v1.get(`livechat/users/agent/${ _id }`);
-
-			if (!agent) {
-				return toastr.error(t('The_selected_user_is_not_an_agent'));
-			}
 
 			const departmentAgents = instance.departmentAgents.get();
 			if (departmentAgents.find(({ agentId }) => agentId === _id)) {
 				return toastr.error(t('This_agent_was_already_selected'));
 			}
 
-			const newAgent = _.clone(agent);
+			const newAgent = _.clone(user);
 			newAgent.agentId = _id;
 			delete newAgent._id;
 			departmentAgents.push(newAgent);
