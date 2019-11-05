@@ -719,7 +719,7 @@ describe('[Administration]', () => {
 					}
 					admin.accountsButtonExpandDefaultUserPreferences.waitForVisible(5000);
 					admin.accountsButtonExpandDefaultUserPreferences.click();
-					admin.accountsNotificationDuration.waitForVisible(5000);
+					admin.accountsidleTimeLimit.waitForVisible(5000);
 				});
 
 				it('it should show the enable auto away field', () => {
@@ -738,14 +738,6 @@ describe('[Administration]', () => {
 				});
 				it('the idle timeout limit field value should be 300', () => {
 					admin.accountsidleTimeLimit.getValue().should.equal('300');
-				});
-
-				it('it should show the notifications durations field', () => {
-					admin.accountsNotificationDuration.click();
-					admin.accountsNotificationDuration.isVisible().should.be.true;
-				});
-				it('the notification duration field value should be 0', () => {
-					admin.accountsNotificationDuration.getValue().should.equal('0');
 				});
 
 				it('it should show the audio notifications select field', () => {

@@ -62,9 +62,6 @@ Template.pushNotificationsFlexTab.helpers({
 	emailNotifications() {
 		return Template.instance().form.emailNotifications.get();
 	},
-	desktopNotificationDuration() {
-		return Template.instance().form.desktopNotificationDuration.get();
-	},
 	subValue(field) {
 		const { form } = Template.instance();
 		if (form[field]) {
@@ -119,7 +116,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			desktopNotifications: 1,
 			mobilePushNotifications: 1,
 			emailNotifications: 1,
-			desktopNotificationDuration: 1,
 			audioNotificationValue: 1,
 			muteGroupMentions: 1,
 		},
@@ -132,7 +128,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications = 'default',
 		mobilePushNotifications = 'default',
 		emailNotifications = 'default',
-		desktopNotificationDuration = 0,
 		audioNotificationValue = null,
 		muteGroupMentions = false,
 	} = sub;
@@ -144,7 +139,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications: new ReactiveVar(desktopNotifications),
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
-		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
@@ -156,7 +150,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications: new ReactiveVar(desktopNotifications),
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
-		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
@@ -173,9 +166,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			}
 			const rid = Session.get('openedRoom');
 			switch (field) {
-				case 'desktopNotificationDuration':
-					await call('saveDesktopNotificationDuration', rid, value);
-					break;
 				case 'audioNotificationValue':
 					await call('saveAudioNotificationValue', rid, value.split(' ')[0]);
 					break;
@@ -252,44 +242,6 @@ Template.pushNotificationsFlexTab.events({
 					...audioAssetsArray,
 				];
 				break;
-			case 'desktopNotificationDuration':
-				options = [{
-					id: 'desktopNotificationDuration',
-					name: 'desktopNotificationDuration',
-					label: 'Default',
-					value: 0,
-				},
-				{
-					id: 'desktopNotificationDuration1s',
-					name: 'desktopNotificationDuration',
-					label: `1 ${ t('seconds') }`,
-					value: 1,
-				},
-				{
-					id: 'desktopNotificationDuration2s',
-					name: 'desktopNotificationDuration',
-					label: `2 ${ t('seconds') }`,
-					value: 2,
-				},
-				{
-					id: 'desktopNotificationDuration3s',
-					name: 'desktopNotificationDuration',
-					label: `3 ${ t('seconds') }`,
-					value: 3,
-				},
-				{
-					id: 'desktopNotificationDuration4s',
-					name: 'desktopNotificationDuration',
-					label: `4 ${ t('seconds') }`,
-					value: 4,
-				},
-				{
-					id: 'desktopNotificationDuration5s',
-					name: 'desktopNotificationDuration',
-					label: `5 ${ t('seconds') }`,
-					value: 5,
-				}];
-				break;
 			default:
 				options = [{
 					id: 'desktopNotificationsDefault',
@@ -321,7 +273,7 @@ Template.pushNotificationsFlexTab.events({
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
-				change: (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
+				change: (value) => instance.form[key].set(value),
 				value: instance.form[key].get(),
 				options,
 			},
