@@ -41,7 +41,7 @@ Template.accountSecurity.events({
 		Meteor.call('2fa:enable', async (error, result) => {
 			const qrcode = await import('yaqrcode');
 			instance.imageSecret.set(result.secret);
-			instance.imageData.set(qrcode(result.url, { size: 200 }));
+			instance.imageData.set(qrcode.default(result.url, { size: 200 }));
 
 			instance.state.set('registering');
 
