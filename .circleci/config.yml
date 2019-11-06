@@ -263,6 +263,45 @@ jobs:
           command: |
             bash .scripts/deploy-assistify-chat.sh
 
+  image-build-prod:
+    <<: *defaults
+
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Build latest Docker image
+          command: |
+            cd /tmp/build
+            tar xzf Rocket.Chat.tar.gz
+            rm Rocket.Chat.tar.gz
+
+            if [[ $CIRCLE_BRANCH == 'master' ]]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+              echo "Build official Docker image"
+              cp ~/repo/.docker/Dockerfile .
+               cp ~/repo/.docker/startup.sh .
+              docker build -t assistify/chat:latest .
+              docker push assistify/chat:latest
+
+              # echo "Build preview Docker image"
+              # cp ~/repo/.docker-mongo/Dockerfile .
+              # cp ~/repo/.docker-mongo/entrypoint.sh .
+              # docker build -t assistify/chat.preview:develop .
+              # docker push assistify/chat.preview:develop
+
+              exit 0
+            fi;
+
   image-build:
     <<: *defaults
 
@@ -494,8 +533,6 @@ workflows:
             branches:
               only:
                 - master
-            tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - image-build:
           requires:
             - build
@@ -511,7 +548,7 @@ workflows:
             - build
           filters:
             branches:
-              only: 
+              only:
                 - master
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
