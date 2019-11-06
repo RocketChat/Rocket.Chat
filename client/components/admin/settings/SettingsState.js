@@ -248,17 +248,19 @@ const useSelector = (selector, equalityFunction = (a, b) => a === b) => {
 };
 
 export const useGroup = (groupId) => {
-	const { hydrate } = useContext(SettingsContext);
 	const group = useSelector((state) => state.settings.find(({ _id, type }) => _id === groupId && type === 'group'));
-	const settings = useSelector((state) => state.settings.filter(({ group }) => group === groupId));
-	const persistedSettings = useSelector((state) => state.persistedSettings.filter(({ group }) => group === groupId));
 
-	const changed = useMemo(() => settings.some(({ changed }) => changed), [settings]);
-	const sections = useMemo(() => Array.from(new Set(settings.map(({ section }) => section || ''))), [settings]);
+	const filterSettings = (settings) => settings.filter(({ group }) => group === groupId);
+
+	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
+	const sections = useSelector((state) => Array.from(new Set(filterSettings(state.settings).map(({ section }) => section || ''))), (a, b) => a.join() === b.join());
 
 	const batchSetSettings = useBatchSetSettings();
+	const { stateRef, hydrate } = useContext(SettingsContext);
 
-	const save = useEventCallback(async (settings) => {
+	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings) => {
+		const settings = filterSettings(state);
+
 		const changes = settings.filter(({ changed }) => changed)
 			.map(({ _id, value, editor }) => ({ _id, value, editor }));
 
@@ -285,9 +287,12 @@ export const useGroup = (groupId) => {
 		} catch (error) {
 			handleError(error);
 		}
-	}, settings);
+	}, filterSettings, stateRef, batchSetSettings);
 
-	const cancel = useEventCallback((settings, persistedSettings, hydrate) => {
+	const cancel = useEventCallback((filterSettings, { current: state }, hydrate) => {
+		const settings = filterSettings(state.settings);
+		const persistedSettings = filterSettings(state.persistedSettings);
+
 		const changes = settings.filter(({ changed }) => changed)
 			.map((field) => {
 				const { _id, value, editor } = persistedSettings.find(({ _id }) => _id === field._id);
@@ -295,7 +300,45 @@ export const useGroup = (groupId) => {
 			});
 
 		hydrate(changes);
-	}, settings, persistedSettings, hydrate);
+	}, filterSettings, stateRef, hydrate);
 
-	return useMemo(() => group && { ...group, sections, changed, save, cancel }, [group, sections.join(','), changed]);
+	return group && { ...group, sections, changed, save, cancel };
+};
+
+export const useSection = (groupId, sectionName) => {
+	sectionName = sectionName || '';
+
+	const filterSettings = (settings) =>
+		settings.filter(({ group, section }) => group === groupId && ((!sectionName && !section) || (sectionName === section)));
+
+	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
+	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => value !== packageValue));
+	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.join() === b.join());
+
+	const { stateRef, hydrate } = useContext(SettingsContext);
+
+	const reset = useEventCallback((filterSettings, { current: state }, hydrate) => {
+		const settings = filterSettings(state.settings);
+		const persistedSettings = filterSettings(state.persistedSettings);
+
+		const changes = settings.map((setting) => {
+			const { _id, value, packageValue, editor } = persistedSettings.find(({ _id }) => _id === setting._id);
+			return {
+				_id,
+				value: packageValue,
+				editor,
+				changed: packageValue !== value,
+			};
+		});
+
+		hydrate(changes);
+	}, filterSettings, stateRef, hydrate);
+
+	return {
+		name: sectionName,
+		changed,
+		canReset,
+		settings: settingsIds,
+		reset,
+	};
 };

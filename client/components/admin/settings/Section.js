@@ -2,12 +2,12 @@ import { Accordion, Button, FieldGroup, Paragraph } from '@rocket.chat/fuselage'
 import React from 'react';
 
 import { useTranslation } from '../../providers/TranslationProvider';
-import { useSection } from './SectionState';
 import { Setting } from './Setting';
 import { SettingState } from './SettingState';
+import { useSection } from './SettingsState';
 
-export function Section({ children, hasReset = true, help, solo }) {
-	const section = useSection();
+export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
+	const section = useSection(groupId, sectionName);
 	const t = useTranslation();
 
 	const handleResetSectionClick = () => {
