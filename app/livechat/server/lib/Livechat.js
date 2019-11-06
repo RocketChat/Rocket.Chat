@@ -298,6 +298,9 @@ export const Livechat = {
 		if (!room || room.t !== 'l' || !room.open) {
 			return false;
 		}
+
+		callbacks.run('livechat.beforeCloseRoom', room);
+
 		const now = new Date();
 
 		const closeData = {

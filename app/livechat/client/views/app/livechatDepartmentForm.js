@@ -29,6 +29,10 @@ Template.livechatDepartmentForm.helpers({
 		const department = Template.instance().department.get();
 		return department.showOnOfflineForm === value || (department.showOnOfflineForm === undefined && value === true);
 	},
+	requestTagBeforeClosingChat() {
+		const department = Template.instance().department.get();
+		return !!(department && department.requestTagBeforeClosingChat);
+	},
 	customFieldsTemplate() {
 		return getCustomFormTemplate('livechatDepartmentForm');
 	},
@@ -81,6 +85,7 @@ Template.livechatDepartmentForm.events({
 			const showOnRegistration = instance.$('input[name=showOnRegistration]:checked').val();
 			const email = instance.$('input[name=email]').val();
 			const showOnOfflineForm = instance.$('input[name=showOnOfflineForm]:checked').val();
+			const requestTagBeforeClosingChat = instance.$('input[name=requestTagBeforeClosingChat]:checked').val();
 
 			if (enabled !== '1' && enabled !== '0') {
 				return toastr.error(t('Please_select_enabled_yes_or_no'));
@@ -100,6 +105,7 @@ Template.livechatDepartmentForm.events({
 				description: description.trim(),
 				showOnRegistration: showOnRegistration === '1',
 				showOnOfflineForm: showOnOfflineForm === '1',
+				requestTagBeforeClosingChat: requestTagBeforeClosingChat === '1',
 				email: email.trim(),
 			};
 		}
