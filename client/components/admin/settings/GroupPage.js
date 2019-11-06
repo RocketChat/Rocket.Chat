@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 import { Header } from '../../header/Header';
 import { useTranslation } from '../../providers/TranslationProvider';
-import { useGroup } from './GroupState';
 
 const Wrapper = styled.div`
 	margin: 0 auto;
@@ -12,9 +11,8 @@ const Wrapper = styled.div`
 	max-width: 590px;
 `;
 
-export function GroupPage({ children, headerButtons }) {
+export function GroupPage({ children, group, headerButtons }) {
 	const t = useTranslation();
-	const group = useGroup();
 
 	const handleSubmit = (event) => {
 		event.preventDefault();

@@ -1,13 +1,12 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 
 import { useSettingsState } from './SettingsState';
-import { useGroup } from './GroupState';
 
 const SectionContext = createContext({});
 
-export function SectionState({ children, section: name }) {
+export function SectionState({ children, group, section: name }) {
 	const { state, persistedState, hydrate } = useSettingsState();
-	const { _id: groupId } = useGroup();
+	const { _id: groupId } = group;
 
 	name = name || '';
 

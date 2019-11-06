@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useAtLeastOnePermission } from '../../../hooks/usePermissions';
 import { useAdminSideNav } from '../hooks';
-import { GroupState } from './GroupState';
+import { GroupSelector } from './GroupSelector';
 import { NotAuthorizedPage } from './NotAuthorizedPage';
 import { SettingsState } from './SettingsState';
 
@@ -22,6 +22,6 @@ export function SettingsRoute({
 	}
 
 	return <SettingsState>
-		<GroupState groupId={groupId} />
+		<GroupSelector groupId={groupId} />
 	</SettingsState>;
 }

@@ -6,12 +6,10 @@ import s from 'underscore.string';
 import { RawText } from '../../../basic/RawText';
 import { useTranslation } from '../../../providers/TranslationProvider';
 import { GroupPage } from '../GroupPage';
-import { useGroup } from '../GroupState';
 import { Section } from '../Section';
 import { SectionState } from '../SectionState';
 
-export function OAuthGroupPage() {
-	const group = useGroup();
+export function OAuthGroupPage({ group }) {
 	const solo = group.sections.length === 1;
 	const t = useTranslation();
 
@@ -22,11 +20,11 @@ export function OAuthGroupPage() {
 		return Meteor.absoluteUrl(`_oauth/${ id }`);
 	};
 
-	return <GroupPage headerButtons={<>
+	return <GroupPage group={group} headerButtons={<>
 		<Button className='refresh-oauth'>{t('Refresh_oauth_services')}</Button>
 		<Button className='add-custom-oauth'>{t('Add_custom_oauth')}</Button>
 	</>}>
-		{group.sections.map((section) => <SectionState key={section} section={section}>
+		{group.sections.map((section) => <SectionState key={section} group={group} section={section}>
 			{(sectionIsCustomOAuth(section)
 				? <Section
 					help={<RawText>{t('Custom_oauth_helper', callbackURL(section))}</RawText>}

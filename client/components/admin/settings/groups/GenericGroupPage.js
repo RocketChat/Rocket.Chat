@@ -1,16 +1,14 @@
 import React from 'react';
 
 import { GroupPage } from '../GroupPage';
-import { useGroup } from '../GroupState';
 import { Section } from '../Section';
 import { SectionState } from '../SectionState';
 
-export function GenericGroupPage() {
-	const group = useGroup();
+export function GenericGroupPage({ group }) {
 	const solo = group.sections.length === 1;
 
-	return <GroupPage>
-		{group.sections.map((section) => <SectionState key={section} section={section}>
+	return <GroupPage group={group}>
+		{group.sections.map((section) => <SectionState key={section} group={group} section={section}>
 			<Section solo={solo} />
 		</SectionState>)}
 	</GroupPage>;

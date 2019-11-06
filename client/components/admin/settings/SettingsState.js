@@ -1,8 +1,15 @@
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import mitt from 'mitt';
 import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState, useMemo, useLayoutEffect } from 'react';
+import toastr from 'toastr';
 
+import { handleError } from '../../../../app/utils/client/lib/handleError';
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
+import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
+import { useLazyRef } from '../../../hooks/useLazyRef';
+import { useEventCallback } from '../../../hooks/useEventCallback';
 
 const SettingsContext = createContext({});
 
@@ -69,11 +76,6 @@ const stateReducer = (states, { type, payload }) => {
 	}
 
 	return states;
-};
-
-const useLazyRef = (fn) => {
-	const [value] = useState(fn);
-	return useRef(value);
 };
 
 export function SettingsState({ children }) {
@@ -220,4 +222,80 @@ export const useSettingsState = () => {
 	}, []);
 
 	return { isLoading, hydrate, isDisabled, state, persistedState };
+};
+
+const useSelector = (selector, equalityFunction = (a, b) => a === b) => {
+	const { emitter, stateRef } = useContext(SettingsContext);
+	const [value, setValue] = useState(() => selector(stateRef.current));
+
+	const handleUpdate = useEventCallback((selector, equalityFunction, value, state) => {
+		const newValue = selector(state);
+
+		if (!equalityFunction(newValue, value)) {
+			setValue(newValue);
+		}
+	}, selector, equalityFunction, value);
+
+	useEffect(() => {
+		emitter.on('update', handleUpdate);
+
+		return () => {
+			emitter.off('update', handleUpdate);
+		};
+	}, [handleUpdate]);
+
+	return value;
+};
+
+export const useGroup = (groupId) => {
+	const { hydrate } = useContext(SettingsContext);
+	const group = useSelector((state) => state.settings.find(({ _id, type }) => _id === groupId && type === 'group'));
+	const settings = useSelector((state) => state.settings.filter(({ group }) => group === groupId));
+	const persistedSettings = useSelector((state) => state.persistedSettings.filter(({ group }) => group === groupId));
+
+	const changed = useMemo(() => settings.some(({ changed }) => changed), [settings]);
+	const sections = useMemo(() => Array.from(new Set(settings.map(({ section }) => section || ''))), [settings]);
+
+	const batchSetSettings = useBatchSetSettings();
+
+	const save = useEventCallback(async (settings) => {
+		const changes = settings.filter(({ changed }) => changed)
+			.map(({ _id, value, editor }) => ({ _id, value, editor }));
+
+		if (changes.length === 0) {
+			return;
+		}
+
+		try {
+			await batchSetSettings(changes);
+
+			if (changes.some(({ _id }) => _id === 'Language')) {
+				const lng = Meteor.user().language
+					|| changes.filter(({ _id }) => _id === 'Language').shift().value
+					|| 'en';
+
+				TAPi18n._loadLanguage(lng)
+					.then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })))
+					.catch(handleError);
+
+				return;
+			}
+
+			toastr.success(TAPi18n.__('Settings_updated'));
+		} catch (error) {
+			handleError(error);
+		}
+	}, settings);
+
+	const cancel = useEventCallback((settings, persistedSettings, hydrate) => {
+		const changes = settings.filter(({ changed }) => changed)
+			.map((field) => {
+				const { _id, value, editor } = persistedSettings.find(({ _id }) => _id === field._id);
+				return { _id, value, editor, changed: false };
+			});
+
+		hydrate(changes);
+	}, settings, persistedSettings, hydrate);
+
+	return useMemo(() => group && { ...group, sections, changed, save, cancel }, [group, sections.join(','), changed]);
 };
