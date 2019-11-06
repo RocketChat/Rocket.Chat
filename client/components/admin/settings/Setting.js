@@ -10,10 +10,11 @@ import { useTranslation } from '../../providers/TranslationProvider';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
 import { StringSettingInput } from './inputs/StringSettingInput';
-import { useSetting } from './SettingState';
+import { useSetting } from './SettingsState';
 
-export function Setting() {
-	const setting = useSetting();
+export function Setting({ settingId }) {
+	const setting = useSetting(settingId);
+
 	const t = useTranslation();
 
 	const {

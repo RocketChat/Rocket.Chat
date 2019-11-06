@@ -3,7 +3,6 @@ import React from 'react';
 
 import { useTranslation } from '../../providers/TranslationProvider';
 import { Setting } from './Setting';
-import { SettingState } from './SettingState';
 import { useSection } from './SettingsState';
 
 export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
@@ -18,9 +17,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		{help && <Paragraph hintColor>{help}</Paragraph>}
 
 		<FieldGroup>
-			{section.settings.map((setting) => <SettingState key={setting} setting={setting}>
-				<Setting />
-			</SettingState>)}
+			{section.settings.map((settingId) => <Setting key={settingId} settingId={settingId} />)}
 
 			{hasReset && section.canReset && <Button
 				children={t('Reset_section_settings')}

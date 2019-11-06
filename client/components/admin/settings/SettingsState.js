@@ -10,6 +10,7 @@ import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client
 import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useLazyRef } from '../../../hooks/useLazyRef';
 import { useEventCallback } from '../../../hooks/useEventCallback';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
 const SettingsContext = createContext({});
 
@@ -311,7 +312,6 @@ export const useSection = (groupId, sectionName) => {
 	const filterSettings = (settings) =>
 		settings.filter(({ group, section }) => group === groupId && ((!sectionName && !section) || (sectionName === section)));
 
-	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
 	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => value !== packageValue));
 	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.join() === b.join());
 
@@ -336,9 +336,50 @@ export const useSection = (groupId, sectionName) => {
 
 	return {
 		name: sectionName,
-		changed,
 		canReset,
 		settings: settingsIds,
+		reset,
+	};
+};
+
+export const useSetting = (_id) => {
+	const { stateRef, hydrate, isDisabled } = useContext(SettingsContext);
+
+	const selectSetting = (settings) => settings.find((setting) => setting._id === _id);
+
+	const setting = useSelector((state) => selectSetting(state.settings));
+	const disabled = useReactiveValue(() => isDisabled(setting), [setting.blocked, setting.enableQuery]);
+
+	const update = useEventCallback((selectSetting, { current: state }, hydrate, data) => {
+		const setting = { ...selectSetting(state.settings), ...data };
+		const persistedSetting = selectSetting(state.persistedSettings);
+
+		const changes = [{
+			_id: setting._id,
+			value: setting.value,
+			editor: setting.editor,
+			changed: (setting.value !== persistedSetting.value) || (setting.editor !== persistedSetting.editor),
+		}];
+
+		hydrate(changes);
+	}, selectSetting, stateRef, hydrate);
+
+	const reset = useEventCallback((selectSetting, { current: state }, hydrate) => {
+		const { _id, value, packageValue, editor } = selectSetting(state.persistedSettings);
+		const changes = [{
+			_id,
+			value: packageValue,
+			editor,
+			changed: packageValue !== value,
+		}];
+
+		hydrate(changes);
+	}, selectSetting, stateRef, hydrate);
+
+	return {
+		...setting,
+		disabled,
+		update,
 		reset,
 	};
 };
