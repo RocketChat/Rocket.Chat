@@ -215,6 +215,7 @@
 		"meteor-node-stubs": "^0.4.1",
 		"mime-db": "^1.40.0",
 		"mime-type": "^3.0.7",
+		"mitt": "^1.2.0",
 		"mkdirp": "^0.5.1",
 		"moment": "^2.22.2",
 		"moment-timezone": "^0.5.23",

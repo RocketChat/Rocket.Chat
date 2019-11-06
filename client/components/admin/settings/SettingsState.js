@@ -1,5 +1,6 @@
 import { Mongo } from 'meteor/mongo';
-import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react';
+import mitt from 'mitt';
+import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState, useMemo, useLayoutEffect } from 'react';
 
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
 
@@ -71,13 +72,8 @@ const stateReducer = (states, { type, payload }) => {
 };
 
 const useLazyRef = (fn) => {
-	const ref = useRef();
-
-	if (!ref.current) {
-		ref.current = fn();
-	}
-
-	return ref;
+	const [value] = useState(fn);
+	return useRef(value);
 };
 
 export function SettingsState({ children }) {
@@ -183,15 +179,45 @@ export function SettingsState({ children }) {
 		settingsRef.current = settings;
 	}, [persistedSettings, settings]);
 
-	const contextValue = {
+	const [emitter] = useState(() => mitt());
+	const stateRef = useRef({ settings, persistedSettings });
+
+	useLayoutEffect(() => {
+		stateRef.current = { settings, persistedSettings };
+		emitter.emit('update', {
+			settings,
+			persistedSettings,
+		});
+	});
+
+	const contextValue = useMemo(() => ({
 		isLoading,
-		state: settings,
-		persistedState: persistedSettings,
+		emitter,
+		stateRef,
 		hydrate,
 		isDisabled,
-	};
+	}), [
+		isLoading,
+		emitter,
+		stateRef,
+		hydrate,
+		isDisabled,
+	]);
 
 	return <SettingsContext.Provider children={children} value={contextValue} />;
 }
 
-export const useSettingsState = () => useContext(SettingsContext);
+export const useSettingsState = () => {
+	const { isLoading, emitter, stateRef, hydrate, isDisabled } = useContext(SettingsContext);
+	const [{ settings: state, persistedSettings: persistedState }, setState] = useState(() => stateRef.current);
+
+	useEffect(() => {
+		emitter.on('update', setState);
+
+		return () => {
+			emitter.off('update', setState);
+		};
+	}, []);
+
+	return { isLoading, hydrate, isDisabled, state, persistedState };
+};
