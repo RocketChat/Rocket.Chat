@@ -27,23 +27,30 @@ const stateReducer = (states, { type, payload }) => {
 	} = states;
 
 	switch (type) {
-		case 'add':
+		case 'add': {
 			return {
 				settings: [...settings, ...payload].sort(compareSettings),
 				persistedSettings: [...persistedSettings, ...payload].sort(compareSettings),
 			};
+		}
 
-		case 'change':
-			return {
-				settings: settings.map((setting) => (setting._id !== payload._id ? setting : payload)),
-				persistedSettings: settings.map((setting) => (setting._id !== payload._id ? setting : payload)),
-			};
+		case 'change': {
+			const mapping = (setting) => (setting._id !== payload._id ? setting : payload);
 
-		case 'remove':
 			return {
-				settings: settings.filter((setting) => setting._id !== payload),
-				persistedSettings: persistedSettings.filter((setting) => setting._id !== payload),
+				settings: settings.map(mapping),
+				persistedSettings: settings.map(mapping),
 			};
+		}
+
+		case 'remove': {
+			const mapping = (setting) => setting._id !== payload;
+
+			return {
+				settings: settings.filter(mapping),
+				persistedSettings: persistedSettings.filter(mapping),
+			};
+		}
 
 		case 'hydrate': {
 			const map = {};
@@ -63,12 +70,20 @@ const stateReducer = (states, { type, payload }) => {
 	return states;
 };
 
+const useLazyRef = (fn) => {
+	const ref = useRef();
+
+	if (!ref.current) {
+		ref.current = fn();
+	}
+
+	return ref;
+};
+
 export function SettingsState({ children }) {
 	const [isLoading, setLoading] = useState(true);
 
-	const persistedCollectionRef = useRef(privateSettingsCachedCollection && privateSettingsCachedCollection.collection);
-
-	useEffect(() => {
+	const persistedCollectionRef = useLazyRef(() => {
 		if (!privateSettingsCachedCollection) {
 			privateSettingsCachedCollection = new PrivateSettingsCachedCollection();
 
@@ -79,19 +94,20 @@ export function SettingsState({ children }) {
 			privateSettingsCachedCollection.init().then(stopLoading, stopLoading);
 		}
 
-		persistedCollectionRef.current = privateSettingsCachedCollection.collection;
-	}, []);
+		return privateSettingsCachedCollection.collection;
+	});
+
+	const collectionRef = useLazyRef(() => new Mongo.Collection(null));
 
 	const [{ settings, persistedSettings }, dispatch] = useReducer(stateReducer, { settings: [], persistedSettings: [] });
-
-	const { current: persistedCollection } = persistedCollectionRef;
-
-	const [collection] = useState(() => new Mongo.Collection(null));
 
 	useEffect(() => {
 		if (isLoading) {
 			return;
 		}
+
+		const { current: persistedCollection } = persistedCollectionRef;
+		const { current: collection } = collectionRef;
 
 		const addedQueue = [];
 		let addedActionTimer;
@@ -126,34 +142,23 @@ export function SettingsState({ children }) {
 			persistedFieldsQueryHandle.stop();
 			clearTimeout(addedActionTimer);
 		};
-	}, [isLoading]);
+	}, [isLoading, persistedCollectionRef, collectionRef]);
 
 	const updateTimersRef = useRef({});
 
-	const updateAtCollection = ({ _id, ...data }) => {
+	const updateAtCollection = useCallback(({ _id, ...data }) => {
+		const { current: collection } = collectionRef;
 		const { current: updateTimers } = updateTimersRef;
 		clearTimeout(updateTimers[_id]);
 		updateTimers[_id] = setTimeout(() => {
 			collection.update(_id, { $set: data });
 		}, 70);
-	};
-
-	const collectionRef = useRef();
-	const updateAtCollectionRef = useRef();
-	const updateStateRef = useRef();
-
-	useEffect(() => {
-		collectionRef.current = collection;
-		updateAtCollectionRef.current = updateAtCollection;
-		updateStateRef.current = dispatch;
-	});
+	}, [collectionRef, updateTimersRef]);
 
 	const hydrate = useCallback((changes) => {
-		const { current: updateAtCollection } = updateAtCollectionRef;
-		const { current: updateState } = updateStateRef;
 		changes.forEach(updateAtCollection);
-		updateState({ type: 'hydrate', payload: changes });
-	}, []);
+		dispatch({ type: 'hydrate', payload: changes });
+	}, [updateAtCollection, dispatch]);
 
 	const isDisabled = useCallback(({ blocked, enableQuery }) => {
 		if (blocked) {
@@ -169,6 +174,14 @@ export function SettingsState({ children }) {
 		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
 		return !queries.every((query) => !!collection.findOne(query));
 	}, []);
+
+	const persistedSettingsRef = useRef(persistedSettings);
+	const settingsRef = useRef(settings);
+
+	useEffect(() => {
+		persistedSettingsRef.current = persistedSettings;
+		settingsRef.current = settings;
+	}, [persistedSettings, settings]);
 
 	const contextValue = {
 		isLoading,
