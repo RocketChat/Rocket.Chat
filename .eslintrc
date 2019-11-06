@@ -1,12 +1,20 @@
 {
-  "extends": ["@rocket.chat/eslint-config"],
-  "parser": "babel-eslint",
+  "extends": ["@rocket.chat/eslint-config", "plugin:@typescript-eslint/recommended"],
+  "parser": "@typescript-eslint/parser",
   "globals": {
     "__meteor_bootstrap__"        : false,
     "__meteor_runtime_config__"   : false,
     "Assets"                      : false,
     "chrome"                      : false,
     "jscolor"                     : false
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2018,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "legacyDecorators": true
+    }
   },
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
@@ -18,11 +26,8 @@
   },
   "settings": {
     "import/resolver": {
-      "webpack": {
-        "config": "webpack.config.js"
-      },
       "node": {
-        "extensions": [".js", ".ts"]
+        "extensions": [".js", ".ts", ".tsx"]
       }
     },
     "react": {
