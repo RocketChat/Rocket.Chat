@@ -309,7 +309,7 @@ export class AppsRestApi {
 
 						result = Apps.getBridges().getListenerBridge().externalComponentEvent(event, externalComponent);
 					} catch (e) {
-						orchestrator.getRocketChatLogger().error(`Error triggering exxternal components' events ${ e.response.data }`);
+						orchestrator.getRocketChatLogger().error(`Error triggering external components' events ${ e.response.data }`);
 						return API.v1.internalError();
 					}
 					return API.v1.success({ result });
