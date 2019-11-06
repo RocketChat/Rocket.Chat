@@ -11,18 +11,58 @@
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2018,
+    "warnOnUnsupportedTypeScriptVersion": false,
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true,
       "legacyDecorators": true
     }
   },
   "plugins": ["react", "@typescript-eslint"],
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true
+  },
   "rules": {
     "jsx-quotes": ["error", "prefer-single"],
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
     "react/jsx-no-undef": "error",
     "react/jsx-fragments": ["error", "syntax"],
+    "@typescript-eslint/camelcase": [0, {
+      "extensions": ".js"
+    }],
+    "@typescript-eslint/no-this-alias": [0, {
+      "extensions": ".js"
+    }],
+    "@typescript-eslint/no-empty-function": [0, {
+      "extensions": ".js"
+    }],
+    "@typescript-eslint/no-var-requires": [0, {
+      "extensions": ".js"
+    }],
+    "prefer-spread": [0, {
+      "extensions": ".js"
+    }],
+    "@typescript-eslint/class-name-casing": [0, {
+      "extensions": ".js"
+    }],
+    "@typescript-eslint/explicit-function-return-type": [0, {
+      "extensions": ".js"
+    }],
+    "@typescript-eslint/no-unused-vars": [0, {
+      "extensions": ".js"
+    }],
+    "@typescript-eslint/no-use-before-define": [0, {
+      "extensions": ".js"
+    }],
+    "import/export": [0, {
+      "extensions": ".js"
+    }],
+    "complexity": [0, {
+      "extensions": ".js"
+    }],
   },
   "settings": {
     "import/resolver": {

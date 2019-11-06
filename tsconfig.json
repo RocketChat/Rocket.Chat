@@ -2,13 +2,17 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
+	"lib": ["es2017"],
+	"moduleResolution": "node",
     "sourceMap": true,
     "declaration": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "removeComments": false,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+	"allowJs": false,
+	"esModuleInterop": false
   },
   "exclude": [
     "node_modules"
