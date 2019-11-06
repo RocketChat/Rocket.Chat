@@ -164,9 +164,9 @@
 	&.loading {
 		position: relative;
 
-		padding-right: calc(3 * 0.782rem);
+		/* padding-right: calc(3 * 0.782rem); */
 
-		transition: padding-right 0.3s;
+		/* transition: padding-right 0.3s; */
 
 		&::before {
 			position: absolute;
