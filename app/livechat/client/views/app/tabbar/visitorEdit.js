@@ -81,7 +81,6 @@ Template.visitorEdit.onCreated(async function() {
 	this.agentDepartments.set(agentDepartments);
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {
 		this.availableTags.set(tagsList);
-		const uid = Meteor.userId();
 		const agentDepartments = this.agentDepartments.get();
 		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
 		const tags = this.availableTags.get() || [];
