@@ -20,16 +20,30 @@ const compareSettings = (a, b) =>
 	|| compareStrings(a.sorter, b.sorter)
 	|| compareStrings(a.i18nLabel, b.i18nLabel);
 
-const stateReducer = (state, { type, payload }) => {
+const stateReducer = (states, { type, payload }) => {
+	const {
+		settings,
+		persistedSettings,
+	} = states;
+
 	switch (type) {
 		case 'add':
-			return [...state, ...payload].sort(compareSettings);
+			return {
+				settings: [...settings, ...payload].sort(compareSettings),
+				persistedSettings: [...persistedSettings, ...payload].sort(compareSettings),
+			};
 
 		case 'change':
-			return state.map((setting) => (setting._id !== payload._id ? setting : payload));
+			return {
+				settings: settings.map((setting) => (setting._id !== payload._id ? setting : payload)),
+				persistedSettings: settings.map((setting) => (setting._id !== payload._id ? setting : payload)),
+			};
 
 		case 'remove':
-			return state.filter((setting) => setting._id !== payload);
+			return {
+				settings: settings.filter((setting) => setting._id !== payload),
+				persistedSettings: persistedSettings.filter((setting) => setting._id !== payload),
+			};
 
 		case 'hydrate': {
 			const map = {};
@@ -37,37 +51,38 @@ const stateReducer = (state, { type, payload }) => {
 				map[setting._id] = setting;
 			});
 
-			return state.map((setting) => (map[setting._id] ? { ...setting, ...map[setting._id] } : setting));
+			const mapping = (setting) => (map[setting._id] ? { ...setting, ...map[setting._id] } : setting);
+
+			return {
+				settings: settings.map(mapping),
+				persistedSettings,
+			};
 		}
 	}
 
-	return state;
+	return states;
 };
 
 export function SettingsState({ children }) {
-	const [state, updateState] = useReducer(stateReducer, []);
-	const [persistedState, updatePersistedState] = useReducer(stateReducer, []);
 	const [isLoading, setLoading] = useState(true);
 
-	const updateStates = (action) => {
-		updateState(action);
-		updatePersistedState(action);
-	};
-
-	const stopLoading = () => {
-		setLoading(false);
-	};
-
-	const persistedCollectionRef = useRef();
+	const persistedCollectionRef = useRef(privateSettingsCachedCollection && privateSettingsCachedCollection.collection);
 
 	useEffect(() => {
 		if (!privateSettingsCachedCollection) {
 			privateSettingsCachedCollection = new PrivateSettingsCachedCollection();
+
+			const stopLoading = () => {
+				setLoading(false);
+			};
+
 			privateSettingsCachedCollection.init().then(stopLoading, stopLoading);
 		}
 
 		persistedCollectionRef.current = privateSettingsCachedCollection.collection;
 	}, []);
+
+	const [{ settings, persistedSettings }, dispatch] = useReducer(stateReducer, { settings: [], persistedSettings: [] });
 
 	const { current: persistedCollection } = persistedCollectionRef;
 
@@ -86,18 +101,18 @@ export function SettingsState({ children }) {
 			addedQueue.push(data);
 			clearTimeout(addedActionTimer);
 			addedActionTimer = setTimeout(() => {
-				updateStates({ type: 'add', payload: addedQueue });
+				dispatch({ type: 'add', payload: addedQueue });
 			}, 70);
 		};
 
 		const changed = (data) => {
 			collection.update(data._id, data);
-			updateStates({ type: 'change', payload: data });
+			dispatch({ type: 'change', payload: data });
 		};
 
 		const removed = ({ _id }) => {
 			collection.remove(_id);
-			updateStates({ type: 'remove', payload: _id });
+			dispatch({ type: 'remove', payload: _id });
 		};
 
 		const persistedFieldsQueryHandle = persistedCollection.find()
@@ -130,7 +145,7 @@ export function SettingsState({ children }) {
 	useEffect(() => {
 		collectionRef.current = collection;
 		updateAtCollectionRef.current = updateAtCollection;
-		updateStateRef.current = updateState;
+		updateStateRef.current = dispatch;
 	});
 
 	const hydrate = useCallback((changes) => {
@@ -157,8 +172,8 @@ export function SettingsState({ children }) {
 
 	const contextValue = {
 		isLoading,
-		state,
-		persistedState,
+		state: settings,
+		persistedState: persistedSettings,
 		hydrate,
 		isDisabled,
 	};
