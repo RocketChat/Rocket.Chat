@@ -7,6 +7,7 @@ import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
+import { settings } from '../../../settings';
 
 export const createLivechatRoom = (rid, name, guest, extraData) => {
 	check(rid, String);
@@ -154,8 +155,17 @@ export const removeAgentFromSubscription = (rid, { _id, username }) => {
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 };
 
+export const normalizeAgent = (agentId) => {
+	if (!agentId) {
+		return;
+	}
+
+	return settings.get('Livechat_show_agent_info') ? Users.getAgentInfo(agentId) : { hiddenInfo: true };
+};
+
 export const dispatchAgentDelegated = (rid, agentId) => {
-	const agent = agentId && Users.getAgentInfo(agentId);
+	const agent = normalizeAgent(agentId);
+
 	Livechat.stream.emit(rid, {
 		type: 'agentData',
 		data: agent,
@@ -169,17 +179,17 @@ export const forwardRoomToAgent = async (room, agentId) => {
 
 	const user = Users.findOneOnlineAgentById(agentId);
 	if (!user) {
-		return false;
+		throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
 	}
 
 	const { _id: rid, servedBy: oldServedBy } = room;
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
-		throw new Meteor.Error('error-transferring-inquiry');
+		throw new Meteor.Error('error-invalid-inquiry', 'Invalid inquiry', { function: 'forwardRoomToAgent' });
 	}
 
 	if (oldServedBy && agentId === oldServedBy._id) {
-		return false;
+		throw new Meteor.Error('error-selected-agent-room-agent-are-same', 'The selected agent and the room agent are the same', { function: 'forwardRoomToAgent' });
 	}
 
 	const { username } = user;
@@ -196,7 +206,6 @@ export const forwardRoomToAgent = async (room, agentId) => {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
 			removeAgentFromSubscription(rid, oldServedBy);
 		}
-
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
 	}
 

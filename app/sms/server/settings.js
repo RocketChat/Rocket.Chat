@@ -47,6 +47,25 @@ Meteor.startup(function() {
 				i18nLabel: 'Auth_Token',
 				secret: true,
 			});
+			this.add('SMS_Twilio_FileUpload_Enabled', true, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'twilio',
+				},
+				i18nLabel: 'FileUpload_Enabled',
+				secret: true,
+			});
+			this.add('SMS_Twilio_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,text/*,application/pdf', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'twilio',
+				},
+				i18nLabel: 'FileUpload_MediaTypeWhiteList',
+				i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+				secret: true,
+			});
 		});
 
 		this.section('Voxtelesys', function() {

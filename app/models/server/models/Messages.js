@@ -4,7 +4,6 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
-import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
 
 export class Messages extends Base {
 	constructor() {
@@ -905,21 +904,26 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	async removeFilesByRoomId(roomId) {
-		this.find({
-			rid: roomId,
-			'file._id': {
-				$exists: true,
-			},
-		}, {
-			fields: {
-				'file._id': 1,
-			},
-		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
-	}
-
 	getMessageByFileId(fileID) {
 		return this.findOne({ 'file._id': fileID });
+	}
+
+	getMessageByFileIdAndUsername(fileID, userId) {
+		const query = {
+			'file._id': fileID,
+			'u._id': userId,
+		};
+
+		const options = {
+			fields: {
+				unread: 0,
+				mentions: 0,
+				channels: 0,
+				groupable: 0,
+			},
+		};
+
+		return this.findOne(query, options);
 	}
 
 	setAsRead(rid, until) {
