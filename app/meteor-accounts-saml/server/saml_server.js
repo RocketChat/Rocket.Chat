@@ -154,6 +154,34 @@ function getUserDataMapping() {
 	return { emailField, usernameField, nameField, userDataFieldMap: newMapping };
 }
 
+function overwriteData(user, fullName, eppnMatch, emailList) {
+	// Overwrite fullname if needed
+	if (Accounts.saml.settings.nameOverwrite === true) {
+		Meteor.users.update({
+			_id: user._id,
+		}, {
+			$set: {
+				name: fullName,
+			},
+		});
+	}
+
+	// Overwrite mail if needed
+	if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
+		Meteor.users.update({
+			_id: user._id,
+		}, {
+			$set: {
+				emails: emailList.map((email) => ({
+					address: email,
+					verified: true,
+				})),
+			},
+		});
+	}
+}
+}
+
 const guessNameFromUsername = (username) =>
 	username
 		.replace(/\W/g, ' ')
@@ -321,30 +349,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			_setUsername(user._id, username);
 		}
 
-		// Overwrite fullname if needed
-		if (Accounts.saml.settings.nameOverwrite === true) {
-			Meteor.users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					name: fullName,
-				},
-			});
-		}
-
-		// Overwrite mail if needed
-		if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
-			Meteor.users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					emails: emailList.map((email) => ({
-						address: email,
-						verified: true,
-					})),
-				},
-			});
-		}
+		overwriteData(user, fullName, eppnMatch, emailList);
 
 		// sending token along with the userId
 		const result = {
