@@ -1235,6 +1235,7 @@ export class Subscriptions extends Base {
 			fname: room.fname,
 			customFields: room.customFields,
 			t: room.t,
+			audioNotificationValue: '0',
 			u: {
 				_id: user._id,
 				username: user.username,
