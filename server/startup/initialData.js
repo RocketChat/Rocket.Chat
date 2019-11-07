@@ -45,6 +45,35 @@ Meteor.startup(function() {
 			});
 		}
 
+        // WIDECHAT bot user
+		if (!Users.findOneById('viasat')) {
+			Users.create({
+				_id: 'viasat',
+				name: 'viasat',
+				username: 'viasat',
+				status: 'online',
+				statusDefault: 'online',
+				utcOffset: 0,
+				active: true,
+				type: 'bot',
+			});
+
+			addUserRoles('viasat', 'bot');
+
+			const rs = RocketChatFile.bufferToStream(new Buffer(Assets.getBinary('avatars/viasat.png'), 'utf8'));
+			const fileStore = FileUpload.getStore('Avatars');
+			fileStore.deleteByName('viasat');
+
+			const file = {
+				userId: 'viasat',
+				type: 'image/png',
+			};
+
+			Meteor.runAsUser('viasat', () => {
+				fileStore.insert(file, rs, () => Users.setAvatarOrigin('viasat', 'local'));
+			});
+		}
+
 		if (process.env.ADMIN_PASS) {
 			if (_.isEmpty(getUsersInRole('admin').fetch())) {
 				console.log('Inserting admin user:'.green);
