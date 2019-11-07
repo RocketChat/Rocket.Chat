@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import mitt from 'mitt';
-import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState, useMemo, useLayoutEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import toastr from 'toastr';
 
 import { handleError } from '../../../../app/utils/client/lib/handleError';
@@ -98,7 +97,23 @@ export function SettingsState({ children }) {
 
 	const collectionRef = useLazyRef(() => new Mongo.Collection(null));
 
-	const [{ settings, persistedSettings }, dispatch] = useReducer(stateReducer, { settings: [], persistedSettings: [] });
+	const [subscribers] = useState(new Set());
+
+	const stateRef = useRef({ settings: [], persistedSettings: [] });
+
+	const enhancedReducer = useCallback((state, action) => {
+		const newState = stateReducer(state, action);
+
+		stateRef.current = newState;
+
+		subscribers.forEach((subscriber) => {
+			subscriber(newState);
+		});
+
+		return newState;
+	}, [stateReducer, subscribers]);
+
+	const [, dispatch] = useReducer(enhancedReducer, { settings: [], persistedSettings: [] });
 
 	useEffect(() => {
 		if (isLoading) {
@@ -174,34 +189,15 @@ export function SettingsState({ children }) {
 		return !queries.every((query) => !!collection.findOne(query));
 	}, []);
 
-	const persistedSettingsRef = useRef(persistedSettings);
-	const settingsRef = useRef(settings);
-
-	useEffect(() => {
-		persistedSettingsRef.current = persistedSettings;
-		settingsRef.current = settings;
-	}, [persistedSettings, settings]);
-
-	const [emitter] = useState(() => mitt());
-	const stateRef = useRef({ settings, persistedSettings });
-
-	useLayoutEffect(() => {
-		stateRef.current = { settings, persistedSettings };
-		emitter.emit('update', {
-			settings,
-			persistedSettings,
-		});
-	});
-
 	const contextValue = useMemo(() => ({
 		isLoading,
-		emitter,
+		subscribers,
 		stateRef,
 		hydrate,
 		isDisabled,
 	}), [
 		isLoading,
-		emitter,
+		subscribers,
 		stateRef,
 		hydrate,
 		isDisabled,
@@ -211,14 +207,14 @@ export function SettingsState({ children }) {
 }
 
 export const useSettingsState = () => {
-	const { isLoading, emitter, stateRef, hydrate, isDisabled } = useContext(SettingsContext);
+	const { isLoading, subscribers, stateRef, hydrate, isDisabled } = useContext(SettingsContext);
 	const [{ settings: state, persistedSettings: persistedState }, setState] = useState(() => stateRef.current);
 
 	useEffect(() => {
-		emitter.on('update', setState);
+		subscribers.add(setState);
 
 		return () => {
-			emitter.off('update', setState);
+			subscribers.delete(setState);
 		};
 	}, []);
 
@@ -226,7 +222,7 @@ export const useSettingsState = () => {
 };
 
 const useSelector = (selector, equalityFunction = (a, b) => a === b) => {
-	const { emitter, stateRef } = useContext(SettingsContext);
+	const { subscribers, stateRef } = useContext(SettingsContext);
 	const [value, setValue] = useState(() => selector(stateRef.current));
 
 	const handleUpdate = useEventCallback((selector, equalityFunction, value, state) => {
@@ -238,10 +234,10 @@ const useSelector = (selector, equalityFunction = (a, b) => a === b) => {
 	}, selector, equalityFunction, value);
 
 	useEffect(() => {
-		emitter.on('update', handleUpdate);
+		subscribers.add(handleUpdate);
 
 		return () => {
-			emitter.off('update', handleUpdate);
+			subscribers.delete(handleUpdate);
 		};
 	}, [handleUpdate]);
 
