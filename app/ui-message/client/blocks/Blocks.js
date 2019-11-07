@@ -12,7 +12,7 @@ Template.Blocks.events({
 Template.Blocks.helpers({
 	template() {
 		const { type } = this;
-		console.log(type);
+
 		switch (type) {
 			case 'section':
 				return 'SectionBlock';
@@ -22,6 +22,12 @@ Template.Blocks.helpers({
 				return 'ImageBlock';
 			case 'actions':
 				return 'ActionsBlock';
+			case 'context':
+				// TODO
+				break;
+			case 'input':
+				// TODO
+				break;
 		}
 	},
 	data() {
