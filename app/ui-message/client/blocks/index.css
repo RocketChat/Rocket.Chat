@@ -1,10 +1,8 @@
-
-
 .block-kit-debug.debug {
-	border: 1px solid;
 	padding: 1rem;
-}
 
+	border: 1px solid;
+}
 
 .block-kit-debug legend {
 	display: none;
