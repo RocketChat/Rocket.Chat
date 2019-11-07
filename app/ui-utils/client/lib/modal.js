@@ -1,97 +1,183 @@
-import './modal.html';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
 import { t, getUserPreference, handleError } from '../../../utils';
+import './modal.html';
+
+let modalStack = [];
+
+const createModal = (config = {}, fn, onCancel) => {
+	config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
+	config.cancelButtonText = config.cancelButtonText || t('Cancel');
+	config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
+	config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
+	config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
+	config.confirmOnEnter = config.confirmOnEnter == null ? true : config.confirmOnEnter;
+
+	if (config.type === 'input') {
+		config.input = true;
+		config.type = false;
+
+		if (!config.inputType) {
+			config.inputType = 'text';
+		}
+	}
+
+	let renderedModal;
+	let timer;
+
+	const instance = {
+		...config,
+
+		render: () => {
+			if (renderedModal) {
+				renderedModal.firstNode().style.display = '';
+				return;
+			}
+
+			renderedModal = Blaze.renderWithData(Template.rc_modal, instance, document.body);
+
+			if (config.timer) {
+				timer = setTimeout(() => {
+					instance.close();
+				}, config.timer);
+			}
+		},
+
+		hide: () => {
+			if (renderedModal) {
+				renderedModal.firstNode().style.display = 'none';
+			}
+
+			if (timer) {
+				clearTimeout(timer);
+				timer = undefined;
+			}
+		},
+
+		destroy: () => {
+			if (renderedModal) {
+				Blaze.remove(renderedModal);
+				renderedModal = undefined;
+			}
+
+			if (timer) {
+				clearTimeout(timer);
+				timer = undefined;
+			}
+		},
+
+		close: () => {
+			instance.destroy();
+			modalStack = modalStack.filter((modal) => modal !== instance);
+			if (modalStack.length) {
+				modalStack[modalStack.length - 1].render();
+			}
+		},
+
+		confirm: (value) => {
+			config.closeOnConfirm && instance.close();
+
+			if (fn) {
+				fn.call(instance, value);
+				return;
+			}
+
+			instance.close();
+		},
+
+		cancel: () => {
+			if (onCancel) {
+				onCancel.call(instance);
+			}
+			instance.close();
+		},
+
+		showInputError: (text) => {
+			const errorEl = document.querySelector('.rc-modal__content-error');
+			errorEl.innerHTML = text;
+			errorEl.style.display = 'block';
+		},
+	};
+
+	return instance;
+};
 
 export const modal = {
-	renderedModal: null,
-	open(config = {}, fn, onCancel) {
-		config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
-		config.cancelButtonText = config.cancelButtonText || t('Cancel');
-		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
-		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
-		config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
-		config.confirmOnEnter = config.confirmOnEnter == null ? true : config.confirmOnEnter;
+	open: (config = {}, fn, onCancel) => {
+		modalStack.forEach((instance) => {
+			instance.destroy();
+		});
+		modalStack = [];
 
-		if (config.type === 'input') {
-			config.input = true;
-			config.type = false;
-
-			if (!config.inputType) {
-				config.inputType = 'text';
-			}
-		}
-
-		this.close();
-		this.fn = fn;
-		this.onCancel = onCancel;
-		this.config = config;
+		const instance = createModal(config, fn, onCancel);
 
 		if (config.dontAskAgain) {
 			const dontAskAgainList = getUserPreference(Meteor.userId(), 'dontAskAgainList');
 
 			if (dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) {
-				this.confirm(true);
+				instance.confirm(true);
 				return;
 			}
 		}
 
-		this.renderedModal = Blaze.renderWithData(Template.rc_modal, config, document.body);
-		this.timer = null;
-		if (config.timer) {
-			this.timer = setTimeout(() => this.close(), config.timer);
-		}
+		instance.render();
+		modalStack.push(instance);
 	},
-	cancel() {
-		if (this.onCancel) {
-			this.onCancel();
-		}
-		this.close();
-	},
-	close() {
-		if (this.renderedModal) {
-			Blaze.remove(this.renderedModal);
-		}
-		this.fn = null;
-		this.onCancel = null;
-		if (this.timer) {
-			clearTimeout(this.timer);
-		}
-	},
-	confirm(value) {
-		const { fn } = this;
+	push: (config = {}, fn, onCancel) => {
+		const instance = createModal(config, fn, onCancel);
 
-		this.config.closeOnConfirm && this.close();
-
-		if (fn) {
-			fn.call(this, value);
+		modalStack.forEach((instance) => {
+			instance.hide();
+		});
+		instance.render();
+		modalStack.push(instance);
+	},
+	cancel: () => {
+		if (modalStack.length) {
+			modalStack[modalStack.length - 1].cancel();
+		}
+	},
+	close: () => {
+		if (modalStack.length) {
+			modalStack[modalStack.length - 1].close();
+		}
+	},
+	confirm: (value) => {
+		if (modalStack.length) {
+			modalStack[modalStack.length - 1].confirm(value);
+		}
+	},
+	showInputError: (text) => {
+		if (modalStack.length) {
+			modalStack[modalStack.length - 1].showInputError(text);
+		}
+	},
+	onKeyDown: (event) => {
+		if (!modalStack.length) {
 			return;
 		}
 
-		this.close();
-	},
-	showInputError(text) {
-		const errorEl = document.querySelector('.rc-modal__content-error');
-		errorEl.innerHTML = text;
-		errorEl.style.display = 'block';
-	},
-	onKeydown(e) {
-		if (modal.config.confirmOnEnter && e.key === 'Enter') {
-			e.preventDefault();
-			e.stopPropagation();
+		const instance = modalStack[modalStack.length - 1];
 
-			if (modal.config.input) {
-				return modal.confirm($('.js-modal-input').val());
+		if (instance.config.confirmOnEnter && event.key === 'Enter') {
+			event.preventDefault();
+			event.stopPropagation();
+
+			if (instance.config.input) {
+				return instance.confirm($('.js-modal-input').val());
 			}
 
-			modal.confirm(true);
-		} else if (e.key === 'Escape') {
-			e.preventDefault();
-			e.stopPropagation();
+			instance.confirm(true);
+			return;
+		}
 
-			modal.close();
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			event.stopPropagation();
+
+			instance.close();
 		}
 	},
 };
@@ -131,25 +217,25 @@ Template.rc_modal.onRendered(function() {
 		$('.js-modal-input').focus();
 	}
 
-	document.addEventListener('keydown', modal.onKeydown);
+	document.addEventListener('keydown', modal.onKeyDown);
 });
 
 Template.rc_modal.onDestroyed(function() {
-	document.removeEventListener('keydown', modal.onKeydown);
+	document.removeEventListener('keydown', modal.onKeyDown);
 });
 
 Template.rc_modal.events({
-	'click .js-action'(e, instance) {
-		!this.action || this.action.call(instance.data.data, e, instance);
-		e.stopPropagation();
-		modal.close();
+	'click .js-action'(event, instance) {
+		!this.action || this.action.call(instance.data.data, event, instance);
+		event.stopPropagation();
+		this.close();
 	},
 	'click .js-close'(e) {
 		e.stopPropagation();
-		modal.cancel();
+		this.cancel();
 	},
-	'click .js-confirm'(e, instance) {
-		e.stopPropagation();
+	'click .js-confirm'(event, instance) {
+		event.stopPropagation();
 		const { dontAskAgain } = instance.data;
 		if (dontAskAgain && document.getElementById('dont-ask-me-again').checked) {
 			const dontAskAgainObject = {
@@ -172,20 +258,20 @@ Template.rc_modal.events({
 		}
 
 		if (instance.data.input) {
-			modal.confirm(document.getElementsByClassName('js-modal-input')[0].value);
+			this.confirm(document.getElementsByClassName('js-modal-input')[0].value);
 			return;
 		}
 
-		modal.confirm(true);
+		this.confirm(true);
 	},
-	'click .rc-modal-wrapper'(e, instance) {
+	'click .rc-modal-wrapper'(event, instance) {
 		if (instance.data.allowOutsideClick === false) {
 			return false;
 		}
 
-		if (e.currentTarget === e.target) {
-			e.stopPropagation();
-			modal.close();
+		if (event.currentTarget === event.target) {
+			event.stopPropagation();
+			this.close();
 		}
 	},
 });
