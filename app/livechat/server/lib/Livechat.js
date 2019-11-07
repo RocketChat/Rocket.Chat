@@ -463,14 +463,19 @@ export const Livechat = {
 
 	saveTransferHistory(room, transferData) {
 		const { departmentId: previousDepartment } = room;
-		const { departmentId: nextDepartment, transferedBy, transferedTo } = transferData;
+		const { departmentId: nextDepartment, transferredBy, transferredTo } = transferData;
+		check(transferredBy, Match.ObjectIncluding({
+			_id: String,
+			username: String,
+			type: String,
+		}));
 		const transfer = {
-			transferedBy,
+			transferredBy,
 			ts: new Date(),
 			scope: nextDepartment ? 'department' : 'agent',
 			...previousDepartment && { previousDepartment },
 			...nextDepartment && { nextDepartment },
-			...transferedTo && { transferedTo },
+			...transferredTo && { transferredTo },
 		};
 		LivechatRooms.updateTransferHistoryByRoomId(room._id, transfer);
 	},

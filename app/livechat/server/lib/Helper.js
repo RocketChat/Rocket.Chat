@@ -257,3 +257,14 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 
 	return true;
 };
+
+export const getTransferredData = (transferredBy, room) => {
+	if (!transferredBy || !room) {
+		throw new Error('You must provide "transferredBy" and "room" params to "getTransferredByData"');
+	}
+	return {
+		_id: transferredBy._id,
+		username: transferredBy.username,
+		type: room.servedBy && room.servedBy._id === transferredBy._id ? 'agent' : 'user',
+	};
+};

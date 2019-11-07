@@ -18,7 +18,7 @@ export class LivechatAgentActivity extends Base {
 
 		return this.upsert({ agentId, date }, {
 			$unset: {
-				lastStopedAt: 1,
+				lastStoppedAt: 1,
 			},
 			$set: {
 				lastStartedAt: new Date(),
@@ -30,7 +30,7 @@ export class LivechatAgentActivity extends Base {
 		});
 	}
 
-	updateLastStoppedAt({ agentId, date, lastStopedAt, availableTime }) {
+	updateLastStoppedAt({ agentId, date, lastStoppedAt, availableTime }) {
 		const query = {
 			agentId,
 			date,
@@ -38,20 +38,20 @@ export class LivechatAgentActivity extends Base {
 		const update = {
 			$inc: { availableTime },
 			$set: {
-				lastStopedAt,
+				lastStoppedAt,
 			},
 		};
 		return this.update(query, update);
 	}
 
-	updateServiceHistory({ agentId, date, historyObject }) {
+	updateServiceHistory({ agentId, date, serviceHistory }) {
 		const query = {
 			agentId,
 			date,
 		};
 		const update = {
 			$addToSet: {
-				serviceHistory: historyObject,
+				serviceHistory,
 			},
 		};
 		return this.update(query, update);

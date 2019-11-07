@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../authorization';
 import { LivechatRooms, Subscriptions, LivechatVisitors, Users } from '../../../models';
 import { Livechat } from '../lib/Livechat';
+import { getTransferredData } from '../lib/Helper';
 
 Meteor.methods({
 	'livechat:transfer'(transferData) {
@@ -32,8 +33,7 @@ Meteor.methods({
 		}
 
 		const guest = LivechatVisitors.findOneById(room.v && room.v._id);
-		const user = Meteor.user();
-		transferData.transferedBy = { _id: user._id, username: user.username };
+		transferData.transferredBy = getTransferredData(Meteor.user() || {}, room);
 		if (transferData.userId) {
 			const userToTransfer = Users.findOneById(transferData.userId);
 			transferData.transferedTo = { _id: userToTransfer._id, username: userToTransfer.username };

@@ -140,6 +140,12 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_room_count',
 	});
 
+	settings.add('Livechat_enabled_when_agent_idle', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		i18nLabel: 'Accept_new_livechats_when_agent_is_idle',
+	});
+
 	settings.add('Livechat_webhookUrl', false, {
 		type: 'string',
 		group: 'Livechat',

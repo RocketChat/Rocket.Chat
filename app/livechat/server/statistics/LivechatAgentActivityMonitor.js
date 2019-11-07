@@ -77,10 +77,10 @@ export class LivechatAgentActivityMonitor {
 		const data = { ...formatDate(), agentId: userId };
 		const livechatSession = LivechatAgentActivity.findOne(data);
 		if (livechatSession) {
-			const stopedAt = new Date();
-			const availableTime = moment(stopedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
-			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStopedAt: stopedAt });
-			LivechatAgentActivity.updateServiceHistory({ ...data, historyObject: { startedAt: livechatSession.lastStartedAt, stopedAt } });
+			const stoppedAt = new Date();
+			const availableTime = moment(stoppedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
+			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStopedAt: stoppedAt });
+			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: livechatSession.lastStartedAt, stopedAt: stoppedAt } });
 		}
 	}
 }
