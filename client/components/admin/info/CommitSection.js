@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { InformationList } from './InformationList';
 import { InformationEntry } from './InformationEntry';
 
 export function CommitSection({ info }) {
 	const t = useTranslation();
-	const { commit } = info;
+	const { commit = {} } = info;
 
 	return <>
 		<h3>{t('Commit')}</h3>

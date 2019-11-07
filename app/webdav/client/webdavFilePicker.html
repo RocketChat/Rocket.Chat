@@ -69,11 +69,17 @@
 								<tr class="webdav_{{this.type}} js-webdav_{{this.type}}" data-name="{{this.basename}}">
 									<td>
 										<div class="table-file-avatar-wrapper">
-											{{#with iconType}}
+											{{#if filePreview}}
 												<div class="table-file-avatar">
-													{{>icon icon=icon}}
+													<img src="{{filePreview}}" class="file-preview"/>
 												</div>
-											{{/with}}
+											{{else}}
+												{{#with iconType}}
+													<div class="table-file-avatar">
+														{{>icon icon=icon}}
+													</div>
+												{{/with}}
+											{{/if}}
 										</div>
 									</td>
 									<td>{{getName this.basename}}</td>
@@ -111,11 +117,17 @@
 							<div class="webdav_{{this.type}} js-webdav_{{this.type}} grid-item" data-name="{{this.basename}}">
 								<div>
 									<div class="grid-file-avatar-wrapper">
-										{{#with iconType}}
+										{{#if filePreview}}
 											<div class="grid-file-avatar">
-												{{>icon icon=icon}}
+												<img src="{{filePreview}}" class="file-preview"/>
 											</div>
-										{{/with}}
+										{{else}}
+											{{#with iconType}}
+												<div class="grid-file-avatar">
+													{{>icon icon=icon}}
+												</div>
+											{{/with}}
+										{{/if}}
 									</div>
 								</div>
 								<div>{{getName this.basename}}</div>

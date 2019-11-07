@@ -2,13 +2,14 @@ import { debounce } from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { updateStatus, updateEnabled } from '../functions/helpers';
+import { updateStatus, updateEnabled, isRegisteringOrEnabled } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMethod';
 import { registerWithHub } from '../lib/dns';
 import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { logger } from '../lib/logger';
 import { FederationKeys } from '../../../models/server';
+import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
 Meteor.startup(function() {
 	const federationPublicKey = FederationKeys.getPublicKeyString();
@@ -68,18 +69,22 @@ Meteor.startup(function() {
 const updateSettings = debounce(Meteor.bindEnvironment(function() {
 	// Get the key pair
 
-	if (getFederationDiscoveryMethod() === 'hub') {
+	if (getFederationDiscoveryMethod() === 'hub' && !isRegisteringOrEnabled()) {
 		// Register with hub
 		try {
+			updateStatus(STATUS_REGISTERING);
+
 			registerWithHub(getFederationDomain(), settings.get('Site_Url'), FederationKeys.getPublicKeyString());
+
+			updateStatus(STATUS_ENABLED);
 		} catch (err) {
 			// Disable federation
 			updateEnabled(false);
 
-			updateStatus('Could not register with Hub');
+			updateStatus(STATUS_ERROR_REGISTERING);
 		}
 	} else {
-		updateStatus('Enabled');
+		updateStatus(STATUS_ENABLED);
 	}
 }), 150);
 
@@ -91,7 +96,7 @@ function enableOrDisable(key, value) {
 
 		enableCallbacks();
 	} else {
-		updateStatus('Disabled');
+		updateStatus(STATUS_DISABLED);
 
 		disableCallbacks();
 	}

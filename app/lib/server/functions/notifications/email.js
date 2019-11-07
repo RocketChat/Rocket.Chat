@@ -76,7 +76,7 @@ function getEmailContent({ message, user, room }) {
 		return header;
 	}
 
-	if (message.attachments.length > 0) {
+	if (Array.isArray(message.attachments) && message.attachments.length > 0) {
 		const [attachment] = message.attachments;
 
 		let content = '';
@@ -150,6 +150,11 @@ export function shouldNotifyEmail({
 	hasReplyToThread,
 	roomType,
 }) {
+	// email notifications are disabled globally
+	if (!settings.get('Accounts_AllowEmailNotifications')) {
+		return false;
+	}
+
 	// use connected (don't need to send him an email)
 	if (statusConnection === 'online') {
 		return false;

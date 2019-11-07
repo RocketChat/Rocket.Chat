@@ -1,11 +1,44 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server';
+import { settings } from '../../../app/settings/server';
 
 Migrations.add({
 	version: 160,
 	up() {
-		Settings.update({ _id: 'Livechat_agent_leave_action' }, { $set: { section: 'Sessions' } });
-		Settings.update({ _id: 'Livechat_agent_leave_action_timeout' }, { $set: { section: 'Sessions' } });
-		Settings.update({ _id: 'Livechat_agent_leave_comment' }, { $set: { section: 'Sessions' } });
+		const emailFieldSetting = Settings.findOne({ _id: 'SAML_Custom_Default_email_field' });
+		const usernameFieldSetting = Settings.findOne({ _id: 'SAML_Custom_Default_username_field' });
+
+		Settings.removeById('SAML_Custom_Default_email_field');
+		Settings.removeById('SAML_Custom_Default_username_field');
+
+		if (!settings.get('SAML_Custom_Default')) {
+			return;
+		}
+
+		const emailField = (emailFieldSetting && emailFieldSetting.value) || 'email';
+		const usernameField = (usernameFieldSetting && usernameFieldSetting.value) || 'username';
+
+		if (emailField === 'email' && usernameField === 'username') {
+			// If using default values, there's no need to initialize the new setting here.
+			return;
+		}
+
+		const defaultMapping = `{"${ usernameField }":"username", "${ emailField }":"email", "cn": "name"}`;
+
+		Settings.upsert({
+			_id: 'SAML_Custom_Default_user_data_fieldmap',
+		},
+		{
+			_id: 'SAML_Custom_Default_user_data_fieldmap',
+			value: defaultMapping,
+			type: 'string',
+			group: 'SAML',
+			section: 'Default',
+			i18nLabel: 'SAML_Custom_user_data_fieldmap',
+			i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
+		});
+	},
+	down() {
+		// Down migration does not apply in this case
 	},
 });

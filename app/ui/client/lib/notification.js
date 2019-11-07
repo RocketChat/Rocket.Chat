@@ -107,7 +107,7 @@ export const KonchatNotification = {
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
 			if (sub && sub.audioNotificationValue !== 'none') {
-				if (sub && sub.audioNotificationValue) {
+				if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
 					CustomSounds.play(sub.audioNotificationValue, {
 						volume: Number((audioVolume / 100).toPrecision(2)),
 					});

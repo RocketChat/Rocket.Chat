@@ -29,10 +29,13 @@ import {
 	LivechatOfficeHour,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
 import { addUserRoles, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
+import { FileUpload } from '../../../file-upload/server';
 
 export const Livechat = {
 	Analytics,
@@ -45,12 +48,23 @@ export const Livechat = {
 	}),
 
 	online() {
+		if (settings.get('Livechat_accept_chats_with_no_agents')) {
+			return true;
+		}
+
+		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
+			const botAgents = Livechat.getBotAgents();
+			if (botAgents && botAgents.count() > 0) {
+				return true;
+			}
+		}
+
 		const onlineAgents = Livechat.getOnlineAgents();
 		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
 	},
 
 	getNextAgent(department) {
-		return RoutingManager.getMethod().getNextAgent(department);
+		return RoutingManager.getNextAgent(department);
 	},
 
 	getAgents(department) {
@@ -59,12 +73,22 @@ export const Livechat = {
 		}
 		return Users.findAgents();
 	},
+
 	getOnlineAgents(department) {
 		if (department) {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
 		return Users.findOnlineAgents();
 	},
+
+	getBotAgents(department) {
+		if (department) {
+			return LivechatDepartmentAgents.getBotsForDepartment(department);
+		}
+
+		return Users.findBotAgents();
+	},
+
 	getRequiredDepartment(onlineRequired = true) {
 		const departments = LivechatDepartment.findEnabledWithAgents();
 
@@ -362,11 +386,13 @@ export const Livechat = {
 			'Livechat_fileupload_enabled',
 			'FileUpload_Enabled',
 			'Livechat_conversation_finished_message',
+			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
+			'Livechat_show_agent_info',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
@@ -462,6 +488,10 @@ export const Livechat = {
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
+		if (!room.open) {
+			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
 		if (!room.servedBy) {
@@ -651,7 +681,7 @@ export const Livechat = {
 		check(token, String);
 
 		LivechatRooms.findByVisitorToken(token).forEach((room) => {
-			Messages.removeFilesByRoomId(room._id);
+			FileUpload.removeFilesByRoomId(room._id);
 			Messages.removeByRoomId(room._id);
 		});
 
@@ -855,6 +885,10 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
+		if (!settings.get('Livechat_show_agent_info')) {
+			return;
+		}
+
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',

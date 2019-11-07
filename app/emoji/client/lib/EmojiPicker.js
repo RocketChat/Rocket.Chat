@@ -113,6 +113,7 @@ export const EmojiPicker = {
 	close() {
 		$('.emoji-picker').removeClass('show');
 		this.opened = false;
+		this.source.focus();
 	},
 	pickEmoji(emoji) {
 		this.pickCallback(emoji);

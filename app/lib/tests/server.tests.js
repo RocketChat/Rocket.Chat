@@ -38,12 +38,12 @@ describe('PasswordPolicyClass', () => {
 
 		describe('Password tests with default options', () => {
 			it('should allow all passwords', () => {
-				const passwordPolice = new PasswordPolicyClass();
-				assert.equal(passwordPolice.validate(), true);
-				assert.equal(passwordPolice.validate(''), true);
+				const passwordPolice = new PasswordPolicyClass({ throwError: false });
+				assert.equal(passwordPolice.validate(), false);
+				assert.equal(passwordPolice.validate(''), false);
+				assert.equal(passwordPolice.validate('            '), false);
 				assert.equal(passwordPolice.validate('a'), true);
 				assert.equal(passwordPolice.validate('aaaaaaaaa'), true);
-				assert.equal(passwordPolice.validate('            '), true);
 			});
 		});
 	});
@@ -73,7 +73,7 @@ describe('PasswordPolicyClass', () => {
 			assert.equal(passwordPolice.validate('1'), false);
 			assert.equal(passwordPolice.validate('1234'), false);
 			assert.equal(passwordPolice.validate('12345'), true);
-			assert.equal(passwordPolice.validate('     '), true);
+			assert.equal(passwordPolice.validate('     '), false);
 		});
 
 		it('should restrict by maxLength', () => {
@@ -99,7 +99,7 @@ describe('PasswordPolicyClass', () => {
 			assert.equal(passwordPolice.validate('1'), true);
 			assert.equal(passwordPolice.validate('12345'), true);
 			assert.equal(passwordPolice.validate('123456'), true);
-			assert.equal(passwordPolice.validate('      '), true);
+			assert.equal(passwordPolice.validate('      '), false);
 			assert.equal(passwordPolice.validate('11111111111111'), true);
 		});
 

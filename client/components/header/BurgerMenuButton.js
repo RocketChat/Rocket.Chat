@@ -1,18 +1,21 @@
 import React, { useMemo } from 'react';
 
 import { ChatSubscription } from '../../../app/models/client/models/ChatSubscription';
-import { Layout } from '../../../app/ui-utils/client/lib/Layout';
-import { useSession } from '../../hooks/useSession';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { useUserPreference } from '../../hooks/useUserPreference';
 import { menu } from '../../../app/ui-utils/client/lib/menu';
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { useSession } from '../../hooks/useSession';
+import { useUserPreference } from '../../hooks/useUserPreference';
 
 import './BurgerMenuButton.css';
 
-const useBurgerMenuState = () => {
-	const isMenuOpen = useSession('isMenuOpen');
-	const isLayoutEmbedded = useReactiveValue(() => Layout.isEmbedded(), []);
+const useSidebarState = () => {
+	const isOpen = useSession('isMenuOpen');
+	const toggle = () => menu.toggle();
+	return [isOpen, toggle];
+};
 
+const useUnreadMessagesBadge = () => {
 	const alertUnreadMessages = useUserPreference('unreadAlert') !== false;
 	const openedRoom = useSession('openedRoom');
 	const [unreadCount, unreadAlert] = useReactiveValue(() => ChatSubscription
@@ -41,30 +44,30 @@ const useBurgerMenuState = () => {
 			return [unreadCount, unreadAlert];
 		}, [0, false]), [openedRoom, alertUnreadMessages]);
 
-	const unreadBadge = useMemo(() => {
+	return useMemo(() => {
 		if (unreadCount > 0) {
 			return unreadCount > 99 ? '99+' : unreadCount.toString(10);
 		}
 
 		return unreadAlert || '';
 	}, [unreadCount, unreadAlert]);
-
-	return { isMenuOpen, isLayoutEmbedded, unreadBadge };
 };
 
 export function BurgerMenuButton() {
-	const { isMenuOpen, isLayoutEmbedded, unreadBadge } = useBurgerMenuState();
+	const [isSidebarOpen, toggleSidebarOpen] = useSidebarState();
+	const isLayoutEmbedded = useEmbeddedLayout();
+	const unreadMessagesBadge = useUnreadMessagesBadge();
 
 	const handleClick = () => {
-		menu.toggle();
+		toggleSidebarOpen();
 	};
 
 	return <button
-		aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+		aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
 		className={[
 			'rc-old',
 			'burger',
-			!!isMenuOpen && 'menu-opened',
+			!!isSidebarOpen && 'menu-opened',
 		].filter(Boolean).join(' ')}
 		type='button'
 		onClick={handleClick}
@@ -72,9 +75,9 @@ export function BurgerMenuButton() {
 		<i className='burger__line' aria-hidden='true' />
 		<i className='burger__line' aria-hidden='true' />
 		<i className='burger__line' aria-hidden='true' />
-		{!isLayoutEmbedded && unreadBadge
+		{!isLayoutEmbedded && unreadMessagesBadge
 			&& <div className='unread-burger-alert color-error-contrast background-error-color'>
-				{unreadBadge}
+				{unreadMessagesBadge}
 			</div>}
 	</button>;
 }
