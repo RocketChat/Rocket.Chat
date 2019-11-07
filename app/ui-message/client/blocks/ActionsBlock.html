@@ -1,0 +1,41 @@
+<!-- {
+	"type": "actions",
+	"elements": [
+		{
+			"type": "button",
+			"text": {
+				"type": "plain_text",
+				"text": "Button",
+				"emoji": true
+			}
+		},
+		{
+			"type": "button",
+			"text": {
+				"type": "plain_text",
+				"text": "Button",
+				"emoji": true
+			}
+		},
+		{
+			"type": "button",
+			"text": {
+				"type": "plain_text",
+				"text": "Button",
+				"emoji": true
+			}
+		}
+	]
+},
+-->
+<template name="ActionsBlock" arguments="elements">
+	<fieldset class="block-kit-debug">
+		<legend>Actions Block</legend>
+
+		<div class="rc-button__group">
+			{{#each element in elements}}
+				<div>{{>ButtonElement text=element.text}}</div>
+			{{/each}}
+		</div>
+	</fieldset>
+</template>

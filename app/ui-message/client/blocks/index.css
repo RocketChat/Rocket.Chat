@@ -1,0 +1,15 @@
+
+
+.block-kit-debug.debug {
+	border: 1px solid;
+	padding: 1rem;
+}
+
+
+.block-kit-debug legend {
+	display: none;
+}
+
+.block-kit-debug.debug legend {
+	display: initial;
+}
