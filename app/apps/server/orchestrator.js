@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
-import { RealAppBridges } from './bridges';
+import { RealAppBridges, AppBlockitBridge } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppRealStorage, AppRealLogsStorage } from './storage';
@@ -46,6 +46,7 @@ class AppServerOrchestrator {
 		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
+		this._communicators.set('blockit', new AppBlockitBridge(this, this._manager));
 
 		this._isInitialized = true;
 	}
