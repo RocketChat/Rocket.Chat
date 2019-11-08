@@ -36,7 +36,7 @@ Meteor.methods({
 		transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
 		if (transferData.userId) {
 			const userToTransfer = Users.findOneById(transferData.userId);
-			transferData.transferedTo = { _id: userToTransfer._id, username: userToTransfer.username };
+			transferData.transferredTo = { _id: userToTransfer._id, username: userToTransfer.username };
 		}
 
 		return Livechat.transfer(room, guest, transferData);
