@@ -16,13 +16,58 @@ export class AppBlockitBridge {
 		this.appActions = new Map();
 
 		this.appActions.set('meu_app', {
-			outra_action: () => {
-				console.log('chamou outra_action');
-				return {
-					success: parseInt(Math.random() * 10) % 2 === 0,
-				};
-			},
-		})
+			outra_action: (req) => ({
+				triggerId: req.body.triggerId,
+				success: true,
+				type: 'modal', // modal, home
+				title: {
+					type: 'text_plain',
+					text: 'Hello Meu App',
+				},
+				submit: {
+					type: 'text_plain',
+					text: 'Amazing Ok',
+				},
+				close: {
+					type: 'text_plain',
+					text: 'Cancel :/',
+				},
+				blocks: [
+					{
+						type: 'section',
+						text: {
+							type: 'plain_text',
+							text: 'This is a plain text section block.',
+							emoji: true,
+						},
+					},
+					{
+						type: 'image',
+						title: {
+							type: 'plain_text',
+							text: 'Example Image',
+							emoji: true,
+						},
+						imageUrl: 'https://api.slack.com/img/blocks/bkb_template_images/goldengate.png',
+						altText: 'Example Image',
+					},
+					{
+						type: 'actions',
+						elements: [
+							{
+								type: 'button',
+								text: {
+									type: 'plain_text',
+									text: 'OK',
+									emoji: true,
+								},
+							},
+						],
+					},
+				],
+
+			}),
+		});
 
 		// apiServer.use('/api/apps', (req, res, next) => {
 		// 	this.orch.debugLog({

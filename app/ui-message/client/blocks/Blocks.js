@@ -1,21 +1,14 @@
 import { Template } from 'meteor/templating';
 
-import { APIClient } from '../../../utils';
-import { modal } from '../../../ui-utils/client/lib/modal';
-
 import './Blocks.html';
+import * as ActionManager from '../ActionManager';
 
 Template.Blocks.events({
-	async 'click button'() {
+	async 'click button'(e) {
+		e.preventDefault();
+		e.stopPropagation();
 		const { actionId, appID, value, mid } = this;
-		const { type, ...data } = await APIClient.post('apps/blockit/meu_app/outra_action', { actionId, appID, value, mid });
-
-		if (type === 'modal') {
-			modal.push({
-				template: 'ModalBlock',
-				data,
-			});
-		}
+		ActionManager.triggerAction({ actionId, appID, value, mid });
 	},
 });
 

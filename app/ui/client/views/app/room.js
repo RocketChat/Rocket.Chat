@@ -259,7 +259,7 @@ Template.room.helpers({
 				},
 			},
 			{
-				'type': 'divider',
+				type: 'divider',
 			},
 			{
 				type: 'image',
@@ -308,8 +308,8 @@ Template.room.helpers({
 				},
 				accessory: {
 					type: 'image',
-					image_url: 'https://api.slack.com/img/blocks/bkb_template_images/palmtree.png',
-					alt_text: 'palm tree',
+					imageUrl: 'https://api.slack.com/img/blocks/bkb_template_images/palmtree.png',
+					altText: 'palm tree',
 				},
 			},
 			{

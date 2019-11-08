@@ -9,10 +9,10 @@
 	"alt_text": "Example Image"
 }, -->
 
-<template name="ImageBlock" arguments="title image_url  alt_text">
+<template name="ImageBlock" arguments="title imageUrl altText">
 	<fieldset class="block-kit-debug">
 		<legend>ImageBlock</legend>
 		<div>{{>TextBlock title}}</div>
-		<img src={{image_url}} alt={{alt_text}}/>
+		<img style="width:300px;" src={{imageUrl}} alt={{altText}}/>
 	</fieldset>
 </template>
