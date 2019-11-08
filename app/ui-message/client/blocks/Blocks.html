@@ -1,5 +1,5 @@
 <template name="Blocks">
 	{{#each blocks}}
-		{{> Template.dynamic template=template data=data}}
+		{{> Template.dynamic template=template data=(data ../mid)}}
 	{{/each}}
 </template>

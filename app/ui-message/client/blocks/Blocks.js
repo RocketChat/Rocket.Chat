@@ -15,7 +15,7 @@ Template.Blocks.events({
 Template.Blocks.helpers({
 	template() {
 		const { type } = this;
-		console.log(this);
+		console.log('Blocks', this);
 		switch (type) {
 			case 'section':
 				return 'SectionBlock';
@@ -33,8 +33,8 @@ Template.Blocks.helpers({
 				break;
 		}
 	},
-	data() {
+	data(mid) {
 		const { type, ...data } = this;
-		return data;
+		return { ...data, mid };
 	},
 });

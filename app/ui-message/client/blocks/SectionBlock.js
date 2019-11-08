@@ -5,7 +5,6 @@ import './SectionBlock.html';
 Template.SectionBlock.helpers({
 	template() {
 		const { type } = this.accessory;
-		console.log(this);
 		switch (type) {
 			case 'button':
 				return 'ButtonElement';
