@@ -10,5 +10,8 @@
 	<fieldset class="block-kit-debug">
 		<legend>Section Block</legend>
 		{{>TextBlock text}}
+		{{#if accessory}}
+			{{> Template.dynamic template=template data=data}}
+		{{/if}}
 	</fieldset>
 </template>

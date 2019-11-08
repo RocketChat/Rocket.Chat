@@ -1,5 +1,8 @@
 import { Random } from 'meteor/random';
+import { Meteor } from 'meteor/meteor';
 
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import Notifications from '../../notifications/client/lib/Notifications';
 import { APIClient } from '../../utils';
 import { modal } from '../../ui-utils/client/lib/modal';
 
@@ -39,3 +42,11 @@ export const triggerAction = async (payload) => {
 	const { type, ...data } = await APIClient.post('apps/blockit/meu_app/outra_action', { ...payload, triggerId });
 	return handlePayloadUserInteraction(type, data);
 };
+
+Meteor.startup(() =>
+	CachedCollectionManager.onLogin(() =>
+		Notifications.onUser('interactions', ({ type, ...data }) => {
+			handlePayloadUserInteraction(type, data);
+		})
+	)
+);
