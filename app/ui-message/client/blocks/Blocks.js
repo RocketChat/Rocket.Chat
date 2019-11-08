@@ -7,14 +7,15 @@ Template.Blocks.events({
 	async 'click button'(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		const { actionId, appID, value, mid } = this;
-		ActionManager.triggerAction({ actionId, appID, value, mid });
+		const { actionId, appId, value = e.currentTarget.value, blockId, mid } = this;
+		ActionManager.triggerAction({ actionId, appId, value, blockId, mid });
 	},
 });
 
 Template.Blocks.helpers({
 	template() {
 		const { type } = this;
+		console.log(this);
 
 		switch (type) {
 			case 'section':

@@ -5,8 +5,10 @@ import './SectionBlock.html';
 Template.SectionBlock.helpers({
 	template() {
 		const { type } = this.accessory;
-
+		console.log(this);
 		switch (type) {
+			case 'button':
+				return 'ButtonElement';
 			case 'section':
 				return 'SectionBlock';
 			case 'divider':
@@ -24,7 +26,7 @@ Template.SectionBlock.helpers({
 		}
 	},
 	data() {
-		const { type, ...data } = this;
-		return data;
+		const { accessory: { type, ...data }, appId, blockId } = this;
+		return { ...data, appId, blockId };
 	},
 });

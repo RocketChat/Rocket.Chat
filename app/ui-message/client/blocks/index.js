@@ -1,6 +1,6 @@
 import './index.css';
 import './Blocks.js';
-import './SectionBlock.html';
+import './SectionBlock';
 import './TextBlock.html';
 import './DividerBlock.html';
 import './ImageBlock.html';
