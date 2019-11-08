@@ -10,6 +10,7 @@ const formatDate = (dateTime = new Date()) => ({
 
 export class LivechatAgentActivityMonitor {
 	constructor() {
+		this.started = false;
 		this._handleMeteorConnection = this._handleMeteorConnection.bind(this);
 		this._handleAgentStatusChanged = this._handleAgentStatusChanged.bind(this);
 		this._handleUserStatusLivechatChanged = this._handleUserStatusLivechatChanged.bind(this);
@@ -19,10 +20,18 @@ export class LivechatAgentActivityMonitor {
 		this._setupListeners();
 	}
 
+	isRunning() {
+		return this.started;
+	}
+
 	_setupListeners() {
+		if (this.isRunning()) {
+			return;
+		}
 		Meteor.onConnection(this._handleMeteorConnection);
 		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
 		callbacks.add('livechat.setUserStatusLivechat', this._handleUserStatusLivechatChanged);
+		this.started = true;
 	}
 
 	_handleMeteorConnection(connection) {
