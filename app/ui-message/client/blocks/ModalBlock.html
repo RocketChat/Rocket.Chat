@@ -1,13 +1,14 @@
 <template name="ModalBlock">
 	<header class="rc-modal__header">
-		{{> TextBlock text=title.text }}
+		<h1 class="rc-modal__title">
+			 {{>TextBlock title}}
+		</h1>
 	</header>
-
 	<section class="rc-modal__content">
 		{{>Blocks blocks=blocks}}
 	</section>
 	<footer class="rc-modal__footer">
-		{{#if close}} {{>ButtonElement text=close}} {{/if}}
-		{{#if submit}}{{>ButtonElement text=submit}}{{/if}}
+		{{> ButtonElement text=close}}
+		{{> ButtonElement text=submit}}
 	</footer>
 </template>
