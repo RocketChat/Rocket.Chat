@@ -1,0 +1,13 @@
+.block-kit-debug.debug {
+	padding: 1rem;
+
+	border: 1px solid;
+}
+
+.block-kit-debug legend {
+	display: none;
+}
+
+.block-kit-debug.debug legend {
+	display: initial;
+}

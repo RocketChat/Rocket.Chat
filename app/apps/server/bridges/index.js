@@ -1,3 +1,4 @@
+import { AppBlockitBridge } from './blockit';
 import { RealAppBridges } from './bridges';
 import { AppActivationBridge } from './activation';
 import { AppCommandsBridge } from './commands';
@@ -12,6 +13,7 @@ import { AppSettingBridge } from './settings';
 import { AppUserBridge } from './users';
 
 export {
+	AppBlockitBridge,
 	RealAppBridges,
 	AppActivationBridge,
 	AppCommandsBridge,

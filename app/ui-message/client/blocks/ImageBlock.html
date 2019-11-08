@@ -1,0 +1,18 @@
+<!-- {
+	"type": "image",
+	"title": {
+		"type": "plain_text",
+		"text": "Example Image",
+		"emoji": true
+	},
+	"image_url": "https://api.slack.com/img/blocks/bkb_template_images/goldengate.png",
+	"alt_text": "Example Image"
+}, -->
+
+<template name="ImageBlock" arguments="title imageUrl altText">
+	<fieldset class="block-kit-debug">
+		<legend>ImageBlock</legend>
+		<div>{{>TextBlock title}}</div>
+		<img style="width:300px;" src={{imageUrl}} alt={{altText}}/>
+	</fieldset>
+</template>
