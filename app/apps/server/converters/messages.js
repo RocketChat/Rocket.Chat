@@ -35,6 +35,7 @@ export class AppMessagesConverter {
 			customFields: 'customFields',
 			groupable: 'groupable',
 			token: 'token',
+			blocks: 'blocks',
 			room: (message) => {
 				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
 				delete message.rid;
@@ -135,6 +136,7 @@ export class AppMessagesConverter {
 			attachments,
 			reactions: message.reactions,
 			parseUrls: message.parseUrls,
+			blocks: message.blocks,
 		};
 
 		return Object.assign(newMessage, message._unmappedProperties_);
