@@ -268,8 +268,8 @@ Template.room.helpers({
 					text: 'Example Image',
 					emoji: true,
 				},
-				image_url: 'https://api.slack.com/img/blocks/bkb_template_images/goldengate.png',
-				alt_text: 'Example Image',
+				imageUrl: 'https://api.slack.com/img/blocks/bkb_template_images/goldengate.png',
+				altText: 'Example Image',
 			},
 			{
 				type: 'actions',
