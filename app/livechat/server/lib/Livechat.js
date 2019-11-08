@@ -477,7 +477,7 @@ export const Livechat = {
 			...nextDepartment && { nextDepartment },
 			...transferredTo && { transferredTo },
 		};
-		LivechatRooms.updateTransferHistoryByRoomId(room._id, transfer);
+		return LivechatRooms.updateTransferHistoryByRoomId(room._id, transfer);
 	},
 
 	async transfer(room, guest, transferData) {
@@ -485,8 +485,7 @@ export const Livechat = {
 		if (!result) {
 			return false;
 		}
-		this.saveTransferHistory(room, transferData);
-		return true;
+		return this.saveTransferHistory(room, transferData);
 	},
 
 	returnRoomAsInquiry(rid, departmentId) {
@@ -890,6 +889,7 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
+		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
 		if (!settings.get('Livechat_show_agent_info')) {
 			return;
 		}
@@ -900,7 +900,6 @@ export const Livechat = {
 				status,
 			});
 		});
-		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
 	},
 
 	allowAgentChangeServiceStatus(statusLivechat) {
