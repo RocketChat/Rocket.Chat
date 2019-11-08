@@ -80,6 +80,9 @@
 					{{else}}
 						{{{body}}}
 					{{/if}}
+					{{#if msg.blocks}}
+						{{> Blocks blocks=msg.blocks}}
+					{{/if}}
 				</div>
 			</div>
 

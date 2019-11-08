@@ -13,61 +13,61 @@ WebApp.connectHandlers.use(apiServer);
 export class AppBlockitBridge {
 	constructor(orch) {
 		this.orch = orch;
-		this.appActions = new Map();
+		// this.appActions = new Map();
 
-		this.appActions.set('meu_app', {
-			outra_action: (req) => ({
-				triggerId: req.body.triggerId,
-				success: true,
-				type: 'modal', // modal, home
-				title: {
-					type: 'text_plain',
-					text: 'Hello Meu App',
-				},
-				submit: {
-					type: 'text_plain',
-					text: 'Amazing Ok',
-				},
-				close: {
-					type: 'text_plain',
-					text: 'Cancel :/',
-				},
-				blocks: [
-					{
-						type: 'section',
-						text: {
-							type: 'plain_text',
-							text: 'This is a plain text section block.',
-							emoji: true,
-						},
-					},
-					{
-						type: 'image',
-						title: {
-							type: 'plain_text',
-							text: 'Example Image',
-							emoji: true,
-						},
-						imageUrl: 'https://api.slack.com/img/blocks/bkb_template_images/goldengate.png',
-						altText: 'Example Image',
-					},
-					{
-						type: 'actions',
-						elements: [
-							{
-								type: 'button',
-								text: {
-									type: 'plain_text',
-									text: 'OK',
-									emoji: true,
-								},
-							},
-						],
-					},
-				],
+		// this.appActions.set('meu_app', {
+		// 	outra_action: (req) => ({
+		// 		triggerId: req.body.triggerId,
+		// 		success: true,
+		// 		type: 'modal', // modal, home
+		// 		title: {
+		// 			type: 'text_plain',
+		// 			text: 'Hello Meu App',
+		// 		},
+		// 		submit: {
+		// 			type: 'text_plain',
+		// 			text: 'Amazing Ok',
+		// 		},
+		// 		close: {
+		// 			type: 'text_plain',
+		// 			text: 'Cancel :/',
+		// 		},
+		// 		blocks: [
+		// 			{
+		// 				type: 'section',
+		// 				text: {
+		// 					type: 'plain_text',
+		// 					text: 'This is a plain text section block.',
+		// 					emoji: true,
+		// 				},
+		// 			},
+		// 			{
+		// 				type: 'image',
+		// 				title: {
+		// 					type: 'plain_text',
+		// 					text: 'Example Image',
+		// 					emoji: true,
+		// 				},
+		// 				imageUrl: 'https://api.slack.com/img/blocks/bkb_template_images/goldengate.png',
+		// 				altText: 'Example Image',
+		// 			},
+		// 			{
+		// 				type: 'actions',
+		// 				elements: [
+		// 					{
+		// 						type: 'button',
+		// 						text: {
+		// 							type: 'plain_text',
+		// 							text: 'OK',
+		// 							emoji: true,
+		// 						},
+		// 					},
+		// 				],
+		// 			},
+		// 		],
 
-			}),
-		});
+		// 	}),
+		// });
 
 		// apiServer.use('/api/apps', (req, res, next) => {
 		// 	this.orch.debugLog({
@@ -82,23 +82,39 @@ export class AppBlockitBridge {
 		apiServer.post('/api/apps/blockit/:appId/:actionId', (req, res) => {
 			console.log('req ->', req.params);
 
-			const notFound = () => res.send(404);
+			// const notFound = () => res.send(404);
 
 			const {
 				appId,
 				actionId,
 			} = req.params;
 
-			const actions = this.appActions.get(appId);
-			if (!actions) {
-				return notFound();
-			}
+			// const actions = this.appActions.get(appId);
+			// if (!actions) {
+			// 	return notFound();
+			// }
 
-			if (!actions[actionId]) {
-				return notFound();
-			}
+			// if (!actions[actionId]) {
+			// 	return notFound();
+			// }
 
-			// this.orch.getManager().getBlockitManager().executeAction(appId, actionId)
+			// Promise.await(this.orch.getManager().getCommandManager().executeCommand(command, context));
+			// this.orch.getManager().getCommandManager().executeCommand(command, context);
+
+			// const result = this.orch.getManager().getBlockitManager().executeAction(appId, actionId);
+
+			const action = {
+				appId: 'meu_app',
+				actionId: 'lero',
+				messageId: 'toma',
+			};
+			Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
+
+
+
+			// console.log('manager ->', manager);
+
+
 			// 	.then(({ status, headers = {}, content }) => {
 			// 		res.set(headers);
 			// 		res.status(status);
@@ -109,7 +125,7 @@ export class AppBlockitBridge {
 			// 		res.status(500).send(reason.message);
 			// 	});
 
-			res.send(actions[actionId](req, res));
+			res.send({success:true});
 
 			// router[method](routePath, Meteor.bindEnvironment(this._appApiExecutor(api, endpoint, appId)));
 			// req._privateHash = req.params.hash;

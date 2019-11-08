@@ -36,4 +36,15 @@ export class AppListenerBridge {
 		// 	this.orch.debugLog(e.stack);
 		// }
 	}
+
+	async blockitEvent(inte, action) {
+		this.orch.getManager().getListenerManager().executeListener(inte, action);
+
+		// try {
+
+		// } catch (e) {
+		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
+		// 	this.orch.debugLog(e.stack);
+		// }
+	}
 }
