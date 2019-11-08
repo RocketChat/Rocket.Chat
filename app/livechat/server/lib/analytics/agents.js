@@ -10,7 +10,7 @@ const findAllAverageServiceTimeAsync = async ({
 	}
 	return {
 		agents: await Users.findAllAverageServiceTime({ start, end, options }),
-		total: (await Users.findAllAverageServiceTime({ start, end, options })).length,
+		total: (await Users.findAllAverageServiceTime({ start, end })).length,
 	};
 };
 
@@ -24,7 +24,7 @@ const findAllServiceTimeAsync = async ({
 	}
 	return {
 		agents: await Users.findAllServiceTime({ start, end, options }),
-		total: (await Users.findAllServiceTime({ start, end, options })).length,
+		total: (await Users.findAllServiceTime({ start, end })).length,
 	};
 };
 
@@ -39,7 +39,7 @@ const findAvailableServiceTimeHistoryAsync = async ({
 	}
 	return {
 		agents: await Users.findAvailableServiceTimeHistory({ start, end, fullReport, options }),
-		total: (await Users.findAvailableServiceTimeHistory({ start, end, fullReport, options })).length,
+		total: (await Users.findAvailableServiceTimeHistory({ start, end, fullReport })).length,
 	};
 };
 
