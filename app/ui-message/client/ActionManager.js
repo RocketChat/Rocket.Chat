@@ -20,6 +20,7 @@ const generateTriggerId = () => {
 };
 
 const handlePayloadUserInteraction = (type, data) => {
+	console.log(type, data);
 	if (!triggersId.has(data.triggerId)) {
 		return;
 	}

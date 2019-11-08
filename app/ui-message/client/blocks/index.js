@@ -6,3 +6,4 @@ import './DividerBlock.html';
 import './ImageBlock.html';
 import './ActionsBlock.html';
 import './ButtonElement.html';
+import './ModalBlock.html';
