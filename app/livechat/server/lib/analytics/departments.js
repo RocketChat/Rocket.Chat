@@ -1,5 +1,4 @@
-import { settings } from '../../../../settings/server';
-import { LivechatDepartment } from '../../../../models/server';
+import { LivechatDepartment } from '../../../../models/server/raw';
 
 const findAllRoomsAsync = async ({
 	start,
@@ -10,45 +9,9 @@ const findAllRoomsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const roomsFilter = [
-		{ $gte: ['$$room.ts', new Date(start)] },
-		{ $lte: ['$$room.ts', new Date(end)] },
-	];
-	if (answered !== undefined) {
-		roomsFilter.push({ [answered ? '$ne' : '$eq']: ['$$room.waitingResponse', true] });
-	}
-	const lookup = {
-		$lookup: {
-			from: 'rocketchat_room',
-			localField: '_id',
-			foreignField: 'departmentId',
-			as: 'rooms',
-		},
-	};
-	const project = {
-		$project: {
-			name: 1,
-			description: 1,
-			enabled: 1,
-			rooms: {
-				$size: {
-					$filter: {
-						input: '$rooms',
-						as: 'room',
-						cond: {
-							$and: roomsFilter,
-						},
-					},
-				},
-			},
-		},
-	};
-	const skip = { $skip: options.offset };
-	const limit = { $limit: options.count };
-	const sort = { $sort: { name: 1 } };
 	return {
-		departments: await LivechatDepartment.model.rawCollection().aggregate([lookup, project, sort, skip, limit]).toArray(),
-		total: (await LivechatDepartment.model.rawCollection().aggregate([lookup, project]).toArray()).length,
+		departments: await LivechatDepartment.findAllRooms({ start, answered, end, options }),
+		total: (await LivechatDepartment.findAllRooms({ start, answered, end })).length,
 	};
 };
 
@@ -60,54 +23,9 @@ const findAllAverageServiceTimeAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const roomsFilter = [
-		{ $gte: ['$$room.ts', new Date(start)] },
-		{ $lte: ['$$room.ts', new Date(end)] },
-	];
-	const lookup = {
-		$lookup: {
-			from: 'rocketchat_room',
-			localField: '_id',
-			foreignField: 'departmentId',
-			as: 'rooms',
-		},
-	};
-	const projects = [
-		{
-			$project: {
-				department: '$$ROOT',
-				rooms: {
-					$filter: {
-						input: '$rooms',
-						as: 'room',
-						cond: {
-							$and: roomsFilter,
-						},
-					},
-				},
-			},
-		},
-		{
-			$project: {
-				department: '$department',
-				chats: { $size: '$rooms' },
-				chatsDuration: { $sum: '$rooms.metrics.chatDuration' },
-			},
-		},
-		{
-			$project: {
-				name: '$department.name',
-				description: '$department.description',
-				enabled: '$department.enabled',
-				averageServiceTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$chats', 0] }, 0, { $divide: ['$chatsDuration', '$chats'] }] } },
-			},
-		}];
-	const skip = { $skip: options.offset };
-	const limit = { $limit: options.count };
-	const sort = { $sort: { name: 1 } };
 	return {
-		departments: await LivechatDepartment.model.rawCollection().aggregate([lookup, ...projects, sort, skip, limit]).toArray(),
-		total: (await LivechatDepartment.model.rawCollection().aggregate([lookup, ...projects]).toArray()).length,
+		departments: await LivechatDepartment.findAllAverageServiceTime({ start, end, options }),
+		total: (await LivechatDepartment.findAllAverageServiceTime({ start, end })).length,
 	};
 };
 
@@ -119,48 +37,9 @@ const findAllServiceTimeAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const roomsFilter = [
-		{ $gte: ['$$room.ts', new Date(start)] },
-		{ $lte: ['$$room.ts', new Date(end)] },
-	];
-	const lookup = {
-		$lookup: {
-			from: 'rocketchat_room',
-			localField: '_id',
-			foreignField: 'departmentId',
-			as: 'rooms',
-		},
-	};
-	const projects = [
-		{
-			$project: {
-				department: '$$ROOT',
-				rooms: {
-					$filter: {
-						input: '$rooms',
-						as: 'room',
-						cond: {
-							$and: roomsFilter,
-						},
-					},
-				},
-			},
-		},
-		{
-			$project: {
-				name: '$department.name',
-				description: '$department.description',
-				enabled: '$department.enabled',
-				chats: { $size: '$rooms' },
-				chatsDuration: { $ceil: { $sum: '$rooms.metrics.chatDuration' } },
-			},
-		}];
-	const skip = { $skip: options.offset };
-	const limit = { $limit: options.count };
-	const sort = { $sort: { name: 1 } };
 	return {
-		departments: await LivechatDepartment.model.rawCollection().aggregate([lookup, ...projects, sort, skip, limit]).toArray(),
-		total: (await LivechatDepartment.model.rawCollection().aggregate([lookup, ...projects]).toArray()).length,
+		departments: await LivechatDepartment.findAllServiceTime({ start, end, options }),
+		total: (await LivechatDepartment.findAllServiceTime({ start, end })).length,
 	};
 };
 
@@ -172,54 +51,9 @@ const findAllAverageWaitingTimeAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const roomsFilter = [
-		{ $gte: ['$$room.ts', new Date(start)] },
-		{ $lte: ['$$room.ts', new Date(end)] },
-		{ $ne: ['$$room.waitingResponse', true] },
-	];
-	const lookup = {
-		$lookup: {
-			from: 'rocketchat_room',
-			localField: '_id',
-			foreignField: 'departmentId',
-			as: 'rooms',
-		},
-	};
-	const projects = [{
-		$project: {
-			department: '$$ROOT',
-			rooms: {
-				$filter: {
-					input: '$rooms',
-					as: 'room',
-					cond: {
-						$and: roomsFilter,
-					},
-				},
-			},
-		},
-	},
-	{
-		$project: {
-			department: '$department',
-			chats: { $size: '$rooms' },
-			chatsFirstResponses: { $sum: '$rooms.metrics.response.ft' },
-		},
-	},
-	{
-		$project: {
-			name: '$department.name',
-			description: '$department.description',
-			enabled: '$department.enabled',
-			averageWaitingTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$chats', 0] }, 0, { $divide: ['$chatsFirstResponses', '$chats'] }] } },
-		},
-	}];
-	const skip = { $skip: options.offset };
-	const limit = { $limit: options.count };
-	const sort = { $sort: { name: 1 } };
 	return {
-		departments: await LivechatDepartment.model.rawCollection().aggregate([lookup, ...projects, sort, skip, limit]).toArray(),
-		total: (await LivechatDepartment.model.rawCollection().aggregate([lookup, ...projects]).toArray()).length,
+		departments: await LivechatDepartment.findAllAverageWaitingTime({ start, end, options }),
+		total: (await LivechatDepartment.findAllAverageWaitingTime({ start, end })).length,
 	};
 };
 
@@ -231,70 +65,9 @@ const findAllNumberOfTransferedRoomsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const roomsFilter = [
-		{ $gte: ['$$room.ts', new Date(start)] },
-		{ $lte: ['$$room.ts', new Date(end)] },
-	];
-	const lookup = {
-		$lookup: {
-			from: 'rocketchat_room',
-			localField: '_id',
-			foreignField: 'departmentId',
-			as: 'rooms',
-		},
-	};
-	const projectRooms = {
-		$project: {
-			department: '$$ROOT',
-			rooms: {
-				$filter: {
-					input: '$rooms',
-					as: 'room',
-					cond: {
-						$and: roomsFilter,
-					},
-				},
-			},
-		},
-	};
-	const projectTransfersSize = {
-		$project: {
-			department: '$department',
-			transfers: { $size: { $ifNull: ['$rooms.transferHistory', []] } },
-		},
-	};
-	const group = {
-		$group: {
-			_id: {
-				departmentId: '$department._id',
-				name: '$department.name',
-				description: '$department.description',
-				enabled: '$department.enabled',
-			},
-			numberOfTransferedRooms: { $sum: '$transfers' },
-		},
-	};
-	const presentationProject = {
-		$project: {
-			_id: '$_id.departmentId',
-			name: '$_id.name',
-			description: '$_id.description',
-			enabled: '$_id.enabled',
-			numberOfTransferedRooms: 1,
-		},
-	};
-	const unwind = {
-		$unwind: {
-			path: '$rooms',
-			preserveNullAndEmptyArrays: true,
-		},
-	};
-	const skip = { $skip: options.offset };
-	const limit = { $limit: options.count };
-	const sort = { $sort: { name: 1 } };
 	return {
-		departments: await LivechatDepartment.model.rawCollection().aggregate([lookup, projectRooms, unwind, projectTransfersSize, group, presentationProject, sort, skip, limit]).toArray(),
-		total: (await LivechatDepartment.model.rawCollection().aggregate([lookup, projectRooms, unwind, projectTransfersSize, group, presentationProject]).toArray()).length,
+		departments: await LivechatDepartment.findAllNumberOfTransferedRooms({ start, end, options }),
+		total: (await LivechatDepartment.findAllNumberOfTransferedRooms({ start, end })).length,
 	};
 };
 
@@ -306,47 +79,9 @@ const findAllNumberOfAbandonedRoomsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const roomsFilter = [
-		{ $gte: ['$$room.ts', new Date(start)] },
-		{ $lte: ['$$room.ts', new Date(end)] },
-		{ $gte: ['$$room.metrics.visitorInactivity', settings.get('Livechat_visitor_inactivity')] },
-	];
-	const lookup = {
-		$lookup: {
-			from: 'rocketchat_room',
-			localField: '_id',
-			foreignField: 'departmentId',
-			as: 'rooms',
-		},
-	};
-	const projects = [{
-		$project: {
-			department: '$$ROOT',
-			rooms: {
-				$filter: {
-					input: '$rooms',
-					as: 'room',
-					cond: {
-						$and: roomsFilter,
-					},
-				},
-			},
-		},
-	},
-	{
-		$project: {
-			name: '$department.name',
-			description: '$department.description',
-			enabled: '$department.enabled',
-			abandonedRooms: { $size: '$rooms' },
-		},
-	}];
-	const skip = { $skip: options.offset };
-	const limit = { $limit: options.count };
-	const sort = { $sort: { name: 1 } };
 	return {
-		departments: await LivechatDepartment.model.rawCollection().aggregate([lookup, ...projects, sort, skip, limit]).toArray(),
-		total: (await LivechatDepartment.model.rawCollection().aggregate([lookup, ...projects]).toArray()).length,
+		departments: await LivechatDepartment.findAllNumberOfAbandonedRooms({ start, end, options }),
+		total: (await LivechatDepartment.findAllNumberOfAbandonedRooms({ start, end })).length,
 	};
 };
 
@@ -358,82 +93,9 @@ const findPercentageOfAbandonedRoomsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const roomsFilter = [
-		{ $gte: ['$$room.ts', new Date(start)] },
-		{ $lte: ['$$room.ts', new Date(end)] },
-	];
-	const lookup = {
-		$lookup: {
-			from: 'rocketchat_room',
-			localField: '_id',
-			foreignField: 'departmentId',
-			as: 'rooms',
-		},
-	};
-	const projectRooms = {
-		$project: {
-			department: '$$ROOT',
-			rooms: {
-				$filter: {
-					input: '$rooms',
-					as: 'room',
-					cond: {
-						$and: roomsFilter,
-					},
-				},
-			},
-		},
-	};
-	const unwind = {
-		$unwind: {
-			path: '$rooms',
-			preserveNullAndEmptyArrays: true,
-		},
-	};
-	const group = {
-		$group: {
-			_id: {
-				departmentId: '$department._id',
-				name: '$department.name',
-				description: '$department.description',
-				enabled: '$department.enabled',
-			},
-			abandonedChats: {
-				$sum: {
-					$cond: [{
-						$and: [
-							{ $ifNull: ['$rooms.metrics.visitorInactivity', false] },
-							{ $gte: ['$rooms.metrics.visitorInactivity', 1] },
-						],
-					}, 1, 0],
-				},
-			},
-			chats: { $sum: 1 },
-		},
-	};
-	const presentationProject = {
-		$project: {
-			_id: '$_id.departmentId',
-			name: '$_id.name',
-			description: '$_id.description',
-			enabled: '$_id.enabled',
-			percentageOfAbandonedChats: {
-				$floor: {
-					$cond: [
-						{ $eq: ['$chats', 0] },
-						0,
-						{ $divide: [{ $multiply: ['$abandonedChats', 100] }, '$chats'] },
-					],
-				},
-			},
-		},
-	};
-	const skip = { $skip: options.offset };
-	const limit = { $limit: options.count };
-	const sort = { $sort: { name: 1 } };
 	return {
-		departments: await LivechatDepartment.model.rawCollection().aggregate([lookup, projectRooms, unwind, group, presentationProject, sort, skip, limit]).toArray(),
-		total: (await LivechatDepartment.model.rawCollection().aggregate([lookup, projectRooms, unwind, group, presentationProject]).toArray()).length,
+		departments: await LivechatDepartment.findPercentageOfAbandonedRooms({ start, end, options }),
+		total: (await LivechatDepartment.findPercentageOfAbandonedRooms({ start, end })).length,
 	};
 };
 
