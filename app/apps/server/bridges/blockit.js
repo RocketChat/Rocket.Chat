@@ -50,7 +50,7 @@ export class AppBlockitBridge {
 		// 				},
 		// 				imageUrl: 'https://api.slack.com/img/blocks/bkb_template_images/goldengate.png',
 		// 				altText: 'Example Image',
-		// 			},
+		// 			},But
 		// 			{
 		// 				type: 'actions',
 		// 				elements: [
@@ -79,15 +79,21 @@ export class AppBlockitBridge {
 		// 	next();
 		// });
 
-		apiServer.post('/api/apps/blockit/:appId/:actionId', (req, res) => {
-			console.log('req ->', req.params);
+		apiServer.post('/api/apps/blockit/:appId', (req, res) => {
+			// console.log('req ->', req);
 
 			// const notFound = () => res.send(404);
 
 			const {
 				appId,
-				actionId,
 			} = req.params;
+
+			const {
+				actionId,
+				triggerId,
+				messageId,
+				value,
+			} = req.body;
 
 			// const actions = this.appActions.get(appId);
 			// if (!actions) {
@@ -104,13 +110,64 @@ export class AppBlockitBridge {
 			// const result = this.orch.getManager().getBlockitManager().executeAction(appId, actionId);
 
 			const action = {
-				appId: 'meu_app',
-				actionId: 'lero',
-				messageId: 'toma',
+				appId,
+				actionId,
+				messageId,
+				triggerId,
+				value,
 			};
 			Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
 
-
+			const result = {
+				success: true,
+				triggerId,
+				type: 'modal', // modal, home
+				title: {
+					type: 'text_plain',
+					text: 'Hello Meu App',
+				},
+				submit: {
+					type: 'text_plain',
+					text: 'Amazing Ok',
+				},
+				close: {
+					type: 'text_plain',
+					text: 'Cancel :/',
+				},
+				blocks: [
+					{
+						type: 'section',
+						text: {
+							type: 'plain_text',
+							text: 'This is a plain text section block.',
+							emoji: true,
+						},
+					},
+					{
+						type: 'image',
+						title: {
+							type: 'plain_text',
+							text: 'Example Image',
+							emoji: true,
+						},
+						imageUrl: 'https://api.slack.com/img/blocks/bkb_template_images/goldengate.png',
+						altText: 'Example Image',
+					},
+					{
+						type: 'actions',
+						elements: [
+							{
+								type: 'button',
+								text: {
+									type: 'plain_text',
+									text: 'OK',
+									emoji: true,
+								},
+							},
+						],
+					},
+				],
+			};
 
 			// console.log('manager ->', manager);
 
@@ -125,7 +182,7 @@ export class AppBlockitBridge {
 			// 		res.status(500).send(reason.message);
 			// 	});
 
-			res.send({success:true});
+			res.send(result);
 
 			// router[method](routePath, Meteor.bindEnvironment(this._appApiExecutor(api, endpoint, appId)));
 			// req._privateHash = req.params.hash;
