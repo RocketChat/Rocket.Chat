@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { LivechatRooms, Messages, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
-import { getTransferredData } from '../lib/Helper';
+import { normalizeTransferredByData } from '../lib/Helper';
 
 Meteor.methods({
 	'livechat:setDepartmentForVisitor'({ roomId, visitorToken, departmentId } = {}) {
@@ -24,7 +24,7 @@ Meteor.methods({
 		const transferData = {
 			roomId,
 			departmentId,
-			transferredBy: getTransferredData(visitor, room),
+			transferredBy: normalizeTransferredByData(visitor, room),
 		};
 
 		return Livechat.transfer(room, visitor, transferData);
