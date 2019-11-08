@@ -38,7 +38,7 @@ export class AppListenerBridge {
 	}
 
 	async blockitEvent(inte, action) {
-		this.orch.getManager().getListenerManager().executeListener(inte, action);
+		return this.orch.getManager().getListenerManager().executeListener(inte, action);
 
 		// try {
 

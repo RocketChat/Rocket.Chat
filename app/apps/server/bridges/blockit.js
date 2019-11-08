@@ -116,58 +116,9 @@ export class AppBlockitBridge {
 				triggerId,
 				value,
 			};
-			Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
+			const result = Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
 
-			const result = {
-				success: true,
-				triggerId,
-				type: 'modal', // modal, home
-				title: {
-					type: 'text_plain',
-					text: 'Hello Meu App',
-				},
-				submit: {
-					type: 'text_plain',
-					text: 'Amazing Ok',
-				},
-				close: {
-					type: 'text_plain',
-					text: 'Cancel :/',
-				},
-				blocks: [
-					{
-						type: 'section',
-						text: {
-							type: 'plain_text',
-							text: 'This is a plain text section block.',
-							emoji: true,
-						},
-					},
-					{
-						type: 'image',
-						title: {
-							type: 'plain_text',
-							text: 'Example Image',
-							emoji: true,
-						},
-						imageUrl: 'https://api.slack.com/img/blocks/bkb_template_images/goldengate.png',
-						altText: 'Example Image',
-					},
-					{
-						type: 'actions',
-						elements: [
-							{
-								type: 'button',
-								text: {
-									type: 'plain_text',
-									text: 'OK',
-									emoji: true,
-								},
-							},
-						],
-					},
-				],
-			};
+			// const result = ;
 
 			// console.log('manager ->', manager);
 
