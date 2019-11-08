@@ -1499,6 +1499,7 @@
   "How_friendly_was_the_chat_agent": "Quão amigável foi o agente de bate-papo?",
   "How_knowledgeable_was_the_chat_agent": "O agente bate-papo possuía conhecimentos suficientes?",
   "How_long_to_wait_after_agent_goes_offline": "Quanto tempo esperar após agente ficar offline",
+  "How_long_to_wait_to_consider_visitor_abandonment": "Quanto tempo esperar para considerar um abandono do visitante?",
   "How_responsive_was_the_chat_agent": "Quão responsivo foi o agente de bate-papo?",
   "How_satisfied_were_you_with_this_chat": "Ficou satisfeito com este bate-papo?",
   "How_to_handle_open_sessions_when_agent_goes_offline": "O que fazer com sessões abertas quando agente ficar offline",
