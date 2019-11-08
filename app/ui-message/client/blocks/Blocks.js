@@ -15,7 +15,7 @@ Template.Blocks.events({
 Template.Blocks.helpers({
 	template() {
 		const { type } = this;
-
+		console.log(this);
 		switch (type) {
 			case 'section':
 				return 'SectionBlock';

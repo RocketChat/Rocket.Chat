@@ -26,7 +26,7 @@ Template.SectionBlock.helpers({
 		}
 	},
 	data() {
-		const { accessory: { type, ...data }, appId, blockId } = this;
-		return { ...data, appId, blockId };
+		const { accessory: { type, ...data }, appId, blockId, actionId } = this;
+		return { ...data, appId, blockId, actionId };
 	},
 });
