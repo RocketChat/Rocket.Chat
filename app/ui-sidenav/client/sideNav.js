@@ -39,6 +39,9 @@ Template.sideNav.helpers({
 	},
 
 	sidebarViewMode() {
+		if (/Mobi/.test(navigator.userAgent)) {
+			return 'extended';
+		}
 		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
 		return viewMode || 'condensed';
 	},

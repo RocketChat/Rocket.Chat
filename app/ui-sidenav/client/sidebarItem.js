@@ -18,6 +18,9 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	isExtendedViewMode() {
+		if (/Mobi/.test(navigator.userAgent)) {
+			return true;
+		}
 		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
 	},
 	lastMessage() {
@@ -78,7 +81,9 @@ Template.sidebarItem.onCreated(function() {
 		const currentData = Template.currentData();
 
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
-			return clearInterval(this.timeAgoInterval);
+			if (!/Mobi/.test(navigator.userAgent)) {
+				return clearInterval(this.timeAgoInterval);
+			}
 		}
 
 		if (!currentData.lastMessage._id) {
