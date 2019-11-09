@@ -327,7 +327,6 @@ export const RoomHistoryManager = new class {
 	}
 
 	clear(rid) {
-		ChatMessage.remove({ rid });
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);
