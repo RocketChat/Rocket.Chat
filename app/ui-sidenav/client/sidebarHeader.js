@@ -27,8 +27,11 @@ const extendedViewOption = (user) => {
 		return {
 			icon: viewModeIcon.extended,
 			name: t('Extended'),
-			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
+			modifier: /Mobi/.test(navigator.userAgent) || getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
 			action: () => {
+				if (/Mobi/.test(navigator.userAgent)) {
+					return;
+				}
 				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
 					if (error) {
 						return handleError(error);
@@ -99,8 +102,11 @@ const toolbarButtons = (user) => [{
 								{
 									icon: viewModeIcon.medium,
 									name: t('Medium'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
+									modifier: !/Mobi/.test(navigator.userAgent) && getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
 									action: () => {
+										if (/Mobi/.test(navigator.userAgent)) {
+											return;
+										}
 										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
 											if (error) {
 												return handleError(error);
@@ -111,8 +117,11 @@ const toolbarButtons = (user) => [{
 								{
 									icon: viewModeIcon.condensed,
 									name: t('Condensed'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
+									modifier: !/Mobi/.test(navigator.userAgent) && getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
 									action: () => {
+										if (/Mobi/.test(navigator.userAgent)) {
+											return;
+										}
 										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
 											if (error) {
 												return handleError(error);
