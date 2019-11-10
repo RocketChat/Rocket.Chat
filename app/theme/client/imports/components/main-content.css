@@ -2,7 +2,7 @@
 
 	position: relative;
 
-	z-index: 0;
+	z-index: 2;
 
 	display: flex;
 	flex-direction: column;
@@ -11,6 +11,9 @@
 	width: 1vw;
 
 	height: 100%;
+
+	transition: transform 0.3s;
+	transform: translate3d(100%, 0, 0);
 }
 
 .messages-container .room-icon {
