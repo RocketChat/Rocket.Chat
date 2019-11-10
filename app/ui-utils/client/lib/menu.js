@@ -156,6 +156,8 @@ export const menu = new class extends EventEmitter {
 		this.sidebar = this.menu;
 		this.sidebarWrap = $('.sidebar-wrap');
 		this.wrapper = $('.messages-box > .wrapper');
+		this.mainContent = $('.main-content');
+
 		const ignore = (fn) => (event) => document.body.clientWidth <= 780 && fn(event);
 
 		document.body.addEventListener('touchstart', ignore((e) => this.touchstart(e)));
@@ -165,21 +167,13 @@ export const menu = new class extends EventEmitter {
 			e.target === this.sidebarWrap[0] && this.isOpen() && this.emit('clickOut', e);
 		}));
 		this.on('close', () => {
-			this.sidebarWrap.css('width', '');
-			// this.sidebarWrap.css('z-index', '');
-			this.sidebarWrap.css('background-color', '');
-			this.sidebar.css('transform', '');
-			this.sidebar.css('box-shadow', '');
-			this.sidebar.css('transition', '');
-			this.sidebarWrap.css('transition', '');
-			this.wrapper && this.wrapper.css('overflow', '');
+			// WIDECHAT open main content
+			this.mainContent.css('transform', 'translate3d( 0, 0 , 0)');
 		});
 		this.on('open', ignore(() => {
-			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
-			// this.sidebarWrap.css('z-index', '9998');
-			this.translate();
+			// WIDECHAT close main content
+			this.mainContent.css('transform', 'translate3d( 100%, 0 , 0)');
 		}));
-		this.mainContent = $('.main-content');
 
 		this.list = $('.rooms-list');
 		this._open = false;
