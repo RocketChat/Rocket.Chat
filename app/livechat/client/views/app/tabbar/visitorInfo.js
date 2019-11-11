@@ -13,7 +13,7 @@ import { modal } from '../../../../../ui-utils';
 import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
-import { hasRole, hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
+import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 
@@ -171,7 +171,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canEditRoom() {
-		if (hasAllPermission('save-others-livechat-room-info')) {
+		if (hasPermission('save-others-livechat-room-info')) {
 			return true;
 		}
 
@@ -179,7 +179,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canCloseRoom() {
-		if (hasAllPermission('close-others-livechat-room')) {
+		if (hasPermission('close-others-livechat-room')) {
 			return true;
 		}
 
@@ -187,11 +187,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canForwardGuest() {
-		if (hasAllPermission('transfer-livechat-guest')) {
-			return true;
-		}
-
-		return isSubscribedToRoom();
+		return hasPermission('transfer-livechat-guest');
 	},
 });
 
