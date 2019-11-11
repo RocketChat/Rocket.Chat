@@ -12,6 +12,7 @@ import { BooleanSettingInput } from './inputs/BooleanSettingInput';
 import { StringSettingInput } from './inputs/StringSettingInput';
 import { RelativeUrlSettingInput } from './inputs/RelativeUrlSettingInput';
 import { PasswordSettingInput } from './inputs/PasswordSettingInput';
+import { IntSettingInput } from './inputs/IntSettingInput';
 import { useSetting } from './SettingsState';
 
 export function Setting({ settingId }) {
@@ -54,7 +55,7 @@ export function Setting({ settingId }) {
 		|| (type === 'string' && <StringSettingInput {...inputProps} />)
 		|| (type === 'relativeUrl' && <RelativeUrlSettingInput {...inputProps} />)
 		|| (type === 'password' && <PasswordSettingInput {...inputProps} />)
-		// || (type === 'int' && <IntSettingInput {...inputProps} />)
+		|| (type === 'int' && <IntSettingInput {...inputProps} />)
 		// || (type === 'select' && <SelectSettingInput {...inputProps} />)
 		// || (type === 'language' && <LanguageSettingInput {...inputProps} />)
 		// || (type === 'color' && <ColorSettingInput {...inputProps} />)

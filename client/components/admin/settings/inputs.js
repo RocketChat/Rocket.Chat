@@ -10,23 +10,6 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Button } from '../../basic/Button';
 import { handleError } from '../../../../app/utils/client';
 
-export function IntSettingInput({
-	_id,
-	value,
-	placeholder,
-	readonly,
-	autocomplete,
-	disabled,
-	onChange,
-}) {
-	const handleChange = (event) => {
-		const value = parseInt(event.currentTarget.value, 10);
-		onChange({ value });
-	};
-
-	return <input type='number' className='rc-input__element' name={_id} value={value} placeholder={placeholder} disabled={disabled} readOnly={readonly} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />;
-}
-
 export function SelectSettingInput({
 	_id,
 	value,
