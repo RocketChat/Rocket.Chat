@@ -1,14 +1,14 @@
 import { Template } from 'meteor/templating';
 
 import { modal } from '../../../ui-utils';
-import { RealAppClientUIHost } from '../RealAppClientUIHost';
+import { RealAppsEngineUIHost } from '../RealAppsEngineUIHost';
 import { APIClient } from '../../../utils/client';
 
 import './gameContainer.html';
 
 const getExternalComponent = async () => {
 	const { data: { game: externalComponent } } = Template.instance();
-	const realAppClientUIHost = new RealAppClientUIHost();
+	const realAppClientUIHost = new RealAppsEngineUIHost();
 	const currentUser = await realAppClientUIHost.getClientUserInfo();
 	const currentRoom = await realAppClientUIHost.getClientRoomInfo();
 

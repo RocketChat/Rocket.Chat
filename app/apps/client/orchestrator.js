@@ -8,7 +8,7 @@ import { AdminBox } from '../../ui-utils';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { handleI18nResources } from './i18n';
-import { RealAppClientUIHost } from './RealAppClientUIHost';
+import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 const createDeferredValue = () => {
 	let resolve;
@@ -23,7 +23,7 @@ const createDeferredValue = () => {
 
 class AppClientOrchestrator {
 	constructor() {
-		this._appClientUIHost = new RealAppClientUIHost();
+		this._appClientUIHost = new RealAppsEngineUIHost();
 		this._manager = new AppClientManager(this._appClientUIHost);
 		this.isLoaded = false;
 		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
