@@ -156,7 +156,8 @@ export const drawLineChart = async (chart, chartContext, chartLabels, dataLabels
 			fill: false,
 		});
 	});
-	const Chart = await import('chart.js');
+	const chartImport = await import('chart.js');
+	const Chart = chartImport.default;
 	return new Chart(chart, {
 		type: 'line',
 		data: {
@@ -181,7 +182,8 @@ export const drawDoughnutChart = async (chart, title, chartContext, dataLabels, 
 	if (chartContext) {
 		chartContext.destroy();
 	}
-	const Chart = await import('chart.js');
+	const chartImport = await import('chart.js');
+	const Chart = chartImport.default;
 	return new Chart(chart, {
 		type: 'doughnut',
 		data: {
@@ -207,7 +209,8 @@ export const drawDoughnutChart = async (chart, title, chartContext, dataLabels, 
  * @param  {String} label [chart label]
  * @param  {Array(Double)} data  [updated data]
  */
-export const updateChart = (chart, label, data) => {
+export const updateChart = async (c, label, data) => {
+	const chart = await c;
 	if (chart.data.labels.indexOf(label) === -1) {
 		// insert data
 		chart.data.labels.push(label);
