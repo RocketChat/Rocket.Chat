@@ -14,7 +14,7 @@ export class RealAppClientUIHost extends AppClientUIHost {
 
 	async getClientRoomInfo() {
 		const { name: roomName, _id: roomId } = Session.get(`roomData${ Session.get('openedRoom') }`);
-		let { members } = await APIClient.get('v1/groups.members', { roomId });
+		let { members } = await APIClient.get('apps/groupMembers', { roomId });
 
 		members = members.map(({ _id, username, status }) => ({
 			userId: _id,
