@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
+import { logger } from './logger';
 import { settings } from '../../settings';
 
 /**
@@ -79,7 +79,7 @@ class MsAutoTranslate extends AutoTranslate {
 				language,
 				name: languages.data.translation[language].name,
 			}));
-			return this.supportedLanguages[target];
+			return this.supportedLanguages[target || 'en'];
 		}
 	}
 
@@ -122,7 +122,7 @@ class MsAutoTranslate extends AutoTranslate {
 				));
 			}
 		} catch (e) {
-			SystemLogger.error('Error translating message', e);
+			logger.microsoft.error('Error translating message', e);
 		}
 		return translations;
 	}
@@ -135,30 +135,37 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @returns {object} translated messages for each target language
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		const translations = {};
-		const query = `text=${ encodeURIComponent(attachment.description || attachment.text) }`;
+		let translations = {};
 		const supportedLanguages = this.getSupportedLanguages('en');
-		targetLanguages.forEach((language) => {
+		targetLanguages = targetLanguages.map((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
-			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
-					params: {
-						auth_key: this.apiKey,
-						target_lang: language,
-					},
-					query,
-				});
-				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
-					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
-						translations[language] = result.data.translations.map((translation) => translation.text);
-					}
-				}
-			} catch (e) {
-				SystemLogger.error('Error translating message attachment', e);
-			}
+			return language;
 		});
+		const url = `${ this.apiEndPointUrl }&to=${ targetLanguages.join('&to=') }`;
+		try {
+			const result = HTTP.post(url, {
+				headers: {
+					'Ocp-Apim-Subscription-Key': this.apiKey,
+					'Content-Type': 'application/json; charset=UTF-8',
+				},
+				data: [{
+					Text: attachment.description || attachment.text,
+				}],
+			});
+
+			if (result.statusCode === 200 && result.data && result.data.length > 0) {
+				// store translation only when the source and target language are different.
+				translations = Object.assign({}, ...targetLanguages.map((language) =>
+					({
+						[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
+					})
+				));
+			}
+		} catch (e) {
+			logger.microsoft.error('Error translating message attachment', e);
+		}
 		return translations;
 	}
 }
