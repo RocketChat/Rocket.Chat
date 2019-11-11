@@ -206,21 +206,6 @@ export function SettingsState({ children }) {
 	return <SettingsContext.Provider children={children} value={contextValue} />;
 }
 
-export const useSettingsState = () => {
-	const { isLoading, subscribers, stateRef, hydrate, isDisabled } = useContext(SettingsContext);
-	const [{ settings: state, persistedSettings: persistedState }, setState] = useState(() => stateRef.current);
-
-	useEffect(() => {
-		subscribers.add(setState);
-
-		return () => {
-			subscribers.delete(setState);
-		};
-	}, []);
-
-	return { isLoading, hydrate, isDisabled, state, persistedState };
-};
-
 const useSelector = (selector, equalityFunction = (a, b) => a === b) => {
 	const { subscribers, stateRef } = useContext(SettingsContext);
 	const [value, setValue] = useState(() => selector(stateRef.current));
@@ -240,6 +225,10 @@ const useSelector = (selector, equalityFunction = (a, b) => a === b) => {
 			subscribers.delete(handleUpdate);
 		};
 	}, [handleUpdate]);
+
+	useEffect(() => {
+		handleUpdate(stateRef.current);
+	});
 
 	return value;
 };
