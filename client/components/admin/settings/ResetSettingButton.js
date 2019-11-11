@@ -1,18 +1,27 @@
-import { Text } from '@rocket.chat/fuselage';
+import { Button, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
+import styled from 'styled-components';
 
-import { Icon } from '../../basic/Icon';
 import { useTranslation } from '../../providers/TranslationProvider';
+
+// TODO: get rid of it
+const StyledResetSettingButton = styled(Button)`
+	padding-block: 0 !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+`;
 
 export function ResetSettingButton({ onClick }) {
 	const t = useTranslation();
 
-	return <Text
+	return <StyledResetSettingButton
 		aria-label={t('Reset')}
-		dangerColor
+		danger
+		ghost
+		small
 		title={t('Reset')}
 		onClick={onClick}
 	>
-		<Icon icon='icon-ccw' />
-	</Text>;
+		<Icon name='undo' />
+	</StyledResetSettingButton>;
 }
