@@ -213,7 +213,7 @@ export class UsersRaw extends BaseRaw {
 		const match = { $match: { roles: { $in: ['livechat-agent'] } } };
 		const lookup = {
 			$lookup: {
-				from: 'rocketchat_livechat_sessions',
+				from: 'rocketchat_livechat_agent_activity',
 				localField: '_id',
 				foreignField: 'agentId',
 				as: 'sessions',
