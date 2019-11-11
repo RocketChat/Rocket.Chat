@@ -36,4 +36,10 @@ export class AppListenerBridge {
 		// 	this.orch.debugLog(e.stack);
 		// }
 	}
+
+	async externalComponentEvent(inte, externalComponent) {
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
+
+		return result;
+	}
 }

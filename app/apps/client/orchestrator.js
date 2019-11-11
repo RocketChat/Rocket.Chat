@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
@@ -7,6 +8,7 @@ import { AdminBox } from '../../ui-utils';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { handleI18nResources } from './i18n';
+import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 const createDeferredValue = () => {
 	let resolve;
@@ -21,6 +23,8 @@ const createDeferredValue = () => {
 
 class AppClientOrchestrator {
 	constructor() {
+		this._appClientUIHost = new RealAppsEngineUIHost();
+		this._manager = new AppClientManager(this._appClientUIHost);
 		this.isLoaded = false;
 		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
 	}
@@ -42,7 +46,9 @@ class AppClientOrchestrator {
 		this.setEnabled(isEnabled);
 	}
 
-	getWsListener = () => this.ws
+	getWsListener = () => this.ws;
+
+	getAppClientManager = () => this._manager;
 
 	registerAdminMenuItems = () => {
 		AdminBox.addOption({
@@ -182,6 +188,7 @@ Meteor.startup(() => {
 				return;
 			}
 
+			Apps.getAppClientManager().initialize();
 			Apps.load(isEnabled);
 		});
 	});
