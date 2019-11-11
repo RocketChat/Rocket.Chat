@@ -10,40 +10,6 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Button } from '../../basic/Button';
 import { handleError } from '../../../../app/utils/client';
 
-export function RelativeUrlSettingInput({
-	_id,
-	value,
-	placeholder,
-	readonly,
-	autocomplete,
-	disabled,
-	onChange,
-}) {
-	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
-	};
-
-	return <input type='url' className='rc-input__element' name={_id} value={Meteor.absoluteUrl(value)} placeholder={placeholder} disabled={disabled} readOnly={readonly} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />;
-}
-
-export function PasswordSettingInput({
-	_id,
-	value,
-	placeholder,
-	readonly,
-	autocomplete,
-	disabled,
-	onChange,
-}) {
-	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
-	};
-
-	return <input type='password' className='rc-input__element' name={_id} value={value} placeholder={placeholder} disabled={disabled} readOnly={readonly} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />;
-}
-
 export function IntSettingInput({
 	_id,
 	value,

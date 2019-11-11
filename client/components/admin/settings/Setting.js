@@ -10,8 +10,9 @@ import { useTranslation } from '../../providers/TranslationProvider';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
 import { StringSettingInput } from './inputs/StringSettingInput';
-import { useSetting } from './SettingsState';
 import { RelativeUrlSettingInput } from './inputs/RelativeUrlSettingInput';
+import { PasswordSettingInput } from './inputs/PasswordSettingInput';
+import { useSetting } from './SettingsState';
 
 export function Setting({ settingId }) {
 	const setting = useSetting(settingId);
@@ -52,7 +53,7 @@ export function Setting({ settingId }) {
 		{(type === 'boolean' && <BooleanSettingInput {...inputProps} />)
 		|| (type === 'string' && <StringSettingInput {...inputProps} />)
 		|| (type === 'relativeUrl' && <RelativeUrlSettingInput {...inputProps} />)
-		// || (type === 'password' && <PasswordSettingInput {...inputProps} />)
+		|| (type === 'password' && <PasswordSettingInput {...inputProps} />)
 		// || (type === 'int' && <IntSettingInput {...inputProps} />)
 		// || (type === 'select' && <SelectSettingInput {...inputProps} />)
 		// || (type === 'language' && <LanguageSettingInput {...inputProps} />)
