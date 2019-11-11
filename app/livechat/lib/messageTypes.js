@@ -30,17 +30,18 @@ MessageTypes.registerType({
 		if (!message.transferData) {
 			return;
 		}
+		const from = message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.name);
 		const transferTypes = {
 			agent: () => TAPi18n.__('Livechat_transfer_to_agent', {
-				from: message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.name),
+				from,
 				to: message.transferData.transferredTo && (message.transferData.transferredTo.name || message.transferData.transferredTo.name),
 			}),
 			department: () => TAPi18n.__('Livechat_transfer_to_department', {
-				from: message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.name),
+				from,
 				to: message.transferData.nextDepartment && message.transferData.nextDepartment.name,
 			}),
 			queue: () => TAPi18n.__('Livechat_transfer_return_to_the_queue', {
-				from: message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.name),
+				from,
 			}),
 		};
 		return {
