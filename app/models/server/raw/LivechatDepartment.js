@@ -216,12 +216,20 @@ export class LivechatDepartmentRaw extends BaseRaw {
 			{ $gte: ['$$room.ts', new Date(start)] },
 			{ $lte: ['$$room.ts', new Date(end)] },
 		];
-		const lookup = {
+		const roomsLookup = {
 			$lookup: {
 				from: 'rocketchat_room',
 				localField: '_id',
 				foreignField: 'departmentId',
 				as: 'rooms',
+			},
+		};
+		const messagesLookup = {
+			$lookup: {
+				from: 'rocketchat_message',
+				localField: 'rooms._id',
+				foreignField: 'rid',
+				as: 'messages',
 			},
 		};
 		const projectRooms = {
@@ -238,10 +246,24 @@ export class LivechatDepartmentRaw extends BaseRaw {
 				},
 			},
 		};
+		const projectMessages = {
+			$project: {
+				department: '$department',
+				messages: {
+					$filter: {
+						input: '$messages',
+						as: 'message',
+						cond: {
+							$and: [{ $eq: ['$$message.t', 'livechat_transfer_history'] }],
+						},
+					},
+				},
+			},
+		};
 		const projectTransfersSize = {
 			$project: {
 				department: '$department',
-				transfers: { $size: { $ifNull: ['$rooms.transferHistory', []] } },
+				transfers: { $size: { $ifNull: ['$messages', []] } },
 			},
 		};
 		const group = {
@@ -270,7 +292,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 				preserveNullAndEmptyArrays: true,
 			},
 		};
-		const params = [lookup, projectRooms, unwind, projectTransfersSize, group, presentationProject];
+		const params = [roomsLookup, projectRooms, unwind, messagesLookup, projectMessages, projectTransfersSize, group, presentationProject];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
