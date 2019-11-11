@@ -272,27 +272,33 @@ export class AppsRestApi {
 
 		this.api.addRoute('groupMembers', { authRequired: true }, {
 			get() {
-				const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
-				const room = Rooms.findOneById(findResult.rid, { fields: { broadcast: 1 } });
+				let users;
+				try {
+					const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+					const room = Rooms.findOneById(findResult.rid, { fields: { broadcast: 1 } });
 
-				if (room.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list')) {
-					return API.v1.unauthorized();
+					if (room.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list')) {
+						return API.v1.unauthorized();
+					}
+
+					const { offset } = this.getPaginationItems();
+					const { sort = {} } = this.parseJsonQuery();
+					const subscriptions = Subscriptions.findByRoomId(findResult.rid, {
+						fields: { 'u._id': 1 },
+						sort: { 'u.username': sort.username != null ? sort.username : 1 },
+						skip: offset,
+						limit: 0,
+					});
+					const members = subscriptions.fetch().map((s) => s.u && s.u._id);
+
+					users = Users.find({ _id: { $in: members } }, {
+						fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
+						sort: { username: sort.username != null ? sort.username : 1 },
+					}).fetch();
+				} catch (e) {
+					orchestrator.getRocketChatLogger().error(`Error getting the group members ${ e }`);
+					return API.v1.internalError();
 				}
-
-				const { offset } = this.getPaginationItems();
-				const { sort = {} } = this.parseJsonQuery();
-				const subscriptions = Subscriptions.findByRoomId(findResult.rid, {
-					fields: { 'u._id': 1 },
-					sort: { 'u.username': sort.username != null ? sort.username : 1 },
-					skip: offset,
-					limit: 0,
-				});
-				const members = subscriptions.fetch().map((s) => s.u && s.u._id);
-				const users = Users.find({ _id: { $in: members } }, {
-					fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
-					sort: { username: sort.username != null ? sort.username : 1 },
-				}).fetch();
-
 				return API.v1.success({ members: users });
 			},
 		});
