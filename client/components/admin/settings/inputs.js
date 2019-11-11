@@ -10,31 +10,6 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Button } from '../../basic/Button';
 import { handleError } from '../../../../app/utils/client';
 
-export function SelectSettingInput({
-	_id,
-	value,
-	readonly,
-	values,
-	disabled,
-	onChange,
-}) {
-	const t = useTranslation();
-
-	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
-	};
-
-	return <div className='rc-select'>
-		<select className='rc-select__element' name={_id} value={value} disabled={disabled} readOnly={readonly} onChange={handleChange}>
-			{values.map(({ key, i18nLabel }) =>
-				<option key={key} value={key}>{t(i18nLabel)}</option>
-			)}
-		</select>
-		<Icon block='rc-select__arrow' icon='arrow-down' />
-	</div>;
-}
-
 export function LanguageSettingInput({
 	_id,
 	value,
