@@ -10,48 +10,6 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Button } from '../../basic/Button';
 import { handleError } from '../../../../app/utils/client';
 
-export function StringSettingInput({
-	_id,
-	multiline,
-	value,
-	placeholder,
-	readonly,
-	autocomplete,
-	disabled,
-	onChange,
-}) {
-	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
-	};
-
-	if (multiline) {
-		return <textarea
-			className='rc-input__element'
-			name={_id}
-			rows='4'
-			style={{ height: 'auto' }}
-			value={value}
-			placeholder={placeholder}
-			disabled={disabled}
-			readOnly={readonly}
-			onChange={handleChange}
-		/>;
-	}
-
-	return <input
-		type='text'
-		className='rc-input__element'
-		name={_id}
-		value={value}
-		placeholder={placeholder}
-		disabled={disabled}
-		readOnly={readonly}
-		autoComplete={autocomplete === false ? 'off' : undefined}
-		onChange={handleChange}
-	/>;
-}
-
 export function RelativeUrlSettingInput({
 	_id,
 	value,

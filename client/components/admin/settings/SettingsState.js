@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 import toastr from 'toastr';
 
 import { handleError } from '../../../../app/utils/client/lib/handleError';
@@ -226,7 +226,7 @@ const useSelector = (selector, equalityFunction = (a, b) => a === b) => {
 		};
 	}, [handleUpdate]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		handleUpdate(stateRef.current);
 	});
 
@@ -245,7 +245,7 @@ export const useGroup = (groupId) => {
 	const { stateRef, hydrate } = useContext(SettingsContext);
 
 	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings) => {
-		const settings = filterSettings(state);
+		const settings = filterSettings(state.settings);
 
 		const changes = settings.filter(({ changed }) => changed)
 			.map(({ _id, value, editor }) => ({ _id, value, editor }));

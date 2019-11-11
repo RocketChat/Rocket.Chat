@@ -11,6 +11,7 @@ import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
 import { StringSettingInput } from './inputs/StringSettingInput';
 import { useSetting } from './SettingsState';
+import { RelativeUrlSettingInput } from './inputs/RelativeUrlSettingInput';
 
 export function Setting({ settingId }) {
 	const setting = useSetting(settingId);
@@ -50,7 +51,7 @@ export function Setting({ settingId }) {
 	return <Field>
 		{(type === 'boolean' && <BooleanSettingInput {...inputProps} />)
 		|| (type === 'string' && <StringSettingInput {...inputProps} />)
-		// || (type === 'relativeUrl' && <RelativeUrlSettingInput {...inputProps} />)
+		|| (type === 'relativeUrl' && <RelativeUrlSettingInput {...inputProps} />)
 		// || (type === 'password' && <PasswordSettingInput {...inputProps} />)
 		// || (type === 'int' && <IntSettingInput {...inputProps} />)
 		// || (type === 'select' && <SelectSettingInput {...inputProps} />)
