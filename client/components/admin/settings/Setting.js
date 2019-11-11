@@ -15,6 +15,7 @@ import { PasswordSettingInput } from './inputs/PasswordSettingInput';
 import { IntSettingInput } from './inputs/IntSettingInput';
 import { SelectSettingInput } from './inputs/SelectSettingInput';
 import { LanguageSettingInput } from './inputs/LanguageSettingInput';
+import { ColorSettingInput } from './inputs/ColorSettingInput';
 import { useSetting } from './SettingsState';
 
 export function Setting({ settingId }) {
@@ -60,7 +61,7 @@ export function Setting({ settingId }) {
 		|| (type === 'int' && <IntSettingInput {...inputProps} />)
 		|| (type === 'select' && <SelectSettingInput {...inputProps} />)
 		|| (type === 'language' && <LanguageSettingInput {...inputProps} />)
-		// || (type === 'color' && <ColorSettingInput {...inputProps} />)
+		|| (type === 'color' && <ColorSettingInput {...inputProps} />)
 		// || (type === 'font' && <FontSettingInput {...inputProps} />)
 		// || (type === 'code' && <CodeSettingInput {...inputProps} />)
 		// || (type === 'action' && <ActionSettingInput {...inputProps} />)
