@@ -12,9 +12,9 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		this._baseURL = document.baseURI.slice(0, -1);
 	}
 
-	async getRoomInfo() {
+	async getClientRoomInfo() {
 		const { name: slugifiedName, _id: id } = Session.get(`roomData${ Session.get('openedRoom') }`);
-		let { members } = await APIClient.get('apps/groupMembers', { id });
+		let { members } = await APIClient.get('apps/groupMembers', { roomId: id });
 
 		members = members.map(({ _id, username }) => ({
 			id: _id,
@@ -29,7 +29,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		};
 	}
 
-	async getUserInfo() {
+	async getClientUserInfo() {
 		const { username, _id } = Meteor.user();
 		const avatarUrl = `${ this._baseURL }${ getUserAvatarURL(username) }`;
 
