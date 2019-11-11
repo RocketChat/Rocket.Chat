@@ -2,24 +2,30 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import s from 'underscore.string';
 import _ from 'underscore';
 
 import { modal, call } from '../../../../ui-utils';
-import { t, handleError } from '../../../../utils';
-import { AgentUsers } from '../../collections/AgentUsers';
-
-
+import { t, handleError, APIClient } from '../../../../utils/client';
 import './livechatAgents.html';
+
+const loadAgents = async (instance, limit = 50, text) => {
+	let baseUrl = `livechat/users/agent?count=${ limit }`;
+
+	if (text) {
+		baseUrl += `&text=${ encodeURIComponent(text) }`;
+	}
+
+	const { users } = await APIClient.v1.get(baseUrl);
+	instance.agents.set(users);
+	instance.ready.set(true);
+};
 
 const getUsername = (user) => user.username;
 Template.livechatAgents.helpers({
 	exceptionsAgents() {
 		const { selectedAgents } = Template.instance();
-		return AgentUsers.find({}, { fields: { username: 1 } })
-			.fetch()
-			.map(getUsername)
-			.concat(selectedAgents.get().map(getUsername));
+		return Template.instance().agents.get()
+			.map(getUsername).concat(selectedAgents.get().map(getUsername));
 	},
 	deleteLastAgent() {
 		const i = Template.instance();
@@ -33,7 +39,7 @@ Template.livechatAgents.helpers({
 		return Template.instance().state.get('loading');
 	},
 	agents() {
-		return Template.instance().agents();
+		return Template.instance().agents.get();
 	},
 	emailAddress() {
 		if (this.emails && this.emails.length > 0) {
@@ -82,7 +88,7 @@ Template.livechatAgents.helpers({
 const DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS = 300;
 
 Template.livechatAgents.events({
-	'click .remove-agent'(e /* , instance*/) {
+	'click .remove-agent'(e, instance) {
 		e.preventDefault();
 
 		modal.open(
@@ -97,12 +103,13 @@ Template.livechatAgents.events({
 				html: false,
 			},
 			() => {
-				Meteor.call('livechat:removeAgent', this.username, function(
+				Meteor.call('livechat:removeAgent', this.username, async function(
 					error /* , result*/
 				) {
 					if (error) {
 						return handleError(error);
 					}
+					await loadAgents(instance);
 					modal.open({
 						title: t('Removed'),
 						text: t('Agent_removed'),
@@ -117,7 +124,7 @@ Template.livechatAgents.events({
 
 	async 'submit #form-agent'(e, instance) {
 		e.preventDefault();
-		const { selectedAgents, state } = instance;
+		const { selectedAgents, state, limit, filter } = instance;
 
 		const users = selectedAgents.get();
 
@@ -130,6 +137,8 @@ Template.livechatAgents.events({
 			await Promise.all(
 				users.map(({ username }) => call('livechat:addAgent', username))
 			);
+
+			await loadAgents(instance, limit.get(), filter.get());
 			selectedAgents.set([]);
 		} finally {
 			state.set('loading', false);
@@ -171,6 +180,7 @@ Template.livechatAgents.onCreated(function() {
 	});
 	this.ready = new ReactiveVar(true);
 	this.selectedAgents = new ReactiveVar([]);
+	this.agents = new ReactiveVar([]);
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([...this.selectedAgents.curValue, agent]);
@@ -181,25 +191,8 @@ Template.livechatAgents.onCreated(function() {
 	};
 
 	this.autorun(function() {
-		const filter = instance.filter.get();
 		const limit = instance.limit.get();
-		const subscription = instance.subscribe('livechat:agents', filter, limit);
-		instance.ready.set(subscription.ready());
+		const filter = instance.filter.get();
+		loadAgents(instance, limit, filter);
 	});
-	this.agents = function() {
-		let filter;
-		let query = {};
-
-		if (instance.filter && instance.filter.get()) {
-			filter = s.trim(instance.filter.get());
-		}
-
-		if (filter) {
-			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] };
-		}
-
-		const limit = instance.limit && instance.limit.get();
-		return AgentUsers.find(query, { limit, sort: { name: 1 } }).fetch();
-	};
 });

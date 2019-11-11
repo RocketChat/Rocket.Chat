@@ -7,12 +7,10 @@ import { Gravatar } from 'meteor/jparker:gravatar';
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import PasswordPolicy from '../lib/PasswordPolicyClass';
+import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusText } from '.';
-
-const passwordPolicy = new PasswordPolicy();
 
 let html = '';
 Meteor.startup(() => {

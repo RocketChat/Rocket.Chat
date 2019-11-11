@@ -356,7 +356,7 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars',
+			i18nLabel: 'Hide_Avatars_Sidebar',
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
@@ -718,6 +718,7 @@ settings.addGroup('General', function() {
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
+		readonly: true,
 		values: [
 			{
 				key: 'pending',
@@ -759,6 +760,18 @@ settings.addGroup('General', function() {
 	this.add('Allow_Invalid_SelfSigned_Certs', false, {
 		type: 'boolean',
 		secret: true,
+	});
+	this.add('Iframe_Restrict_Access', true, {
+		type: 'boolean',
+		secret: true,
+	});
+	this.add('Iframe_X_Frame_Options', 'sameorigin', {
+		type: 'string',
+		secret: true,
+		enableQuery: {
+			_id: 'Iframe_Restrict_Access',
+			value: true,
+		},
 	});
 	this.add('Favorite_Rooms', true, {
 		type: 'boolean',
