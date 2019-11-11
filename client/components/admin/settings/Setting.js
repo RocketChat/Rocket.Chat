@@ -14,6 +14,7 @@ import { RelativeUrlSettingInput } from './inputs/RelativeUrlSettingInput';
 import { PasswordSettingInput } from './inputs/PasswordSettingInput';
 import { IntSettingInput } from './inputs/IntSettingInput';
 import { SelectSettingInput } from './inputs/SelectSettingInput';
+import { LanguageSettingInput } from './inputs/LanguageSettingInput';
 import { useSetting } from './SettingsState';
 
 export function Setting({ settingId }) {
@@ -58,7 +59,7 @@ export function Setting({ settingId }) {
 		|| (type === 'password' && <PasswordSettingInput {...inputProps} />)
 		|| (type === 'int' && <IntSettingInput {...inputProps} />)
 		|| (type === 'select' && <SelectSettingInput {...inputProps} />)
-		// || (type === 'language' && <LanguageSettingInput {...inputProps} />)
+		|| (type === 'language' && <LanguageSettingInput {...inputProps} />)
 		// || (type === 'color' && <ColorSettingInput {...inputProps} />)
 		// || (type === 'font' && <FontSettingInput {...inputProps} />)
 		// || (type === 'code' && <CodeSettingInput {...inputProps} />)

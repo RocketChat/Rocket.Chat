@@ -6,47 +6,8 @@ import toastr from 'toastr';
 
 import { useTranslation } from '../../providers/TranslationProvider';
 import { Icon } from '../../basic/Icon';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { Button } from '../../basic/Button';
 import { handleError } from '../../../../app/utils/client';
-
-export function LanguageSettingInput({
-	_id,
-	value,
-	readonly,
-	disabled,
-	onChange,
-}) {
-	const languages = useReactiveValue(() => {
-		const languages = TAPi18n.getLanguages();
-
-		const result = Object.entries(languages)
-			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
-			.sort((a, b) => a.key - b.key);
-
-		result.unshift({
-			name: 'Default',
-			en: 'Default',
-			key: '',
-		});
-
-		return result;
-	}, []);
-
-	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
-	};
-
-	return <div className='rc-select'>
-		<select className='rc-select__element' name={_id} disabled={disabled} readOnly={readonly} value={value} onChange={handleChange}>
-			{languages.map(({ key, name }) =>
-				<option key={key} value={key} dir='auto'>{name}</option>
-			)}
-		</select>
-		<Icon block='rc-select__arrow' icon='arrow-down' />
-	</div>;
-}
 
 export function ColorSettingInput({
 	_id,

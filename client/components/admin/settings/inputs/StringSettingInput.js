@@ -34,6 +34,7 @@ export function StringSettingInput({
 		{multiline
 			? <TextAreaInput
 				data-qa-setting-id={_id}
+				id={_id}
 				rows={4}
 				value={value}
 				placeholder={placeholder}
@@ -44,6 +45,7 @@ export function StringSettingInput({
 			/>
 			: <TextInput
 				data-qa-setting-id={_id}
+				id={_id}
 				value={value}
 				placeholder={placeholder}
 				disabled={disabled}

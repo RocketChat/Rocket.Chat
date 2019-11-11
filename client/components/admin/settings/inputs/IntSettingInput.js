@@ -31,6 +31,7 @@ export function IntSettingInput({
 		</Field.Row>
 		<InputBox
 			data-qa-setting-id={_id}
+			id={_id}
 			type='number'
 			value={value}
 			placeholder={placeholder}

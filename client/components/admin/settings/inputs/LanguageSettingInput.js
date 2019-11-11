@@ -1,14 +1,14 @@
 import {
 	Field,
 	Label,
-	UrlInput,
+	SelectInput,
 } from '@rocket.chat/fuselage';
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
+import { useLanguages } from '../../../providers/TranslationProvider';
 import { ResetSettingButton } from '../ResetSettingButton';
 
-export function RelativeUrlSettingInput({
+export function LanguageSettingInput({
 	_id,
 	label,
 	value,
@@ -20,6 +20,8 @@ export function RelativeUrlSettingInput({
 	hasResetButton,
 	onResetButtonClick,
 }) {
+	const languages = useLanguages();
+
 	const handleChange = (event) => {
 		const { value } = event.currentTarget;
 		onChange({ value });
@@ -30,15 +32,19 @@ export function RelativeUrlSettingInput({
 			<Label htmlFor={_id} text={label} title={_id} />
 			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 		</Field.Row>
-		<UrlInput
+		<SelectInput
 			data-qa-setting-id={_id}
 			id={_id}
-			value={Meteor.absoluteUrl(value)}
+			value={value}
 			placeholder={placeholder}
 			disabled={disabled}
 			readOnly={readonly}
 			autoComplete={autocomplete === false ? 'off' : undefined}
 			onChange={handleChange}
-		/>
+		>
+			{languages.map(({ key, name }) =>
+				<SelectInput.Option key={key} value={key} dir='auto'>{name}</SelectInput.Option>
+			)}
+		</SelectInput>
 	</>;
 }

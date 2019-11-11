@@ -31,6 +31,7 @@ export function GenericSettingInput({
 		</Field.Row>
 		<TextInput
 			data-qa-setting-id={_id}
+			id={_id}
 			value={value}
 			placeholder={placeholder}
 			disabled={disabled}

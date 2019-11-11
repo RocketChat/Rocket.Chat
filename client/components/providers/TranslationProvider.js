@@ -57,3 +57,19 @@ export function TranslationProvider({ children }) {
 export const useTranslation = () => useContext(TranslationContext).translate;
 
 export const useLanguage = () => useContext(TranslationContext).language;
+
+export const useLanguages = () => useReactiveValue(() => {
+	const languages = TAPi18n.getLanguages();
+
+	const result = Object.entries(languages)
+		.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+		.sort((a, b) => a.key - b.key);
+
+	result.unshift({
+		name: 'Default',
+		en: 'Default',
+		key: '',
+	});
+
+	return result;
+}, []);
