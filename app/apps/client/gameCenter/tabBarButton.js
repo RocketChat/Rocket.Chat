@@ -6,9 +6,9 @@ import { APIClient } from '../../../utils';
 import './gameCenter.html';
 
 Meteor.startup(async function() {
-	const { games } = await APIClient.get('apps/games');
+	const { externalComponents } = await APIClient.get('apps/externalComponents');
 
-	if (games.length > 0) {
+	if (externalComponents.length > 0) {
 		TabBar.addButton({
 			groups: ['channel', 'group', 'direct'],
 			id: 'gameCenter',

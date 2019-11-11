@@ -251,11 +251,11 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute('games', { authRequired: false }, {
+		this.api.addRoute('externalComponents', { authRequired: false }, {
 			get() {
-				const games = orchestrator.getEnabledGames();
+				const externalComponents = orchestrator.getProvidedComponents();
 
-				return API.v1.success({ games: Array.from(games.values()) });
+				return API.v1.success({ externalComponents });
 			},
 		});
 

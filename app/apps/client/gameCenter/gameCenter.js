@@ -5,10 +5,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { modal } from '../../../ui-utils';
 import { APIClient, t } from '../../../utils';
 
-const getActivatedGames = async (instance) => {
+const getExternalComponents = async (instance) => {
 	try {
-		const { games } = await APIClient.get('apps/games');
-		instance.games.set(games);
+		const { externalComponents } = await APIClient.get('apps/externalComponents');
+		instance.games.set(externalComponents);
 	} catch (e) {
 		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 	}
@@ -86,7 +86,7 @@ Template.GameCenter.onCreated(function() {
 		this.gameManifestInfo.set(null);
 	};
 
-	getActivatedGames(this);
+	getExternalComponents(this);
 });
 
 Template.GameCenter.events({
