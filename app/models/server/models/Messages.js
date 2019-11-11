@@ -770,6 +770,33 @@ export class Messages extends Base {
 		return record;
 	}
 
+	createTransferHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+		const type = 'livechat_transfer_history';
+		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
+		if ((room != null ? room.sysMes : undefined) === false) {
+			return;
+		}
+		const record = {
+			t: type,
+			rid: roomId,
+			ts: new Date(),
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username,
+			},
+			groupable: false,
+		};
+
+		if (settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+		Object.assign(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
+		return record;
+	}
+
 	createUserJoinWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);

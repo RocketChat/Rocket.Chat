@@ -36,6 +36,7 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
+import { normalizeTransferredByData } from './Helper';
 
 export const Livechat = {
 	Analytics,
@@ -430,7 +431,10 @@ export const Livechat = {
 	forwardOpenChats(userId) {
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = LivechatVisitors.findOneById(room.v._id);
-			this.transfer(room, guest, { departmentId: guest.department });
+			const user = Users.findOneById(userId);
+			const { _id, username, name } = user;
+			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
+			this.transfer(room, guest, { roomId: room._id, transferredBy, department: LivechatDepartment.findOneById(guest.department) });
 		});
 	},
 
@@ -463,21 +467,25 @@ export const Livechat = {
 
 	saveTransferHistory(room, transferData) {
 		const { departmentId: previousDepartment } = room;
-		const { departmentId: nextDepartment, transferredBy, transferredTo } = transferData;
+		const { department: nextDepartment, transferredBy, transferredTo, scope } = transferData;
 		check(transferredBy, Match.ObjectIncluding({
 			_id: String,
 			username: String,
+			name: String,
 			type: String,
 		}));
+		const user = Users.findOneByUsername(transferredBy.username);
 		const transfer = {
-			transferredBy,
-			ts: new Date(),
-			scope: nextDepartment ? 'department' : 'agent',
-			...previousDepartment && { previousDepartment },
-			...nextDepartment && { nextDepartment },
-			...transferredTo && { transferredTo },
+			transferData: {
+				transferredBy,
+				ts: new Date(),
+				scope: scope || (nextDepartment ? 'department' : 'agent'),
+				...previousDepartment && { previousDepartment },
+				...nextDepartment && { nextDepartment },
+				...transferredTo && { transferredTo },
+			},
 		};
-		return LivechatRooms.updateTransferHistoryByRoomId(room._id, transfer);
+		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', user, transfer);
 	},
 
 	async transfer(room, guest, transferData) {
@@ -488,7 +496,7 @@ export const Livechat = {
 		return this.saveTransferHistory(room, transferData);
 	},
 
-	returnRoomAsInquiry(rid, departmentId) {
+	returnRoomAsInquiry(rid, departmentId, transferData) {
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:returnRoomAsInquiry' });
@@ -512,7 +520,7 @@ export const Livechat = {
 		if (!inquiry) {
 			return false;
 		}
-
+		this.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	},
 

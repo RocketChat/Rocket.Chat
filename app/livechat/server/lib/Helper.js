@@ -263,11 +263,12 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 		throw new Error('You must provide "transferredBy" and "room" params to "getTransferredByData"');
 	}
 	const { servedBy: { _id: agentId } = {} } = room;
-	const { _id, username, userType: transferType } = transferredBy;
+	const { _id, username, name, userType: transferType } = transferredBy;
 	const type = transferType || (_id === agentId ? 'agent' : 'user');
 	return {
 		_id,
 		username,
+		name,
 		type,
 	};
 };
