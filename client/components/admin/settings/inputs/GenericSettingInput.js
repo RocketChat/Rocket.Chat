@@ -27,10 +27,10 @@ export function GenericSettingInput({
 	return <>
 		<Field.Row>
 			<Label htmlFor={_id} text={label} title={_id} />
-			{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
+			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 		</Field.Row>
 		<TextInput
-			id={_id}
+			data-qa-setting-id={_id}
 			value={value}
 			placeholder={placeholder}
 			disabled={disabled}

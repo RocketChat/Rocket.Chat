@@ -11,7 +11,7 @@ const StyledResetSettingButton = styled(Button)`
 	padding-bottom: 0 !important;
 `;
 
-export function ResetSettingButton({ onClick }) {
+export function ResetSettingButton(props) {
 	const t = useTranslation();
 
 	return <StyledResetSettingButton
@@ -20,7 +20,7 @@ export function ResetSettingButton({ onClick }) {
 		ghost
 		small
 		title={t('Reset')}
-		onClick={onClick}
+		{...props}
 	>
 		<Icon name='undo' />
 	</StyledResetSettingButton>;

@@ -26,6 +26,7 @@ export function BooleanSettingInput({
 	return <Field.Row>
 		<Label position='end' text={label} title={_id}>
 			<ToggleSwitch
+				data-qa-setting-id={_id}
 				value='true'
 				checked={value === true}
 				disabled={disabled}
@@ -34,6 +35,6 @@ export function BooleanSettingInput({
 				onChange={handleChange}
 			/>
 		</Label>
-		{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
+		{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 	</Field.Row>;
 }
