@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
-import { ChatMessages } from '../../../ui';
+import { chatMessages, ChatMessages } from '../../../ui';
 import { normalizeThreadMessage, call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
@@ -127,6 +127,9 @@ Template.thread.onRendered(function() {
 		const rid = this.state.get('rid');
 		const tmid = this.state.get('tmid');
 		this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
+		if (rid && tmid) {
+			chatMessages[`${ rid }-${ tmid }`] = this.chatMessages;
+		}
 	});
 
 
