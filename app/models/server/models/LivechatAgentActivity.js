@@ -10,7 +10,7 @@ export class LivechatAgentActivity extends Base {
 	}
 
 	createOrUpdate(data = {}) {
-		const { date, agentId } = data;
+		const { date, agentId, lastStartedAt } = data;
 
 		if (!date || !agentId) {
 			return;
@@ -21,7 +21,7 @@ export class LivechatAgentActivity extends Base {
 				lastStoppedAt: 1,
 			},
 			$set: {
-				lastStartedAt: new Date(),
+				lastStartedAt: lastStartedAt || new Date(),
 			},
 			$setOnInsert: {
 				date,
@@ -55,6 +55,14 @@ export class LivechatAgentActivity extends Base {
 			},
 		};
 		return this.update(query, update);
+	}
+
+	findOpenSessions() {
+		const query = {
+			lastStoppedAt: { $exists: false },
+		};
+
+		return this.find(query);
 	}
 }
 
