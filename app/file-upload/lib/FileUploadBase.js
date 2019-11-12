@@ -52,8 +52,7 @@ export class FileUploadBase {
 		return this.meta.name;
 	}
 
-	start(callback) {
-		console.log('heree client');
+	start(callback, offlineUpload) {
 		this.handler = new UploadFS.Uploader({
 			store: this.store,
 			data: this.file,
@@ -70,6 +69,10 @@ export class FileUploadBase {
 		this.handler.onProgress = (file, progress) => {
 			this.onProgress(progress);
 		};
+
+		if (offlineUpload) {
+			offlineUpload(this.file, this.meta);
+		}
 
 		return this.handler.start();
 	}

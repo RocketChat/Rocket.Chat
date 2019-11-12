@@ -19,4 +19,5 @@ export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient } from './lib/RestApiClient';
 export { canDeleteMessage } from './lib/canDeleteMessage';
+export { SWCache } from './lib/swCache';
 export { mime } from '../lib/mimeTypes';
