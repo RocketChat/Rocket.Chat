@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
 import { DateFormat } from '../../lib';
-import { getUserPreference, getURL } from '../../utils/client';
-import { Users } from '../../models';
+import { getURL } from '../../utils/client';
 import { renderMessageBody } from '../../ui-utils';
 
 const colors = {
@@ -27,15 +25,18 @@ Template.messageAttachment.helpers({
 		});
 	},
 	loadImage() {
-		if (this.downloadImages !== true) {
-			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad': 1 } });
-			if (getUserPreference(user, 'autoImageLoad') === false) {
-				return false;
-			}
-			if (Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth') !== true) {
-				return false;
-			}
+		if (this.downloadImages) {
+			return true;
 		}
+
+		if (this.settings.autoImageLoad === false) {
+			return false;
+		}
+
+		if (this.settings.saveMobileBandwidth === true) {
+			return false;
+		}
+
 		return true;
 	},
 	getImageHeight(height = 200) {
@@ -54,7 +55,7 @@ Template.messageAttachment.helpers({
 		if (this.collapsed != null) {
 			return this.collapsed;
 		}
-		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
+		return this.settings.collapseMediaByDefault === true;
 	},
 	time() {
 		const messageDate = new Date(this.ts);
@@ -67,7 +68,9 @@ Template.messageAttachment.helpers({
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;
 	},
-
+	injectSettings(data, settings) {
+		data.settings = settings;
+	},
 	isFile() {
 		return this.type === 'file';
 	},
