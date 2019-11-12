@@ -2,7 +2,7 @@ import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../settings/server/raw';
 
 export class LivechatDepartmentRaw extends BaseRaw {
-	findAllRooms({ start, end, answered, options = {} }) {
+	findAllRooms({ start, end, answered, departmentId, options = {} }) {
 		const roomsFilter = [
 			{ $gte: ['$$room.ts', new Date(start)] },
 			{ $lte: ['$$room.ts', new Date(end)] },
@@ -36,7 +36,15 @@ export class LivechatDepartmentRaw extends BaseRaw {
 				},
 			},
 		};
+		const match = {
+			$match: {
+				_id: departmentId,
+			},
+		};
 		const params = [lookup, project];
+		if (departmentId) {
+			params.unshift(match);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -49,7 +57,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findAllAverageServiceTime({ start, end, options = {} }) {
+	findAllAverageServiceTime({ start, end, departmentId, options = {} }) {
 		const roomsFilter = [
 			{ $gte: ['$$room.ts', new Date(start)] },
 			{ $lte: ['$$room.ts', new Date(end)] },
@@ -92,7 +100,15 @@ export class LivechatDepartmentRaw extends BaseRaw {
 					averageServiceTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$chats', 0] }, 0, { $divide: ['$chatsDuration', '$chats'] }] } },
 				},
 			}];
+		const match = {
+			$match: {
+				_id: departmentId,
+			},
+		};
 		const params = [lookup, ...projects];
+		if (departmentId) {
+			params.unshift(match);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -105,7 +121,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findAllServiceTime({ start, end, options = {} }) {
+	findAllServiceTime({ start, end, departmentId, options = {} }) {
 		const roomsFilter = [
 			{ $gte: ['$$room.ts', new Date(start)] },
 			{ $lte: ['$$room.ts', new Date(end)] },
@@ -142,7 +158,15 @@ export class LivechatDepartmentRaw extends BaseRaw {
 					chatsDuration: { $ceil: { $sum: '$rooms.metrics.chatDuration' } },
 				},
 			}];
+		const match = {
+			$match: {
+				_id: departmentId,
+			},
+		};
 		const params = [lookup, ...projects];
+		if (departmentId) {
+			params.unshift(match);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -155,7 +179,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findAllAverageWaitingTime({ start, end, options = {} }) {
+	findAllAverageWaitingTime({ start, end, departmentId, options = {} }) {
 		const roomsFilter = [
 			{ $gte: ['$$room.ts', new Date(start)] },
 			{ $lte: ['$$room.ts', new Date(end)] },
@@ -198,7 +222,15 @@ export class LivechatDepartmentRaw extends BaseRaw {
 				averageWaitingTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$chats', 0] }, 0, { $divide: ['$chatsFirstResponses', '$chats'] }] } },
 			},
 		}];
+		const match = {
+			$match: {
+				_id: departmentId,
+			},
+		};
 		const params = [lookup, ...projects];
+		if (departmentId) {
+			params.unshift(match);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -211,7 +243,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findAllNumberOfTransferedRooms({ start, end, options = {} }) {
+	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
 		const roomsFilter = [
 			{ $gte: ['$$room.ts', new Date(start)] },
 			{ $lte: ['$$room.ts', new Date(end)] },
@@ -274,7 +306,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 					description: '$department.description',
 					enabled: '$department.enabled',
 				},
-				numberOfTransferedRooms: { $sum: '$transfers' },
+				numberOfTransferredRooms: { $sum: '$transfers' },
 			},
 		};
 		const presentationProject = {
@@ -283,7 +315,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 				name: '$_id.name',
 				description: '$_id.description',
 				enabled: '$_id.enabled',
-				numberOfTransferedRooms: 1,
+				numberOfTransferredRooms: 1,
 			},
 		};
 		const unwind = {
@@ -292,7 +324,15 @@ export class LivechatDepartmentRaw extends BaseRaw {
 				preserveNullAndEmptyArrays: true,
 			},
 		};
+		const match = {
+			$match: {
+				_id: departmentId,
+			},
+		};
 		const params = [roomsLookup, projectRooms, unwind, messagesLookup, projectMessages, projectTransfersSize, group, presentationProject];
+		if (departmentId) {
+			params.unshift(match);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -305,7 +345,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	async findAllNumberOfAbandonedRooms({ start, end, options = {} }) {
+	async findAllNumberOfAbandonedRooms({ start, end, departmentId, options = {} }) {
 		const roomsFilter = [
 			{ $gte: ['$$room.ts', new Date(start)] },
 			{ $lte: ['$$room.ts', new Date(end)] },
@@ -341,7 +381,15 @@ export class LivechatDepartmentRaw extends BaseRaw {
 				abandonedRooms: { $size: '$rooms' },
 			},
 		}];
+		const match = {
+			$match: {
+				_id: departmentId,
+			},
+		};
 		const params = [lookup, ...projects];
+		if (departmentId) {
+			params.unshift(match);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -354,7 +402,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findPercentageOfAbandonedRooms({ start, end, options = {} }) {
+	findPercentageOfAbandonedRooms({ start, end, departmentId, options = {} }) {
 		const roomsFilter = [
 			{ $gte: ['$$room.ts', new Date(start)] },
 			{ $lte: ['$$room.ts', new Date(end)] },
@@ -425,7 +473,15 @@ export class LivechatDepartmentRaw extends BaseRaw {
 				},
 			},
 		};
+		const match = {
+			$match: {
+				_id: departmentId,
+			},
+		};
 		const params = [lookup, projectRooms, unwind, group, presentationProject];
+		if (departmentId) {
+			params.unshift(match);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}

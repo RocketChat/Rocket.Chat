@@ -30,11 +30,11 @@ MessageTypes.registerType({
 		if (!message.transferData) {
 			return;
 		}
-		const from = message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.name);
+		const from = message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
 		const transferTypes = {
 			agent: () => TAPi18n.__('Livechat_transfer_to_agent', {
 				from,
-				to: message.transferData.transferredTo && (message.transferData.transferredTo.name || message.transferData.transferredTo.name),
+				to: message.transferData.transferredTo && (message.transferData.transferredTo.name || message.transferData.transferredTo.username),
 			}),
 			department: () => TAPi18n.__('Livechat_transfer_to_department', {
 				from,
