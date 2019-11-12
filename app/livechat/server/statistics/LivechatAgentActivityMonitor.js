@@ -39,7 +39,7 @@ export class LivechatAgentActivityMonitor {
 	_startMonitoring() {
 		SyncedCron.add({
 			name: 'Livechat Agent Activity Monitor',
-			schedule: (parser) => parser.cron('59 23 * * *'),
+			schedule: (parser) => parser.cron('0 0 * * *'),
 			job: () => {
 				this._updateActiveSessions();
 			},
@@ -53,11 +53,11 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 		const today = moment(new Date());
-		const stoppedAt = new Date(today.year(), today.month(), today.date(), 23, 59, 59);
-		const tomorrow = moment(stoppedAt).clone().add(1, 'seconds');
-		const startedAt = new Date(tomorrow.year(), tomorrow.month(), tomorrow.date(), tomorrow.hour(), tomorrow.minute(), tomorrow.second());
+		const yesterday = today.clone().subtract(1, 'days');
+		const stoppedAt = new Date(yesterday.year(), yesterday.month(), yesterday.date(), 23, 59, 59);
+		const startedAt = new Date(today.year(), today.month(), today.date());
 		for (const session of openLivechatAgentSessions) {
-			const data = { ...formatDate(), agentId: session.agentId };
+			const data = { ...formatDate(yesterday), agentId: session.agentId };
 			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
 			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
 			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } });
@@ -109,7 +109,7 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_createOrUpdateSession(userId, lastStartedAt) {
-		const data = { ...formatDate(), agentId: userId, lastStartedAt };
+		const data = { ...formatDate(lastStartedAt), agentId: userId, lastStartedAt };
 		LivechatAgentActivity.createOrUpdate(data);
 	}
 
