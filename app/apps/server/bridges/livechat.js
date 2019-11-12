@@ -5,7 +5,6 @@ import { Livechat } from '../../../livechat/server/lib/Livechat';
 import Rooms from '../../../models/server/models/Rooms';
 import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
 import Users from '../../../models/server/models/Users';
-import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
 
 export class AppLivechatBridge {
 	constructor(orch) {
@@ -124,7 +123,7 @@ export class AppLivechatBridge {
 		return Livechat.transfer(
 			this.orch.getConverters().get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent.id, department: LivechatDepartment.findOneById(departmentId) },
+			{ userId: targetAgent.id, departmentId },
 		);
 	}
 

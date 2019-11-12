@@ -450,19 +450,6 @@ export class LivechatRooms extends Base {
 		return this.remove(query);
 	}
 
-	updateTransferHistoryByRoomId(roomId, transferHistory) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$addToSet: {
-				transferHistory,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setVisitorLastMessageTimestampByRoomId(roomId, lastMessageTs) {
 		const query = {
 			_id: roomId,

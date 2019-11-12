@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings as rcSettings } from '../../../../settings';
-import { Messages, LivechatRooms, LivechatDepartment } from '../../../../models';
+import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api';
 import { findGuest, findRoom, getRoom, settings, findAgent } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -89,7 +89,7 @@ API.v1.addRoute('livechat/room.transfer', {
 				department: String,
 			});
 
-			const { rid, token, department: departmentId } = this.bodyParams;
+			const { rid, token, department } = this.bodyParams;
 
 			const guest = findGuest(token);
 			if (!guest) {
@@ -106,9 +106,8 @@ API.v1.addRoute('livechat/room.transfer', {
 
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
-			const department = LivechatDepartment.findOneById(departmentId);
 
-			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, department, transferredBy }))) {
+			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 

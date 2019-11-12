@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission } from '../../../authorization';
 import { LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
-import { normalizeTransferredByData } from '../lib/Helper';
 
 Meteor.methods({
 	'livechat:returnAsInquiry'(rid, departmentId) {
@@ -19,9 +18,7 @@ Meteor.methods({
 		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnAsInquiry' });
 		}
-		const transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
-		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
 
-		return Livechat.returnRoomAsInquiry(rid, departmentId, transferData);
+		return Livechat.returnRoomAsInquiry(rid, departmentId);
 	},
 });

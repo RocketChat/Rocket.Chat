@@ -434,7 +434,7 @@ export const Livechat = {
 			const user = Users.findOneById(userId);
 			const { _id, username, name } = user;
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			this.transfer(room, guest, { roomId: room._id, transferredBy, department: LivechatDepartment.findOneById(guest.department) });
+			this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department });
 		});
 	},
 
@@ -493,10 +493,11 @@ export const Livechat = {
 		if (!result) {
 			return false;
 		}
+		transferData.department = LivechatDepartment.findOneById(transferData.departmentId);
 		return this.saveTransferHistory(room, transferData);
 	},
 
-	returnRoomAsInquiry(rid, departmentId, transferData) {
+	returnRoomAsInquiry(rid, departmentId) {
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:returnRoomAsInquiry' });
@@ -520,6 +521,8 @@ export const Livechat = {
 		if (!inquiry) {
 			return false;
 		}
+		const transferredBy = normalizeTransferredByData(user, room);
+		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
 		this.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	},
