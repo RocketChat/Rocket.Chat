@@ -18,6 +18,7 @@ import { LanguageSettingInput } from './inputs/LanguageSettingInput';
 import { ColorSettingInput } from './inputs/ColorSettingInput';
 import { FontSettingInput } from './inputs/FontSettingInput';
 import { useSetting } from './SettingsState';
+import { ActionSettingInput } from './inputs/ActionSettingInput';
 
 export function Setting({ settingId }) {
 	const setting = useSetting(settingId);
@@ -65,7 +66,7 @@ export function Setting({ settingId }) {
 		|| (type === 'color' && <ColorSettingInput {...inputProps} />)
 		|| (type === 'font' && <FontSettingInput {...inputProps} />)
 		// || (type === 'code' && <CodeSettingInput {...inputProps} />)
-		// || (type === 'action' && <ActionSettingInput {...inputProps} />)
+		|| (type === 'action' && <ActionSettingInput {...inputProps} />)
 		// || (type === 'asset' && <AssetSettingInput {...inputProps} />)
 		// || (type === 'roomPick' && <RoomPickSettingInput {...inputProps} />)
 		|| <GenericSettingInput {...inputProps} />}

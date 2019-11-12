@@ -297,6 +297,7 @@ export const useSection = (groupId, sectionName) => {
 	const filterSettings = (settings) =>
 		settings.filter(({ group, section }) => group === groupId && ((!sectionName && !section) || (sectionName === section)));
 
+	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
 	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => value !== packageValue));
 	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.join() === b.join());
 
@@ -321,6 +322,7 @@ export const useSection = (groupId, sectionName) => {
 
 	return {
 		name: sectionName,
+		changed,
 		canReset,
 		settings: settingsIds,
 		reset,
@@ -333,6 +335,7 @@ export const useSetting = (_id) => {
 	const selectSetting = (settings) => settings.find((setting) => setting._id === _id);
 
 	const setting = useSelector((state) => selectSetting(state.settings));
+	const sectionChanged = useSelector((state) => state.settings.some(({ section, changed }) => section === setting.section && changed));
 	const disabled = useReactiveValue(() => isDisabled(setting), [setting.blocked, setting.enableQuery]);
 
 	const update = useEventCallback((selectSetting, { current: state }, hydrate, data) => {
@@ -363,6 +366,7 @@ export const useSetting = (_id) => {
 
 	return {
 		...setting,
+		sectionChanged,
 		disabled,
 		update,
 		reset,

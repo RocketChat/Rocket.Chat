@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import toastr from 'toastr';
 
 import { useTranslation } from '../../providers/TranslationProvider';
 import { Icon } from '../../basic/Icon';
 import { Button } from '../../basic/Button';
-import { handleError } from '../../../../app/utils/client';
 
 export function FontSettingInput({
 	_id,
@@ -44,34 +40,6 @@ export function CodeSettingInput({
 				<Button primary className='button-restore'>{t('Exit_Full_Screen')}</Button>
 			</div>
 		</div>;
-}
-
-export function ActionSettingInput({
-	value,
-	actionText,
-	disabled,
-	didSectionChange,
-}) {
-	const t = useTranslation();
-
-	const handleClick = async () => {
-		Meteor.call(value, (err, data) => {
-			if (err) {
-				err.details = Object.assign(err.details || {}, {
-					errorTitle: 'Error',
-				});
-				handleError(err);
-				return;
-			}
-
-			const args = [data.message].concat(data.params);
-			toastr.success(TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success'));
-		});
-	};
-
-	return didSectionChange
-		? <span style={{ lineHeight: '40px' }} className='secondary-font-color'>{t('Save_to_enable_this_action')}</span>
-		: <Button primary disabled={disabled} onClick={handleClick}>{t(actionText)}</Button>;
 }
 
 export function AssetSettingInput({
