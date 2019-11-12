@@ -39,7 +39,7 @@ export class LivechatAgentActivityMonitor {
 	_startMonitoring() {
 		SyncedCron.add({
 			name: 'Livechat Agent Activity Monitor',
-			schedule: (parser) => parser.cron('23 59 * * *'),
+			schedule: (parser) => parser.cron('59 23 * * *'),
 			job: () => {
 				this._updateActiveSessions();
 			},
