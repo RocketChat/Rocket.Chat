@@ -244,9 +244,10 @@ export class LivechatDepartmentRaw extends BaseRaw {
 	}
 
 	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
-		const roomsFilter = [
-			{ $gte: ['$$room.ts', new Date(start)] },
-			{ $lte: ['$$room.ts', new Date(end)] },
+		const messageFilter = [
+			{ $gte: ['$$message.ts', new Date(start)] },
+			{ $lte: ['$$message.ts', new Date(end)] },
+			{ $eq: ['$$message.t', 'livechat_transfer_history'] },
 		];
 		const roomsLookup = {
 			$lookup: {
@@ -267,15 +268,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		const projectRooms = {
 			$project: {
 				department: '$$ROOT',
-				rooms: {
-					$filter: {
-						input: '$rooms',
-						as: 'room',
-						cond: {
-							$and: roomsFilter,
-						},
-					},
-				},
+				rooms: 1,
 			},
 		};
 		const projectMessages = {
@@ -286,7 +279,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 						input: '$messages',
 						as: 'message',
 						cond: {
-							$and: [{ $eq: ['$$message.t', 'livechat_transfer_history'] }],
+							$and: messageFilter,
 						},
 					},
 				},
