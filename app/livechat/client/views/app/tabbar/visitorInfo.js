@@ -197,7 +197,7 @@ Template.visitorInfo.events({
 
 		instance.action.set('edit');
 	},
-	'click .close-livechat'(event) {
+	'click .close-livechat'(event, instance) {
 		event.preventDefault();
 
 		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, function(error/* , result*/) {
@@ -211,6 +211,8 @@ Template.visitorInfo.events({
 				timer: 1000,
 				showConfirmButton: false,
 			});
+
+			instance.data.tabBar.close();
 		});
 
 		if (!settings.get('Livechat_request_comment_when_closing_conversation')) {
