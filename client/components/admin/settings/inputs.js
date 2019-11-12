@@ -9,47 +9,6 @@ import { Icon } from '../../basic/Icon';
 import { Button } from '../../basic/Button';
 import { handleError } from '../../../../app/utils/client';
 
-export function ColorSettingInput({
-	_id,
-	value,
-	editor,
-	allowedTypes,
-	autocomplete,
-	disabled,
-	onChange,
-}) {
-	const t = useTranslation();
-
-	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
-	};
-
-	const handleEditorTypeChange = (event) => {
-		const editor = event.currentTarget.value.trim();
-		onChange({ editor });
-	};
-
-	return <>
-		<div className='horizontal'>
-			{editor === 'color' && <div className='flex-grow-1'>
-				<input className='rc-input__element colorpicker-input' type='text' name={_id} value={value} autoComplete='off' disabled={disabled} onChange={handleChange} />
-				<span className='colorpicker-swatch border-component-color' style={{ backgroundColor: value }} />
-			</div>}
-			{editor === 'expression' && <div className='flex-grow-1'>
-				<input className='rc-input__element' type='text' name={_id} value={value} disabled={disabled} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />
-			</div>}
-			<div className='color-editor'>
-				<select name='color-editor' value={editor} onChange={handleEditorTypeChange}>
-					{allowedTypes && allowedTypes.map((allowedType) =>
-						<option key={allowedType} value={allowedType}>{t(allowedType)}</option>)}
-				</select>
-			</div>
-		</div>
-		<div className='settings-description'>Variable name: {_id.replace(/theme-color-/, '@')}</div>
-	</>;
-}
-
 export function FontSettingInput({
 	_id,
 	value,
