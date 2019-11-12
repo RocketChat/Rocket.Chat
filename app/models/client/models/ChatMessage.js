@@ -1,16 +1,17 @@
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import s from 'underscore.string';
 import { Tracker } from 'meteor/tracker';
-import { PersistentMinimongo2 } from 'meteor/frozeman:persistent-minimongo2';
 
+import { CachedCollection } from '../../../ui-cached-collection';
 import { CachedChatSubscription } from './CachedChatSubscription';
 import { ChatSubscription } from './ChatSubscription';
 import { getConfig } from '../../../ui-utils/client/config';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 
-export const ChatMessage = new Mongo.Collection(null);
+const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
+
+export const ChatMessage = CachedChatMessage.collection;
 
 ChatMessage.setReactions = function(messageId, reactions) {
 	return this.update({ _id: messageId }, { $set: { reactions } });
@@ -19,8 +20,6 @@ ChatMessage.setReactions = function(messageId, reactions) {
 ChatMessage.unsetReactions = function(messageId) {
 	return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 };
-
-new PersistentMinimongo2(ChatMessage, 'Message');
 
 const normalizeThreadMessage = (message) => {
 	if (message.msg) {
