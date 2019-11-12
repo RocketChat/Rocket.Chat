@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { call } from '../../app/ui-utils/client';
+import { SWCache } from '../../app/utils/client';
+import { fileUploadHandler } from '../../app/file-upload';
 
 const action = {
 	clean: (msg) => {
@@ -11,7 +13,27 @@ const action = {
 
 	send: (msg) => {
 		msg.ts = new Date();
+		if (msg.file && msg.meta) {
+			action.sendFile(msg);
+			return;
+		}
 		call('sendMessage', msg);
+	},
+
+	sendFile: async (msg) => {
+		const file = await SWCache.getFileFromCache(msg.file);
+
+		if (!file) { return; }
+
+		const upload = fileUploadHandler('Uploads', msg.meta, file);
+		upload.start((error, file, storage) => {
+			if (error || !file) { return; }
+
+			const msgData = { id: msg._id, msg: msg.msg, tmid: msg.tmid };
+			Meteor.call('sendFileMessage', msg.rid, storage, file, msgData, () => {
+				SWCache.removeFromCache(msg.file);
+			});
+		});
 	},
 
 	update: (msg) => {

@@ -1,5 +1,5 @@
 <template name="messageAttachment">
-	<div class="attachment">
+	<div class="attachment {{# if temp}}attachment-temp{{/if}}">
 		<!-- <div>fallback: {{fallback}}</div> -->
 		{{#if markdownInPretext}}
 			{{{parsedPretext}}}
