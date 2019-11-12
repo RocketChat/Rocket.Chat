@@ -9,6 +9,7 @@ import { Users, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { timeAgo } from '../../lib/client/lib/formatDate';
+import { isMobile } from '../../utils/client/lib/isMobile';
 
 Template.sidebarItem.helpers({
 	streaming() {
@@ -18,6 +19,9 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	isExtendedViewMode() {
+		if (isMobile()) {
+			return true;
+		}
 		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
 	},
 	lastMessage() {
@@ -84,7 +88,13 @@ Template.sidebarItem.onCreated(function() {
 		const currentData = Template.currentData();
 
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
+<<<<<<< HEAD
 			return clearInterval(this.timeAgoInterval);
+=======
+			if (!isMobile()) {
+				return clearInterval(this.timeAgoInterval);
+			}
+>>>>>>> 766fe6a04... Added isMobile util function on the client.
 		}
 
 		if (currentData.lastMessage && !currentData.lastMessage._id) {

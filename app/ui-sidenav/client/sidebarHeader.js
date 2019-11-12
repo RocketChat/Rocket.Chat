@@ -9,6 +9,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
+import { isMobile } from '../../utils/client/lib/isMobile';
 
 const setStatus = (status, statusText) => {
 	AccountBox.setStatus(status, statusText);
@@ -27,8 +28,11 @@ const extendedViewOption = (user) => {
 		return {
 			icon: viewModeIcon.extended,
 			name: t('Extended'),
-			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
+			modifier: isMobile() || getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
 			action: () => {
+				if (isMobile()) {
+					return;
+				}
 				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
 					if (error) {
 						return handleError(error);
@@ -87,8 +91,11 @@ const toolbarButtons = (user) => [{
 								{
 									icon: viewModeIcon.medium,
 									name: t('Medium'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
+									modifier: !isMobile() && getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
 									action: () => {
+										if (isMobile()) {
+											return;
+										}
 										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
 											if (error) {
 												return handleError(error);
@@ -99,8 +106,11 @@ const toolbarButtons = (user) => [{
 								{
 									icon: viewModeIcon.condensed,
 									name: t('Condensed'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
+									modifier: !isMobile() && getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
 									action: () => {
+										if (isMobile()) {
+											return;
+										}
 										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
 											if (error) {
 												return handleError(error);
