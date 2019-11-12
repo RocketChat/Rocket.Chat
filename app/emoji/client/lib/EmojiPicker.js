@@ -22,10 +22,12 @@ export const EmojiPicker = {
 	pickCallback: null,
 	scrollingToCategory: false,
 	currentCategory: new ReactiveVar('recent'),
-	init() {
+	async init() {
 		if (this.initiated) {
 			return;
 		}
+
+		await import('../emojiPicker');
 		this.initiated = true;
 
 		this.recent = Meteor._localStorage.getItem('emoji.recent') ? Meteor._localStorage.getItem('emoji.recent').split(',') : [];
@@ -87,9 +89,9 @@ export const EmojiPicker = {
 
 		return $('.emoji-picker').css(cssProperties);
 	},
-	open(source, callback) {
+	async open(source, callback) {
 		if (!this.initiated) {
-			this.init();
+			await this.init();
 		}
 		this.pickCallback = callback;
 		this.source = source;
