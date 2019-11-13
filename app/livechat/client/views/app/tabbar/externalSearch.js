@@ -46,11 +46,7 @@ Template.externalSearch.onCreated(function() {
 		if (this.roomId) {
 			const { messages, total } = await APIClient.v1.get(`livechat/messages.external/${ this.roomId }?count=${ MESSAGES_COUNT }&offset=${ offset }`);
 			this.total.set(total);
-			if (offset === 0) {
-				this.externalMessages.set(messages);
-			} else {
-				this.externalMessages.set(this.externalMessages.get().concat(messages));
-			}
+			this.externalMessages.set(this.externalMessages.get().concat(messages));
 		}
 		this.ready.set(true);
 	});
