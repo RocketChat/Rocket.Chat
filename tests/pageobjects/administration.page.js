@@ -126,19 +126,17 @@ class Administration extends Page {
 	// settings
 	get buttonSave() { return browser.element('button.save'); }
 
-	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(3) .expand'); }
+	get generalSectionIframeIntegration() { return browser.element('[data-qa-section="Iframe_Integration"]'); }
 
-	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(4) .expand'); }
+	get generalSectionNotifications() { return browser.element('[data-qa-section="Notifications"]'); }
 
-	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(5) .expand'); }
+	get generalSectionRestApi() { return browser.element('[data-qa-section="REST API"]'); }
 
-	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(6) .expand'); }
+	get generalSectionReporting() { return browser.element('[data-qa-section="Reporting"]'); }
 
-	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(7) .expand'); }
+	get generalSectionStreamCast() { return browser.element('[data-qa-section="Stream_Cast"]'); }
 
-	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(8) .expand'); }
-
-	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(9) .expand'); }
+	get generalSectionUTF8() { return browser.element('[data-qa-section="UTF8"]'); }
 
 	get generalSiteUrl() { return browser.element('[data-qa-setting-id="Site_Url"]'); }
 
@@ -154,15 +152,11 @@ class Administration extends Page {
 
 	get generalLanguageReset() { return browser.element('[data-qa-reset-setting-id="Language"]'); }
 
-	get generalSelfSignedCertsTrue() { return browser.element('label:nth-of-type(1) [name="Allow_Invalid_SelfSigned_Certs"]'); }
-
-	get generalSelfSignedCertsFalse() { return browser.element('label:nth-of-type(2) [name="Allow_Invalid_SelfSigned_Certs"]'); }
+	get generalSelfSignedCerts() { return browser.element('[data-qa-setting-id="Allow_Invalid_SelfSigned_Certs"]'); }
 
 	get generalSelfSignedCertsReset() { return browser.element('[data-qa-reset-setting-id="Allow_Invalid_SelfSigned_Certs"]'); }
 
-	get generalFavoriteRoomTrue() { return browser.element('label:nth-of-type(1) [name="Favorite_Rooms"]'); }
-
-	get generalFavoriteRoomFalse() { return browser.element('label:nth-of-type(2) [name="Favorite_Rooms"]'); }
+	get generalFavoriteRoom() { return browser.element('[data-qa-setting-id="Favorite_Rooms"]'); }
 
 	get generalFavoriteRoomReset() { return browser.element('[data-qa-reset-setting-id="Favorite_Rooms"]'); }
 
@@ -174,9 +168,7 @@ class Administration extends Page {
 
 	get generalCdnPrefixReset() { return browser.element('[data-qa-reset-setting-id="CDN_PREFIX"]'); }
 
-	get generalForceSSLTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Force_SSL"]'); }
-
-	get generalForceSSLFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Force_SSL"]'); }
+	get generalForceSSL() { return browser.element('[data-qa-setting-id="Force_SSL"]'); }
 
 	get generalForceSSLReset() { return browser.element('[data-qa-reset-setting-id="Force_SSL"]'); }
 
@@ -188,9 +180,7 @@ class Administration extends Page {
 
 	get generalBugsnagKeyReset() { return browser.element('[data-qa-reset-setting-id="Bugsnag_api_key"]'); }
 
-	get generalIframeSendTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Iframe_Integration_send_enable"]'); }
-
-	get generalIframeSendFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Iframe_Integration_send_enable"]'); }
+	get generalIframeSend() { return browser.element('[data-qa-setting-id="Iframe_Integration_send_enable"]'); }
 
 	get generalIframeSendReset() { return browser.element('[data-qa-reset-setting-id="Iframe_Integration_send_enable"]'); }
 
@@ -198,11 +188,7 @@ class Administration extends Page {
 
 	get generalIframeSendTargetOriginReset() { return browser.element('[data-qa-reset-setting-id="Iframe_Integration_send_target_origin"]'); }
 
-	get generalIframeRecieveTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Iframe_Integration_receive_enable"]'); }
-
-	get generalIframeRecieveFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Iframe_Integration_receive_enable"]'); }
-
-	get generalIframeRecieveFalseReset() { return browser.element('[data-qa-reset-setting-id="Iframe_Integration_receive_enable"]'); }
+	get generalIframeRecieve() { return browser.element('[data-qa-setting-id="Iframe_Integration_receive_enable"]'); }
 
 	get generalIframeRecieveOrigin() { return browser.element('[data-qa-setting-id="Iframe_Integration_receive_origin"]'); }
 
@@ -216,9 +202,7 @@ class Administration extends Page {
 
 	get generalRestApiUserLimitReset() { return browser.element('[data-qa-reset-setting-id="API_User_Limit"]'); }
 
-	get generalReportingTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Statistics_reporting"]'); }
-
-	get generalReportingFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Statistics_reporting"]'); }
+	get generalReporting() { return browser.element('[data-qa-setting-id="Statistics_reporting"]'); }
 
 	get generalReportingReset() { return browser.element('[data-qa-reset-setting-id="Statistics_reporting"]'); }
 
@@ -230,22 +214,16 @@ class Administration extends Page {
 
 	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_Names_Validation"]'); }
 
-	get generalUTF8NamesSlugTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="UTF8_Names_Slugify"]'); }
-
-	get generalUTF8NamesSlugFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="UTF8_Names_Slugify"]'); }
+	get generalUTF8NamesSlug() { return browser.element('[data-qa-setting-id="UTF8_Names_Slugify"]'); }
 
 	get generalUTF8NamesSlugReset() { return browser.element('[data-qa-reset-setting-id="UTF8_Names_Slugify"]'); }
 
 	get generalLayoutTitle() { return browser.element('[data-qa-setting-id="Layout_Home_Title"]'); }
 
 	// accounts
-	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .expand'); }
+	get accountsSectionDefaultUserPreferences() { return browser.element('[data-qa-section="Accounts_Default_User_Preferences"]'); }
 
-	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .collapse'); }
-
-	get accountsEnableAutoAwayTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]'); }
-
-	get accountsEnableAutoAwayFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]'); }
+	get accountsEnableAutoAway() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 
 	get accountsEnableAutoAwayReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 
@@ -269,69 +247,47 @@ class Administration extends Page {
 
 	get accountsMobileNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_mobileNotifications"]'); }
 
-	get accountsUnreadAlertTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_unreadAlert"]'); }
-
-	get accountsUnreadAlertFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_unreadAlert"]'); }
+	get accountsUnreadAlert() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_unreadAlert"]'); }
 
 	get accountsUnreadAlertReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_unreadAlert"]'); }
 
-	get accountsUseEmojisTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_useEmojis"]'); }
-
-	get accountsUseEmojisFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_useEmojis"]'); }
+	get accountsUseEmojis() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_useEmojis"]'); }
 
 	get accountsUseEmojisReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_useEmojis"]'); }
 
-	get accountsConvertAsciiEmojiTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
-
-	get accountsConvertAsciiEmojiFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
+	get accountsConvertAsciiEmoji() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
 
 	get accountsConvertAsciiEmojiReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
 
-	get accountsAutoImageLoadTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]'); }
-
-	get accountsAutoImageLoadFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]'); }
+	get accountsAutoImageLoad() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]'); }
 
 	get accountsAutoImageLoadReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]'); }
 
-	get accountsSaveMobileBandwidthTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
-
-	get accountsSaveMobileBandwidthFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
+	get accountsSaveMobileBandwidth() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
 
 	get accountsSaveMobileBandwidthReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
 
-	get accountsCollapseMediaByDefaultTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
-
-	get accountsCollapseMediaByDefaultFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
+	get accountsCollapseMediaByDefault() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
 
 	get accountsCollapseMediaByDefaultReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
 
-	get accountsHideUsernamesTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_hideUsernames"]'); }
-
-	get accountsHideUsernamesFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_hideUsernames"]'); }
+	get accountsHideUsernames() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideUsernames"]'); }
 
 	get accountsHideUsernamesReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideUsernames"]'); }
 
-	get accountsHideRolesTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_hideRoles"]'); }
-
-	get accountsHideRolesFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_hideRoles"]'); }
+	get accountsHideRoles() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideRoles"]'); }
 
 	get accountsHideRolesReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideRoles"]'); }
 
-	get accountsHideFlexTabTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
-
-	get accountsHideFlexTabFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
+	get accountsHideFlexTab() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
 
 	get accountsHideFlexTabReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
 
-	get accountsHideAvatarsTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
-
-	get accountsHideAvatarsFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get accountsHideAvatars() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
 
 	get accountsHideAvatarsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
 
-	get accountsMergeChannelsTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
-
-	get accountsMergeChannelsFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
+	get accountsMergeChannels() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
 
 	get accountsMergeChannelsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
 
@@ -347,9 +303,7 @@ class Administration extends Page {
 
 	get accountsEmailNotificationModeReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
 
-	get accountsRoomCounterSidebarTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
-
-	get accountsRoomCounterSidebarFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
+	get accountsRoomCounterSidebar() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
 
 	get accountsRoomCounterSidebarReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
 
@@ -361,9 +315,7 @@ class Administration extends Page {
 
 	get accountsNewMessageNotificationReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_newMessageNotification"]'); }
 
-	get accountsMuteFocusedConversationsTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
-
-	get accountsMuteFocusedConversationsFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
+	get accountsMuteFocusedConversations() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
 
 	get accountsMuteFocusedConversationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
 
@@ -371,17 +323,11 @@ class Administration extends Page {
 
 	get accountsNotificationsSoundVolumeReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }
 
-	get accountsRealNameChangeTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_AllowRealNameChange"]'); }
+	get accountsRealNameChange() { return browser.element('[data-qa-setting-id="Accounts_AllowRealNameChange"]'); }
 
-	get accountsRealNameChangeFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_AllowRealNameChange"]'); }
+	get accountsUserStatusMessageChange() { return browser.element('[data-qa-setting-id="Accounts_AllowUserStatusMessageChange"]'); }
 
-	get accountsUserStatusMessageChangeTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_AllowUserStatusMessageChange"]'); }
-
-	get accountsUserStatusMessageChangeFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_AllowUserStatusMessageChange"]'); }
-
-	get accountsUsernameChangeTrue() { return browser.element('label:nth-of-type(1) [data-qa-setting-id="Accounts_AllowUsernameChange"]'); }
-
-	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [data-qa-setting-id="Accounts_AllowUsernameChange"]'); }
+	get accountsUsernameChange() { return browser.element('[data-qa-setting-id="Accounts_AllowUsernameChange"]'); }
 
 	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .rc-button.rc-button--nude'); }
 

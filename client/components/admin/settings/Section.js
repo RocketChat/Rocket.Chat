@@ -13,7 +13,11 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		section.reset();
 	};
 
-	return <Accordion.Item noncollapsible={solo || !section.name} title={section.name && t(section.name)}>
+	return <Accordion.Item
+		data-qa-section={sectionName}
+		noncollapsible={solo || !section.name}
+		title={section.name && t(section.name)}
+	>
 		{help && <Paragraph hintColor>{help}</Paragraph>}
 
 		<FieldGroup>
