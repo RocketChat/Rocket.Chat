@@ -179,17 +179,17 @@ export const forwardRoomToAgent = async (room, agentId) => {
 
 	const user = Users.findOneOnlineAgentById(agentId);
 	if (!user) {
-		return false;
+		throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
 	}
 
 	const { _id: rid, servedBy: oldServedBy } = room;
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
-		throw new Meteor.Error('error-transferring-inquiry');
+		throw new Meteor.Error('error-invalid-inquiry', 'Invalid inquiry', { function: 'forwardRoomToAgent' });
 	}
 
 	if (oldServedBy && agentId === oldServedBy._id) {
-		return false;
+		throw new Meteor.Error('error-selected-agent-room-agent-are-same', 'The selected agent and the room agent are the same', { function: 'forwardRoomToAgent' });
 	}
 
 	const { username } = user;
@@ -206,7 +206,6 @@ export const forwardRoomToAgent = async (room, agentId) => {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
 			removeAgentFromSubscription(rid, oldServedBy);
 		}
-
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
 	}
 
@@ -257,4 +256,19 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 	Livechat.setDepartmentForGuest({ token, department: departmentId });
 
 	return true;
+};
+
+export const normalizeTransferredByData = (transferredBy, room) => {
+	if (!transferredBy || !room) {
+		throw new Error('You must provide "transferredBy" and "room" params to "getTransferredByData"');
+	}
+	const { servedBy: { _id: agentId } = {} } = room;
+	const { _id, username, name, userType: transferType } = transferredBy;
+	const type = transferType || (_id === agentId ? 'agent' : 'user');
+	return {
+		_id,
+		username,
+		name,
+		type,
+	};
 };

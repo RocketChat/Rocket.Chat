@@ -13,8 +13,7 @@ import { modal } from '../../../../../ui-utils';
 import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
-import { hasRole, hasAllPermission, hasAtLeastOnePermission } from '../../../../../authorization';
-import { LivechatVisitor } from '../../../collections/LivechatVisitor';
+import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 
@@ -172,7 +171,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canEditRoom() {
-		if (hasAllPermission('save-others-livechat-room-info')) {
+		if (hasPermission('save-others-livechat-room-info')) {
 			return true;
 		}
 
@@ -180,7 +179,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canCloseRoom() {
-		if (hasAllPermission('close-others-livechat-room')) {
+		if (hasPermission('close-others-livechat-room')) {
 			return true;
 		}
 
@@ -188,11 +187,7 @@ Template.visitorInfo.helpers({
 	},
 
 	canForwardGuest() {
-		if (hasAllPermission('transfer-livechat-guest')) {
-			return true;
-		}
-
-		return isSubscribedToRoom();
+		return hasPermission('transfer-livechat-guest');
 	},
 });
 
@@ -313,8 +308,6 @@ Template.visitorInfo.onCreated(function() {
 				loadRoomData(rid);
 			}
 		});
-
-		this.subscribe('livechat:visitorInfo', { rid });
 	}
 
 	this.autorun(async () => {
@@ -324,7 +317,11 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	this.autorun(() => {
-		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));
+	this.autorun(async () => {
+		const visitorId = this.visitorId.get();
+		if (visitorId) {
+			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+			this.user.set(visitor);
+		}
 	});
 });

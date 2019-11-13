@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Messages, Users, Rooms } from '../../../models';
 
 Meteor.publish('snippetedMessage', function(_id) {
+	console.warn('The publication "snippetedMessage" is deprecated and will be removed after version v3.0.0');
 	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
 	}

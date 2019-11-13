@@ -32,6 +32,7 @@ Meteor.startup(function() {
 		{ _id: 'delete-c',                      roles: ['admin', 'owner'] },
 		{ _id: 'delete-d',                      roles: ['admin'] },
 		{ _id: 'delete-message',                roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'delete-own-message',            roles: ['admin', 'user'] },
 		{ _id: 'delete-p',                      roles: ['admin', 'owner'] },
 		{ _id: 'delete-user',                   roles: ['admin'] },
 		{ _id: 'edit-message',                  roles: ['admin', 'owner', 'moderator'] },
