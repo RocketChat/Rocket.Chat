@@ -7,6 +7,7 @@ FlowRouter.route('/admin/apps/what-is-it', {
 	name: 'apps-what-is-it',
 	action: async () => {
 		// TODO: render loading indicator
+		await import('./admin/views');
 		if (await Apps.isEnabled()) {
 			FlowRouter.go('apps');
 		} else {
@@ -18,6 +19,7 @@ FlowRouter.route('/admin/apps/what-is-it', {
 const createAppsRouteAction = (centerTemplate) => async () => {
 	// TODO: render loading indicator
 	if (await Apps.isEnabled()) {
+		await import('./admin/views');
 		BlazeLayout.render('main', { center: centerTemplate, old: true }); // TODO remove old
 	} else {
 		FlowRouter.go('apps-what-is-it');
