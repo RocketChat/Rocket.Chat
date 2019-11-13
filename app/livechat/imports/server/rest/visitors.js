@@ -16,13 +16,24 @@ API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('livechat/visitors.pagesVisited', { authRequired: true }, {
+API.v1.addRoute('livechat/visitors.pagesVisited/:roomId', { authRequired: true }, {
 	get() {
-		check(this.queryParams, {
+		check(this.urlParams, {
 			roomId: String,
 		});
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
 
-		const pages = Promise.await(findVisitedPages({ userId: this.userId, roomId: this.queryParams.roomId }));
+
+		const pages = Promise.await(findVisitedPages({
+			userId: this.userId,
+			roomId: this.urlParams.roomId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
 
 		return API.v1.success(pages);
 	},

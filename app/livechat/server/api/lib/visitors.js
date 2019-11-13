@@ -16,16 +16,28 @@ export async function findVisitorInfo({ userId, visitorId }) {
 	};
 }
 
-export async function findVisitedPages({ userId, roomId }) {
+export async function findVisitedPages({ userId, roomId, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
-
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('invalid-room');
 	}
+	const cursor = await Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+	});
+
+	const total = await cursor.count();
+
+	const pages = await cursor.toArray();
+
 	return {
-		pages: await Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history').toArray(),
+		pages,
+		count: pages.length,
+		offset,
+		total,
 	};
 }
