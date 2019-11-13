@@ -468,13 +468,16 @@ export const Livechat = {
 	saveTransferHistory(room, transferData) {
 		const { departmentId: previousDepartment } = room;
 		const { department: nextDepartment, transferredBy, transferredTo, scope } = transferData;
+
 		check(transferredBy, Match.ObjectIncluding({
 			_id: String,
 			username: String,
 			name: String,
 			type: String,
 		}));
-		const user = Users.findOneByUsername(transferredBy.username);
+
+		const { _id, username } = transferredBy;
+
 		const transfer = {
 			transferData: {
 				transferredBy,
@@ -485,7 +488,8 @@ export const Livechat = {
 				...transferredTo && { transferredTo },
 			},
 		};
-		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', user, transfer);
+
+		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', { _id, username }, transfer);
 	},
 
 	async transfer(room, guest, transferData) {
