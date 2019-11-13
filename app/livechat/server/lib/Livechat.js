@@ -493,14 +493,11 @@ export const Livechat = {
 	},
 
 	async transfer(room, guest, transferData) {
-		const result = await RoutingManager.transferRoom(room, guest, transferData);
-		if (!result) {
-			return false;
-		}
 		if (transferData.departmentId) {
 			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
 		}
-		return this.saveTransferHistory(room, transferData);
+
+		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
 	returnRoomAsInquiry(rid, departmentId) {
@@ -529,8 +526,7 @@ export const Livechat = {
 		}
 		const transferredBy = normalizeTransferredByData(user, room);
 		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
-		this.saveTransferHistory(room, transferData);
-		return RoutingManager.unassignAgent(inquiry, departmentId);
+		return this.saveTransferHistory(room, transferData) && RoutingManager.unassignAgent(inquiry, departmentId);
 	},
 
 	sendRequest(postData, callback, trying = 1) {
