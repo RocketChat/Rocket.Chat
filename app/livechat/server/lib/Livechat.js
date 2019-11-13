@@ -36,6 +36,7 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
+import { normalizeTransferredByData } from './Helper';
 
 export const Livechat = {
 	Analytics,
@@ -430,7 +431,10 @@ export const Livechat = {
 	forwardOpenChats(userId) {
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = LivechatVisitors.findOneById(room.v._id);
-			this.transfer(room, guest, { departmentId: guest.department });
+			const user = Users.findOneById(userId);
+			const { _id, username, name } = user;
+			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
+			this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department });
 		});
 	},
 
@@ -461,8 +465,38 @@ export const Livechat = {
 		}
 	},
 
+	saveTransferHistory(room, transferData) {
+		const { departmentId: previousDepartment } = room;
+		const { department: nextDepartment, transferredBy, transferredTo, scope } = transferData;
+		check(transferredBy, Match.ObjectIncluding({
+			_id: String,
+			username: String,
+			name: String,
+			type: String,
+		}));
+		const user = Users.findOneByUsername(transferredBy.username);
+		const transfer = {
+			transferData: {
+				transferredBy,
+				ts: new Date(),
+				scope: scope || (nextDepartment ? 'department' : 'agent'),
+				...previousDepartment && { previousDepartment },
+				...nextDepartment && { nextDepartment },
+				...transferredTo && { transferredTo },
+			},
+		};
+		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', user, transfer);
+	},
+
 	async transfer(room, guest, transferData) {
-		return RoutingManager.transferRoom(room, guest, transferData);
+		const result = await RoutingManager.transferRoom(room, guest, transferData);
+		if (!result) {
+			return false;
+		}
+		if (transferData.departmentId) {
+			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
+		}
+		return this.saveTransferHistory(room, transferData);
 	},
 
 	returnRoomAsInquiry(rid, departmentId) {
@@ -489,7 +523,9 @@ export const Livechat = {
 		if (!inquiry) {
 			return false;
 		}
-
+		const transferredBy = normalizeTransferredByData(user, room);
+		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
+		this.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	},
 
@@ -866,6 +902,7 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
+		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
 		if (!settings.get('Livechat_show_agent_info')) {
 			return;
 		}

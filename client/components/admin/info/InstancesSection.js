@@ -16,8 +16,8 @@ export function InstancesSection({ instances }) {
 		{instances.map(({ address, broadcastAuth, currentStatus, instanceRecord }, i) =>
 			<DescriptionList key={i}>
 				<DescriptionList.Entry label={t('Address')}>{address}</DescriptionList.Entry>
-				<DescriptionList.Entry label={t('Auth')}>{broadcastAuth}</DescriptionList.Entry>
-				<DescriptionList.Entry label={<>{t('Current_Status')} > {t('Connected')}</>}>{currentStatus.connected}</DescriptionList.Entry>
+				<DescriptionList.Entry label={t('Auth')}>{broadcastAuth ? 'true' : 'false'}</DescriptionList.Entry>
+				<DescriptionList.Entry label={<>{t('Current_Status')} > {t('Connected')}</>}>{currentStatus.connected ? 'true' : 'false'}</DescriptionList.Entry>
 				<DescriptionList.Entry label={<>{t('Current_Status')} > {t('Retry_Count')}</>}>{currentStatus.retryCount}</DescriptionList.Entry>
 				<DescriptionList.Entry label={<>{t('Current_Status')} > {t('Status')}</>}>{currentStatus.status}</DescriptionList.Entry>
 				<DescriptionList.Entry label={<>{t('Instance_Record')} > {t('ID')}</>}>{instanceRecord._id}</DescriptionList.Entry>
