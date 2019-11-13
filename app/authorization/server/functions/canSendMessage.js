@@ -17,7 +17,7 @@ export const canSendMessageAsync = async (rid, { uid, username }, extraData) => 
 	}
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, subscriptionOptions);
-	if (subscription.blocked || subscription.blocker) {
+	if (subscription && (subscription.blocked || subscription.blocker)) {
 		throw new Error('room_is_blocked');
 	}
 

@@ -1,5 +1,20 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Messages, LivechatRooms } from '../../../../models/server/raw';
+import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
+
+export async function findVisitorInfo({ userId, visitorId }) {
+	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+
+	const visitor = await LivechatVisitors.findOneById(visitorId);
+	if (!visitor) {
+		throw new Error('visitor-not-found');
+	}
+
+	return {
+		visitor,
+	};
+}
 
 export async function findVisitedPages({ userId, roomId }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
