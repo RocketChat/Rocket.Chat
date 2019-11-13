@@ -7,6 +7,9 @@ import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
 
+import './emojiPicker.html';
+import '../../theme/client/imports/components/emojiPicker.css';
+
 const ESCAPE = 27;
 
 const emojiListByCategory = new ReactiveDict('emojiList');
