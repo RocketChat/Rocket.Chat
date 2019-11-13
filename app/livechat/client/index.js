@@ -1,5 +1,4 @@
 import '../lib/messageTypes';
-import '../lib/LivechatExternalMessage';
 import './roomType';
 import './route';
 import './ui';
