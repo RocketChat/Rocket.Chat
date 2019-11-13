@@ -12,7 +12,7 @@ describe('LIVECHAT - messages', function() {
 
 	describe('livechat/messages.external', () => {
 		it('should return an array of messages', (done) => {
-			request.get(api('livechat/messages.external?roomId=roomId'))
+			request.get(api('livechat/messages.external/roomId'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
