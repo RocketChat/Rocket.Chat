@@ -142,12 +142,11 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		const { userId, departmentId } = transferData;
-		if (userId) {
+		if (transferData.userId) {
 			return forwardRoomToAgent(room, transferData);
 		}
 
-		if (departmentId) {
+		if (transferData.departmentId) {
 			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
