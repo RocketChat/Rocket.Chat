@@ -15,6 +15,8 @@ import './hooks/RDStation';
 import './hooks/saveAnalyticsData';
 import './hooks/sendToCRM';
 import './hooks/sendToFacebook';
+import './hooks/processRoomAbandonment';
+import './hooks/saveLastVisitorMessageTs';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';
