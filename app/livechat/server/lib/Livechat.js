@@ -493,7 +493,9 @@ export const Livechat = {
 		if (!result) {
 			return false;
 		}
-		transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
+		if (transferData.departmentId) {
+			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
+		}
 		return this.saveTransferHistory(room, transferData);
 	},
 
