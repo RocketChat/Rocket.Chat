@@ -141,7 +141,7 @@ Template.messageBox.onRendered(function() {
 	});
 
 	this.autorun(() => {
-		const { rid, onInputChanged, onResize } = Template.currentData();
+		const { rid, tmid, onInputChanged, onResize } = Template.currentData();
 
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message');
@@ -156,6 +156,7 @@ Template.messageBox.onRendered(function() {
 			if (input && rid) {
 				this.popupConfig.set({
 					rid,
+					tmid,
 					getInput: () => input,
 				});
 			} else {
@@ -374,7 +375,13 @@ Template.messageBox.events({
 			return;
 		}
 
-		const files = [...event.originalEvent.clipboardData.items]
+		const items = [...event.originalEvent.clipboardData.items];
+
+		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
+			return;
+		}
+
+		const files = items
 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
 			.map((item) => ({
 				file: item.getAsFile(),

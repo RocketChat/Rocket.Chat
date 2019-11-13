@@ -32,8 +32,9 @@ Meteor.publish('userAutocomplete', function(selector) {
 
 	const pub = this;
 	const exceptions = selector.exceptions || [];
+	const conditions = selector.conditions || {};
 
-	const cursorHandle = Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options).observeChanges({
+	const cursorHandle = Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).observeChanges({
 		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},

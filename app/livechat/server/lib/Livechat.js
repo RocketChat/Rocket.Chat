@@ -36,6 +36,7 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
+import { normalizeTransferredByData } from './Helper';
 
 export const Livechat = {
 	Analytics,
@@ -48,12 +49,23 @@ export const Livechat = {
 	}),
 
 	online() {
+		if (settings.get('Livechat_accept_chats_with_no_agents')) {
+			return true;
+		}
+
+		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
+			const botAgents = Livechat.getBotAgents();
+			if (botAgents && botAgents.count() > 0) {
+				return true;
+			}
+		}
+
 		const onlineAgents = Livechat.getOnlineAgents();
 		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
 	},
 
 	getNextAgent(department) {
-		return RoutingManager.getMethod().getNextAgent(department);
+		return RoutingManager.getNextAgent(department);
 	},
 
 	getAgents(department) {
@@ -62,12 +74,22 @@ export const Livechat = {
 		}
 		return Users.findAgents();
 	},
+
 	getOnlineAgents(department) {
 		if (department) {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
 		return Users.findOnlineAgents();
 	},
+
+	getBotAgents(department) {
+		if (department) {
+			return LivechatDepartmentAgents.getBotsForDepartment(department);
+		}
+
+		return Users.findBotAgents();
+	},
+
 	getRequiredDepartment(onlineRequired = true) {
 		const departments = LivechatDepartment.findEnabledWithAgents();
 
@@ -365,6 +387,7 @@ export const Livechat = {
 			'Livechat_fileupload_enabled',
 			'FileUpload_Enabled',
 			'Livechat_conversation_finished_message',
+			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',
@@ -408,7 +431,10 @@ export const Livechat = {
 	forwardOpenChats(userId) {
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = LivechatVisitors.findOneById(room.v._id);
-			this.transfer(room, guest, { departmentId: guest.department });
+			const user = Users.findOneById(userId);
+			const { _id, username, name } = user;
+			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
+			this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department });
 		});
 	},
 
@@ -439,7 +465,38 @@ export const Livechat = {
 		}
 	},
 
+	saveTransferHistory(room, transferData) {
+		const { departmentId: previousDepartment } = room;
+		const { department: nextDepartment, transferredBy, transferredTo, scope } = transferData;
+
+		check(transferredBy, Match.ObjectIncluding({
+			_id: String,
+			username: String,
+			name: String,
+			type: String,
+		}));
+
+		const { _id, username } = transferredBy;
+
+		const transfer = {
+			transferData: {
+				transferredBy,
+				ts: new Date(),
+				scope: scope || (nextDepartment ? 'department' : 'agent'),
+				...previousDepartment && { previousDepartment },
+				...nextDepartment && { nextDepartment },
+				...transferredTo && { transferredTo },
+			},
+		};
+
+		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', { _id, username }, transfer);
+	},
+
 	async transfer(room, guest, transferData) {
+		if (transferData.departmentId) {
+			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
+		}
+
 		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
@@ -467,8 +524,9 @@ export const Livechat = {
 		if (!inquiry) {
 			return false;
 		}
-
-		return RoutingManager.unassignAgent(inquiry, departmentId);
+		const transferredBy = normalizeTransferredByData(user, room);
+		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
+		return this.saveTransferHistory(room, transferData) && RoutingManager.unassignAgent(inquiry, departmentId);
 	},
 
 	sendRequest(postData, callback, trying = 1) {
@@ -844,6 +902,7 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
+		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
 		if (!settings.get('Livechat_show_agent_info')) {
 			return;
 		}

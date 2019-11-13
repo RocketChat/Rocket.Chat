@@ -14,10 +14,12 @@ API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 		});
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
+		const { text } = this.queryParams;
 
 		if (this.urlParams.type === 'agent') {
 			return API.v1.success(Promise.await(findAgents({
 				userId: this.userId,
+				text,
 				pagination: {
 					offset,
 					count,
@@ -28,6 +30,7 @@ API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 		if (this.urlParams.type === 'manager') {
 			return API.v1.success(Promise.await(findManagers({
 				userId: this.userId,
+				text,
 				pagination: {
 					offset,
 					count,

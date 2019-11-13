@@ -233,6 +233,17 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findClosedRooms(departmentIds, options) {
+		const query = {
+			t: 'l',
+			open: { $exists: false },
+			closedAt: { $exists: true },
+			...Array.isArray(departmentIds) && departmentIds.length > 0 && { departmentId: { $in: departmentIds } },
+		};
+
+		return this.find(query, options);
+	}
+
 	setResponseByRoomId(roomId, response) {
 		return this.update({
 			_id: roomId,
@@ -437,6 +448,32 @@ export class LivechatRooms extends Base {
 		};
 
 		return this.remove(query);
+	}
+
+	setVisitorLastMessageTimestampByRoomId(roomId, lastMessageTs) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				'v.lastMessageTs': lastMessageTs,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setVisitorInactivityInSecondsByRoomId(roomId, visitorInactivity) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				'metrics.visitorInactivity': visitorInactivity,
+			},
+		};
+
+		return this.update(query, update);
 	}
 }
 

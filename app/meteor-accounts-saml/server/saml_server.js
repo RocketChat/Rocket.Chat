@@ -3,12 +3,13 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 import _ from 'underscore';
 
 import { SAML } from './saml_utils';
-import { CredentialTokens } from '../../models';
+import { Rooms, Subscriptions, CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
 import { _setUsername } from '../../lib/server/functions';
 
@@ -126,31 +127,99 @@ function getUserDataMapping() {
 	let usernameField = 'username';
 	let nameField = 'cn';
 	const newMapping = {};
+	const regexes = {};
+
+	const applyField = function(samlFieldName, targetFieldName) {
+		if (typeof targetFieldName === 'object') {
+			regexes[targetFieldName.field] = targetFieldName.regex;
+			targetFieldName = targetFieldName.field;
+		}
+
+		if (targetFieldName === 'email') {
+			emailField = samlFieldName;
+			return;
+		}
+
+		if (targetFieldName === 'username') {
+			usernameField = samlFieldName;
+			return;
+		}
+
+		if (targetFieldName === 'name') {
+			nameField = samlFieldName;
+			return;
+		}
+
+		newMapping[samlFieldName] = map[samlFieldName];
+	};
 
 	for (const field in map) {
 		if (!map.hasOwnProperty(field)) {
 			continue;
 		}
 
-		if (map[field] === 'email') {
-			emailField = field;
-			continue;
-		}
+		const targetFieldName = map[field];
 
-		if (map[field] === 'username') {
-			usernameField = field;
-			continue;
+		if (Array.isArray(targetFieldName)) {
+			for (const item of targetFieldName) {
+				applyField(field, item);
+			}
+		} else {
+			applyField(field, targetFieldName);
 		}
-
-		if (map[field] === 'name') {
-			nameField = field;
-			continue;
-		}
-
-		newMapping[field] = map[field];
 	}
 
-	return { emailField, usernameField, nameField, userDataFieldMap: newMapping };
+	return { emailField, usernameField, nameField, userDataFieldMap: newMapping, regexes };
+}
+
+function overwriteData(user, fullName, eppnMatch, emailList) {
+	// Overwrite fullname if needed
+	if (Accounts.saml.settings.nameOverwrite === true) {
+		Meteor.users.update({
+			_id: user._id,
+		}, {
+			$set: {
+				name: fullName,
+			},
+		});
+	}
+
+	// Overwrite mail if needed
+	if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
+		Meteor.users.update({
+			_id: user._id,
+		}, {
+			$set: {
+				emails: emailList.map((email) => ({
+					address: email,
+					verified: true,
+				})),
+			},
+		});
+	}
+}
+
+function getProfileValue(profile, samlFieldName, regex) {
+	const value = profile[samlFieldName];
+
+	if (!regex) {
+		return value;
+	}
+
+	if (!value || !value.match) {
+		return;
+	}
+
+	const match = value.match(new RegExp(regex));
+	if (!match || !match.length) {
+		return;
+	}
+
+	if (match.length >= 2) {
+		return match[1];
+	}
+
+	return match[0];
 }
 
 const guessNameFromUsername = (username) =>
@@ -175,7 +244,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 	}
 
-	const { emailField, usernameField, nameField, userDataFieldMap } = getUserDataMapping();
+	const { emailField, usernameField, nameField, userDataFieldMap, regexes } = getUserDataMapping();
 	const { defaultUserRole = 'user', roleAttributeName } = Accounts.saml.settings;
 
 	if (loginResult && loginResult.profile && loginResult.profile[emailField]) {
@@ -183,7 +252,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
 
 		const eduPersonPrincipalName = loginResult.profile.eppn;
-		const fullName = loginResult.profile[nameField] || loginResult.profile.displayName || loginResult.profile.username;
+		const profileFullName = getProfileValue(loginResult.profile, nameField, regexes.name);
+		const fullName = profileFullName || loginResult.profile.displayName || loginResult.profile.username;
 
 		let eppnMatch = false;
 		let user = null;
@@ -201,7 +271,10 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 		let username;
 		if (loginResult.profile[usernameField]) {
-			username = Accounts.normalizeUsername(loginResult.profile[usernameField]);
+			const profileUsername = getProfileValue(loginResult.profile, usernameField, regexes.username);
+			if (profileUsername) {
+				username = Accounts.normalizeUsername(profileUsername);
+			}
 		}
 
 		// If eppn is not exist
@@ -238,6 +311,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				eppn: eduPersonPrincipalName,
 				globalRoles,
 				emails,
+				services: {},
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
@@ -249,8 +323,18 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
 
+			const languages = TAPi18n.getLanguages();
+			if (languages[loginResult.profile.language]) {
+				newUser.language = loginResult.profile.language;
+			}
+
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
+
+			if (loginResult.profile.channels) {
+				const channels = loginResult.profile.channels.split(',');
+				Accounts.saml.subscribeToSAMLChannels(channels, user);
+			}
 		}
 
 		// If eppn is not exist then update
@@ -291,7 +375,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			if (loginResult.profile[field]) {
 				const rcField = userDataFieldMap[field];
-				updateData[`customFields.${ rcField }`] = loginResult.profile[field];
+				const value = getProfileValue(loginResult.profile, field, regexes[rcField]);
+				updateData[`customFields.${ rcField }`] = value;
 			}
 		}
 
@@ -309,30 +394,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			_setUsername(user._id, username);
 		}
 
-		// Overwrite fullname if needed
-		if (Accounts.saml.settings.nameOverwrite === true) {
-			Meteor.users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					name: fullName,
-				},
-			});
-		}
-
-		// Overwrite mail if needed
-		if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
-			Meteor.users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					emails: emailList.map((email) => ({
-						address: email,
-						verified: true,
-					})),
-				},
-			});
-		}
+		overwriteData(user, fullName, eppnMatch, emailList);
 
 		// sending token along with the userId
 		const result = {
@@ -344,6 +406,36 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 	throw new Error('SAML Profile did not contain an email address');
 });
+
+
+Accounts.saml.subscribeToSAMLChannels = function(channels, user) {
+	try {
+		for (let roomName of channels) {
+			roomName = roomName.trim();
+			if (!roomName) {
+				continue;
+			}
+
+			let room = Rooms.findOneByNameAndType(roomName, 'c');
+			if (!room) {
+				room = Rooms.createWithIdTypeAndName(Random.id(), 'c', roomName);
+			}
+
+			if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
+				Subscriptions.createWithRoomAndUser(room, user, {
+					ts: new Date(),
+					open: true,
+					alert: true,
+					unread: 1,
+					userMentions: 1,
+					groupMentions: 0,
+				});
+			}
+		}
+	}	catch (err) {
+		console.error(err);
+	}
+};
 
 Accounts.saml.hasCredential = function(credentialToken) {
 	return CredentialTokens.findOneById(credentialToken) != null;

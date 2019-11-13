@@ -468,7 +468,7 @@ rc-old select,
 }
 
 .rc-old .-autocomplete-container {
-	top: auto !important;
+	top: auto;
 
 	width: 100%;
 
@@ -5031,6 +5031,19 @@ rc-old select,
 @media (width <= 500px) {
 	.rc-old .messages-container .message-form > .formatting-tips {
 		display: none;
+	}
+
+	.cms-page {
+		padding: 0;
+
+		&__content {
+			margin: 0;
+			padding: 0 1rem 1rem;
+		}
+
+		& .cms-page-close {
+			margin-top: 10px;
+		}
 	}
 }
 

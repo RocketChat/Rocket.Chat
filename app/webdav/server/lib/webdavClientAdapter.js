@@ -1,14 +1,21 @@
 import { createClient } from 'webdav';
 
 export class WebdavClientAdapter {
-	constructor(serverConfig, username, password) {
-		this._client = createClient(
-			serverConfig,
-			{
-				username,
-				password,
-			}
-		);
+	constructor(serverConfig, cred) {
+		if (cred.token) {
+			this._client = createClient(
+				serverConfig,
+				{ token: cred.token }
+			);
+		} else {
+			this._client = createClient(
+				serverConfig,
+				{
+					username: cred.username,
+					password: cred.password,
+				}
+			);
+		}
 	}
 
 	async stat(path) {

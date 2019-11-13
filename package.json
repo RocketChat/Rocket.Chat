@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "2.2.0-develop",
+	"version": "2.3.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -146,7 +146,7 @@
 		"@google-cloud/language": "^2.0.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
-		"@rocket.chat/apps-engine": "^1.6.0",
+		"@rocket.chat/apps-engine": "^1.7.0",
 		"@rocket.chat/fuselage": "^0.2.0-alpha.4",
 		"@rocket.chat/icons": "^0.2.0-alpha.0",
 		"@slack/client": "^4.8.0",
@@ -212,7 +212,7 @@
 		"mime-type": "^3.0.7",
 		"mkdirp": "^0.5.1",
 		"moment": "^2.22.2",
-		"moment-timezone": "^0.5.23",
+		"moment-timezone": "^0.5.27",
 		"node-dogstatsd": "^0.0.7",
 		"node-rsa": "^1.0.5",
 		"object-path": "^0.11.4",
@@ -240,7 +240,7 @@
 		"underscore.string": "^3.3.5",
 		"url-polyfill": "^1.1.5",
 		"uuid": "^3.3.2",
-		"webdav": "^2.0.0",
+		"webdav": "^2.10.0",
 		"wolfy87-eventemitter": "^5.2.5",
 		"xml-crypto": "^1.0.2",
 		"xml-encryption": "0.11.2",

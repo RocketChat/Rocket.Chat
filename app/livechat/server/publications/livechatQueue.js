@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission } from '../../../authorization';
 import { LivechatDepartmentAgents } from '../../../models';
 
-console.warn('The publication "livechat:queue" is deprecated and will be removed after version v3.0.0');
 Meteor.publish('livechat:queue', function() {
+	console.warn('The publication "livechat:queue" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:queue' }));
 	}
@@ -12,24 +12,6 @@ Meteor.publish('livechat:queue', function() {
 	if (!hasPermission(this.userId, 'view-l-room')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:queue' }));
 	}
-
-	// let sort = { count: 1, sort: 1, username: 1 };
-	// let onlineUsers = {};
-
-	// let handleUsers = RocketChat.models.Users.findOnlineAgents().observeChanges({
-	// 	added(id, fields) {
-	// 		onlineUsers[fields.username] = 1;
-	// 		// this.added('livechatQueueUser', id, fields);
-	// 	},
-	// 	changed(id, fields) {
-	// 		onlineUsers[fields.username] = 1;
-	// 		// this.changed('livechatQueueUser', id, fields);
-	// 	},
-	// 	removed(id) {
-	// 		this.removed('livechatQueueUser', id);
-	// 	}
-	// });
-
 	const self = this;
 
 	const handleDepts = LivechatDepartmentAgents.findUsersInQueue().observeChanges({
@@ -47,7 +29,6 @@ Meteor.publish('livechat:queue', function() {
 	this.ready();
 
 	this.onStop(() => {
-		// handleUsers.stop();
 		handleDepts.stop();
 	});
 });
