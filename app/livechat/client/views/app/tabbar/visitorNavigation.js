@@ -72,11 +72,7 @@ Template.visitorNavigation.onCreated(async function() {
 			const { pages, total } = await APIClient.v1.get(`livechat/visitors.pagesVisited/${ currentData.rid }?count=${ ITEMS_COUNT }&offset=${ offset }`);
 			this.isLoading.set(false);
 			this.total.set(total);
-			if (offset === 0) {
-				this.pages.set(pages);
-			} else {
-				this.pages.set(this.pages.get().concat(pages));
-			}
+			this.pages.set(this.pages.get().concat(pages));
 		}
 		this.isLoading.set(false);
 	});
