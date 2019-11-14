@@ -17,15 +17,14 @@ export function SelectSettingInput({
 	autocomplete,
 	disabled,
 	values,
-	onChange,
 	hasResetButton,
+	onChangeValue,
 	onResetButtonClick,
 }) {
 	const t = useTranslation();
 
 	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
+		onChangeValue(event.currentTarget.value);
 	};
 
 	return <>

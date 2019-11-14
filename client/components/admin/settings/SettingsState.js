@@ -365,6 +365,7 @@ export const useSetting = (_id) => {
 
 	const reset = useEventCallback((selectSetting, { current: state }, hydrate) => {
 		const { _id, value, packageValue, editor } = selectSetting(state.persistedSettings);
+
 		const changes = [{
 			_id,
 			value: packageValue,

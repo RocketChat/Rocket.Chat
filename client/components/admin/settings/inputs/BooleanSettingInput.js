@@ -14,13 +14,13 @@ export function BooleanSettingInput({
 	readonly,
 	autocomplete,
 	value,
-	onChange,
 	hasResetButton,
+	onChangeValue,
 	onResetButtonClick,
 }) {
 	const handleChange = (event) => {
 		const value = event.currentTarget.checked;
-		onChange({ value });
+		onChangeValue(value);
 	};
 
 	return <Field.Row>

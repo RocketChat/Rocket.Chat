@@ -15,13 +15,12 @@ export function FontSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
-	onChange,
 	hasResetButton,
+	onChangeValue,
 	onResetButtonClick,
 }) {
 	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
+		onChangeValue(event.currentTarget.value);
 	};
 
 	return <>

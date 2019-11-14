@@ -16,15 +16,14 @@ export function LanguageSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
-	onChange,
 	hasResetButton,
+	onChangeValue,
 	onResetButtonClick,
 }) {
 	const languages = useLanguages();
 
 	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
+		onChangeValue(event.currentTarget.value);
 	};
 
 	return <>

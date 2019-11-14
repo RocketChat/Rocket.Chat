@@ -20,20 +20,20 @@ export function ColorSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
-	onChange,
 	hasResetButton,
+	onChangeValue,
+	onChangeEditor,
 	onResetButtonClick,
 }) {
 	const t = useTranslation();
 
 	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
+		onChangeValue(event.currentTarget.value);
 	};
 
 	const handleEditorTypeChange = (event) => {
 		const editor = event.currentTarget.value.trim();
-		onChange({ editor });
+		onChangeEditor(editor);
 	};
 
 	return <>
