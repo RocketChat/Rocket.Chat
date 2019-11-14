@@ -23,7 +23,7 @@ export function emitLivechatRoomManager(id, data) {
 		return;
 	}
 
-	if (!data.t === 'l') {
+	if (data.t !== 'l') {
 		return;
 	}
 
