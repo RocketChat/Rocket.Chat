@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
@@ -6,7 +7,6 @@ import { Blaze } from 'meteor/blaze';
 
 import { roomTypes } from '../../../utils/client';
 import { ChatRoom } from '../../../models/client';
-import { randomString } from '../utils';
 import { call } from '../../../ui-utils/client';
 
 import './invitePlayers.html';
@@ -70,7 +70,7 @@ Template.InvitePlayers.events({
 		const { data: { name } } = instance;
 		const { _id: userId } = Meteor.user();
 		const users = instance.selectedUsers.get().map(({ username }) => username);
-		const privateGroupName = `${ name.replace(/\s/g, '-') }-${ randomString(10) }`;
+		const privateGroupName = `${ name.replace(/\s/g, '-') }-${ Random.id(10) }`;
 
 		Meteor.runAsUser(userId, async () => {
 			try {
