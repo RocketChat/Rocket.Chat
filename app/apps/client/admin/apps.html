@@ -1,15 +1,15 @@
 <template name="apps">
 	<section class="rc-apps-section">
 		{{#header sectionName="Apps" hideHelp=true fixedHeight=true fullpage=true}}
-		<div class="rc-header__section-button">
+			<div class="rc-header__section-button">
+				<button class="rc-button rc-button--small rc-button--primary js-marketplace">
+					{{> icon icon="cloud-plus" block="rc-icon--default-size"}} {{_ "Marketplace_view_marketplace"}}
+				</button>
 				{{#if isDevelopmentModeEnabled}}
-					<button class="rc-button rc-button--secondary js-upload">
+					<button class="rc-button rc-button--small rc-button--primary rc-button--outline js-upload">
 						{{> icon icon="upload" block="rc-icon--default-size"}} {{_ "Upload_app"}}
 					</button>
 				{{/if}}
-				<button class="rc-button rc-button--primary js-marketplace">
-					{{> icon icon="cloud-plus" block="rc-icon--default-size"}} {{_ "Marketplace_view_marketplace"}}
-				</button>
 			</div>
 		{{/header}}
 
