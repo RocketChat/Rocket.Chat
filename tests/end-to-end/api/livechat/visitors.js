@@ -71,9 +71,9 @@ describe('LIVECHAT - visitors', function() {
 					.end(done);
 			});
 		});
-		it('should return an "error" when the roomId query param is not provided', (done) => {
+		it('should return an "error" when the roomId param is not provided', (done) => {
 			updatePermission('view-l-room', ['admin']).then(() => {
-				request.get(api('livechat/visitors.pagesVisited'))
+				request.get(api('livechat/visitors.pagesVisited/room-id'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
