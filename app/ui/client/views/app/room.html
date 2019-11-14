@@ -135,7 +135,7 @@
 										{{#each msg in messagesHistory}}{{> message shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
 									{{/with}}
 								{{/if}}
-
+									{{> Blocks blocks=blocks}}
 								{{#if hasMoreNext}}
 									<li class="load-more">
 										{{#if isLoading}}

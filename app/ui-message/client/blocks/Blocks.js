@@ -29,8 +29,7 @@ Template.Blocks.helpers({
 				// TODO
 				break;
 			case 'input':
-				// TODO
-				break;
+				return 'InputElement';
 		}
 	},
 	data(mid) {
