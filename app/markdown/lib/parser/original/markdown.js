@@ -18,6 +18,8 @@ const addAsToken = function(message, html) {
 	return token;
 };
 
+const URL = global.URL || require('url').URL || require('url').Url;
+
 const validateUrl = (url) => {
 	try {
 		new URL(url);
@@ -93,13 +95,14 @@ const parseNotEscaped = function(msg, message) {
 		let escapedUrl = s.escapeHTML(url);
 		escapedUrl = escapedUrl.replace(/&amp;/g, '&');
 
-		return addAsToken(message,`<a href="${ escapedUrl }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
+		return addAsToken(message, `<a href="${ escapedUrl }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
 	// Support <http://link|Text>
 	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
 		if (!validateUrl(url)) {
-			return match;
+			console.log('invalid', url);
+		// 	return match;
 		}
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
 		return addAsToken(message, `<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
