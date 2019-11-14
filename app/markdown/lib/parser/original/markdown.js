@@ -8,20 +8,29 @@ import s from 'underscore.string';
 
 import { settings } from '../../../../settings';
 
+const addAsToken = function(message, html) {
+	const token = `=!=${ Random.id() }=!=`;
+	message.tokens.push({
+		token,
+		text: html,
+	});
+
+	return token;
+};
+
+const validateUrl = (url) => {
+	try {
+		new URL(url);
+		return true;
+	} catch (e) {
+		return false;
+	}
+};
+
 const parseNotEscaped = function(msg, message) {
 	if (message && message.tokens == null) {
 		message.tokens = [];
 	}
-
-	const addAsToken = function(html) {
-		const token = `=!=${ Random.id() }=!=`;
-		message.tokens.push({
-			token,
-			text: html,
-		});
-
-		return token;
-	};
 
 	const schemes = (settings.get('Markdown_SupportSchemesForLink') || '').split(',').join('|');
 
@@ -66,25 +75,34 @@ const parseNotEscaped = function(msg, message) {
 
 	// Support ![alt text](http://image url)
 	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
+		if (!validateUrl(url)) {
+			return match;
+		}
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return addAsToken(`<a href="${ s.escapeHTML(url) }" title="${ s.escapeHTML(title) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ s.escapeHTML(url) });"></div></a>`);
+		return addAsToken(message, `<a href="${ s.escapeHTML(url) }" title="${ s.escapeHTML(title) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ s.escapeHTML(url) });"></div></a>`);
 	});
 
 	// Support [Text](http://link)
 	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
+		if (!validateUrl(url)) {
+			return match;
+		}
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
 		title = title.replace(/&amp;/g, '&');
 
 		let escapedUrl = s.escapeHTML(url);
 		escapedUrl = escapedUrl.replace(/&amp;/g, '&');
 
-		return addAsToken(`<a href="${ escapedUrl }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
+		return addAsToken(message,`<a href="${ escapedUrl }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
 	// Support <http://link|Text>
 	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
+		if (!validateUrl(url)) {
+			return match;
+		}
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return addAsToken(`<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
+		return addAsToken(message, `<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
 	return msg;
