@@ -1,3 +1,12 @@
+# Assistify 0.9.14
+
+This release enables Microsoft Text Translator
+
+- Added Microsoft Text Translator as service to auto translate
+- Improved translated message cache
+- Fixed production deployment steps in circleCI
+- Set verification status for users added by a manager
+
 # Assistify 0.9.13
 
 This release enables Assistify to run with multiple instances on ECS.

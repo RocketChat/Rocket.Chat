@@ -17,6 +17,7 @@ import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
 import './messageThread.html';
+import { AutoTranslate } from '../../autotranslate/client';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement)
@@ -258,6 +259,11 @@ Template.message.helpers({
 			const autoTranslate = subscription && subscription.autoTranslate;
 			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
 		}
+	},
+	translationProvider() {
+		const instance = Template.instance();
+		const { translationProvider } = instance.data.msg;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
 	},
 	edited() {
 		return Template.instance().wasEdited;
