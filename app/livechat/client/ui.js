@@ -9,7 +9,7 @@ Tracker.autorun((c) => {
 	if (!settings.get('Livechat_enabled')) {
 		return;
 	}
-	import('./views/app/tabbar');
+	import('./views/regular');
 	c.stop();
 });
 
