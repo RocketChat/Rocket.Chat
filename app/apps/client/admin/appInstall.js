@@ -59,19 +59,21 @@ Template.appInstall.helpers({
 	appFile() {
 		return Template.instance().file.get();
 	},
-	isInstalling() {
-		return Template.instance().isInstalling.get();
+	isLoading() {
+		return Template.instance().state.get('loading');
 	},
 	appUrl() {
 		return Template.instance().appUrl.get();
 	},
-	loading() {
-		const instance = Template.instance();
-		return instance.state.get('loading') && 'loading';
+	loadingClass() {
+		return Template.instance().state.get('loading') && 'loading';
 	},
 	disabled() {
 		const instance = Template.instance();
 		return instance.state.get('error') || !(instance.appUrl.get() || instance.file.get());
+	},
+	hideButtonText() {
+		return Template.instance().state.get('loading') && 'visibility: hidden';
 	},
 	isUpdating() {
 		const instance = Template.instance();
@@ -85,10 +87,10 @@ Template.appInstall.onCreated(function() {
 	this.state = new ReactiveDict({
 		dragLevel: 0,
 		error: false,
+		loading: false,
 	});
 	instance.file = new ReactiveVar('');
 	instance.appUrl = new ReactiveVar('');
-	instance.isInstalling = new ReactiveVar(false);
 	instance.isUpdatingId = new ReactiveVar('');
 
 	// Allow passing in a url as a query param to show installation of
@@ -164,7 +166,7 @@ Template.appInstall.events({
 		i.state.set('error', null);
 		i.files = [file];
 	},
-	async 'click .js-install'(e, t) {
+	'click .js-install'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -173,24 +175,22 @@ Template.appInstall.events({
 
 		// Handle url installations
 		if (url) {
-			try {
-				const isUpdating = t.isUpdatingId.get();
-				let result;
+			const isUpdating = t.isUpdatingId.get();
+			let result;
 
-				if (isUpdating) {
-					result = await APIClient.post(`apps/${ t.isUpdatingId.get() }`, { url });
-				} else {
-					result = await APIClient.post('apps', { url });
-				}
-				modal.close();
-				FlowRouter.go(`/admin/apps/${ result.app.id }`);
-			} catch (err) {
-				t.state.set('error', handleInstallError(err));
+			if (isUpdating) {
+				result = APIClient.post(`apps/${ t.isUpdatingId.get() }`, { url });
+			} else {
+				result = APIClient.post('apps', { url });
 			}
 
-			t.state.set('loading', false);
-
-			return;
+			return result
+				.then(({ app }) => {
+					modal.close();
+					FlowRouter.go(`/admin/apps/${ app.id }`);
+				})
+				.catch((err) => t.state.set('error', handleInstallError(err)))
+				.then(() => t.state.set('loading', false));
 		}
 
 		const f = t.file.get();
@@ -210,24 +210,22 @@ Template.appInstall.events({
 			return;
 		}
 
-		try {
-			const isUpdating = t.isUpdatingId.get();
-			let result;
+		const isUpdating = t.isUpdatingId.get();
+		let result;
 
-			if (isUpdating) {
-				result = await APIClient.upload(`apps/${ t.isUpdatingId.get() }`, data);
-			} else {
-				result = await APIClient.upload('apps', data);
-			}
-
-			modal.close();
-
-			FlowRouter.go(`/admin/apps/${ result.app.id }?version=${ result.app.version }`);
-		} catch (err) {
-			t.state.set('error', handleInstallError(err));
+		if (isUpdating) {
+			result = APIClient.upload(`apps/${ t.isUpdatingId.get() }`, data);
+		} else {
+			result = APIClient.upload('apps', data);
 		}
 
-		t.state.set('loading', false);
+		result
+			.then(({ app }) => {
+				modal.close();
+				FlowRouter.go(`/admin/apps/${ app.id }?version=${ app.version }`);
+			})
+			.catch((err) => t.state.set('error', handleInstallError(err)))
+			.then(() => t.state.set('loading', false));
 	},
 });
 

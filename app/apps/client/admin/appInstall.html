@@ -3,67 +3,68 @@
 	{{> header sectionName="App_Installation" hideHelp=true fullpage=true}}
 	{{#requiresPermission 'manage-apps'}}
 		<form class="preferences-page__content">
-			{{#if isInstalling}}
-				{{> loading}}
-			{{else}}
-				<div class="rc-form-group">
-					<div class="rc-input">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{_ "App_Url_to_Install_From"}}</div>
-							<div class="rc-input__wrapper">
-								<input type="text" class="rc-input__element" name="appPackageUrl" id="appPackage" placeholder="https://rocket.chat/apps/package.zip" value="{{appUrl}}" >
-							</div>
-						</label>
-					</div>
+			<div class="rc-form-group">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "App_Url_to_Install_From"}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" class="rc-input__element" name="appPackageUrl" id="appPackage" placeholder="https://rocket.chat/apps/package.zip" value="{{appUrl}}" >
+						</div>
+					</label>
 				</div>
-				<hr class='divider' data-content="OR">
-				<div class="rc-form-group">
+			</div>
+			<hr class='divider' data-content="OR">
+			<div class="rc-form-group">
 
-					<div class="rc-dropfile {{errorClass}} {{over}}">
-						<label class="rc-dropfile__wrapper" for="upload-app">
+				<div class="rc-dropfile {{errorClass}} {{over}}">
+					<label class="rc-dropfile__wrapper" for="upload-app">
 						{{# if error}}
 							{{> icon icon="circle-cross" block="rc-dropfile--icon"}}
 							{{appFile}}
 							{{_ error}}
 						{{else}}
 							{{# if appFile}}
-								 {{> icon icon="checkmark-circled" block="rc-dropfile--icon"}}
-								 {{appFile}}
+								{{> icon icon="checkmark-circled" block="rc-dropfile--icon"}}
+								{{appFile}}
 							{{else}}
 								{{> icon icon="upload" block="rc-dropfile--icon"}}
 								{{_ "Drop_to_upload_file"}}
 							{{/if}}
 						{{/if}}
-						</label>
-						<input type="file" id="upload-app" name="upload-app" class="rc-dropfile--input js-input"  accept=".zip, application/zip, application/x-rar"/>
-					</div>
-					<!-- <div class="rc-input-file">
-						<label class="rc-input-file__label">
-							<div class="rc-input-file__title">{{_ "App_Url_to_Install_From_File"}}</div>
-							<div class="rc-input-file__wrapper">
-								<div class="rc-input-file__name">
-									{{appFile}}
-								</div>
-								<input type="file" accept=".zip" class="rc-input-file__element" name="appPackageUrl" id="upload-app" placeholder="https://rocket.chat/apps/package.zip">
-								<label for='upload-app' class="rc-button rc-button-secondary install">{{_ "Browse_Files"}}</label>
-							</div>
-						</label>
-					</div> -->
+					</label>
+					<input type="file" id="upload-app" name="upload-app" class="rc-dropfile--input js-input"  accept=".zip, application/zip, application/x-rar"/>
 				</div>
-				<div class="rc-form-group">
-					<div class="rc-button__group">
-						<button class="rc-button rc-button--secondary js-close">{{_ "Cancel"}}</button>
-						<button class="rc-button rc-button--primary js-install {{loading}}" disabled='{{disabled}}'>
+				<!-- <div class="rc-input-file">
+					<label class="rc-input-file__label">
+						<div class="rc-input-file__title">{{_ "App_Url_to_Install_From_File"}}</div>
+						<div class="rc-input-file__wrapper">
+							<div class="rc-input-file__name">
+								{{appFile}}
+							</div>
+							<input type="file" accept=".zip" class="rc-input-file__element" name="appPackageUrl" id="upload-app" placeholder="https://rocket.chat/apps/package.zip">
+							<label for='upload-app' class="rc-button rc-button-secondary install">{{_ "Browse_Files"}}</label>
+						</div>
+					</label>
+				</div> -->
+			</div>
+			<div class="rc-form-group">
+				<div class="rc-button__group">
+					<button class="rc-button rc-button--secondary js-close {{loadingClass}}" disabled="{{isLoading}}">{{_ "Cancel"}}</button>
+					<button class="rc-button rc-button--primary js-install {{loadingClass}}" disabled="{{disabled}}">
+						{{#if isLoading}}
+							{{> loading}}
+						{{/if}}
+						<span style="{{hideButtonText}}">
 							{{#if isUpdating}}
 								{{_ "Update"}}
 							{{else}}
 								{{_ "Install"}}
 							{{/if}}
-						</button>
-					</div>
+						</span>
+					</button>
 				</div>
-			{{/if}}
-			</form>
+			</div>
+		</form>
 	{{/requiresPermission}}
 	</div>
 </template>
