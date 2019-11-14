@@ -5,7 +5,7 @@ This release enables Microsoft Text Translator
 - Added Microsoft Text Translator as service to auto translate
 - Improved translated message cache
 - Fixed production deployment steps in circleCI
-- Set verfication status for users added by a manager
+- Set verification status for users added by a manager
 
 # Assistify 0.9.13
 
