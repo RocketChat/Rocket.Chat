@@ -4,16 +4,25 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 import toastr from 'toastr';
 
-import { handleError } from '../../../../app/utils/client/lib/handleError';
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
+import { handleError } from '../../../../app/utils/client/lib/handleError';
 import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
-import { useLazyRef } from '../../../hooks/useLazyRef';
 import { useEventCallback } from '../../../hooks/useEventCallback';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
 const SettingsContext = createContext({});
 
 let privateSettingsCachedCollection; // Remove this singleton (╯°□°)╯︵ ┻━┻
+
+const getPrivateSettingsCachedCollection = () => {
+	if (privateSettingsCachedCollection) {
+		return [privateSettingsCachedCollection, Promise.resolve()];
+	}
+
+	privateSettingsCachedCollection = new PrivateSettingsCachedCollection();
+
+	return [privateSettingsCachedCollection, privateSettingsCachedCollection.init()];
+};
 
 const compareStrings = (a = '', b = '') => {
 	if (a === b || (!a && !b)) {
@@ -28,7 +37,7 @@ const compareSettings = (a, b) =>
 	|| compareStrings(a.sorter, b.sorter)
 	|| compareStrings(a.i18nLabel, b.i18nLabel);
 
-const stateReducer = (states, { type, payload }) => {
+const settingsReducer = (states, { type, payload }) => {
 	const {
 		settings,
 		persistedSettings,
@@ -81,30 +90,12 @@ const stateReducer = (states, { type, payload }) => {
 export function SettingsState({ children }) {
 	const [isLoading, setLoading] = useState(true);
 
-	const persistedCollectionRef = useLazyRef(() => {
-		const stopLoading = () => {
-			setLoading(false);
-		};
-
-		if (!privateSettingsCachedCollection) {
-			privateSettingsCachedCollection = new PrivateSettingsCachedCollection();
-
-			privateSettingsCachedCollection.init().then(stopLoading, stopLoading);
-		} else {
-			stopLoading();
-		}
-
-		return privateSettingsCachedCollection.collection;
-	});
-
-	const collectionRef = useLazyRef(() => new Mongo.Collection(null));
-
 	const [subscribers] = useState(new Set());
 
 	const stateRef = useRef({ settings: [], persistedSettings: [] });
 
 	const enhancedReducer = useCallback((state, action) => {
-		const newState = stateReducer(state, action);
+		const newState = settingsReducer(state, action);
 
 		stateRef.current = newState;
 
@@ -113,63 +104,81 @@ export function SettingsState({ children }) {
 		});
 
 		return newState;
-	}, [stateReducer, subscribers]);
+	}, [settingsReducer, subscribers]);
 
 	const [, dispatch] = useReducer(enhancedReducer, { settings: [], persistedSettings: [] });
+
+	const collectionsRef = useRef({});
+
+	useEffect(() => {
+		const [privateSettingsCachedCollection, loadingPromise] = getPrivateSettingsCachedCollection();
+
+		const stopLoading = () => {
+			setLoading(false);
+		};
+
+		loadingPromise.then(stopLoading, stopLoading);
+
+		const { collection: persistedSettingsCollection } = privateSettingsCachedCollection;
+		const settingsCollection = new Mongo.Collection(null);
+
+		collectionsRef.current = {
+			persistedSettingsCollection,
+			settingsCollection,
+		};
+	}, [collectionsRef]);
 
 	useEffect(() => {
 		if (isLoading) {
 			return;
 		}
 
-		const { current: persistedCollection } = persistedCollectionRef;
-		const { current: collection } = collectionRef;
+		const { current: { persistedSettingsCollection, settingsCollection } } = collectionsRef;
+
+		const query = persistedSettingsCollection.find();
+
+		const syncCollectionsHandle = query.observe({
+			added: (data) => settingsCollection.insert(data),
+			changed: (data) => settingsCollection.update(data._id, data),
+			removed: ({ _id }) => settingsCollection.remove(_id),
+		});
 
 		const addedQueue = [];
 		let addedActionTimer;
 
-		const added = (data) => {
-			collection.insert(data);
-			addedQueue.push(data);
-			clearTimeout(addedActionTimer);
-			addedActionTimer = setTimeout(() => {
-				dispatch({ type: 'add', payload: addedQueue });
-			}, 70);
-		};
-
-		const changed = (data) => {
-			collection.update(data._id, data);
-			dispatch({ type: 'change', payload: data });
-		};
-
-		const removed = ({ _id }) => {
-			collection.remove(_id);
-			dispatch({ type: 'remove', payload: _id });
-		};
-
-		const persistedFieldsQueryHandle = persistedCollection.find()
-			.observe({
-				added,
-				changed,
-				removed,
-			});
+		const syncStateHandle = query.observe({
+			added: (data) => {
+				addedQueue.push(data);
+				clearTimeout(addedActionTimer);
+				addedActionTimer = setTimeout(() => {
+					dispatch({ type: 'add', payload: addedQueue });
+				}, 70);
+			},
+			changed: (data) => {
+				dispatch({ type: 'change', payload: data });
+			},
+			removed: ({ _id }) => {
+				dispatch({ type: 'remove', payload: _id });
+			},
+		});
 
 		return () => {
-			persistedFieldsQueryHandle.stop();
+			syncCollectionsHandle.stop();
+			syncStateHandle.stop();
 			clearTimeout(addedActionTimer);
 		};
-	}, [isLoading, persistedCollectionRef, collectionRef]);
+	}, [isLoading, collectionsRef]);
 
 	const updateTimersRef = useRef({});
 
 	const updateAtCollection = useCallback(({ _id, ...data }) => {
-		const { current: collection } = collectionRef;
+		const { current: { settingsCollection } } = collectionsRef;
 		const { current: updateTimers } = updateTimersRef;
 		clearTimeout(updateTimers[_id]);
 		updateTimers[_id] = setTimeout(() => {
-			collection.update(_id, { $set: data });
+			settingsCollection.update(_id, { $set: data });
 		}, 70);
-	}, [collectionRef, updateTimersRef]);
+	}, [collectionsRef, updateTimersRef]);
 
 	const hydrate = useCallback((changes) => {
 		changes.forEach(updateAtCollection);
@@ -185,11 +194,11 @@ export function SettingsState({ children }) {
 			return false;
 		}
 
-		const { current: collection } = collectionRef;
+		const { current: { settingsCollection } } = collectionsRef;
 
 		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
-		return !queries.every((query) => !!collection.findOne(query));
-	}, []);
+		return !queries.every((query) => !!settingsCollection.findOne(query));
+	}, [collectionsRef]);
 
 	const contextValue = useMemo(() => ({
 		isLoading,
