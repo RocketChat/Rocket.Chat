@@ -7,7 +7,6 @@ import { settings } from '../../../../settings';
 import { roomTypes } from '../../../../utils';
 import { metrics } from '../../../../metrics';
 import { callbacks } from '../../../../callbacks';
-import { Users } from '../../../../models';
 
 let advice = '';
 let goToMessage = '';
@@ -95,7 +94,19 @@ function getEmailContent({ message, user, room }) {
 	return header;
 }
 
-export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
+function generateNameEmail(name, email) {
+	return `${ String(name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ email }>`;
+}
+
+export function sendEmail({
+	message,
+	receiver,
+	sender,
+	subscription,
+	room,
+	emailAddress,
+	hasMentionToUser,
+}) {
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
@@ -111,40 +122,37 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 	});
 	const content = getEmailContent({
 		message,
-		user,
+		user: receiver,
 		room,
 	});
 
 	const room_path = roomTypes.getURL(room.t, subscription);
 
+	const receiverName = settings.get('UI_Use_Real_Name')
+		? receiver.name || receiver.username
+		: receiver.username;
+
+	const [senderEmail] = sender.emails;
+
 	const email = {
-		to: emailAddress,
+		from: generateNameEmail(username, settings.get('From_Email')),
+		to: generateNameEmail(receiverName, emailAddress),
 		subject: emailSubject,
 		html: content + goToMessage + (settings.get('Direct_Reply_Enable') ? advice : ''),
 		data: {
 			room_path,
 		},
+		headers: {
+			'Reply-To': generateNameEmail(username, senderEmail.address),
+		},
 	};
 
-        // email header From: and To: fix
-        const sender = Users.findOne({ _id: message.u._id });
-
-        const recipient = Users.findOneByEmailAddress(emailAddress);
-        email.to = `${ recipient.name } <${ emailAddress }>`;
-
-        email.from = `${ String(username).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ settings.get('From_Email') }>`;
-
-        if (sender.emails[0].address && sender.emails[0].address.length !== 0) {
-		email.from = `${ String(sender.name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ sender.emails[0].address }>`;
-	};
-	
 	// If direct reply enabled, email content with headers
 	if (settings.get('Direct_Reply_Enable')) {
 		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
-		email.headers = {
-			// Reply-To header with format "username+messageId@domain"
-			'Reply-To': `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,
-		};
+
+		// Reply-To header with format "username+messageId@domain"
+		email.headers['Reply-To'] = `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`;
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });

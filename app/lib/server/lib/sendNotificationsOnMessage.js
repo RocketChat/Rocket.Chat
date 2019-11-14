@@ -142,7 +142,15 @@ export const sendNotification = async ({
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
-				sendEmail({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser });
+				sendEmail({
+					message,
+					receiver,
+					sender,
+					subscription,
+					room,
+					emailAddress: email.address,
+					hasMentionToUser,
+				});
 
 				return true;
 			}
