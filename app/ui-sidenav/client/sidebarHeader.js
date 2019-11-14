@@ -4,12 +4,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
-import { t, getUserPreference, handleError } from '../../utils';
+import { t, getUserPreference, handleError, isMobile } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
-import { isMobile } from '../../utils/client/lib/isMobile';
 
 const setStatus = (status, statusText) => {
 	AccountBox.setStatus(status, statusText);
