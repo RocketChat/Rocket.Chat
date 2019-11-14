@@ -17,8 +17,25 @@ import { SelectSettingInput } from './inputs/SelectSettingInput';
 import { LanguageSettingInput } from './inputs/LanguageSettingInput';
 import { ColorSettingInput } from './inputs/ColorSettingInput';
 import { FontSettingInput } from './inputs/FontSettingInput';
-import { useSetting } from './SettingsState';
+import { CodeSettingInput } from './inputs/CodeSettingInput';
 import { ActionSettingInput } from './inputs/ActionSettingInput';
+import { useSetting } from './SettingsState';
+
+const getInputComponentByType = (type) => ({
+	boolean: BooleanSettingInput,
+	string: StringSettingInput,
+	relativeUrl: RelativeUrlSettingInput,
+	password: PasswordSettingInput,
+	int: IntSettingInput,
+	select: SelectSettingInput,
+	language: LanguageSettingInput,
+	color: ColorSettingInput,
+	font: FontSettingInput,
+	code: CodeSettingInput,
+	action: ActionSettingInput,
+	// asset: AssetSettingInput,
+	// roomPick: RoomPickSettingInput,
+})[type] || GenericSettingInput;
 
 export function Setting({ settingId }) {
 	const setting = useSetting(settingId);
@@ -47,6 +64,8 @@ export function Setting({ settingId }) {
 		setting.reset();
 	};
 
+	const InputComponent = getInputComponentByType(type);
+
 	const inputProps = {
 		...setting,
 		label,
@@ -56,20 +75,7 @@ export function Setting({ settingId }) {
 	};
 
 	return <Field>
-		{(type === 'boolean' && <BooleanSettingInput {...inputProps} />)
-		|| (type === 'string' && <StringSettingInput {...inputProps} />)
-		|| (type === 'relativeUrl' && <RelativeUrlSettingInput {...inputProps} />)
-		|| (type === 'password' && <PasswordSettingInput {...inputProps} />)
-		|| (type === 'int' && <IntSettingInput {...inputProps} />)
-		|| (type === 'select' && <SelectSettingInput {...inputProps} />)
-		|| (type === 'language' && <LanguageSettingInput {...inputProps} />)
-		|| (type === 'color' && <ColorSettingInput {...inputProps} />)
-		|| (type === 'font' && <FontSettingInput {...inputProps} />)
-		// || (type === 'code' && <CodeSettingInput {...inputProps} />)
-		|| (type === 'action' && <ActionSettingInput {...inputProps} />)
-		// || (type === 'asset' && <AssetSettingInput {...inputProps} />)
-		// || (type === 'roomPick' && <RoomPickSettingInput {...inputProps} />)
-		|| <GenericSettingInput {...inputProps} />}
+		<InputComponent {...inputProps} />
 		{hint && <Field.Hint>{hint}</Field.Hint>}
 		{callout && <Callout type='warning' title={callout} />}
 	</Field>;

@@ -5,43 +5,6 @@ import { useTranslation } from '../../providers/TranslationProvider';
 import { Icon } from '../../basic/Icon';
 import { Button } from '../../basic/Button';
 
-export function FontSettingInput({
-	_id,
-	value,
-	placeholder,
-	readonly,
-	autocomplete,
-	disabled,
-	onChange,
-}) {
-	const handleChange = (event) => {
-		const { value } = event.currentTarget;
-		onChange({ value });
-	};
-
-	return <input type='text' className='rc-input__element' name={_id} value={value} placeholder={placeholder} disabled={disabled} readOnly={readonly} autoComplete={autocomplete === false ? 'off' : undefined} onChange={handleChange} />;
-}
-
-export function CodeSettingInput({
-	_id,
-	i18nLabel,
-	disabled,
-}) {
-	const t = useTranslation();
-
-	return disabled
-		? <>{/* {> CodeMirror name=_id options=(getEditorOptions true) code=(i18nDefaultValue) }*/}</>
-		: <div className='code-mirror-box' data-editor-id={_id}>
-			<div className='title'>{(i18nLabel && t(i18nLabel)) || (_id || t(_id))}</div>
-			{/* {> CodeMirror name=_id options=getEditorOptions code=value editorOnBlur=setEditorOnBlur}*/}
-
-			<div className='buttons'>
-				<Button primary className='button-fullscreen'>{t('Full_Screen')}</Button>
-				<Button primary className='button-restore'>{t('Exit_Full_Screen')}</Button>
-			</div>
-		</div>;
-}
-
 export function AssetSettingInput({
 	value,
 	fileConstraints,

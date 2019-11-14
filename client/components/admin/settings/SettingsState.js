@@ -82,14 +82,16 @@ export function SettingsState({ children }) {
 	const [isLoading, setLoading] = useState(true);
 
 	const persistedCollectionRef = useLazyRef(() => {
+		const stopLoading = () => {
+			setLoading(false);
+		};
+
 		if (!privateSettingsCachedCollection) {
 			privateSettingsCachedCollection = new PrivateSettingsCachedCollection();
 
-			const stopLoading = () => {
-				setLoading(false);
-			};
-
 			privateSettingsCachedCollection.init().then(stopLoading, stopLoading);
+		} else {
+			stopLoading();
 		}
 
 		return privateSettingsCachedCollection.collection;
@@ -239,7 +241,7 @@ export const useGroup = (groupId) => {
 	const filterSettings = (settings) => settings.filter(({ group }) => group === groupId);
 
 	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
-	const sections = useSelector((state) => Array.from(new Set(filterSettings(state.settings).map(({ section }) => section || ''))), (a, b) => a.join() === b.join());
+	const sections = useSelector((state) => Array.from(new Set(filterSettings(state.settings).map(({ section }) => section || ''))), (a, b) => a.length === b.length && a.join() === b.join());
 
 	const batchSetSettings = useBatchSetSettings();
 	const { stateRef, hydrate } = useContext(SettingsContext);
@@ -299,7 +301,7 @@ export const useSection = (groupId, sectionName) => {
 
 	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
 	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => value !== packageValue));
-	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.join() === b.join());
+	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.length === b.length && a.join() === b.join());
 
 	const { stateRef, hydrate } = useContext(SettingsContext);
 
