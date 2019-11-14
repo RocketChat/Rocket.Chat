@@ -201,13 +201,11 @@ export function SettingsState({ children }) {
 	}, [collectionsRef]);
 
 	const contextValue = useMemo(() => ({
-		isLoading,
 		subscribers,
 		stateRef,
 		hydrate,
 		isDisabled,
 	}), [
-		isLoading,
 		subscribers,
 		stateRef,
 		hydrate,

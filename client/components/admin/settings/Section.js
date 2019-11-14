@@ -1,4 +1,4 @@
-import { Accordion, Button, FieldGroup, Paragraph } from '@rocket.chat/fuselage';
+import { Accordion, Button, FieldGroup, Paragraph, Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../providers/TranslationProvider';
@@ -36,3 +36,16 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		</FieldGroup>
 	</Accordion.Item>;
 }
+
+Section.Skeleton = function Skeleton() {
+	return <Accordion.Item
+		noncollapsible
+		title={<Text.Skeleton animated subtitle />}
+	>
+		<Paragraph.Skeleton animated />
+
+		<FieldGroup>
+			{Array.from({ length: 10 }).map((_, i) => <Setting.Skeleton key={i} />)}
+		</FieldGroup>
+	</Accordion.Item>;
+};
