@@ -305,7 +305,7 @@ Meteor.startup(async function() {
 	if (isMobile()) {
 		MessageAction.addButton({
 			id: 'cancel-message',
-			icon: 'trash',
+			icon: 'cross',
 			label: 'Cancel',
 			context: ['message', 'message-mobile', 'threads'],
 			color: 'alert',
@@ -318,8 +318,8 @@ Meteor.startup(async function() {
 				}
 				return true;
 			},
-			order: 19,
-			group: 'menu',
+			order: 23,
+			group: 'message',
 		});
 	}
 	MessageAction.addButton({
