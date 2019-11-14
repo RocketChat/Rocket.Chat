@@ -123,7 +123,7 @@ export class AppLivechatBridge {
 		return Livechat.transfer(
 			this.orch.getConverters().get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent.id, departmentId }
+			{ userId: targetAgent.id, departmentId },
 		);
 	}
 
