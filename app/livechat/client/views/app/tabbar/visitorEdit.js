@@ -5,7 +5,6 @@ import toastr from 'toastr';
 
 import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
-import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
 
@@ -63,8 +62,12 @@ Template.visitorEdit.onCreated(async function() {
 	this.agentDepartments = new ReactiveVar([]);
 	this.availableUserTags = new ReactiveVar([]);
 
-	this.autorun(() => {
-		this.visitor.set(LivechatVisitor.findOne({ _id: Template.currentData().visitorId }));
+	this.autorun(async () => {
+		const { visitorId } = Template.currentData();
+		if (visitorId) {
+			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+			this.visitor.set(visitor);
+		}
 	});
 
 	const rid = Template.currentData().roomId;
