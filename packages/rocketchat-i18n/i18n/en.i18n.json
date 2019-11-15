@@ -1371,7 +1371,7 @@
   "except_pinned": "(except those that are pinned)",
   "Execute_Synchronization_Now": "Execute Synchronization Now",
   "Exit_Full_Screen": "Exit Full Screen",
-  "Experimental_Feature_Alert": "This is an experimental feature! Please be aware that every experimental feature may change, be broken, or be removed in the future without any notice.",
+  "Experimental_Feature_Alert": "This is an experimental feature! Please be aware that it may change, break, or even be removed in the future without any notice.",
   "Export_My_Data": "Export My Data (JSON)",
   "expression": "Expression",
   "Extended": "Extended",
