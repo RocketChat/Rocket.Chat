@@ -11,7 +11,7 @@ import './admin/appWhatIsIt.html';
 import './admin/appWhatIsIt';
 import './routes';
 
-import './gameCenter/tabBarButton';
+import './gameCenter/tabBar';
 import './gameCenter/gameContainer';
 import './gameCenter/gameCenter';
 import './gameCenter/invitePlayers';
