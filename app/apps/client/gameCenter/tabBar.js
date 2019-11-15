@@ -12,7 +12,7 @@ Meteor.startup(function() {
 			return TabBar.addButton({
 				groups: ['channel', 'group', 'direct'],
 				id: 'gameCenter',
-				i18nTitle: 'Game Center',
+				i18nTitle: 'Game_Center',
 				icon: 'cube',
 				template: 'GameCenter',
 				order: -1,
