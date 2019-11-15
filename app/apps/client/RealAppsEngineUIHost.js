@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 
+import { Rooms } from '../../models';
 import { APIClient } from '../../utils';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 
@@ -13,7 +14,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	async getClientRoomInfo() {
-		const { name: slugifiedName, _id: id } = Session.get(`roomData${ Session.get('openedRoom') }`);
+		const { name: slugifiedName, _id: id } = Rooms.findOne(Session.get('openedRoom'));
 		let { members } = await APIClient.get('apps/groupMembers', { roomId: id });
 
 		members = members.map(({ _id, username }) => ({

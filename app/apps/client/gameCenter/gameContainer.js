@@ -1,14 +1,14 @@
 import { Template } from 'meteor/templating';
 
 import { modal } from '../../../ui-utils';
-import { RealAppsEngineUIHost } from '../RealAppsEngineUIHost';
+import { Apps } from '../orchestrator';
 import { APIClient } from '../../../utils/client';
 
 import './gameContainer.html';
 
 const getExternalComponent = async () => {
 	const { data: { game: externalComponent } } = Template.instance();
-	const realAppClientUIHost = new RealAppsEngineUIHost();
+	const realAppClientUIHost = Apps.getUIHost();
 	const currentUser = await realAppClientUIHost.getClientUserInfo();
 	const currentRoom = await realAppClientUIHost.getClientRoomInfo();
 
@@ -49,7 +49,7 @@ Template.GameContainer.events({
 Template.GameContainer.onCreated(async () => {
 	const externalComponent = await getExternalComponent();
 
-	await APIClient.post('apps/externalComponentEvent', {
+	APIClient.post('apps/externalComponentEvent', {
 		event: 'IPostExternalComponentOpened',
 		externalComponent,
 	});
@@ -58,7 +58,7 @@ Template.GameContainer.onCreated(async () => {
 Template.GameContainer.onDestroyed(async () => {
 	const externalComponent = await getExternalComponent();
 
-	await APIClient.post('apps/externalComponentEvent', {
+	APIClient.post('apps/externalComponentEvent', {
 		event: 'IPostExternalComponentClosed',
 		externalComponent,
 	});

@@ -141,8 +141,11 @@ Template.SearchInvitePlayers.events({
 		t.ac.onItemClick(this, e);
 	},
 	'keydown input'(e, t) {
+		const KEYCODE_BACKSPACE = 8;
+		const KEYCODE_DELETE = 46;
+
 		t.ac.onKeyDown(e);
-		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+		if ([KEYCODE_BACKSPACE, KEYCODE_DELETE].includes(e.keyCode) && e.target.value === '') {
 			const { deleteLastItem } = t;
 			return deleteLastItem && deleteLastItem();
 		}
