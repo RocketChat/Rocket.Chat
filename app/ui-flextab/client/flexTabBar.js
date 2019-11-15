@@ -59,6 +59,9 @@ const filterButtons = (button, anonymous, rid) => {
 	if (button.id === 'thread' && !settings.get('Threads_enabled')) {
 		return false;
 	}
+	if (button.id === 'gameCenter' && !settings.get('Apps_Game_Center_enabled')) {
+		return false;
+	}
 	return true;
 };
 Template.flexTabBar.helpers({
