@@ -60,21 +60,17 @@ export function Setting({ settingId }) {
 	const t = useTranslation();
 
 	const [value, setValue] = useState(contextValue);
-	const setContextValue = useDebouncedCallback((value) => setting.update({ value }), 70);
+	const setContextValue = useDebouncedCallback((value) => setting.update({ value }), 70, []);
 
 	useEffect(() => {
-		if (value !== contextValue) {
-			setValue(contextValue);
-		}
+		setValue(contextValue);
 	}, [contextValue]);
 
 	const [editor, setEditor] = useState(contextEditor);
-	const setContextEditor = useDebouncedCallback((editor) => setting.update({ editor }), 70);
+	const setContextEditor = useDebouncedCallback((editor) => setting.update({ editor }), 70, []);
 
 	useEffect(() => {
-		if (editor !== contextEditor) {
-			setEditor(contextEditor);
-		}
+		setEditor(contextEditor);
 	}, [contextEditor]);
 
 	const onChangeValue = (value) => {
