@@ -1516,6 +1516,7 @@
   "From_email_warning": "<b>Warning</b>: The field <b>From</b> is subject to your mail server settings.",
   "Full_Screen": "Full Screen",
   "Game_Center": "Game Center",
+  "Game_Center_Play_Game_Together": "@here Let's play __name__ together!",
   "Gaming": "Gaming",
   "General": "General",
   "Get_link": "Get Link",

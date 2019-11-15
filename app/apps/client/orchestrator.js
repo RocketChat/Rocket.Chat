@@ -176,6 +176,8 @@ class AppClientOrchestrator {
 		const categories = await APIClient.get('apps', { categories: 'true' });
 		return categories;
 	}
+
+	getUIHost = () => this._appClientUIHost;
 }
 
 export const Apps = new AppClientOrchestrator();

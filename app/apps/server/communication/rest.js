@@ -272,7 +272,6 @@ export class AppsRestApi {
 
 		this.api.addRoute('groupMembers', { authRequired: true }, {
 			get() {
-				let users;
 				try {
 					const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
 					const room = Rooms.findOneById(findResult.rid, { fields: { broadcast: 1 } });
@@ -291,36 +290,34 @@ export class AppsRestApi {
 					});
 					const members = subscriptions.fetch().map((s) => s.u && s.u._id);
 
-					users = Users.find({ _id: { $in: members } }, {
+					const users = Users.find({ _id: { $in: members } }, {
 						fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 						sort: { username: sort.username != null ? sort.username : 1 },
 					}).fetch();
+
+					return API.v1.success({ members: users });
 				} catch (e) {
 					orchestrator.getRocketChatLogger().error(`Error getting the group members ${ e }`);
 					return API.v1.internalError();
 				}
-				return API.v1.success({ members: users });
 			},
 		});
 
 		this.api.addRoute('externalComponentEvent', { authRequired: true }, {
 			post() {
-				if (this.bodyParams.event && this.bodyParams.externalComponent
-					&& ['IPostExternalComponentOpened', 'IPostExternalComponentClosed'].includes(this.bodyParams.event)
-				) {
-					let result;
-					try {
-						const { event } = this.bodyParams;
-						const { externalComponent } = this.bodyParams;
-
-						result = Apps.getBridges().getListenerBridge().externalComponentEvent(event, externalComponent);
-					} catch (e) {
-						orchestrator.getRocketChatLogger().error(`Error triggering external components' events ${ e.response.data }`);
-						return API.v1.internalError();
-					}
-					return API.v1.success({ result });
+				if (!this.bodyParams.externalComponent || !['IPostExternalComponentOpened', 'IPostExternalComponentClosed'].includes(this.bodyParams.event)) {
+					return API.v1.failure({ error: 'Event and externalComponent must be provided.' });
 				}
-				return API.v1.failure({ error: 'Event and externalComponent must be provided.' });
+
+				try {
+					const { event, externalComponent } = this.bodyParams;
+					const result = Apps.getBridges().getListenerBridge().externalComponentEvent(event, externalComponent);
+
+					return API.v1.success({ result });
+				} catch (e) {
+					orchestrator.getRocketChatLogger().error(`Error triggering external components' events ${ e.response.data }`);
+					return API.v1.internalError();
+				}
 			},
 		});
 
