@@ -2520,6 +2520,8 @@
   "Push_apn_key": "APN Key",
   "Push_apn_passphrase": "APN Passphrase",
   "Push_debug": "Debug",
+  "Push_send_interval": "Interval to check the queue for new push notifications",
+  "Push_send_batch_size": "Batch size to be processed every tick",
   "Push_enable": "Enable",
   "Push_enable_gateway": "Enable Gateway",
   "Push_gateway": "Gateway",
