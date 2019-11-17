@@ -9,7 +9,7 @@ import { getConfig } from '../../../ui-utils/client/config';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 
-const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
+export const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
 
 export const ChatMessage = CachedChatMessage.collection;
 
@@ -99,17 +99,8 @@ Tracker.autorun(() => {
 		);
 		const limit = parseInt(getConfig('roomListLimit')) || 50;
 		subscriptions.forEach((subscription) => {
-			let ts;
+			const ts = undefined;
 			const { rid, ls } = subscription;
-			const lastMessage = ChatMessage.findOne(
-				{ rid, _hidden: { $ne: true } },
-				{ sort: { ts: 1 } }
-			);
-			if (lastMessage) {
-				({ ts } = lastMessage);
-			} else {
-				ts = undefined;
-			}
 			Meteor.call('loadHistory', rid, ts, limit, ls, (err, result) => {
 				if (err) {
 					return;

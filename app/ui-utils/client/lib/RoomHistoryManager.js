@@ -9,7 +9,7 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom, CachedChatMessage } from '../../../models';
 
 export const normalizeThreadMessage = (message) => {
 	if (message.msg) {
@@ -329,16 +329,17 @@ export const RoomHistoryManager = new class {
 	clear(rid) {
 		const query = { rid };
 		const options = {
-			fields: {
-				ls: 1,
-			},
 			sort: {
 				ls: -1,
 			},
-			limit: 10,
+			limit: 50,
 		};
 		const retain = ChatMessage.find(query, options).fetch();
-		ChatMessage.remove({ _id: { '$nin': retain } });
+		ChatMessage.remove({ rid });
+		retain.forEach((message) => {
+			ChatMessage.insert(message);
+		});
+		CachedChatMessage.save();
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);

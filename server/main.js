@@ -79,7 +79,6 @@ import './publications/roles';
 import './publications/userAutocomplete';
 import './publications/userChannels';
 import './publications/userData';
-import './publications/userData1';
 import './routes/avatar';
 import './stream/messages';
 import './stream/streamBroadcast';
