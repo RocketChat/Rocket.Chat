@@ -17,6 +17,8 @@ export function RoomPickSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }) {
+	value = value || [];
+
 	const wrapperRef = useRef();
 	const valueRef = useRef(value);
 
