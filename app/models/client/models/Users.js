@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { PersistentMinimongo2 } from 'meteor/frozeman:persistent-minimongo2';
+
+import { CachedCollection } from '../../../ui-cached-collection';
 
 export const Users = {
 	isUserInRole(userId, roleName) {
@@ -27,10 +28,9 @@ export const Users = {
 Meteor.users = new Mongo.Collection(null);
 Meteor.user = () => Meteor.users.findOne({ _id: Meteor.userId() });
 
-new PersistentMinimongo2(Meteor.users, 'Users');
-
 // logged user data will come to this collection
-const OwnUser = new Mongo.Collection('own_user');
+const CachedOwnUser = new CachedCollection({ name: 'ownUser' });
+const OwnUser = CachedOwnUser.collection;
 
 // register an observer to logged user's collection and populate "original" Meteor.users with it
 OwnUser.find().observe({
