@@ -17,6 +17,7 @@ import { ColorSettingInput } from './inputs/ColorSettingInput';
 import { FontSettingInput } from './inputs/FontSettingInput';
 import { CodeSettingInput } from './inputs/CodeSettingInput';
 import { ActionSettingInput } from './inputs/ActionSettingInput';
+import { AssetSettingInput } from './inputs/AssetSettingInput';
 import { useSetting } from './SettingsState';
 
 const getInputComponentByType = (type) => ({
@@ -31,7 +32,7 @@ const getInputComponentByType = (type) => ({
 	font: FontSettingInput,
 	code: CodeSettingInput,
 	action: ActionSettingInput,
-	// asset: AssetSettingInput,
+	asset: AssetSettingInput,
 	// roomPick: RoomPickSettingInput,
 })[type] || GenericSettingInput;
 

@@ -1,33 +1,6 @@
 import React, { useState } from 'react';
-import { Random } from 'meteor/random';
 
-import { useTranslation } from '../../providers/TranslationProvider';
 import { Icon } from '../../basic/Icon';
-import { Button } from '../../basic/Button';
-
-export function AssetSettingInput({
-	value,
-	fileConstraints,
-}) {
-	const t = useTranslation();
-	return value.url
-		? <div className='settings-file-preview'>
-			<div className='preview' style={{ backgroundImage: `url(${ value.url }?_dc=${ Random.id() })` }} />
-			<div className='action'>
-				<Button className='delete-asset'>
-					<Icon icon='icon-trash' />{t('Delete')}
-				</Button>
-			</div>
-		</div>
-		: <div className='settings-file-preview'>
-			<div className='preview no-file background-transparent-light secondary-font-color'><Icon icon='icon-upload' /></div>
-			<div className='action'>
-				<div className='rc-button rc-button--primary'>{t('Select_file')}
-					<input type='file' accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${ fileConstraints.extensions.join(', .') }`} />
-				</div>
-			</div>
-		</div>;
-}
 
 export function RoomPickSettingInput({ _id }) {
 	// const collection = usePrivateSettingsCollection();
