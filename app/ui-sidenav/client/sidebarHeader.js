@@ -89,6 +89,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('View_mode'),
 	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'condensed'],
+	condition: () => !isMobile(),
 	hasPopup: true,
 	action: (e) => {
 		const hideAvatarSetting = getUserPreference(user, 'sidebarHideAvatar');
@@ -159,6 +160,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Sort'),
 	icon: 'sort',
+	condition: () => !isMobile(),
 	hasPopup: true,
 	action: (e) => {
 		const options = [];
@@ -264,6 +266,12 @@ const toolbarButtons = (user) => [{
 			};
 		}
 
+		const sortOption = {
+			name: t('Sort'),
+			icon: 'sort',
+			type: 'sort-action',
+		};
+
 		const config = {
 			popoverClass: 'sidebar-header',
 			columns: [
@@ -305,6 +313,10 @@ const toolbarButtons = (user) => [{
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
+		if (isMobile()) {
+			console.log(config.columns);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
+		}
 
 		popover.open(config);
 	},
