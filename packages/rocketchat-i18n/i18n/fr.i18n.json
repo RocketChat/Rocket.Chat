@@ -40,7 +40,7 @@
   "Accounts_AllowUserProfileChange": "Autoriser la modification de profil",
   "Accounts_AllowUserStatusMessageChange": "Autoriser les statuts personnalisés",
   "Accounts_AvatarBlockUnauthenticatedAccess": "Bloquer l'accès non authentifié aux avatars",
-  "Accounts_AvatarCacheTime": "Avatar temps de cache",
+  "Accounts_AvatarCacheTime": "Temps de cache de l'avatar",
   "Accounts_AvatarCacheTime_description": "Nombre de secondes pendant lesquelles il est demandé au protocole http de mettre dans le cache les images de l'avatar.",
   "Accounts_AvatarResize": "Redimensionner les avatars",
   "Accounts_AvatarSize": "Taille de l'avatar",
