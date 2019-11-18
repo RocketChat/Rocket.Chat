@@ -1,8 +1,6 @@
-import {
-	Callout,
-	Field,
-} from '@rocket.chat/fuselage';
-import React from 'react';
+import { Callout, Field, InputBox, Label, Text } from '@rocket.chat/fuselage';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { MarkdownText } from '../../basic/MarkdownText';
 import { RawText } from '../../basic/RawText';
@@ -19,6 +17,7 @@ import { ColorSettingInput } from './inputs/ColorSettingInput';
 import { FontSettingInput } from './inputs/FontSettingInput';
 import { CodeSettingInput } from './inputs/CodeSettingInput';
 import { ActionSettingInput } from './inputs/ActionSettingInput';
+import { AssetSettingInput } from './inputs/AssetSettingInput';
 import { useSetting } from './SettingsState';
 
 const getInputComponentByType = (type) => ({
@@ -33,21 +32,67 @@ const getInputComponentByType = (type) => ({
 	font: FontSettingInput,
 	code: CodeSettingInput,
 	action: ActionSettingInput,
-	// asset: AssetSettingInput,
+	asset: AssetSettingInput,
 	// roomPick: RoomPickSettingInput,
 })[type] || GenericSettingInput;
 
+const MemoizedSetting = React.memo(function MemoizedSetting({
+	type,
+	hint,
+	callout,
+	...inputProps
+}) {
+	const InputComponent = getInputComponentByType(type);
+
+	return <Field>
+		<InputComponent {...inputProps} />
+		{hint && <Field.Hint>{hint}</Field.Hint>}
+		{callout && <Callout type='warning' title={callout} />}
+	</Field>;
+});
+
 export function Setting({ settingId }) {
-	const setting = useSetting(settingId);
+	const {
+		value: contextValue,
+		editor: contextEditor,
+		...setting
+	} = useSetting(settingId);
 
 	const t = useTranslation();
+
+	const [value, setValue] = useState(contextValue);
+	const setContextValue = useDebouncedCallback((value) => setting.update({ value }), 70, []);
+
+	useEffect(() => {
+		setValue(contextValue);
+	}, [contextValue]);
+
+	const [editor, setEditor] = useState(contextEditor);
+	const setContextEditor = useDebouncedCallback((editor) => setting.update({ editor }), 70, []);
+
+	useEffect(() => {
+		setEditor(contextEditor);
+	}, [contextEditor]);
+
+	const onChangeValue = (value) => {
+		setValue(value);
+		setContextValue(value);
+	};
+
+	const onChangeEditor = (editor) => {
+		setEditor(editor);
+		setContextEditor(editor);
+	};
+
+	const onResetButtonClick = () => {
+		setting.reset();
+	};
 
 	const {
 		_id,
 		disableReset,
 		readonly,
 		type,
-		value,
 		packageValue,
 		blocked,
 		i18nLabel,
@@ -56,27 +101,30 @@ export function Setting({ settingId }) {
 	} = setting;
 
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
-	const hint = t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>;
-	const callout = alert && <RawText>{t(alert)}</RawText>;
-
+	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>, [i18nDescription]);
+	const callout = useMemo(() => alert && <RawText>{t(alert)}</RawText>, [alert]);
 	const hasResetButton = !disableReset && !readonly && type !== 'asset' && value !== packageValue && !blocked;
-	const onResetButtonClick = () => {
-		setting.reset();
-	};
 
-	const InputComponent = getInputComponentByType(type);
-
-	const inputProps = {
-		...setting,
-		label,
-		onChange: setting.update,
-		hasResetButton,
-		onResetButtonClick,
-	};
-
-	return <Field>
-		<InputComponent {...inputProps} />
-		{hint && <Field.Hint>{hint}</Field.Hint>}
-		{callout && <Callout type='warning' title={callout} />}
-	</Field>;
+	return <MemoizedSetting
+		type={type}
+		label={label}
+		hint={hint}
+		callout={callout}
+		{...setting}
+		value={value}
+		editor={editor}
+		hasResetButton={hasResetButton}
+		onChangeValue={onChangeValue}
+		onChangeEditor={onChangeEditor}
+		onResetButtonClick={onResetButtonClick}
+	/>;
 }
+
+Setting.Skeleton = function Skeleton() {
+	return <Field>
+		<Label>
+			<Text.Skeleton animated width='1/4' />
+		</Label>
+		<InputBox.Skeleton animated />
+	</Field>;
+};

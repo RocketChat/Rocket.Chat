@@ -15,13 +15,12 @@ export function IntSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
-	onChange,
+	onChangeValue,
 	hasResetButton,
 	onResetButtonClick,
 }) {
 	const handleChange = (event) => {
-		const value = parseInt(event.currentTarget.value, 10);
-		onChange({ value });
+		onChangeValue(parseInt(event.currentTarget.value, 10));
 	};
 
 	return <>

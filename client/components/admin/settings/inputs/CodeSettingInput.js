@@ -100,8 +100,8 @@ export function CodeSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
-	onChange,
 	hasResetButton,
+	onChangeValue,
 	onResetButtonClick,
 }) {
 	const t = useTranslation();
@@ -109,7 +109,7 @@ export function CodeSettingInput({
 	const [fullScreen, toggleFullScreen] = useToggle(false);
 
 	const handleChange = (value) => {
-		onChange({ value });
+		onChangeValue(value);
 	};
 
 	return <>
