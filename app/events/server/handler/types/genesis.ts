@@ -1,14 +1,16 @@
+import { IEvent } from '../../../definitions/IEvent';
+import { IEventGenesis } from '../../../definitions/IEventGenesis';
 import { contextDefinitions } from '../../../../models/server/models/Events';
 import { RoomEvents, Rooms } from '../../../../models/server';
 // import { normalizers } from '../../../../federation/server/normalizers';
 
-module.exports = async (event) => {
+module.exports = async <T extends IEventGenesis>(event: IEvent<T>) => {
 	const eventContext = contextDefinitions.ROOM.context(event);
 
 	let eventResult;
 
 	switch (event.d.contextType) {
-		case contextDefinitions.ROOM.type:
+		case contextDefinitions.ROOM.t:
 			eventResult = await RoomEvents.addEvent(eventContext, event);
 
 			// If the event was successfully added, handle the event locally

@@ -1,13 +1,16 @@
-import { v4 as uuid } from 'uuid';
+import { IEventMessage } from './IEventMessage';
+import { IEventGenesis } from './IEventGenesis';
 
-export interface IEvent {
+export type EventType = IEventMessage | IEventGenesis;
+
+export interface IEvent<T extends EventType> {
     _cid: string;
-    _pids: [string];
+    _pids: string[];
     v: number;
     ts: Date;
     src: string;
     // ...contextQuery,
     t: string;
-    d: object;
+    d: T;
     hasChildren: boolean;
 }

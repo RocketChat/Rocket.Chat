@@ -1,6 +1,7 @@
 import { SHA256 } from 'meteor/sha';
 
 import { Base } from './_Base';
+import { EventType, IEvent } from '../../../events/definitions/IEvent';
 
 export const eventTypes = {
 	// Global
@@ -21,23 +22,26 @@ export const eventTypes = {
 	ROOM_UNMUTE_USER: 'room_unmute_user',
 };
 
+declare type RoomContextQuery = { rid: string };
+declare type ContextQuery = RoomContextQuery;
+
 export const contextDefinitions = {
 	ROOM: {
 		t: 'room',
-		isRoom(event) {
+		isRoom<T extends EventType>(event: IEvent<T>): boolean {
 			return !!event.rid;
 		},
-		context(event) {
+		context<T extends EventType>(event: IEvent<T>): string {
 			const { rid } = event;
 
 			return rid;
 		},
-		contextQuery(rid) {
+		contextQuery(rid: string): ContextQuery {
 			return { rid };
 		},
 	},
 
-	defineType(event) {
+	defineType<T extends EventType>(event: IEvent<T>): string {
 		if (this.ROOM.isRoom(event)) {
 			return this.ROOM.t;
 		}
@@ -47,18 +51,18 @@ export const contextDefinitions = {
 };
 
 export class EventsModel extends Base {
-	constructor(nameOrModel) {
+	constructor(nameOrModel: string) {
 		super(nameOrModel);
 
 		this.tryEnsureIndex({ hasChildren: 1 }, { sparse: true });
 		this.tryEnsureIndex({ ts: 1 });
 	}
 
-	getEventHash(contextQuery, event) {
+	getEventHash<T extends EventType>(contextQuery: ContextQuery, event: IEvent<T>) {
 		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ JSON.stringify(event.d) }`);
 	}
 
-	async createEvent(src, contextQuery, { _cid, t, d }) {
+	async createEvent<T extends EventType>(src: string, contextQuery: ContextQuery, { _cid, t, d }) {
 		let _pids = []; // Previous ids
 
 		// If it is not a GENESIS event, we need to get the previous events
