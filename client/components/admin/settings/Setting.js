@@ -18,6 +18,7 @@ import { FontSettingInput } from './inputs/FontSettingInput';
 import { CodeSettingInput } from './inputs/CodeSettingInput';
 import { ActionSettingInput } from './inputs/ActionSettingInput';
 import { AssetSettingInput } from './inputs/AssetSettingInput';
+import { RoomPickSettingInput } from './inputs/RoomPickSettingInput';
 import { useSetting } from './SettingsState';
 
 const getInputComponentByType = (type) => ({
@@ -33,7 +34,7 @@ const getInputComponentByType = (type) => ({
 	code: CodeSettingInput,
 	action: ActionSettingInput,
 	asset: AssetSettingInput,
-	// roomPick: RoomPickSettingInput,
+	roomPick: RoomPickSettingInput,
 })[type] || GenericSettingInput;
 
 const MemoizedSetting = React.memo(function MemoizedSetting({
