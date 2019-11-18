@@ -51,8 +51,11 @@ callbacks.add('livechat.closeRoom', (room) => {
 	const closedByAgent = room.closer !== 'visitor';
 	const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
 	if (closedByAgent && wasTheLastMessageSentByAgent) {
-		const agentLastMessage = Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs).fetch()[0];
-		const secondsSinceLastAgentResponse = getSecondsSinceLastAgentResponse(room, agentLastMessage);
-		LivechatRooms.setVisitorInactivityInSecondsByRoomId(room._id, secondsSinceLastAgentResponse);
+		const agentLastMessage = Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
+		console.log(agentLastMessage);
+		if (agentLastMessage) {
+			const secondsSinceLastAgentResponse = getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			LivechatRooms.setVisitorInactivityInSecondsByRoomId(room._id, secondsSinceLastAgentResponse);
+		}
 	}
 }, callbacks.priority.HIGH, 'process-room-abandonment');
