@@ -453,8 +453,6 @@ workflows:
           requires:
             - build
           filters:
-            branches:
-              ignore: lolimay-apps-engine-experimental
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-3-6: &test-mongo-no-pr
@@ -484,9 +482,18 @@ workflows:
               only: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - pr-build:
+      - hold:
+          type: approval
           requires:
             - build
+          filters:
+            branches:
+              ignore: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - pr-build:
+          requires:
+            - hold
           filters:
             branches:
               ignore: develop
