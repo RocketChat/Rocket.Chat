@@ -177,6 +177,20 @@ Template.popover.events({
 			return false;
 		}
 	},
+	'click [data-type="sort-action"]'(e) {
+		popover.close();
+		console.log('works');
+		const options = [];
+		const config = {
+			template: 'sortlist',
+			currentTarget: e.currentTarget,
+			data: {
+				options,
+			},
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+		popover.open(config);
+	},
 	'click [data-type="sidebar-item"]'(e, instance) {
 		popover.close();
 		const { rid, name, template } = instance.data.data;
