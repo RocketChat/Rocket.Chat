@@ -398,7 +398,7 @@ Template.appManage.events({
 		_app.set('working', true);
 
 		try {
-			const { status } = await Apps.installApp(appId, _app.get('marketplaceVersion'));
+			const { status } = await Apps.updateApp(appId, _app.get('marketplaceVersion'));
 			warnStatusChange(_app.get('name'), status);
 		} catch (error) {
 			handleAPIError(error);
