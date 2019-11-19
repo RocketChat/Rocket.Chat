@@ -4,12 +4,12 @@ import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { drawLineChart, drawDoughnutChart, updateChart } from '../../../lib/chartHandler';
-import { getTimingsChartData, getAgentStatusData, getConversationsOverviewData, getTimingsOverviewData } from '../../../lib/dataHandler';
+import { getTimingsChartData, getAgentStatusData, getTimingsOverviewData } from '../../../lib/dataHandler';
 import { LivechatMonitoring } from '../../../collections/LivechatMonitoring';
 import { AgentUsers } from '../../../collections/AgentUsers';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
+import { APIClient } from '../../../../../utils/client';
 import './livechatRealTimeMonitoring.html';
-
 
 let chartContexts = {};			// stores context of current chart, used to clean when redrawing
 let templateInstance;
@@ -184,12 +184,6 @@ const updateChatsChart = () => {
 	updateChartData('lc-chats-chart', 'Queue', [chats.queue]);
 };
 
-const updateConversationsOverview = () => {
-	const data = getConversationsOverviewData(LivechatMonitoring.find());
-
-	templateInstance.conversationsOverview.set(data);
-};
-
 const updateTimingsOverview = () => {
 	const data = getTimingsOverviewData(LivechatMonitoring.find());
 
@@ -208,7 +202,34 @@ const updateVisitorsCount = () => {
 	});
 };
 
+let timer;
+
+const getDaterange = () => {
+	const today = moment(new Date());
+	return {
+		start: `${ moment(new Date(today.year(), today.month(), today.date(), 0, 0, 0)).format('YYYY-MM-DDTHH:mm:ss') }Z`,
+		end: `${ moment(new Date(today.year(), today.month(), today.date(), 23, 59, 59)).format('YYYY-MM-DDTHH:mm:ss') }Z`,
+	};
+};
+
+const loadConversationOverview = async ({ start, end }) => {
+	const { totalizers } = await APIClient.v1.get(`livechat/analytics/dashboards/conversation-totalizers?start=${ start }&end=${ end }`);
+	return totalizers;
+};
+
+const updateConversationOverview = async (totalizers) => {
+	if (totalizers && Array.isArray(totalizers)) {
+		templateInstance.conversationsOverview.set(totalizers);
+	}
+};
+
+const getIntervalInMS = () => templateInstance.interval.get() * 1000;
+
 Template.livechatRealTimeMonitoring.helpers({
+	selected(value) {
+		if (value === templateInstance.analyticsOptions.get().value || value === templateInstance.chartOptions.get().value) { return 'selected'; }
+		return false;
+	},
 	showDepartmentChart() {
 		return templateInstance.showDepartmentChart.get();
 	},
@@ -221,16 +242,35 @@ Template.livechatRealTimeMonitoring.helpers({
 	totalVisitors() {
 		return templateInstance.totalVisitors.get();
 	},
+	isLoading() {
+		return Template.instance().isLoading.get();
+	},
 });
 
 Template.livechatRealTimeMonitoring.onCreated(function() {
 	templateInstance = Template.instance();
+	this.isLoading = new ReactiveVar(true);
 	this.conversationsOverview = new ReactiveVar();
 	this.timingOverview = new ReactiveVar();
+	this.conversationTotalizers = new ReactiveVar([]);
 	this.totalVisitors = new ReactiveVar({
 		title: 'Total_visitors',
 		value: 0,
 	});
+	this.interval = new ReactiveVar(5);
+	this.updateDashboard = async () => {
+		const daterange = getDaterange();
+		updateConversationOverview(await loadConversationOverview(daterange));
+		this.isLoading.set(false);
+	};
+
+	this.autorun(() => {
+		if (timer) {
+			clearInterval(timer);
+		}
+		timer = setInterval(() => this.updateDashboard(), getIntervalInMS());
+	});
+	this.updateDashboard();
 
 	AgentUsers.find().observeChanges({
 		changed() {
@@ -287,10 +327,6 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		if (fields.departmentId) {
 			updateDepartmentsChart(fields.departmentId);
 		}
-
-		if (fields.msgs) {
-			updateConversationsOverview();
-		}
 	};
 
 	LivechatMonitoring.find().observeChanges({
@@ -320,4 +356,14 @@ Template.livechatRealTimeMonitoring.onRendered(function() {
 		gte: moment().startOf('day').toISOString(),
 		lt: moment().startOf('day').add(1, 'days').toISOString(),
 	});
+});
+
+Template.livechatRealTimeMonitoring.events({
+	'change .js-interval': (event, instance) => {
+		instance.interval.set(event.target.value);
+	},
+});
+
+Template.livechatRealTimeMonitoring.onDestroyed(function() {
+	clearInterval(timer);
 });

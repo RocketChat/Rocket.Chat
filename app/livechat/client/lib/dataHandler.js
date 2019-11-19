@@ -145,31 +145,6 @@ export const getAgentStatusData = (dbCursor) => {
 	return data;
 };
 
-/**
- *
- * @param  {Object} dbCursor cursor to minimongo result
- * @return {Array(Object)}
- */
-export const getConversationsOverviewData = (dbCursor) => {
-	let total = 0;
-	let totalMessages = 0;
-
-	dbCursor.forEach(function(doc) {
-		total++;
-		if (doc.msgs) {
-			totalMessages += doc.msgs;
-		}
-	});
-
-	return [{
-		title: 'Total_conversations',
-		value: total || 0,
-	}, {
-		title: 'Total_messages',
-		value: totalMessages || 0,
-	}];
-};
-
 
 /**
  *

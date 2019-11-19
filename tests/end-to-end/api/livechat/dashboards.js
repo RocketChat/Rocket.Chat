@@ -11,7 +11,7 @@ describe('LIVECHAT - dashboards', function() {
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
-		const expectedMetrics = ['Total_conversations', 'Open_conversations', 'Total_messages', 'Busiest_day', 'Conversations_per_day', 'Busiest_time'];
+		const expectedMetrics = ['Total_conversations', 'Open_conversations', 'Total_messages', 'Busiest_time'];
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request.get(api('livechat/analytics/dashboards/conversation-totalizers'))

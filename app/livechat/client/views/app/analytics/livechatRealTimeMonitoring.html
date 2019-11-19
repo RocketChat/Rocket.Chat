@@ -1,23 +1,39 @@
 <template name="livechatRealTimeMonitoring">
 	{{#requiresPermission 'view-livechat-real-time-monitoring'}}
-	<div class="lc-analytics-overview">
-		{{#each conversationsOverview}}
-		<div class="lc-analytics-ov-col">
-			<div class="lc-analytics-ov-case">
-				<span class="title">{{_ title}}</span>
-				<span class="value">{{value}}</span>
-			</div>
+	<form class="form-inline">
+		<div class="form-group rc-select lc-analytics-header">
+			<select id="lc-analytics-options" class="rc-select__element js-interval">
+				<option class="rc-select__option" value="5" >5 {{_ "seconds"}}</option>
+				<option class="rc-select__option" value="10" >10 {{_ "seconds"}}</option>
+				<option class="rc-select__option" value="30" >30 {{_ "seconds"}}</option>
+				<option class="rc-select__option" value="60" >1 {{_ "minute"}}</option>
+			</select>
+			<i class="icon-angle-down"></i>
 		</div>
-		{{/each}}
-		{{#with totalVisitors}}
-		<div class="lc-analytics-ov-col">
-			<div class="lc-analytics-ov-case">
-				<span class="title">{{_ title}}</span>
-				<span class="value">{{value}}</span>
+	</form>
+	{{#if isLoading}}
+		{{> loading}}
+	{{else}}
+		<div class="lc-analytics-overview">
+			{{#each conversationsOverview}}
+			<div class="lc-analytics-ov-col">
+				<div class="lc-analytics-ov-case">
+					<span class="title">{{_ title}}</span>
+					<span class="value">{{value}}</span>
+				</div>
 			</div>
+			{{/each}}
+			{{#with totalVisitors}}
+			<div class="lc-analytics-ov-col">
+				<div class="lc-analytics-ov-case">
+					<span class="title">{{_ title}}</span>
+					<span class="value">{{value}}</span>
+				</div>
+			</div>
+			{{/with}}
 		</div>
-		{{/with}}
-	</div>
+	{{/if}}
+
 	<div class="lc-monitoring-flex">
 		<div class="section lc-monitoring-doughnut-chart">
 			<div class="section-content border-component-color">

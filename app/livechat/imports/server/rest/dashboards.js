@@ -10,7 +10,6 @@ API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authR
 			return API.v1.unauthorized();
 		}
 		let { start, end } = this.requestParams();
-
 		check(start, String);
 		check(end, String);
 
@@ -33,9 +32,9 @@ API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authR
 				name: 'Conversations',
 			},
 		});
-
+		const metrics = ['Total_conversations', 'Open_conversations', 'Total_messages', 'Busiest_time'];
 		return API.v1.success({
-			totalizers,
+			totalizers: totalizers.filter((metric) => metrics.includes(metric.title)),
 		});
 	},
 });
