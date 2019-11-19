@@ -1,4 +1,5 @@
 import { Subscriptions, Settings } from '../../../models';
+import { settings } from '../../../settings';
 
 export class AppInternalBridge {
 	constructor(orch) {
@@ -23,5 +24,9 @@ export class AppInternalBridge {
 		const publicKeySetting = Settings.findById('Cloud_Workspace_PublicKey').fetch()[0];
 
 		return this.orch.getConverters().get('settings').convertToApp(publicKeySetting);
+	}
+
+	isDevelopmentModeEnabled() {
+		return settings.get('Apps_Framework_Development_Mode') === true;
 	}
 }
