@@ -22,12 +22,14 @@ export const normalizeMessagesForUser = (messages, uid) => {
 	messages.forEach((message) => {
 		message = filterStarred(message, uid);
 
-		usernames.add(message.u.username);
+		if (message.u && message.u.username) {
+			usernames.add(message.u.username);
 
-		(message.mentions || []).forEach(({ username }) => { usernames.add(username); });
+			(message.mentions || []).forEach(({ username }) => { usernames.add(username); });
 
-		Object.values(message.reactions || {})
-			.forEach((reaction) => reaction.usernames.forEach((username) => usernames.add(username)));
+			Object.values(message.reactions || {})
+				.forEach((reaction) => reaction.usernames.forEach((username) => usernames.add(username)));
+		}
 	});
 
 	const users = {};
@@ -42,14 +44,16 @@ export const normalizeMessagesForUser = (messages, uid) => {
 	});
 
 	messages.forEach((message) => {
-		message.u.name = users[message.u.username];
+		if (message.u) {
+			message.u.name = users[message.u.username];
 
-		(message.mentions || []).forEach((mention) => { mention.name = users[mention.username]; });
+			(message.mentions || []).forEach((mention) => { mention.name = users[mention.username]; });
 
-		Object.keys(message.reactions || {}).forEach((reaction) => {
-			const names = message.reactions[reaction].usernames.map((username) => users[username]);
-			message.reactions[reaction].names = names;
-		});
+			Object.keys(message.reactions || {}).forEach((reaction) => {
+				const names = message.reactions[reaction].usernames.map((username) => users[username]);
+				message.reactions[reaction].names = names;
+			});
+		}
 	});
 
 	return messages;
