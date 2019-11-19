@@ -201,7 +201,7 @@ Template.appInstall.events({
 		const data = new FormData();
 		for (let i = 0; i < t.files.length; i++) {
 			const f = t.files[i];
-			if (f.type === 'application/zip') {
+			if (['application/zip', 'application/x-zip-compressed', 'multipart/x-zip'].includes(f.type)) {
 				data.append('app', f, f.name);
 			}
 		}
