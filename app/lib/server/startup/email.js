@@ -428,6 +428,21 @@ settings.addGroup('Email', function() {
 		});
 	});
 
+	this.section('Password_changed_section', function() {
+		this.add('Password_Changed_Email_Subject', '{Password_Changed_Email_Subject}', {
+			type: 'string',
+			i18nLabel: 'Subject',
+		});
+
+		this.add('Password_Changed_Email', '<h2>{Hi},</h2><p>{Your_password_was_changed_by_an_admin}</p><p>{Your_temporary_password_is_password}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			i18nLabel: 'Body',
+			i18nDescription: 'Password_Changed_Description',
+		});
+	});
+
 	this.section('Privacy', function() {
 		this.add('Email_notification_show_message', true, {
 			type: 'boolean',
