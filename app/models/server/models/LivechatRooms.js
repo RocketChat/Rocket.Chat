@@ -324,6 +324,68 @@ export class LivechatRooms extends Base {
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
+	getAnalyticsBetweenDate(date) {
+		return this.model.rawCollection().aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
+						$lt: new Date(date.lt),	// ISODate, ts < date.lt
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_message',
+					localField: '_id',
+					foreignField: 'rid',
+					as: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$messages',
+				},
+			},
+			{
+				$group: {
+					_id: {
+						_id: '$_id',
+						ts: '$ts',
+						departmentId: '$departmentId',
+						open: '$open',
+						servedBy: '$servedBy',
+						metrics: '$metrics',
+						msgs: '$msgs',
+					},
+					messages: {
+						$sum: {
+							$cond: [{
+								$and: [
+									{ $ifNull: ['$messages.t', false] },
+								],
+							}, 1, 0],
+						},
+					},
+				},
+			},
+			{
+				$project: {
+					_id: '$_id._id',
+					ts: '$_id.ts',
+					departmentId: '$_id.departmentId',
+					open: '$_id.open',
+					servedBy: '$_id.servedBy',
+					metrics: '$_id.metrics',
+					msgs: { $subtract: ['$_id.msgs', '$messages'] },
+				},
+			},
+
+		]);
+	}
+
+
 	closeByRoomId(roomId, closeInfo) {
 		return this.update({
 			_id: roomId,

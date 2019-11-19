@@ -285,8 +285,8 @@ export const Analytics = {
 					lt: moment(m).add(1, 'days'),
 				};
 
-				const result = LivechatRooms.getAnalyticsMetricsBetweenDate('l', date);
-				totalConversations += result.count();
+				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date).toArray());
+				totalConversations += result.length;
 
 				result.forEach(summarize(m));
 			}
