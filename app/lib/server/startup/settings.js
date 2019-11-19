@@ -2621,6 +2621,10 @@ settings.addGroup('Setup_Wizard', function() {
 			secret: true,
 		});
 
+		this.add('Cloud_Service_Agree_PrivacyTerms', false, {
+			type: 'boolean',
+		});
+
 		this.add('Cloud_Workspace_Id', '', {
 			type: 'string',
 			hidden: true,
