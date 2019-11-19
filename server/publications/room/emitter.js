@@ -1,4 +1,4 @@
-import { emitLivechatRoomManager } from '../../../app/livechat/server/streamer/roomManager';
+import { emitRoomDataEvent } from '../../stream/rooms';
 import { Rooms, Subscriptions } from '../../../app/models';
 import { Notifications } from '../../../app/notifications';
 
@@ -38,5 +38,5 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 
 	Notifications.streamUser.__emit(id, clientAction, data);
 
-	emitLivechatRoomManager(id, data);
+	emitRoomDataEvent(id, data);
 });

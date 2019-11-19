@@ -31,6 +31,10 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 		const { token } = message;
 		return { token };
 	}
+
+	listenStreamerEvents() {
+		return true;
+	}
 }
 
 roomTypes.add(new LivechatRoomTypeServer());

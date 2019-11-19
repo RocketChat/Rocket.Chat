@@ -16,7 +16,7 @@ import { t, handleError, roomTypes } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
-import { livechatRoomManager } from '../../../lib/roomManagerStream';
+import { RoomManager } from '../../../../../ui-utils/client';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -198,7 +198,7 @@ Template.visitorInfo.events({
 
 		instance.action.set('edit');
 	},
-	'click .close-livechat'(event, instance) {
+	'click .close-livechat'(event) {
 		event.preventDefault();
 
 		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, function(error/* , result*/) {
@@ -212,8 +212,6 @@ Template.visitorInfo.events({
 				timer: 1000,
 				showConfirmButton: false,
 			});
-
-			instance.data.tabBar.close();
 		});
 
 		if (!settings.get('Livechat_request_comment_when_closing_conversation')) {
@@ -309,13 +307,8 @@ Template.visitorInfo.onCreated(function() {
 	};
 
 	if (rid) {
-		this.autorun(() => {
-			const action = this.action.get();
-			if (action === undefined) {
-				loadRoomData(rid);
-			}
-		});
-		livechatRoomManager.on(rid, this.updateRoom);
+		loadRoomData(rid);
+		RoomManager.roomStream.on(rid, this.updateRoom);
 	}
 
 	this.autorun(async () => {
@@ -336,5 +329,5 @@ Template.visitorInfo.onCreated(function() {
 
 Template.visitorInfo.onDestroyed(function() {
 	const { rid } = Template.currentData();
-	livechatRoomManager.removeListener(rid, this.updateRoom);
+	RoomManager.roomStream.removeListener(rid, this.updateRoom);
 });
