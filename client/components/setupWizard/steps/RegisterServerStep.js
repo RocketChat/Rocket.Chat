@@ -51,6 +51,7 @@ export function RegisterServerStep({ step, title }) {
 
 	const [registerServer, setRegisterServer] = useState(true);
 	const [optInMarketingEmails, setOptInMarketingEmails] = useState(true);
+	const [agreeTermsAndPrivacy, setAgreeTermsAndPrivacy] = useState(false);
 
 	const t = useTranslation();
 
@@ -82,6 +83,10 @@ export function RegisterServerStep({ step, title }) {
 				{
 					_id: 'Allow_Marketing_Emails',
 					value: optInMarketingEmails,
+				},
+				{
+					_id: 'Cloud_Service_Agree_PrivacyTerms',
+					value: agreeTermsAndPrivacy,
 				},
 			]);
 
@@ -145,6 +150,7 @@ export function RegisterServerStep({ step, title }) {
 					onChange={({ currentTarget: { checked } }) => {
 						setRegisterServer(!checked);
 						setOptInMarketingEmails(!checked);
+						setAgreeTermsAndPrivacy(!checked);
 					}}
 				>
 					<Items>
@@ -153,6 +159,18 @@ export function RegisterServerStep({ step, title }) {
 						<Item icon='circle'>{t('Register_Server_Standalone_Own_Certificates')}</Item>
 					</Items>
 				</Option>
+
+				<Label text={<>{t('Register_Server_Registered_I_Agree')} <a href='https://rocket.chat/terms'>{t('Terms')}</a> & <a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a></>} position='end' className='SetupWizard__RegisterServerStep__PrivacyTerms'>
+					<CheckBox
+						name='agreeTermsAndPrivacy'
+						value='false'
+						disabled={!registerServer}
+						checked={agreeTermsAndPrivacy}
+						onChange={({ currentTarget: { checked } }) => {
+							setAgreeTermsAndPrivacy(checked);
+						}}
+					/>
+				</Label>
 			</div>
 		</StepContent>
 
