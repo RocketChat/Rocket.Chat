@@ -5,7 +5,6 @@ import { Users, Subscriptions } from '../../../models';
 Meteor.methods({
 	'e2e.resetOwnE2EKey'() {
 		const userId = Meteor.userId();
-		console.log('reset own E2E key', userId);
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
