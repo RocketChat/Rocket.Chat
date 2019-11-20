@@ -2578,6 +2578,7 @@
   "Register_Server_Standalone_Update_Settings": "Update the preconfigured settings",
   "Register_Server_Standalone_Own_Certificates": "Recompile the mobile apps with your own certificates",
   "Register_Server_Registered_I_Agree": "I agree with the",
+  "Register_Server_Terms_Alert": "Please agree to terms to complete registration",
   "Registration": "Registration",
   "Registration_Succeeded": "Registration Succeeded",
   "Registration_via_Admin": "Registration via Admin",

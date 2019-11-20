@@ -67,6 +67,10 @@ export function RegisterServerStep({ step, title }) {
 		setComitting(true);
 
 		try {
+			if (registerServer && !agreeTermsAndPrivacy) {
+				throw new Object({ error: 'Register_Server_Terms_Alert' });
+			}
+
 			await batchSetSettings([
 				{
 					_id: 'Statistics_reporting',
