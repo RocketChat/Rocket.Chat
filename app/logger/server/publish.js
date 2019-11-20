@@ -42,12 +42,11 @@ export const StdOut = new class extends EventEmitter {
 			};
 			this.queue.push(item);
 
-			if (typeof settings !== 'undefined') {
-				const limit = settings.get('Log_View_Limit');
-				if (limit && this.queue.length > limit) {
-					this.queue.shift();
-				}
+			const limit = settings.get('Log_View_Limit') || 1000;
+			if (limit && this.queue.length > limit) {
+				this.queue.shift();
 			}
+
 			this.emit('write', string, item);
 		};
 	}
@@ -59,18 +58,18 @@ Meteor.publish('stdout', function() {
 		return this.ready();
 	}
 
-	StdOut.queue.forEach((item) => {
+	const handler = (string, item) => {
 		this.added('stdout', item.id, {
 			string: item.string,
 			ts: item.ts,
 		});
-	});
+	};
+
+	StdOut.queue.forEach((item) => handler('', item));
 
 	this.ready();
-	StdOut.on('write', (string, item) => {
-		this.added('stdout', item.id, {
-			string: item.string,
-			ts: item.ts,
-		});
-	});
+
+	this.onStop(() => StdOut.removeListener('write', handler));
+
+	StdOut.on('write', handler);
 });

@@ -34,6 +34,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}
 
+		if (room.sms) {
+			delete guestData.phone;
+		}
+
 		const ret = Livechat.saveGuest(guestData) && Livechat.saveRoomInfo(roomData, guestData);
 
 		Meteor.defer(() => {
