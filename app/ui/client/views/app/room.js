@@ -229,9 +229,6 @@ async function createFileFromUrl(url) {
 	try {
 		response = await fetch(url);
 	} catch (error) {
-		if (error.toString().includes('TypeError')) {
-			return url;
-		}
 		throw error;
 	}
 
