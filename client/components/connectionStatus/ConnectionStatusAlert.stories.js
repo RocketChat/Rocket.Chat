@@ -1,16 +1,12 @@
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { rocketChatWrapper } from '../../../.storybook/helpers';
 import { ConnectionStatusAlert } from './ConnectionStatusAlert';
 import { ConnectionStatusProvider } from '../providers/ConnectionStatusProvider.mock';
 
 export default {
 	title: 'connectionStatus/ConnectionStatusAlert',
 	component: ConnectionStatusAlert,
-	decorators: [
-		rocketChatWrapper,
-	],
 };
 
 export const connected = () => <ConnectionStatusProvider connected status='connected' reconnect={action('reconnect')}>

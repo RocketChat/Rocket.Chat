@@ -1,8 +1,8 @@
 import { Icon } from '@rocket.chat/fuselage';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useConnectionStatus, useReconnect } from '../contexts/ConnectionStatusContext';
-import { useTranslation } from '../contexts/TranslationContext';
+import { useConnectionStatus, useReconnect } from '../providers/ConnectionStatusProvider';
+import { useTranslation } from '../providers/TranslationProvider';
 import './ConnectionStatusAlert.css';
 
 export function ConnectionStatusAlert() {
@@ -48,7 +48,7 @@ export function ConnectionStatusAlert() {
 
 	return <div className='ConnectionStatusAlert' role='alert'>
 		<strong>
-			<Icon iconName='warning' /> {t('meteor_status', { context: status })}
+			<Icon name='warning' /> {t('meteor_status', { context: status })}
 		</strong>
 
 		{status === 'waiting' && <>
