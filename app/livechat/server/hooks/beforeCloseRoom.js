@@ -10,7 +10,7 @@ callbacks.add('livechat.beforeCloseRoom', (room) => {
 	}
 
 	const department = LivechatDepartment.findOneById(departmentId);
-	if (!department || !department.tagRequiredWhenClosingChat) {
+	if (!department || !department.requestTagBeforeClosingChat) {
 		return room;
 	}
 
