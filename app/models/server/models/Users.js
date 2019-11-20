@@ -543,8 +543,9 @@ export class Users extends Base {
 		return this.find({ active: true }, options);
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
 		if (exceptions == null) { exceptions = []; }
+		if (conditions == null) { conditions = {}; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
 			exceptions = [exceptions];
@@ -570,6 +571,7 @@ export class Users extends Base {
 					$nin: exceptions,
 				},
 			}],
+			...conditions,
 		};
 
 		return this.find(query, options);

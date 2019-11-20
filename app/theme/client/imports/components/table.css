@@ -99,6 +99,8 @@
 
 		color: var(--rc-color-primary);
 
+		line-height: normal;
+
 		& .rc-icon {
 			margin: 0 -4px;
 
