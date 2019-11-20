@@ -1,4 +1,4 @@
-import { LivechatDepartment } from '../../../../models/server/raw';
+import { LivechatDepartment, LivechatRooms } from '../../../../models/server/raw';
 
 const findAllRoomsAsync = async ({
 	start,
@@ -86,8 +86,8 @@ const findAllNumberOfAbandonedRoomsAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		departments: await LivechatDepartment.findAllNumberOfAbandonedRooms({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllNumberOfAbandonedRooms({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllNumberOfAbandonedRooms({ start, end, departmentId, options }),
+		total: (await LivechatRooms.findAllNumberOfAbandonedRooms({ start, end, departmentId })).length,
 	};
 };
 

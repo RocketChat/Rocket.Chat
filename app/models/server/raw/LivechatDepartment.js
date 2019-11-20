@@ -1,5 +1,4 @@
 import { BaseRaw } from './BaseRaw';
-import { getValue } from '../../../settings/server/raw';
 
 export class LivechatDepartmentRaw extends BaseRaw {
 	findAllRooms({ start, end, answered, departmentId, options = {} }) {
@@ -323,63 +322,6 @@ export class LivechatDepartmentRaw extends BaseRaw {
 			},
 		};
 		const params = [roomsLookup, projectRooms, unwind, messagesLookup, projectMessages, projectTransfersSize, group, presentationProject];
-		if (departmentId) {
-			params.unshift(match);
-		}
-		if (options.offset) {
-			params.push({ $skip: options.offset });
-		}
-		if (options.count) {
-			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
-		}
-		return this.col.aggregate(params).toArray();
-	}
-
-	async findAllNumberOfAbandonedRooms({ start, end, departmentId, options = {} }) {
-		const roomsFilter = [
-			{ $gte: ['$$room.ts', new Date(start)] },
-			{ $lte: ['$$room.ts', new Date(end)] },
-			{ $gte: ['$$room.metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')] },
-		];
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_room',
-				localField: '_id',
-				foreignField: 'departmentId',
-				as: 'rooms',
-			},
-		};
-		const projects = [{
-			$project: {
-				department: '$$ROOT',
-				rooms: {
-					$filter: {
-						input: '$rooms',
-						as: 'room',
-						cond: {
-							$and: roomsFilter,
-						},
-					},
-				},
-			},
-		},
-		{
-			$project: {
-				name: '$department.name',
-				description: '$department.description',
-				enabled: '$department.enabled',
-				abandonedRooms: { $size: '$rooms' },
-			},
-		}];
-		const match = {
-			$match: {
-				_id: departmentId,
-			},
-		};
-		const params = [lookup, ...projects];
 		if (departmentId) {
 			params.unshift(match);
 		}

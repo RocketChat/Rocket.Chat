@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { API } from '../../../../api';
 import { Livechat } from '../../../server/lib/Livechat';
 import { hasPermission } from '../../../../authorization/server';
+import { findAllNumberOfAbandonedRooms } from '../../../server/lib/analytics/departments';
 
 API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authRequired: true }, {
 	get() {
@@ -33,8 +34,16 @@ API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authR
 			},
 		});
 		const metrics = ['Total_conversations', 'Open_conversations', 'Total_messages', 'Busiest_time'];
+		const abandonedRooms = findAllNumberOfAbandonedRooms({
+			start,
+			end,
+		});
+		const totalAbandonedRooms = abandonedRooms.departments.reduce((acc, item) => {
+			acc += item.abandonedRooms;
+			return acc;
+		}, 0);
 		return API.v1.success({
-			totalizers: totalizers.filter((metric) => metrics.includes(metric.title)),
+			totalizers: [...totalizers.filter((metric) => metrics.includes(metric.title)), { title: 'Total_abandoned_chats', value: totalAbandonedRooms }],
 		});
 	},
 });
