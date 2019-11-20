@@ -1,4 +1,4 @@
-import { LivechatDepartment, LivechatRooms } from '../../../../models/server/raw';
+import { LivechatRooms } from '../../../../models/server/raw';
 
 const findAllRoomsAsync = async ({
 	start,
@@ -11,8 +11,8 @@ const findAllRoomsAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		departments: await LivechatDepartment.findAllRooms({ start, answered, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllRooms({ start, answered, end, departmentId })).length,
+		departments: await LivechatRooms.findAllRooms({ start, answered, end, departmentId, options }),
+		total: (await LivechatRooms.findAllRooms({ start, answered, end, departmentId })).length,
 	};
 };
 
@@ -41,8 +41,8 @@ const findAllServiceTimeAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		departments: await LivechatDepartment.findAllServiceTime({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllServiceTime({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllServiceTime({ start, end, departmentId, options }),
+		total: (await LivechatRooms.findAllServiceTime({ start, end, departmentId })).length,
 	};
 };
 
@@ -71,8 +71,8 @@ const findAllNumberOfTransferredRoomsAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		departments: await LivechatDepartment.findAllNumberOfTransferredRooms({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllNumberOfTransferredRooms({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllNumberOfTransferredRooms({ start, end, departmentId, options }),
+		total: (await LivechatRooms.findAllNumberOfTransferredRooms({ start, end, departmentId })).length,
 	};
 };
 
