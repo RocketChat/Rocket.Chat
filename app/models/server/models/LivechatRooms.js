@@ -449,6 +449,32 @@ export class LivechatRooms extends Base {
 
 		return this.remove(query);
 	}
+
+	setVisitorLastMessageTimestampByRoomId(roomId, lastMessageTs) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				'v.lastMessageTs': lastMessageTs,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setVisitorInactivityInSecondsByRoomId(roomId, visitorInactivity) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				'metrics.visitorInactivity': visitorInactivity,
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
 
 export default new LivechatRooms(Rooms.model, true);
