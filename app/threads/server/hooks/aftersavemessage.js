@@ -47,7 +47,6 @@ const processThreads = (message, room) => {
 	}
 
 	const replies = [
-		parentMessage.u._id,
 		...parentMessage.replies || [],
 	].filter((userId) => userId !== message.u._id);
 
