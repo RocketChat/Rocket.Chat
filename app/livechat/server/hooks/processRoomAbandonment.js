@@ -1,8 +1,10 @@
 import moment from 'moment';
+import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { LivechatRooms, Messages, LivechatOfficeHour } from '../../../models';
+import { Apps } from '../../../apps';
 
 const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) => moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
 const getOfficeHoursDictionary = () => LivechatOfficeHour.find().fetch().reduce((acc, day) => {
@@ -48,6 +50,8 @@ const getSecondsSinceLastAgentResponse = (room, agentLastMessage) => {
 };
 
 callbacks.add('livechat.closeRoom', (room) => {
+	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomClosedHandler, room);
+
 	const closedByAgent = room.closer !== 'visitor';
 	const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
 	if (!closedByAgent || !wasTheLastMessageSentByAgent) {
