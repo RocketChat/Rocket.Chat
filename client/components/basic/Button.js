@@ -6,6 +6,8 @@ export const Button = ({
 	invisible,
 	primary,
 	secondary,
+	cancel,
+	nude,
 	submit,
 	...props
 }) => <button
@@ -15,6 +17,8 @@ export const Button = ({
 		primary && 'rc-button--primary',
 		secondary && 'rc-button--secondary',
 		invisible && 'rc-button--invisible',
+		cancel && 'rc-button--cancel',
+		nude && 'rc-button--nude',
 		className,
 	].filter(Boolean).join(' ')}
 	{...props}

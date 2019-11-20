@@ -8,11 +8,15 @@ Migrations.add({
 		const mobileNotifications = Settings.findOne({ _id: 'Accounts_Default_User_Preferences_mobileNotifications' });
 
 		if (desktopNotifications && desktopNotifications.value === 'mentions') {
-			Settings.update({ _id: 'Accounts_Default_User_Preferences_desktopNotifications' }, { value: 'all' });
+			Settings.update({ _id: 'Accounts_Default_User_Preferences_desktopNotifications' }, {
+				$set: { value: 'all' },
+			});
 		}
 
 		if (mobileNotifications && mobileNotifications.value === 'mentions') {
-			Settings.update({ _id: 'Accounts_Default_User_Preferences_mobileNotifications' }, { value: 'all' });
+			Settings.update({ _id: 'Accounts_Default_User_Preferences_mobileNotifications' }, {
+				$set: { value: 'all' },
+			});
 		}
 	},
 	down() {

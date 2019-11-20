@@ -172,11 +172,12 @@ export const dispatchAgentDelegated = (rid, agentId) => {
 	});
 };
 
-export const forwardRoomToAgent = async (room, agentId) => {
+export const forwardRoomToAgent = async (room, transferData) => {
 	if (!room || !room.open) {
 		return false;
 	}
 
+	const { userId: agentId } = transferData;
 	const user = Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
@@ -201,6 +202,8 @@ export const forwardRoomToAgent = async (room, agentId) => {
 		return false;
 	}
 
+	Livechat.saveTransferHistory(room, transferData);
+
 	const { servedBy } = roomTaken;
 	if (servedBy) {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
@@ -212,7 +215,7 @@ export const forwardRoomToAgent = async (room, agentId) => {
 	return true;
 };
 
-export const forwardRoomToDepartment = async (room, guest, departmentId) => {
+export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (!room || !room.open) {
 		return false;
 	}
@@ -224,7 +227,9 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 		throw new Meteor.Error('error-transferring-inquiry');
 	}
 
+	const { departmentId } = transferData;
 	if (!RoutingManager.getConfig().autoAssignAgent) {
+		Livechat.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
 
@@ -241,10 +246,10 @@ export const forwardRoomToDepartment = async (room, guest, departmentId) => {
 		return false;
 	}
 
+	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
 		removeAgentFromSubscription(rid, oldServedBy);
 	}
-
 	if (servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
 	}
