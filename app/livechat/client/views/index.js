@@ -22,6 +22,8 @@ import './app/livechatNotSubscribed.html';
 import './app/livechatRoomTagSelector.html';
 import './app/integrations/livechatIntegrationWebhook';
 import './app/integrations/livechatIntegrationFacebook';
+import './app/tabbar/agentEdit';
+import './app/tabbar/agentInfo';
 import './app/tabbar/externalSearch';
 import './app/tabbar/visitorEdit';
 import './app/tabbar/visitorForward';
