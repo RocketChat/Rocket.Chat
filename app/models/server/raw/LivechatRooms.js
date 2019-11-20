@@ -3,11 +3,6 @@ import { getValue } from '../../../settings/server/raw';
 
 export class LivechatRoomsRaw extends BaseRaw {
 	async findAllNumberOfAbandonedRooms({ start, end, departmentId, options = {} }) {
-		const roomsFilter = [
-			{ $gte: ['$$room.ts', new Date(start)] },
-			{ $lte: ['$$room.ts', new Date(end)] },
-			{ $gte: ['$$room.metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')] },
-		];
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_livechat_department',
@@ -32,30 +27,19 @@ export class LivechatRoomsRaw extends BaseRaw {
 				rooms: { $push: '$$ROOT' },
 			},
 		};
-		const projects = [
-			{
-				$project: {
-					rooms: {
-						$filter: {
-							input: '$rooms',
-							as: 'room',
-							cond: {
-								$and: roomsFilter,
-							},
-						},
-					},
-				},
+		const presentationProject = {
+			$project: {
+				_id: { $ifNull: ['$_id.departmentId', null] },
+				name: { $ifNull: ['$_id.name', null] },
+				abandonedRooms: { $size: '$rooms' },
 			},
-			{
-				$project: {
-					_id: { $ifNull: ['$_id.departmentId', null] },
-					name: { $ifNull: ['$_id.name', null] },
-					abandonedRooms: { $size: '$rooms' },
-				},
-			}];
+		};
 		const match = {
 			$match: {
 				t: 'l',
+				'metrics.visitorInactivity': { $gte: await getValue('Livechat_visitor_inactivity_timeout') },
+				ts: { $gte: new Date(start) },
+				closedAt: { $lte: new Date(end) },
 			},
 		};
 		const firstParams = [match, lookup, unwind];
@@ -66,7 +50,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, group, ...projects];
+		const params = [...firstParams, group, presentationProject];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
