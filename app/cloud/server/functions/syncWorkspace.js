@@ -22,7 +22,7 @@ export function syncWorkspace(reconnectCheck = false) {
 
 	const setupComplete = settings.get('Show_Setup_Wizard') === 'completed';
 
-	const { organizationType, industry, size: orgSize, country, language } = stats.wizard;
+	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
 
 	const info = {
 		uniqueId: stats.uniqueId,
@@ -34,6 +34,7 @@ export function syncWorkspace(reconnectCheck = false) {
 		orgSize,
 		country,
 		language,
+		workspaceType,
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
