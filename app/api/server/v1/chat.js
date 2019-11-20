@@ -71,7 +71,7 @@ API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
 		return API.v1.success({
 			result: {
 				updated: normalizeMessagesForUser(result.updated, this.userId),
-				deleted: normalizeMessagesForUser(result.deleted, this.userId),
+				deleted: result.deleted,
 			},
 		});
 	},
