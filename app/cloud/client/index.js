@@ -1,6 +1,3 @@
-import './admin/callback';
-import './admin/cloud';
-
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
@@ -9,14 +6,16 @@ import { hasAtLeastOnePermission } from '../../authorization';
 
 FlowRouter.route('/admin/cloud', {
 	name: 'cloud-config',
-	action() {
+	async action() {
+		await import('./admin');
 		BlazeLayout.render('main', { center: 'cloud', old: true });
 	},
 });
 
 FlowRouter.route('/admin/cloud/oauth-callback', {
 	name: 'cloud-oauth-callback',
-	action() {
+	async action() {
+		await import('./admin');
 		BlazeLayout.render('main', { center: 'cloudCallback', old: true });
 	},
 });

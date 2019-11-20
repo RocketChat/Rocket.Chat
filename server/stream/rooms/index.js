@@ -5,7 +5,7 @@ import { ROOM_DATA_STREAM_OBSERVER } from '../../../app/utils/stream/constants';
 
 export const roomDataStream = new Meteor.Streamer(ROOM_DATA_STREAM_OBSERVER);
 
-const isEmitAllowed = (t) => roomTypes.getConfig(t).listenStreamerEvents();
+const isEmitAllowed = (t) => roomTypes.getConfig(t).isEmitAllowed();
 
 roomDataStream.allowWrite('none');
 

@@ -32,7 +32,7 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 		return { token };
 	}
 
-	listenStreamerEvents() {
+	isEmitAllowed() {
 		return true;
 	}
 }

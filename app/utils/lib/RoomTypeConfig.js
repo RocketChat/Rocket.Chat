@@ -214,7 +214,7 @@ export class RoomTypeConfig {
 		return false;
 	}
 
-	listenStreamerEvents() {
+	isEmitAllowed() {
 		return false;
 	}
 
