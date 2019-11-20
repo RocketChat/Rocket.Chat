@@ -26,8 +26,8 @@ const findAllAverageServiceTimeAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		departments: await LivechatDepartment.findAllAverageServiceTime({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllAverageServiceTime({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllAverageServiceTime({ start, end, departmentId, options }),
+		total: (await LivechatRooms.findAllAverageServiceTime({ start, end, departmentId })).length,
 	};
 };
 
@@ -56,8 +56,8 @@ const findAllAverageWaitingTimeAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		departments: await LivechatDepartment.findAllAverageWaitingTime({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllAverageWaitingTime({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllAverageWaitingTime({ start, end, departmentId, options }),
+		total: (await LivechatRooms.findAllAverageWaitingTime({ start, end, departmentId })).length,
 	};
 };
 
@@ -101,8 +101,8 @@ const findPercentageOfAbandonedRoomsAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		departments: await LivechatDepartment.findPercentageOfAbandonedRooms({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findPercentageOfAbandonedRooms({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findPercentageOfAbandonedRooms({ start, end, departmentId, options }),
+		total: (await LivechatRooms.findPercentageOfAbandonedRooms({ start, end, departmentId })).length,
 	};
 };
 

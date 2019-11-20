@@ -4,7 +4,7 @@ import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { drawLineChart, drawDoughnutChart, updateChart } from '../../../lib/chartHandler';
-import { getTimingsChartData, getAgentStatusData, getTimingsOverviewData } from '../../../lib/dataHandler';
+import { getTimingsChartData, getAgentStatusData } from '../../../lib/dataHandler';
 import { LivechatMonitoring } from '../../../collections/LivechatMonitoring';
 import { AgentUsers } from '../../../collections/AgentUsers';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
@@ -184,12 +184,6 @@ const updateChatsChart = () => {
 	updateChartData('lc-chats-chart', 'Queue', [chats.queue]);
 };
 
-const updateTimingsOverview = () => {
-	const data = getTimingsOverviewData(LivechatMonitoring.find());
-
-	templateInstance.timingOverview.set(data);
-};
-
 const displayDepartmentChart = (val) => {
 	const elem = document.getElementsByClassName('lc-chats-per-dept-chart-section')[0];
 	elem.style.display = val ? 'block' : 'none';
@@ -207,8 +201,8 @@ let timer;
 const getDaterange = () => {
 	const today = moment(new Date());
 	return {
-		start: `${ moment(new Date(today.year(), today.month(), today.date(), 0, 0, 0)).format('YYYY-MM-DDTHH:mm:ss') }Z`,
-		end: `${ moment(new Date(today.year(), today.month(), today.date(), 23, 59, 59)).format('YYYY-MM-DDTHH:mm:ss') }Z`,
+		start: `${ moment(new Date(today.year(), today.month(), today.date(), 0, 0, 0)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`,
+		end: `${ moment(new Date(today.year(), today.month(), today.date(), 23, 59, 59)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`,
 	};
 };
 
@@ -220,6 +214,17 @@ const loadConversationOverview = async ({ start, end }) => {
 const updateConversationOverview = async (totalizers) => {
 	if (totalizers && Array.isArray(totalizers)) {
 		templateInstance.conversationsOverview.set(totalizers);
+	}
+};
+
+const loadProductivityOverview = async ({ start, end }) => {
+	const { totalizers } = await APIClient.v1.get(`livechat/analytics/dashboards/productivity-totalizers?start=${ start }&end=${ end }`);
+	return totalizers;
+};
+
+const updateProductivityOverview = async (totalizers) => {
+	if (totalizers && Array.isArray(totalizers)) {
+		templateInstance.timingOverview.set(totalizers);
 	}
 };
 
@@ -261,6 +266,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 	this.updateDashboard = async () => {
 		const daterange = getDaterange();
 		updateConversationOverview(await loadConversationOverview(daterange));
+		updateProductivityOverview(await loadProductivityOverview(daterange));
 		this.isLoading.set(false);
 	};
 
@@ -309,7 +315,6 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 			metricsUpdated(ts);
 			updateChatsChart();
 			updateAgentsChart();
-			updateTimingsOverview();
 			updateDepartmentsChart();
 		}
 
