@@ -1,5 +1,6 @@
 import dns from 'dns';
 
+import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
@@ -37,6 +38,7 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData } from './Helper';
+import { Apps } from '../../../apps';
 
 export const Livechat = {
 	Analytics,
@@ -344,6 +346,7 @@ export const Livechat = {
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
+			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomClosedHandler, room);
 			callbacks.run('livechat.closeRoom', room);
 		});
 
