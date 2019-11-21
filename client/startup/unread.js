@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { Favico } from '../../app/favico';
-import { ChatSubscription } from '../../app/models';
+import { ChatSubscription, ChatRoom } from '../../app/models/client';
 import { menu, fireGlobalEvent } from '../../app/ui-utils';
 import { getUserPreference } from '../../app/utils';
 import { settings } from '../../app/settings';
@@ -20,6 +20,8 @@ const fetchSubscriptions = () => ChatSubscription.find({
 		name: 1,
 		ls: 1,
 		unreadAlert: 1,
+		fname: 1,
+		prid: 1,
 	},
 }).fetch();
 
@@ -30,7 +32,8 @@ Meteor.startup(() => {
 		let unreadAlert = false;
 
 		const unreadCount = fetchSubscriptions().reduce((ret, subscription) => {
-			fireGlobalEvent('unread-changed-by-subscription', subscription);
+			const room = ChatRoom.findOne({ _id: subscription.rid }, { fields: { usersCount: 1 } });
+			fireGlobalEvent('unread-changed-by-subscription', { ...subscription, usersCount: room && room.usersCount });
 
 			if (subscription.alert || subscription.unread > 0) {
 				// Increment the total unread count.
