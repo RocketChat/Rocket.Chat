@@ -237,6 +237,20 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
+	setLivechatData(userId, data = {}) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				livechat: data,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	closeOffice() {
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'not-available'));
 	}
@@ -257,6 +271,7 @@ export class Users extends Base {
 				phone: 1,
 				customFields: 1,
 				status: 1,
+				livechat: 1,
 			},
 		};
 
@@ -1149,6 +1164,20 @@ export class Users extends Base {
 	// REMOVE
 	removeById(_id) {
 		return this.remove(_id);
+	}
+
+	removeLivechatData(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$unset: {
+				livechat: true,
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	/*

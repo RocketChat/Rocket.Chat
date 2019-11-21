@@ -18,4 +18,8 @@ export class BaseRaw {
 	find(...args) {
 		return this.col.find(...args);
 	}
+
+	update(...args) {
+		return this.col.update(...args);
+	}
 }
