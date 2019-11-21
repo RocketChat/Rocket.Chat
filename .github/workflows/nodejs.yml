@@ -13,6 +13,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+      
+    - uses: actions/cache@v1
+      id: cache
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+  
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -22,7 +29,7 @@ jobs:
         npm ci
     - name: npm lint and test
       run: |
-        npm run lint
+        npm run jslint
         npm run testunit
       env:
         CI: true
