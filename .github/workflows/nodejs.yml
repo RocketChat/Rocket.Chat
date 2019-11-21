@@ -23,6 +23,6 @@ jobs:
     - name: npm lint and test
       run: |
         npm run lint
-        npm test
+        npm run testunit
       env:
         CI: true
