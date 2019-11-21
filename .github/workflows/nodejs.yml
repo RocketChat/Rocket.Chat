@@ -15,11 +15,16 @@ jobs:
     steps:
     - uses: actions/checkout@v1 
       
-    - uses: actions/cache@v1
-      id: cache
+    - name: Cache node modules
+      uses: actions/cache@v1
       with:
         path: node_modules
-        key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-build-
+          ${{ runner.OS }}-
+
   
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
