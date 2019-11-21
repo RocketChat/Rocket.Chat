@@ -74,7 +74,7 @@ jobs:
         meteor npm --versions
         meteor node -v
         git version
-        $GITHUB_REF
+        echo $GITHUB_REF
 
     - name: npm install
       run: |
@@ -99,7 +99,7 @@ jobs:
       env:
         TOOL_NODE_FLAGS: --max_old_space_size=3072
       run: |
-        if [[ $CIRCLE_TAG ]] || [[ $GITHUB_REF == 'refs/head/develop' ]]; then
+        if [[ $CIRCLE_TAG ]] || [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
           meteor reset;
         fi
 
