@@ -92,6 +92,15 @@ jobs:
         CI: true
         MONGO_URL: mongodb://localhost:27017
 
+    # To reduce memory need during actual build, build the packages solely first
+    - name: Build a Meteor cache
+      run: |
+        # to do this we can clear the main files and it build the rest
+        echo "" > server/main.js
+        echo "" > client/main.js
+        meteor build --server-only --debug --directory /tmp/build-temp
+        git checkout -- server/main.js client/main.js
+
 
     # TODO: Fix env variables
     - name: Build Rocket.Chat
