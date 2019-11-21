@@ -1,4 +1,3 @@
-import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -12,8 +11,6 @@ import './livechatRealTimeMonitoring.html';
 
 let chartContexts = {};			// stores context of current chart, used to clean when redrawing
 let templateInstance;
-
-const LivechatVisitors = new Mongo.Collection('livechatVisitors');
 
 const initChart = {
 	'lc-chats-chart'() {
@@ -148,13 +145,6 @@ const displayDepartmentChart = (val) => {
 	elem.style.display = val ? 'block' : 'none';
 };
 
-const updateVisitorsCount = () => {
-	templateInstance.totalVisitors.set({
-		title: templateInstance.totalVisitors.get().title,
-		value: LivechatVisitors.find().count(),
-	});
-};
-
 let timer;
 
 const getDaterange = () => {
@@ -232,9 +222,6 @@ Template.livechatRealTimeMonitoring.helpers({
 	timingOverview() {
 		return templateInstance.timingOverview.get();
 	},
-	totalVisitors() {
-		return templateInstance.totalVisitors.get();
-	},
 	isLoading() {
 		return Template.instance().isLoading.get();
 	},
@@ -246,11 +233,8 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 	this.conversationsOverview = new ReactiveVar();
 	this.timingOverview = new ReactiveVar();
 	this.conversationTotalizers = new ReactiveVar([]);
-	this.totalVisitors = new ReactiveVar({
-		title: 'Total_visitors',
-		value: 0,
-	});
 	this.interval = new ReactiveVar(5);
+
 	this.updateDashboard = async () => {
 		const daterange = getDaterange();
 		updateConversationOverview(await loadConversationOverview(daterange));
@@ -268,15 +252,6 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		timer = setInterval(() => this.updateDashboard(), getIntervalInMS());
 	});
 	this.updateDashboard();
-
-	LivechatVisitors.find().observeChanges({
-		added() {
-			updateVisitorsCount();
-		},
-		removed() {
-			updateVisitorsCount();
-		},
-	});
 
 	LivechatDepartment.find({ enabled: true }).observeChanges({
 		changed(id) {
@@ -322,10 +297,6 @@ Template.livechatRealTimeMonitoring.onRendered(function() {
 
 	this.subscribe('livechat:departments');
 	this.subscribe('livechat:monitoring', {
-		gte: moment().startOf('day').toISOString(),
-		lt: moment().startOf('day').add(1, 'days').toISOString(),
-	});
-	this.subscribe('livechat:visitors', {
 		gte: moment().startOf('day').toISOString(),
 		lt: moment().startOf('day').add(1, 'days').toISOString(),
 	});

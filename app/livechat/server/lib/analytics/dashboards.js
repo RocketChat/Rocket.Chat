@@ -1,4 +1,4 @@
-import { LivechatRooms, Users } from '../../../../models/server/raw';
+import { LivechatRooms, Users, LivechatVisitors } from '../../../../models/server/raw';
 import { Livechat } from '../Livechat';
 import { secondsToHHMMSS } from '../../../../utils/server';
 import {
@@ -109,12 +109,17 @@ const getConversationsMetricsAsync = async ({
 		end,
 		departmentId,
 	});
+	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({ start, end }).count();
 	const totalAbandonedRooms = abandonedRooms.departments.reduce((acc, item) => {
 		acc += item.abandonedRooms;
 		return acc;
 	}, 0);
 	return {
-		totalizers: [...totalizers.filter((metric) => metrics.includes(metric.title)), { title: 'Total_abandoned_chats', value: totalAbandonedRooms }],
+		totalizers: [
+			...totalizers.filter((metric) => metrics.includes(metric.title)),
+			{ title: 'Total_abandoned_chats', value: totalAbandonedRooms },
+			{ title: 'Total_visitors', value: visitorsCount },
+		],
 	};
 };
 
