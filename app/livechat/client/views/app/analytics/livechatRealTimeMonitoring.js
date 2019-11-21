@@ -310,7 +310,6 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		if (fields.metrics) {
 			// metrics changed
 			metricsUpdated(ts);
-			updateChatsChart();
 			updateAgentsChart();
 			updateDepartmentsChart();
 		}
@@ -318,12 +317,10 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		if (fields.servedBy) {
 			// agent data changed
 			updateAgentsChart(fields.servedBy.username);
-			updateChatsChart();
 		}
 
 		if (fields.open) {
 			updateAgentsChart();
-			updateChatsChart();
 		}
 
 		if (fields.departmentId) {
