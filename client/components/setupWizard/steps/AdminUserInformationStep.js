@@ -1,46 +1,57 @@
-import { Input, Field, FieldGroup, Label } from '@rocket.chat/fuselage';
+import {
+	EmailInput,
+	Field,
+	FieldGroup,
+	Icon,
+	Label,
+	PasswordInput,
+	TextInput,
+} from '@rocket.chat/fuselage';
 import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
 
-import { call } from '../../../../app/ui-utils/client';
 import { handleError } from '../../../../app/utils/client';
 import { callbacks } from '../../../../app/callbacks/client';
 import { useFocus } from '../../../hooks/useFocus';
+import { useLoginWithPassword } from '../../../hooks/useLoginWithPassword';
+import { useMethod } from '../../../hooks/useMethod';
 import { useSetting } from '../../../hooks/useSetting';
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
-import { loginWithPassword } from '../functions';
 
-const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
-	await call('registerUser', { name, username, email, pass: password });
-	callbacks.run('userRegistered');
+export function AdminUserInformationStep({ step, title, active }) {
+	const { goToNextStep } = useSetupWizardStepsState();
 
-	try {
-		await loginWithPassword(email, password);
-	} catch (error) {
-		if (error.error === 'error-invalid-email') {
-			onRegistrationEmailSent && onRegistrationEmailSent();
-			return;
+	const loginWithPassword = useLoginWithPassword();
+	const registerUser = useMethod('registerUser');
+	const defineUsername = useMethod('setUsername');
+
+	const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
+		await registerUser({ name, username, email, pass: password });
+		callbacks.run('userRegistered');
+
+		try {
+			await loginWithPassword(email, password);
+		} catch (error) {
+			if (error.error === 'error-invalid-email') {
+				onRegistrationEmailSent && onRegistrationEmailSent();
+				return;
+			}
+			handleError(error);
+			throw error;
 		}
-		handleError(error);
-		throw error;
-	}
 
-	Session.set('forceLogin', false);
+		Session.set('forceLogin', false);
 
-	await call('setUsername', username);
+		await defineUsername(username);
 
-	callbacks.run('usernameSet');
-};
-
-export function AdminUserInformationStep({ step, title }) {
-	const { currentStep, goToNextStep } = useSetupWizardStepsState();
-	const active = step === currentStep;
+		callbacks.run('usernameSet');
+	};
 
 	const regexpForUsernameValidation = useSetting('UTF8_Names_Validation');
 	const usernameRegExp = useMemo(() => new RegExp(`^${ regexpForUsernameValidation }$`), [regexpForUsernameValidation]);
@@ -111,53 +122,52 @@ export function AdminUserInformationStep({ step, title }) {
 		<StepContent>
 			<FieldGroup>
 				<Field>
-					<Label text={t('Name')}>
-						<Input
-							ref={autoFocusRef}
-							type='text'
-							icon='user'
-							placeholder={t('Type_your_name')}
-							value={name}
-							onChange={({ currentTarget: { value } }) => setName(value)}
-							error={!isNameValid}
-						/>
-					</Label>
+					<Label text={t('Name')} />
+					<TextInput
+						ref={autoFocusRef}
+						addon={<Icon name='user' />}
+						placeholder={t('Type_your_name')}
+						value={name}
+						onChange={({ currentTarget: { value } }) => setName(value)}
+						error={!isNameValid}
+					/>
 				</Field>
 				<Field>
-					<Label text={t('Username')}>
-						<Input
-							type='text'
-							icon='at'
-							placeholder={t('Type_your_username')}
-							value={username}
-							onChange={({ currentTarget: { value } }) => setUsername(value)}
-							error={!isUsernameValid && t('Invalid_username')}
-						/>
-					</Label>
+					<Field.Row>
+						<Label text={t('Username')} />
+						{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
+					</Field.Row>
+					<TextInput
+						addon={<Icon name='at' />}
+						placeholder={t('Type_your_username')}
+						value={username}
+						onChange={({ currentTarget: { value } }) => setUsername(value)}
+						error={!isUsernameValid}
+					/>
 				</Field>
 				<Field>
-					<Label text={t('Organization_Email')}>
-						<Input
-							type='email'
-							icon='mail'
-							placeholder={t('Type_your_email')}
-							value={email}
-							onChange={({ currentTarget: { value } }) => setEmail(value)}
-							error={!isEmailValid && t('Invalid_email')}
-						/>
-					</Label>
+					<Field.Row>
+						<Label text={t('Organization_Email')} />
+						{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
+					</Field.Row>
+					<EmailInput
+						addon={<Icon name='mail' />}
+						placeholder={t('Type_your_email')}
+						value={email}
+						onChange={({ currentTarget: { value } }) => setEmail(value)}
+						error={!isEmailValid}
+					/>
 				</Field>
 				<Field>
-					<Label text={t('Password')}>
-						<Input
-							type='password'
-							icon='key'
-							placeholder={t('Type_your_password')}
-							value={password}
-							onChange={({ currentTarget: { value } }) => setPassword(value)}
-							error={!isPasswordValid}
-						/>
-					</Label>
+					<Label text={t('Password')} />
+					<PasswordInput
+						type='password'
+						addon={<Icon name='key' />}
+						placeholder={t('Type_your_password')}
+						value={password}
+						onChange={({ currentTarget: { value } }) => setPassword(value)}
+						error={!isPasswordValid}
+					/>
 				</Field>
 			</FieldGroup>
 		</StepContent>

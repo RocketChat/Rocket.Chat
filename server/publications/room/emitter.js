@@ -1,3 +1,4 @@
+import { emitRoomDataEvent } from '../../stream/rooms';
 import { Rooms, Subscriptions } from '../../../app/models';
 import { Notifications } from '../../../app/notifications';
 
@@ -21,17 +22,21 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 			break;
 	}
 
-	if (data) {
-		if (clientAction === 'removed') {
-			getSubscriptions(clientAction, id).forEach(({ u }) => {
-				Notifications.notifyUserInThisInstance(
-					u._id,
-					'rooms-changed',
-					clientAction,
-					data
-				);
-			});
-		}
-		Notifications.streamUser.__emit(id, clientAction, data);
+	if (!data) {
+		return;
 	}
+	if (clientAction === 'removed') {
+		getSubscriptions(clientAction, id).forEach(({ u }) => {
+			Notifications.notifyUserInThisInstance(
+				u._id,
+				'rooms-changed',
+				clientAction,
+				data
+			);
+		});
+	}
+
+	Notifications.streamUser.__emit(id, clientAction, data);
+
+	emitRoomDataEvent(id, data);
 });

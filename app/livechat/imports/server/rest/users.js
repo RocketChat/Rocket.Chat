@@ -104,7 +104,7 @@ API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
 
 			if (user.roles.indexOf(role) !== -1) {
 				return API.v1.success({
-					user: _.pick(user, '_id', 'username'),
+					user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
 				});
 			}
 
