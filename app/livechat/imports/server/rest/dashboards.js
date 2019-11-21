@@ -8,6 +8,7 @@ import {
 	getConversationsMetrics,
 	findAllChatMetricsByAgent,
 	findAllAgentsStatus,
+	findAllChatMetricsByDepartment,
 } from '../../../server/lib/analytics/dashboards';
 
 API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authRequired: true }, {
@@ -113,6 +114,30 @@ API.v1.addRoute('livechat/analytics/dashboards/charts/agents-status', { authRequ
 			return API.v1.unauthorized();
 		}
 		const result = findAllAgentsStatus({});
+
+		return API.v1.success(result);
+	},
+});
+
+API.v1.addRoute('livechat/analytics/dashboards/charts/chats-per-department', { authRequired: true }, {
+	get() {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+			return API.v1.unauthorized();
+		}
+		let { start, end } = this.requestParams();
+		check(start, String);
+		check(end, String);
+
+		if (isNaN(Date.parse(start))) {
+			return API.v1.failure('The "start" query parameter must be a valid date.');
+		}
+		start = new Date(start);
+
+		if (isNaN(Date.parse(end))) {
+			return API.v1.failure('The "end" query parameter must be a valid date.');
+		}
+		end = new Date(end);
+		const result = findAllChatMetricsByDepartment({ start, end });
 
 		return API.v1.success(result);
 	},

@@ -135,7 +135,7 @@ const findAllChatMetricsByAgentAsync = async ({
 	const closed = await LivechatRooms.countAllClosedChatsByAgentBetweenDate({ start, end, departmentId });
 	const result = {};
 	(open || []).forEach((agent) => {
-		result[agent._id] = { open: agent.chats };
+		result[agent._id] = { open: agent.chats, closed: 0 };
 	});
 	(closed || []).forEach((agent) => {
 		result[agent._id] = { open: result[agent._id] ? result[agent._id].open : 0, closed: agent.chats };
@@ -145,8 +145,29 @@ const findAllChatMetricsByAgentAsync = async ({
 
 const findAllAgentsStatusAsync = async ({ departmentId = undefined }) => (await Users.countAllAgentsStatus({ departmentId }))[0];
 
+const findAllChatMetricsByDepartmentAsync = async ({
+	start,
+	end,
+	departmentId = undefined,
+}) => {
+	if (!start || !end) {
+		throw new Error('"start" and "end" must be provided');
+	}
+	const open = await LivechatRooms.countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId });
+	const closed = await LivechatRooms.countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId });
+	const result = {};
+	(open || []).forEach((department) => {
+		result[department.name] = { open: department.chats, closed: 0 };
+	});
+	(closed || []).forEach((department) => {
+		result[department.name] = { open: result[department.name] ? result[department.name].open : 0, closed: department.chats };
+	});
+	return result;
+};
+
 export const findAllChatsStatus = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
 export const getProductivityMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getProductivityMetricsAsync({ start, end, departmentId }));
 export const getConversationsMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getConversationsMetricsAsync({ start, end, departmentId }));
 export const findAllChatMetricsByAgent = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByAgentAsync({ start, end, departmentId }));
+export const findAllChatMetricsByDepartment = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByDepartmentAsync({ start, end, departmentId }));
 export const findAllAgentsStatus = ({ departmentId = undefined }) => Promise.await(findAllAgentsStatusAsync({ departmentId }));

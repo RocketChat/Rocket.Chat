@@ -5,7 +5,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { drawLineChart, drawDoughnutChart, updateChart } from '../../../lib/chartHandler';
 import { getTimingsChartData } from '../../../lib/dataHandler';
 import { LivechatMonitoring } from '../../../collections/LivechatMonitoring';
-import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import { APIClient } from '../../../../../utils/client';
 import './livechatRealTimeMonitoring.html';
 
@@ -86,25 +85,25 @@ const initChart = {
 	},
 };
 
-const initAllCharts = () => {
-	chartContexts['lc-chats-chart'] = initChart['lc-chats-chart']();
-	chartContexts['lc-agents-chart'] = initChart['lc-agents-chart']();
-	chartContexts['lc-chats-per-agent-chart'] = initChart['lc-chats-per-agent-chart']();
-	chartContexts['lc-chats-per-dept-chart'] = initChart['lc-chats-per-dept-chart']();
-	chartContexts['lc-reaction-response-times-chart'] = initChart['lc-reaction-response-times-chart']();
-	chartContexts['lc-chat-duration-chart'] = initChart['lc-chat-duration-chart']();
+const initAllCharts = async () => {
+	chartContexts['lc-chats-chart'] = await initChart['lc-chats-chart']();
+	chartContexts['lc-agents-chart'] = await initChart['lc-agents-chart']();
+	chartContexts['lc-chats-per-agent-chart'] = await initChart['lc-chats-per-agent-chart']();
+	chartContexts['lc-chats-per-dept-chart'] = await initChart['lc-chats-per-dept-chart']();
+	chartContexts['lc-reaction-response-times-chart'] = await initChart['lc-reaction-response-times-chart']();
+	chartContexts['lc-chat-duration-chart'] = await initChart['lc-chat-duration-chart']();
 };
 
-const updateChartData = (chartId, label, data) => {
+const updateChartData = async (chartId, label, data) => {
 	// update chart
 	if (!chartContexts[chartId]) {
-		chartContexts[chartId] = initChart[chartId]();
+		chartContexts[chartId] = await initChart[chartId]();
 	}
 
-	updateChart(chartContexts[chartId], label, data);
+	await updateChart(chartContexts[chartId], label, data);
 };
 
-const metricsUpdated = (ts) => {
+const metricsUpdated = async (ts) => {
 	const hour = moment(ts).format('H');
 	const label = `${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`;
 
@@ -117,32 +116,8 @@ const metricsUpdated = (ts) => {
 
 	const data = getTimingsChartData(LivechatMonitoring.find(query));
 
-	updateChartData('lc-reaction-response-times-chart', label, [data.reaction.avg, data.reaction.longest, data.response.avg, data.response.longest]);
-	updateChartData('lc-chat-duration-chart', label, [data.chatDuration.avg, data.chatDuration.longest]);
-};
-
-const updateDepartmentsChart = (departmentId) => {
-	if (departmentId) {
-		// update for dept
-		const label = LivechatDepartment.findOne({ _id: departmentId }).name;
-
-		const data = {
-			open: LivechatMonitoring.find({ departmentId, open: true }).count(),
-			closed: LivechatMonitoring.find({ departmentId, open: { $exists: false } }).count(),
-		};
-
-		updateChartData('lc-chats-per-dept-chart', label, [data.open, data.closed]);
-	} else {
-		// update for all
-		LivechatDepartment.find({ enabled: true }).forEach(function(dept) {
-			updateDepartmentsChart(dept._id);
-		});
-	}
-};
-
-const displayDepartmentChart = (val) => {
-	const elem = document.getElementsByClassName('lc-chats-per-dept-chart-section')[0];
-	elem.style.display = val ? 'block' : 'none';
+	await updateChartData('lc-reaction-response-times-chart', label, [data.reaction.avg, data.reaction.longest, data.response.avg, data.response.longest]);
+	await updateChartData('lc-chat-duration-chart', label, [data.chatDuration.avg, data.chatDuration.longest]);
 };
 
 let timer;
@@ -179,13 +154,17 @@ const updateProductivityOverview = async (totalizers) => {
 
 const loadChatsChartData = ({ start, end }) => APIClient.v1.get(`livechat/analytics/dashboards/charts/chats?start=${ start }&end=${ end }`);
 
-const updateChatsChart = ({ open, closed, queued }) => {
-	updateChartData('lc-chats-chart', 'Open', [open]);
-	updateChartData('lc-chats-chart', 'Closed', [closed]);
-	updateChartData('lc-chats-chart', 'Queue', [queued]);
+const updateChatsChart = async ({ open, closed, queued }) => {
+	await updateChartData('lc-chats-chart', 'Open', [open]);
+	await updateChartData('lc-chats-chart', 'Closed', [closed]);
+	await updateChartData('lc-chats-chart', 'Queue', [queued]);
 };
 
-const loadChatsPerAgentChartData = ({ start, end }) => APIClient.v1.get(`livechat/analytics/dashboards/charts/chats-per-agent?start=${ start }&end=${ end }`);
+const loadChatsPerAgentChartData = async ({ start, end }) => {
+	const result = await APIClient.v1.get(`livechat/analytics/dashboards/charts/chats-per-agent?start=${ start }&end=${ end }`);
+	delete result.success;
+	return result;
+};
 
 const updateChatsPerAgentChart = (agents) => {
 	Object
@@ -195,15 +174,27 @@ const updateChatsPerAgentChart = (agents) => {
 
 const loadAgentsStatusChartData = () => APIClient.v1.get('livechat/analytics/dashboards/charts/agents-status');
 
-const updateAgentStatusChart = (statusData) => {
+const updateAgentStatusChart = async (statusData) => {
 	if (!statusData) {
 		return;
 	}
 
-	updateChartData('lc-agents-chart', 'Offline', [statusData.offline]);
-	updateChartData('lc-agents-chart', 'Available', [statusData.available]);
-	updateChartData('lc-agents-chart', 'Away', [statusData.away]);
-	updateChartData('lc-agents-chart', 'Busy', [statusData.busy]);
+	await updateChartData('lc-agents-chart', 'Offline', [statusData.offline]);
+	await updateChartData('lc-agents-chart', 'Available', [statusData.available]);
+	await updateChartData('lc-agents-chart', 'Away', [statusData.away]);
+	await updateChartData('lc-agents-chart', 'Busy', [statusData.busy]);
+};
+
+const loadChatsPerDepartmentChartData = async ({ start, end }) => {
+	const result = await APIClient.v1.get(`livechat/analytics/dashboards/charts/chats-per-department?start=${ start }&end=${ end }`);
+	delete result.success;
+	return result;
+};
+
+const updateDepartmentsChart = (departments) => {
+	Object
+		.keys(departments)
+		.forEach((department) => updateChartData('lc-chats-per-dept-chart', department, [departments[department].open, departments[department].closed]));
 };
 
 const getIntervalInMS = () => templateInstance.interval.get() * 1000;
@@ -235,46 +226,12 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 	this.conversationTotalizers = new ReactiveVar([]);
 	this.interval = new ReactiveVar(5);
 
-	this.updateDashboard = async () => {
-		const daterange = getDaterange();
-		updateConversationOverview(await loadConversationOverview(daterange));
-		updateProductivityOverview(await loadProductivityOverview(daterange));
-		updateChatsChart(await loadChatsChartData(daterange));
-		updateChatsPerAgentChart(await loadChatsPerAgentChartData(daterange));
-		updateAgentStatusChart(await loadAgentsStatusChartData());
-		this.isLoading.set(false);
-	};
-
-	this.autorun(() => {
-		if (timer) {
-			clearInterval(timer);
-		}
-		timer = setInterval(() => this.updateDashboard(), getIntervalInMS());
-	});
-	this.updateDashboard();
-
-	LivechatDepartment.find({ enabled: true }).observeChanges({
-		changed(id) {
-			displayDepartmentChart(true);
-			updateDepartmentsChart(id);
-		},
-		added(id) {
-			displayDepartmentChart(true);
-			updateDepartmentsChart(id);
-		},
-	});
-
-	const updateMonitoringDashboard = (id, fields) => {
+	const updateMonitoringDashboard = async (id, fields) => {
 		const { ts } = LivechatMonitoring.findOne({ _id: id });
 
 		if (fields.metrics) {
 			// metrics changed
-			metricsUpdated(ts);
-			updateDepartmentsChart();
-		}
-
-		if (fields.departmentId) {
-			updateDepartmentsChart(fields.departmentId);
+			await metricsUpdated(ts);
 		}
 	};
 
@@ -288,18 +245,34 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 	});
 });
 
-Template.livechatRealTimeMonitoring.onRendered(function() {
+Template.livechatRealTimeMonitoring.onRendered(async function() {
 	chartContexts = {};			// Clear chart contexts from previous loads, fixing bug when menu is reopened after changing to another.
 
-	initAllCharts();
+	await initAllCharts();
 
-	displayDepartmentChart(false);
-
-	this.subscribe('livechat:departments');
 	this.subscribe('livechat:monitoring', {
 		gte: moment().startOf('day').toISOString(),
 		lt: moment().startOf('day').add(1, 'days').toISOString(),
 	});
+
+	this.updateDashboard = async () => {
+		const daterange = getDaterange();
+		updateConversationOverview(await loadConversationOverview(daterange));
+		updateProductivityOverview(await loadProductivityOverview(daterange));
+		updateChatsChart(await loadChatsChartData(daterange));
+		updateChatsPerAgentChart(await loadChatsPerAgentChartData(daterange));
+		updateAgentStatusChart(await loadAgentsStatusChartData());
+		updateDepartmentsChart(await loadChatsPerDepartmentChartData(daterange));
+		this.isLoading.set(false);
+	};
+
+	this.autorun(() => {
+		if (timer) {
+			clearInterval(timer);
+		}
+		timer = setInterval(() => this.updateDashboard(), getIntervalInMS());
+	});
+	this.updateDashboard();
 });
 
 Template.livechatRealTimeMonitoring.events({

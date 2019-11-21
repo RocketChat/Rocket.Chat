@@ -692,4 +692,96 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		return this.col.aggregate([match, group]).toArray();
 	}
+
+	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				open: true,
+				departmentId: { $exists: true },
+				ts: { $gte: new Date(start), $lte: new Date(end) },
+			},
+		};
+		const lookup = {
+			$lookup: {
+				from: 'rocketchat_livechat_department',
+				localField: 'departmentId',
+				foreignField: '_id',
+				as: 'departments',
+			},
+		};
+		const unwind = {
+			$unwind: {
+				path: '$departments',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
+		const group = {
+			$group: {
+				_id: {
+					_id: '$departments._id',
+					name: '$departments.name',
+				},
+				chats: { $sum: 1 },
+			},
+		};
+		const project = {
+			$project: {
+				_id: '$_id._id',
+				name: '$_id.name',
+				chats: 1,
+			},
+		};
+		if (departmentId) {
+			match.$match.departmentId = departmentId;
+		}
+		const params = [match, lookup, unwind, group, project];
+		return this.col.aggregate(params).toArray();
+	}
+
+	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				open: { $exists: false },
+				departmentId: { $exists: true },
+				ts: { $gte: new Date(start), $lte: new Date(end) },
+			},
+		};
+		const lookup = {
+			$lookup: {
+				from: 'rocketchat_livechat_department',
+				localField: 'departmentId',
+				foreignField: '_id',
+				as: 'departments',
+			},
+		};
+		const unwind = {
+			$unwind: {
+				path: '$departments',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
+		const group = {
+			$group: {
+				_id: {
+					_id: '$departments._id',
+					name: '$departments.name',
+				},
+				chats: { $sum: 1 },
+			},
+		};
+		const project = {
+			$project: {
+				_id: '$_id._id',
+				name: '$_id.name',
+				chats: 1,
+			},
+		};
+		if (departmentId) {
+			match.$match.departmentId = departmentId;
+		}
+		const params = [match, lookup, unwind, group, project];
+		return this.col.aggregate(params).toArray();
+	}
 }
