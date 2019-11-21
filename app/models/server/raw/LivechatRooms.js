@@ -610,6 +610,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	countAllOpenChatsBetweenDate({ start, end, departmentId }) {
 		const query = {
+			t: 'l',
 			'metrics.chatDuration': {
 				$exists: false,
 			},
@@ -624,6 +625,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	countAllClosedChatsBetweenDate({ start, end, departmentId }) {
 		const query = {
+			t: 'l',
 			'metrics.chatDuration': {
 				$exists: true,
 			},
@@ -638,6 +640,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	countAllQueuedChatsBetweenDate({ start, end, departmentId }) {
 		const query = {
+			t: 'l',
 			servedBy: { $exists: false },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
@@ -645,5 +648,48 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.departmentId = departmentId;
 		}
 		return this.find(query).count();
+	}
+
+	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				'servedBy.username': { $exists: true },
+				open: true,
+				ts: { $gte: new Date(start), $lte: new Date(end) },
+			},
+		};
+		const group = {
+			$group: {
+				_id: '$servedBy.username',
+				chats: { $sum: 1 },
+			},
+		};
+		if (departmentId) {
+			match.$match.departmentId = departmentId;
+		}
+		return this.col.aggregate([match, group]).toArray();
+	}
+
+	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				open: { $exists: false },
+				'servedBy.username': { $exists: true },
+				ts: { $gte: new Date(start) },
+				closedAt: { $lte: new Date(end) },
+			},
+		};
+		const group = {
+			$group: {
+				_id: '$servedBy.username',
+				chats: { $sum: 1 },
+			},
+		};
+		if (departmentId) {
+			match.$match.departmentId = departmentId;
+		}
+		return this.col.aggregate([match, group]).toArray();
 	}
 }

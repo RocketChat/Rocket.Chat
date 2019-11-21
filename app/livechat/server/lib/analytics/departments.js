@@ -211,6 +211,25 @@ const getConversationsMetricsAsync = async ({
 	};
 };
 
+const findAllChatMetricsByAgentAsync = async ({
+	start,
+	end,
+}) => {
+	if (!start || !end) {
+		throw new Error('"start" and "end" must be provided');
+	}
+	const open = await LivechatRooms.countAllOpenChatsByAgentBetweenDate({ start, end });
+	const closed = await LivechatRooms.countAllClosedChatsByAgentBetweenDate({ start, end });
+	const result = {};
+	(open || []).forEach((agent) => {
+		result[agent._id] = { open: agent.chats };
+	});
+	(closed || []).forEach((agent) => {
+		result[agent._id] = { open: result[agent._id] ? result[agent._id].open : 0, closed: agent.chats };
+	});
+	return result;
+};
+
 export const findAllAverageServiceTime = ({ start, end, departmentId, options }) => Promise.await(findAllAverageServiceTimeAsync({ start, end, departmentId, options }));
 export const findAllRooms = ({ start, end, answered, departmentId, options }) => Promise.await(findAllRoomsAsync({ start, end, answered, departmentId, options }));
 export const findAllServiceTime = ({ start, end, departmentId, options }) => Promise.await(findAllServiceTimeAsync({ start, end, departmentId, options }));
@@ -221,3 +240,4 @@ export const findPercentageOfAbandonedRooms = ({ start, end, departmentId, optio
 export const findAllChatsStatus = ({ start, end, departmentId }) => Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
 export const getProductivityMetrics = ({ start, end, departmentId }) => Promise.await(getProductivityMetricsAsync({ start, end, departmentId }));
 export const getConversationsMetrics = ({ start, end, departmentId }) => Promise.await(getConversationsMetricsAsync({ start, end, departmentId }));
+export const findAllChatMetricsByAgent = ({ start, end, departmentId }) => Promise.await(findAllChatMetricsByAgentAsync({ start, end, departmentId }));

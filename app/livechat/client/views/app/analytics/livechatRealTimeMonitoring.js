@@ -144,25 +144,6 @@ const updateDepartmentsChart = (departmentId) => {
 	}
 };
 
-const updateAgentsChart = (agent) => {
-	if (agent) {
-		// update for the agent
-		const data = {
-			open: LivechatMonitoring.find({ 'servedBy.username': agent, open: true }).count(),
-			closed: LivechatMonitoring.find({ 'servedBy.username': agent, open: { $exists: false } }).count(),
-		};
-
-		updateChartData('lc-chats-per-agent-chart', agent, [data.open, data.closed]);
-	} else {
-		// update for all agents
-		AgentUsers.find().forEach(function(agent) {
-			if (agent.username) {
-				updateAgentsChart(agent.username);
-			}
-		});
-	}
-};
-
 const updateAgentStatusChart = () => {
 	const statusData = getAgentStatusData(AgentUsers.find());
 
@@ -224,6 +205,14 @@ const updateChatsChart = ({ open, closed, queued }) => {
 	updateChartData('lc-chats-chart', 'Queue', [queued]);
 };
 
+const loadChatsPerAgentChartData = ({ start, end }) => APIClient.v1.get(`livechat/analytics/dashboards/charts/chats-per-agent?start=${ start }&end=${ end }`);
+
+const updateChatsPerAgentChart = (agents) => {
+	Object
+		.keys(agents)
+		.forEach((agent) => updateChartData('lc-chats-per-agent-chart', agent, [agents[agent].open, agents[agent].closed]));
+};
+
 const getIntervalInMS = () => templateInstance.interval.get() * 1000;
 
 Template.livechatRealTimeMonitoring.helpers({
@@ -264,6 +253,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		updateConversationOverview(await loadConversationOverview(daterange));
 		updateProductivityOverview(await loadProductivityOverview(daterange));
 		updateChatsChart(await loadChatsChartData(daterange));
+		updateChatsPerAgentChart(await loadChatsPerAgentChartData(daterange));
 		this.isLoading.set(false);
 	};
 
@@ -310,17 +300,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		if (fields.metrics) {
 			// metrics changed
 			metricsUpdated(ts);
-			updateAgentsChart();
 			updateDepartmentsChart();
-		}
-
-		if (fields.servedBy) {
-			// agent data changed
-			updateAgentsChart(fields.servedBy.username);
-		}
-
-		if (fields.open) {
-			updateAgentsChart();
 		}
 
 		if (fields.departmentId) {
