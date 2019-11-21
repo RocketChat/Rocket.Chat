@@ -225,6 +225,12 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Notification_Duration',
 		});
+		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Notification_RequireInteraction',
+			i18nDescription: 'Notification_RequireInteraction_Description',
+		});
 		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
 			type: 'select',
 			values: [
