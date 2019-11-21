@@ -31,7 +31,7 @@ class SetupWizard extends Page {
 
 	get serviceTermsAndPrivacyPolicy() { return browser.element('[data-qa-agree-terms]').$('..'); }
 
-	get serviceTermsAndPrivacyPolicyCheckbox() { return browser.element('input[name="agreeTermsAndPrivacy"][value="false"]'); }
+	get serviceTermsAndPrivacyPolicyCheckbox() { return browser.element('[data-qa-agree-terms]'); }
 
 	login() {
 		browser.execute(function(email, password) {

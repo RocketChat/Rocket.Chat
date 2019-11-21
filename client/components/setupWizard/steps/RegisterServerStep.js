@@ -168,7 +168,6 @@ export function RegisterServerStep({ step, title }) {
 					<CheckBox
 						name='agreeTermsAndPrivacy'
 						data-qa-agree-terms
-						value='false'
 						disabled={!registerServer}
 						checked={agreeTermsAndPrivacy}
 						onChange={({ currentTarget: { checked } }) => {
