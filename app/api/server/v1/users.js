@@ -31,6 +31,7 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			roles: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
 			requirePasswordChange: Match.Maybe(Boolean),
+			setRandomPassword: Match.Maybe(Boolean),
 			sendWelcomeEmail: Match.Maybe(Boolean),
 			verified: Match.Maybe(Boolean),
 			customFields: Match.Maybe(Object),
