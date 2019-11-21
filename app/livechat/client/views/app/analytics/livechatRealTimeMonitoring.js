@@ -4,9 +4,8 @@ import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { drawLineChart, drawDoughnutChart, updateChart } from '../../../lib/chartHandler';
-import { getTimingsChartData, getAgentStatusData } from '../../../lib/dataHandler';
+import { getTimingsChartData } from '../../../lib/dataHandler';
 import { LivechatMonitoring } from '../../../collections/LivechatMonitoring';
-import { AgentUsers } from '../../../collections/AgentUsers';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import { APIClient } from '../../../../../utils/client';
 import './livechatRealTimeMonitoring.html';
@@ -144,15 +143,6 @@ const updateDepartmentsChart = (departmentId) => {
 	}
 };
 
-const updateAgentStatusChart = () => {
-	const statusData = getAgentStatusData(AgentUsers.find());
-
-	updateChartData('lc-agents-chart', 'Offline', [statusData.offline]);
-	updateChartData('lc-agents-chart', 'Available', [statusData.available]);
-	updateChartData('lc-agents-chart', 'Away', [statusData.away]);
-	updateChartData('lc-agents-chart', 'Busy', [statusData.busy]);
-};
-
 const displayDepartmentChart = (val) => {
 	const elem = document.getElementsByClassName('lc-chats-per-dept-chart-section')[0];
 	elem.style.display = val ? 'block' : 'none';
@@ -213,6 +203,19 @@ const updateChatsPerAgentChart = (agents) => {
 		.forEach((agent) => updateChartData('lc-chats-per-agent-chart', agent, [agents[agent].open, agents[agent].closed]));
 };
 
+const loadAgentsStatusChartData = () => APIClient.v1.get('livechat/analytics/dashboards/charts/agents-status');
+
+const updateAgentStatusChart = (statusData) => {
+	if (!statusData) {
+		return;
+	}
+
+	updateChartData('lc-agents-chart', 'Offline', [statusData.offline]);
+	updateChartData('lc-agents-chart', 'Available', [statusData.available]);
+	updateChartData('lc-agents-chart', 'Away', [statusData.away]);
+	updateChartData('lc-agents-chart', 'Busy', [statusData.busy]);
+};
+
 const getIntervalInMS = () => templateInstance.interval.get() * 1000;
 
 Template.livechatRealTimeMonitoring.helpers({
@@ -254,6 +257,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		updateProductivityOverview(await loadProductivityOverview(daterange));
 		updateChatsChart(await loadChatsChartData(daterange));
 		updateChatsPerAgentChart(await loadChatsPerAgentChartData(daterange));
+		updateAgentStatusChart(await loadAgentsStatusChartData());
 		this.isLoading.set(false);
 	};
 
@@ -264,15 +268,6 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		timer = setInterval(() => this.updateDashboard(), getIntervalInMS());
 	});
 	this.updateDashboard();
-
-	AgentUsers.find().observeChanges({
-		changed() {
-			updateAgentStatusChart();
-		},
-		added() {
-			updateAgentStatusChart();
-		},
-	});
 
 	LivechatVisitors.find().observeChanges({
 		added() {
@@ -326,7 +321,6 @@ Template.livechatRealTimeMonitoring.onRendered(function() {
 	displayDepartmentChart(false);
 
 	this.subscribe('livechat:departments');
-	this.subscribe('livechat:agents');
 	this.subscribe('livechat:monitoring', {
 		gte: moment().startOf('day').toISOString(),
 		lt: moment().startOf('day').add(1, 'days').toISOString(),

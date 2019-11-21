@@ -134,4 +134,37 @@ describe('LIVECHAT - dashboards', function() {
 				});
 		});
 	});
+
+	describe('livechat/analytics/dashboards/charts/agents-status', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+			updatePermission('view-livechat-manager', []).then(() => {
+				request.get(api('livechat/analytics/dashboards/charts/agents-status'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should return an object with agents status metrics', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request.get(api('livechat/analytics/dashboards/charts/agents-status'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('offline');
+							expect(res.body).to.have.property('away');
+							expect(res.body).to.have.property('busy');
+							expect(res.body).to.have.property('available');
+						})
+						.end(done);
+				});
+		});
+	});
 });

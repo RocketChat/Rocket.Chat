@@ -7,7 +7,8 @@ import {
 	getProductivityMetrics,
 	getConversationsMetrics,
 	findAllChatMetricsByAgent,
-} from '../../../server/lib/analytics/departments';
+	findAllAgentsStatus,
+} from '../../../server/lib/analytics/dashboards';
 
 API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authRequired: true }, {
 	get() {
@@ -101,6 +102,17 @@ API.v1.addRoute('livechat/analytics/dashboards/charts/chats-per-agent', { authRe
 		}
 		end = new Date(end);
 		const result = findAllChatMetricsByAgent({ start, end });
+
+		return API.v1.success(result);
+	},
+});
+
+API.v1.addRoute('livechat/analytics/dashboards/charts/agents-status', { authRequired: true }, {
+	get() {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+			return API.v1.unauthorized();
+		}
+		const result = findAllAgentsStatus({});
 
 		return API.v1.success(result);
 	},
