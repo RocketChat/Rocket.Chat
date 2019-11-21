@@ -1,108 +1,147 @@
-import { EventsModel, contextDefinitions, eventTypes } from './Events';
+import { AddEventResult, ContextQuery, EventsModel, EventStub } from './Events';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
+import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
+import { IEDataMessage } from '../../../events/definitions/data/IEDataMessage';
+import { IEvent, EventTypeDescriptor, EDataDefinition } from '../../../events/definitions/IEvent';
+import { IRoom } from '../../../events/definitions/IRoom';
+import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
 
-const { type, contextQuery } = contextDefinitions.ROOM;
+const getContextQuery = (param: string | IEvent<any>): ContextQuery => {
+  let rid: string;
+
+  if (typeof param === 'string') {
+    rid = param;
+  } else {
+    rid = param.rid;
+  }
+
+  return { rid };
+};
 
 class RoomEventsModel extends EventsModel {
-	constructor() {
-		super('message');
+  constructor() {
+    super('message');
 
-		this.tryEnsureIndex({ 'context.roomId': 1 });
-		this.tryEnsureIndex({ 'd.msg': 'text' }, { sparse: true });
-	}
+    // this.tryEnsureIndex({ 'context.roomId': 1 });
+    // this.tryEnsureIndex({ 'd.msg': 'text' }, { sparse: true });
+  }
 
-	ensureSrc(src) {
-		return src || getLocalSrc();
-	}
+  ensureSrc(src: string) {
+    return src || getLocalSrc();
+  }
 
-	async createGenesisEvent({ src, room }) {
-		src = this.ensureSrc(src);
+  async addRoomEvent<T extends EDataDefinition>(event: IEvent<T>): Promise<AddEventResult> {
+    return super.addEvent(getContextQuery(event), event);
+  }
 
-		return super.createGenesisEvent(src, contextQuery(room._id), { d: { contextType: type, room } });
-	}
+  async updateRoomEventData<T extends EDataDefinition>(event: IEvent<T>, dataToUpdate: IEDataUpdate<T>): Promise<void> {
+    return super.updateEventData(getContextQuery(event), event._cid, dataToUpdate);
+  }
 
-	async createMessageEvent({ src, roomId, _cid, d }) {
-		src = this.ensureSrc(src);
+  async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IEDataGenesis>> {
+    src = this.ensureSrc(src);
 
-		return super.createEvent(src, contextQuery(roomId), { _cid, t: eventTypes.ROOM_MESSAGE, d });
-	}
+    const event: IEDataGenesis = { room };
 
-	async createEditMessageEvent({ src, roomId, _cid, d }) {
-		src = this.ensureSrc(src);
+    return super.createGenesisEvent(src, getContextQuery(room._id), event);
+  }
 
-		return super.createEvent(src, contextQuery(roomId), { _cid, t: eventTypes.ROOM_EDIT_MESSAGE, d });
-	}
+  async createMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: T): Promise<IEvent<T>> {
+    src = this.ensureSrc(src);
 
-	async createDeleteRoomEvent(src, roomId) {
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_DELETE, { roomId });
-	}
+    const stub: EventStub<T> = {
+      _cid,
+      t: EventTypeDescriptor.MESSAGE,
+      d
+    };
 
-	async createAddUserEvent(src, roomId, user, subscription, domainsAfterAdd) {
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_ADD_USER, { roomId, user, subscription, domainsAfterAdd });
-	}
+    return super.createEvent(src, getContextQuery(roomId), stub);
+  }
 
-	async createRemoveUserEvent(src, roomId, user, domainsAfterRemoval) {
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_REMOVE_USER, { roomId, user, domainsAfterRemoval });
-	}
+  async createEditMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: IEDataUpdate<T>): Promise<IEvent<T>> {
+    src = this.ensureSrc(src);
 
-	async createDeleteMessageEvent(src, roomId, messageId) {
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_DELETE_MESSAGE, { roomId, messageId });
-	}
+    const stub: EventStub<T> = {
+      _cid,
+      t: EventTypeDescriptor.EDIT_MESSAGE,
+      d
+    };
 
-	async createSetMessageReactionEvent(src, roomId, messageId, username, reaction) {
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_SET_MESSAGE_REACTION, { roomId, messageId, username, reaction });
-	}
+    return super.createEvent(src, getContextQuery(roomId), stub);
+  }
 
-	async createUnsetMessageReactionEvent(src, roomId, messageId, username, reaction) {
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_UNSET_MESSAGE_REACTION, { roomId, messageId, username, reaction });
-	}
+  // async createDeleteRoomEvent(src, roomId) {
+  // 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_DELETE, { roomId });
+  // }
 
-	async createMuteUserEvent(src, roomId, user) {
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_MUTE_USER, { roomId, user });
-	}
+  // async createAddUserEvent(src, roomId, user, subscription, domainsAfterAdd) {
+  // 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_ADD_USER, { roomId, user, subscription, domainsAfterAdd });
+  // }
 
-	async createUnmuteUserEvent(src, roomId, user) {
-		return super.createEvent(src, contextQuery(roomId), eventTypes.ROOM_UNMUTE_USER, { roomId, user });
-	}
+  // async createRemoveUserEvent(src, roomId, user, domainsAfterRemoval) {
+  // 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_REMOVE_USER, { roomId, user, domainsAfterRemoval });
+  // }
 
-	async removeRoomEvents(roomId) {
-		return super.removeContextEvents(contextQuery(roomId));
-	}
+  // async createDeleteMessageEvent(src, roomId, messageId) {
+  // 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_DELETE_MESSAGE, { roomId, messageId });
+  // }
 
-	//
-	// Backwards compatibility
-	//
-	fromV1Data(message) {
-		return {
-			u: message.u,
-			msg: message.msg,
-			mentions: message.mentions,
-			channels: message.channels,
-			reactions: message.reactions,
-		};
-	}
+  // async createSetMessageReactionEvent(src, roomId, messageId, username, reaction) {
+  // 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_SET_MESSAGE_REACTION, { roomId, messageId, username, reaction });
+  // }
 
-	toV1(event) {
-		const v1Data = {
-			_id: event._cid,
-			v: 1,
-			rid: event.rid,
-			u: event.d.u,
-			ts: event.ts,
-			msg: event.d.msg,
-			html: event.d.html,
-			unread: event.d.unread,
-			mentions: event.d.mentions,
-			channels: event.d.channels,
-			_updatedAt: event._updatedAt,
-		};
+  // async createUnsetMessageReactionEvent(src, roomId, messageId, username, reaction) {
+  // 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_UNSET_MESSAGE_REACTION, { roomId, messageId, username, reaction });
+  // }
 
-		if (event.d.reactions) {
-			v1Data.reactions = event.d.reactions;
-		}
+  // async createMuteUserEvent(src, roomId, user) {
+  // 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_MUTE_USER, { roomId, user });
+  // }
 
-		return v1Data;
-	}
+  // async createUnmuteUserEvent(src, roomId, user) {
+  // 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_UNMUTE_USER, { roomId, user });
+  // }
+
+  // async removeRoomEvents(roomId) {
+  // 	return super.removeContextEvents(getContextQuery(roomId));
+  // }
+
+  //
+  // Backwards compatibility
+  //
+  fromV1Data(message: any): IEDataMessage {
+    return {
+      u: message.u,
+      msg: message.msg,
+      mentions: message.mentions,
+      channels: message.channels,
+      reactions: message.reactions,
+    };
+  }
+
+  toV1(event: any) {
+    console.log(event);
+
+    const v1Data: any = {
+      _id: event._cid,
+      v: 1,
+      rid: event.rid,
+      u: event.d.u,
+      ts: event.ts,
+      msg: event.d.msg,
+      html: event.d.html,
+      unread: event.d.unread,
+      mentions: event.d.mentions,
+      channels: event.d.channels,
+      _updatedAt: event._updatedAt,
+    };
+
+    if (event.d.reactions) {
+      v1Data.reactions = event.d.reactions;
+    }
+
+    return v1Data;
+  }
 }
 
 export const RoomEvents = new RoomEventsModel();

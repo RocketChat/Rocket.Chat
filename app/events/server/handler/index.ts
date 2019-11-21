@@ -1,4 +1,4 @@
-import { IEvent } from '../../definitions/IEvent';
+import { IEvent, EDataDefinition } from '../../definitions/IEvent';
 
 const typesHandler = {
 	genesis: require('./types/genesis'), // GENESIS
@@ -8,7 +8,7 @@ const typesHandler = {
 	emsg: require('./types/room_edit_message'), // ROOM_EDIT_MESSAGE
 };
 
-export async function handleEvents(events: [IEvent]) {
+export async function handleEvents<T extends EDataDefinition>(events: [IEvent<T>]) {
 	for (const event of events) {
 		// /* eslint-disable no-await-in-loop */
 		await typesHandler[event.t](event);

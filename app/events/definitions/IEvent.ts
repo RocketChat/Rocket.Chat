@@ -1,16 +1,38 @@
-import { IEventMessage } from './IEventMessage';
-import { IEventGenesis } from './IEventGenesis';
+import { IEDataUpdate } from './data/IEDataUpdate';
+import { IEDataGenesis } from './data/IEDataGenesis';
+import { IEDataMessage } from './data/IEDataMessage';
 
-export type EventType = IEventMessage | IEventGenesis;
+export type EDataDefinition = IEDataUpdate<EDataDefinition> | IEDataGenesis | IEDataMessage;
 
-export interface IEvent<T extends EventType> {
+export enum EventTypeDescriptor {
+    // Global
+    PING = 'ping',
+
+    // Rooms
+    GENESIS = 'genesis',
+    MESSAGE = 'msg',
+    EDIT_MESSAGE = 'emsg',
+
+    // Not implemented
+    DELETE = 'delete',
+    ADD_USER = 'add_user',
+    REMOVE_USER = 'remove_user',
+    DELETE_MESSAGE = 'delete_message',
+    SET_MESSAGE_REACTION = 'set_message_reaction',
+    UNSET_MESSAGE_REACTION = 'unset_message_reaction',
+    MUTE_USER = 'mute_user',
+    UNMUTE_USER = 'unmute_user',
+};
+
+export interface IEvent<T extends EDataDefinition> {
+    _id: string;
     _cid: string;
     _pids: string[];
     v: number;
     ts: Date;
     src: string;
-    // ...contextQuery,
-    t: string;
-    d: T;
+    rid: string;
+    t: EventTypeDescriptor;
+    d: T | IEDataUpdate<T>;
     hasChildren: boolean;
 }

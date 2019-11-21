@@ -6,7 +6,7 @@ import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
 import { RoomEvents } from './RoomEvents';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
-import { eventTypes } from './Events';
+import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
 
 export class Messages extends Base {
 	constructor() {
@@ -75,7 +75,7 @@ export class Messages extends Base {
 	find(...args) {
 		if (args[0]) {
 			// Add a `t: msg`
-			args[0].t = eventTypes.ROOM_MESSAGE;
+			args[0].t = EventTypeDescriptor.ROOM_MESSAGE;
 		}
 
 		const cursor = RoomEvents.find.apply(RoomEvents, args);
@@ -116,7 +116,7 @@ export class Messages extends Base {
 	insert(...args) {
 		const [message] = args;
 
-		const event = Promise.await(RoomEvents.createMessageEvent({ src: getLocalSrc(), roomId: message.rid, _cid: message._id, d: RoomEvents.fromV1Data(message) }));
+		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, RoomEvents.fromV1Data(message)));
 
 		this.emit('dispatchEvent', event);
 
@@ -145,7 +145,7 @@ export class Messages extends Base {
 
 		d._oid = event._id; // Original id
 
-		const editEvent = Promise.await(RoomEvents.createEditMessageEvent({ src: event.src, roomId: event.rid, _cid, d }));
+		const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, _cid, d));
 
 		this.emit('dispatchEvent', editEvent);
 
@@ -244,7 +244,7 @@ export class Messages extends Base {
 
 	// FIND
 	findByMention(username, options) {
-		const query =	{ 'mentions.username': username };
+		const query = { 'mentions.username': username };
 
 		return this.find(query, options);
 	}
@@ -341,7 +341,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =			{ $nin: types };
+			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
@@ -453,7 +453,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =			{ $nin: types };
+			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
@@ -472,7 +472,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =			{ $nin: types };
+			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
@@ -618,7 +618,7 @@ export class Messages extends Base {
 	// UPDATE
 	setHiddenById(_id, hidden) {
 		if (hidden == null) { hidden = true; }
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -630,7 +630,7 @@ export class Messages extends Base {
 	}
 
 	setAsDeletedByIdAndUser(_id, user) {
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -654,7 +654,7 @@ export class Messages extends Base {
 	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
 		if (pinned == null) { pinned = true; }
 		if (pinnedAt == null) { pinnedAt = 0; }
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -670,7 +670,7 @@ export class Messages extends Base {
 	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
 		if (snippeted == null) { snippeted = true; }
 		if (snippetedAt == null) { snippetedAt = 0; }
-		const query =	{ _id: message._id };
+		const query = { _id: message._id };
 
 		const msg = `\`\`\`${ message.msg }\`\`\``;
 
@@ -688,7 +688,7 @@ export class Messages extends Base {
 	}
 
 	setUrlsById(_id, urls) {
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -700,7 +700,7 @@ export class Messages extends Base {
 	}
 
 	updateAllUsernamesByUserId(userId, username) {
-		const query =	{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		const update = {
 			$set: {
@@ -712,7 +712,7 @@ export class Messages extends Base {
 	}
 
 	updateUsernameOfEditByUserId(userId, username) {
-		const query =	{ 'editedBy._id': userId };
+		const query = { 'editedBy._id': userId };
 
 		const update = {
 			$set: {
@@ -741,7 +741,7 @@ export class Messages extends Base {
 
 	updateUserStarById(_id, userId, starred) {
 		let update;
-		const query =	{ _id };
+		const query = { _id };
 
 		if (starred) {
 			update = {
@@ -761,7 +761,7 @@ export class Messages extends Base {
 	}
 
 	upgradeEtsToEditAt() {
-		const query =	{ ets: { $exists: 1 } };
+		const query = { ets: { $exists: 1 } };
 
 		const update = {
 			$rename: {
@@ -773,7 +773,7 @@ export class Messages extends Base {
 	}
 
 	setMessageAttachments(_id, attachments) {
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -785,7 +785,7 @@ export class Messages extends Base {
 	}
 
 	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -979,13 +979,13 @@ export class Messages extends Base {
 
 	// REMOVE
 	removeById(_id) {
-		const query =	{ _id };
+		const query = { _id };
 
 		return this.remove(query);
 	}
 
 	removeByRoomId(roomId) {
-		const query =	{ rid: roomId };
+		const query = { rid: roomId };
 
 		return this.remove(query);
 	}
@@ -1027,7 +1027,7 @@ export class Messages extends Base {
 	}
 
 	removeByUserId(userId) {
-		const query =	{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		return this.remove(query);
 	}

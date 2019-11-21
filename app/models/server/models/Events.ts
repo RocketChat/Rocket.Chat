@@ -1,54 +1,14 @@
 import { SHA256 } from 'meteor/sha';
 
 import { Base } from './_Base';
-import { EventType, IEvent } from '../../../events/definitions/IEvent';
+import { EDataDefinition, IEvent } from '../../../events/definitions/IEvent';
+import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
+import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
+import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
 
-export const eventTypes = {
-	// Global
-	GENESIS: 'genesis',
-	PING: 'ping',
-
-	// Room
-	ROOM_MESSAGE: 'msg',
-	ROOM_EDIT_MESSAGE: 'emsg',
-
-	ROOM_DELETE: 'room_delete',
-	ROOM_ADD_USER: 'room_add_user',
-	ROOM_REMOVE_USER: 'room_remove_user',
-	ROOM_DELETE_MESSAGE: 'room_delete_message',
-	ROOM_SET_MESSAGE_REACTION: 'room_set_message_reaction',
-	ROOM_UNSET_MESSAGE_REACTION: 'room_unset_message_reaction',
-	ROOM_MUTE_USER: 'room_mute_user',
-	ROOM_UNMUTE_USER: 'room_unmute_user',
-};
-
-declare type RoomContextQuery = { rid: string };
-declare type ContextQuery = RoomContextQuery;
-
-export const contextDefinitions = {
-	ROOM: {
-		t: 'room',
-		isRoom<T extends EventType>(event: IEvent<T>): boolean {
-			return !!event.rid;
-		},
-		context<T extends EventType>(event: IEvent<T>): string {
-			const { rid } = event;
-
-			return rid;
-		},
-		contextQuery(rid: string): ContextQuery {
-			return { rid };
-		},
-	},
-
-	defineType<T extends EventType>(event: IEvent<T>): string {
-		if (this.ROOM.isRoom(event)) {
-			return this.ROOM.t;
-		}
-
-		return 'undefined';
-	},
-};
+export declare type ContextQuery = { rid: string };
+export declare type AddEventResult = { success: boolean, reason?: string, missingParentIds?: string[], latestEventIds?: string[] };
+export declare type EventStub<T extends EDataDefinition> = { _cid?: string, t: EventTypeDescriptor, d?: T | IEDataUpdate<T> };
 
 export class EventsModel extends Base {
 	constructor(nameOrModel: string) {
@@ -58,32 +18,33 @@ export class EventsModel extends Base {
 		this.tryEnsureIndex({ ts: 1 });
 	}
 
-	getEventHash<T extends EventType>(contextQuery: ContextQuery, event: IEvent<T>) {
-		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ JSON.stringify(event.d) }`);
+	getEventHash<T extends EDataDefinition>(contextQuery: ContextQuery, event: IEvent<T>): string {
+		return SHA256(`${event.src}${JSON.stringify(contextQuery)}${event._pids.join(',')}${event.t}${event.ts}${JSON.stringify(event.d)}`);
 	}
 
-	async createEvent<T extends EventType>(src: string, contextQuery: ContextQuery, { _cid, t, d }) {
+	async createEvent<T extends EDataDefinition>(src: string, contextQuery: ContextQuery, stub: EventStub<T>): Promise<IEvent<T>> {
 		let _pids = []; // Previous ids
 
 		// If it is not a GENESIS event, we need to get the previous events
-		if (t !== eventTypes.GENESIS) {
+		if (stub.t !== EventTypeDescriptor.GENESIS) {
 			const previousEvents = await this.model
 				.rawCollection()
 				.find({ ...contextQuery, hasChildren: false })
 				.toArray();
 
-			_pids = previousEvents.map((e) => e._id);
+			_pids = previousEvents.map((e: IEvent<any>) => e._id);
 		}
 
-		const event = {
-			_cid,
+		const event: IEvent<T> = {
+			_id: '',
+			_cid: stub._cid,
 			_pids: _pids || [],
 			v: 2,
 			ts: new Date(),
 			src,
 			...contextQuery,
-			t,
-			d,
+			t: stub.t,
+			d: stub.d,
 			hasChildren: false,
 		};
 
@@ -92,28 +53,33 @@ export class EventsModel extends Base {
 		return event;
 	}
 
-	async createGenesisEvent(src, contextQuery, { d }) {
+	async createGenesisEvent(src: string, contextQuery: ContextQuery, d: IEDataGenesis): Promise<IEvent<IEDataGenesis>> {
 		// Check if genesis event already exists, if so, do not create
 		const genesisEvent = await this.model
 			.rawCollection()
-			.findOne({ ...contextQuery, t: eventTypes.GENESIS });
+			.findOne({ ...contextQuery, t: EventTypeDescriptor.GENESIS });
 
 		if (genesisEvent) {
-			throw new Error(`A GENESIS event for this context query already exists: ${ JSON.stringify(contextQuery, null, 2) }`);
+			throw new Error(`A GENESIS event for this context query already exists: ${JSON.stringify(contextQuery, null, 2)}`);
 		}
 
-		return this.createEvent(src, contextQuery, { t: eventTypes.GENESIS, d });
+		const stub: EventStub<IEDataGenesis> = {
+			t: EventTypeDescriptor.GENESIS,
+			d
+		};
+
+		return this.createEvent(src, contextQuery, stub);
 	}
 
-	async addEvent(contextQuery, event) {
+	async addEvent<T extends EDataDefinition>(contextQuery: ContextQuery, event: IEvent<T>): Promise<AddEventResult> {
 		// Check if the event does not exit
 		const existingEvent = this.findOne({ _id: event._id });
 
 		// If it does not, we insert it, checking for the parents
 		if (!existingEvent) {
 			// Check if we have the parents
-			const parents = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event._pids } }, { _id: 1 }).toArray();
-			const _pids = parents.map(({ _id }) => _id);
+			const parents: IEvent<any>[] = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event._pids } }, { _id: 1 }).toArray();
+			const _pids: string[] = parents.map((e: IEvent<any>) => e._id);
 
 			// This means that we do not have the parents of the event we are adding
 			if (_pids.length !== event._pids.length) {
@@ -121,12 +87,12 @@ export class EventsModel extends Base {
 
 				// Get the latest events for that context and src
 				const latestEvents = await this.model.rawCollection().find({ ...contextQuery, src }, { _id: 1 }).toArray();
-				const latestEventIds = latestEvents.map(({ _id }) => _id);
+				const latestEventIds = latestEvents.map((e: IEvent<any>) => e._id);
 
 				return {
 					success: false,
 					reason: 'missingParents',
-					missingParentIds: event._pids.filter(({ _id }) => _pids.indexOf(_id) === -1),
+					missingParentIds: event._pids.filter((_id) => _pids.indexOf(_id) === -1),
 					latestEventIds,
 				};
 			}
@@ -142,33 +108,27 @@ export class EventsModel extends Base {
 		};
 	}
 
-	async updateEventData(contextQuery, event) {
+	async updateEventData<T extends EDataDefinition>(contextQuery: ContextQuery, eventCID: string, updateData: IEDataUpdate<T>): Promise<void> {
 		const existingEvent = await this.model
 			.rawCollection()
-			.findOne({ ...contextQuery, _cid: event._cid });
+			.findOne({ ...contextQuery, _cid: eventCID });
 
-		const updateQuery = {};
+		const updateQuery: any = {};
 
-		if (event.d.set) {
+		if (updateData.set) {
 			updateQuery.$set = {};
 
-			for (const k of Object.keys(event.d.set)) {
-				updateQuery.$set[`d.${ k }`] = event.d.set[k];
+			for (const k of Object.keys(updateData.set)) {
+				updateQuery.$set[`d.${k}`] = updateData.set[k];
 			}
 		}
 
-		if (event.d.unset) {
+		if (updateData.unset) {
 			updateQuery.$unset = {};
 
-			for (const k of Object.keys(event.d.unset)) {
-				updateQuery.$unset[`d.${ k }`] = event.d.unset[k];
+			for (const k of Object.keys(updateData.unset)) {
+				updateQuery.$unset[`d.${k}`] = updateData.unset[k];
 			}
-		}
-
-		if (!event.d.set && !event.d.unset) {
-			updateQuery.$set = {};
-
-			updateQuery.$set.d = event.d;
 		}
 
 		// If there is no _d (original data), create it
@@ -179,22 +139,22 @@ export class EventsModel extends Base {
 		await this.model.rawCollection().update({ _id: existingEvent._id }, updateQuery);
 	}
 
-	async getEventById(contextQuery, eventId) {
-		const event = await this.model
-			.rawCollection()
-			.findOne({ ...contextQuery, _id: eventId });
+	// async getEventById(contextQuery: ContextQuery, eventId:string) {
+	// 	const event = await this.model
+	// 		.rawCollection()
+	// 		.findOne({ ...contextQuery, _id: eventId });
 
-		return {
-			success: !!event,
-			event,
-		};
-	}
+	// 	return {
+	// 		success: !!event,
+	// 		event,
+	// 	};
+	// }
 
-	async getLatestEvents(contextQuery, fromTimestamp) {
-		return this.model.rawCollection().find({ ...contextQuery, ts: { $gt: new Date(fromTimestamp) } }).toArray();
-	}
+	// async getLatestEvents(contextQuery: ContextQuery, fromTimestamp: Date) {
+	// 	return this.model.rawCollection().find({ ...contextQuery, ts: { $gt: fromTimestamp } }).toArray();
+	// }
 
-	async removeContextEvents(contextQuery) {
-		return this.model.rawCollection().remove({ ...contextQuery });
-	}
+	// async removeContextEvents(contextQuery: ContextQuery) {
+	// 	return this.model.rawCollection().remove({ ...contextQuery });
+	// }
 }
