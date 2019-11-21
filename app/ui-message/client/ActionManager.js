@@ -9,13 +9,17 @@ import { modal } from '../../ui-utils/client/lib/modal';
 const TRIGGER_TIMEOUT = 5000;
 const MODAL_ACTIONS = ['modal', 'modal.open'];
 
-const triggersId = new Set();
+const triggersId = new Map();
 
-const invalidateTriggerId = (id) => triggersId.delete(id);
+const invalidateTriggerId = (id) => {
+	const appId = triggersId.get(id);
+	triggersId.delete(id);
+	return appId;
+};
 
-const generateTriggerId = () => {
+const generateTriggerId = (appId) => {
 	const triggerId = Random.id();
-	triggersId.add(triggerId);
+	triggersId.set(triggerId, appId);
 	return triggerId;
 };
 
@@ -25,18 +29,21 @@ const handlePayloadUserInteraction = (type, data) => {
 		return;
 	}
 
-	invalidateTriggerId(data.triggerId);
+	const appId = invalidateTriggerId(data.triggerId);
 
 	if (MODAL_ACTIONS.includes(type)) {
 		modal.push({
 			template: 'ModalBlock',
-			data,
+			data: {
+				appId,
+				...data,
+			},
 		});
 	}
 };
 
 export const triggerAction = async ({ appId, mid, ...payload }) => {
-	const triggerId = generateTriggerId();
+	const triggerId = generateTriggerId(appId);
 
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 

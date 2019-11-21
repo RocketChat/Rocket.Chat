@@ -7,9 +7,11 @@ Template.ModalBlock.events({
 	'submit form'(e) {
 		e.preventDefault();
 
+		const { appId } = this;
+
 		triggerAction({
 			type: 'viewSubmit',
-
+			appId,
 			payload: {
 				state: Object.values(e.target).reduce((obj, e) => {
 					if (!e.getAttribute || !e.name) {
