@@ -134,6 +134,15 @@ describe('[Setup Wizard]', () => {
 			setupWizard.registeredServer.isSelected().should.be.true;
 		});
 
+		it('it should check if agree to privacy policy is false', () => {
+			setupWizard.serviceTermsAndPrivacyPolicyCheckbox.isSelected().should.be.false;
+		});
+
+		it('it should click agree to privacy policy and check if true', () => {
+			setupWizard.serviceTermsAndPrivacyPolicy.click();
+			setupWizard.serviceTermsAndPrivacyPolicyCheckbox.isSelected().should.be.true;
+		});
+
 		after(() => {
 			setupWizard.goNext();
 		});

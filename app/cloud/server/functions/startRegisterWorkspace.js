@@ -41,7 +41,12 @@ export function startRegisterWorkspace(resend = false) {
 	const allowMarketing = settings.get('Allow_Marketing_Emails');
 
 	const accountName = settings.get('Organization_Name');
+
 	const website = settings.get('Website');
+
+	const agreePrivacyTerms = settings.get('Cloud_Service_Agree_PrivacyTerms');
+
+	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
 
 	const regInfo = {
 		uniqueId: stats.uniqueId,
@@ -51,11 +56,19 @@ export function startRegisterWorkspace(resend = false) {
 		contactEmail,
 		allowMarketing,
 		accountName,
+		organizationType,
+		industry,
+		orgSize,
+		country,
+		language,
+		agreePrivacyTerms,
 		website,
 		siteName,
+		workspaceType,
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
+		setupComplete: true,
 	};
 
 	const cloudUrl = settings.get('Cloud_Url');
