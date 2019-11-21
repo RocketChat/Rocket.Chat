@@ -6,6 +6,19 @@ import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { ChatRoom } from '../../models';
 
+// import { ContactsProvider } from '../../contacts/server/service';
+
+// const crypto = require('crypto');
+import { getHash } from '../../lib/utils';
+
+// let crypto;
+// try {
+//   crypto = require('crypto');
+// } catch (err) {
+//   console.log('################### EAR>> crypto support is disabled!');
+//   console.log(err)
+// }
+
 function trackEvent(category, action, label) {
 	if (window._paq) {
 		window._paq.push(['trackEvent', category, action, label]);
@@ -26,7 +39,21 @@ if (!window._paq || window.ga) {
 			window._paq.push(['trackPageView']);
 		}
 		if (window.ga) {
+		  // WIDECHAT - obfuscate username in GA
+		  var pathArray = route.path.split('/');
+		  if (pathArray[1] === 'direct') {
+		  	var hashedUsername = getHash(pathArray[2]);
+
+		  	// var hashedUsername = 'debuggingTest';
+		  	// var hashedUsername = crypto1.createHash('sha1').update(pathArray[2]).digest('hex');
+		  	// var hashedUsername = pathArray[2].hashCode()
+
+
+		  	var page = route.path.replace(pathArray[2], hashedUsername);
+		  	window.ga('send', 'pageview', page);
+          } else {
 			window.ga('send', 'pageview', route.path);
+		  }
 		}
 	}]);
 

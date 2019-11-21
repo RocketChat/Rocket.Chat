@@ -78,8 +78,18 @@ Template.body.onRendered(() => {
 			  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
 			  ga('create', googleId, 'auto');
-			  ga('send', 'pageview');
+
+              // WIDECHAT - obfuscate username in GA
+			  var pathArray = document.location.pathname.split('/');
+			  if (pathArray[1] === 'direct') {
+			  	var hashedUsername = 'goobledigahh';
+			  	var page = document.location.pathname.replace(pathArray[2], hashedUsername);
+			  	
+                ga('send', 'pageview', page);
+              } else {
+			    ga('send', 'pageview');
 				/* eslint-enable */
+			  }
 			}
 		}
 	});
