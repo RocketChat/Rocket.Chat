@@ -224,6 +224,31 @@ function roomMaxAge(room) {
 	}
 }
 
+async function createFileFromUrl(url) {
+	let response;
+	try {
+		response = await fetch(url);
+	} catch (error) {
+		throw error;
+	}
+
+	const data = await response.blob();
+	const metadata = {
+		type: data.type,
+	};
+	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
+	return file;
+}
+
+function addToInput(text) {
+	const { input } = chatMessages[RoomManager.openedRoom];
+	const initText = input.value.slice(0, input.selectionStart);
+	const finalText = input.value.slice(input.selectionEnd, input.value.length);
+
+	input.value = initText + text + finalText;
+	$(input).change().trigger('input');
+}
+
 callbacks.add('enter-room', wipeFailedUploads);
 
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
@@ -708,7 +733,8 @@ let lastScrollTop;
 export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
-		if (types != null && types.length > 0 && _.every(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1) && userCanDrop(this._id)) {
+
+		if (types != null && types.length > 0 && _.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) && userCanDrop(this._id)) {
 			e.currentTarget.classList.add('over');
 		}
 		e.stopPropagation();
@@ -729,14 +755,39 @@ export const dropzoneEvents = {
 		e.stopPropagation();
 	},
 
-	'dropped .dropzone-overlay'(event, instance) {
+	async 'dropped .dropzone-overlay'(event, instance) {
 		event.currentTarget.parentNode.classList.remove('over');
 
 		const e = event.originalEvent || event;
 
 		e.stopPropagation();
 
-		const files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
+		let files = (e.dataTransfer && e.dataTransfer.files) || [];
+
+		if (files.length < 1) {
+			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
+
+			if (e.dataTransfer.types.includes('text/uri-list')) {
+				const dropContext = document.createDocumentFragment();
+				const dropContextContent = document.createElement('div');
+				dropContextContent.innerHTML = e.dataTransfer.getData('text/html');
+				dropContext.appendChild(dropContextContent);
+				const imgURL = dropContext.querySelector('img').src;
+
+				if (!imgURL) {
+					return addToInput(dropContext.querySelector('a').href);
+				}
+
+				const file = await createFileFromUrl(imgURL);
+				if (typeof file === 'string') {
+					return addToInput(file);
+				}
+				files = [file];
+			}
+			if (e.dataTransfer.types.includes('text/plain')) {
+				return addToInput(transferData.trim());
+			}
+		}
 
 		const filesToUpload = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });

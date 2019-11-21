@@ -1020,7 +1020,7 @@
   "Desktop_Notifications": "Notificações Desktop",
   "Desktop_Notifications_Default_Alert": "Alertas padrão de Notificações de área de trabalho",
   "Desktop_Notifications_Disabled": "Notificações Desktop estão Desativadas. Mude as preferências do seu navegador se quiser habilitar as notificações.",
-  "Desktop_Notifications_Duration": "Duração das notificações",
+  "Desktop_Notifications_Duration": "Duração das notificações desktop",
   "Desktop_Notifications_Duration_Description": "Segundos para exibir notificação de desktop. Isso pode afetar Centro de Notificação do OS X. Insira 0 para usar as configurações padrão do navegador e não afetar Centro de Notificação do OS X.",
   "Desktop_Notifications_Enabled": "Notificações Desktop estão Habilitadas",
   "Desktop_Notifications_Not_Enabled": "Notificações Desktop estão Desabilitadas",
