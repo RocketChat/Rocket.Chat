@@ -6,6 +6,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import Clipboard from 'clipboard';
 import toastr from 'toastr';
 
+import { APIClient } from '../../../utils/client';
+import { modal } from '../../../ui-utils/client';
+
 import './cloudRegisterManually.html';
 import './cloudRegisterManually.css';
 
@@ -30,7 +33,24 @@ Template.cloudRegisterManually.events({
 		instance.state.set('step', CLOUD_STEPS.COPY);
 	},
 	'click .js-finish'(event, instance) {
-		instance.state.set('step', CLOUD_STEPS.DONE);
+		instance.state.set('loading', true);
+
+		APIClient
+			.post('v1/cloud.manualRegister', {}, { cloudBlob: instance.state.get('cloudKey') })
+			.then(() => modal.open({
+				type: 'success',
+				title: TAPi18n.__('Success'),
+				text: TAPi18n.__('Cloud_register_success'),
+				confirmButtonText: TAPi18n.__('Ok'),
+				closeOnConfirm: false,
+				showCancelButton: false,
+			}, () => window.location.reload()))
+			.catch(() => modal.open({
+				type: 'error',
+				title: TAPi18n.__('Error'),
+				text: TAPi18n.__('Cloud_register_error'),
+			}))
+			.then(() => instance.state.set('loading', false));
 	},
 });
 
@@ -44,11 +64,18 @@ Template.cloudRegisterManually.helpers({
 	clientKey() {
 		return Template.instance().state.get('clientKey');
 	},
+	isLoading() {
+		return Template.instance().state.get('loading');
+	},
 	step() {
 		return Template.instance().state.get('step');
 	},
 	disabled() {
-		return Template.instance().state.get('cloudKey').trim().length === 0 && 'disabled';
+		const { state } = Template.instance();
+
+		const shouldDisable = state.get('cloudKey').trim().length === 0 || state.get('loading');
+
+		return shouldDisable && 'disabled';
 	},
 });
 
@@ -67,6 +94,7 @@ Template.cloudRegisterManually.onCreated(function() {
 	this.cloudLink = new ReactiveVar();
 	this.state = new ReactiveDict({
 		step: CLOUD_STEPS.COPY,
+		loading: false,
 		clientKey: '',
 		cloudKey: '',
 		error: '',

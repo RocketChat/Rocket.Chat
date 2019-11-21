@@ -3,8 +3,8 @@
 		<section class="page-container page-home page-static page-settings">
 			{{#header sectionName="Connectivity_Services" hideHelp=true fixedHeight=true fullpage=true}}
 				<div class="rc-header__section-button">
-					{{#unless info.workspaceRegistered}}
-						<button class="rc-button rc-button--small rc-button--secondary js-register">
+					{{#unless info.connectToCloud}}
+						<button class="rc-button rc-button--small rc-button--primary rc-button--outline js-register">
 							{{_ "Cloud_Register_manually"}}
 						</button>
 					{{/unless}}
