@@ -7,9 +7,25 @@
 			</div>
 			<div class="sidebar__toolbar">
 				{{#each toolbarButtons}}
-					<button class="sidebar__toolbar-button rc-tooltip rc-tooltip--down js-button" aria-label="{{name}}" aria-haspopup="{{hasPopup}}">
-						{{> icon block="sidebar__toolbar-button-icon" icon=icon }}
-					</button>
+					{{#if searchBar}}
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+									</div>
+									<input type="text" class="rc-input__element rc-input__element--small js-search" id="searchBar">
+									<div class="rc-input__icon rc-input__icon--right">
+										{{> icon block="rc-input__icon-svg" icon="plus"}}
+									</div>
+								</div>
+							</label>
+						</div>
+					{{else}}
+						<button class="sidebar__toolbar-button rc-tooltip rc-tooltip--down js-button" aria-label="{{name}}" aria-haspopup="{{hasPopup}}">
+							{{> icon block="sidebar__toolbar-button-icon" icon=icon }}
+						</button>
+					{{/if}}
 				{{/each}}
 			</div>
 		{{/with}}
