@@ -89,10 +89,11 @@ export class AppBlockitBridge {
 			} = req.params;
 
 			const {
+				type,
 				actionId,
 				triggerId,
 				messageId,
-				value,
+				payload,
 			} = req.body;
 
 			// const actions = this.appActions.get(appId);
@@ -110,11 +111,12 @@ export class AppBlockitBridge {
 			// const result = this.orch.getManager().getBlockitManager().executeAction(appId, actionId);
 
 			const action = {
+				type,
 				appId,
 				actionId,
 				messageId,
 				triggerId,
-				value,
+				payload,
 			};
 			const result = Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
 

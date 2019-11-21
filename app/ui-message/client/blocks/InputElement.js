@@ -4,8 +4,8 @@ import './InputElement.html';
 
 Template.InputElement.helpers({
 	data() {
-		const { block_id, element } = this;
-		return { block_id, ...element };
+		const { blockId, element } = this;
+		return { blockId, ...element };
 	},
 	template() {
 		switch (this.element.type) {

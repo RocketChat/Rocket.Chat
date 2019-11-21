@@ -8,7 +8,7 @@ Template.Blocks.events({
 		e.preventDefault();
 		e.stopPropagation();
 		const { actionId, appId, value = e.currentTarget.value, blockId, mid } = this;
-		ActionManager.triggerAction({ actionId, appId, value, blockId, mid });
+		ActionManager.triggerAction({ type: 'blockAction', actionId, appId, payload: { value }, blockId, mid });
 	},
 });
 

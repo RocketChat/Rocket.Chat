@@ -3,14 +3,14 @@
 	{{> Template.dynamic template=template data=data }}
 </template>
 <template name="InputElement__StaticSelect">
-	<select name={{action_id}} data-block-id={{block_id}} class="rc-input__element" multiple={{multiple}}>
+	<select name="{{actionId}}" data-block-id="{{blockId}}" class="rc-input__element" multiple="{{multiple}}">
 		{{#each option in options}}
 		<option value="{{option.value}}">{{ option.text.text }}</option>
 		{{/each}}
 	</select>
 </template>
 <template name="InputElement__StaticMultiSelect">
-	<select class="rc-input__element" multiple name={{action_id}} data-block-id={{block_id}}>
+	<select class="rc-input__element" multiple name="{{actionId}}" data-block-id="{{blockId}}">
 		{{#each option in options}}
 		<option value="{{option.value}}">{{ option.text.text }}</option>
 		{{/each}}
@@ -19,8 +19,8 @@
 <template name="InputElement__PlainTextInput">
 
 	{{#if multiline}}
-		<textarea class="rc-input__element" placeholder="{{placeholder.text}}" name={{action_id}} data-block-id={{block_id}}></textarea>
+		<textarea class="rc-input__element" placeholder="{{placeholder.text}}" name="{{actionId}}" data-block-id="{{blockId}}"></textarea>
 	{{else}}
-		<input class="rc-input__element" placeholder="{{placeholder.text}}" name={{action_id}} data-block-id={{block_id}}/>
+		<input class="rc-input__element" placeholder="{{placeholder.text}}" name="{{actionId}}" data-block-id="{{blockId}}"/>
 	{{/if}}
 </template>
