@@ -22,7 +22,8 @@ Meteor.startup(function() {
 
 FlowRouter.route('/admin/view-logs', {
 	name: 'admin-view-logs',
-	action() {
+	async action() {
+		await import('./views/viewLogs');
 		return BlazeLayout.render('main', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('View_Logs'),

@@ -20,6 +20,7 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 			status: 1,
 			statusLivechat: 1,
 			emails: 1,
+			livechat: 1,
 		},
 	});
 
