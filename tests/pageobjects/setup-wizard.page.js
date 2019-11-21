@@ -29,6 +29,10 @@ class SetupWizard extends Page {
 
 	get standaloneServer() { return browser.element('input[name="registerServer"][value="false"]'); }
 
+	get serviceTermsAndPrivacyPolicy() { return browser.element('[data-qa-agree-terms]').$('..'); }
+
+	get serviceTermsAndPrivacyPolicyCheckbox() { return browser.element('input[name="agreeTermsAndPrivacy"][value="false"]'); }
+
 	login() {
 		browser.execute(function(email, password) {
 			Meteor.loginWithPassword(email, password, () => {});
