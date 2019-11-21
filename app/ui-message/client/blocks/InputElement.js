@@ -3,9 +3,11 @@ import { Template } from 'meteor/templating';
 import './InputElement.html';
 
 Template.InputElement.helpers({
+	data() {
+		const { block_id, element } = this;
+		return { block_id, ...element };
+	},
 	template() {
-		console.log(this);
-
 		switch (this.element.type) {
 			case 'plain_text_input':
 				return 'InputElement__PlainTextInput';

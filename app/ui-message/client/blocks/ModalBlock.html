@@ -7,10 +7,10 @@
 	<section class="rc-modal__content">
 		<form>
 			{{>Blocks blocks=blocks}}
+			<footer class="rc-modal__footer">
+				{{> ButtonElement text=close}}
+				{{> ButtonElement text=submit}}
+			</footer>
 		</form>
 	</section>
-	<footer class="rc-modal__footer">
-		{{> ButtonElement text=close}}
-		{{> ButtonElement text=submit}}
-	</footer>
 </template>

@@ -263,8 +263,10 @@ Template.room.helpers({
 					text: 'You enjoy working here at Pistachio & Co',
 					emoji: true,
 				},
+				block_id: 'edit-ticket-desc',
 				element: {
 					type: 'static_select',
+					action_id: 'test1',
 					placeholder: {
 						type: 'plain_text',
 						text: 'Select an item',
@@ -316,6 +318,7 @@ Template.room.helpers({
 			},
 			{
 				type: 'input',
+				block_id: 'edit-ticket-desc',
 				label: {
 					type: 'plain_text',
 					text: 'What do you want for our team weekly lunch?',

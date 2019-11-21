@@ -1,16 +1,16 @@
 <template name="InputElement">
 	<label>{{> TextBlock text=label.text}}{{#if optional}} - (optional) {{/if}}</label>
-	{{> Template.dynamic template=template data=element }}
+	{{> Template.dynamic template=template data=data }}
 </template>
 <template name="InputElement__StaticSelect">
-	<select class="rc-input__element" multiple={{multiple}}>
+	<select name={{action_id}} data-block-id={{block_id}} class="rc-input__element" multiple={{multiple}}>
 		{{#each option in options}}
 		<option value="{{option.value}}">{{ option.text.text }}</option>
 		{{/each}}
 	</select>
 </template>
 <template name="InputElement__StaticMultiSelect">
-	<select class="rc-input__element" multiple>
+	<select class="rc-input__element" multiple name={{action_id}} data-block-id={{block_id}}>
 		{{#each option in options}}
 		<option value="{{option.value}}">{{ option.text.text }}</option>
 		{{/each}}
@@ -19,8 +19,8 @@
 <template name="InputElement__PlainTextInput">
 
 	{{#if multiline}}
-		<textarea class="rc-input__element" placeholder="{{placeholder.text}}"></textarea>
+		<textarea class="rc-input__element" placeholder="{{placeholder.text}}" name={{action_id}} data-block-id={{block_id}}></textarea>
 	{{else}}
-		<input class="rc-input__element" placeholder="{{placeholder.text}}" />
+		<input class="rc-input__element" placeholder="{{placeholder.text}}" name={{action_id}} data-block-id={{block_id}}/>
 	{{/if}}
 </template>
