@@ -80,4 +80,5 @@ import './publications/userChannels';
 import './publications/userData';
 import './routes/avatar';
 import './stream/messages';
+import './stream/rooms';
 import './stream/streamBroadcast';

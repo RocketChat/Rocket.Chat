@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
@@ -41,6 +40,10 @@ Template.userEdit.helpers({
 
 	requirePasswordChange() {
 		return !Template.instance().user || Template.instance().user.requirePasswordChange;
+	},
+
+	setRandomPassword() {
+		return !Template.instance().user || Template.instance().user.setRandomPassword;
 	},
 
 	role() {
@@ -122,17 +125,6 @@ Template.userEdit.events({
 		$(`[title=${ this }]`).remove();
 	},
 
-	'click #randomPassword'(e) {
-		e.stopPropagation();
-		e.preventDefault();
-		e.target.classList.add('loading');
-		$('#password').val('');
-		setTimeout(() => {
-			$('#password').val(Random.id());
-			e.target.classList.remove('loading');
-		}, 1000);
-	},
-
 	'mouseover #password'(e) {
 		e.target.type = 'text';
 	},
@@ -186,6 +178,7 @@ Template.userEdit.onCreated(function() {
 		userData.email = s.trim(this.$('#email').val());
 		userData.verified = this.$('#verified:checked').length > 0;
 		userData.password = s.trim(this.$('#password').val());
+		userData.setRandomPassword = this.$('#setRandomPassword:checked').length > 0;
 		userData.requirePasswordChange = this.$('#changePassword:checked').length > 0;
 		userData.joinDefaultChannels = this.$('#joinDefaultChannels:checked').length > 0;
 		userData.sendWelcomeEmail = this.$('#sendWelcomeEmail:checked').length > 0;
