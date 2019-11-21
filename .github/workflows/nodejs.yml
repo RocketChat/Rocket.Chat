@@ -118,3 +118,17 @@ jobs:
           export METEOR_PROFILE=1000
           meteor build --server-only --directory --debug /tmp/build-test
         fi;
+
+    - name: Prepare build
+      run: |
+        mkdir /tmp/build/
+        cd /tmp/build-test
+        tar czf /tmp/build/Rocket.Chat.tar.gz bundle
+        cd /tmp/build-test/bundle/programs/server
+        npm install
+        
+    - name: Store build
+      uses: actions/upload-artifact@v1
+      with:
+        name: build
+        path: /tmp/build
