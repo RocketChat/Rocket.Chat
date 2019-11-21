@@ -7,14 +7,59 @@ import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
+import { LivechatCustomField } from '../../../collections/LivechatCustomField';
 
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
 	},
 
+	visitorCustomFields() {
+		const fields = [];
+		const visitor = Template.instance().visitor.get();
+		const customFields = Template.instance().customFields.get();
+
+		if (!customFields) {
+			return fields;
+		}
+
+		customFields.forEach((field) => {
+			if (field.visibility !== 'hidden' && field.scope === 'visitor') {
+				const value = visitor.hasOwnProperty('livechatData') && visitor.livechatData.hasOwnProperty(field._id)
+					? visitor.livechatData[field._id]
+					: '';
+
+				fields.push({ name: field._id, label: field.label, value });
+			}
+		});
+
+		return fields;
+	},
+
 	room() {
 		return Template.instance().room.get();
+	},
+
+	roomCustomFields() {
+		const fields = [];
+		const room = Template.instance().room.get();
+		const customFields = Template.instance().customFields.get();
+
+		if (!customFields) {
+			return fields;
+		}
+
+		customFields.forEach((field) => {
+			if (field.visibility !== 'hidden' && field.scope === 'room') {
+				const value = room.hasOwnProperty('livechatData') && room.livechatData.hasOwnProperty(field._id)
+					? room.livechatData[field._id]
+					: '';
+
+				fields.push({ name: field._id, label: field.label, value });
+			}
+		});
+
+		return fields;
 	},
 
 	email() {
@@ -61,6 +106,7 @@ Template.visitorEdit.onCreated(async function() {
 	this.availableTags = new ReactiveVar([]);
 	this.agentDepartments = new ReactiveVar([]);
 	this.availableUserTags = new ReactiveVar([]);
+	this.customFields = new ReactiveVar([]);
 
 	this.autorun(async () => {
 		const { visitorId } = Template.currentData();
@@ -72,10 +118,13 @@ Template.visitorEdit.onCreated(async function() {
 
 	const rid = Template.currentData().roomId;
 
+	this.subscribe('livechat:customFields');
 	this.autorun(async () => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+		const customFields = LivechatCustomField.find().fetch();
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
+		this.customFields.set(customFields || []);
 	});
 
 	const uid = Meteor.userId();
@@ -106,9 +155,17 @@ Template.visitorEdit.events({
 		userData.name = event.currentTarget.elements.name.value;
 		userData.email = event.currentTarget.elements.email.value;
 		userData.phone = event.currentTarget.elements.phone.value;
+		userData.livechatData = {};
+		$('[data-visitorLivechatData=true]').each(function() {
+			userData.livechatData[this.name] = $(this).val() || '';
+		});
 
 		roomData.topic = event.currentTarget.elements.topic.value;
 		roomData.tags = instance.tags.get();
+		roomData.livechatData = {};
+		$('[data-roomLivechatData=true]').each(function() {
+			roomData.livechatData[this.name] = $(this).val() || '';
+		});
 
 		if (sms) {
 			delete userData.phone;

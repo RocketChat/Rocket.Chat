@@ -276,7 +276,7 @@ export const Livechat = {
 		return false;
 	},
 
-	saveGuest({ _id, name, email, phone }) {
+	saveGuest({ _id, name, email, phone, livechatData }) {
 		const updateData = {};
 
 		if (name) {
@@ -287,6 +287,9 @@ export const Livechat = {
 		}
 		if (phone) {
 			updateData.phone = phone;
+		}
+		if (livechatData) {
+			updateData.livechatData = livechatData;
 		}
 		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
@@ -414,7 +417,7 @@ export const Livechat = {
 	},
 
 	saveRoomInfo(roomData, guestData) {
-		if ((roomData.topic != null || roomData.tags != null) && !LivechatRooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
+		if (!LivechatRooms.saveRoomById(roomData)) {
 			return false;
 		}
 

@@ -160,6 +160,15 @@ export class LivechatVisitors extends Base {
 			}
 		}
 
+		if (data.livechatData) {
+			setData.livechatData = {};
+			for (const field in data.livechatData) {
+				if (data.livechatData.hasOwnProperty(field) && !_.isEmpty(s.trim(data.livechatData[field]))) {
+					setData.livechatData[field] = s.trim(data.livechatData[field]);
+				}
+			}
+		}
+
 		const update = {};
 
 		if (!_.isEmpty(setData)) {

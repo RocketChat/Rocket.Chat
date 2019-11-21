@@ -62,14 +62,9 @@ Template.visitorInfo.helpers({
 		return tags && tags.join(', ');
 	},
 
-	customFields() {
+	customRoomFields() {
 		const fields = [];
 		let livechatData = {};
-		const user = Template.instance().user.get();
-		if (user) {
-			livechatData = _.extend(livechatData, user.livechatData);
-		}
-
 		const data = Template.currentData();
 		if (data && data.rid) {
 			const room = Template.instance().room.get();
@@ -84,7 +79,31 @@ Template.visitorInfo.helpers({
 					const customFields = Template.instance().customFields.get();
 					if (customFields) {
 						const field = _.findWhere(customFields, { _id });
-						if (field && field.visibility !== 'hidden') {
+						if (field && field.visibility !== 'hidden' && field.scope === 'room') {
+							fields.push({ label: field.label, value: livechatData[_id] });
+						}
+					}
+				}
+			}
+			return fields;
+		}
+	},
+
+	customVisitorFields() {
+		const fields = [];
+		let livechatData = {};
+		const user = Template.instance().user.get();
+		if (user) {
+			livechatData = _.extend(livechatData, user.livechatData);
+		}
+
+		if (!_.isEmpty(livechatData)) {
+			for (const _id in livechatData) {
+				if (livechatData.hasOwnProperty(_id)) {
+					const customFields = Template.instance().customFields.get();
+					if (customFields) {
+						const field = _.findWhere(customFields, { _id });
+						if (field && field.visibility !== 'hidden' && field.scope === 'visitor') {
 							fields.push({ label: field.label, value: livechatData[_id] });
 						}
 					}
