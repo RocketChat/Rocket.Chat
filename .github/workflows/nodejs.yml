@@ -25,14 +25,13 @@ jobs:
           ${{ runner.OS }}-build-
           ${{ runner.OS }}-
 
-  
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
     - name: npm install
       run: |
-        npm ci
+        npm install
         
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
