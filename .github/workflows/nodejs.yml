@@ -23,7 +23,24 @@ jobs:
         restore-keys: |
           ${{ runner.OS }}-build-${{ env.cache-name }}-
           ${{ runner.OS }}-build-
-          ${{ runner.OS }}-
+          
+    - name: Cache meteor local
+      uses: actions/cache@v1
+      with:
+        path: ./.meteor/local
+        key: ${{ runner.OS }}-meteor-cache-${{ hashFiles('.meteor/versions') }}
+        restore-keys: |
+          ${{ runner.OS }}-meteor-cache-${{ env.cache-name }}-
+          ${{ runner.OS }}-meteor-cache-
+
+    - name: Cache meteor
+      uses: actions/cache@v1
+      with:
+        path: ~/.meteor
+        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
+        restore-keys: |
+          ${{ runner.OS }}-meteor-${{ env.cache-name }}-
+          ${{ runner.OS }}-meteor-
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -57,6 +74,7 @@ jobs:
         meteor npm --versions
         meteor node -v
         git version
+        $GITHUB_REF
 
     - name: npm install
       run: |
@@ -74,3 +92,21 @@ jobs:
       env:
         CI: true
         MONGO_URL: mongodb://localhost:27017
+
+
+    # TODO: Fix env variables
+    - name: Build Rocket.Chat
+      env:
+        TOOL_NODE_FLAGS: --max_old_space_size=3072
+      run: |
+        if [[ $CIRCLE_TAG ]] || [[ $GITHUB_REF == 'refs/head/develop' ]]; then
+          meteor reset;
+        fi
+
+        export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+        if [[ -z $CIRCLE_PR_NUMBER ]]; then
+          meteor build --server-only --directory /tmp/build-test
+        else
+          export METEOR_PROFILE=1000
+          meteor build --server-only --directory --debug /tmp/build-test
+        fi;
