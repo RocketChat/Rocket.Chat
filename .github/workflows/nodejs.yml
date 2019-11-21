@@ -49,9 +49,18 @@ jobs:
         # only install meteor if bin isn't found
         command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
 
+    - name: Versions
+      run: |
+        npm --versions
+        node -v
+        meteor --version
+        meteor npm --versions
+        meteor node -v
+        git version
+
     - name: npm install
       run: |
-        npm install
+        meteor npm install
         
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
