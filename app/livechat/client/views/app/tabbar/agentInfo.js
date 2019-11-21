@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -156,13 +157,14 @@ Template.agentInfo.onCreated(async function() {
 	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
 	const loadAgentData = async (agentId) => {
+		this.ready.set(false);
 		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
 		this.agent.set(user);
 
 		// TODO: Need to replace the following subscribe by the REST approach
-		this.subscribe('livechat:departmentAgents', null, agentId, () => {
+		Tracker.nonreactive(() => this.subscribe('livechat:departmentAgents', null, agentId, () => {
 			this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
-		});
+		}));
 
 		this.ready.set(true);
 	};

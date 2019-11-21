@@ -4,7 +4,7 @@
 	{{else}}
 		<section class="contextual-bar__content">
 			<form id="agent-form" data-id="{{agent._id}}">
-				<div class="rc-form-group rc-form-group--small">
+				<div class="rc-form-group">
 					<label class="rc-form-label">
 						{{_ "Profile_picture"}}
 					</label>
@@ -14,17 +14,17 @@
 						</div>
 					</div>
 				</div>
-				<div class="rc-input rc-form-group rc-form-group--small">
-						<label class="rc-input__label">
-								<div class="rc-input__title">
-									{{_ "Name"}}
-								</div>
-								<div class="rc-input__wrapper">
-										<input name="name" type="text" class="rc-input__element rc-input__element--small" id="name" autocomplete="off" value="{{agent.name}}" disabled/>
-								</div>
-						</label>
+				<div class="rc-input rc-form-group">
+					<label class="rc-input__label">
+							<div class="rc-input__title">
+								{{_ "Name"}}
+							</div>
+							<div class="rc-input__wrapper">
+									<input name="name" type="text" class="rc-input__element" id="name" autocomplete="off" value="{{agent.name}}" disabled/>
+							</div>
+					</label>
 				</div>
-				<div class="rc-input rc-form-group rc-form-group--small">
+				<div class="rc-input rc-form-group">
 						<label class="rc-input__label">
 								<div class="rc-input__title">
 									{{_ "Username"}}
@@ -33,12 +33,12 @@
 										<div class="rc-input__icon">
 											{{> icon icon='at' }}
 										</div>
-										<input name="name" type="text" class="rc-input__element rc-input__element--small" id="username" autocomplete="off" value="{{agent.username}}" disabled/>
+										<input name="name" type="text" class="rc-input__element" id="username" autocomplete="off" value="{{agent.username}}" disabled/>
 								</div>
 						</label>
 				</div>
 				{{#if agent.emails}}
-					<div class="rc-form-group rc-form-group--small">
+					<div class="rc-form-group">
 						<div class="rc-input">
 							<label class="rc-input__label">
 								<div class="rc-input__title">{{_ "Email"}}</div>
@@ -46,25 +46,25 @@
 									<div class="rc-input__icon">
 										{{> icon icon='mail' }}
 									</div>
-									<input name="name" type="text" class="rc-input__element rc-input__element--small" id="email" autocomplete="off" value="{{agent.emails.[0].address}}" disabled/>
+									<input name="name" type="text" class="rc-input__element" id="email" autocomplete="off" value="{{agent.emails.[0].address}}" disabled/>
 								</div>
 							</label>
 						</div>
 					</div>
 				{{/if}}
 				{{#if hasAvailableDepartments}}
-					<div class="rc-form-group rc-form-group--small rc-form-group--inline">
+					<div class="rc-form-group rc-form-group--inline">
 						<select id="departmentSelect" class="rc-input rc-input--small rc-form-item-inline">
-								<option value="placeholder" disabled selected>{{_ "Select_department"}}</option>
-								{{#each dept in availableDepartments}}
-									<option value="{{dept._id}}">{{dept.name}}</option>
-								{{/each}}
+							<option value="placeholder" disabled selected>{{_ "Select_department"}}</option>
+							{{#each dept in availableDepartments}}
+								<option value="{{dept._id}}">{{dept.name}}</option>
+							{{/each}}
 						</select>
 						<button id="addDepartment" class="rc-button rc-button--primary rc-form-item-inline"><i class="icon-plus"></i></button>
 					</div>
 				{{/if}}
 				{{#if hasAgentDepartments}}
-					<div class="rc-form-group rc-form-group--small">
+					<div class="rc-form-group">
 						<div class="rc-input">
 							<label class="rc-input__label">
 								<div class="rc-input__title">{{_ "Departments"}}</div>

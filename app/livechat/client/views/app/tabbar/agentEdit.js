@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
@@ -134,17 +135,21 @@ Template.agentEdit.onCreated(async function() {
 	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
 	this.autorun(async () => {
+		this.ready.set(false);
+
 		const { agentId } = Template.currentData();
 
-		if (agentId) {
-			const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
-			this.agent.set(user);
-
-
-			this.subscribe('livechat:departmentAgents', null, agentId, () => {
-				this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
-			});
+		if (!agentId) {
+			return;
 		}
+
+		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
+
+		this.agent.set(user);
+
+		Tracker.nonreactive(() => this.subscribe('livechat:departmentAgents', null, agentId, () => {
+			this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
+		}));
 
 		this.ready.set(true);
 	});
