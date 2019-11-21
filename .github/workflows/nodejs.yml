@@ -37,6 +37,6 @@ jobs:
     - name: npm lint and test
       run: |
         npm run jslint
-        npm run testunit
+        MONGO_URL=mongodb://localhost:27017 npm run testunit
       env:
         CI: true
