@@ -428,6 +428,21 @@ settings.addGroup('Email', function() {
 		});
 	});
 
+	this.section('Email_changed_section', function() {
+		this.add('Email_Changed_Email_Subject', '{Email_Changed_Email_Subject}', {
+			type: 'string',
+			i18nLabel: 'Subject',
+		});
+
+		this.add('Email_Changed_Email', '<h2>{Hi},</h2><p>{Your_email_address_has_changed}</p><p>{Your_new_email_is_email}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			i18nLabel: 'Body',
+			i18nDescription: 'Email_Changed_Description',
+		});
+	});
+
 	this.section('Privacy', function() {
 		this.add('Email_notification_show_message', true, {
 			type: 'boolean',
