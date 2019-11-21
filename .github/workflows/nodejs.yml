@@ -9,10 +9,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [8.15.x, 8.14.x]
+        node-version: [8.15]
+        mongodb-version: ["3.4"]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v1 
       
     - uses: actions/cache@v1
       id: cache
@@ -27,6 +28,12 @@ jobs:
     - name: npm install
       run: |
         npm ci
+        
+    - name: Launch MongoDB
+      uses: wbari/start-mongoDB@v0.2
+      with:
+        mongoDBVersion: ${{ matrix.mongodb-version }}
+
     - name: npm lint and test
       run: |
         npm run jslint
