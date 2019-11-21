@@ -607,4 +607,43 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	countAllOpenChatsBetweenDate({ start, end, departmentId }) {
+		const query = {
+			'metrics.chatDuration': {
+				$exists: false,
+			},
+			servedBy: { $exists: true },
+			ts: { $gte: new Date(start), $lte: new Date(end) },
+		};
+		if (departmentId) {
+			query.departmentId = departmentId;
+		}
+		return this.find(query).count();
+	}
+
+	countAllClosedChatsBetweenDate({ start, end, departmentId }) {
+		const query = {
+			'metrics.chatDuration': {
+				$exists: true,
+			},
+			servedBy: { $exists: true },
+			ts: { $gte: new Date(start), $lte: new Date(end) },
+		};
+		if (departmentId) {
+			query.departmentId = departmentId;
+		}
+		return this.find(query).count();
+	}
+
+	countAllQueuedChatsBetweenDate({ start, end, departmentId }) {
+		const query = {
+			servedBy: { $exists: false },
+			ts: { $gte: new Date(start), $lte: new Date(end) },
+		};
+		if (departmentId) {
+			query.departmentId = departmentId;
+		}
+		return this.find(query).count();
+	}
 }

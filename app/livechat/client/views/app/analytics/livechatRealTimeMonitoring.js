@@ -172,18 +172,6 @@ const updateAgentStatusChart = () => {
 	updateChartData('lc-agents-chart', 'Busy', [statusData.busy]);
 };
 
-const updateChatsChart = () => {
-	const chats = {
-		open: LivechatMonitoring.find({ 'metrics.chatDuration': { $exists: false }, servedBy: { $exists: true } }).count(),
-		closed: LivechatMonitoring.find({ 'metrics.chatDuration': { $exists: true }, servedBy: { $exists: true } }).count(),
-		queue: LivechatMonitoring.find({ servedBy: { $exists: false } }).count(),
-	};
-
-	updateChartData('lc-chats-chart', 'Open', [chats.open]);
-	updateChartData('lc-chats-chart', 'Closed', [chats.closed]);
-	updateChartData('lc-chats-chart', 'Queue', [chats.queue]);
-};
-
 const displayDepartmentChart = (val) => {
 	const elem = document.getElementsByClassName('lc-chats-per-dept-chart-section')[0];
 	elem.style.display = val ? 'block' : 'none';
@@ -228,6 +216,14 @@ const updateProductivityOverview = async (totalizers) => {
 	}
 };
 
+const loadChatsChartData = ({ start, end }) => APIClient.v1.get(`livechat/analytics/dashboards/charts/chats?start=${ start }&end=${ end }`);
+
+const updateChatsChart = ({ open, closed, queued }) => {
+	updateChartData('lc-chats-chart', 'Open', [open]);
+	updateChartData('lc-chats-chart', 'Closed', [closed]);
+	updateChartData('lc-chats-chart', 'Queue', [queued]);
+};
+
 const getIntervalInMS = () => templateInstance.interval.get() * 1000;
 
 Template.livechatRealTimeMonitoring.helpers({
@@ -267,6 +263,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		const daterange = getDaterange();
 		updateConversationOverview(await loadConversationOverview(daterange));
 		updateProductivityOverview(await loadProductivityOverview(daterange));
+		updateChatsChart(await loadChatsChartData(daterange));
 		this.isLoading.set(false);
 	};
 
