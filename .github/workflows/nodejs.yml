@@ -79,8 +79,8 @@ jobs:
       run: |
         #meteor npm install
         echo $GITHUB_WORKSPACE
-        cp -R ./ ../../_temp/repo
-        cd ../../_temp/
+        cp -R ./ ..
+        cd ..
         pwd
         ls -la
         
