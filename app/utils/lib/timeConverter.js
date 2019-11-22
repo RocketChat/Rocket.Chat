@@ -18,7 +18,7 @@ export const secondsToHHMMSS = (sec) => {
 		return `${ hours }:${ minutes }:${ seconds }`;
 	}
 	if (minutes > 0) {
-		return `${ minutes }:${ seconds }`;
+		return `00:${ minutes }:${ seconds }`;
 	}
-	return sec;
+	return `00:00:${ seconds }`;
 };
