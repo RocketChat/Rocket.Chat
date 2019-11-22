@@ -176,15 +176,16 @@ jobs:
     - name: Decompress build
       run: |
         cd /tmp
-        ls -la
         tar xzf Rocket.Chat.test.tar.gz 
-        ls -la
         cd -
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
+    - name: Setup Chromedriver
+      uses: nanasess/setup-chromedriver@v1.0.0
 
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
