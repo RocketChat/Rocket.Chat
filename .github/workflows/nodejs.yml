@@ -191,7 +191,6 @@ jobs:
         rm -rf /tmp/google-chrome-stable_current_amd64.deb
         sudo sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome"
         google-chrome --version
-
         export CHROMEDRIVER_RELEASE=$(curl --location --fail --retry 3 http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
         curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip"
         cd /tmp
@@ -200,13 +199,12 @@ jobs:
         sudo mv chromedriver /usr/local/bin/chromedriver
         sudo chmod +x /usr/local/bin/chromedriver
         chromedriver --version
-
-        # start xvfb automatically
         export DISPLAY=:99
         Xvfb :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
 
     - name: Test Chrome
       run: |
+        export DISPLAY=:99
         ls -la /usr/bin/google-chrome
         /usr/bin/google-chrome
 
