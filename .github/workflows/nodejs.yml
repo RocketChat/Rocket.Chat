@@ -186,8 +186,10 @@ jobs:
 
     - name: Setup Chrome
       run: |
+        ls -la /usr/bin/google-chrome
         npm i selenium-webdriver chromedriver@74 --chromedriver-force-download
-        /bin/google-chrome --version
+        ls -la /usr/bin/google-chrome
+        /usr/bin/google-chrome --version
 
 #     - name: Launch MongoDB
 #       uses: wbari/start-mongoDB@v0.2
