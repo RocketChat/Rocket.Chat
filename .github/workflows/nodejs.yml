@@ -174,7 +174,9 @@ jobs:
         
     - name: Decompress build
       run: |
+        mv build-test/Rocket.Chat.test.tar.gz /tmp/Rocket.Chat.test.tar.gz
         cd /tmp
+        ls -la
         tar xzf Rocket.Chat.test.tar.gz 
         ls -la
         cd -
