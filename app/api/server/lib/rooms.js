@@ -54,7 +54,7 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 	};
 }
 
-export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
+async function findChannelAndOrPrivateAutocomplete(withPrivate, { uid, selector }) {
 	if (!await hasPermissionAsync(uid, 'view-other-user-channels')) {
 		return { items: [] };
 	}
@@ -69,9 +69,17 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 		},
 	};
 
-	const rooms = await Rooms.findChannelAndPrivateByNameStarting(selector.name, options).toArray();
+	const rooms = await Rooms.findChannelAndOrPrivateByNameStarting(selector.name, options, withPrivate, selector.exceptions).toArray();
 
 	return {
 		items: rooms,
 	};
+}
+
+export function findChannelAndPrivateAutocomplete(params) {
+	return findChannelAndOrPrivateAutocomplete(true, params);
+}
+
+export function findChannelAutocomplete(params) {
+	return findChannelAndOrPrivateAutocomplete(false, params);
 }

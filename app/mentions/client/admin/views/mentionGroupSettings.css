@@ -1,0 +1,23 @@
+.users-table {
+	margin-top: 8px;
+}
+
+.users-table thead {
+	border-bottom: 1px solid rgba(216, 216, 216, 0.4);
+}
+
+.users-table th {
+	padding-bottom: 8px;
+
+	text-align: left;
+
+	color: var(--rc-color-primary-light);
+
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1rem;
+}
+
+.users-table tbody tr:first-child td {
+	padding-top: 8px;
+}

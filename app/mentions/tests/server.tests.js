@@ -28,6 +28,13 @@ beforeEach(function() {
 		},
 		getUser: (userId) => ({ _id: userId, language: 'en' }),
 		getTotalChannelMembers: (/* rid*/) => 2,
+		getMentionGroups: () => [{
+			name: 'test',
+			users: [1],
+			groups: [],
+			roles: [],
+			channels: [],
+		}],
 	});
 });
 
@@ -149,6 +156,20 @@ describe('Mention Server', () => {
 					msg: '@unknow',
 				};
 				const expected = [];
+				const result = mention.getUsersByMentions(message);
+				assert.deepEqual(expected, result);
+			});
+		});
+
+		describe('for mention group', () => {
+			it('should return "test"', () => {
+				const message = {
+					msg: '@test',
+				};
+				const expected = [{
+					_id: 'test',
+					username: 'test',
+				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
 			});

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+import _ from 'underscore';
 
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Subscriptions, Users } from '../../../models/server';
+import { Subscriptions, Users, MentionGroups } from '../../../models/server';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
@@ -186,16 +187,30 @@ const lookup = {
 	},
 };
 
-export async function sendMessageNotifications(message, room, usersInThread = []) {
+export async function sendMessageNotifications(message, room, usersInThread = [], mentionGroups = []) {
 	const sender = roomTypes.getConfig(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
 	}
 
+
+	const mentionGroupNames = mentionGroups.map((group) => group.name);
 	const mentionIds = (message.mentions || []).map(({ _id }) => _id).concat(usersInThread); // add users in thread to mentions array because they follow the same rules
-	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here');
-	const hasMentionToAll = mentionIds.includes('all');
-	const hasMentionToHere = mentionIds.includes('here');
+	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here' && !mentionGroupNames.includes(_id));
+	const mentionIdsToGroups = mentionIds.filter((_id) => {
+		const group = mentionGroups.find((group) => group.name === _id);
+		// no channels on the list -> group works for all of them
+		return group && (group.channels.length === 0 || group.channels.includes(room._id));
+	});
+	const mentionedGroups = mentionGroups.filter((group) => mentionIdsToGroups.includes(group.name));
+	const hasMentionToAll = mentionIds.includes('all') || mentionedGroups.some((group) => group.mentionsOffline);
+	const hasMentionToHere = mentionIds.includes('here') || mentionedGroups.length > 0;
+	const usersInGroups = _.flatten( // TODO: replace with flatMap on Node >= 11.0
+		mentionGroups.filter((group) =>
+			mentionIdsToGroups.includes(group.name)
+      || group.groups.some((name) => mentionIdsToGroups.includes(name)),
+		).map((group) => group.users),
+	);
 
 	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
@@ -214,6 +229,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		$or: [
 			{ 'userHighlights.0': { $exists: 1 } },
 			...usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : [],
+			...usersInGroups.length > 0 ? [{ 'u._id': { $in: usersInGroups } }] : [],
 		],
 	};
 
@@ -271,7 +287,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		message,
 		notificationMessage,
 		room,
-		mentionIds,
+		mentionIds: [...mentionIds, ...usersInGroups],
 		disableAllMessageNotifications,
 		hasReplyToThread: usersInThread && usersInThread.includes(subscription.u._id),
 	}));
@@ -304,6 +320,7 @@ export async function sendAllNotifications(message, room) {
 		return message;
 	}
 
+	const mentionGroups = MentionGroups.find({}).fetch();
 	const {
 		sender,
 		hasMentionToAll,
@@ -311,7 +328,7 @@ export async function sendAllNotifications(message, room) {
 		notificationMessage,
 		mentionIds,
 		mentionIdsWithoutGroups,
-	} = await sendMessageNotifications(message, room);
+	} = await sendMessageNotifications(message, room, undefined, mentionGroups);
 
 	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
 	if (room.t === 'c') {
@@ -325,7 +342,10 @@ export async function sendAllNotifications(message, room) {
 		});
 
 		Promise.all(mentions
-			.map(async (userId) => {
+			.filter((mention) => {
+				const group = mentionGroups.find((g) => g.name === mention);
+				return !group || group.mentionsOutside; // if group is undefined then this is a regular mention
+			}).map(async (userId) => {
 				await callJoinRoom(userId, room._id);
 
 				return userId;

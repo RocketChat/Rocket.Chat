@@ -1,0 +1,114 @@
+<template name="mentionGroupSettings">
+  <div class="permissions-manager">
+    {{#if hasPermission}}
+    <a href="{{pathFor "admin-mention-groups"}}"><i class="icon-angle-left"></i> {{_ "Back_to_mention_groups"}}</a><br><br>
+    <div class="rocket-form">
+      <div class="">
+        <div class="section-content">
+          <div class="input-line double-col">
+            <label>{{_ "Mentions_GroupName"}}</label>
+            <div>
+              <input type="text" class="rc-input__element js-input" name="name" value="{{group.name.get}}" />
+              <div class="settings-description secondary-font-color">
+                {{_ "Mentions_GroupNameDescription"}}</div>
+            </div>
+          </div>
+          <div class="input-line double-col">
+            <label>{{_ "Mentions_GroupDescription"}}</label>
+            <div>
+              <input type="text" class="rc-input__element js-input" name="description" value="{{group.description.get}}" />
+              <div class="settings-description secondary-font-color">
+                {{_ "Mentions_GroupDescriptionDescription"}}</div>
+            </div>
+          </div>
+          <div class="input-line double-col">
+            <label>{{_ "Mentions_UserCanJoin"}}</label>
+            <div>
+              <label>
+                <input type="checkbox" class="rc-switch__input js-input-check" name="userCanJoin" checked="{{group.userCanJoin.get}}">
+                <span class="rc-switch__button">
+                  <span class="rc-switch__button-inside"></span>
+                </span>
+              </label>
+              <div class="settings-description secondary-font-color">
+                  {{_ "Mentions_UserCanJoinDescription"}}</div>
+            </div>
+          </div>
+          <div class="input-line double-col">
+            <label>{{_ "Mentions_Offline"}}</label>
+            <div>
+              <label>
+                <input type="checkbox" class="rc-switch__input js-input-check" name="mentionsOffline" checked="{{group.mentionsOffline.get}}">
+                <span class="rc-switch__button">
+                  <span class="rc-switch__button-inside"></span>
+                </span>
+              </label>
+              <div class="settings-description secondary-font-color">
+                  {{_ "Mentions_OfflineDescription"}}</div>
+            </div>
+          </div>
+          <div class="input-line double-col">
+            <label>{{_ "Mentions_Outside"}}</label>
+            <div>
+              <label>
+                <input type="checkbox" class="rc-switch__input js-input-check" name="mentionsOutside" checked="{{group.mentionsOutside.get}}">
+                <span class="rc-switch__button">
+                  <span class="rc-switch__button-inside"></span>
+                </span>
+              </label>
+              <div class="settings-description secondary-font-color">
+                  {{_ "Mentions_OutsideDescription"}}</div>
+            </div>
+          </div>
+
+          <div class="input-line double-col">
+            <label>{{_ "Roles"}}</label>
+            <div>
+              {{>userAutocomplete id='mention_group_roles' placeholder='Role_Placeholder' collection='UserAndRoom' endpoint='roles.autocomplete' field='name' selected=group.roles.get onUsersChanged=onRolesChanged}}
+              <div class="settings-description secondary-font-color">
+                {{_ "Mentions_RolesDescription"}}</div>
+            </div>
+          </div>
+          
+          <div class="input-line double-col">
+            <label>{{_ "Groups"}}</label>
+            <div>
+              {{>userAutocomplete id='mention_group_groups' placeholder='Group_Placeholder' collection='UserAndRoom' endpoint='mentionGroups.autocomplete' field='name' selected=group.groups.get exclude=group._id onUsersChanged=onGroupsChanged}}
+              <div class="settings-description secondary-font-color">
+                {{_ "Mentions_GroupsDescription"}}</div>
+            </div>
+          </div>
+          
+          <div class="input-line double-col">
+            <label>{{_ "Channels"}}</label>
+            <div>
+              {{>userAutocomplete position='top' id='mention_group_channels' placeholder='Channel_Placeholder' collection='CachedChannelList' endpoint='rooms.autocomplete.channel' field='name' selected=group.channels.get onUsersChanged=onChannelsChanged}}
+              <div class="settings-description secondary-font-color">
+                {{_ "Mentions_ChannelsDescription"}}</div>
+            </div>
+          </div>
+
+          <div class="input-line double-col">
+            <label>{{_ "Users"}}</label>
+            <div>
+              {{>userAutocomplete id='mention_group_users' placeholder='Username_Placeholder' collection='CachedUserList' endpoint='users.autocomplete' field='username' selected=group.users.get onUsersChanged=onUsersChanged}}
+              <div class="settings-description secondary-font-color">
+                  {{_ "Mentions_UsersDescription"}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="submit section">
+        {{#if isEditing}}
+          <button class="button danger js-delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
+          <button class="button primary js-save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+        {{else}}
+          <button class="button primary js-create"><i class="icon-send"></i><span>{{_ "Create"}}</span></button>
+        {{/if}}
+      </div>
+    </div>
+    {{else}}
+    {{_ "Not_authorized"}}
+    {{/if}}
+  </div>
+</template>

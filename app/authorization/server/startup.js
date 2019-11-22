@@ -111,6 +111,7 @@ Meteor.startup(function() {
 		{ _id: 'view-livechat-webhooks',        roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-facebook',        roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-officeHours',     roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-mention-groups',         roles: ['admin'] },
 	];
 
 	for (const permission of permissions) {

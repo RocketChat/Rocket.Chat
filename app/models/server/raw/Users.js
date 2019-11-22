@@ -287,6 +287,10 @@ export class UsersRaw extends BaseRaw {
 				username: {
 					$nin: exceptions,
 				},
+			}, {
+				_id: {
+					$nin: exceptions,
+				},
 			}],
 			...conditions,
 		};

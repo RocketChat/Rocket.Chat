@@ -4,7 +4,7 @@ import Busboy from 'busboy';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findChannelAutocomplete } from '../lib/rooms';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -303,6 +303,20 @@ API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, 
 		}
 
 		return API.v1.success(Promise.await(findChannelAndPrivateAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
+	},
+});
+
+API.v1.addRoute('rooms.autocomplete.channel', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findChannelAutocomplete({
 			uid: this.userId,
 			selector: JSON.parse(selector),
 		})));
