@@ -1,4 +1,4 @@
-name: Node CI
+name: Build and Test
 
 on: [push]
 
@@ -132,3 +132,45 @@ jobs:
       with:
         name: build
         path: /tmp/build
+
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        mongodb-version: ["3.4", "3.6", "4.0"]
+
+    steps:
+    - uses: actions/checkout@v1 
+
+    - name: Launch MongoDB
+      uses: wbari/start-mongoDB@v0.2
+      with:
+        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc, --smallfiles, --replSet=rs0
+
+    - name: Install dependencies
+      run: |
+        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+        echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+        sudo apt-get update
+        sudo apt-get install -y mongodb-org-shell google-chrome-stable
+        
+    - name: Configure Replica Set
+      run: |
+        mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+        mongo --eval 'rs.status()'
+        
+    - name: NPM install
+      run: |
+        npm install
+
+    - name: Test
+      env:
+        TEST_MODE: "true"
+        MONGO_URL: mongodb://localhost:27017/rocketchat
+        MONGO_OPLOG_URL: mongodb://localhost:27017/local
+      run: |
+        for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+      
