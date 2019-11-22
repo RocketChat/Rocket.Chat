@@ -79,7 +79,7 @@ jobs:
       run: |
         #meteor npm install
         npm install
-        #cp -R ./ $GITHUB_WORKSPACE/repo
+        cp -R ./ $GITHUB_WORKSPACE/repo
         
 #     - name: Launch MongoDB
 #       uses: wbari/start-mongoDB@v0.2
