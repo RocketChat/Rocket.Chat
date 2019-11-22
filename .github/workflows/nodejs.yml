@@ -154,81 +154,59 @@ jobs:
         mongodb-version: ["3.4"]
 
     steps:
-#     - uses: actions/checkout@v1
-#       with:
-#         fetch-depth: 1
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
     
-#     - name: Cache node modules
-#       uses: actions/cache@v1
-#       with:
-#         path: node_modules
-#         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-#         restore-keys: |
-#           ${{ runner.OS }}-build-${{ env.cache-name }}-
-#           ${{ runner.OS }}-build-
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-build-
 
-#     - name: Restore build for tests
-#       uses: actions/download-artifact@v1
-#       with:
-#         name: build-test
-#         path: /tmp
+    - name: Restore build for tests
+      uses: actions/download-artifact@v1
+      with:
+        name: build-test
+        path: /tmp
         
-#     - name: Decompress build
-#       run: |
-#         cd /tmp
-#         tar xzf Rocket.Chat.test.tar.gz 
-#         cd -
+    - name: Decompress build
+      run: |
+        cd /tmp
+        tar xzf Rocket.Chat.test.tar.gz 
+        cd -
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
 
-#     - name: Setup Chrome
-#       run: |
-#         curl --silent --show-error --location --fail --retry 3 --output /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-#         (sudo dpkg -i /tmp/google-chrome-stable_current_amd64.deb || sudo apt-get -fy install)
-#         rm -rf /tmp/google-chrome-stable_current_amd64.deb
-#         sudo sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome"
-#         google-chrome --version
-#         export CHROMEDRIVER_RELEASE=$(curl --location --fail --retry 3 http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-#         curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip"
-#         cd /tmp
-#         unzip chromedriver_linux64.zip
-#         rm -rf chromedriver_linux64.zip
-#         sudo mv chromedriver /usr/local/bin/chromedriver
-#         sudo chmod +x /usr/local/bin/chromedriver
-#         chromedriver --version
-#         export DISPLAY=:99
-#         Xvfb :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-
     - name: Setup Chrome
       run: |
-        npm i selenium-webdriver chromedriver geckodriver
+        npm i selenium-webdriver chromedriver
 
-    - name: Test Chrome
-      run: |
-        ls -la /usr/bin/google-chrome
-        xvfb-run --auto-servernum /usr/bin/google-chrome
-
-#     - name: Launch MongoDB
-#       uses: wbari/start-mongoDB@v0.2
-#       with:
-#         mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
+    - name: Launch MongoDB
+      uses: wbari/start-mongoDB@v0.2
+      with:
+        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
 
     - name: Install dependencies
       run: |
-        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+        #wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        #sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+        #echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
         echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
         sudo apt-get update
-        sudo apt-get install -y mongodb-org-shell google-chrome-stable
+        sudo apt-get install -y mongodb-org-shell
+        #google-chrome-stable
         
-#     - name: Configure Replica Set
-#       run: |
-#         mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-#         mongo --eval 'rs.status()'
+    - name: Configure Replica Set
+      run: |
+        mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+        mongo --eval 'rs.status()'
         
 #     - name: NPM install
 #       run: |
@@ -241,5 +219,5 @@ jobs:
         MONGO_OPLOG_URL: mongodb://localhost:27017/local
       run: |
         #for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
-        npm run chimp-test
+        xvfb-run --auto-servernum npm run chimp-test
       
