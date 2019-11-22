@@ -16,7 +16,7 @@ export const findAllRoomsAsync = async ({
 	};
 };
 
-export const findAllAverageServiceTimeAsync = async ({
+export const findAllAverageOfChatDurationTimeAsync = async ({
 	start,
 	end,
 	departmentId,
@@ -26,8 +26,8 @@ export const findAllAverageServiceTimeAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		departments: await LivechatRooms.findAllAverageServiceTime({ start, end, departmentId, options }),
-		total: (await LivechatRooms.findAllAverageServiceTime({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllAverageOfChatDurationTime({ start, end, departmentId, options }),
+		total: (await LivechatRooms.findAllAverageOfChatDurationTime({ start, end, departmentId })).length,
 	};
 };
 
@@ -106,7 +106,7 @@ export const findPercentageOfAbandonedRoomsAsync = async ({
 	};
 };
 
-export const findAllAverageServiceTime = ({ start, end, departmentId, options }) => Promise.await(findAllAverageServiceTimeAsync({ start, end, departmentId, options }));
+export const findAllAverageOfChatDurationTime = ({ start, end, departmentId, options }) => Promise.await(findAllAverageOfChatDurationTimeAsync({ start, end, departmentId, options }));
 export const findAllRooms = ({ start, end, answered, departmentId, options }) => Promise.await(findAllRoomsAsync({ start, end, answered, departmentId, options }));
 export const findAllServiceTime = ({ start, end, departmentId, options }) => Promise.await(findAllServiceTimeAsync({ start, end, departmentId, options }));
 export const findAllAverageWaitingTime = ({ start, end, departmentId, options }) => Promise.await(findAllAverageWaitingTimeAsync({ start, end, departmentId, options }));

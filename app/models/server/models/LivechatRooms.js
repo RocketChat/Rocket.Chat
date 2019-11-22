@@ -253,10 +253,22 @@ export class LivechatRooms extends Base {
 				responseBy: {
 					_id: response.user._id,
 					username: response.user.username,
+					lastMessageTs: new Date(),
 				},
 			},
 			$unset: {
 				waitingResponse: 1,
+			},
+		});
+	}
+
+	setAgentLastMessageTs(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				'responseBy.lastMessageTs': new Date(),
 			},
 		});
 	}

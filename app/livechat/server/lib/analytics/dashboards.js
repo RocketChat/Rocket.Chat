@@ -1,9 +1,11 @@
-import { LivechatRooms, Users, LivechatVisitors } from '../../../../models/server/raw';
+import moment from 'moment';
+
+import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '../../../../models/server/raw';
 import { Livechat } from '../Livechat';
 import { secondsToHHMMSS } from '../../../../utils/server';
 import {
 	findPercentageOfAbandonedRoomsAsync,
-	findAllAverageServiceTimeAsync,
+	findAllAverageOfChatDurationTimeAsync,
 	findAllAverageWaitingTimeAsync,
 	findAllNumberOfAbandonedRoomsAsync,
 } from './departments';
@@ -47,7 +49,11 @@ const getProductivityMetricsAsync = async ({
 		end,
 		departmentId,
 	});
-	const averageServiceTime = await findAllAverageServiceTimeAsync({
+	const averageOfAvailableServiceTime = (await LivechatAgentActivity.findAllAverageAvailableServiceTime({
+		date: parseInt(moment(start).format('YYYYMMDD')),
+		departmentId,
+	}))[0];
+	const averageOfChatDurationTime = await findAllAverageOfChatDurationTimeAsync({
 		start,
 		end,
 		departmentId,
@@ -57,29 +63,45 @@ const getProductivityMetricsAsync = async ({
 		end,
 		departmentId,
 	});
+	const averageOfServiceTime = await LivechatRooms.findAllAverageOfServiceTime({
+		start,
+		end,
+		departmentId,
+	});
+
 	const totalOfAbandonedRooms = averageOfAbandonedRooms.departments.length;
-	const totalOfServiceTime = averageServiceTime.departments.length;
+	const totalOfChatDurationTime = averageOfChatDurationTime.departments.length;
 	const totalOfWaitingTime = averageWaitingTime.departments.length;
+	const totalOfServiceTime = averageOfServiceTime.length;
+
 	const sumOfPercentageOfAbandonedRooms = averageOfAbandonedRooms.departments.reduce((acc, abandonedRoom) => {
 		acc += abandonedRoom.percentageOfAbandonedChats;
 		return acc;
 	}, 0);
-	const sumOfServiceTime = averageServiceTime.departments.reduce((acc, serviceTime) => {
-		acc += serviceTime.averageServiceTimeInSeconds;
+	const sumOfChatDurationTime = averageOfChatDurationTime.departments.reduce((acc, chatDurationTime) => {
+		acc += chatDurationTime.averageChatDurationTimeInSeconds;
 		return acc;
 	}, 0);
 	const sumOfWaitingTime = averageWaitingTime.departments.reduce((acc, serviceTime) => {
 		acc += serviceTime.averageWaitingTimeInSeconds;
 		return acc;
 	}, 0);
+	const sumOfServiceTime = averageOfServiceTime.reduce((acc, serviceTime) => {
+		acc += serviceTime.averageServiceTimeInSeconds;
+		return acc;
+	}, 0);
 	const totalOfAverageAbandonedRooms = totalOfAbandonedRooms === 0 ? 0 : sumOfPercentageOfAbandonedRooms / totalOfAbandonedRooms;
-	const totalOfAverageServiceTime = totalOfServiceTime === 0 ? 0 : sumOfServiceTime / totalOfServiceTime;
+	const totalOfAverageChatDurationTime = totalOfChatDurationTime === 0 ? 0 : sumOfChatDurationTime / totalOfChatDurationTime;
 	const totalOfAvarageWaitingTime = totalOfWaitingTime === 0 ? 0 : sumOfWaitingTime / totalOfWaitingTime;
+	const totalOfAverageAvailableServiceTime = averageOfAvailableServiceTime.averageAvailableServiceTimeInSeconds;
+	const totalOfAverageServiceTime = totalOfServiceTime === 0 ? 0 : sumOfServiceTime / totalOfServiceTime;
 
 	return {
 		totalizers: [
 			...totalizers,
 			{ title: 'Avg_of_abandoned_chats', value: `${ totalOfAverageAbandonedRooms }%` },
+			{ title: 'Avg_of_available_service_time', value: secondsToHHMMSS(totalOfAverageAvailableServiceTime) },
+			{ title: 'Avg_of_chat_duration_time', value: secondsToHHMMSS(totalOfAverageChatDurationTime) },
 			{ title: 'Avg_of_service_time', value: secondsToHHMMSS(totalOfAverageServiceTime) },
 			{ title: 'Avg_of_waiting_time', value: secondsToHHMMSS(totalOfAvarageWaitingTime) },
 		],

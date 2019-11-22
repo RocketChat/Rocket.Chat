@@ -453,6 +453,8 @@
   "Avg_chat_duration": "Average of Chat Duration",
   "Avg_first_response_time": "Average of First Response Time",
   "Avg_of_abandoned_chats": "Average of Abandoned Chats",
+  "Avg_of_available_service_time": "Average of Service Available Time (Agents)",
+  "Avg_of_chat_duration_time": "Average of Chat Duration Time (Agents)",
   "Avg_of_service_time": "Average of Service Time (Agents)",
   "Avg_of_waiting_time": "Average of Waiting Time",
   "Avg_response_time": "Average of Response Time",
