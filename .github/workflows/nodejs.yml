@@ -187,6 +187,7 @@ jobs:
     - name: Setup Chrome
       run: |
         npm i selenium-webdriver chromedriver@74
+        /bin/google-chrome --version
 
 #     - name: Launch MongoDB
 #       uses: wbari/start-mongoDB@v0.2
