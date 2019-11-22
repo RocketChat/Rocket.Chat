@@ -209,10 +209,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y mongodb-org-shell google-chrome-stable
         
-    - name: Configure Replica Set
-      run: |
-        mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-        mongo --eval 'rs.status()'
+#     - name: Configure Replica Set
+#       run: |
+#         mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+#         mongo --eval 'rs.status()'
         
 #     - name: NPM install
 #       run: |
