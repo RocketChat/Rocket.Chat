@@ -171,10 +171,10 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: build-test
+        path: /tmp
         
     - name: Decompress build
       run: |
-        mv build-test/Rocket.Chat.test.tar.gz /tmp/Rocket.Chat.test.tar.gz
         cd /tmp
         ls -la
         tar xzf Rocket.Chat.test.tar.gz 
