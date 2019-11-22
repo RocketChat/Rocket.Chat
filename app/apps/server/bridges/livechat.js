@@ -141,6 +141,6 @@ export class AppLivechatBridge {
 	async findDepartments(query, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
 
-		return LivechatDepartment.find(query).fetch().map((department) => this.orch.getConverters().get('departments').covertDepartment(department));
+		return LivechatDepartment.find(query).fetch().map(this.orch.getConverters().get('departments').convertDepartment);
 	}
 }
