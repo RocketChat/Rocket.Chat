@@ -165,9 +165,38 @@ const findAllChatMetricsByDepartmentAsync = async ({
 	return result;
 };
 
+const findAllResponseTimeMetricsAsync = async ({
+	start,
+	end,
+	departmentId = undefined,
+}) => {
+	if (!start || !end) {
+		throw new Error('"start" and "end" must be provided');
+	}
+	const responseTimes = (await LivechatRooms.calculateResponseTimingsBetweenDates({ start, end, departmentId }))[0];
+	const reactionTimes = (await LivechatRooms.calculateReactionTimingsBetweenDates({ start, end, departmentId }))[0];
+	const durationTimings = (await LivechatRooms.calculateDurationTimingsBetweenDates({ start, end, departmentId }))[0];
+
+	return {
+		response: {
+			avg: responseTimes ? responseTimes.avg : 0,
+			longest: responseTimes ? responseTimes.longest : 0,
+		},
+		reaction: {
+			avg: reactionTimes ? reactionTimes.avg : 0,
+			longest: reactionTimes ? reactionTimes.longest : 0,
+		},
+		chatDuration: {
+			avg: durationTimings ? durationTimings.avg : 0,
+			longest: durationTimings ? durationTimings.longest : 0,
+		},
+	};
+};
+
 export const findAllChatsStatus = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
 export const getProductivityMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getProductivityMetricsAsync({ start, end, departmentId }));
 export const getConversationsMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getConversationsMetricsAsync({ start, end, departmentId }));
 export const findAllChatMetricsByAgent = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByAgentAsync({ start, end, departmentId }));
 export const findAllChatMetricsByDepartment = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByDepartmentAsync({ start, end, departmentId }));
+export const findAllResponseTimeMetrics = ({ start, end, departmentId = undefined }) => Promise.await(findAllResponseTimeMetricsAsync({ start, end, departmentId }));
 export const findAllAgentsStatus = ({ departmentId = undefined }) => Promise.await(findAllAgentsStatusAsync({ departmentId }));

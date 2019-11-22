@@ -3,12 +3,10 @@ import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { drawLineChart, drawDoughnutChart, updateChart } from '../../../lib/chartHandler';
-import { getTimingsChartData } from '../../../lib/dataHandler';
-import { LivechatMonitoring } from '../../../collections/LivechatMonitoring';
 import { APIClient } from '../../../../../utils/client';
 import './livechatRealTimeMonitoring.html';
 
-let chartContexts = {};			// stores context of current chart, used to clean when redrawing
+const chartContexts = {}; // stores context of current chart, used to clean when redrawing
 let templateInstance;
 
 const initChart = {
@@ -95,29 +93,11 @@ const initAllCharts = async () => {
 };
 
 const updateChartData = async (chartId, label, data) => {
-	// update chart
 	if (!chartContexts[chartId]) {
 		chartContexts[chartId] = await initChart[chartId]();
 	}
 
 	await updateChart(chartContexts[chartId], label, data);
-};
-
-const metricsUpdated = async (ts) => {
-	const hour = moment(ts).format('H');
-	const label = `${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`;
-
-	const query = {
-		ts: {
-			$gte: new Date(moment(ts).startOf('hour')),
-			$lt: new Date(moment(ts).add(1, 'hours').startOf('hour')),
-		},
-	};
-
-	const data = getTimingsChartData(LivechatMonitoring.find(query));
-
-	await updateChartData('lc-reaction-response-times-chart', label, [data.reaction.avg, data.reaction.longest, data.response.avg, data.response.longest]);
-	await updateChartData('lc-chat-duration-chart', label, [data.chatDuration.avg, data.chatDuration.longest]);
 };
 
 let timer;
@@ -197,15 +177,21 @@ const updateDepartmentsChart = (departments) => {
 		.forEach((department) => updateChartData('lc-chats-per-dept-chart', department, [departments[department].open, departments[department].closed]));
 };
 
+const loadTimingsChartData = ({ start, end }) => APIClient.v1.get(`livechat/analytics/dashboards/charts/timings?start=${ start }&end=${ end }`);
+
+const updateTimingsChart = async (timingsData) => {
+	const hour = moment(new Date()).format('H');
+	const label = `${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`;
+
+	await updateChartData('lc-reaction-response-times-chart', label, [timingsData.reaction.avg, timingsData.reaction.longest, timingsData.response.avg, timingsData.response.longest]);
+	await updateChartData('lc-chat-duration-chart', label, [timingsData.chatDuration.avg, timingsData.chatDuration.longest]);
+};
+
 const getIntervalInMS = () => templateInstance.interval.get() * 1000;
 
 Template.livechatRealTimeMonitoring.helpers({
 	selected(value) {
-		if (value === templateInstance.analyticsOptions.get().value || value === templateInstance.chartOptions.get().value) { return 'selected'; }
-		return false;
-	},
-	showDepartmentChart() {
-		return templateInstance.showDepartmentChart.get();
+		return value === templateInstance.analyticsOptions.get().value || value === templateInstance.chartOptions.get().value ? 'selected' : false;
 	},
 	conversationsOverview() {
 		return templateInstance.conversationsOverview.get();
@@ -220,40 +206,15 @@ Template.livechatRealTimeMonitoring.helpers({
 
 Template.livechatRealTimeMonitoring.onCreated(function() {
 	templateInstance = Template.instance();
-	this.isLoading = new ReactiveVar(true);
+	this.isLoading = new ReactiveVar(false);
 	this.conversationsOverview = new ReactiveVar();
 	this.timingOverview = new ReactiveVar();
 	this.conversationTotalizers = new ReactiveVar([]);
 	this.interval = new ReactiveVar(5);
-
-	const updateMonitoringDashboard = async (id, fields) => {
-		const { ts } = LivechatMonitoring.findOne({ _id: id });
-
-		if (fields.metrics) {
-			// metrics changed
-			await metricsUpdated(ts);
-		}
-	};
-
-	LivechatMonitoring.find().observeChanges({
-		changed(id, fields) {
-			updateMonitoringDashboard(id, fields);
-		},
-		added(id, fields) {
-			updateMonitoringDashboard(id, fields);
-		},
-	});
 });
 
 Template.livechatRealTimeMonitoring.onRendered(async function() {
-	chartContexts = {};			// Clear chart contexts from previous loads, fixing bug when menu is reopened after changing to another.
-
 	await initAllCharts();
-
-	this.subscribe('livechat:monitoring', {
-		gte: moment().startOf('day').toISOString(),
-		lt: moment().startOf('day').add(1, 'days').toISOString(),
-	});
 
 	this.updateDashboard = async () => {
 		const daterange = getDaterange();
@@ -263,16 +224,17 @@ Template.livechatRealTimeMonitoring.onRendered(async function() {
 		updateChatsPerAgentChart(await loadChatsPerAgentChartData(daterange));
 		updateAgentStatusChart(await loadAgentsStatusChartData());
 		updateDepartmentsChart(await loadChatsPerDepartmentChartData(daterange));
-		this.isLoading.set(false);
+		updateTimingsChart(await loadTimingsChartData(daterange));
 	};
-
 	this.autorun(() => {
 		if (timer) {
 			clearInterval(timer);
 		}
 		timer = setInterval(() => this.updateDashboard(), getIntervalInMS());
 	});
-	this.updateDashboard();
+	this.isLoading.set(true);
+	await this.updateDashboard();
+	this.isLoading.set(false);
 });
 
 Template.livechatRealTimeMonitoring.events({

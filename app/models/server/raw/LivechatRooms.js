@@ -784,4 +784,139 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const params = [match, lookup, unwind, group, project];
 		return this.col.aggregate(params).toArray();
 	}
+
+	calculateResponseTimingsBetweenDates({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				ts: { $gte: new Date(start), $lte: new Date(end) },
+			},
+		};
+		const group = {
+			$group: {
+				_id: null,
+				sumResponseAvg: {
+					$sum: '$metrics.response.avg',
+				},
+				roomsWithResponseTime: {
+					$sum: {
+						$cond: [{
+							$and: [
+								{ $ifNull: ['$metrics.response.avg', false] },
+							],
+						}, 1, 0],
+					},
+				},
+				maxFirstResponse: { $max: '$metrics.response.ft' },
+			},
+		};
+		const project = {
+			$project: {
+				avg: {
+					$trunc: {
+						$cond: [
+							{ $eq: ['$roomsWithResponseTime', 0] },
+							0,
+							{ $divide: ['$sumResponseAvg', '$roomsWithResponseTime'] },
+						],
+					},
+				},
+				longest: '$maxFirstResponse',
+			},
+		};
+		if (departmentId) {
+			match.$match.departmentId = departmentId;
+		}
+		return this.col.aggregate([match, group, project]).toArray();
+	}
+
+	calculateReactionTimingsBetweenDates({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				ts: { $gte: new Date(start), $lte: new Date(end) },
+			},
+		};
+		const group = {
+			$group: {
+				_id: null,
+				sumReactionFirstResponse: {
+					$sum: '$metrics.reaction.ft',
+				},
+				roomsWithFirstReaction: {
+					$sum: {
+						$cond: [{
+							$and: [
+								{ $ifNull: ['$metrics.reaction.ft', false] },
+							],
+						}, 1, 0],
+					},
+				},
+				maxFirstReaction: { $max: '$metrics.reaction.ft' },
+			},
+		};
+		const project = {
+			$project: {
+				avg: {
+					$trunc: {
+						$cond: [
+							{ $eq: ['$roomsWithFirstReaction', 0] },
+							0,
+							{ $divide: ['$sumReactionFirstResponse', '$roomsWithFirstReaction'] },
+						],
+					},
+				},
+				longest: '$maxFirstReaction',
+			},
+		};
+		if (departmentId) {
+			match.$match.departmentId = departmentId;
+		}
+		return this.col.aggregate([match, group, project]).toArray();
+	}
+
+	calculateDurationTimingsBetweenDates({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				ts: { $gte: new Date(start), $lte: new Date(end) },
+			},
+		};
+		const group = {
+			$group: {
+				_id: null,
+				sumChatDuration: {
+					$sum: '$metrics.chatDuration',
+				},
+				roomsWithChatDuration: {
+					$sum: {
+						$cond: [{
+							$and: [
+								{ $ifNull: ['$metrics.chatDuration', false] },
+							],
+						}, 1, 0],
+					},
+				},
+				maxChatDuration: { $max: '$metrics.chatDuration' },
+			},
+		};
+		const project = {
+			$project: {
+				avg: {
+					$trunc: {
+						$cond: [
+							{ $eq: ['$roomsWithChatDuration', 0] },
+							0,
+							{ $divide: ['$sumChatDuration', '$roomsWithChatDuration'] },
+						],
+					},
+				},
+				longest: '$maxChatDuration',
+			},
+		};
+		if (departmentId) {
+			match.$match.departmentId = departmentId;
+		}
+		return this.col.aggregate([match, group, project]).toArray();
+	}
 }
