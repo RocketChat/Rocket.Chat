@@ -128,13 +128,14 @@ jobs:
         tar czf /tmp/build/Rocket.Chat.tar.gz bundle
         cd /tmp/build-test/bundle/programs/server
         npm install
-        tar czf Rocket.Chat.tar.gz ./
+        cd /tmp
+        tar czf Rocket.Chat.test.tar.gz ./build-test
         
     - name: Store build for tests
       uses: actions/upload-artifact@v1
       with:
         name: build-test
-        path: /tmp/build-test/Rocket.Chat.tar.gz
+        path: /tmp/Rocket.Chat.test.tar.gz
 
     - name: Store build
       uses: actions/upload-artifact@v1
@@ -173,7 +174,10 @@ jobs:
         
     - name: Decompress build
       run: |
-        tar xzf /tmp/build-test/Rocket.Chat.tar.gz 
+        cd /tmp
+        tar xzf Rocket.Chat.test.tar.gz 
+        ls -la
+        cd -
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
