@@ -178,7 +178,7 @@ jobs:
         echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
         echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
         sudo apt-get update
-        sudo apt-get install -y mongodb-org-shell google-chrome-stable@74
+        sudo apt-get install -y mongodb-org-shell google-chrome-stable=74
 
     - name: Setup Chrome
       run: |
