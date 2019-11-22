@@ -154,18 +154,18 @@ jobs:
         mongodb-version: ["3.4"]
 
     steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+#     - uses: actions/checkout@v1
+#       with:
+#         fetch-depth: 1
     
-    - name: Cache node modules
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-build-${{ env.cache-name }}-
-          ${{ runner.OS }}-build-
+#     - name: Cache node modules
+#       uses: actions/cache@v1
+#       with:
+#         path: node_modules
+#         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+#         restore-keys: |
+#           ${{ runner.OS }}-build-${{ env.cache-name }}-
+#           ${{ runner.OS }}-build-
 
 #     - name: Restore build for tests
 #       uses: actions/download-artifact@v1
@@ -204,6 +204,11 @@ jobs:
         # start xvfb automatically
         export DISPLAY=:99
         Xvfb :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+
+    - name: Test Chrome
+      run: |
+        ls -la /usr/bin/google-chrome
+        /usr/bin/google-chrome
 
 #     - name: Launch MongoDB
 #       uses: wbari/start-mongoDB@v0.2
