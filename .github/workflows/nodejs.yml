@@ -143,7 +143,7 @@ jobs:
         mongodb-version: [3.4, 3.6, 4.0]
 
     steps:
-    #- uses: actions/checkout@v1 
+    - uses: actions/checkout@v1 
     
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
