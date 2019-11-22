@@ -8,6 +8,7 @@ import {
 	findAllAverageOfChatDurationTimeAsync,
 	findAllAverageWaitingTimeAsync,
 	findAllNumberOfAbandonedRoomsAsync,
+	findAllAverageServiceTimeAsync,
 } from './departments';
 
 
@@ -63,7 +64,7 @@ const getProductivityMetricsAsync = async ({
 		end,
 		departmentId,
 	});
-	const averageOfServiceTime = await LivechatRooms.findAllAverageOfServiceTime({
+	const averageOfServiceTime = await findAllAverageServiceTimeAsync({
 		start,
 		end,
 		departmentId,
@@ -72,7 +73,7 @@ const getProductivityMetricsAsync = async ({
 	const totalOfAbandonedRooms = averageOfAbandonedRooms.departments.length;
 	const totalOfChatDurationTime = averageOfChatDurationTime.departments.length;
 	const totalOfWaitingTime = averageWaitingTime.departments.length;
-	const totalOfServiceTime = averageOfServiceTime.length;
+	const totalOfServiceTime = averageOfServiceTime.departments.length;
 
 	const sumOfPercentageOfAbandonedRooms = averageOfAbandonedRooms.departments.reduce((acc, abandonedRoom) => {
 		acc += abandonedRoom.percentageOfAbandonedChats;
@@ -86,7 +87,7 @@ const getProductivityMetricsAsync = async ({
 		acc += serviceTime.averageWaitingTimeInSeconds;
 		return acc;
 	}, 0);
-	const sumOfServiceTime = averageOfServiceTime.reduce((acc, serviceTime) => {
+	const sumOfServiceTime = averageOfServiceTime.departments.reduce((acc, serviceTime) => {
 		acc += serviceTime.averageServiceTimeInSeconds;
 		return acc;
 	}, 0);
