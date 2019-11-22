@@ -154,6 +154,11 @@ jobs:
         mongodb-version: ["3.4"]
 
     steps:
+    - name: Launch MongoDB
+      uses: wbari/start-mongoDB@v0.2
+      with:
+        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
+
     - name: Restore build for tests
       uses: actions/download-artifact@v1
       with:
@@ -187,11 +192,6 @@ jobs:
         npm i selenium-webdriver chromedriver@73 --chromedriver-force-download
         ls -la /usr/bin/google-chrome
         /usr/bin/google-chrome --version
-
-    - name: Launch MongoDB
-      uses: wbari/start-mongoDB@v0.2
-      with:
-        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
         
     - name: Configure Replica Set
       run: |
