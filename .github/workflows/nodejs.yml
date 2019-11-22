@@ -208,9 +208,8 @@ jobs:
 
     - name: Test Chrome
       run: |
-        export DISPLAY=:99
         ls -la /usr/bin/google-chrome
-        /usr/bin/google-chrome
+        xvfb-run --auto-servernum /usr/bin/google-chrome
 
 #     - name: Launch MongoDB
 #       uses: wbari/start-mongoDB@v0.2
