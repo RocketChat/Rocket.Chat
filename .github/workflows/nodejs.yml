@@ -156,6 +156,10 @@ jobs:
         pwd
         ls -la
         cd -
+        cd ../../
+        pwd
+        ls -la
+        cd -
     
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
