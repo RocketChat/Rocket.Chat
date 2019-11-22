@@ -150,8 +150,7 @@ jobs:
     strategy:
       matrix:
         node-version: ["8.15"]
-#         mongodb-version: ["3.4", "3.6", "4.0"]
-        mongodb-version: ["3.4"]
+        mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
     - name: Launch MongoDB
@@ -178,20 +177,14 @@ jobs:
 
     - name: Install dependencies
       run: |
-        #wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
         sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-        #echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
         echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
         sudo apt-get update
         sudo apt-get install -y mongodb-org-shell
-        #google-chrome-stable=74.0.3729.169-1
 
     - name: Setup Chrome
       run: |
-        ls -la /usr/bin/google-chrome
-        npm i selenium-webdriver chromedriver@73 --chromedriver-force-download
-        ls -la /usr/bin/google-chrome
-        /usr/bin/google-chrome --version
+        npm i chromedriver
         
     - name: Configure Replica Set
       run: |
