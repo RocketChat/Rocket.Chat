@@ -94,7 +94,7 @@ const getProductivityMetricsAsync = async ({
 	const totalOfAverageAbandonedRooms = totalOfAbandonedRooms === 0 ? 0 : sumOfPercentageOfAbandonedRooms / totalOfAbandonedRooms;
 	const totalOfAverageChatDurationTime = totalOfChatDurationTime === 0 ? 0 : sumOfChatDurationTime / totalOfChatDurationTime;
 	const totalOfAvarageWaitingTime = totalOfWaitingTime === 0 ? 0 : sumOfWaitingTime / totalOfWaitingTime;
-	const totalOfAverageAvailableServiceTime = averageOfAvailableServiceTime.averageAvailableServiceTimeInSeconds;
+	const totalOfAverageAvailableServiceTime = averageOfAvailableServiceTime ? averageOfAvailableServiceTime.averageAvailableServiceTimeInSeconds : 0;
 	const totalOfAverageServiceTime = totalOfServiceTime === 0 ? 0 : sumOfServiceTime / totalOfServiceTime;
 
 	return {

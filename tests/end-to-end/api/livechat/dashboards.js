@@ -43,7 +43,16 @@ describe('LIVECHAT - dashboards', function() {
 	});
 
 	describe('livechat/analytics/dashboards/productivity-totalizers', () => {
-		const expectedMetrics = ['Avg_response_time', 'Avg_first_response_time', 'Avg_reaction_time', 'Avg_of_abandoned_chats', 'Avg_of_service_time', 'Avg_of_waiting_time'];
+		const expectedMetrics = [
+			'Avg_response_time',
+			'Avg_first_response_time',
+			'Avg_reaction_time',
+			'Avg_of_abandoned_chats',
+			'Avg_of_available_service_time',
+			'Avg_of_chat_duration_time',
+			'Avg_of_service_time',
+			'Avg_of_waiting_time',
+		];
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request.get(api('livechat/analytics/dashboards/productivity-totalizers'))
