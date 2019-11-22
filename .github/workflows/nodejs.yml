@@ -12,7 +12,9 @@ jobs:
         mongodb-version: ["3.4"]
 
     steps:
-    - uses: actions/checkout@v1 
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
       
     - name: Cache node modules
       uses: actions/cache@v1
@@ -127,6 +129,12 @@ jobs:
         cd /tmp/build-test/bundle/programs/server
         npm install
         
+    - name: Store build for tests
+      uses: actions/upload-artifact@v1
+      with:
+        name: build-test
+        path: /tmp/build-test
+
     - name: Store build
       uses: actions/upload-artifact@v1
       with:
@@ -135,15 +143,18 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-#     needs: build
+    needs: build
 
     strategy:
       matrix:
         node-version: ["8.15"]
-        mongodb-version: ["3.4", "3.6", "4.0"]
+#         mongodb-version: ["3.4", "3.6", "4.0"]
+        mongodb-version: ["3.4"]
 
     steps:
     - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
     
     - name: Cache node modules
       uses: actions/cache@v1
@@ -153,6 +164,11 @@ jobs:
         restore-keys: |
           ${{ runner.OS }}-build-${{ env.cache-name }}-
           ${{ runner.OS }}-build-
+
+    - name: Restore build for tests
+      uses: actions/download-artifact@v1
+      with:
+        name: build-test
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
