@@ -186,7 +186,7 @@ jobs:
 
     - name: Setup Chrome
       run: |
-        npm i selenium-webdriver chromedriver@74
+        npm i selenium-webdriver chromedriver@74 --chromedriver-force-download
         /bin/google-chrome --version
 
 #     - name: Launch MongoDB
