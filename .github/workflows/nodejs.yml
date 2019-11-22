@@ -185,7 +185,15 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Setup Chromedriver
-      uses: nanasess/setup-chromedriver@v1.0.0
+      run: |
+        sudo apt-fast install -y xvfb screen google-chrome-stable
+
+        wget -c -nc --retry-connrefused --tries=0 https://chromedriver.storage.googleapis.com/77.0.3865.40/chromedriver_linux64.zip
+        unzip -o -q chromedriver_linux64.zip
+        sudo mv chromedriver /usr/local/bin/chromedriver
+        export DISPLAY=:99
+        chromedriver --url-base=/wd/hub &
+        sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
