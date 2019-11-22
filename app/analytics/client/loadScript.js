@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../settings';
+import { getHash } from '../../utils';
 
 Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
@@ -82,7 +83,7 @@ Template.body.onRendered(() => {
               // WIDECHAT - obfuscate username in GA
 			  var pathArray = document.location.pathname.split('/');
 			  if (pathArray[1] === 'direct') {
-			  	var hashedUsername = 'goobledigahh';
+			  	var hashedUsername = getHash(pathArray[2]);
 			  	var page = document.location.pathname.replace(pathArray[2], hashedUsername);
 			  	
                 ga('send', 'pageview', page);
