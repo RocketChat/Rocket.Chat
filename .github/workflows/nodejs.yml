@@ -154,19 +154,6 @@ jobs:
         mongodb-version: ["3.4"]
 
     steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-    
-    - name: Cache node modules
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-build-${{ env.cache-name }}-
-          ${{ runner.OS }}-build-
-
 #     - name: Restore build for tests
 #       uses: actions/download-artifact@v1
 #       with:
@@ -209,7 +196,20 @@ jobs:
 #       run: |
 #         mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
 #         mongo --eval 'rs.status()'
-        
+
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-build-
+
 #     - name: NPM install
 #       run: |
 #         npm install
