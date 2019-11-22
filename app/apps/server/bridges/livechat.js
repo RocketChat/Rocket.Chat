@@ -4,11 +4,16 @@ import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import Rooms from '../../../models/server/models/Rooms';
 import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
+import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
 import Users from '../../../models/server/models/Users';
 
 export class AppLivechatBridge {
 	constructor(orch) {
 		this.orch = orch;
+	}
+
+	isOnline() {
+		return Livechat.online();
 	}
 
 	async createMessage(message, appId) {
@@ -131,5 +136,11 @@ export class AppLivechatBridge {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
 		return LivechatVisitors.find(query).fetch().map((visitor) => this.orch.getConverters().get('visitors').convertVisitor(visitor));
+	}
+
+	async findDepartments(query, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
+
+		return LivechatDepartment.find(query).fetch().map((department) => this.orch.getConverters().get('departments').covertDepartment(department));
 	}
 }
