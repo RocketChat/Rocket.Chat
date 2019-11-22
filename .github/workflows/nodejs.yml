@@ -79,7 +79,10 @@ jobs:
       run: |
         #meteor npm install
         echo $GITHUB_WORKSPACE
-        cp -R ./ $GITHUB_WORKSPACE/../../_temp/repo
+        cp -R ./ ../../_temp/repo
+        cd ../../_temp/
+        pwd
+        ls -la
         
 #     - name: Launch MongoDB
 #       uses: wbari/start-mongoDB@v0.2
@@ -164,7 +167,11 @@ jobs:
         pwd
         ls -la
         cd -
-    
+        cd ../../_temp/_github_workflow/
+        pwd
+        ls -la
+        cd -
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
