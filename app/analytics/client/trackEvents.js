@@ -27,15 +27,14 @@ if (!window._paq || window.ga) {
 			window._paq.push(['trackPageView']);
 		}
 		if (window.ga) {
-		  // WIDECHAT - obfuscate username in GA
-		  var pathArray = route.path.split('/');
-		  if (pathArray[1] === 'direct') {
-		  	var hashedUsername = getHash(pathArray[2]);
-		  	var page = route.path.replace(pathArray[2], hashedUsername);
-		  	window.ga('send', 'pageview', page);
-          } else {
-			window.ga('send', 'pageview', route.path);
-		  }
+			const pathArray = route.path.split('/');
+			if (pathArray[1] === 'direct') {
+				const hashedUsername = getHash(pathArray[2]);
+				const page = route.path.replace(pathArray[2], hashedUsername);
+				window.ga('send', 'pageview', page);
+			} else {
+				window.ga('send', 'pageview', route.path);
+			}
 		}
 	}]);
 

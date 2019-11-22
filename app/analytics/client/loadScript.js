@@ -81,16 +81,16 @@ Template.body.onRendered(() => {
 			  ga('create', googleId, 'auto');
 
               // WIDECHAT - obfuscate username in GA
-			  var pathArray = document.location.pathname.split('/');
+			  const pathArray = document.location.pathname.split('/');
 			  if (pathArray[1] === 'direct') {
-			  	var hashedUsername = getHash(pathArray[2]);
-			  	var page = document.location.pathname.replace(pathArray[2], hashedUsername);
+			  	const hashedUsername = getHash(pathArray[2]);
+			  	const page = document.location.pathname.replace(pathArray[2], hashedUsername);
 			  	
                 ga('send', 'pageview', page);
               } else {
 			    ga('send', 'pageview');
 				/* eslint-enable */
-			  }
+				}
 			}
 		}
 	});
