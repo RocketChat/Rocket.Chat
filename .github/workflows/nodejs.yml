@@ -178,12 +178,12 @@ jobs:
         echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
         echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
         sudo apt-get update
-        sudo apt-get install -y mongodb-org-shell google-chrome-stable=74
+        sudo apt-get install -y mongodb-org-shell google-chrome-stable=73
 
     - name: Setup Chrome
       run: |
         ls -la /usr/bin/google-chrome
-        npm i selenium-webdriver chromedriver@74 --chromedriver-force-download
+        npm i selenium-webdriver chromedriver@73 --chromedriver-force-download
         ls -la /usr/bin/google-chrome
         /usr/bin/google-chrome --version
 
