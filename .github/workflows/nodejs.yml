@@ -77,7 +77,8 @@ jobs:
 
     - name: npm install
       run: |
-        meteor npm install
+        #meteor npm install
+        npm install
         #cp -R ./ $GITHUB_WORKSPACE/repo
         
 #     - name: Launch MongoDB
