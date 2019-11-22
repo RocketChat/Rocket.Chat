@@ -17,6 +17,7 @@ jobs:
         fetch-depth: 1
       
     - name: Cache node modules
+      id: cache-nodemodules
       uses: actions/cache@v1
       with:
         path: node_modules
@@ -78,6 +79,7 @@ jobs:
         echo $GITHUB_REF
 
     - name: npm install
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
       run: |
         meteor npm install
 
@@ -175,13 +177,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-#     - name: Install dependencies
-#       run: |
-#         sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-#         echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-#         sudo apt-get update
-#         sudo apt-get install -y mongodb-org-shell
-
     - name: Setup Chrome
       run: |
         npm i chromedriver
@@ -198,6 +193,7 @@ jobs:
         fetch-depth: 1
     
     - name: Cache node modules
+      id: cache-nodemodules
       uses: actions/cache@v1
       with:
         path: node_modules
@@ -207,6 +203,7 @@ jobs:
           ${{ runner.OS }}-build-
 
     - name: NPM install
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
       run: |
         npm install
 
