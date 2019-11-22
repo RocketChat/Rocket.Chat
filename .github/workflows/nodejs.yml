@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         node-version: [8.15]
-        mongodb-version: ["3.4"]
+        mongodb-version: [3.4]
 
     steps:
     - uses: actions/checkout@v1 
@@ -139,10 +139,16 @@ jobs:
 
     strategy:
       matrix:
-        mongodb-version: ["3.4", "3.6", "4.0"]
+        node-version: [8.15]
+        mongodb-version: [3.4, 3.6, 4.0]
 
     steps:
-    - uses: actions/checkout@v1 
+    #- uses: actions/checkout@v1 
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
 
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
@@ -165,6 +171,8 @@ jobs:
         
     - name: NPM install
       run: |
+        pwd
+        ls -la
         npm install
 
     - name: Test
