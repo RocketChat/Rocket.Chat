@@ -135,7 +135,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: build
+    #needs: build
 
     strategy:
       matrix:
@@ -147,7 +147,7 @@ jobs:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc, --smallfiles, --replSet=rs0
+        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
 
     - name: Install dependencies
       run: |
