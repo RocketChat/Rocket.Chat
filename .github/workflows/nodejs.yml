@@ -190,7 +190,8 @@ jobs:
       run: |
         #mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
         #mongo --eval 'rs.status()'
-        docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})' && mongo --eval 'rs.status()'
+        docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+        docker exec mongo mongo --eval 'rs.status()'
 
     - uses: actions/checkout@v1
       with:
