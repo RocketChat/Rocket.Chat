@@ -59,11 +59,13 @@ export class AppLivechatBridge {
 			agentRoom = Object.assign({}, { agentId: user._id });
 		}
 
-		return this.orch.getConverters().get('rooms').convertRoom(getRoom({
+		const result = Promise.await(getRoom({
 			guest: this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
 			agent: agentRoom,
 			rid: Random.id(),
-		}).room);
+		}));
+
+		return this.orch.getConverters().get('rooms').convertRoom(result.room);
 	}
 
 	async closeRoom(room, comment, appId) {
