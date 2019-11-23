@@ -175,8 +175,6 @@ jobs:
         
     - name: Configure Replica Set
       run: |
-        #mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-        #mongo --eval 'rs.status()'
         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
         docker exec mongo mongo --eval 'rs.status()'
 
@@ -188,9 +186,6 @@ jobs:
       with:
         path: node_modules
         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-build-${{ env.cache-name }}-
-          ${{ runner.OS }}-build-
 
     - name: NPM install
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
