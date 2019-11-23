@@ -2,7 +2,7 @@ import { Random } from 'meteor/random';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
-import Rooms from '../../../models/server/models/Rooms';
+import LivechatRooms from '../../../models/server/models/LivechatRooms';
 import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
 import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
 import Users from '../../../models/server/models/Users';
@@ -53,12 +53,15 @@ export class AppLivechatBridge {
 	async createRoom(visitor, agent, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating a livechat room.`);
 
-		const agentUser = Users.findOneById(agent.id);
-		agentUser.agentId = agentUser._id;
+		let agentRoom;
+		if (agent && agent.id) {
+			const user = Users.getAgentInfo(agent.id);
+			agentRoom = Object.assign({}, { agentId: user._id });
+		}
 
 		return this.orch.getConverters().get('rooms').convertRoom(getRoom({
 			guest: this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			agent: agentUser,
+			agent: agentRoom,
 			rid: Random.id(),
 		}).room);
 	}
@@ -83,9 +86,9 @@ export class AppLivechatBridge {
 		let result;
 
 		if (departmentId) {
-			result = Rooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId).fetch();
+			result = LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId).fetch();
 		} else {
-			result = Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			result = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 		}
 
 		return result.map((room) => this.orch.getConverters().get('rooms').convertRoom(room));
