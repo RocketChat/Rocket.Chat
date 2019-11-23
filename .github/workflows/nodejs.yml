@@ -13,6 +13,7 @@ on:
 env:
   CI: true
   MONGO_URL: mongodb://localhost:27017
+  TOOL_NODE_FLAGS: --max_old_space_size=3072
 
 jobs:
   build:
@@ -99,23 +100,22 @@ jobs:
         meteor build --server-only --debug --directory /tmp/build-temp
         git checkout -- server/main.js client/main.js
 
-
-    # TODO: Fix env variables
-    - name: Build Rocket.Chat
-      env:
-        TOOL_NODE_FLAGS: --max_old_space_size=3072
+    - name: Reset Meteor
+      if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
       run: |
-        #if [[ $CIRCLE_TAG ]] || [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-        #  meteor reset;
-        #fi
+        meteor reset
 
-        #export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
-        #if [[ -z $CIRCLE_PR_NUMBER ]]; then
-        #  meteor build --server-only --directory /tmp/build-test
-        #else
-        export METEOR_PROFILE=1000
+    - name: Build Rocket.Chat From Pull Request
+      if: startsWith(github.ref, 'refs/pull/') == 'true'
+      env:
+        METEOR_PROFILE: 1000
+      run: |
         meteor build --server-only --directory --debug /tmp/build-test
-        #fi;
+
+    - name: Build Rocket.Chat
+      if: startsWith(github.ref, 'refs/pull/') != 'false'
+      run: |
+        meteor build --server-only --directory /tmp/build-test
 
     - name: Prepare build
       run: |
