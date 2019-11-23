@@ -1,15 +1,15 @@
 name: Build and Test
 
-on: [push]
+on:
+  push:
+    tags:    
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-rc.[0-9+]'
+      - '[0-9]+.[0-9]+.[0-9]+-beta.[0-9+]'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: ["8.15"]
-        mongodb-version: ["3.4"]
 
     steps:
     - uses: actions/checkout@v1
@@ -21,33 +21,24 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-build-${{ env.cache-name }}-
-          ${{ runner.OS }}-build-
+        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}
           
     - name: Cache meteor local
       uses: actions/cache@v1
       with:
         path: ./.meteor/local
-        key: ${{ runner.OS }}-meteor-cache-${{ hashFiles('.meteor/versions') }}
-        restore-keys: |
-          ${{ runner.OS }}-meteor-cache-${{ env.cache-name }}-
-          ${{ runner.OS }}-meteor-cache-
+        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}
 
     - name: Cache meteor
       uses: actions/cache@v1
       with:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
-        restore-keys: |
-          ${{ runner.OS }}-meteor-${{ env.cache-name }}-
-          ${{ runner.OS }}-meteor-
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 8.15
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: "8.15"
 
     - name: Install Meteor
       run: |
@@ -86,12 +77,13 @@ jobs:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: ${{ matrix.mongodb-version }}
+        mongoDBVersion: "4.0"
 
-    - name: npm lint and test
-      run: |
-        npm run lint
-        npm run testunit
+    - run: npm run lint
+      env:
+        CI: true
+
+    - run: npm run testunit
       env:
         CI: true
         MONGO_URL: mongodb://localhost:27017
