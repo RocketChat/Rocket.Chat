@@ -212,7 +212,7 @@ jobs:
       uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
       with:
         type: ${{ job.status }}
-        job_name: '**Build and Test** Succeeded'
+        job_name: '**Build and Test**'
         url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
         commit: true
         token: ${{ secrets.GITHUB_TOKEN }}
