@@ -10,6 +10,10 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+-rc.[0-9+]'
       - '[0-9]+.[0-9]+.[0-9]+-beta.[0-9+]'
 
+env:
+  CI: true
+  MONGO_URL: mongodb://localhost:27017
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -83,13 +87,8 @@ jobs:
         mongoDBVersion: "4.0"
 
     - run: npm run lint
-      env:
-        CI: true
 
     - run: npm run testunit
-      env:
-        CI: true
-        MONGO_URL: mongodb://localhost:27017
 
     # To reduce memory need during actual build, build the packages solely first
     - name: Build a Meteor cache
