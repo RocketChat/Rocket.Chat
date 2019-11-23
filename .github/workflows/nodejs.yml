@@ -21,8 +21,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
       
     - name: Cache node modules
       id: cache-nodemodules
@@ -183,8 +181,6 @@ jobs:
         docker exec mongo mongo --eval 'rs.status()'
 
     - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
     
     - name: Cache node modules
       id: cache-nodemodules
