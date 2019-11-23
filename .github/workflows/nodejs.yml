@@ -104,14 +104,14 @@ jobs:
         meteor reset
 
     - name: Build Rocket.Chat From Pull Request
-      if: startsWith(github.ref, 'refs/pull/') == 'true'
+      if: startsWith(github.ref, 'refs/pull/') == true
       env:
         METEOR_PROFILE: 1000
       run: |
         meteor build --server-only --directory --debug /tmp/build-test
 
     - name: Build Rocket.Chat
-      if: startsWith(github.ref, 'refs/pull/') != 'false'
+      if: startsWith(github.ref, 'refs/pull/') != true
       run: |
         meteor build --server-only --directory /tmp/build-test
 
