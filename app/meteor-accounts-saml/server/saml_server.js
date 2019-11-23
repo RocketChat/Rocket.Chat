@@ -333,7 +333,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			user = Meteor.users.findOne(userId);
 
 			if (loginResult.profile.channels) {
-				const channels = loginResult.profile.channels.split(',');
+				const { channels } = loginResult.profile.channels;
 				Accounts.saml.subscribeToSAMLChannels(channels, user);
 			}
 		}
@@ -411,7 +411,13 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 Accounts.saml.subscribeToSAMLChannels = function(channels, user) {
 	try {
-		for (let roomName of channels) {
+		// supports either a comma separated list of channels or an array of channels passed to the channels variable
+		let channelList = [];
+		for (let roomNameList of channels) {
+			roomNameList = roomNameList.split(',');
+			channelList = channelList.concat(roomNameList);
+		}
+		for (let roomName of channelList) {
 			roomName = roomName.trim();
 			if (!roomName) {
 				continue;
