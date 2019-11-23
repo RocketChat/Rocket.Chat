@@ -67,9 +67,9 @@ export function BurgerMenuButton() {
 		className={[
 			'rc-old',
 			'burger',
-			!!isSidebarOpen && 'menu-opened',
+			'menu-opened',
 		].filter(Boolean).join(' ')}
-		type='button'
+		type='button' 
 		onClick={handleClick}
 	>
 		<i className='burger__line' aria-hidden='true' />
