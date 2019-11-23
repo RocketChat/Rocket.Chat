@@ -1,7 +1,10 @@
 name: Build and Test
 
 on:
+  pull_request:
+    branches: '**'
   push:
+    branches: '**'
     tags:    
       - '[0-9]+.[0-9]+.[0-9]+'
       - '[0-9]+.[0-9]+.[0-9]+-rc.[0-9+]'
