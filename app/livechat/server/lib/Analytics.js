@@ -278,8 +278,7 @@ export const Analytics = {
 						gte: h,
 						lt: moment(h).add(1, 'hours'),
 					};
-
-					LivechatRooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+					Promise.await(LivechatRooms.getAnalyticsBetweenDate(date).toArray()).forEach(({
 						msgs,
 					}) => {
 						const dayHour = h.format('H');		// @int : 0, 1, ... 23

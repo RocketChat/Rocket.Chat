@@ -120,8 +120,8 @@ const getAgentsProductivityMetricsAsync = async ({
 	return {
 		totalizers: [
 			{ title: 'Avg_of_available_service_time', value: secondsToHHMMSS(totalOfAverageAvailableServiceTime) },
-			{ title: 'Avg_of_chat_duration_time', value: secondsToHHMMSS(totalOfAverageChatDurationTime) },
 			{ title: 'Avg_of_service_time', value: secondsToHHMMSS(totalOfAverageServiceTime) },
+			{ title: 'Avg_of_chat_duration_time', value: secondsToHHMMSS(totalOfAverageChatDurationTime) },
 		],
 	};
 };
