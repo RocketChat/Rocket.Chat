@@ -1,14 +1,14 @@
 import { SHA256 } from 'meteor/sha';
 
-import { Base } from './_Base';
-import { EDataDefinition, IEvent } from '../../../events/definitions/IEvent';
-import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
 import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
+import { EDataDefinition, IEvent } from '../../../events/definitions/IEvent';
+import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
+import { Base } from './_Base';
 
-export declare type ContextQuery = { rid: string };
-export declare type AddEventResult = { success: boolean, reason?: string, missingParentIds?: string[], latestEventIds?: string[] };
-export declare type EventStub<T extends EDataDefinition> = { _cid?: string, t: EventTypeDescriptor, d?: T | IEDataUpdate<T> };
+export declare interface ContextQuery { rid: string }
+export declare interface AddEventResult { success: boolean, reason?: string, missingParentIds?: Array<string>, latestEventIds?: Array<string> }
+export declare interface EventStub<T extends EDataDefinition> { _cid?: string, t: EventTypeDescriptor, d?: T | IEDataUpdate<T> }
 
 export class EventsModel extends Base {
 	constructor(nameOrModel: string) {
@@ -18,11 +18,11 @@ export class EventsModel extends Base {
 		this.tryEnsureIndex({ ts: 1 });
 	}
 
-	getEventHash<T extends EDataDefinition>(contextQuery: ContextQuery, event: IEvent<T>): string {
+	public getEventHash<T extends EDataDefinition>(contextQuery: ContextQuery, event: IEvent<T>): string {
 		return SHA256(`${event.src}${JSON.stringify(contextQuery)}${event._pids.join(',')}${event.t}${event.ts}${JSON.stringify(event.d)}`);
 	}
 
-	async createEvent<T extends EDataDefinition>(src: string, contextQuery: ContextQuery, stub: EventStub<T>): Promise<IEvent<T>> {
+	public async createEvent<T extends EDataDefinition>(src: string, contextQuery: ContextQuery, stub: EventStub<T>): Promise<IEvent<T>> {
 		let _pids = []; // Previous ids
 
 		// If it is not a GENESIS event, we need to get the previous events
@@ -53,7 +53,7 @@ export class EventsModel extends Base {
 		return event;
 	}
 
-	async createGenesisEvent(src: string, contextQuery: ContextQuery, d: IEDataGenesis): Promise<IEvent<IEDataGenesis>> {
+	public async createGenesisEvent(src: string, contextQuery: ContextQuery, d: IEDataGenesis): Promise<IEvent<IEDataGenesis>> {
 		// Check if genesis event already exists, if so, do not create
 		const genesisEvent = await this.model
 			.rawCollection()
@@ -65,21 +65,21 @@ export class EventsModel extends Base {
 
 		const stub: EventStub<IEDataGenesis> = {
 			t: EventTypeDescriptor.GENESIS,
-			d
+			d,
 		};
 
 		return this.createEvent(src, contextQuery, stub);
 	}
 
-	async addEvent<T extends EDataDefinition>(contextQuery: ContextQuery, event: IEvent<T>): Promise<AddEventResult> {
+	public async addEvent<T extends EDataDefinition>(contextQuery: ContextQuery, event: IEvent<T>): Promise<AddEventResult> {
 		// Check if the event does not exit
 		const existingEvent = this.findOne({ _id: event._id });
 
 		// If it does not, we insert it, checking for the parents
 		if (!existingEvent) {
 			// Check if we have the parents
-			const parents: IEvent<any>[] = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event._pids } }, { _id: 1 }).toArray();
-			const _pids: string[] = parents.map((e: IEvent<any>) => e._id);
+			const parents: Array<IEvent<any>> = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event._pids } }, { _id: 1 }).toArray();
+			const _pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
 
 			// This means that we do not have the parents of the event we are adding
 			if (_pids.length !== event._pids.length) {
@@ -108,7 +108,7 @@ export class EventsModel extends Base {
 		};
 	}
 
-	async updateEventData<T extends EDataDefinition>(contextQuery: ContextQuery, eventCID: string, updateData: IEDataUpdate<T>): Promise<void> {
+	public async updateEventData<T extends EDataDefinition>(contextQuery: ContextQuery, eventCID: string, updateData: IEDataUpdate<T>): Promise<void> {
 		const existingEvent = await this.model
 			.rawCollection()
 			.findOne({ ...contextQuery, _cid: eventCID });

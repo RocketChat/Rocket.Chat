@@ -1,10 +1,10 @@
-import { AddEventResult, ContextQuery, EventsModel, EventStub } from './Events';
-import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
 import { IEDataMessage } from '../../../events/definitions/data/IEDataMessage';
-import { IEvent, EventTypeDescriptor, EDataDefinition } from '../../../events/definitions/IEvent';
-import { IRoom } from '../../../events/definitions/IRoom';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
+import { EDataDefinition, EventTypeDescriptor, IEvent } from '../../../events/definitions/IEvent';
+import { IRoom } from '../../../events/definitions/IRoom';
+import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
+import { AddEventResult, ContextQuery, EventsModel, EventStub } from './Events';
 
 const getContextQuery = (param: string | IEvent<any>): ContextQuery => {
   let rid: string;
@@ -26,19 +26,19 @@ class RoomEventsModel extends EventsModel {
     // this.tryEnsureIndex({ 'd.msg': 'text' }, { sparse: true });
   }
 
-  ensureSrc(src: string) {
+  public ensureSrc(src: string) {
     return src || getLocalSrc();
   }
 
-  async addRoomEvent<T extends EDataDefinition>(event: IEvent<T>): Promise<AddEventResult> {
+  public async addRoomEvent<T extends EDataDefinition>(event: IEvent<T>): Promise<AddEventResult> {
     return super.addEvent(getContextQuery(event), event);
   }
 
-  async updateRoomEventData<T extends EDataDefinition>(event: IEvent<T>, dataToUpdate: IEDataUpdate<T>): Promise<void> {
+  public async updateRoomEventData<T extends EDataDefinition>(event: IEvent<T>, dataToUpdate: IEDataUpdate<T>): Promise<void> {
     return super.updateEventData(getContextQuery(event), event._cid, dataToUpdate);
   }
 
-  async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IEDataGenesis>> {
+  public async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IEDataGenesis>> {
     src = this.ensureSrc(src);
 
     const event: IEDataGenesis = { room };
@@ -46,25 +46,25 @@ class RoomEventsModel extends EventsModel {
     return super.createGenesisEvent(src, getContextQuery(room._id), event);
   }
 
-  async createMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: T): Promise<IEvent<T>> {
+  public async createMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: T): Promise<IEvent<T>> {
     src = this.ensureSrc(src);
 
     const stub: EventStub<T> = {
       _cid,
       t: EventTypeDescriptor.MESSAGE,
-      d
+      d,
     };
 
     return super.createEvent(src, getContextQuery(roomId), stub);
   }
 
-  async createEditMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: IEDataUpdate<T>): Promise<IEvent<T>> {
+  public async createEditMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: IEDataUpdate<T>): Promise<IEvent<T>> {
     src = this.ensureSrc(src);
 
     const stub: EventStub<T> = {
       _cid,
       t: EventTypeDescriptor.EDIT_MESSAGE,
-      d
+      d,
     };
 
     return super.createEvent(src, getContextQuery(roomId), stub);
@@ -109,7 +109,7 @@ class RoomEventsModel extends EventsModel {
   //
   // Backwards compatibility
   //
-  fromV1Data(message: any): IEDataMessage {
+  public fromV1Data(message: any): IEDataMessage {
     return {
       u: message.u,
       msg: message.msg,
@@ -119,7 +119,7 @@ class RoomEventsModel extends EventsModel {
     };
   }
 
-  toV1(event: any) {
+  public toV1(event: any) {
     console.log(event);
 
     const v1Data: any = {

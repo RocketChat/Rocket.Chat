@@ -1,4 +1,4 @@
-import { IEvent, EDataDefinition } from '../../definitions/IEvent';
+import { EDataDefinition, IEvent } from '../../definitions/IEvent';
 
 const typesHandler = {
 	genesis: require('./types/genesis'), // GENESIS

@@ -1,6 +1,6 @@
-import { IEDataUpdate } from './data/IEDataUpdate';
 import { IEDataGenesis } from './data/IEDataGenesis';
 import { IEDataMessage } from './data/IEDataMessage';
+import { IEDataUpdate } from './data/IEDataUpdate';
 
 export type EDataDefinition = IEDataUpdate<EDataDefinition> | IEDataGenesis | IEDataMessage;
 
@@ -22,12 +22,12 @@ export enum EventTypeDescriptor {
     UNSET_MESSAGE_REACTION = 'unset_message_reaction',
     MUTE_USER = 'mute_user',
     UNMUTE_USER = 'unmute_user',
-};
+}
 
 export interface IEvent<T extends EDataDefinition> {
     _id: string;
     _cid: string;
-    _pids: string[];
+    _pids: Array<string>;
     v: number;
     ts: Date;
     src: string;
