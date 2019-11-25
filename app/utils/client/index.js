@@ -20,3 +20,4 @@ export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient } from './lib/RestApiClient';
 export { canDeleteMessage } from './lib/canDeleteMessage';
 export { mime } from '../lib/mimeTypes';
+export { getHash } from './lib/getHash';

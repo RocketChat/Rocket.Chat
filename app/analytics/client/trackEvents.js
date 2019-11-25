@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { ChatRoom } from '../../models';
+import { getHash } from '../../utils';
 
 function trackEvent(category, action, label) {
 	if (window._paq) {
@@ -26,7 +27,14 @@ if (!window._paq || window.ga) {
 			window._paq.push(['trackPageView']);
 		}
 		if (window.ga) {
-			window.ga('send', 'pageview', route.path);
+			const pathArray = route.path.split('/');
+			if (pathArray[1] === 'direct') {
+				const hashedUsername = getHash(pathArray[2]);
+				const page = route.path.replace(pathArray[2], hashedUsername);
+				window.ga('send', 'pageview', page);
+			} else {
+				window.ga('send', 'pageview', route.path);
+			}
 		}
 	}]);
 

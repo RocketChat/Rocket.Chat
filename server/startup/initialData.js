@@ -45,7 +45,7 @@ Meteor.startup(function() {
 			});
 		}
 
-        // WIDECHAT bot user
+		// WIDECHAT bot user
 		if (!Users.findOneById('viasat')) {
 			Users.create({
 				_id: 'viasat',
