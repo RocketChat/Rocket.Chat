@@ -54,6 +54,23 @@
 				</div>
 			</div>
 		</div>
+		{{#if isLoading}}
+			{{> loading }}
+		{{else}}
+		<div class="section-content border-component-color">
+			<div class="lc-analytics-overview">
+				{{#each agentsOverview}}
+				<div class="lc-analytics-ov-col">
+					<div class="lc-analytics-ov-case">
+						<span class="title">{{_ title}}</span>
+						<span class="value">{{value}}</span>
+					</div>
+				</div>
+				{{/each}}
+			</div>
+		</div>
+		{{/if}}
+		
 		<div class="section lc-monitoring-line-chart-full">
 			<div class="section-content border-component-color">
 				<div class="lc-monitoring-chart-container">

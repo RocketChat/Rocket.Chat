@@ -121,6 +121,17 @@ const updateConversationOverview = async (totalizers) => {
 	}
 };
 
+const loadAgentsOverview = async ({ start, end }) => {
+	const { totalizers } = await APIClient.v1.get(`livechat/analytics/dashboards/agents-productivity-totalizers?start=${ start }&end=${ end }`);
+	return totalizers;
+};
+
+const updateAgentsOverview = async (totalizers) => {
+	if (totalizers && Array.isArray(totalizers)) {
+		templateInstance.agentsOverview.set(totalizers);
+	}
+};
+
 const loadProductivityOverview = async ({ start, end }) => {
 	const { totalizers } = await APIClient.v1.get(`livechat/analytics/dashboards/productivity-totalizers?start=${ start }&end=${ end }`);
 	return totalizers;
@@ -199,6 +210,9 @@ Template.livechatRealTimeMonitoring.helpers({
 	timingOverview() {
 		return templateInstance.timingOverview.get();
 	},
+	agentsOverview() {
+		return templateInstance.agentsOverview.get();
+	},
 	isLoading() {
 		return Template.instance().isLoading.get();
 	},
@@ -209,6 +223,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 	this.isLoading = new ReactiveVar(false);
 	this.conversationsOverview = new ReactiveVar();
 	this.timingOverview = new ReactiveVar();
+	this.agentsOverview = new ReactiveVar();
 	this.conversationTotalizers = new ReactiveVar([]);
 	this.interval = new ReactiveVar(5);
 });
@@ -225,6 +240,7 @@ Template.livechatRealTimeMonitoring.onRendered(async function() {
 		updateAgentStatusChart(await loadAgentsStatusChartData());
 		updateDepartmentsChart(await loadChatsPerDepartmentChartData(daterange));
 		updateTimingsChart(await loadTimingsChartData(daterange));
+		updateAgentsOverview(await loadAgentsOverview(daterange));
 	};
 	this.autorun(() => {
 		if (timer) {

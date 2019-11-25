@@ -50,16 +50,48 @@ const getProductivityMetricsAsync = async ({
 		end,
 		departmentId,
 	});
+	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
+		start,
+		end,
+		departmentId,
+	});
+
+	const totalOfAbandonedRooms = averageOfAbandonedRooms.departments.length;
+	const totalOfWaitingTime = averageWaitingTime.departments.length;
+
+	const sumOfPercentageOfAbandonedRooms = averageOfAbandonedRooms.departments.reduce((acc, abandonedRoom) => {
+		acc += abandonedRoom.percentageOfAbandonedChats;
+		return acc;
+	}, 0);
+	const sumOfWaitingTime = averageWaitingTime.departments.reduce((acc, serviceTime) => {
+		acc += serviceTime.averageWaitingTimeInSeconds;
+		return acc;
+	}, 0);
+	const totalOfAverageAbandonedRooms = totalOfAbandonedRooms === 0 ? 0 : sumOfPercentageOfAbandonedRooms / totalOfAbandonedRooms;
+	const totalOfAvarageWaitingTime = totalOfWaitingTime === 0 ? 0 : sumOfWaitingTime / totalOfWaitingTime;
+
+	return {
+		totalizers: [
+			...totalizers,
+			{ title: 'Avg_of_abandoned_chats', value: `${ totalOfAverageAbandonedRooms }%` },
+			{ title: 'Avg_of_waiting_time', value: secondsToHHMMSS(totalOfAvarageWaitingTime) },
+		],
+	};
+};
+
+const getAgentsProductivityMetricsAsync = async ({
+	start,
+	end,
+	departmentId = undefined,
+}) => {
+	if (!start || !end) {
+		throw new Error('"start" and "end" must be provided');
+	}
 	const averageOfAvailableServiceTime = (await LivechatAgentActivity.findAllAverageAvailableServiceTime({
 		date: parseInt(moment(start).format('YYYYMMDD')),
 		departmentId,
 	}))[0];
 	const averageOfChatDurationTime = await findAllAverageOfChatDurationTimeAsync({
-		start,
-		end,
-		departmentId,
-	});
-	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
 		start,
 		end,
 		departmentId,
@@ -70,41 +102,26 @@ const getProductivityMetricsAsync = async ({
 		departmentId,
 	});
 
-	const totalOfAbandonedRooms = averageOfAbandonedRooms.departments.length;
 	const totalOfChatDurationTime = averageOfChatDurationTime.departments.length;
-	const totalOfWaitingTime = averageWaitingTime.departments.length;
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
 
-	const sumOfPercentageOfAbandonedRooms = averageOfAbandonedRooms.departments.reduce((acc, abandonedRoom) => {
-		acc += abandonedRoom.percentageOfAbandonedChats;
-		return acc;
-	}, 0);
 	const sumOfChatDurationTime = averageOfChatDurationTime.departments.reduce((acc, chatDurationTime) => {
 		acc += chatDurationTime.averageChatDurationTimeInSeconds;
-		return acc;
-	}, 0);
-	const sumOfWaitingTime = averageWaitingTime.departments.reduce((acc, serviceTime) => {
-		acc += serviceTime.averageWaitingTimeInSeconds;
 		return acc;
 	}, 0);
 	const sumOfServiceTime = averageOfServiceTime.departments.reduce((acc, serviceTime) => {
 		acc += serviceTime.averageServiceTimeInSeconds;
 		return acc;
 	}, 0);
-	const totalOfAverageAbandonedRooms = totalOfAbandonedRooms === 0 ? 0 : sumOfPercentageOfAbandonedRooms / totalOfAbandonedRooms;
 	const totalOfAverageChatDurationTime = totalOfChatDurationTime === 0 ? 0 : sumOfChatDurationTime / totalOfChatDurationTime;
-	const totalOfAvarageWaitingTime = totalOfWaitingTime === 0 ? 0 : sumOfWaitingTime / totalOfWaitingTime;
 	const totalOfAverageAvailableServiceTime = averageOfAvailableServiceTime ? averageOfAvailableServiceTime.averageAvailableServiceTimeInSeconds : 0;
 	const totalOfAverageServiceTime = totalOfServiceTime === 0 ? 0 : sumOfServiceTime / totalOfServiceTime;
 
 	return {
 		totalizers: [
-			...totalizers,
-			{ title: 'Avg_of_abandoned_chats', value: `${ totalOfAverageAbandonedRooms }%` },
 			{ title: 'Avg_of_available_service_time', value: secondsToHHMMSS(totalOfAverageAvailableServiceTime) },
 			{ title: 'Avg_of_chat_duration_time', value: secondsToHHMMSS(totalOfAverageChatDurationTime) },
 			{ title: 'Avg_of_service_time', value: secondsToHHMMSS(totalOfAverageServiceTime) },
-			{ title: 'Avg_of_waiting_time', value: secondsToHHMMSS(totalOfAvarageWaitingTime) },
 		],
 	};
 };
@@ -218,6 +235,7 @@ const findAllResponseTimeMetricsAsync = async ({
 
 export const findAllChatsStatus = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
 export const getProductivityMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getProductivityMetricsAsync({ start, end, departmentId }));
+export const getAgentsProductivityMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getAgentsProductivityMetricsAsync({ start, end, departmentId }));
 export const getConversationsMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getConversationsMetricsAsync({ start, end, departmentId }));
 export const findAllChatMetricsByAgent = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByAgentAsync({ start, end, departmentId }));
 export const findAllChatMetricsByDepartment = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByDepartmentAsync({ start, end, departmentId }));
