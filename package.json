@@ -140,6 +140,7 @@
 		"stylelint": "^9.9.0",
 		"stylelint-order": "^2.0.0",
 		"supertest": "^3.3.0",
+		"tslint": "^5.20.1",
 		"webpack": "^4.29.3"
 	},
 	"dependencies": {
