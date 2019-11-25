@@ -47,7 +47,6 @@ describe('LIVECHAT - dashboards', function() {
 			'Avg_response_time',
 			'Avg_first_response_time',
 			'Avg_reaction_time',
-			'Avg_of_abandoned_chats',
 			'Avg_of_waiting_time',
 		];
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
@@ -80,10 +79,46 @@ describe('LIVECHAT - dashboards', function() {
 		});
 	});
 
+	describe('livechat/analytics/dashboards/chats-totalizers', () => {
+		const expectedMetrics = [
+			'Total_abandoned_chats',
+			'Avg_of_abandoned_chats',
+			'Avg_of_chat_duration_time',
+		];
+		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+			updatePermission('view-livechat-manager', []).then(() => {
+				request.get(api('livechat/analytics/dashboards/chats-totalizers'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should return an array of chats totalizers', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.totalizers).to.be.an('array');
+							res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						})
+						.end(done);
+				});
+		});
+	});
+
 	describe('livechat/analytics/dashboards/agents-productivity-totalizers', () => {
 		const expectedMetrics = [
+			'Busiest_time',
 			'Avg_of_available_service_time',
-			'Avg_of_chat_duration_time',
 			'Avg_of_service_time',
 		];
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {

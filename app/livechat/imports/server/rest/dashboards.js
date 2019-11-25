@@ -11,6 +11,7 @@ import {
 	findAllChatMetricsByDepartment,
 	findAllResponseTimeMetrics,
 	getAgentsProductivityMetrics,
+	getChatsMetrics,
 } from '../../../server/lib/analytics/dashboards';
 
 API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authRequired: true }, {
@@ -57,6 +58,30 @@ API.v1.addRoute('livechat/analytics/dashboards/agents-productivity-totalizers', 
 		end = new Date(end);
 
 		const totalizers = getAgentsProductivityMetrics({ start, end });
+		return API.v1.success(totalizers);
+	},
+});
+
+API.v1.addRoute('livechat/analytics/dashboards/chats-totalizers', { authRequired: true }, {
+	get() {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+			return API.v1.unauthorized();
+		}
+		let { start, end } = this.requestParams();
+		check(start, String);
+		check(end, String);
+
+		if (isNaN(Date.parse(start))) {
+			return API.v1.failure('The "start" query parameter must be a valid date.');
+		}
+		start = new Date(start);
+
+		if (isNaN(Date.parse(end))) {
+			return API.v1.failure('The "end" query parameter must be a valid date.');
+		}
+		end = new Date(end);
+
+		const totalizers = getChatsMetrics({ start, end });
 		return API.v1.success(totalizers);
 	},
 });
