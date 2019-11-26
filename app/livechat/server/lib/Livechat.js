@@ -38,7 +38,7 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData } from './Helper';
-import { Apps } from '../../../apps';
+import { Apps } from '../../../apps/server';
 
 export const Livechat = {
 	Analytics,
