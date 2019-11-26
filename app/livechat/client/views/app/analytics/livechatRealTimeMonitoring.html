@@ -12,7 +12,7 @@
 		</div>
 	</form>
 	{{#if isLoading}}
-	{{> loading }}
+		{{> loading }}
 	{{else}}
 	<div class="lc-analytics-overview">
 		{{#each conversationsOverview}}
@@ -37,7 +37,7 @@
 			{{#if isLoading}}
 				{{> loading }}
 			{{else}}
-			<div class="section-content border-component-color">
+			<div class="section-content border-component-color lc-chart-section-content">
 				<div class="lc-analytics-overview">
 					{{#each chatsOverview}}
 					<div class="lc-analytics-ov-col">
@@ -69,7 +69,7 @@
 			{{#if isLoading}}
 				{{> loading }}
 			{{else}}
-			<div class="section-content border-component-color">
+			<div class="section-content border-component-color lc-chart-section-content">
 				<div class="lc-analytics-overview">
 					{{#each agentsOverview}}
 					<div class="lc-analytics-ov-col">
@@ -100,16 +100,18 @@
 		{{#if isLoading}}
 			{{> loading }}
 		{{else}}
-		<div class="section-content border-component-color">
-			<div class="lc-analytics-overview">
-				{{#each timingOverview}}
-				<div class="lc-analytics-ov-col">
-					<div class="lc-analytics-ov-case">
-						<span class="title">{{_ title}}</span>
-						<span class="value">{{value}}</span>
+		<div class="section lc-monitoring-line-chart-full">
+			<div class="section-content border-component-color">
+				<div class="lc-analytics-overview">
+					{{#each timingOverview}}
+					<div class="lc-analytics-ov-col">
+						<div class="lc-analytics-ov-case">
+							<span class="title">{{_ title}}</span>
+							<span class="value">{{value}}</span>
+						</div>
 					</div>
+					{{/each}}
 				</div>
-				{{/each}}
 			</div>
 		</div>
 		{{/if}}
