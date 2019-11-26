@@ -1,13 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
 
 import { fileUploadHandler } from '../../../file-upload';
-import { t, fileUploadIsValidContentType } from '../../../utils';
+import { t, fileUploadIsValidContentType, SWCache } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
+import { sendOfflineFileMessage } from './sendOfflineFileMessage';
 
+const setMsgId = (msgData = {}) => {
+	let id;
+	if (msgData.id) {
+		id = msgData.id;
+	} else {
+		id = Random.id();
+	}
+	return Object.assign({
+		id,
+		msg: '',
+		groupable: false,
+	}, msgData);
+};
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -144,6 +159,8 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 	const replies = $(input).data('reply') || [];
 	const mention = $(input).data('mention-user') || false;
 	const msg = await prependReplies('', replies, mention);
+	const msgData = setMsgId({ msg, tmid });
+	let offlineFile = null;
 
 	const uploadNextFile = () => {
 		const file = files.pop();
@@ -195,7 +212,6 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			};
 
 			const upload = fileUploadHandler('Uploads', record, file.file);
-
 			uploadNextFile();
 
 			const uploads = Session.get('uploading') || [];
@@ -214,6 +230,10 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				Session.set('uploading', uploads);
 			};
 
+			const offlineUpload = (file, meta) => sendOfflineFileMessage(rid, msgData, file, meta, (file) => {
+				offlineFile = file;
+			});
+
 			upload.start((error, file, storage) => {
 				if (error) {
 					const uploads = Session.get('uploading') || [];
@@ -230,17 +250,21 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					return;
 				}
 
-				Meteor.call('sendFileMessage', rid, storage, file, { msg, tmid }, () => {
+				Meteor.call('sendFileMessage', rid, storage, file, msgData, () => {
 					$(input)
 						.removeData('reply')
 						.trigger('dataChange');
+
+					if (offlineFile) {
+						SWCache.removeFromCache(offlineFile);
+					}
 
 					setTimeout(() => {
 						const uploads = Session.get('uploading') || [];
 						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 					}, 2000);
 				});
-			});
+			}, offlineUpload);
 
 			Tracker.autorun((computation) => {
 				const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);

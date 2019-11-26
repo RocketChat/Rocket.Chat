@@ -15,6 +15,18 @@ Meteor.methods({
 
 		const message = Messages.findOne({ _id: messageId });
 		const room = Rooms.findOne({ _id: message.rid });
+		const tempActions = message.tempActions || {};
+
+		if (tempActions.delete) {
+			return false;
+		}
+
+		if (tempActions.react) {
+			tempActions.reactions.push(reaction);
+		} else if (!tempActions.send) {
+			tempActions.react = true;
+			tempActions.reactions = [reaction];
+		}
 
 		if (room.ro && !room.reactWhenReadOnly) {
 			if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
@@ -47,10 +59,10 @@ Meteor.methods({
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
-				Messages.unsetReactions(messageId);
+				Messages.unsetReactions(messageId, tempActions);
 				callbacks.run('unsetReaction', messageId, reaction);
 			} else {
-				Messages.setReactions(messageId, message.reactions);
+				Messages.setReactions(messageId, message.reactions, tempActions);
 				callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
@@ -64,7 +76,7 @@ Meteor.methods({
 			}
 			message.reactions[reaction].usernames.push(user.username);
 
-			Messages.setReactions(messageId, message.reactions);
+			Messages.setReactions(messageId, message.reactions, tempActions);
 			callbacks.run('setReaction', messageId, reaction);
 		}
 	},

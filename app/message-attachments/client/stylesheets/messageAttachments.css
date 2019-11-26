@@ -160,3 +160,9 @@ html.rtl .attachment {
 		margin-top: 6px;
 	}
 }
+
+.attachment-temp {
+	& .attachment-image {
+		opacity: 0.5;
+	}
+}

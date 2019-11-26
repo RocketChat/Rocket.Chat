@@ -13,12 +13,14 @@ export const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
 
 export const ChatMessage = CachedChatMessage.collection;
 
-ChatMessage.setReactions = function(messageId, reactions) {
-	return this.update({ _id: messageId }, { $set: { reactions } });
+ChatMessage.setReactions = function(messageId, reactions, tempActions) {
+	const messageObject = { temp: true, tempActions, reactions };
+	return this.update({ _id: messageId }, { $set: messageObject });
 };
 
-ChatMessage.unsetReactions = function(messageId) {
-	return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
+ChatMessage.unsetReactions = function(messageId, tempActions) {
+	const messageObject = { temp: true, tempActions };
+	return this.update({ _id: messageId }, { $unset: { reactions: 1 }, $set: messageObject });
 };
 
 const normalizeThreadMessage = (message) => {
