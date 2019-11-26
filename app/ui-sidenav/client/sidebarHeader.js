@@ -78,9 +78,18 @@ const toolbarButtons = (user) => [{
 	},
 },
 {
+	name: t('Search Input'),
+	icon: '',
+	condition: () => isMobile(),
+	action: () => {
+		toolbarSearch.show(false);
+	},
+	searchBar: true,
+},
+{
 	name: t('Directory'),
 	icon: 'globe',
-	condition: () => settings.get('UI_DisplayDirectory'),
+	condition: () => !isMobile() && settings.get('UI_DisplayDirectory'),
 	action: () => {
 		menu.close();
 		FlowRouter.go('directory');
@@ -89,6 +98,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('View_mode'),
 	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'condensed'],
+	condition: () => !isMobile(),
 	hasPopup: true,
 	action: (e) => {
 		const hideAvatarSetting = getUserPreference(user, 'sidebarHideAvatar');
@@ -159,6 +169,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Sort'),
 	icon: 'sort',
+	condition: () => !isMobile(),
 	hasPopup: true,
 	action: (e) => {
 		const options = [];
@@ -264,6 +275,12 @@ const toolbarButtons = (user) => [{
 			};
 		}
 
+		const sortOption = {
+			name: t('Sort'),
+			icon: 'sort',
+			type: 'sort-action',
+		};
+
 		const config = {
 			popoverClass: 'sidebar-header',
 			columns: [
@@ -305,6 +322,10 @@ const toolbarButtons = (user) => [{
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
+		if (isMobile()) {
+			console.log(config.columns);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
+		}
 
 		popover.open(config);
 	},
@@ -337,6 +358,12 @@ Template.sidebarHeader.events({
 			e.currentTarget.blur();
 		}
 		return this.action && this.action.apply(this, [e]);
+	},
+	'click #searchBar'() {
+		toolbarSearch.show(false);
+	},
+	'focus #searchBar'() {
+		toolbarSearch.show(false);
 	},
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
