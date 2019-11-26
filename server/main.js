@@ -69,6 +69,7 @@ import './publications/activeUsers';
 import './publications/channelAndPrivateAutocomplete';
 import './publications/fullUserData';
 import './publications/messages';
+import './publications/ownUser';
 import './publications/room';
 import './publications/roomFiles';
 import './publications/roomFilesWithSearchText';
