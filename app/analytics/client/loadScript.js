@@ -3,7 +3,6 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../settings';
-import { getHash } from '../../utils';
 
 Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
@@ -79,18 +78,8 @@ Template.body.onRendered(() => {
 			  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
 			  ga('create', googleId, 'auto');
-
-              // WIDECHAT - obfuscate username in GA
-			  const pathArray = document.location.pathname.split('/');
-			  if (pathArray[1] === 'direct') {
-			  	const hashedUsername = getHash(pathArray[2]);
-			  	const page = document.location.pathname.replace(pathArray[2], hashedUsername);
-			  	
-                ga('send', 'pageview', page);
-              } else {
-			    ga('send', 'pageview');
+			  ga('send', 'pageview');
 				/* eslint-enable */
-				}
 			}
 		}
 	});
