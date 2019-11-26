@@ -276,17 +276,36 @@ export class UsersRaw extends BaseRaw {
 				_id: null,
 				offline: {
 					$sum: {
-						$cond: [{ $eq: ['$status', 'offline'] }, 1, 0],
+						$cond: [{
+							$or: [{
+								$and: [
+									{ $eq: ['$status', 'offline'] },
+									{ $eq: ['$statusLivechat', 'available'] },
+								],
+							},
+							{ $eq: ['$statusLivechat', 'not-available'] },
+							],
+						}, 1, 0],
 					},
 				},
 				away: {
 					$sum: {
-						$cond: [{ $eq: ['$status', 'away'] }, 1, 0],
+						$cond: [{
+							$and: [
+								{ $eq: ['$status', 'away'] },
+								{ $eq: ['$statusLivechat', 'available'] },
+							],
+						}, 1, 0],
 					},
 				},
 				busy: {
 					$sum: {
-						$cond: [{ $eq: ['$status', 'busy'] }, 1, 0],
+						$cond: [{
+							$and: [
+								{ $eq: ['$status', 'busy'] },
+								{ $eq: ['$statusLivechat', 'available'] },
+							],
+						}, 1, 0],
 					},
 				},
 				available: {
