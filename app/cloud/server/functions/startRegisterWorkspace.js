@@ -3,8 +3,8 @@ import { HTTP } from 'meteor/http';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../../settings';
-import { Settings, Users } from '../../../models';
-import { statistics } from '../../../statistics';
+import { Settings } from '../../../models';
+import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 
 
 export function startRegisterWorkspace(resend = false) {
@@ -22,54 +22,7 @@ export function startRegisterWorkspace(resend = false) {
 		}
 	}
 
-	const stats = statistics.get();
-
-	const address = settings.get('Site_Url');
-	const siteName = settings.get('Site_Name');
-
-	// If we have it lets send it because likely an update
-	const workspaceId = settings.get('Cloud_Workspace_Id');
-
-	const firstUser = Users.getOldest({ name: 1, emails: 1 });
-	const contactName = firstUser && firstUser.name;
-	let contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
-
-	if (settings.get('Organization_Email')) {
-		contactEmail = settings.get('Organization_Email');
-	}
-
-	const allowMarketing = settings.get('Allow_Marketing_Emails');
-
-	const accountName = settings.get('Organization_Name');
-
-	const website = settings.get('Website');
-
-	const agreePrivacyTerms = settings.get('Cloud_Service_Agree_PrivacyTerms');
-
-	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
-
-	const regInfo = {
-		uniqueId: stats.uniqueId,
-		workspaceId,
-		address,
-		contactName,
-		contactEmail,
-		allowMarketing,
-		accountName,
-		organizationType,
-		industry,
-		orgSize,
-		country,
-		language,
-		agreePrivacyTerms,
-		website,
-		siteName,
-		workspaceType,
-		deploymentMethod: stats.deploy.method,
-		deploymentPlatform: stats.deploy.platform,
-		version: stats.version,
-		setupComplete: true,
-	};
+	const regInfo = buildWorkspaceRegistrationData();
 
 	const cloudUrl = settings.get('Cloud_Url');
 

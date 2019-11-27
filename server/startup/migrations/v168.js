@@ -1,13 +1,16 @@
-import { Migrations } from '../../../app/migrations';
-import { LivechatRooms } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Permissions } from '../../../app/models/server';
 
 Migrations.add({
 	version: 168,
 	up() {
-		LivechatRooms.update(
-			{ t: 'l', whatsAppGateway: { $exists: 1 } },
-			{ $rename: { whatsAppGateway: 'customFields.whatsAppGateway' } },
-			{ multi: true },
-		);
+		const perm = Permissions.findOne({ _id: 'reset-other-user-e2e-key' });
+
+		if (perm) {
+			Permissions.remove({ _id: 'reset-other-user-e2e-key' });
+		}
+	},
+	down() {
+		Permissions.upsert({ _id: 'reset-other-user-e2e-key' }, { _id: 'reset-other-user-e2e-key', roles: ['admin'] });
 	},
 });
