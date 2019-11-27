@@ -76,7 +76,7 @@ function trigger(msg) {
 
 Meteor.startup(() => {
 	if ('indexedDB' in window) {
-		const db = indexedDB.open('persistent-minimongo2-Message');
+		const db = indexedDB.open('localforage');
 		let dbExist = true;
 
 		db.onupgradeneeded = function() {
@@ -87,9 +87,9 @@ Meteor.startup(() => {
 
 		db.onsuccess = function(event) {
 			if (!dbExist) { return; }
-			const tx = event.target.result.transaction('minimongo', 'readwrite');
-			const store = tx.objectStore('minimongo');
-			store.openCursor().onsuccess = function(event) {
+			const tx = event.target.result.transaction('keyvaluepairs', 'readwrite');
+			const store = tx.objectStore('keyvaluepairs');
+			store.openCursor("chatMessage").onsuccess = function(event) {
 				const cursor = event.target.result;
 				if (cursor) {
 					if (cursor.value.temp) {
