@@ -1,39 +1,111 @@
 <template name="livechatQueue">
 	{{#if hasPermission}}
-		{{#each departments}}
-			<p class="queue-department">
-				{{_ "Department"}}: <strong>{{name}}</strong>
-				( <label for="show-offline-{{_id}}">{{_ "show_offline_users"}}</label>
-				<input type="checkbox" class="show-offline" id="show-offline-{{_id}}">)
-			</p>
+	<fieldset>
+		<form class="form-inline" method="post">
+			<div class="livechat-current-chats-filters-wrapper">
+				<div class="livechat-current-chats-filters">
+					<div class="livechat-current-chats-standard-filters">
+						<div class="form-group">
+							{{> livechatAutocompleteUser
+								onClickTag=onClickTagAgent
+								list=selectedAgents
+								onSelect=onSelectAgents
+								collection='UserAndRoom'
+								subscription='userAutocomplete'
+								field='username'
+								sort='username'
+								label="Served_By"
+								placeholder="Served_By"
+								name="agent"
+								icon="at"
+								noMatchTemplate="userSearchEmpty"
+								templateItem="popupList_item_default"
+								modifier=agentModifier
+								showLabel=true
+							}}
+						</div>
+						<div class="form-group">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "Status"}}</div>
+								<div class="rc-select">
+									<select class="rc-select__element" name="agentStatus">
+										<option class="rc-select__option" value="">{{_ "Online"}}</option>
+										<option class="rc-select__option" value="offline">{{_ "Include_Offline_Agents"}}</option>
+									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
+								</div>
+							</label>
+						</div>
+						<div class="form-group">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "Department"}}</div>
+								<div class="rc-select">
+									<select class="rc-select__element" name="department">
+										<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
+										{{#each departments}}
+										<option class="rc-select__option" value="{{_id}}">{{name}}</option>
+										{{/each}}
+									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
+								</div>
+							</label>
+						</div>
+					</div>
+				</div>
 
-			<div class="rocket-form">
-				<div class="list">
-					<table>
-						<thead>
-							<tr>
-								<th width="70%">{{_ "Agent"}}</th>
-								<th width="15%" class="text-right">{{_ "Count"}}</th>
-								<th width="15%" class="text-right">{{_ "Order"}}</th>
-							</tr>
-						</thead>
-						<tbody>
-							{{#each users}}
-								<tr>
-									<td>{{username}}</td>
-									<td class="text-right">{{count}}</td>
-									<td class="text-right">{{order}}</td>
-								</tr>
-							{{else}}
-							<tr>
-								<td colspan="3">{{_ "Nobody_available"}}</td>
-							</tr>
-							{{/each}}
-						</tbody>
-					</table>
+				<div class="livechat-current-chats-filters-buttons">
+					<div class="rc-button__group">
+						<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+						{{#if hasPopoverPermissions}}
+						<button class="livechat-current-chats-extra-actions">
+							{{> icon icon="menu" block="rc-icon--default-size"}}
+						</button>
+						{{/if}}
+					</div>
 				</div>
 			</div>
-		{{/each}}
+		</form>
+	</fieldset>
+	<div class="rc-table-content">
+		{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+			<thead>
+				<tr>
+					<th width="25%">
+						<div class="table-fake-th">{{_ "Served_By"}}</div>
+					</th>
+					<th width="25%">
+						<div class="table-fake-th">{{_ "Department"}}</div>
+					</th>
+					<th width="25%">
+						<div class="table-fake-th">{{_ "Total"}}</div>
+					</th>
+					<th width="25%">
+						<div class="table-fake-th">{{_ "Status"}}</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each queue}}
+					<tr class="rc-table-tr manage row-link" data-name="{{user.username}}">
+						<td>{{user.username}}</td>
+						<td>{{department.name}}</td>
+						<td>{{chats}}</td>
+						<td>{{user.status}}</td>
+					</tr>
+				{{/each}}
+				{{#if isLoading}}
+					<tr class="table-no-click">
+						<td colspan="5" class="table-loading-td">{{> loading}}</td>
+					</tr>
+				{{/if}}
+			</tbody>
+		{{/table}}
+	</div>
+	{{#if hasMore}}
+		<div class="rc-button__group">
+			<button class="rc-button rc-button--primary js-load-more">{{_ "Load_more"}}</button>
+		</div>
+	{{/if}}
 	{{else}}
 		<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 	{{/if}}

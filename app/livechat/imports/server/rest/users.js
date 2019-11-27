@@ -5,7 +5,7 @@ import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api';
 import { Users } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
-import { findAgents, findManagers, findUsersInQueue } from '../../../server/api/lib/users';
+import { findAgents, findManagers } from '../../../server/api/lib/users';
 
 API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 	get() {
@@ -148,24 +148,5 @@ API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
 		} catch (e) {
 			return API.v1.failure(e.error);
 		}
-	},
-});
-
-
-API.v1.addRoute('livechat/users.queue', { authRequired: true }, {
-	get() {
-		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
-
-		const users = Promise.await(findUsersInQueue({
-			userId: this.userId,
-			pagination: {
-				offset,
-				count,
-				sort,
-			},
-		}));
-
-		return API.v1.success(users);
 	},
 });
