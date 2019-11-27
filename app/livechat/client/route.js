@@ -71,6 +71,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Edit_Department',
 	pageTemplate: 'livechatDepartmentForm',
+	customContainer: true,
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
@@ -79,6 +80,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'New_Department',
 	pageTemplate: 'livechatDepartmentForm',
+	customContainer: true,
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
