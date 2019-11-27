@@ -177,8 +177,9 @@ Template.main.helpers({
 
 		const settingsReady = settings.cachedCollection.ready.get();
 
+		const serviceWorkerReady = !!navigator.serviceWorker.controller;
 
-		const ready = (userReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = (userReady && subscriptionsReady && settingsReady &&  serviceWorkerReady) || !Meteor.userId();
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
