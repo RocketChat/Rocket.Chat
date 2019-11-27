@@ -42,6 +42,16 @@ Template.userEdit.helpers({
 		return !Template.instance().user || Template.instance().user.requirePasswordChange;
 	},
 
+	requirePasswordChangeDisabled() {
+		// when setting a random password, requiring a password change is mandatory
+		return !Template.instance().user || Template.instance().requiringPasswordReset.get();
+	},
+
+	setRandomPasswordDisabled() {
+		// when creating a new user, setting a random password is mandatory
+		return !Template.instance().user;
+	},
+
 	setRandomPassword() {
 		return !Template.instance().user || Template.instance().user.setRandomPassword;
 	},
@@ -84,6 +94,15 @@ Template.userEdit.events({
 	'input .js-avatar-url-input'(e, template) {
 		const text = e.target.value;
 		template.url.set(text);
+	},
+
+	'change #setRandomPassword'(e, template) {
+		const requiring = e.currentTarget.checked;
+		template.requiringPasswordReset.set(requiring);
+
+		if (requiring) {
+			$(e.currentTarget.form).find('#changePassword')[0].checked = true;
+		}
 	},
 
 	'change .js-select-avatar-upload [type=file]'(event, template) {
@@ -157,6 +176,8 @@ Template.userEdit.onCreated(function() {
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 	this.avatar = new ReactiveVar();
 	this.url = new ReactiveVar('');
+	this.requiringPasswordReset = new ReactiveVar(false);
+
 	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 
 	const { tabBar } = Template.currentData();
