@@ -56,7 +56,7 @@ const createCallbackTimed = (hook, callbacks) =>
 const create = (hook, cbs) =>
 	(timed ? createCallbackTimed(hook, cbs) : createCallback(hook, cbs));
 const combinedCallbacks = new Map();
-this.combinedCallbacks = combinedCallbacks;
+
 /*
 * Callback priorities
 */

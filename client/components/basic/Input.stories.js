@@ -1,14 +1,10 @@
 import React from 'react';
 
-import { rocketChatWrapper } from '../../../.storybook/helpers';
 import { Input } from './Input';
 
 export default {
 	title: 'basic/Input',
 	component: Input,
-	decorators: [
-		rocketChatWrapper,
-	],
 };
 
 export const _default = () => <Input />;
