@@ -9,13 +9,18 @@ import toastr from 'toastr';
 import { hasAllPermission } from '../../../../authorization';
 import { modal, SideNav } from '../../../../ui-utils/client';
 import { t, handleError } from '../../../../utils';
-import { ChatOAuthApps } from '../collection';
+import { APIClient } from '../../../../utils/client';
 
-Template.oauthApp.onCreated(function() {
-	this.subscribe('oauthApps');
+Template.oauthApp.onCreated(async function() {
+	const params = this.data.params();
+	this.oauthApp = new ReactiveVar({});
 	this.record = new ReactiveVar({
 		active: true,
 	});
+	if (params && params.id) {
+		const { oauthApp } = await APIClient.v1.get(`oauthApps.getOne?appId=${ params.id }`);
+		this.oauthApp.set(oauthApp);
+	}
 });
 
 Template.oauthApp.helpers({
@@ -27,7 +32,7 @@ Template.oauthApp.helpers({
 		if (typeof instance.data.params === 'function') {
 			const params = instance.data.params();
 			if (params && params.id) {
-				const data = ChatOAuthApps.findOne({ _id: params.id });
+				const data = Template.instance().oauthApp.get();
 				if (data) {
 					data.authorization_url = Meteor.absoluteUrl('oauth/authorize');
 					data.access_token_url = Meteor.absoluteUrl('oauth/token');

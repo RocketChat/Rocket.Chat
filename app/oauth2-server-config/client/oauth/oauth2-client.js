@@ -3,8 +3,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Template } from 'meteor/templating';
 import { Accounts } from 'meteor/accounts-base';
+import { ReactiveVar } from 'meteor/reactive-var';
 
-import { ChatOAuthApps } from '../admin/collection';
+import { APIClient } from '../../../utils/client';
 
 FlowRouter.route('/oauth/authorize', {
 	action(params, queryParams) {
@@ -29,9 +30,11 @@ FlowRouter.route('/oauth/error/:error', {
 	},
 });
 
-Template.authorize.onCreated(function() {
+Template.authorize.onCreated(async function() {
+	this.oauthApp = new ReactiveVar({});
 	this.subscribe('authorizedOAuth');
-	this.subscribe('oauthClient', this.data.client_id());
+	const { oauthApp } = await APIClient.v1.get(`oauthApps.getOne?clientId=${ this.data.client_id() }`);
+	this.oauthApp.set(oauthApp);
 });
 
 Template.authorize.helpers({
@@ -39,7 +42,7 @@ Template.authorize.helpers({
 		return Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY);
 	},
 	getClient() {
-		return ChatOAuthApps.findOne();
+		return Template.instance().oauthApp.get();
 	},
 });
 
