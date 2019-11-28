@@ -116,7 +116,7 @@
 			{{#if hasPermission 'edit-other-user-password'}}
 			<div class="rc-form-group rc-form-group--small rc-switch">
 				<label class="rc-switch__label" tabindex="-1">
-					<input class="rc-switch__input" type="checkbox" id="setRandomPassword" value="1" checked="{{setRandomPassword}}"/>
+					<input class="rc-switch__input" type="checkbox" id="setRandomPassword" value="1" checked="{{setRandomPassword}}" disabled="{{setRandomPasswordDisabled}}"/>
 					<span class="rc-switch__button">
 						<span class="rc-switch__button-inside"></span>
 					</span>
@@ -127,7 +127,7 @@
 			</div>
 			<div class="rc-form-group rc-form-group--small rc-switch">
 				<label class="rc-switch__label" tabindex="-1">
-					<input class="rc-switch__input" type="checkbox" id="changePassword" value="1" checked="{{requirePasswordChange}}"/>
+					<input class="rc-switch__input" type="checkbox" id="changePassword" value="1" checked="{{requirePasswordChange}}" disabled="{{requirePasswordChangeDisabled}}"/>
 					<span class="rc-switch__button">
 						<span class="rc-switch__button-inside"></span>
 					</span>
