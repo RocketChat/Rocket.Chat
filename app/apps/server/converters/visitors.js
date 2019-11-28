@@ -49,6 +49,7 @@ export class AppVisitorsConverter {
 			token: visitor.token,
 			phone: visitor.phone,
 			visitorEmails: visitor.visitorEmails,
+			department: visitor.department,
 		};
 
 		return Object.assign(newVisitor, visitor._unmappedProperties_);
