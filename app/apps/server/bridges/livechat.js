@@ -59,11 +59,11 @@ export class AppLivechatBridge {
 			agentRoom = Object.assign({}, { agentId: user._id });
 		}
 
-		const result = Promise.await(getRoom({
+		const result = await getRoom({
 			guest: this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
 			agent: agentRoom,
 			rid: Random.id(),
-		}));
+		});
 
 		return this.orch.getConverters().get('rooms').convertRoom(result.room);
 	}
@@ -140,12 +140,28 @@ export class AppLivechatBridge {
 	async findVisitors(query, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
+		if (this.orch.isDebugging()) {
+			console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');
+		}
+
 		return LivechatVisitors.find(query).fetch().map((visitor) => this.orch.getConverters().get('visitors').convertVisitor(visitor));
 	}
 
-	async findDepartments(query, appId) {
+	async findVisitorById(id, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return this.orch.getConverters().get('visitors').convertById(id);
+	}
+
+	async findVisitorByEmail(email, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return this.orch.getConverters().get('visitor').convert(LivechatVisitors.findOneGuestByEmailAddress(email));
+	}
+
+	async findDepartmentsByIdOrName(value, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
 
-		return LivechatDepartment.find(query).fetch().map(this.orch.getConverters().get('departments').convertDepartment);
+		return this.orch.getConverters().get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value));
 	}
 }
