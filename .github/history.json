@@ -37124,6 +37124,51 @@
           ]
         }
       ]
+    },
+    "2.3.0-rc.1": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15869",
+          "title": "Fix Livechat duplicated templates error",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15870",
+          "title": "Improvements to random password field on user edit/creation",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15860",
+          "title": "Remove unused permission to reset users' E2E key",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15849",
+          "title": "[CHORE] Add lingohub to readme",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
     }
   }
 }
