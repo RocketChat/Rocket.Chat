@@ -1,28 +1,11 @@
 
-# 2.3.0 (Under Release Candidate Process)
+# 2.3.0
+`2019-11-27  ·  13 🎉  ·  17 🚀  ·  26 🐛  ·  19 🔍  ·  25 👩‍💻👨‍💻`
 
-## 2.3.0-rc.1
-`2019-11-27  ·  4 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Fix Livechat duplicated templates error ([#15869](https://github.com/RocketChat/Rocket.Chat/pull/15869))
-- Improvements to random password field on user edit/creation ([#15870](https://github.com/RocketChat/Rocket.Chat/pull/15870))
-- Remove unused permission to reset users' E2E key ([#15860](https://github.com/RocketChat/Rocket.Chat/pull/15860))
-- [CHORE] Add lingohub to readme ([#15849](https://github.com/RocketChat/Rocket.Chat/pull/15849))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 2.3.0-rc.0
-`2019-11-21  ·  13 🎉  ·  17 🚀  ·  26 🐛  ·  14 🔍  ·  25 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.15.1`
+- NPM: `6.9.0`
+- MongoDB: `3.4, 3.6, 4.0`
 
 ### 🎉 New features
 
@@ -92,6 +75,7 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Release 2.2.0 ([#15681](https://github.com/RocketChat/Rocket.Chat/pull/15681) by [@Montel](https://github.com/Montel) & [@antkaz](https://github.com/antkaz) & [@hmagarotto](https://github.com/hmagarotto) & [@nstseek](https://github.com/nstseek) & [@oguhpereira](https://github.com/oguhpereira) & [@rodrigokamada](https://github.com/rodrigokamada) & [@yusukeh0710](https://github.com/yusukeh0710))
 - LingoHub based on develop ([#15822](https://github.com/RocketChat/Rocket.Chat/pull/15822))
 - [REGRESSION] Add livechat room type to the room's file list ([#15795](https://github.com/RocketChat/Rocket.Chat/pull/15795))
 - Fix notification migration ([#15783](https://github.com/RocketChat/Rocket.Chat/pull/15783))
@@ -106,6 +90,10 @@
 - LingoHub based on develop ([#15688](https://github.com/RocketChat/Rocket.Chat/pull/15688))
 - Merge master into develop & Set version to 2.3.0-develop ([#15683](https://github.com/RocketChat/Rocket.Chat/pull/15683))
 - Release 2.2.0 ([#15681](https://github.com/RocketChat/Rocket.Chat/pull/15681) by [@Montel](https://github.com/Montel) & [@antkaz](https://github.com/antkaz) & [@hmagarotto](https://github.com/hmagarotto) & [@nstseek](https://github.com/nstseek) & [@oguhpereira](https://github.com/oguhpereira) & [@rodrigokamada](https://github.com/rodrigokamada) & [@yusukeh0710](https://github.com/yusukeh0710))
+- Fix Livechat duplicated templates error ([#15869](https://github.com/RocketChat/Rocket.Chat/pull/15869))
+- Improvements to random password field on user edit/creation ([#15870](https://github.com/RocketChat/Rocket.Chat/pull/15870))
+- Remove unused permission to reset users' E2E key ([#15860](https://github.com/RocketChat/Rocket.Chat/pull/15860))
+- [CHORE] Add lingohub to readme ([#15849](https://github.com/RocketChat/Rocket.Chat/pull/15849))
 
 </details>
 
