@@ -33,6 +33,7 @@ export class PushNotification {
 			from: 'push',
 			badge,
 			sound: 'default',
+			priority: 10,
 			title,
 			text: message,
 			payload,

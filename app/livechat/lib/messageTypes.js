@@ -23,6 +23,34 @@ MessageTypes.registerType({
 });
 
 MessageTypes.registerType({
+	id: 'livechat_transfer_history',
+	system: true,
+	message: 'New_chat_transfer',
+	data(message) {
+		if (!message.transferData) {
+			return;
+		}
+		const from = message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
+		const transferTypes = {
+			agent: () => TAPi18n.__('Livechat_transfer_to_agent', {
+				from,
+				to: message.transferData.transferredTo && (message.transferData.transferredTo.name || message.transferData.transferredTo.username),
+			}),
+			department: () => TAPi18n.__('Livechat_transfer_to_department', {
+				from,
+				to: message.transferData.nextDepartment && message.transferData.nextDepartment.name,
+			}),
+			queue: () => TAPi18n.__('Livechat_transfer_return_to_the_queue', {
+				from,
+			}),
+		};
+		return {
+			transfer: transferTypes[message.transferData.scope](),
+		};
+	},
+});
+
+MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
 	message: 'New_videocall_request',

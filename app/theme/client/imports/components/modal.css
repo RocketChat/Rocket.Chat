@@ -7,6 +7,8 @@
 	height: auto;
 	max-height: 90%;
 
+	padding: 1.5rem;
+
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
 	border: none;
@@ -40,6 +42,12 @@
 	&--modal &__title {
 		font-size: 1.375rem;
 		font-weight: 500;
+	}
+
+	&__description {
+		font-size: 0.874rem;
+		margin-block-end: 1.5rem;
+		margin-block-start: 0.5rem;
 	}
 
 	&__title {

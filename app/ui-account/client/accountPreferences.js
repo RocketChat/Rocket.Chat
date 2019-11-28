@@ -90,6 +90,13 @@ Template.accountPreferences.helpers({
 	defaultDesktopNotificationDuration() {
 		return settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration');
 	},
+	desktopNotificationRequireInteraction() {
+		const userPref = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction', 'undefined');
+		return userPref !== 'undefined' ? userPref : undefined;
+	},
+	defaultDesktopNotificationRequireInteraction() {
+		return settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction');
+	},
 	idleTimeLimit() {
 		return getUserPreference(Meteor.userId(), 'idleTimeLimit');
 	},
@@ -167,6 +174,7 @@ Template.accountPreferences.onCreated(function() {
 		data.messageViewMode = parseInt($('#messageViewMode').find('select').val());
 		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
 		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
+		data.sidebarHideAvatar = JSON.parse($('#sidebarHideAvatar').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
@@ -186,6 +194,12 @@ Template.accountPreferences.onCreated(function() {
 
 		if (settings.get('UI_DisplayRoles')) {
 			data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
+		}
+
+		if ($('input[name=desktopNotificationRequireInteraction]:checked').val() === undefined) {
+			data.desktopNotificationRequireInteraction = settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction');
+		} else {
+			data.desktopNotificationRequireInteraction = JSON.parse($('input[name=desktopNotificationRequireInteraction]:checked').val());
 		}
 
 		// if highlights changed we need page reload
