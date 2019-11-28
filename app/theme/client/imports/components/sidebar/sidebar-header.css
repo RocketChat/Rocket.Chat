@@ -149,3 +149,12 @@
 		}
 	}
 }
+
+@media (width <= 400px) {
+	.sidebar__toolbar {
+		& .rc-input > .rc-input__label > .rc-input__wrapper> #searchBar {
+			border-color: #81868d;
+			border-radius: 15px;
+		}
+	}
+}
