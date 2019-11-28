@@ -1,6 +1,26 @@
 
 # 2.3.0 (Under Release Candidate Process)
 
+## 2.3.0-rc.1
+`2019-11-27  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix Livechat duplicated templates error ([#15869](https://github.com/RocketChat/Rocket.Chat/pull/15869))
+- Improvements to random password field on user edit/creation ([#15870](https://github.com/RocketChat/Rocket.Chat/pull/15870))
+- Remove unused permission to reset users' E2E key ([#15860](https://github.com/RocketChat/Rocket.Chat/pull/15860))
+- [CHORE] Add lingohub to readme ([#15849](https://github.com/RocketChat/Rocket.Chat/pull/15849))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 2.3.0-rc.0
 `2019-11-21  ·  13 🎉  ·  17 🚀  ·  26 🐛  ·  14 🔍  ·  25 👩‍💻👨‍💻`
 
@@ -127,16 +147,6 @@
 - Node: `8.15.1`
 - NPM: `6.9.0`
 - MongoDB: `3.4, 3.6, 4.0`
-
-### 🐛 Bug fixes
-
-- Markdown link parser ([#15794](https://github.com/RocketChat/Rocket.Chat/pull/15794))
-- Updating an app via "Update" button errors out with "App already exists" ([#15814](https://github.com/RocketChat/Rocket.Chat/pull/15814))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
 
 # 2.2.0
 `2019-10-27  ·  14 🎉  ·  16 🚀  ·  22 🐛  ·  27 🔍  ·  27 👩‍💻👨‍💻`
@@ -280,16 +290,6 @@
 - Node: `8.15.1`
 - NPM: `6.9.0`
 - MongoDB: `3.4, 3.6, 4.0`
-
-### 🐛 Bug fixes
-
-- Markdown link parser ([#15794](https://github.com/RocketChat/Rocket.Chat/pull/15794))
-- Updating an app via "Update" button errors out with "App already exists" ([#15814](https://github.com/RocketChat/Rocket.Chat/pull/15814))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
 
 # 2.1.2
 `2019-10-25  ·  3 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
@@ -469,16 +469,6 @@
 - Node: `8.11.4`
 - NPM: `6.4.1`
 - MongoDB: `3.4, 3.6, 4.0`
-
-### 🐛 Bug fixes
-
-- Markdown link parser ([#15794](https://github.com/RocketChat/Rocket.Chat/pull/15794))
-- Updating an app via "Update" button errors out with "App already exists" ([#15814](https://github.com/RocketChat/Rocket.Chat/pull/15814))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
 
 # 2.0.0
 `2019-09-12  ·  7 ️️️⚠️  ·  14 🎉  ·  6 🚀  ·  16 🐛  ·  36 🔍  ·  26 👩‍💻👨‍💻`
