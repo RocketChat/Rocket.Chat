@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
@@ -43,6 +42,20 @@ Template.userEdit.helpers({
 		return !Template.instance().user || Template.instance().user.requirePasswordChange;
 	},
 
+	requirePasswordChangeDisabled() {
+		// when setting a random password, requiring a password change is mandatory
+		return !Template.instance().user || Template.instance().requiringPasswordReset.get();
+	},
+
+	setRandomPasswordDisabled() {
+		// when creating a new user, setting a random password is mandatory
+		return !Template.instance().user;
+	},
+
+	setRandomPassword() {
+		return !Template.instance().user || Template.instance().user.setRandomPassword;
+	},
+
 	role() {
 		const roles = Template.instance().roles.get();
 		return Roles.find({ _id: { $nin: roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
@@ -81,6 +94,15 @@ Template.userEdit.events({
 	'input .js-avatar-url-input'(e, template) {
 		const text = e.target.value;
 		template.url.set(text);
+	},
+
+	'change #setRandomPassword'(e, template) {
+		const requiring = e.currentTarget.checked;
+		template.requiringPasswordReset.set(requiring);
+
+		if (requiring) {
+			$(e.currentTarget.form).find('#changePassword')[0].checked = true;
+		}
 	},
 
 	'change .js-select-avatar-upload [type=file]'(event, template) {
@@ -122,17 +144,6 @@ Template.userEdit.events({
 		$(`[title=${ this }]`).remove();
 	},
 
-	'click #randomPassword'(e) {
-		e.stopPropagation();
-		e.preventDefault();
-		e.target.classList.add('loading');
-		$('#password').val('');
-		setTimeout(() => {
-			$('#password').val(Random.id());
-			e.target.classList.remove('loading');
-		}, 1000);
-	},
-
 	'mouseover #password'(e) {
 		e.target.type = 'text';
 	},
@@ -165,6 +176,8 @@ Template.userEdit.onCreated(function() {
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 	this.avatar = new ReactiveVar();
 	this.url = new ReactiveVar('');
+	this.requiringPasswordReset = new ReactiveVar(false);
+
 	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 
 	const { tabBar } = Template.currentData();
@@ -186,6 +199,7 @@ Template.userEdit.onCreated(function() {
 		userData.email = s.trim(this.$('#email').val());
 		userData.verified = this.$('#verified:checked').length > 0;
 		userData.password = s.trim(this.$('#password').val());
+		userData.setRandomPassword = this.$('#setRandomPassword:checked').length > 0;
 		userData.requirePasswordChange = this.$('#changePassword:checked').length > 0;
 		userData.joinDefaultChannels = this.$('#joinDefaultChannels:checked').length > 0;
 		userData.sendWelcomeEmail = this.$('#sendWelcomeEmail:checked').length > 0;

@@ -368,6 +368,9 @@ Template.message.helpers({
 	injectIndex(data, index) {
 		data.index = index;
 	},
+	injectSettings(data, settings) {
+		data.settings = settings;
+	},
 	channelName() {
 		const { subscription } = this;
 		// const subscription = Subscriptions.findOne({ rid: this.rid });

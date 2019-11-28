@@ -36311,6 +36311,864 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "1.3.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15794",
+          "title": "[FIX] Markdown link parser",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15814",
+          "title": "[FIX] Updating an app via \"Update\" button errors out with \"App already exists\"",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
+    },
+    "2.0.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15794",
+          "title": "[FIX] Markdown link parser",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15814",
+          "title": "[FIX] Updating an app via \"Update\" button errors out with \"App already exists\"",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
+    },
+    "2.1.3": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15794",
+          "title": "[FIX] Markdown link parser",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15814",
+          "title": "[FIX] Updating an app via \"Update\" button errors out with \"App already exists\"",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
+    },
+    "2.2.1": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15794",
+          "title": "[FIX] Markdown link parser",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15814",
+          "title": "[FIX] Updating an app via \"Update\" button errors out with \"App already exists\"",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
+    },
+    "2.3.0-rc.0": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15703",
+          "title": "[NEW] Add forms to view and edit Livechat agents info",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15442",
+          "title": "[NEW] Workspace Manual Registration",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "15832",
+          "title": "[FIX] Missing Privacy Policy Agree on register",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "15752",
+          "title": "[NEW] Option on livechat departments to ensure a chat has tags before closing",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15804",
+          "title": "[IMPROVE] Make push notification batchsize and interval configurable",
+          "userLogin": "Exordian",
+          "contributors": [
+            "Exordian"
+          ]
+        },
+        {
+          "pr": "15803",
+          "title": "[FIX] Push: fix notification priority for google (FCM)",
+          "userLogin": "Exordian",
+          "contributors": [
+            "Exordian"
+          ]
+        },
+        {
+          "pr": "14807",
+          "title": "[NEW] Setting to dismiss desktop notification only after interaction",
+          "userLogin": "mpdbl",
+          "milestone": "2.3.0",
+          "contributors": [
+            "mpdbl",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15818",
+          "title": "[NEW] Option for admins to set a random password to a user",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15836",
+          "title": "[NEW] SAML login without popup windows",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15786",
+          "title": "[IMPROVE] Add more fields to iframe integration event `unread-changed-by-subscription`",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15691",
+          "title": "[IMPROVE] Allow dragging of images and text from browsers",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MartinSchoeler",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15777",
+          "title": "[NEW] Add ability to users reset their own E2E key",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15651",
+          "title": "[FIX] Not valid relative URLs on message attachments",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15828",
+          "title": "[NEW] Notify users when their email address change",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15770",
+          "title": "[NEW] Add a new stream to emit and listen room data events",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15740",
+          "title": "[IMPROVE] Unfollow own threads",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15452",
+          "title": "[IMPROVE] Administration UI - React and Fuselage components",
+          "userLogin": "tassoevan",
+          "milestone": "2.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15824",
+          "title": "[FIX] REST endpoint `chat.syncMessages` returning an error with deleted messages",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15822",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15814",
+          "title": "[FIX] Updating an app via \"Update\" button errors out with \"App already exists\"",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "15771",
+          "title": "[FIX] Channel notification audio preferences",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.3.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15811",
+          "title": "[FIX] Pasting images on reply as thread",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15794",
+          "title": "[FIX] Markdown link parser",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15809",
+          "title": "[FIX] Prevent agent last message undefined",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15795",
+          "title": "[REGRESSION] Add livechat room type to the room's file list",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15783",
+          "title": "Fix notification migration",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.3.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15629",
+          "title": "[IMPROVE] Replace livechat:pagesvisited publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15643",
+          "title": "[IMPROVE] Replace livechat:externalMessages publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15775",
+          "title": "[IMPROVE] dynamic import  livechat views",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15780",
+          "title": "[FIX] Livechat transfer history messages",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15230",
+          "title": "[NEW] Livechat analytics",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15743",
+          "title": "[NEW] Allow Regexes on SAML user field mapping",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15772",
+          "title": "Regression: fix admin instances info page",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.3.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15773",
+          "title": "[FIX] Add button to reset.css",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15774",
+          "title": "[FIX] Mentions before blockquote",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15639",
+          "title": "[IMPROVE] Replace livechat:visitorInfo publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15764",
+          "title": "[IMPROVE] Lazyload Chart.js",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "ggazzo",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15666",
+          "title": "[NEW] Livechat analytics functions",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15763",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15745",
+          "title": "[FIX] Sidebar font color was not respecting theming",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.3.0",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "15732",
+          "title": "[FIX] Add livechat agents into departments",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15741",
+          "title": "[IMPROVE] Lazyload qrcode lib",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "ggazzo",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15733",
+          "title": "Regression: messageAttachments inside messageAttachments not receiving settings",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15655",
+          "title": "Improve LDAP Login Fallback setting description in portuguese",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15644",
+          "title": "[IMPROVE] Replace personalAccessTokens publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15632",
+          "title": "[FIX] Changed cmsPage Style",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15718",
+          "title": "[FIX] Forward Livechat UI and the related permissions ",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15581",
+          "title": "[FIX] line-height to show entire letters",
+          "userLogin": "nstseek",
+          "milestone": "2.3.0",
+          "contributors": [
+            "nstseek",
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15529",
+          "title": "[IMPROVE] Replace livechat:departmentAgents subscription to REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15717",
+          "title": "[FIX]  Apply server side filters on Livechat lists",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15729",
+          "title": "Update moment-timezone",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15728",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15654",
+          "title": "[FIX] Error when exporting user data",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15699",
+          "title": "[FIX] Livechat webhook broken when sending an image",
+          "userLogin": "tatosjb",
+          "milestone": "2.3.0",
+          "contributors": [
+            "tatosjb"
+          ]
+        },
+        {
+          "pr": "15716",
+          "title": "[IMPROVE] remove computations inside messageAttachment",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15707",
+          "title": "[FIX] Sending messages to livechat rooms without a subscription",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15709",
+          "title": "Regression: Fix hide avatars in side bar preference",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15679",
+          "title": "[IMPROVE] Replace snippetedMessage publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "pierre-lehnen-rc",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15678",
+          "title": "[IMPROVE] Replace snipptedMessages publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15694",
+          "title": "[FIX] Duplicate label 'Hide Avatars' in accounts",
+          "userLogin": "rajvaibhavdubey",
+          "contributors": [
+            "rajvaibhavdubey"
+          ]
+        },
+        {
+          "pr": "15623",
+          "title": "[FIX] Block Show_Setup_Wizard Option",
+          "userLogin": "gabriellsh",
+          "milestone": "2.3.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "MartinSchoeler",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15512",
+          "title": "[NEW] add delete-own-message permission",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15636",
+          "title": "[FIX] Use Media Devices API to guess if a microphone is not available",
+          "userLogin": "tassoevan",
+          "milestone": "2.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15689",
+          "title": "Remove yarn.lock",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15631",
+          "title": "[FIX] Ignore file uploads from message box if text/plain content is being pasted",
+          "userLogin": "tassoevan",
+          "milestone": "2.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15688",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15645",
+          "title": "[FIX] typo on PT-BR translation",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15638",
+          "title": "[FIX] Null value at Notifications Preferences tab",
+          "userLogin": "tassoevan",
+          "milestone": "2.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15640",
+          "title": "[FIX] Edit in thread",
+          "userLogin": "tassoevan",
+          "milestone": "2.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15658",
+          "title": "[IMPROVE] Remove \"EmojiCustom\" unused subscription",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15683",
+          "title": "Merge master into develop & Set version to 2.3.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15794",
+          "title": "[FIX] Markdown link parser",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15814",
+          "title": "[FIX] Updating an app via \"Update\" button errors out with \"App already exists\"",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "15681",
+          "title": "Release 2.2.0",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "tassoevan",
+            "ggazzo",
+            "engelgabriel",
+            "mar-v",
+            "rodrigok",
+            "MarcosSpessatto",
+            "hmagarotto",
+            "renatobecker",
+            "oguhpereira",
+            "rodrigokamada",
+            "Montel",
+            "antkaz",
+            "yusukeh0710",
+            "nstseek",
+            "d-gubert"
+          ]
+        }
+      ]
+    },
+    "2.3.0-rc.1": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15869",
+          "title": "Fix Livechat duplicated templates error",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.0",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15870",
+          "title": "Improvements to random password field on user edit/creation",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15860",
+          "title": "Remove unused permission to reset users' E2E key",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15849",
+          "title": "[CHORE] Add lingohub to readme",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
     }
   }
 }
