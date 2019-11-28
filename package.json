@@ -146,7 +146,7 @@
 	"dependencies": {
 		"@accounts/mongo": "0.0.12",
 		"@accounts/server": "0.0.18",
-		"@babel/runtime": "^7.2.0",
+		"@babel/runtime": "^7.7.4",
 		"@google-cloud/language": "^2.0.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
@@ -212,7 +212,7 @@
 		"mailparser": "^2.4.3",
 		"marked": "^0.6.1",
 		"mem": "4.1.0",
-		"meteor-node-stubs": "^0.4.1",
+		"meteor-node-stubs": "^1.0.0",
 		"mime-db": "^1.40.0",
 		"mime-type": "^3.0.7",
 		"mkdirp": "^0.5.1",
