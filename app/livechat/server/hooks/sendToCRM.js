@@ -61,7 +61,8 @@ function sendToCRM(type, room, includeMessages = true) {
 				msg.attachments = message.attachments;
 			}
 
-			postData.messages.push(normalizeMessageFileUpload(msg));
+			const { u } = message;
+			postData.messages.push(normalizeMessageFileUpload({ u, ...msg }));
 		});
 	}
 
