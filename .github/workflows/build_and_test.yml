@@ -298,16 +298,17 @@ jobs:
     - name: Build Docker image for PRs
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPOSITORY: rodrigok
         VERSION: pr-${{ github.event.number }} 
       run: |
         cd /tmp/build-pr
+        
+        export OWNER="${GITHUB_REPOSITORY%/*}"
 
-        docker login docker.pkg.github.com -u "${REPOSITORY}" -p "${GITHUB_TOKEN}"
+        docker login docker.pkg.github.com -u "${OWNER}" -p "${GITHUB_TOKEN}"
 
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
         
-        export IMAGE_NAME="docker.pkg.github.com/${REPOSITORY}/Rocket.Chat/rocket.chat:${VERSION}"
+        export IMAGE_NAME="docker.pkg.github.com/${GITHUB_REPOSITORY}/rocket.chat:${VERSION}"
         
         echo "Build official Docker image ${IMAGE_NAME}"
 
