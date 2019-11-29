@@ -306,8 +306,8 @@ jobs:
         echo "Build official Docker image"
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
-        docker build -t docker.pkg.github.com/rodrigok/rocket.chat:pr-${{ github.event.number }} .
-        docker push docker.pkg.github.com/rodrigok/rocket.chat:pr-${{ github.event.number }}
+        docker build -t docker.pkg.github.com/rodrigok/rocket.chat/rocket.chat:pr-${{ github.event.number }} .
+        docker push docker.pkg.github.com/rodrigok/rocket.chat/rocket.chat:pr-${{ github.event.number }}
 
 
       
