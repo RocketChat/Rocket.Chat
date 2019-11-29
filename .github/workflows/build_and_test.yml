@@ -293,7 +293,7 @@ jobs:
 
     - name: Build Rocket.Chat
       run: |
-        meteor build --server-only /tmp/build-pr
+        meteor build --server-only --debug /tmp/build-pr
 
     - name: Build Docker image for PRs
       env:
