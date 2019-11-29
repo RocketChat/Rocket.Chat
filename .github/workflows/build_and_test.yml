@@ -292,7 +292,6 @@ jobs:
         git checkout -- server/main.js client/main.js
 
     - name: Build Rocket.Chat
-      if: startsWith(github.ref, 'refs/pull/') != true
       run: |
         meteor build --server-only /tmp/build-pr
 
