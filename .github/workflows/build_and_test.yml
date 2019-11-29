@@ -308,7 +308,9 @@ jobs:
 
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
         
-        export IMAGE_NAME="docker.pkg.github.com/${GITHUB_REPOSITORY}/rocket.chat:${VERSION}"
+        export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
+        
+        export IMAGE_NAME="docker.pkg.github.com/${LOWERCASE_REPOSITORY}/rocket.chat:${VERSION}"
         
         echo "Build official Docker image ${IMAGE_NAME}"
 
