@@ -156,7 +156,19 @@ export class AppLivechatBridge {
 	async findVisitorByEmail(email, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
-		return this.orch.getConverters().get('visitor').convert(LivechatVisitors.findOneGuestByEmailAddress(email));
+		return this.orch.getConverters().get('visitors').convert(LivechatVisitors.findOneGuestByEmailAddress(email));
+	}
+
+	async findVisitorByToken(token, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return this.orch.getConverters().get('visitors').convert(LivechatVisitors.getVisitorByToken(token));
+	}
+
+	async findVisitorByPhoneNumber(phoneNumber, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return this.orch.getConverters().get('visitors').convert(LivechatVisitors.findOneVisitorByPhone(phoneNumber));
 	}
 
 	async findDepartmentsByIdOrName(value, appId) {
