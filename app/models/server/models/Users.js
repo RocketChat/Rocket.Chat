@@ -584,6 +584,21 @@ export class Users extends Base {
 			exceptions = [exceptions];
 		}
 
+		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+		if (searchTerm === '') {
+			const query = {
+				$and: [
+					{
+						active: true,
+						username: { $exists: true, $nin: exceptions },
+					},
+					...extraQuery,
+				],
+			};
+
+			return this._db.find(query, options);
+		}
+
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
