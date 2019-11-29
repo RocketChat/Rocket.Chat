@@ -171,7 +171,7 @@ export class AppLivechatBridge {
 		return this.orch.getConverters().get('visitors').convertVisitor(LivechatVisitors.findOneVisitorByPhone(phoneNumber));
 	}
 
-	async findDepartmentsByIdOrName(value, appId) {
+	async findDepartmentByIdOrName(value, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
 
 		return this.orch.getConverters().get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value));
