@@ -305,8 +305,11 @@ jobs:
 
         docker login docker.pkg.github.com -u "${REPOSITORY}" -p "${GITHUB_TOKEN}"
 
-        echo "Build official Docker image"
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
+        
+        export IMAGE_NAME="docker.pkg.github.com/${REPOSITORY}/Rocket.Chat/rocket.chat:${VERSION}"
+        
+        echo "Build official Docker image ${IMAGE_NAME}"
 
-        docker build -t docker.pkg.github.com/$REPOSITORY/Rocket.Chat/rocket.chat:$VERSION .
-        docker push docker.pkg.github.com/$REPOSITORY/Rocket.Chat/rocket.chat:$VERSION
+        docker build -t $IMAGE_NAME .
+        docker push $IMAGE_NAME
