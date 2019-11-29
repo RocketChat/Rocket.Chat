@@ -308,5 +308,5 @@ jobs:
         echo "Build official Docker image"
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
-        docker build -t docker.pkg.github.com/$(REPOSITORY)/Rocket.Chat/rocket.chat:$(VERSION) .
-        docker push docker.pkg.github.com/$(REPOSITORY)/Rocket.Chat/rocket.chat:$(VERSION)
+        docker build -t docker.pkg.github.com/$REPOSITORY/Rocket.Chat/rocket.chat:$VERSION .
+        docker push docker.pkg.github.com/$REPOSITORY/Rocket.Chat/rocket.chat:$VERSION
