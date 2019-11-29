@@ -48,8 +48,8 @@ export class AppVisitorsConverter {
 			name: visitor.name,
 			token: visitor.token,
 			phone: visitor.phone,
-			visitorEmails: visitor.visitorEmails,
-			department: visitor.department,
+			...visitor.visitorEmails && { visitorEmails: visitor.visitorEmails },
+			...visitor.department && { department: visitor.department },
 		};
 
 		return Object.assign(newVisitor, visitor._unmappedProperties_);
