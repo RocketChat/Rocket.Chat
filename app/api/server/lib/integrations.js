@@ -5,9 +5,12 @@ const hasIntegrationsPermission = async (userId, integration) => {
 	if (!integration) {
 		throw new Error('integration is required');
 	}
+	const canManageIncomingIntegrations = await hasPermissionAsync(userId, 'manage-incoming-integrations') || (userId === integration._createdBy._id && await hasPermissionAsync(userId, 'manage-own-incoming-integrations'));
+	const canManageOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations') || (userId === integration._createdBy._id && await hasPermissionAsync(userId, 'manage-own-outgoing-integrations'));
+
 	return integration.type === 'webhook-incoming'
-		? hasPermissionAsync(userId, 'manage-incoming-integrations') || (userId === integration._createdBy._id && hasPermissionAsync(userId, 'manage-own-incoming-integrations'))
-		: hasPermissionAsync(userId, 'manage-outgoing-integrations') || (userId === integration._createdBy._id && hasPermissionAsync(userId, 'manage-own-outgoing-integrations'));
+		? canManageIncomingIntegrations
+		: canManageOutgoingIntegrations;
 };
 
 export const findOneIntegration = async ({ userId, integrationId, createdBy }) => {
