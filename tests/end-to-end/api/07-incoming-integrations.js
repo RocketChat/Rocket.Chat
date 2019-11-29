@@ -258,6 +258,94 @@ describe('[Incoming Integrations]', function() {
 		});
 	});
 
+	describe('[/integrations.getOne]', () => {
+		it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
+			request.get(api('integrations.getOne'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The query parameter "integrationId" is required.');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', (done) => {
+			updatePermission('manage-incoming-integrations', []).then(() => {
+				request.get(api(`integrations.getOne?integrationId=${ integration._id }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'not-authorized');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', (done) => {
+			updatePermission('manage-incoming-integrations', []).then(() => {
+				request.get(api(`integrations.getOne?integrationId=${ integrationCreatedByAnUser._id }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'not-authorized');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the user sends an invalid integration', (done) => {
+			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				request.get(api('integrations.getOne?integrationId=invalid'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'The integration does not exists.');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return the integration successfully when the user is able to see only your own integrations', (done) => {
+			updatePermission('manage-incoming-integrations', [])
+				.then(() => updatePermission('manage-own-incoming-integrations', ['user']))
+				.then(() => {
+					request.get(api(`integrations.getOne?integrationId=${ integrationCreatedByAnUser._id }`))
+						.set(userCredentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('integration');
+							expect(res.body.integration._id).to.be.equal(integrationCreatedByAnUser._id);
+						})
+						.end(done);
+				});
+		});
+
+		it('should return the integration successfully', (done) => {
+			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				request.get(api(`integrations.getOne?integrationId=${ integration._id }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('integration');
+						expect(res.body.integration._id).to.be.equal(integration._id);
+					})
+					.end(done);
+			});
+		});
+	});
+
 	describe('[/integrations.remove]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to remove an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {

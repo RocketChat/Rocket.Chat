@@ -11,12 +11,24 @@ import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
 import { hasAtLeastOnePermission, hasAllPermission } from '../../../authorization';
 import { modal, SideNav } from '../../../ui-utils/client';
 import { t, handleError } from '../../../utils';
-import { ChatIntegrations } from '../collections';
+import { APIClient } from '../../../utils/client';
 
-Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated() {
+Template.integrationsIncoming.onCreated(async function _incomingIntegrationsOnCreated() {
+	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
+	this.integration = new ReactiveVar({});
 	this.record = new ReactiveVar({
 		username: 'rocket.cat',
 	});
+	if (params && params.id) {
+		const baseUrl = `integrations.getOne?integrationId=${ params.id }`;
+		if (hasAllPermission('manage-incoming-integrations')) {
+			const { integration } = await APIClient.v1.get(baseUrl);
+			this.integration.set(integration);
+		} else if (hasAllPermission('manage-own-incoming-integrations')) {
+			const { integration } = await APIClient.v1.get(`${ baseUrl }&createdBy=${ Meteor.userId() }`);
+			this.integration.set(integration);
+		}
+	}
 });
 
 Template.integrationsIncoming.helpers({
@@ -35,24 +47,14 @@ Template.integrationsIncoming.helpers({
 	},
 
 	data() {
-		const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
-
-		if (params && params.id) {
-			let data;
-			if (hasAllPermission('manage-incoming-integrations')) {
-				data = ChatIntegrations.findOne({ _id: params.id });
-			} else if (hasAllPermission('manage-own-incoming-integrations')) {
-				data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
-			}
-
-			if (data) {
-				const completeToken = `${ data._id }/${ data.token }`;
-				data.url = Meteor.absoluteUrl(`hooks/${ completeToken }`);
-				data.completeToken = completeToken;
-				data.hasScriptError = data.scriptEnabled && data.scriptError;
-				Template.instance().record.set(data);
-				return data;
-			}
+		const data = Template.instance().integration.get();
+		if (data) {
+			const completeToken = `${ data._id }/${ data.token }`;
+			data.url = Meteor.absoluteUrl(`hooks/${ completeToken }`);
+			data.completeToken = completeToken;
+			data.hasScriptError = data.scriptEnabled && data.scriptError;
+			Template.instance().record.set(data);
+			return data;
 		}
 
 		return Template.instance().record.curValue;

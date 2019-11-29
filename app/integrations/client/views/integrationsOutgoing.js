@@ -11,11 +11,11 @@ import toastr from 'toastr';
 import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { modal, SideNav } from '../../../ui-utils';
-import { t, handleError } from '../../../utils/client';
-import { ChatIntegrations } from '../collections';
+import { t, handleError, APIClient } from '../../../utils/client';
 import { integrations } from '../../lib/rocketchat';
 
-Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated() {
+Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCreated() {
+	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
 	this.record = new ReactiveVar({
 		username: 'rocket.cat',
 		token: Random.id(24),
@@ -49,30 +49,24 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 		});
 	};
 
-	this.autorun(() => {
-		const id = this.data && this.data.params && this.data.params().id;
-
-		if (id) {
-			const sub = this.subscribe('integrations');
-			if (sub.ready()) {
-				let intRecord;
-
-				if (hasAllPermission('manage-outgoing-integrations')) {
-					intRecord = ChatIntegrations.findOne({ _id: id });
-				} else if (hasAllPermission('manage-own-outgoing-integrations')) {
-					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
-				}
-				intRecord.hasScriptError = intRecord.scriptEnabled && intRecord.scriptError;
-
-				if (intRecord) {
-					this.record.set(intRecord);
-				} else {
-					toastr.error(TAPi18n.__('No_integration_found'));
-					FlowRouter.go('admin-integrations');
-				}
-			}
+	if (params && params.id) {
+		let integration;
+		const baseUrl = `integrations.getOne?integrationId=${ params.id }`;
+		if (hasAllPermission('manage-outgoing-integrations')) {
+			const { integration: record } = await APIClient.v1.get(baseUrl);
+			integration = record;
+		} else if (hasAllPermission('manage-own-outgoing-integrations')) {
+			const { integration: record } = await APIClient.v1.get(`${ baseUrl }&createdBy=${ Meteor.userId() }`);
+			integration = record;
 		}
-	});
+		if (integration) {
+			integration.hasScriptError = integration.scriptEnabled && integration.scriptError;
+			this.record.set(integration);
+		} else {
+			toastr.error(TAPi18n.__('No_integration_found'));
+			FlowRouter.go('admin-integrations');
+		}
+	}
 });
 
 Template.integrationsOutgoing.helpers({
