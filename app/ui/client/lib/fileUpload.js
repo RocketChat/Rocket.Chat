@@ -6,6 +6,7 @@ import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
 
 import { fileUploadHandler } from '../../../file-upload';
+import { ChatMessage } from '../../../models/client';
 import { t, fileUploadIsValidContentType, SWCache } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 import { sendOfflineFileMessage } from './sendOfflineFileMessage';
@@ -212,22 +213,20 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			};
 
 			const upload = fileUploadHandler('Uploads', record, file.file);
-			uploadNextFile();
-
-			const uploads = Session.get('uploading') || [];
-			uploads.push({
+			const uploading = {
 				id: upload.id,
 				name: upload.getFileName(),
 				percentage: 0,
-			});
-			Session.set('uploading', uploads);
+			};
+			file.file._id = upload.id;
+			uploadNextFile();
+
+			// Session.set(`uploading-${ upload.id }`, uploading);
 
 			upload.onProgress = (progress) => {
-				const uploads = Session.get('uploading') || [];
-				uploads.filter((u) => u.id === upload.id).forEach((u) => {
-					u.percentage = Math.round(progress * 100) || 0;
-				});
-				Session.set('uploading', uploads);
+				const uploads = uploading;
+				uploads.percentage = Math.round(progress * 100) || 0;
+				ChatMessage.setProgress(msgData.id, uploads);
 			};
 
 			const offlineUpload = (file, meta) => sendOfflineFileMessage(rid, msgData, file, meta, (file) => {
@@ -236,13 +235,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 
 			upload.start((error, file, storage) => {
 				if (error) {
-					const uploads = Session.get('uploading') || [];
-					uploads.filter((u) => u.id === upload.id).forEach((u) => {
-						u.error = error.message;
-						u.percentage = 0;
-					});
-					Session.set('uploading', uploads);
-
+					ChatMessage.setProgress(msgData.id, uploading);
 					return;
 				}
 
@@ -258,16 +251,12 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					if (offlineFile) {
 						SWCache.removeFromCache(offlineFile);
 					}
-
-					setTimeout(() => {
-						const uploads = Session.get('uploading') || [];
-						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
-					}, 2000);
 				});
 			}, offlineUpload);
 
 			Tracker.autorun((computation) => {
 				const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
+
 				if (!isCanceling) {
 					return;
 				}
@@ -275,8 +264,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				computation.stop();
 				upload.stop();
 
-				const uploads = Session.get('uploading') || {};
-				Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+				ChatMessage.setProgress(msgData.id, uploading);
 			});
 		}));
 	};

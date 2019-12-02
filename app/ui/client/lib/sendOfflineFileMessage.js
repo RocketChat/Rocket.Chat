@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import toastr from 'toastr';
 
-import { ChatMessage } from '../../../models';
+import { ChatMessage, CachedChatMessage } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises/client';
@@ -50,8 +50,13 @@ const getOfflineMessage = (roomId, msgData, file, meta) => {
 		msg: '',
 		file: {
 			_id: id,
-			name: file.name,
-			type: file.type,
+			name,
+			type,
+		},
+		uploads: {
+			id,
+			name,
+			percentage: 0,
 		},
 		meta,
 		groupable: false,
@@ -87,11 +92,15 @@ export const sendOfflineFileMessage = (roomId, msgData, file, meta, callback) =>
 		message.unread = true;
 	}
 
-	SWCache.uploadToCache(message, file);
-	callback(message.file);
-	message = callbacks.run('beforeSaveMessage', message);
-	promises.run('onClientMessageReceived', message).then(function(message) {
-		ChatMessage.insert(message);
-		return callbacks.run('afterSaveMessage', message);
+	SWCache.uploadToCache(message, file, (error) => {
+		if (error) { return; }
+
+		callback(message.file);
+		message = callbacks.run('beforeSaveMessage', message);
+		promises.run('onClientMessageReceived', message).then(function(message) {
+			ChatMessage.insert(message);
+			CachedChatMessage.save();
+			return callbacks.run('afterSaveMessage', message);
+		});
 	});
 };

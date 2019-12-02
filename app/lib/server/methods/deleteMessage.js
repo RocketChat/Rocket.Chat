@@ -27,8 +27,18 @@ Meteor.methods({
 				ts: 1,
 			},
 		});
-
-		if (!originalMessage || !canDeleteMessage(uid, originalMessage)) {
+		if (originalMessage == null) {
+			return;
+			// throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+			// 	method: 'deleteMessage',
+			// 	action: 'Delete_message',
+			// });
+		}
+		const forceDelete = hasPermission(Meteor.userId(), 'force-delete-message', originalMessage.rid);
+		const _hasPermission = hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid);
+		const deleteAllowed = settings.get('Message_AllowDeleting');
+		const deleteOwn = originalMessage && originalMessage.u && originalMessage.u._id === Meteor.userId();
+		if (!(_hasPermission || (deleteAllowed && deleteOwn)) && !forceDelete) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'deleteMessage',
 				action: 'Delete_message',
