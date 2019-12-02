@@ -18,4 +18,20 @@ export class SettingsRaw extends BaseRaw {
 
 		return this.find(query);
 	}
+
+	updateValueById(_id, value) {
+		const query = {
+			blocked: { $ne: true },
+			value: { $ne: value },
+			_id,
+		};
+
+		const update = {
+			$set: {
+				value,
+			},
+		};
+
+		return this.col.update(query, update);
+	}
 }

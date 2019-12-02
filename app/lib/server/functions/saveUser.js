@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
+import { Random } from 'meteor/random';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -13,11 +14,42 @@ import { validateEmailDomain } from '../lib';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusText } from '.';
 
 let html = '';
+let passwordChangedHtml = '';
 Meteor.startup(() => {
 	Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
 		html = template;
 	});
+
+	Mailer.getTemplate('Password_Changed_Email', (template) => {
+		passwordChangedHtml = template;
+	});
 });
+
+function _sendUserEmail(subject, html, userData) {
+	const email = {
+		to: userData.email,
+		from: settings.get('From_Email'),
+		subject,
+		html,
+		data: {
+			email: s.escapeHTML(userData.email),
+			password: s.escapeHTML(userData.password),
+		},
+	};
+
+	if (typeof userData.name !== 'undefined') {
+		email.data.name = s.escapeHTML(userData.name);
+	}
+
+	try {
+		Mailer.send(email);
+	} catch (error) {
+		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
+			function: 'RocketChat.saveUser',
+			message: error.message,
+		});
+	}
+}
 
 function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(getRoles(), '_id');
@@ -80,7 +112,7 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (!userData._id && !userData.password) {
+	if (!userData._id && !userData.password && !userData.setRandomPassword) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Password is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Password',
@@ -162,6 +194,17 @@ function validateUserEditing(userId, userData) {
 
 export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
+	let sendPassword = false;
+
+	if (userData.hasOwnProperty('setRandomPassword')) {
+		if (userData.setRandomPassword) {
+			userData.password = Random.id();
+			userData.requirePasswordChange = true;
+			sendPassword = true;
+		}
+
+		delete userData.setRandomPassword;
+	}
 
 	if (!userData._id) {
 		validateEmailDomain(userData.email);
@@ -200,31 +243,7 @@ export const saveUser = function(userId, userData) {
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
-			const subject = settings.get('Accounts_UserAddedEmail_Subject');
-
-			const email = {
-				to: userData.email,
-				from: settings.get('From_Email'),
-				subject,
-				html,
-				data: {
-					email: s.escapeHTML(userData.email),
-					password: s.escapeHTML(userData.password),
-				},
-			};
-
-			if (typeof userData.name !== 'undefined') {
-				email.data.name = s.escapeHTML(userData.name);
-			}
-
-			try {
-				Mailer.send(email);
-			} catch (error) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-					function: 'RocketChat.saveUser',
-					message: error.message,
-				});
-			}
+			_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
 		}
 
 		userData._id = _id;
@@ -264,6 +283,8 @@ export const saveUser = function(userId, userData) {
 
 	if (userData.password && userData.password.trim() && hasPermission(userId, 'edit-other-user-password') && passwordPolicy.validate(userData.password)) {
 		Accounts.setPassword(userData._id, userData.password.trim());
+	} else {
+		sendPassword = false;
 	}
 
 	const updateUser = {
@@ -290,6 +311,10 @@ export const saveUser = function(userId, userData) {
 	}
 
 	Meteor.users.update({ _id: userData._id }, updateUser);
+
+	if (sendPassword) {
+		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
+	}
 
 	return true;
 };
