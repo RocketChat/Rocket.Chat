@@ -2,39 +2,24 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import s from 'underscore.string';
+import _ from 'underscore';
 
-import { EmojiCustom } from '../../../models';
 import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
+import { APIClient } from '../../../utils/client';
+
+const EMOJIS_COUNT = 25;
+const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 Template.adminEmoji.helpers({
 	searchText() {
 		const instance = Template.instance();
 		return instance.filter && instance.filter.get();
 	},
-	isReady() {
-		if (Template.instance().ready != null) {
-			return Template.instance().ready.get();
-		}
-		return undefined;
-	},
 	customemoji() {
-		return Template.instance().customemoji();
+		return Template.instance().emojis.get();
 	},
 	isLoading() {
-		if (Template.instance().ready != null) {
-			if (!Template.instance().ready.get()) {
-				return 'btn-loading';
-			}
-		}
-	},
-	hasMore() {
-		if (Template.instance().limit != null) {
-			if (typeof Template.instance().customemoji === 'function') {
-				return Template.instance().limit.get() === Template.instance().customemoji().length;
-			}
-		}
-		return false;
+		return Template.instance().isLoading.get();
 	},
 	flexData() {
 		return {
@@ -48,26 +33,31 @@ Template.adminEmoji.helpers({
 			if ((currentTarget.offsetHeight + currentTarget.scrollTop) < (currentTarget.scrollHeight - 100)) {
 				return;
 			}
-			if (instance.limit.get() > instance.customemoji().length) {
-				return false;
+			const emojis = instance.emojis.get();
+			if (instance.total.get() > emojis.length) {
+				instance.offset.set(instance.offset.get() + EMOJIS_COUNT);
 			}
-			instance.limit.set(instance.limit.get() + 50);
 		};
 	},
 	onTableItemClick() {
 		const instance = Template.instance();
 		return function({ _id }) {
-			instance.tabBarData.set(EmojiCustom.findOne({ _id }));
+			instance.tabBarData.set({
+				emoji: instance.emojis.get().find((emoji) => emoji._id === _id),
+				onSuccess: instance.onSuccessCallback,
+			});
 			instance.tabBar.open('admin-emoji-info');
 		};
 	},
 });
 
-Template.adminEmoji.onCreated(function() {
-	const instance = this;
-	this.limit = new ReactiveVar(50);
+Template.adminEmoji.onCreated(async function() {
+	this.emojis = new ReactiveVar([]);
+	this.offset = new ReactiveVar(0);
+	this.total = new ReactiveVar(0);
 	this.filter = new ReactiveVar('');
-	this.ready = new ReactiveVar(false);
+	this.query = new ReactiveVar({});
+	this.isLoading = new ReactiveVar(false);
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
@@ -91,26 +81,32 @@ Template.adminEmoji.onCreated(function() {
 		order: 2,
 	});
 
-	this.autorun(function() {
-		const limit = instance.limit != null ? instance.limit.get() : 0;
-		const subscription = instance.subscribe('fullEmojiData', '', limit);
-		instance.ready.set(subscription.ready());
-	});
-
-	this.customemoji = function() {
-		const filter = instance.filter != null ? s.trim(instance.filter.get()) : '';
-
-		let query = {};
-
-		if (filter) {
-			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ name: filterReg }, { aliases: filterReg }] };
-		}
-
-		const limit = instance.limit != null ? instance.limit.get() : 0;
-
-		return EmojiCustom.find(query, { limit, sort: { name: 1 } }).fetch();
+	this.onSuccessCallback = () => {
+		this.offset.set(0);
+		return this.loadEmojis(this.query.get(), this.offset.get());
 	};
+
+	this.loadEmojis = _.debounce(async (query, offset) => {
+		this.isLoading.set(true);
+		const { emojis, total } = await APIClient.v1.get(`emoji-custom.listWithPagination?count=${ EMOJIS_COUNT }&offset=${ offset }&query=${ JSON.stringify(query) }`);
+		this.total.set(total);
+		if (offset === 0) {
+			this.emojis.set(emojis);
+		} else {
+			this.emojis.set(this.emojis.get().concat(emojis));
+		}
+		this.isLoading.set(false);
+	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
+
+	this.autorun(() => {
+		const filter = this.filter.get() && this.filter.get().trim();
+		const offset = this.offset.get();
+		if (filter) {
+			const regex = { $regex: filter, $options: 'i' };
+			return this.loadEmojis({ $or: [{ name: regex }, { aliases: regex }] }, offset);
+		}
+		return this.loadEmojis({}, offset);
+	});
 });
 
 Template.adminEmoji.onRendered(() =>
@@ -133,5 +129,6 @@ Template.adminEmoji.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
+		t.offset.set(0);
 	},
 });
