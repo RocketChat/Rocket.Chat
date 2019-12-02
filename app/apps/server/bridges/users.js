@@ -23,11 +23,9 @@ export class AppUserBridge {
 	}
 
 	async create(user, appId) {
-		this.orch.debugLog(`The App ${ appId } is requesting to create a new user`);
+		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
 
-		user.password = 'pass';
 		user.requirePasswordChange = true;
-
 
 		if (typeof user.joinDefaultChannels === 'undefined') {
 			user.joinDefaultChannels = true;
