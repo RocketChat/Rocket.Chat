@@ -80,7 +80,7 @@ export default class AutoComplete {
 		this.position = settings.position || 'bottom';
 		this.rules = settings.rules;
 		this.selector = {
-			constainer: '.-autocomplete-container',
+			container: '.-autocomplete-container',
 			item: '.-autocomplete-item',
 			...settings.selector,
 		};
@@ -392,7 +392,7 @@ export default class AutoComplete {
 	positionContainer() {
 		// First render; Pick the first item and set css whenever list gets shown
 		let pos = {};
-		const element = this.tmplInst.$(this.selector.anchor || this.$element);
+		const element = this.selector.anchor ? this.tmplInst.$(this.selector.anchor) : this.$element;
 
 		if (this.position === 'fixed') {
 			const width = element.outerWidth();

@@ -31,6 +31,7 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			roles: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
 			requirePasswordChange: Match.Maybe(Boolean),
+			setRandomPassword: Match.Maybe(Boolean),
 			sendWelcomeEmail: Match.Maybe(Boolean),
 			verified: Match.Maybe(Boolean),
 			customFields: Match.Maybe(Object),
@@ -511,6 +512,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
 				desktopNotificationDuration: Match.Maybe(Number),
+				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
 				messageViewMode: Match.Maybe(Number),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
@@ -668,6 +670,18 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 		return API.v1.success({
 			users: Users.findUsersNotOffline(options).fetch(),
 			full: true,
+		});
+	},
+});
+
+API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
+	get() {
+		const { fullExport = false } = this.queryParams;
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }));
+
+		return API.v1.success({
+			requested: result.requested,
+			exportOperation: result.exportOperation,
 		});
 	},
 });

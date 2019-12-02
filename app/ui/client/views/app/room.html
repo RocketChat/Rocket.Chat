@@ -14,9 +14,9 @@
 				<div class="messages-container-main dropzone">
 					<div class="dropzone-overlay background-transparent-darkest color-content-background-color">{{_ "Drop_to_upload_file"}}</div>
 					{{#unless embeddedVersion}}
-						{{#if showAnnouncement}}
-						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline roomAnnouncement}}">
-							<p>{{{RocketChatMarkdownInline roomAnnouncement}}}</p>
+						{{#if announcement}}
+						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline announcement}}">
+							<p>{{{RocketChatMarkdownInline announcement}}}</p>
 						</div>
 						{{/if}}
 					{{/unless}}

@@ -32,6 +32,7 @@ const mountFileObject = (message) => ({
 
 const roomTypes = {
 	c: 'channels',
+	l: 'channels',
 	d: 'im',
 	p: 'groups',
 };
@@ -51,8 +52,12 @@ Template.uploadedFilesList.onCreated(function() {
 	const { rid } = Template.currentData();
 	const room = Rooms.findOne({ _id: rid });
 	this.searchText = new ReactiveVar(null);
+
+	this.showFileType = new ReactiveVar('all');
+
 	this.roomFiles = new ReactiveVar([]);
 	this.files = new Mongo.Collection(null);
+
 	this.state = new ReactiveDict({
 		limit: LIST_SIZE,
 		hasMore: true,
@@ -103,6 +108,13 @@ Template.uploadedFilesList.onCreated(function() {
 	});
 
 	this.autorun(() => {
+		if (this.showFileType.get() === 'all') {
+			delete query.typeGroup;
+		} else {
+			this.files.remove({});
+			query.typeGroup = this.showFileType.get();
+		}
+
 		const limit = this.state.get('limit');
 		const searchText = this.searchText.get();
 		if (!searchText) {
@@ -219,6 +231,10 @@ Template.uploadedFilesList.events({
 			return t.state.set('limit', t.state.get('limit') + LIST_SIZE);
 		}
 	}, 200),
+
+	'change .js-type'(e, t) {
+		t.showFileType.set(e.currentTarget.value);
+	},
 
 	'click .js-action'(e) {
 		e.currentTarget.parentElement.classList.add('active');

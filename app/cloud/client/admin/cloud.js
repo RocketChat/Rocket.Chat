@@ -8,7 +8,7 @@ import queryString from 'query-string';
 import toastr from 'toastr';
 
 import { t } from '../../../utils';
-import { SideNav } from '../../../ui-utils/client';
+import { SideNav, modal } from '../../../ui-utils/client';
 
 
 Template.cloud.onCreated(function() {
@@ -161,6 +161,17 @@ Template.cloud.helpers({
 });
 
 Template.cloud.events({
+	'click .js-register'() {
+		modal.open({
+			template: 'cloudRegisterManually',
+			showCancelButton: false,
+			showConfirmButton: false,
+			showFooter: false,
+			closeOnCancel: true,
+			html: true,
+			confirmOnEnter: false,
+		});
+	},
 	'click .update-email-btn'() {
 		const val = $('input[name=cloudEmail]').val();
 

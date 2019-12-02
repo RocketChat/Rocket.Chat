@@ -7,7 +7,8 @@
 [![Rocket.Chat](https://open.rocket.chat/images/join-chat.svg)](https://open.rocket.chat/)
 [![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
 [![Project Dependencies](https://david-dm.org/RocketChat/Rocket.Chat.svg)](https://david-dm.org/RocketChat/Rocket.Chat)
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/8580571ba024426d9649e9ab389bd5dd)](https://www.codacy.com/app/RocketChat/Rocket-Chat)
+[![devDependencies Status](https://david-dm.org/RocketChat/Rocket.Chat/dev-status.svg)](https://david-dm.org/RocketChat/Rocket.Chat?type=dev)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/8580571ba024426d9649e9ab389bd5dd)](https://www.codacy.com/app/RocketChat/Rocket-chat)
 [![Coverage Status](https://coveralls.io/repos/RocketChat/Rocket.Chat/badge.svg)](https://coveralls.io/r/RocketChat/Rocket.Chat)
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
@@ -116,11 +117,6 @@ Deploy to a DigitalOcean droplet with our one-click install listing from the Dig
 
 [![do-btn-blue](https://user-images.githubusercontent.com/51996/58146107-50512580-7c1a-11e9-8ec9-e032ba387c2a.png)](https://marketplace.digitalocean.com/apps/rocket-chat?action=deploy&refcode=1940fe28bd31)
 
-## RocketChatLauncher
-
-Focus on your team/community and not on servers or code - the Launcher provides RocketChat-as-a-Service on a monthly subscription model.
-
-[![RocketChatLauncher](https://rocketchatlauncher.com/wp-content/uploads/2017/03/cropped-rcl-small-type.png)](https://rocketchatlauncher.com)
 
 ## Layershift
 
@@ -448,7 +444,9 @@ Emoji provided graciously by [JoyPixels](https://www.joypixels.com/)
 
 Testing with [BrowserStack](https://www.browserstack.com)
 
+![LingoHub](https://user-images.githubusercontent.com/20868078/69438584-0dd0e880-0d24-11ea-9127-de61dcfa6cd6.png)
 
+Translations done with [LingoHub](https://www.lingohub.com)
 
 # Donate
 

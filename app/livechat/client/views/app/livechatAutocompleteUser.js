@@ -85,9 +85,11 @@ Template.livechatAutocompleteUser.onCreated(function() {
 
 	const filter = {};
 	this.autorun(() => {
-		const { exceptions } = Template.currentData();
+		const { exceptions, conditions } = Template.currentData();
 		filter.exceptions = exceptions;
+		filter.conditions = conditions;
 	});
+
 	const { collection, subscription, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
 	this.ac = new AutoComplete({
 		selector: {

@@ -1,6 +1,5 @@
 /* eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import s from 'underscore.string';
@@ -8,8 +7,9 @@ import toastr from 'toastr';
 
 import { t, handleError } from '../../../../utils';
 import './livechatAppearance.html';
+import { APIClient } from '../../../../utils/client';
 
-const LivechatAppearance = new Mongo.Collection('livechatAppearance');
+const getSettingFromAppearance = (instance, settingName) => instance.appearance.get() && instance.appearance.get().find((setting) => setting._id === settingName);
 
 Template.livechatAppearance.helpers({
 	color() {
@@ -84,6 +84,9 @@ Template.livechatAppearance.helpers({
 	conversationFinishedMessage() {
 		return Template.instance().conversationFinishedMessage.get();
 	},
+	conversationFinishedText() {
+		return Template.instance().conversationFinishedText.get();
+	},
 	registrationFormEnabled() {
 		if (Template.instance().registrationFormEnabled.get()) {
 			return 'checked';
@@ -104,9 +107,8 @@ Template.livechatAppearance.helpers({
 	},
 });
 
-Template.livechatAppearance.onCreated(function() {
-	this.subscribe('livechat:appearance');
-
+Template.livechatAppearance.onCreated(async function() {
+	this.appearance = new ReactiveVar([]);
 	this.title = new ReactiveVar(null);
 	this.color = new ReactiveVar(null);
 
@@ -120,75 +122,50 @@ Template.livechatAppearance.onCreated(function() {
 	this.colorOffline = new ReactiveVar(null);
 	this.offlineEmail = new ReactiveVar(null);
 	this.conversationFinishedMessage = new ReactiveVar(null);
+	this.conversationFinishedText = new ReactiveVar(null);
 	this.registrationFormEnabled = new ReactiveVar(null);
 	this.registrationFormNameFieldEnabled = new ReactiveVar(null);
 	this.registrationFormEmailFieldEnabled = new ReactiveVar(null);
 	this.registrationFormMessage = new ReactiveVar(null);
 
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_title');
-		this.title.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_title_color');
-		this.color.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_show_agent_info');
-		this.showAgentInfo.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_show_agent_email');
-		this.showAgentEmail.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_display_offline_form');
-		this.displayOfflineForm.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_offline_form_unavailable');
-		this.offlineUnavailableMessage.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_offline_message');
-		this.offlineMessage.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_offline_success_message');
-		this.offlineSuccessMessage.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_offline_title');
-		this.titleOffline.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_offline_title_color');
-		this.colorOffline.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_offline_email');
-		this.offlineEmail.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_conversation_finished_message');
-		this.conversationFinishedMessage.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_registration_form_message');
-		this.registrationFormMessage.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_registration_form');
-		this.registrationFormEnabled.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_name_field_registration_form');
-		this.registrationFormNameFieldEnabled.set(setting && setting.value);
-	});
-	this.autorun(() => {
-		const setting = LivechatAppearance.findOne('Livechat_email_field_registration_form');
-		this.registrationFormEmailFieldEnabled.set(setting && setting.value);
-	});
+	const { appearance } = await APIClient.v1.get('livechat/appearance');
+	this.appearance.set(appearance);
+
+	const livechatTitle = getSettingFromAppearance(this, 'Livechat_title');
+	const livechatTitleColor = getSettingFromAppearance(this, 'Livechat_title_color');
+	const livechatShowAgentInfo = getSettingFromAppearance(this, 'Livechat_show_agent_info');
+	const livechatShowAgentEmail = getSettingFromAppearance(this, 'Livechat_show_agent_email');
+	const livechatDisplayOfflineForm = getSettingFromAppearance(this, 'Livechat_display_offline_form');
+	const livechatOfflineFormUnavailable = getSettingFromAppearance(this, 'Livechat_offline_form_unavailable');
+	const livechatOfflineMessage = getSettingFromAppearance(this, 'Livechat_offline_message');
+	const livechatOfflineSuccessMessage = getSettingFromAppearance(this, 'Livechat_offline_success_message');
+	const livechatOfflineTitle = getSettingFromAppearance(this, 'Livechat_offline_title');
+	const livechatOfflineTitleColor = getSettingFromAppearance(this, 'Livechat_offline_title_color');
+	const livechatOfflineEmail = getSettingFromAppearance(this, 'Livechat_offline_email');
+	const livechatConversationFinishedMessage = getSettingFromAppearance(this, 'Livechat_conversation_finished_message');
+	const livechatRegistrationFormMessage = getSettingFromAppearance(this, 'Livechat_registration_form_message');
+	const livechatRegistrationForm = getSettingFromAppearance(this, 'Livechat_registration_form');
+	const livechatNameFieldRegistrationForm = getSettingFromAppearance(this, 'Livechat_name_field_registration_form');
+	const livechatEmailFieldRegistrationForm = getSettingFromAppearance(this, 'Livechat_email_field_registration_form');
+	const conversationFinishedText = getSettingFromAppearance(this, 'Livechat_conversation_finished_text');
+
+	this.title.set(livechatTitle && livechatTitle.value);
+	this.color.set(livechatTitleColor && livechatTitleColor.value);
+	this.showAgentInfo.set(livechatShowAgentInfo && livechatShowAgentInfo.value);
+	this.showAgentEmail.set(livechatShowAgentEmail && livechatShowAgentEmail.value);
+	this.displayOfflineForm.set(livechatDisplayOfflineForm && livechatDisplayOfflineForm.value);
+	this.offlineUnavailableMessage.set(livechatOfflineFormUnavailable && livechatOfflineFormUnavailable.value);
+	this.offlineMessage.set(livechatOfflineMessage && livechatOfflineMessage.value);
+	this.offlineSuccessMessage.set(livechatOfflineSuccessMessage && livechatOfflineSuccessMessage.value);
+	this.titleOffline.set(livechatOfflineTitle && livechatOfflineTitle.value);
+	this.colorOffline.set(livechatOfflineTitleColor && livechatOfflineTitleColor.value);
+	this.offlineEmail.set(livechatOfflineEmail && livechatOfflineEmail.value);
+	this.conversationFinishedMessage.set(livechatConversationFinishedMessage && livechatConversationFinishedMessage.value);
+	this.registrationFormMessage.set(livechatRegistrationFormMessage && livechatRegistrationFormMessage.value);
+	this.registrationFormEnabled.set(livechatRegistrationForm && livechatRegistrationForm.value);
+	this.registrationFormNameFieldEnabled.set(livechatNameFieldRegistrationForm && livechatNameFieldRegistrationForm.value);
+	this.registrationFormEmailFieldEnabled.set(livechatEmailFieldRegistrationForm && livechatEmailFieldRegistrationForm.value);
+	this.conversationFinishedText.set(conversationFinishedText && conversationFinishedText.value);
 });
 
 Template.livechatAppearance.events({
@@ -205,49 +182,52 @@ Template.livechatAppearance.events({
 	'click .reset-settings'(e, instance) {
 		e.preventDefault();
 
-		const settingTitle = LivechatAppearance.findOne('Livechat_title');
+		const settingTitle = getSettingFromAppearance(instance, 'Livechat_title');
 		instance.title.set(settingTitle && settingTitle.value);
 
-		const settingTitleColor = LivechatAppearance.findOne('Livechat_title_color');
+		const settingTitleColor = getSettingFromAppearance(instance, 'Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
 
-		const settingShowAgentInfo = LivechatAppearance.findOne('Livechat_show_agent_info');
+		const settingShowAgentInfo = getSettingFromAppearance(instance, 'Livechat_show_agent_info');
 		instance.showAgentInfo.set(settingShowAgentInfo && settingShowAgentInfo.value);
 
-		const settingShowAgentEmail = LivechatAppearance.findOne('Livechat_show_agent_email');
+		const settingShowAgentEmail = getSettingFromAppearance(instance, 'Livechat_show_agent_email');
 		instance.showAgentEmail.set(settingShowAgentEmail && settingShowAgentEmail.value);
 
-		const settingDiplayOffline = LivechatAppearance.findOne('Livechat_display_offline_form');
+		const settingDiplayOffline = getSettingFromAppearance(instance, 'Livechat_display_offline_form');
 		instance.displayOfflineForm.set(settingDiplayOffline && settingDiplayOffline.value);
 
-		const settingFormUnavailable = LivechatAppearance.findOne('Livechat_offline_form_unavailable');
+		const settingFormUnavailable = getSettingFromAppearance(instance, 'Livechat_offline_form_unavailable');
 		instance.offlineUnavailableMessage.set(settingFormUnavailable && settingFormUnavailable.value);
 
-		const settingOfflineMessage = LivechatAppearance.findOne('Livechat_offline_message');
+		const settingOfflineMessage = getSettingFromAppearance(instance, 'Livechat_offline_message');
 		instance.offlineMessage.set(settingOfflineMessage && settingOfflineMessage.value);
 
-		const settingOfflineSuccess = LivechatAppearance.findOne('Livechat_offline_success_message');
+		const settingOfflineSuccess = getSettingFromAppearance(instance, 'Livechat_offline_success_message');
 		instance.offlineSuccessMessage.set(settingOfflineSuccess && settingOfflineSuccess.value);
 
-		const settingOfflineTitle = LivechatAppearance.findOne('Livechat_offline_title');
+		const settingOfflineTitle = getSettingFromAppearance(instance, 'Livechat_offline_title');
 		instance.titleOffline.set(settingOfflineTitle && settingOfflineTitle.value);
 
-		const settingOfflineTitleColor = LivechatAppearance.findOne('Livechat_offline_title_color');
+		const settingOfflineTitleColor = getSettingFromAppearance(instance, 'Livechat_offline_title_color');
 		instance.colorOffline.set(settingOfflineTitleColor && settingOfflineTitleColor.value);
 
-		const settingConversationFinishedMessage = LivechatAppearance.findOne('Livechat_conversation_finished_message');
+		const settingConversationFinishedMessage = getSettingFromAppearance(instance, 'Livechat_conversation_finished_message');
 		instance.conversationFinishedMessage.set(settingConversationFinishedMessage && settingConversationFinishedMessage.value);
 
-		const settingRegistrationFormEnabled = LivechatAppearance.findOne('Livechat_registration_form');
+		const settingConversationFinishedText = getSettingFromAppearance(instance, 'Livechat_conversation_finished_text');
+		instance.conversationFinishedText.set(settingConversationFinishedText && settingConversationFinishedText.value);
+
+		const settingRegistrationFormEnabled = getSettingFromAppearance(instance, 'Livechat_registration_form');
 		instance.registrationFormEnabled.set(settingRegistrationFormEnabled && settingRegistrationFormEnabled.value);
 
-		const settingRegistrationFormNameFieldEnabled = LivechatAppearance.findOne('Livechat_name_field_registration_form');
+		const settingRegistrationFormNameFieldEnabled = getSettingFromAppearance(instance, 'Livechat_name_field_registration_form');
 		instance.registrationFormNameFieldEnabled.set(settingRegistrationFormNameFieldEnabled && settingRegistrationFormNameFieldEnabled.value);
 
-		const settingRegistrationFormEmailFieldEnabled = LivechatAppearance.findOne('Livechat_email_field_registration_form');
+		const settingRegistrationFormEmailFieldEnabled = getSettingFromAppearance(instance, 'Livechat_email_field_registration_form');
 		instance.registrationFormEmailFieldEnabled.set(settingRegistrationFormEmailFieldEnabled && settingRegistrationFormEmailFieldEnabled.value);
 
-		const settingRegistrationFormMessage = LivechatAppearance.findOne('Livechat_registration_form_message');
+		const settingRegistrationFormMessage = getSettingFromAppearance(instance, 'Livechat_registration_form_message');
 		instance.registrationFormMessage.set(settingRegistrationFormMessage && settingRegistrationFormMessage.value);
 	},
 	'submit .rocket-form'(e, instance) {
@@ -302,6 +282,10 @@ Template.livechatAppearance.events({
 				value: s.trim(instance.conversationFinishedMessage.get()),
 			},
 			{
+				_id: 'Livechat_conversation_finished_text',
+				value: s.trim(instance.conversationFinishedText.get()),
+			},
+			{
 				_id: 'Livechat_registration_form',
 				value: instance.registrationFormEnabled.get(),
 			},
@@ -323,6 +307,7 @@ Template.livechatAppearance.events({
 			if (err) {
 				return handleError(err);
 			}
+			instance.appearance.set(settings);
 			toastr.success(t('Settings_updated'));
 		});
 	},

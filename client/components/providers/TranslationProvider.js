@@ -1,8 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 
-import { TranslationContext } from '../contexts/TranslationContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
+
+const translate = function(key) {
+	return key;
+};
+
+translate.has = () => true;
+
+export const TranslationContext = createContext(translate);
 
 const createContextValue = (language) => {
 	const translate = (key, ...replaces) => {
@@ -30,7 +37,11 @@ const createContextValue = (language) => {
 	const has = (key, { lng = language, ...options } = {}) => TAPi18next.exists(key, { ...options, lng });
 
 	translate.has = has;
-	return translate;
+
+	return {
+		language,
+		translate,
+	};
 };
 
 export function TranslationProvider({ children }) {
@@ -42,3 +53,23 @@ export function TranslationProvider({ children }) {
 		{children}
 	</TranslationContext.Provider>;
 }
+
+export const useTranslation = () => useContext(TranslationContext).translate;
+
+export const useLanguage = () => useContext(TranslationContext).language;
+
+export const useLanguages = () => useReactiveValue(() => {
+	const languages = TAPi18n.getLanguages();
+
+	const result = Object.entries(languages)
+		.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+		.sort((a, b) => a.key - b.key);
+
+	result.unshift({
+		name: 'Default',
+		en: 'Default',
+		key: '',
+	});
+
+	return result;
+}, []);

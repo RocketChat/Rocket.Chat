@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import i18next from 'i18next';
 
-import { TranslationContext } from '../contexts/TranslationContext';
+import { TranslationContext } from './TranslationProvider';
 
 export function TranslationProvider({ children }) {
 	const [contextValue, setContextValue] = useState();
