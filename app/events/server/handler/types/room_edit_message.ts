@@ -1,10 +1,10 @@
 import { RoomEvents } from '../../../../models/server';
-import { AddEventResult } from '../../../../models/server/models/Events';
+import { IAddEventResult } from '../../../../models/server/models/Events';
 import { IEDataMessage } from '../../../definitions/data/IEDataMessage';
 import { IEDataUpdate } from '../../../definitions/data/IEDataUpdate';
 import { IEvent } from '../../../definitions/IEvent';
 
-module.exports = async <T extends IEDataMessage>(event: IEvent<T>): Promise<AddEventResult> => {
+module.exports = async <T extends IEDataMessage>(event: IEvent<T>): Promise<IAddEventResult> => {
 	const eventResult = await RoomEvents.addRoomEvent(event);
 
 	if (eventResult.success) {

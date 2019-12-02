@@ -158,6 +158,7 @@
 		"@rocket.chat/fuselage-hooks": "^0.2.0-dev.50",
 		"@rocket.chat/icons": "^0.2.0-dev.49",
 		"@slack/client": "^4.8.0",
+		"@types/meteor": "^1.4.37",
 		"adm-zip": "^0.4.13",
 		"archiver": "^3.0.0",
 		"arraybuffer-to-string": "^1.0.2",

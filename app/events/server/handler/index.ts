@@ -1,6 +1,11 @@
-import { EDataDefinition, IEvent } from '../../definitions/IEvent';
+import { EDataDefinition, IEvent, EventTypeDescriptor } from '../../definitions/IEvent';
+import { IAddEventResult } from '../../../models/server/models/Events';
 
-const typesHandler = {
+export type TypesHandler = {
+	[P in EventTypeDescriptor]?: <T extends EDataDefinition>(event: IEvent<T>) => Promise<IAddEventResult>;
+}
+
+const typesHandler: TypesHandler = {
 	genesis: require('./types/genesis'), // GENESIS
 
 	// Room
@@ -10,8 +15,7 @@ const typesHandler = {
 
 export async function handleEvents<T extends EDataDefinition>(events: [IEvent<T>]) {
 	for (const event of events) {
-		// /* eslint-disable no-await-in-loop */
+		// eslint-disable-next-line no-await-in-loop
 		await typesHandler[event.t](event);
-		// /* eslint-enable no-await-in-loop */
 	}
 }

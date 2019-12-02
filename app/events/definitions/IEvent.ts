@@ -2,7 +2,9 @@ import { IEDataGenesis } from './data/IEDataGenesis';
 import { IEDataMessage } from './data/IEDataMessage';
 import { IEDataUpdate } from './data/IEDataUpdate';
 
-export type EDataDefinition = IEDataUpdate<EDataDefinition> | IEDataGenesis | IEDataMessage;
+export type IEData = IEDataGenesis | IEDataMessage;
+
+export type EDataDefinition = IEDataUpdate<IEData> | IEData;
 
 export enum EventTypeDescriptor {
     // Global
@@ -33,6 +35,6 @@ export interface IEvent<T extends EDataDefinition> {
     src: string;
     rid: string;
     t: EventTypeDescriptor;
-    d: T | IEDataUpdate<T>;
+    d: T;
     hasChildren: boolean;
 }

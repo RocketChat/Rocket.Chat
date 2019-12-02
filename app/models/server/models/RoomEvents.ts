@@ -4,9 +4,9 @@ import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
 import { EDataDefinition, EventTypeDescriptor, IEvent } from '../../../events/definitions/IEvent';
 import { IRoom } from '../../../events/definitions/IRoom';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
-import { AddEventResult, ContextQuery, EventsModel, EventStub } from './Events';
+import { IAddEventResult, IContextQuery, EventsModel, IEventStub } from './Events';
 
-const getContextQuery = (param: string | IEvent<any>): ContextQuery => {
+const getContextQuery = (param: string | IEvent<any>): IContextQuery => {
 	let rid: string;
 
 	if (typeof param === 'string') {
@@ -30,7 +30,7 @@ class RoomEventsModel extends EventsModel {
 		return src || getLocalSrc();
 	}
 
-	public async addRoomEvent<T extends EDataDefinition>(event: IEvent<T>): Promise<AddEventResult> {
+	public async addRoomEvent<T extends EDataDefinition>(event: IEvent<T>): Promise<IAddEventResult> {
 		return super.addEvent(getContextQuery(event), event);
 	}
 
@@ -49,7 +49,7 @@ class RoomEventsModel extends EventsModel {
 	public async createMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: T): Promise<IEvent<T>> {
 		src = this.ensureSrc(src);
 
-		const stub: EventStub<T> = {
+		const stub: IEventStub<T> = {
 			_cid,
 			t: EventTypeDescriptor.MESSAGE,
 			d,
@@ -58,10 +58,10 @@ class RoomEventsModel extends EventsModel {
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
-	public async createEditMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: IEDataUpdate<T>): Promise<IEvent<T>> {
+	public async createEditMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: T): Promise<IEvent<T>> {
 		src = this.ensureSrc(src);
 
-		const stub: EventStub<T> = {
+		const stub: IEventStub<T> = {
 			_cid,
 			t: EventTypeDescriptor.EDIT_MESSAGE,
 			d,

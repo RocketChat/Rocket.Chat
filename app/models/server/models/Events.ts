@@ -7,7 +7,7 @@ import { Base } from './_Base';
 
 export declare interface IContextQuery { rid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
-export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d?: T | IEDataUpdate<T> }
+export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d?: T }
 
 export class EventsModel extends Base {
 	constructor(nameOrModel: string) {
@@ -117,16 +117,16 @@ export class EventsModel extends Base {
 		if (updateData.set) {
 			updateQuery.$set = {};
 
-			for (const k of Object.keys(updateData.set)) {
-				updateQuery.$set[`d.${ k }`] = updateData.set[k];
+			for (const [k, v] of Object.entries(updateData.set)) {
+				updateQuery.$set[`d.${ k }`] = v;
 			}
 		}
 
 		if (updateData.unset) {
 			updateQuery.$unset = {};
 
-			for (const k of Object.keys(updateData.unset)) {
-				updateQuery.$unset[`d.${ k }`] = updateData.unset[k];
+			for (const [k, v] of Object.entries(updateData.unset)) {
+				updateQuery.$unset[`d.${ k }`] = v;
 			}
 		}
 
