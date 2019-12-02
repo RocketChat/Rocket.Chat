@@ -1,10 +1,10 @@
 import { RoomEvents, Rooms } from '../../../../models/server';
-import { AddEventResult } from '../../../../models/server/models/Events';
+import { IAddEventResult } from '../../../../models/server/models/Events';
 import { IEDataGenesis } from '../../../definitions/data/IEDataGenesis';
 import { IEvent } from '../../../definitions/IEvent';
 // import { normalizers } from '../../../../federation/server/normalizers';
 
-module.exports = async <T extends IEDataGenesis>(event: IEvent<T>): Promise<AddEventResult> => {
+module.exports = async <T extends IEDataGenesis>(event: IEvent<T>): Promise<IAddEventResult> => {
 	const eventResult = await RoomEvents.addRoomEvent(event);
 
 	// If the event was successfully added, handle the event locally

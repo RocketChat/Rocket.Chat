@@ -1,5 +1,5 @@
-import { Base } from "./_Base";
+import { Base } from './_Base';
 
 export declare class Rooms extends Base {
-    constructor(...args: any[]);
+	constructor(...args: any[]);
 }

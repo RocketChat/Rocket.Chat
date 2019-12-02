@@ -2,13 +2,12 @@ import { SHA256 } from 'meteor/sha';
 
 import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
-import { EDataDefinition, IEvent } from '../../../events/definitions/IEvent';
-import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
+import { EDataDefinition, IEvent, EventTypeDescriptor } from '../../../events/definitions/IEvent';
 import { Base } from './_Base';
 
-export declare interface ContextQuery { rid: string }
-export declare interface AddEventResult { success: boolean, reason?: string, missingParentIds?: Array<string>, latestEventIds?: Array<string> }
-export declare interface EventStub<T extends EDataDefinition> { _cid?: string, t: EventTypeDescriptor, d?: T | IEDataUpdate<T> }
+export declare interface IContextQuery { rid: string }
+export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
+export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d?: T | IEDataUpdate<T> }
 
 export class EventsModel extends Base {
 	constructor(nameOrModel: string) {
@@ -18,11 +17,11 @@ export class EventsModel extends Base {
 		this.tryEnsureIndex({ ts: 1 });
 	}
 
-	public getEventHash<T extends EDataDefinition>(contextQuery: ContextQuery, event: IEvent<T>): string {
-		return SHA256(`${event.src}${JSON.stringify(contextQuery)}${event._pids.join(',')}${event.t}${event.ts}${JSON.stringify(event.d)}`);
+	public getEventHash<T extends EDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
+		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ JSON.stringify(event.d) }`);
 	}
 
-	public async createEvent<T extends EDataDefinition>(src: string, contextQuery: ContextQuery, stub: EventStub<T>): Promise<IEvent<T>> {
+	public async createEvent<T extends EDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>): Promise<IEvent<T>> {
 		let _pids = []; // Previous ids
 
 		// If it is not a GENESIS event, we need to get the previous events
@@ -53,17 +52,17 @@ export class EventsModel extends Base {
 		return event;
 	}
 
-	public async createGenesisEvent(src: string, contextQuery: ContextQuery, d: IEDataGenesis): Promise<IEvent<IEDataGenesis>> {
+	public async createGenesisEvent(src: string, contextQuery: IContextQuery, d: IEDataGenesis): Promise<IEvent<IEDataGenesis>> {
 		// Check if genesis event already exists, if so, do not create
 		const genesisEvent = await this.model
 			.rawCollection()
 			.findOne({ ...contextQuery, t: EventTypeDescriptor.GENESIS });
 
 		if (genesisEvent) {
-			throw new Error(`A GENESIS event for this context query already exists: ${JSON.stringify(contextQuery, null, 2)}`);
+			throw new Error(`A GENESIS event for this context query already exists: ${ JSON.stringify(contextQuery, null, 2) }`);
 		}
 
-		const stub: EventStub<IEDataGenesis> = {
+		const stub: IEventStub<IEDataGenesis> = {
 			t: EventTypeDescriptor.GENESIS,
 			d,
 		};
@@ -71,7 +70,7 @@ export class EventsModel extends Base {
 		return this.createEvent(src, contextQuery, stub);
 	}
 
-	public async addEvent<T extends EDataDefinition>(contextQuery: ContextQuery, event: IEvent<T>): Promise<AddEventResult> {
+	public async addEvent<T extends EDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): Promise<IAddEventResult> {
 		// Check if the event does not exit
 		const existingEvent = this.findOne({ _id: event._id });
 
@@ -108,7 +107,7 @@ export class EventsModel extends Base {
 		};
 	}
 
-	public async updateEventData<T extends EDataDefinition>(contextQuery: ContextQuery, eventCID: string, updateData: IEDataUpdate<T>): Promise<void> {
+	public async updateEventData<T extends EDataDefinition>(contextQuery: IContextQuery, eventCID: string, updateData: IEDataUpdate<T>): Promise<void> {
 		const existingEvent = await this.model
 			.rawCollection()
 			.findOne({ ...contextQuery, _cid: eventCID });
@@ -119,7 +118,7 @@ export class EventsModel extends Base {
 			updateQuery.$set = {};
 
 			for (const k of Object.keys(updateData.set)) {
-				updateQuery.$set[`d.${k}`] = updateData.set[k];
+				updateQuery.$set[`d.${ k }`] = updateData.set[k];
 			}
 		}
 
@@ -127,7 +126,7 @@ export class EventsModel extends Base {
 			updateQuery.$unset = {};
 
 			for (const k of Object.keys(updateData.unset)) {
-				updateQuery.$unset[`d.${k}`] = updateData.unset[k];
+				updateQuery.$unset[`d.${ k }`] = updateData.unset[k];
 			}
 		}
 

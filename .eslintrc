@@ -79,7 +79,7 @@
       }
     },
     "react": {
-      "version": "detect",
-    },
-  },
+      "version": "detect"
+    }
+  }
 }

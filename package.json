@@ -63,9 +63,9 @@
 		"start": "meteor",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
-		"lint": "meteor npm run stylelint && meteor npm run jslint && meteor npm run tslint",
-		"jslint": "eslint .",
-		"tslint": "tslint --project ./",
+		"lint": "meteor npm run stylelint && meteor npm run eslint",
+		"jslint": "npm run eslint",
+		"eslint": "eslint --ext .js,.ts,.jsx,.tsx .",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\"",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
@@ -144,7 +144,6 @@
 		"stylelint": "^9.9.0",
 		"stylelint-order": "^2.0.0",
 		"supertest": "^3.3.0",
-		"tslint": "^5.20.1",
 		"webpack": "^4.29.3"
 	},
 	"dependencies": {
