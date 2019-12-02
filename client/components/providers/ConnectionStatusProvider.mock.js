@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ConnectionStatusContext } from '../contexts/ConnectionStatusContext';
+import { ConnectionStatusContext } from './ConnectionStatusProvider';
 
 export function ConnectionStatusProvider({
 	children,

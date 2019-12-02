@@ -7,6 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 import _ from 'underscore';
+import s from 'underscore.string';
 
 import { SAML } from './saml_utils';
 import { Rooms, Subscriptions, CredentialTokens } from '../../models';
@@ -453,17 +454,6 @@ Accounts.saml.storeCredential = function(credentialToken, loginResult) {
 	CredentialTokens.create(credentialToken, loginResult);
 };
 
-const closePopup = function(res, err) {
-	res.writeHead(200, {
-		'Content-Type': 'text/html',
-	});
-	let content = '<html><head><script>window.close()</script></head><body><H1>Verified</H1></body></html>';
-	if (err) {
-		content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ err }</div><a onclick="window.close();">Close Window</a></body></html>`;
-	}
-	res.end(content, 'utf-8');
-};
-
 const samlUrlToObject = function(url) {
 	// req.url will be '/_saml/<action>/<service name>/<credentialToken>'
 	if (!url) {
@@ -512,6 +502,14 @@ const logoutRemoveTokens = function(userId) {
 	});
 };
 
+const showErrorMessage = function(res, err) {
+	res.writeHead(200, {
+		'Content-Type': 'text/html',
+	});
+	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ s.escapeHTML(err) }</div></body></html>`;
+	res.end(content, 'utf-8');
+};
+
 const middleware = function(req, res, next) {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
@@ -536,17 +534,28 @@ const middleware = function(req, res, next) {
 
 		// Skip everything if there's no service set by the saml middleware
 		if (!service) {
+			if (samlObject.actionName === 'metadata') {
+				showErrorMessage(res, `Unexpected SAML service ${ samlObject.serviceName }`);
+				return;
+			}
+
 			throw new Error(`Unexpected SAML service ${ samlObject.serviceName }`);
 		}
+
 		let _saml;
 		switch (samlObject.actionName) {
 			case 'metadata':
-				_saml = new SAML(service);
-				service.callbackUrl = Meteor.absoluteUrl(`_saml/validate/${ service.provider }`);
+				try {
+					_saml = new SAML(service);
+					service.callbackUrl = Meteor.absoluteUrl(`_saml/validate/${ service.provider }`);
+				} catch (err) {
+					showErrorMessage(res, err);
+					return;
+				}
+
 				res.writeHead(200);
 				res.write(_saml.generateServiceProviderMetadata(service.callbackUrl));
 				res.end();
-				// closePopup(res);
 				break;
 			case 'logout':
 				// This is where we receive SAML LogoutResponse
@@ -619,9 +628,6 @@ const middleware = function(req, res, next) {
 							});
 							res.end();
 						}
-						//  else {
-						// 	// TBD thinking of sth meaning full.
-						// }
 					});
 				}
 				break;
@@ -654,31 +660,40 @@ const middleware = function(req, res, next) {
 						throw new Error(`Unable to validate response url: ${ err }`);
 					}
 
-					const credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+					let credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
 					const loginResult = {
 						profile,
 					};
+
 					if (!credentialToken) {
 						// No credentialToken in IdP-initiated SSO
-						const saml_idp_credentialToken = Random.id();
-						Accounts.saml.storeCredential(saml_idp_credentialToken, loginResult);
+						credentialToken = Random.id();
 
-						const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ saml_idp_credentialToken }`;
-						res.writeHead(302, {
-							Location: url,
-						});
-						res.end();
-					} else {
-						Accounts.saml.storeCredential(credentialToken, loginResult);
-						closePopup(res);
+						if (Accounts.saml.settings.debug) {
+							console.log('[SAML] Using random credentialToken: ', credentialToken);
+						}
 					}
+
+					Accounts.saml.storeCredential(credentialToken, loginResult);
+					const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ credentialToken }`;
+					res.writeHead(302, {
+						Location: url,
+					});
+					res.end();
 				});
 				break;
 			default:
 				throw new Error(`Unexpected SAML action ${ samlObject.actionName }`);
 		}
 	} catch (err) {
-		closePopup(res, err);
+		// #ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
+		console.log(err);
+
+		const url = Meteor.absoluteUrl('home');
+		res.writeHead(302, {
+			Location: url,
+		});
+		res.end();
 	}
 };
 

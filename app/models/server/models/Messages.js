@@ -1242,9 +1242,10 @@ export class Messages extends Base {
 		const query = {
 			rid: roomId,
 			ts: { $gt: visitorLastMessageTs },
+			token: { $exists: false },
 		};
 
-		return this.find(query, { sort: { ts: 1 } });
+		return this.findOne(query, { sort: { ts: 1 } });
 	}
 }
 
