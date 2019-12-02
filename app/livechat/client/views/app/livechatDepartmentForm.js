@@ -5,6 +5,7 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 
+import { TabBar, RocketChatTabBar } from '../../../../ui-utils';
 import { t, handleError } from '../../../../utils';
 import { hasPermission } from '../../../../authorization';
 import { getCustomFormTemplate } from './customTemplates/register';
@@ -66,6 +67,17 @@ Template.livechatDepartmentForm.helpers({
 	},
 	onClickTagAgents() {
 		return Template.instance().onClickTagAgents;
+	},
+	flexData() {
+		return {
+			tabBar: Template.instance().tabBar,
+			data: Template.instance().tabBarData.get(),
+		};
+	},
+	tabBarVisible() {
+		return Object.values(TabBar.buttons.get())
+			.some((button) => button.groups
+				.some((group) => group.startsWith('livechat-department')));
 	},
 });
 
@@ -184,6 +196,9 @@ Template.livechatDepartmentForm.onCreated(async function() {
 	this.department = new ReactiveVar({ enabled: true });
 	this.departmentAgents = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
+	this.tabBar = new RocketChatTabBar();
+	this.tabBar.showGroup(FlowRouter.current().route.name);
+	this.tabBarData = new ReactiveVar();
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
