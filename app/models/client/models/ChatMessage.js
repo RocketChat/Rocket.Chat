@@ -23,6 +23,10 @@ ChatMessage.unsetReactions = function(messageId, tempActions) {
 	return this.update({ _id: messageId }, { $unset: { reactions: 1 }, $set: messageObject });
 };
 
+ChatMessage.setProgress = function(messageId, upload) {
+	return this.update({ _id: messageId }, { $set: { uploads: upload } });
+};
+
 const normalizeThreadMessage = (message) => {
 	if (message.msg) {
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');

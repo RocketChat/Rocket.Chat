@@ -1,8 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 
 import { call } from '../../app/ui-utils/client';
 import { SWCache } from '../../app/utils/client';
 import { fileUploadHandler } from '../../app/file-upload';
+import { ChatMessage } from '../../app/models/client';
 
 const action = {
 	clean: (msg) => {
@@ -12,27 +15,61 @@ const action = {
 	},
 
 	send: (msg) => {
-		msg.ts = new Date();
 		if (msg.file && msg.meta) {
 			action.sendFile(msg);
 			return;
 		}
-		call('sendMessage', msg);
+		call('sendMessage', msg, true);
 	},
 
 	sendFile: async (msg) => {
 		const file = await SWCache.getFileFromCache(msg.file);
+		const uploading = {
+			id: msg.file._id,
+			name: msg.file.name,
+			percentage: 0,
+		};
 
 		if (!file) { return; }
 
 		const upload = fileUploadHandler('Uploads', msg.meta, file);
+
+		// Session.set(`uploading-${msg.file._id}`, uploading);
+
+		upload.onProgress = (progress) => {
+			const uploads = uploading;
+			uploads.percentage = Math.round(progress * 100) || 0;
+			ChatMessage.setProgress(msg._id, uploads);
+		};
+
 		upload.start((error, file, storage) => {
-			if (error || !file) { return; }
+			if (error) {
+				ChatMessage.setProgress(msg._id, uploading);
+				return;
+			}
+
+			if (!file) {
+				return;
+			}
 
 			const msgData = { id: msg._id, msg: msg.msg, tmid: msg.tmid };
+
 			Meteor.call('sendFileMessage', msg.rid, storage, file, msgData, () => {
 				SWCache.removeFromCache(msg.file);
 			});
+		});
+
+		Tracker.autorun((computation) => {
+			// using file._id as initial upload id, as messsageAttachment have access to file._id
+			const isCanceling = Session.get(`uploading-cancel-${ msg.file._id }`);
+			if (!isCanceling) {
+				return;
+			}
+
+			computation.stop();
+			upload.stop();
+
+			ChatMessage.setProgress(msg._id, uploading);
 		});
 	},
 
@@ -73,6 +110,10 @@ function trigger(msg) {
 	}
 }
 
+function triggerOfflineMsgs(messages) {
+	const tempMsgs = messages.filter((msg) => msg.temp);
+	tempMsgs.forEach((msg) => trigger(msg));
+}
 
 Meteor.startup(() => {
 	if ('indexedDB' in window) {
@@ -89,13 +130,10 @@ Meteor.startup(() => {
 			if (!dbExist) { return; }
 			const tx = event.target.result.transaction('keyvaluepairs', 'readwrite');
 			const store = tx.objectStore('keyvaluepairs');
-			store.openCursor("chatMessage").onsuccess = function(event) {
+			store.openCursor('chatMessage').onsuccess = function(event) {
 				const cursor = event.target.result;
-				if (cursor) {
-					if (cursor.value.temp) {
-						trigger(cursor.value);
-					}
-					cursor.continue();
+				if (cursor && cursor.value && cursor.value.records) {
+					triggerOfflineMsgs(cursor.value.records);
 				}
 			};
 		};
