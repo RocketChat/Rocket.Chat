@@ -25,6 +25,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Github Info
+      run: |
+        echo $GITHUB_ACTOR
+        echo $GITHUB_REF
+        echo $GITHUB_HEAD_REF
+        echo $GITHUB_BASE_REF
+        echo '{{ github.event }}'
+        echo '{{ github.event_name }}'
+
     - uses: actions/checkout@v1
 
     - name: Cache node modules
@@ -78,7 +87,6 @@ jobs:
         meteor npm --versions
         meteor node -v
         git version
-        echo $GITHUB_REF
 
     - name: npm install
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
