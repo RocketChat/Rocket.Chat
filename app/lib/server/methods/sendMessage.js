@@ -35,11 +35,12 @@ Meteor.methods({
 		if (message.ts) {
 			const tsDiff = Math.abs(moment(message.ts).diff());
 			if (tsDiff > 60000) {
-				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
-					method: 'sendMessage',
-					message_ts: message.ts,
-					server_ts: new Date().getTime(),
-				});
+				// throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
+				// 	method: 'sendMessage',
+				// 	message_ts: message.ts,
+				// 	server_ts: new Date().getTime(),
+				// });
+				message.ts = new Date();
 			} else if (tsDiff > 10000) {
 				message.ts = new Date();
 			}

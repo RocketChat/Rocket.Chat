@@ -2,17 +2,19 @@ const version = 'viasat-0.1';
 const getFileUrl = ({ _id, name }) => `/file-upload/${ _id }/${ name }`;
 
 export const SWCache = {
-	uploadToCache: (message, file) => {
+	uploadToCache: (message, file, callback) => {
 		caches.open(version).then((cache) => {
 			file._id = file._id || message.file._id;
+			file.name = file.name || message.file.name;
 			const res = new Response(file, {
 				status: 200,
 				statusText: 'No connection to the server',
-				headers: new Headers({ 'Content-Type': 'image/png' }),
+				headers: new Headers({ 'Content-Type': file.type }),
 			});
 			cache.put(getFileUrl(file), res);
+			callback();
 		}).catch((err) => {
-			console.log(err);
+			callback(err);
 		});
 	},
 

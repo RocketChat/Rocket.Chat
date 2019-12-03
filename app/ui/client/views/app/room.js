@@ -140,14 +140,6 @@ const mountPopover = (e, i, outerContext) => {
 	popover.open(config);
 };
 
-const wipeFailedUploads = () => {
-	const uploads = Session.get('uploading');
-
-	if (uploads) {
-		Session.set('uploading', uploads.filter((upload) => !upload.error));
-	}
-};
-
 function roomHasGlobalPurge(room) {
 	if (!settings.get('RetentionPolicy_Enabled')) {
 		return false;
@@ -222,8 +214,6 @@ function roomMaxAge(room) {
 		return settings.get('RetentionPolicy_MaxAge_DMs');
 	}
 }
-
-callbacks.add('enter-room', wipeFailedUploads);
 
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
@@ -307,10 +297,6 @@ Template.room.helpers({
 
 	windowId() {
 		return `chat-window-${ this._id }`;
-	},
-
-	uploading() {
-		return Session.get('uploading');
 	},
 
 	roomLeader() {
@@ -696,11 +682,6 @@ Template.room.events({
 
 	'touchcancel .message'(e, t) {
 		clearTimeout(t.touchtime);
-	},
-
-	'click .upload-progress-close'(e) {
-		e.preventDefault();
-		Session.set(`uploading-cancel-${ this.id }`, true);
 	},
 
 	'click .unread-bar > button.mark-read'() {
