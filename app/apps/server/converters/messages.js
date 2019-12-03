@@ -137,6 +137,7 @@ export class AppMessagesConverter {
 			reactions: message.reactions,
 			parseUrls: message.parseUrls,
 			blocks: message.blocks,
+			token: message.token,
 		};
 
 		return Object.assign(newMessage, message._unmappedProperties_);
