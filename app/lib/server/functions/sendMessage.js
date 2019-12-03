@@ -177,7 +177,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
+			if (settings.get('Apps_Framework_Development_Mode')) {
+				console.log('A Rocket.Chat App prevented the message sending.', message);
+			}
+
+			return;
 		}
 
 		let result;
