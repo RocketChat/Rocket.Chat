@@ -31,8 +31,8 @@ jobs:
         echo $GITHUB_REF
         echo $GITHUB_HEAD_REF
         echo $GITHUB_BASE_REF
-        echo '{{ github.event }}'
-        echo '{{ github.event_name }}'
+        echo '${{ github.event }}'
+        echo '${{ github.event_name }}'
 
     - uses: actions/checkout@v1
 
