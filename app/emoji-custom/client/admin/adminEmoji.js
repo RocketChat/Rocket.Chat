@@ -52,6 +52,7 @@ Template.adminEmoji.helpers({
 });
 
 Template.adminEmoji.onCreated(async function() {
+	const instance = this;
 	this.emojis = new ReactiveVar([]);
 	this.offset = new ReactiveVar(0);
 	this.total = new ReactiveVar(0);
@@ -80,11 +81,13 @@ Template.adminEmoji.onCreated(async function() {
 		template: 'adminEmojiInfo',
 		order: 2,
 	});
-
 	this.onSuccessCallback = () => {
 		this.offset.set(0);
 		return this.loadEmojis(this.query.get(), this.offset.get());
 	};
+	this.tabBarData.set({
+		onSuccess: instance.onSuccessCallback,
+	});
 
 	this.loadEmojis = _.debounce(async (query, offset) => {
 		this.isLoading.set(true);
