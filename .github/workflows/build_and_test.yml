@@ -34,6 +34,7 @@ jobs:
         echo 'GITHUB_BASE_REF: $GITHUB_BASE_REF'
         echo 'github.event: ${{ github.event }}'
         echo 'github.event_name: ${{ github.event_name }}'
+        cat $GITHUB_EVENT_PATH
 
     - uses: actions/checkout@v1
 
