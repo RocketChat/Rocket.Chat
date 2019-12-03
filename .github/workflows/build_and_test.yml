@@ -32,7 +32,6 @@ jobs:
         echo "GITHUB_REF: $GITHUB_REF"
         echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
         echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
-        echo "github.event: ${{ github.event }}"
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
