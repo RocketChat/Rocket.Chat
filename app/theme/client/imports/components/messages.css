@@ -214,4 +214,12 @@
 		}
 		user-select: none;
 	}
+	.message-body-wrapper {
+		.role-tag {
+			font-size: 5px !important;
+		},
+		.time {
+			font-size: 10px !important;
+		}
+	}
 }
