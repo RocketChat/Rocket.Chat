@@ -5,20 +5,21 @@ import { getDefaultUserFields } from '../../../app/utils/server/functions/getDef
 Users.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'inserted':
-			data = Users.find({ _id: id }, { fields: getDefaultUserFields() });
+			data = Users.findOneById(id, { fields: getDefaultUserFields() });
 			break;
 
 		case 'updated':
 			// Override data cuz we do not publish all fields
-			data = Users.find({ _id: id }, { fields: getDefaultUserFields() });
+			data = Users.findOneById(id, { fields: getDefaultUserFields() });
 			break;
 
 		case 'removed':
+			data = Users.findOneById(id, { fields: getDefaultUserFields() });
+			break;
 	}
-	Notifications.streamUser.__emit(data._id, clientAction, data);
-
+	// Notifications.streamUser.__emit(data._id, clientAction, data);
 	Notifications.notifyUserInThisInstance(
-		data._id,
+		id,
 		'ownUser-changed',
 		clientAction,
 		data
