@@ -27,12 +27,13 @@ jobs:
     steps:
     - name: Github Info
       run: |
-        echo $GITHUB_ACTOR
-        echo $GITHUB_REF
-        echo $GITHUB_HEAD_REF
-        echo $GITHUB_BASE_REF
-        echo '${{ github.event }}'
-        echo '${{ github.event_name }}'
+        echo 'GITHUB_ACTION: $GITHUB_ACTION'
+        echo 'GITHUB_ACTOR: $GITHUB_ACTOR'
+        echo 'GITHUB_REF: $GITHUB_REF'
+        echo 'GITHUB_HEAD_REF: $GITHUB_HEAD_REF'
+        echo 'GITHUB_BASE_REF: $GITHUB_BASE_REF'
+        echo 'github.event: ${{ github.event }}'
+        echo 'github.event_name: ${{ github.event_name }}'
 
     - uses: actions/checkout@v1
 
