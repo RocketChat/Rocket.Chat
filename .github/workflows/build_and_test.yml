@@ -329,3 +329,48 @@ jobs:
 
         docker build -t $IMAGE_NAME .
         docker push $IMAGE_NAME
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+
+    steps:
+    - name: Restore build
+      uses: actions/download-artifact@v1
+      with:
+        name: build
+        path: /tmp/build
+
+    - name: Use Node.js 8.16.2
+      uses: actions/setup-node@v1
+      with:
+        node-version: "8.16.2"
+
+    - name: Publish assets
+      run: |
+        if [[ '${{ github.event_name }}' = 'release' ]]; then
+          export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
+        else
+          export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+        fi;
+
+        export CIRCLE_SHA1=$GITHUB_SHA
+        export CIRCLE_BUILD_NUM=$GITHUB_SHA
+
+        echo $CIRCLE_BRANCH
+        echo $CIRCLE_TAG
+        echo $CIRCLE_SHA1
+        echo $CIRCLE_BUILD_NUM
+
+        # aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
+
+        # source .circleci/setartname.sh
+        # source .circleci/setdeploydir.sh
+        # bash .circleci/setupsig.sh
+        # bash .circleci/namefiles.sh
+
+        # aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
+
+        # bash .circleci/update-releases.sh
+        # bash .circleci/snap.sh
+        # bash .circleci/redhat-registry.sh
