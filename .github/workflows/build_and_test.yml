@@ -1,6 +1,8 @@
 name: Build and Test
 
 on:
+  release:
+    types: [published]
   pull_request:
     branches: '**'
   push:
