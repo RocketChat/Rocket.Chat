@@ -57,7 +57,7 @@ Template.soundEdit.onCreated(function() {
 		this.sound = undefined;
 		this.data.tabBar.showGroup('custom-sounds');
 	}
-
+	this.onSuccess = Template.currentData().onSuccess;
 	this.cancel = (form, name) => {
 		form.reset();
 		this.data.tabBar.close();
@@ -141,6 +141,7 @@ Template.soundEdit.onCreated(function() {
 					}
 
 					toastr.success(t('Custom_Sound_Saved_Successfully'));
+					this.onSuccess();
 
 					this.cancel(form, soundData.name);
 				}
