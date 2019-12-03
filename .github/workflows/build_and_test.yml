@@ -333,6 +333,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+    needs: test
 
     steps:
     - name: Restore build
