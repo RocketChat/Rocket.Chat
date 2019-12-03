@@ -150,6 +150,11 @@ const validateUserIdentity = (message, _id) => {
 	}
 	const forbiddenPropsToChangeWhenUserIsNotABot = ['alias', 'avatar'];
 	const user = Users.findOneById(_id, { fields: { roles: 1, name: 1 } });
+	/**
+	 * If the query returns no user, the message has likely
+	 * been sent by a Livechat Visitor, so we don't need to
+	 * validate whether the sender is a bot.
+	 */
 	if (!user) {
 		return;
 	}
