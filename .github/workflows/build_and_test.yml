@@ -215,19 +215,19 @@ jobs:
       run: |
         for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-  notification:
-    runs-on: ubuntu-latest
-    needs: test
+#   notification:
+#     runs-on: ubuntu-latest
+#     needs: test
 
-    steps:
-    - name: Rocket.Chat Notification
-      uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
-      with:
-        type: ${{ job.status }}
-        job_name: '**Build and Test**'
-        url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
-        commit: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+#     steps:
+#     - name: Rocket.Chat Notification
+#       uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+#       with:
+#         type: ${{ job.status }}
+#         job_name: '**Build and Test**'
+#         url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
+#         commit: true
+#         token: ${{ secrets.GITHUB_TOKEN }}
 
   build-image-pr:
     runs-on: ubuntu-latest
@@ -349,6 +349,9 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+        REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
+        REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
+        UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
       run: |
         if [[ '${{ github.event_name }}' = 'release' ]]; then
           export CIRCLE_TAG="${GITHUB_REF#*tags/}"
@@ -366,11 +369,11 @@ jobs:
         bash .circleci/setupsig.sh
         bash .circleci/namefiles.sh
 
-        # aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
+        aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
-        # bash .circleci/update-releases.sh
-        # bash .circleci/snap.sh
-        # bash .circleci/redhat-registry.sh
+        bash .circleci/update-releases.sh
+        bash .circleci/snap.sh
+        bash .circleci/redhat-registry.sh
 
   image-build:
     runs-on: ubuntu-latest
@@ -422,7 +425,7 @@ jobs:
         export CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
         docker build -t ${IMAGE}:$CIRCLE_TAG .
-        # docker push ${IMAGE}:$CIRCLE_TAG
+        docker push ${IMAGE}:$CIRCLE_TAG
 
         if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
           export RELEASE="latest"
@@ -431,11 +434,11 @@ jobs:
         fi
 
         docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
-        # docker push ${IMAGE}:${RELEASE}
+        docker push ${IMAGE}:${RELEASE}
 
     - name: Build Docker image for develop
       if: github.ref == 'refs/heads/develop'
       run: |
         cd /tmp/build
         docker build -t ${IMAGE}:develop .
-        # docker push ${IMAGE}:develop
+        docker push ${IMAGE}:develop
