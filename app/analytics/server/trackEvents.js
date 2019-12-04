@@ -15,16 +15,16 @@ Meteor.startup(() => {
 function trackEvent(category, action, label, uid) {
     if (googleId) {
         HTTP.call("POST", gaEndpoint,
-            {params: {
+            { params: {
                 v: '1',
                 tid: googleId,
                 uid: uid,
                 t: 'event',
                 ec: category,
                 ea: action,
-                el: label
-            }}
-            );
+                el: label,
+            } }
+        );
     }
 }
 
