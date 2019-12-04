@@ -342,10 +342,10 @@ jobs:
         name: build
         path: /tmp/build
 
-    - name: Use Node.js 8.16.2
-      uses: actions/setup-node@v1
-      with:
-        node-version: "8.16.2"
+    # - name: Use Node.js 8.16.2
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: "8.16.2"
 
     - name: Publish assets
       run: |
@@ -375,3 +375,69 @@ jobs:
         # bash .circleci/update-releases.sh
         # bash .circleci/snap.sh
         # bash .circleci/redhat-registry.sh
+
+  image-build:
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    strategy:
+      matrix:
+        release: ["official", "preview"]
+
+    env:
+      IMAGE: "rocketchat/rocket.chat"
+
+    steps:
+    - name: Restore build
+      uses: actions/download-artifact@v1
+      with:
+        name: build
+        path: /tmp/build
+
+    - name: Unpack build
+      run: |
+        cd /tmp/build
+        tar xzf Rocket.Chat.tar.gz
+        rm Rocket.Chat.tar.gz
+
+        export DOCKER_PATH="${$GITHUB_WORKSPACE}/.docker"
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+          export DOCKER_PATH="${DOCKER_PATH}-mongo"
+        fi;
+
+        docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+        echo "Build ${{ matrix.release }} Docker image"
+        cp ${DOCKER_PATH}/Dockerfile .
+        if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
+          cp ${DOCKER_PATH}/entrypoint.sh .
+        fi;
+
+    - name: Build Docker image for tag
+      if: github.event_name == 'release'
+      run: |
+        export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+
+        echo $IMAGE
+        echo $CIRCLE_TAG
+        # docker build -t ${IMAGE}:$CIRCLE_TAG .
+        # docker push ${IMAGE}:$CIRCLE_TAG
+
+        if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+          export RELEASE="latest"
+        elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+          export RELEASE="release-candidate"
+        fi
+
+        echo $RELEASE
+
+        # docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
+        # docker push ${IMAGE}:${RELEASE}
+
+    - name: Build Docker image for develop
+      if: github.ref == 'refs/heads/develop'
+      run: |
+        echo $IMAGE
+        # docker build -t ${IMAGE}:develop .
+        # docker push ${IMAGE}:develop
