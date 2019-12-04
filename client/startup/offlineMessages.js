@@ -117,19 +117,16 @@ function triggerOfflineMsgs(messages) {
 
 Meteor.startup(() => {
 	if ('indexedDB' in window) {
-		const db = indexedDB.open('localforage');
-		let dbExist = true;
+		const request = indexedDB.open('localforage');
 
-		db.onupgradeneeded = function() {
-			if (db.result.version === 1) {
-				dbExist = false;
-			}
-		};
-
-		db.onsuccess = function(event) {
-			if (!dbExist) { return; }
-			const tx = event.target.result.transaction('keyvaluepairs', 'readwrite');
+		request.onsuccess = function(event) {
+			const db = event.target.result;
+			
+			if (db.version === 1) { return; }
+			
+			const tx = db.transaction('keyvaluepairs');
 			const store = tx.objectStore('keyvaluepairs');
+			
 			store.openCursor('chatMessage').onsuccess = function(event) {
 				const cursor = event.target.result;
 				if (cursor && cursor.value && cursor.value.records) {
@@ -137,7 +134,8 @@ Meteor.startup(() => {
 				}
 			};
 		};
-		db.onerror = function() {
+		
+		request.onerror = function() {
 			console.log('Error in opening Message persistent Minimongo');
 		};
 	}
