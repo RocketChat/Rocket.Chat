@@ -162,7 +162,7 @@ export const modal = {
 
 		const instance = modalStack[modalStack.length - 1];
 
-		if (instance.config.confirmOnEnter && event.key === 'Enter') {
+		if (instance && instance.config && instance.config.confirmOnEnter && event.key === 'Enter') {
 			event.preventDefault();
 			event.stopPropagation();
 

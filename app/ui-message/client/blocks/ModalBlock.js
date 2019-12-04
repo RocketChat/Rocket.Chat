@@ -31,7 +31,7 @@ Template.ModalBlock.onRendered(async function() {
 			appId: this.data.appId,
 
 		}), { data: () => state.get() }),
-		this.find('.rc-modal__content')
+		this.find('.js-modal-block')
 	);
 });
 

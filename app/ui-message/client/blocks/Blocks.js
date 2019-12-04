@@ -17,8 +17,8 @@ Template.Blocks.onRendered(async function() {
 	ReactDOM.render(
 		React.createElement(messageBlockWithContext({
 			action: (options) => {
-				const { actionId, appId, value, blockId, mid = this.data.mid } = options;
-				ActionManager.triggerBlockAction({ actionId, appId, value, blockId, mid });
+				const { actionId, value, blockId, mid = this.data.mid } = options;
+				ActionManager.triggerBlockAction({ actionId, appId: this.data.blocks[1].appId, value, blockId, mid });
 			},
 			// state: alert,
 			appId: this.data.appId,

@@ -32,12 +32,12 @@ const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
-const handlePayloadUserInteraction = (type, { appId, viewId, triggerId, ...data }) => {
+const handlePayloadUserInteraction = (type, { appId, viewId = 'lero', triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
 
-	if (appId !== invalidateTriggerId(triggerId)) {
+	if (!invalidateTriggerId(triggerId)) {
 		return;
 	}
 
@@ -56,17 +56,17 @@ const handlePayloadUserInteraction = (type, { appId, viewId, triggerId, ...data 
 	}
 };
 
-export const triggerAction = async ({ type, appId, mid, ...payload }) => {
+export const triggerAction = async ({ type, actionId, appId, mid, ...payload }) => {
 	const triggerId = generateTriggerId(appId);
 
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 
-	const { type: interactionType, ...data } = await APIClient.post(`apps/blockit/${ appId }/`, { type, payload, messageId: mid, triggerId });
+	const { type: interactionType, ...data } = await APIClient.post(`apps/blockit/${ appId }/`, { type, actionId, payload, messageId: mid, triggerId });
 	return handlePayloadUserInteraction(interactionType, data);
 };
 
 export const triggerBlockAction = (options) => triggerAction({ type: ACTION_TYPES.ACTION, ...options });
-export const triggerSubmitView = async ({ viewId, ...options }) => {
+export const triggerSubmitView = async ({ viewId = 'lero', ...options }) => {
 	const instance = instances.get(viewId);
 	try {
 		await triggerAction({ type: ACTION_TYPES.SUBMIT, ...options });
@@ -77,7 +77,7 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 		}
 	}
 };
-export const triggerCancel = async ({ viewId, ...options }) => {
+export const triggerCancel = async ({ viewId = 'lero', ...options }) => {
 	const instance = instances.get(viewId);
 	try {
 		await triggerAction({ type: ACTION_TYPES.CANCEL, ...options });
