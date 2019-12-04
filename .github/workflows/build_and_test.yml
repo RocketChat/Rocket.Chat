@@ -421,6 +421,7 @@ jobs:
     - name: Build Docker image for tag
       if: github.event_name == 'release'
       run: |
+        cd /tmp/build
         export CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
         echo $IMAGE
@@ -443,6 +444,7 @@ jobs:
     - name: Build Docker image for develop
       if: github.ref == 'refs/heads/develop'
       run: |
+        cd /tmp/build
         echo $IMAGE
         ls -la
         docker build -t ${IMAGE}:develop .
