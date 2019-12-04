@@ -17,6 +17,7 @@ import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
+import { updateUserData } from '../../../client/lib/userData';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -171,11 +172,9 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const routerReady = FlowRouter.subsReady('userData');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
-
-		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = (subscriptionsReady && settingsReady) || !Meteor.userId();
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
@@ -261,6 +260,7 @@ Template.main.onRendered(function() {
 	});
 });
 
-Meteor.startup(function() {
+Meteor.startup(async function() {
+	await updateUserData();
 	return fireGlobalEvent('startup', true);
 });

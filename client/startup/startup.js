@@ -7,10 +7,10 @@ import toastr from 'toastr';
 import hljs from 'highlight.js';
 
 import { fireGlobalEvent } from '../../app/ui-utils';
-import { settings } from '../../app/settings';
 import { Users } from '../../app/models';
 import { getUserPreference } from '../../app/utils';
 import 'highlight.js/styles/github.css';
+import { Notifications } from '../../app/notifications/client';
 
 hljs.initHighlightingOnLoad();
 
@@ -29,12 +29,12 @@ Meteor.startup(function() {
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 
-	Tracker.autorun(function(computation) {
-		if (!Meteor.userId() && !settings.get('Accounts_AllowAnonymousRead')) {
-			return;
-		}
-		Meteor.subscribe('userData');
-		computation.stop();
+	Notifications.onUser('userData', ({ type, user }) => {
+		const events = {
+			changed: () => Meteor.users.upsert({ _id: user._id }, user),
+			removed: () => Meteor.users.remove({ _id: user._id }),
+		};
+		events[type]();
 	});
 
 	let status = undefined;
@@ -42,6 +42,7 @@ Meteor.startup(function() {
 		if (!Meteor.userId()) {
 			return;
 		}
+
 		const user = Users.findOne(Meteor.userId(), {
 			fields: {
 				status: 1,
