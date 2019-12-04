@@ -336,8 +336,6 @@ jobs:
     needs: test
 
     steps:
-    - uses: actions/checkout@v1
-
     - name: Restore build
       uses: actions/download-artifact@v1
       with:
@@ -363,11 +361,6 @@ jobs:
 
         export CIRCLE_SHA1=$GITHUB_SHA
         export CIRCLE_BUILD_NUM=$GITHUB_SHA
-
-        echo $CIRCLE_BRANCH
-        echo $CIRCLE_TAG
-        echo $CIRCLE_SHA1
-        echo $CIRCLE_BUILD_NUM
 
         aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
 
@@ -432,6 +425,7 @@ jobs:
 
         echo $IMAGE
         echo $CIRCLE_TAG
+        ls -la
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         # docker push ${IMAGE}:$CIRCLE_TAG
 
@@ -450,5 +444,6 @@ jobs:
       if: github.ref == 'refs/heads/develop'
       run: |
         echo $IMAGE
+        ls -la
         docker build -t ${IMAGE}:develop .
         # docker push ${IMAGE}:develop
