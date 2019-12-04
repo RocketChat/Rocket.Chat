@@ -213,7 +213,7 @@ jobs:
         MONGO_URL: mongodb://localhost:27017/rocketchat
         MONGO_OPLOG_URL: mongodb://localhost:27017/local
       run: |
-        for i in $(seq 1 5); do (docker exec mongo mongo --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
   notification:
     runs-on: ubuntu-latest
@@ -400,7 +400,7 @@ jobs:
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
-        export DOCKER_PATH="${$GITHUB_WORKSPACE}/.docker"
+        export DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
           export IMAGE="${IMAGE}.preview"
           export DOCKER_PATH="${DOCKER_PATH}-mongo"
