@@ -363,12 +363,12 @@ jobs:
         echo $CIRCLE_SHA1
         echo $CIRCLE_BUILD_NUM
 
-        # aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
+        aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
 
-        # source .circleci/setartname.sh
-        # source .circleci/setdeploydir.sh
-        # bash .circleci/setupsig.sh
-        # bash .circleci/namefiles.sh
+        source .circleci/setartname.sh
+        source .circleci/setdeploydir.sh
+        bash .circleci/setupsig.sh
+        bash .circleci/namefiles.sh
 
         # aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
@@ -412,7 +412,7 @@ jobs:
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
 
-        # docker login -u $DOCKER_USER -p $DOCKER_PASS
+        docker login -u $DOCKER_USER -p $DOCKER_PASS
 
     - name: Build Docker image for tag
       if: github.event_name == 'release'
@@ -421,7 +421,7 @@ jobs:
 
         echo $IMAGE
         echo $CIRCLE_TAG
-        # docker build -t ${IMAGE}:$CIRCLE_TAG .
+        docker build -t ${IMAGE}:$CIRCLE_TAG .
         # docker push ${IMAGE}:$CIRCLE_TAG
 
         if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
@@ -432,12 +432,12 @@ jobs:
 
         echo $RELEASE
 
-        # docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
+        docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
         # docker push ${IMAGE}:${RELEASE}
 
     - name: Build Docker image for develop
       if: github.ref == 'refs/heads/develop'
       run: |
         echo $IMAGE
-        # docker build -t ${IMAGE}:develop .
+        docker build -t ${IMAGE}:develop .
         # docker push ${IMAGE}:develop
