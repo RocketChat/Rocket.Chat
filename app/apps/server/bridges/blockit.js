@@ -50,6 +50,7 @@ export class AppBlockitBridge {
 				appId,
 			} = req.params;
 
+			// TODO: validate payloads per type
 			const {
 				type,
 				actionId,
@@ -58,13 +59,17 @@ export class AppBlockitBridge {
 				payload,
 			} = req.body;
 
+			const user = this.orch.getConverters().get('users').convertToApp(req.user);
+			const message = messageId && this.orch.getConverters().get('messages').convertById(messageId);
+
 			const action = {
 				type,
 				appId,
 				actionId,
-				messageId,
+				message,
 				triggerId,
 				payload,
+				user,
 			};
 
 			try {
