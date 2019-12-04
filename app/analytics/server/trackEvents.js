@@ -14,7 +14,7 @@ Meteor.startup(() => {
 // Send Google Analytics
 function trackEvent(category, action, label, uid) {
     if (googleId) {
-        HTTP.call("POST", gaEndpoint,
+        HTTP.call('POST', gaEndpoint,
             { params: {
                 v: '1',
                 tid: googleId,

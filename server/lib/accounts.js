@@ -13,6 +13,9 @@ import { Users as UsersRaw } from '../../app/models/server/raw';
 import { addUserRoles } from '../../app/authorization';
 import { getAvatarSuggestionForUser } from '../../app/lib/server/functions';
 
+// EAR Test
+const crypto = require('crypto');
+
 const accountsConfig = {
 	forbidClientAccountCreation: true,
 	loginExpirationInDays: settings.get('Accounts_LoginExpiration'),
@@ -101,9 +104,6 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
-	// EAR testing
-	// callbacks.run('customOauthRegisterNewUser', 'earTestId');
-
 	user.status = 'offline';
 	user.active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
@@ -120,6 +120,10 @@ Accounts.onCreateUser(function(options, user = {}) {
 			}
 		}
 	}
+
+	// EAR testing
+	// const uid = crypto.createHash('sha1').update('eric').digest('hex');
+	// callbacks.run('customOauthRegisterNewUser', uid);
 
 	if (user.services) {
 		for (const service of Object.values(user.services)) {
