@@ -21,3 +21,4 @@ public/livechat/
 public/pdf.worker.min.js
 imports/client/
 app/utils/client/lib/sha1.js
+app/analytics/server/trackEvents.js
