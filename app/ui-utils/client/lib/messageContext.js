@@ -7,7 +7,7 @@ import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
 
-const fields = { name: 1, username: 1, 'settings.autoImageLoad': 1, 'settings.saveMobileBandwidth': 1, 'settings.collapseMediaByDefault': 1, 'settings.hideRoles': 1 };
+const fields = { name: 1, username: 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
 
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
@@ -30,7 +30,7 @@ export function messageContext({ rid } = Template.instance()) {
 		}),
 		settings: {
 			translateLanguage: AutoTranslate.getLanguage(rid),
-			autoImageLoad: getUserPreference(user, 'saveMobileBandwidth'),
+			autoImageLoad: getUserPreference(user, 'autoImageLoad'),
 			saveMobileBandwidth: Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
 			collapseMediaByDefault: getUserPreference(user, 'collapseMediaByDefault'),
 			showreply: true,
