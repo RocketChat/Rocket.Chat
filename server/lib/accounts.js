@@ -101,6 +101,9 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
+	// EAR testing
+	// callbacks.run('customOauthRegisterNewUser', 'earTestId');
+
 	user.status = 'offline';
 	user.active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
