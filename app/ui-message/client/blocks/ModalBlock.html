@@ -6,9 +6,9 @@
 	</header>
 	<section class="rc-modal__content">
 		<form>
-			{{>Blocks blocks=blocks}}
+			<div class="js-mobal-block"></div>>
 			<footer class="rc-modal__footer">
-				{{> ButtonElement text=close}}
+				{{> ButtonElement id="blockkit-cancel" value="cancel" text=close}}
 				{{> ButtonElement text=submit}}
 			</footer>
 		</form>

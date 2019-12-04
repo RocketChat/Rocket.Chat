@@ -133,6 +133,7 @@ export const modal = {
 		});
 		instance.render();
 		modalStack.push(instance);
+		return instance;
 	},
 	cancel: () => {
 		if (modalStack.length) {
