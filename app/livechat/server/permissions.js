@@ -31,7 +31,6 @@ Meteor.startup(() => {
 		Permissions.createIfNotExists('view-livechat-departments', ['livechat-manager', 'admin']);
 		Permissions.createIfNotExists('add-livechat-department-agents', ['livechat-manager', 'admin']);
 		Permissions.createIfNotExists('view-livechat-current-chats', ['livechat-manager', 'admin']);
-		Permissions.createIfNotExists('view-livechat-analytics', ['livechat-manager', 'admin']);
 		Permissions.createIfNotExists('view-livechat-real-time-monitoring', ['livechat-manager', 'admin']);
 		Permissions.createIfNotExists('view-livechat-triggers', ['livechat-manager', 'admin']);
 		Permissions.createIfNotExists('view-livechat-customfields', ['livechat-manager', 'admin']);
