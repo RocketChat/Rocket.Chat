@@ -14,7 +14,7 @@ import { addUserRoles } from '../../app/authorization';
 import { getAvatarSuggestionForUser } from '../../app/lib/server/functions';
 
 // EAR Test
-const crypto = require('crypto');
+// const crypto = require('crypto');
 
 const accountsConfig = {
 	forbidClientAccountCreation: true,
