@@ -350,9 +350,9 @@ jobs:
     - name: Publish assets
       run: |
         if [[ '${{ github.event_name }}' = 'release' ]]; then
-          export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
-        else
           export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+        else
+          export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
         fi;
 
         export CIRCLE_SHA1=$GITHUB_SHA
