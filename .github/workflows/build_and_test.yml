@@ -406,13 +406,13 @@ jobs:
           export DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
-        docker login -u $DOCKER_USER -p $DOCKER_PASS
-
         echo "Build ${{ matrix.release }} Docker image"
         cp ${DOCKER_PATH}/Dockerfile .
         if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
+
+        # docker login -u $DOCKER_USER -p $DOCKER_PASS
 
     - name: Build Docker image for tag
       if: github.event_name == 'release'
