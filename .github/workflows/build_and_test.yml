@@ -388,6 +388,8 @@ jobs:
       IMAGE: "rocketchat/rocket.chat"
 
     steps:
+    - uses: actions/checkout@v1
+
     - name: Restore build
       uses: actions/download-artifact@v1
       with:
