@@ -18,12 +18,6 @@ export class Permissions extends Base {
 		this.upsert({ _id: name }, { $set: { roles } });
 	}
 
-	createIfNotExists(name, roles) {
-		if (!this.findOneById(name)) {
-			this.upsert({ _id: name }, { $set: { roles } });
-		}
-	}
-
 	addRole(permission, role) {
 		this.update({ _id: permission }, { $addToSet: { roles: role } });
 	}
