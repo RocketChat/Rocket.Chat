@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 
-const gaEndpoint = "https://www.google-analytics.com/collect?";
+const gaEndpoint = 'https://www.google-analytics.com/collect?';
 
 let googleId = '';
 
@@ -15,16 +15,16 @@ Meteor.startup(() => {
 function trackEvent(category, action, label, uid) {
     if (googleId) {
         HTTP.call("POST", gaEndpoint,
-                   {params: {
-                      'v': '1',
-                      'tid': googleId,
-                      'uid': uid,
-                      't': 'event',
-                      'ec': category,
-                      'ea': action,
-                      'el': label
-                    }}
-        );
+            {params: {
+                v: '1',
+                tid: googleId,
+                uid: uid,
+                t: 'event',
+                ec: category,
+                ea: action,
+                el: label
+            }}
+            );
     }
 }
 
