@@ -348,6 +348,10 @@ jobs:
     #     node-version: "8.16.2"
 
     - name: Publish assets
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
       run: |
         if [[ '${{ github.event_name }}' = 'release' ]]; then
           export CIRCLE_TAG="${GITHUB_REF#*tags/}"
@@ -397,6 +401,9 @@ jobs:
         path: /tmp/build
 
     - name: Unpack build
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
