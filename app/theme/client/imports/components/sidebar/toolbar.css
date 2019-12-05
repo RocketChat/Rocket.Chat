@@ -110,9 +110,16 @@
 	}
 }
 
+.rtl .toolbar {
+	& .rc-input__icon + .rc-input__element {
+		padding: 0.5rem 2.25rem 0.5rem 1rem;
+		line-height: 4.5em !important;
+	}
+}
+
 @media (width <= 400px) {
 	.toolbar {
-		height: 30px !important;
+		height: 36px !important;
 		margin: -3px -10px;
 		padding: 0 var(--sidebar-extra-small-default-padding) var(--sidebar-small-default-padding);
 
@@ -120,14 +127,22 @@
 			&__wrapper {
 				padding: 0;
 				color: var(--rc-color-primary-light);
+				text-align: center;
 			}
-		}
-	}
-}
+			&__icon {
+				left: 2rem;
+				&--right {
+					display: none !important;
+				}
+			}
 
-.rtl .toolbar {
-	& .rc-input__icon + .rc-input__element {
-		padding: 0.5rem 2.25rem 0.5rem 1rem;
-		line-height: 4.5em !important;
+		}
+		& .rc-input__icon + .rc-input__element {
+			padding: 0.5rem 2.25rem 0.5rem 3rem;
+			height: 40px !important;
+			border-color: #81868d;
+			border-radius: 15px;
+			width: 90%;
+		}
 	}
 }
