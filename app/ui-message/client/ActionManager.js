@@ -1,10 +1,21 @@
 import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
+import EventEmitter from 'wolfy87-eventemitter';
 
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import Notifications from '../../notifications/client/lib/Notifications';
 import { APIClient } from '../../utils';
 import { modal } from '../../ui-utils/client/lib/modal';
+
+const events = new EventEmitter();
+
+export const on = (...args) => {
+	events.on(...args);
+};
+
+export const off = (...args) => {
+	events.off(...args);
+};
 
 const TRIGGER_TIMEOUT = 5000;
 
@@ -14,7 +25,11 @@ const ACTION_TYPES = {
 	CANCEL: 'viewCancel',
 };
 
-const MODAL_ACTIONS = ['modal', 'modal.open'];
+const MODAL_ACTIONS = {
+	OPEN: 'modal',
+	CLOSE: 'modal.close',
+	UPDATE: 'modal.update',
+};
 
 const triggersId = new Map();
 
@@ -32,22 +47,35 @@ const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
-const handlePayloadUserInteraction = (type, { appId, viewId = 'lero', triggerId, ...data }) => {
+const handlePayloadUserInteraction = (type, { /* appId,*/ viewId = 'lero', triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
-
-	if (!invalidateTriggerId(triggerId)) {
+	const appId = invalidateTriggerId(triggerId);
+	if (!appId) {
 		return;
 	}
 
-	if (MODAL_ACTIONS.includes(type) && viewId) {
+	if (!viewId) {
+		return;
+	}
+
+	if ([MODAL_ACTIONS.UPDATE].includes(type)) {
+		return events.emit(viewId, {
+			triggerId,
+			viewId,
+			appId: appId || data.blocks[0].appId, // TODO REMOVE GAMBA
+			...data,
+		});
+	}
+
+	if ([MODAL_ACTIONS.OPEN].includes(type)) {
 		const instance = modal.push({
 			template: 'ModalBlock',
 			data: {
 				triggerId,
 				viewId,
-				appId,
+				appId: appId || data.blocks[0].appId, // TODO REMOVE GAMBA
 				...data,
 			},
 		});

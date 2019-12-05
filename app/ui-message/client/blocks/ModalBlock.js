@@ -11,9 +11,21 @@ Template.ModalBlock.onRendered(async function() {
 	const ReactDOM = await import('react-dom');
 	const state = new ReactiveVar();
 
+	const { viewId } = this.data;
+
 	this.autorun(() => {
 		state.set(Template.currentData());
 	});
+
+	const handleUpdate = (data) => {
+		state.set(data);
+	};
+
+	this.cancel = () => {
+		ActionManager.off(viewId, handleUpdate);
+	};
+
+	ActionManager.on(viewId, handleUpdate);
 
 	this.state = new ReactiveDict({});
 
@@ -22,7 +34,7 @@ Template.ModalBlock.onRendered(async function() {
 			action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
 				ActionManager.triggerBlockAction({ actionId, appId, value, blockId, mid });
 			},
-			state: ({ actionId, value, /* ,appId, */blockId }) => {
+			state: ({ actionId, value, /* ,appId, */blockId = 'default' }) => {
 				this.state.set(actionId, {
 					blockId,
 					value,
@@ -34,18 +46,23 @@ Template.ModalBlock.onRendered(async function() {
 		this.find('.js-modal-block')
 	);
 });
+Template.ModalBlock.onDestroyed(async function() {
+	const ReactDOM = await import('react-dom');
+	const node = this.find('.js-modal-block');
+	node && ReactDOM.unmountComponentAtNode(node);
+});
 
 Template.ModalBlock.events({
-	'click #blockkit-cancel'(e) {
+	'click #blockkit-cancel'(e, i) {
 		e.preventDefault();
-		const { appId, viewId } = this;
+		const { appId, viewId } = i.data;
 
 		ActionManager.triggerCancel({ appId, viewId });
 	},
 	'submit form'(e, i) {
 		e.preventDefault();
 
-		const { appId, viewId } = this;
+		const { appId, viewId } = i.data;
 		ActionManager.triggerSubmitView({
 			appId,
 			viewId,

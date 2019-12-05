@@ -5,7 +5,6 @@ import { messageBlockWithContext } from './MessageBlock';
 import './Blocks.html';
 import * as ActionManager from '../ActionManager';
 
-
 Template.Blocks.onRendered(async function() {
 	const React = await import('react');
 	const ReactDOM = await import('react-dom');
@@ -30,5 +29,5 @@ Template.Blocks.onRendered(async function() {
 
 Template.Blocks.onDestroyed(async function() {
 	const ReactDOM = await import('react-dom');
-	ReactDOM.unmountComponentAtNode(this.firstNode);
+	this.firstNode && ReactDOM.unmountComponentAtNode(this.firstNode);
 });
