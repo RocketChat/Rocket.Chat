@@ -38,21 +38,19 @@ Template.ModalBlock.onRendered(async function() {
 Template.ModalBlock.events({
 	'click #blockkit-cancel'(e) {
 		e.preventDefault();
-		const { appId } = this;
+		const { appId, viewId } = this;
 
-		ActionManager.triggerCancel({ appId });
+		ActionManager.triggerCancel({ appId, viewId });
 	},
 	'submit form'(e, i) {
 		e.preventDefault();
 
-		const { appId } = this;
+		const { appId, viewId } = this;
 		ActionManager.triggerSubmitView({
 			appId,
+			viewId,
 			payload: {
 				state: Object.entries(i.state.all()).reduce((obj, [key, { blockId, value }]) => {
-					if (!e.getAttribute || !e.name) {
-						return obj;
-					}
 					obj[blockId] = obj[blockId] || {};
 					obj[blockId][key] = value;
 					return obj;

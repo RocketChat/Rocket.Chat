@@ -4,13 +4,13 @@
 			 {{>TextBlock title}}
 		</h1>
 	</header>
-	<form>
-		<section class="rc-modal__content">
+	<section class="rc-modal__content">
+		<form id={{viewId}}>
 			<div class="js-modal-block"></div>
-		</section>
-		<footer class="rc-modal__footer">
-			{{> ButtonElement id="blockkit-cancel" value="cancel" type="button" text=close}}
-			{{> ButtonElement text=submit}}
-		</footer>
-	</form>
+		</form>
+	</section>
+	<footer class="rc-modal__footer">
+		{{> ButtonElement form=viewId id="blockkit-cancel" value="cancel" type="button" text=close}}
+		{{> ButtonElement form=viewId text=submit}}
+	</footer>
 </template>
