@@ -65,13 +65,15 @@ Template.ModalBlock.events({
 		const { appId, viewId } = i.data;
 		ActionManager.triggerSubmitView({
 			appId,
-			viewId,
 			payload: {
-				state: Object.entries(i.state.all()).reduce((obj, [key, { blockId, value }]) => {
-					obj[blockId] = obj[blockId] || {};
-					obj[blockId][key] = value;
-					return obj;
-				}, {}),
+				view: {
+					id: viewId,
+					state: Object.entries(i.state.all()).reduce((obj, [key, { blockId, value }]) => {
+						obj[blockId] = obj[blockId] || {};
+						obj[blockId][key] = value;
+						return obj;
+					}, {}),
+				},
 			},
 		});
 	},

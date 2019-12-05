@@ -84,8 +84,10 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ viewId = 'lero', trigg
 	}
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, ...payload }) => {
+export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }) => {
 	const triggerId = generateTriggerId(appId);
+
+	const payload = rest.payload || rest;
 
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 
@@ -94,10 +96,10 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, ...payloa
 };
 
 export const triggerBlockAction = (options) => triggerAction({ type: ACTION_TYPES.ACTION, ...options });
-export const triggerSubmitView = async ({ viewId = 'lero', ...options }) => {
+export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const instance = instances.get(viewId);
 	try {
-		await triggerAction({ type: ACTION_TYPES.SUBMIT, ...options });
+		await triggerAction({ type: ACTION_TYPES.SUBMIT, viewId, ...options });
 	} finally {
 		if (instance) {
 			instance.close();
@@ -105,10 +107,10 @@ export const triggerSubmitView = async ({ viewId = 'lero', ...options }) => {
 		}
 	}
 };
-export const triggerCancel = async ({ viewId = 'lero', ...options }) => {
+export const triggerCancel = async ({ viewId, ...options }) => {
 	const instance = instances.get(viewId);
 	try {
-		await triggerAction({ type: ACTION_TYPES.CANCEL, ...options });
+		await triggerAction({ type: ACTION_TYPES.CANCEL, viewId, ...options });
 	} finally {
 		if (instance) {
 			instance.close();

@@ -50,38 +50,86 @@ export class AppBlockitBridge {
 				appId,
 			} = req.params;
 
-			// TODO: validate payloads per type
 			const {
 				type,
-				actionId,
-				triggerId,
-				mid,
-				rid,
-				payload,
 			} = req.body;
 
-			const room = this.orch.getConverters().get('rooms').convertById(rid);
-			const user = this.orch.getConverters().get('users').convertToApp(req.user);
-			const message = mid && this.orch.getConverters().get('messages').convertById(mid);
+			switch (type) {
+				case 'blockAction': {
+					const {
+						type,
+						actionId,
+						triggerId,
+						mid,
+						rid,
+						payload,
+					} = req.body;
 
-			const action = {
-				type,
-				appId,
-				actionId,
-				message,
-				triggerId,
-				payload,
-				user,
-				room,
-			};
+					console.log('req.body ->', JSON.stringify(req.body, null, 2));
 
-			try {
-				const result = Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
+					const room = this.orch.getConverters().get('rooms').convertById(rid);
+					const user = this.orch.getConverters().get('users').convertToApp(req.user);
+					const message = mid && this.orch.getConverters().get('messages').convertById(mid);
 
-				res.send(result);
-			} catch (e) {
-				res.status(500).send(e.message);
+					const action = {
+						type,
+						appId,
+						actionId,
+						message,
+						triggerId,
+						payload,
+						user,
+						room,
+					};
+
+					try {
+						const result = Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
+
+						res.send(result);
+					} catch (e) {
+						res.status(500).send(e.message);
+					}
+				}
+					break;
+
+				case 'viewCancel':
+					res.status(200);
+					break;
+
+				case 'viewSubmit': {
+					const {
+						type,
+						actionId,
+						triggerId,
+						payload,
+					} = req.body;
+
+					console.log('req.body ->', JSON.stringify(req.body, null, 2));
+
+					const user = this.orch.getConverters().get('users').convertToApp(req.user);
+
+					const action = {
+						type,
+						appId,
+						actionId,
+						triggerId,
+						payload,
+						user,
+					};
+
+					try {
+						const result = Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
+
+						res.send(result);
+					} catch (e) {
+						res.status(500).send(e.message);
+					}
+				}
+					break;
 			}
+
+			// TODO: validate payloads per type
+
 		});
 	}
 }
