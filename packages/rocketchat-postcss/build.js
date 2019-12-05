@@ -1,235 +1,165 @@
-import Future from 'fibers/future';
 import { CssTools } from 'meteor/minifier-css';
-
-require('app-module-path/cwd');
-const postCSS = require('postcss');
-const load = require('postcss-load-config');
-const sourcemap = require('source-map');
+import postcss from 'postcss';
+import postcssrc from 'postcss-load-config';
+import { SourceMapConsumer, SourceMapGenerator } from 'source-map';
 
 let loaded = false;
 let postcssConfigPlugins = [];
 let postcssConfigParser = null;
 let postcssConfigExcludedPackages = [];
-let ast;
 
-const isNotInExcludedPackages = function(excludedPackages, pathInBundle) {
-	let processedPackageName;
-	let exclArr = [];
-	if (excludedPackages && excludedPackages instanceof Array) {
-		exclArr = excludedPackages.map((packageName) => {
-			processedPackageName = packageName && packageName.replace(':', '_');
-			return pathInBundle && pathInBundle.indexOf(`packages/${ processedPackageName }`) > -1;
-		});
+const loadPostcssConfig = async () => {
+	if (loaded) {
+		return;
 	}
-	return exclArr.indexOf(true) === -1;
+
+	try {
+		const config = await postcssrc({ meteor: true });
+		postcssConfigPlugins = config.plugins || [];
+		postcssConfigParser = config.options.parser || null;
+		postcssConfigExcludedPackages = config.options.excludedPackages || [];
+	} catch (error) {
+		if (error.message.indexOf('No PostCSS Config found') < 0) {
+			throw error;
+		}
+	} finally {
+		loaded = true;
+	}
 };
 
-const mergeCss = function(css) {
-	// Filenames passed to AST manipulator mapped to their original files
-	const originals = {};
+const isImportFile = ({ _source: { url } }) => /\.import\.css$/.test(url) || /(?:^|\/)imports\//.test(url);
 
-	const cssAsts = css.map(function(file) {
-		const filename = file.getPathInBundle();
-		originals[filename] = file;
+const isInExcludedPackages = (pathInBundle) =>
+	postcssConfigExcludedPackages.some((packageName) =>
+		pathInBundle.indexOf(`packages/${ packageName.replace(':', '_') }/`) > -1);
 
-		const f = new Future();
+const handleFileError = (file, error) => {
+	if (error.name === 'CssSyntaxError') {
+		file.error({
+			message: error.message,
+			line: error.line,
+			column: error.column,
+		});
+		return;
+	}
 
-		let css;
-		let postres;
-		let isFileForPostCSS;
+	if (error.reason) {
+		file.error({
+			message: error.reason,
+			line: error.line,
+			column: error.column,
+		});
+		return;
+	}
 
-		if (isNotInExcludedPackages(postcssConfigExcludedPackages, file.getPathInBundle())) {
-			isFileForPostCSS = true;
-		} else {
-			isFileForPostCSS = false;
-		}
+	file.error({ message: error.message });
+};
 
-		postCSS(isFileForPostCSS ? postcssConfigPlugins : [])
+const getAbstractSyntaxTree = async (file) => {
+	const filename = file.getPathInBundle();
+
+	const isFileForPostCSS = !isInExcludedPackages(file.getPathInBundle());
+
+	try {
+		const result = await postcss(isFileForPostCSS ? postcssConfigPlugins : [])
 			.process(file.getContentsAsString(), {
 				from: process.cwd() + file._source.url,
 				parser: postcssConfigParser,
-			})
-			.then(function(result) {
-				result.warnings().forEach(function(warn) {
-					process.stderr.write(warn.toString());
-				});
-				f.return(result);
-			})
-			.catch(function(error) {
-				let errMsg = error.message;
-				if (error.name === 'CssSyntaxError') {
-					errMsg = `${ error.message }\n\nCss Syntax Error.\n\n${ error.message }${ error.showSourceCode() }`;
-				}
-				error.message = errMsg;
-				f.return(error);
 			});
 
-		try {
-			const parseOptions = {
-				source: filename,
-				position: true,
-			};
+		result.warnings().forEach((warn) => {
+			process.stderr.write(warn.toString());
+		});
 
-			postres = f.wait();
+		const ast = CssTools.parseCss(result.css, {
+			source: filename,
+			position: true,
+		});
 
-			if (postres.name === 'CssSyntaxError') {
-				throw postres;
-			}
-
-			css = postres.css;
-
-			ast = CssTools.parseCss(css, parseOptions);
-			ast.filename = filename;
-		} catch (e) {
-			if (e.name === 'CssSyntaxError') {
-				file.error({
-					message: e.message,
-					line: e.line,
-					column: e.column,
-				});
-			} else if (e.reason) {
-				file.error({
-					message: e.reason,
-					line: e.line,
-					column: e.column,
-				});
-			} else {
-				// Just in case it's not the normal error the library makes.
-				file.error({
-					message: e.message,
-				});
-			}
-
-			return {
-				type: 'stylesheet',
-				stylesheet: {
-					rules: [],
-				},
-				filename,
-			};
+		ast.filename = filename;
+		return ast;
+	} catch (error) {
+		if (error.name === 'CssSyntaxError') {
+			error.message = `${ error.message }\n\nCss Syntax Error.\n\n${ error.message }${ error.showSourceCode() }`;
 		}
 
-		return ast;
+		handleFileError(file, error);
+
+		return {
+			type: 'stylesheet',
+			stylesheet: {
+				rules: [],
+			},
+			filename,
+		};
+	}
+};
+
+const mergeCssFiles = async (files) => {
+	const cssAsts = await Promise.all(files.map(getAbstractSyntaxTree));
+
+	const mergedCssAst = CssTools.mergeCssAsts(cssAsts, (filename, msg) => {
+		console.warn(`${ filename }: warn: ${ msg }`);
 	});
 
-	const warnCb = function(filename, msg) {
-		// XXX make this a buildmessage.warning call rather than a random log.
-		//     this API would be like buildmessage.error, but wouldn't cause
-		//     the build to fail.
-		console.log(`${ filename }: warn: ${ msg }`);
-	};
-
-	const mergedCssAst = CssTools.mergeCssAsts(cssAsts, warnCb);
-
-	// Overwrite the CSS files list with the new concatenated file
-	const stringifiedCss = CssTools.stringifyCss(mergedCssAst, {
+	const { code, map } = CssTools.stringifyCss(mergedCssAst, {
 		sourcemap: true,
-		// don't try to read the referenced sourcemaps from the input
 		inputSourcemaps: false,
 	});
 
-	if (!stringifiedCss.code) {
+	if (!code) {
 		return {
 			code: '',
 		};
 	}
 
-	// Add the contents of the input files to the source map of the new file
-	stringifiedCss.map.sourcesContent = stringifiedCss.map.sources.map(function(filename) {
-		return originals[filename].getContentsAsString();
-	});
+	const mapFilenameToFile = files.reduce((obj, file) => ({
+		...obj,
+		[file.getPathInBundle()]: file,
+	}), {});
 
-	// If any input files had source maps, apply them.
-	// Ex.: less -> css source map should be composed with css -> css source map
-	const newMap = sourcemap.SourceMapGenerator.fromSourceMap(
-		new sourcemap.SourceMapConsumer(stringifiedCss.map));
+	map.sourcesContent = map.sources.map((filename) => mapFilenameToFile[filename].getContentsAsString());
 
-	Object.keys(originals).forEach(function(name) {
-		const file = originals[name];
-		if (!file.getSourceMap()) { return; }
-		try {
-			newMap.applySourceMap(
-				new sourcemap.SourceMapConsumer(file.getSourceMap()), name);
-		} catch (err) {
-			// If we can't apply the source map, silently drop it.
-			//
-			// XXX This is here because there are some less files that
-			// produce source maps that throw when consumed. We should
-			// figure out exactly why and fix it, but this will do for now.
-		}
-	});
+	const newMap = SourceMapGenerator.fromSourceMap(new SourceMapConsumer(map));
+
+	files.filter((file) => file.getSourceMap())
+		.forEach((file) => {
+			newMap.applySourceMap(new SourceMapConsumer(file.getSourceMap()), file.getPathInBundle());
+		});
 
 	return {
-		code: stringifiedCss.code,
+		code,
 		sourceMap: newMap.toString(),
 	};
 };
 
-const loadPostcssConfig = function() {
-	if (!loaded) {
-		loaded = true;
-
-		let config;
-		try {
-			config = Promise.await(load({ meteor: true }));
-			postcssConfigPlugins = config.plugins || [];
-			postcssConfigParser = config.options.parser || null;
-			postcssConfigExcludedPackages = config.options.excludedPackages || [];
-			// There is also "config.file" which is a path to the file we use to force
-			// Meteor reload on any change, but it seems this is not (yet) possible.
-		} catch (error) {
-			// Do not emit an error if the error is that no config can be found.
-			if (error.message.indexOf('No PostCSS Config found') < 0) {
-				throw error;
-			}
-		}
+const processFilesForBundle = async (files = [], { minifyMode }) => {
+	if (!files.length) {
+		return;
 	}
-};
 
-const isNotImport = function(inputFileUrl) {
-	return !(/\.import\.css$/.test(inputFileUrl)
-             || /(?:^|\/)imports\//.test(inputFileUrl));
-};
+	await loadPostcssConfig();
 
-function CssToolsMinifier() {}
+	const filesToMerge = files.filter((file) => !isImportFile(file));
 
-CssToolsMinifier.prototype.processFilesForBundle = function(files, options) {
-	loadPostcssConfig();
+	const { code, sourceMap } = await mergeCssFiles(filesToMerge);
 
-	const mode = options.minifyMode;
-
-	if (!files.length) { return; }
-
-	const filesToMerge = [];
-
-	files.forEach(function(file) {
-		if (isNotImport(file._source.url)) {
-			filesToMerge.push(file);
-		}
-	});
-
-	const merged = mergeCss(filesToMerge);
-
-	if (mode === 'development') {
+	if (minifyMode === 'development') {
 		files[0].addStylesheet({
-			data: merged.code,
-			sourceMap: merged.sourceMap,
+			data: code,
+			sourceMap,
 			path: 'merged-stylesheets.css',
 		});
 		return;
 	}
 
-	const minifiedFiles = CssTools.minifyCss(merged.code);
+	const minifiedFiles = CssTools.minifyCss(code);
 
-	if (files.length) {
-		minifiedFiles.forEach(function(minified) {
-			files[0].addStylesheet({
-				data: minified,
-			});
-		});
-	}
+	minifiedFiles.forEach((data) => {
+		files[0].addStylesheet({ data });
+	});
 };
 
 Plugin.registerMinifier({ extensions: ['css'] }, () => ({
-	processFilesForBundle: CssToolsMinifier.prototype.processFilesForBundle,
+	processFilesForBundle,
 }));

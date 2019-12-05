@@ -10,13 +10,7 @@ Package.registerBuildPlugin({
 		'ecmascript',
 		'minifier-css',
 	],
-	npmDependencies: {
-		'source-map': '0.5.6',
-		'app-module-path': '2.2.0',
-	},
-	sources: [
-		'build.js',
-	],
+	sources: ['build.js'],
 });
 
 Package.onUse((api) => {
