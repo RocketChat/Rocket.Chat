@@ -171,10 +171,13 @@ Template.main.helpers({
 		const iframeEnabled = typeof iframeLogin !== 'undefined';
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
-	subsReady() {
+	async subsReady() {
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
 		const ready = (subscriptionsReady && settingsReady) || !Meteor.userId();
+		if (Meteor.userId()) {
+			await updateUserData();
+		}
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
@@ -261,6 +264,5 @@ Template.main.onRendered(function() {
 });
 
 Meteor.startup(async function() {
-	await updateUserData();
 	return fireGlobalEvent('startup', true);
 });
