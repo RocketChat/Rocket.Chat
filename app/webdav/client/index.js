@@ -10,7 +10,7 @@ Meteor.startup(() => {
 		}
 		c.stop();
         import('./startup/messageBoxActions');
-        import('./startup/subscription');
+        import('./startup/initCollection');
         import('./actionButton');
         import('./addWebdavAccount.html');
         import('./addWebdavAccount');
