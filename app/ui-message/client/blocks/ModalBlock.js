@@ -64,6 +64,7 @@ Template.ModalBlock.events({
 
 		const { appId, viewId } = i.data;
 		ActionManager.triggerSubmitView({
+			viewId,
 			appId,
 			payload: {
 				view: {
