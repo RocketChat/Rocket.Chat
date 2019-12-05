@@ -55,12 +55,14 @@ export class AppBlockitBridge {
 				type,
 				actionId,
 				triggerId,
-				messageId,
+				mid,
+				rid,
 				payload,
 			} = req.body;
 
+			const room = this.orch.getConverters().get('rooms').convertById(rid);
 			const user = this.orch.getConverters().get('users').convertToApp(req.user);
-			const message = messageId && this.orch.getConverters().get('messages').convertById(messageId);
+			const message = mid && this.orch.getConverters().get('messages').convertById(mid);
 
 			const action = {
 				type,
@@ -70,6 +72,7 @@ export class AppBlockitBridge {
 				triggerId,
 				payload,
 				user,
+				room,
 			};
 
 			try {

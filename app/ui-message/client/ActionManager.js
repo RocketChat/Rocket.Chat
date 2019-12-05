@@ -84,12 +84,12 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ viewId = 'lero', trigg
 	}
 };
 
-export const triggerAction = async ({ type, actionId, appId, mid, ...payload }) => {
+export const triggerAction = async ({ type, actionId, appId, rid, mid, ...payload }) => {
 	const triggerId = generateTriggerId(appId);
 
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 
-	const { type: interactionType, ...data } = await APIClient.post(`apps/blockit/${ appId }/`, { type, actionId, payload, messageId: mid, triggerId });
+	const { type: interactionType, ...data } = await APIClient.post(`apps/blockit/${ appId }/`, { type, actionId, payload, mid, rid, triggerId });
 	return handlePayloadUserInteraction(interactionType, data);
 };
 

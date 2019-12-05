@@ -17,11 +17,11 @@ Template.Blocks.onRendered(async function() {
 		React.createElement(messageBlockWithContext({
 			action: (options) => {
 				const { actionId, value, blockId, mid = this.data.mid } = options;
-				ActionManager.triggerBlockAction({ actionId, appId: this.data.blocks[1].appId, value, blockId, mid });
+				ActionManager.triggerBlockAction({ actionId, appId: this.data.blocks[1].appId, value, blockId, rid: this.data.rid, mid });
 			},
 			// state: alert,
 			appId: this.data.appId,
-
+			rid: this.data.rid,
 		}), { data: () => state.get() }),
 		this.firstNode
 	);
