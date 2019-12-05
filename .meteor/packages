@@ -72,7 +72,6 @@ todda00:friendly-slugs
 
 rocketchat:tap-i18n
 underscore@1.0.10
-juliancwirko:postcss
 littledata:synced-cron
 
 edgee:slingshot
@@ -96,3 +95,4 @@ webapp@1.7.3
 webapp-hashing@1.0.9
 rocketchat:oauth2-server
 rocketchat:i18n
+rocketchat:postcss

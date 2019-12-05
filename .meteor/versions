@@ -61,7 +61,6 @@ jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
 jparker:gravatar@0.5.1
 jquery@1.11.11
-juliancwirko:postcss@2.0.3
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.12.1
 keepnox:perfect-scrollbar@0.6.8
@@ -127,6 +126,7 @@ rocketchat:i18n@0.0.1
 rocketchat:livechat@0.0.1
 rocketchat:mongo-config@0.0.1
 rocketchat:oauth2-server@2.1.0
+rocketchat:postcss@1.0.0
 rocketchat:push@3.3.1
 rocketchat:streamer@1.0.2
 rocketchat:tap-i18n@1.9.1
@@ -146,7 +146,6 @@ templating@1.3.2
 templating-compiler@1.3.3
 templating-runtime@1.3.2
 templating-tools@1.1.2
-tmeasday:check-npm-versions@0.3.2
 todda00:friendly-slugs@0.6.0
 tracker@1.2.0
 twitter-oauth@1.2.0

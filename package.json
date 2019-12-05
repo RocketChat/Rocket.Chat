@@ -107,6 +107,7 @@
 		"@storybook/addons": "^5.2.4",
 		"@storybook/react": "^5.2.4",
 		"acorn": "^6.0.7",
+		"app-module-path": "^2.2.0",
 		"autoprefixer": "^9.6.1",
 		"babel-eslint": "^10.0.1",
 		"babel-loader": "^8.0.6",
