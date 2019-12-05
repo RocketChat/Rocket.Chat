@@ -316,15 +316,14 @@ jobs:
         cd /tmp/build-pr
 
         export OWNER="${GITHUB_REPOSITORY%/*}"
-        export REPOSITORY="${GITHUB_REPOSITORY#*/}"
 
         docker login docker.pkg.github.com -u "${OWNER}" -p "${GITHUB_TOKEN}"
 
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
-        export LOWERCASE_REPOSITORY=$(echo "$REPOSITORY" | tr "[:upper:]" "[:lower:]")
+        export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
 
-        export IMAGE_NAME="docker.pkg.github.com/${OWNER}/${LOWERCASE_REPOSITORY}/rocket.chat:${VERSION}"
+        export IMAGE_NAME="docker.pkg.github.com/${LOWERCASE_REPOSITORY}/rocket.chat:${VERSION}"
 
         echo "Build official Docker image ${IMAGE_NAME}"
 
