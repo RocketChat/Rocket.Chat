@@ -177,10 +177,12 @@ settings.addGroup('General', function() {
 				value: true,
 			},
 			hidden: false,
+			public: true,
 			alert: 'Experimental_Feature_Alert',
 		});
 	});
 });
+
 
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`
