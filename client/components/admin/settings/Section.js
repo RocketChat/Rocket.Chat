@@ -18,7 +18,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		noncollapsible={solo || !section.name}
 		title={section.name && t(section.name)}
 	>
-		{help && <Paragraph hintColor>{help}</Paragraph>}
+		{help && <Paragraph><Text hintColor>{help}</Text></Paragraph>}
 
 		<FieldGroup>
 			{section.settings.map((settingId) => <Setting key={settingId} settingId={settingId} />)}
