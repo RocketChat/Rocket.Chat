@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
@@ -321,7 +322,26 @@ export class APIClass extends Restivus {
 							});
 						}
 
-						result = originalAction.apply(this);
+						const connection = {
+							id: Random.id(),
+							close() {},
+							token: this.token,
+						};
+
+						const invocation = new DDPCommon.MethodInvocation({
+							connection,
+							isSimulation: false,
+							userId: this.userId,
+						});
+
+						Accounts._accountData[connection.id] = {
+							connection,
+						};
+						Accounts._setAccountData(connection.id, 'loginToken', this.token);
+
+						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
+
+						delete Accounts._accountData[connection.id];
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 
@@ -544,6 +564,8 @@ const getUserAuth = function _getUserAuth(...args) {
 			if (this.request.headers['x-auth-token']) {
 				token = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
 			}
+
+			this.token = token;
 
 			return {
 				userId: this.request.headers['x-user-id'],
