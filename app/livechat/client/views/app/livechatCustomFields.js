@@ -43,7 +43,7 @@ Template.livechatCustomFields.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeCustomField', this._id, async function(error/* , result*/) {
+			Meteor.call('livechat:removeCustomField', this._id, function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
