@@ -6,6 +6,13 @@ import _marked from 'marked';
 
 import { settings } from '../../../../settings';
 
+// Ignore regular URLs. Leave it to AutoLinker.
+// AutoLinker does more advanced parser.
+function noop() {}
+noop.exec = noop;
+_marked.InlineLexer.rules.gfm.url = noop;
+_marked.InlineLexer.rules.breaks.url = noop;
+
 const renderer = new _marked.Renderer();
 
 let msg = null;

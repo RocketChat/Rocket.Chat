@@ -12,7 +12,7 @@ let config;
 
 Tracker.autorun(function() {
 	config = {
-		stripPrefix: settings.get('AutoLinker_StripPrefix'),
+		newWindow: settings.get('AutoLinker_NewWindow'),
 		urls: {
 			schemeMatches: settings.get('AutoLinker_Urls_Scheme'),
 			wwwMatches: settings.get('AutoLinker_Urls_www'),
@@ -20,8 +20,18 @@ Tracker.autorun(function() {
 		},
 		email: settings.get('AutoLinker_Email'),
 		phone: settings.get('AutoLinker_Phone'),
-		twitter: false,
-		stripTrailingSlash: false,
+		mention: false,
+		hashtag: false,
+		stripPrefix: settings.get('AutoLinker_StripPrefix') ? {
+			scheme: settings.get('AutoLinker_StripPrefix_Scheme'),
+			www: settings.get('AutoLinker_StripPrefix_www'),
+		} : false,
+		stripTrailingSlash: settings.get('AutoLinker_StripTrailingSlash'),
+		truncate: settings.get('AutoLinker_Truncate') ? {
+			length: settings.get('AutoLinker_Truncate_Length'),
+			location: settings.get('AutoLinker_Truncate_Location'),
+		} : false,
+		decodePercentEncoding: settings.get('AutoLinker_DecodePercentEncoding'),
 	};
 });
 
