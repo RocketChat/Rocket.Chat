@@ -3,9 +3,7 @@ import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 
-const translate = function(key) {
-	return key;
-};
+const translate = (key) => key;
 
 translate.has = () => true;
 
@@ -34,7 +32,7 @@ const createContextValue = (language) => {
 		});
 	};
 
-	const has = (key, { lng = language, ...options } = {}) => TAPi18next.exists(key, { ...options, lng });
+	const has = (key, { lng = language, ...options } = {}) => !!key && TAPi18next.exists(key, { ...options, lng });
 
 	translate.has = has;
 
