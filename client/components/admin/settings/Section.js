@@ -25,7 +25,6 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 
 			{hasReset && section.canReset && <Button
 				children={t('Reset_section_settings')}
-				className='reset-group'
 				danger
 				data-section={section.name}
 				ghost
