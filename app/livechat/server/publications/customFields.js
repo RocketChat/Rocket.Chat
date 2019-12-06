@@ -4,8 +4,8 @@ import s from 'underscore.string';
 import { hasPermission } from '../../../authorization';
 import { LivechatCustomField } from '../../../models';
 
-console.warn('The publication "livechat:customFields" is deprecated and will be removed after version v3.0.0');
 Meteor.publish('livechat:customFields', function(_id) {
+	console.warn('The publication "livechat:customFields" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:customFields' }));
 	}

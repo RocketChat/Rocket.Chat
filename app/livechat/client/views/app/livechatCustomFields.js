@@ -7,14 +7,24 @@ import { modal } from '../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../utils/client';
 import './livechatCustomFields.html';
 
-const loadCustomFields = async (instance) => {
-	const { customFields } = await APIClient.v1.get('livechat/custom-fields');
-	instance.customFields.set(customFields);
-};
+const CUSTOM_FIELDS_COUNT = 50;
 
 Template.livechatCustomFields.helpers({
 	customFields() {
 		return Template.instance().customFields.get();
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop < currentTarget.scrollHeight - 100) {
+				return;
+			}
+			const customFields = instance.customFields.get();
+			if (instance.total.get() <= customFields.length) {
+				return;
+			}
+			return instance.offset.set(instance.offset.get() + CUSTOM_FIELDS_COUNT);
+		};
 	},
 });
 
@@ -37,7 +47,7 @@ Template.livechatCustomFields.events({
 				if (error) {
 					return handleError(error);
 				}
-				await loadCustomFields(instance);
+				instance.offset.set(0);
 				modal.open({
 					title: t('Removed'),
 					text: t('Field_removed'),
@@ -57,5 +67,17 @@ Template.livechatCustomFields.events({
 
 Template.livechatCustomFields.onCreated(function() {
 	this.customFields = new ReactiveVar([]);
-	loadCustomFields(this);
+	this.offset = new ReactiveVar(0);
+	this.total = new ReactiveVar(0);
+
+	this.autorun(async () => {
+		const offset = this.offset.get();
+		const { customFields, total } = await APIClient.v1.get(`livechat/custom-fields?count=${ CUSTOM_FIELDS_COUNT }&offset=${ offset }`);
+		if (offset === 0) {
+			this.customFields.set(customFields);
+		} else {
+			this.customFields.set(this.customFields.get().concat(customFields));
+		}
+		this.total.set(total);
+	});
 });
