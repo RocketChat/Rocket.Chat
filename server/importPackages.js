@@ -37,6 +37,7 @@ import '../app/importer-hipchat-enterprise/server';
 import '../app/importer-slack/server';
 import '../app/importer-slack-users/server';
 import '../app/integrations/server';
+import '../app/invites/server';
 import '../app/irc';
 import '../app/issuelinks/server';
 import '../app/katex/server';

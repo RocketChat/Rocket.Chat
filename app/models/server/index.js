@@ -18,6 +18,7 @@ import CustomSounds from './models/CustomSounds';
 import CustomUserStatus from './models/CustomUserStatus';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
+import Invites from './models/Invites';
 import CredentialTokens from './models/CredentialTokens';
 import EmojiCustom from './models/EmojiCustom';
 import OAuthApps from './models/OAuthApps';
@@ -65,6 +66,7 @@ export {
 	CustomUserStatus,
 	Integrations,
 	IntegrationHistory,
+	Invites,
 	CredentialTokens,
 	EmojiCustom,
 	OAuthApps,

@@ -100,6 +100,10 @@ Template.membersList.helpers({
 		return (() => roomTypes.roomTypes[roomData.t].canAddUser(roomData))();
 	},
 
+	canInviteUser() {
+		return true;
+	},
+
 	autocompleteSettingsAddUser() {
 		return {
 			limit: 10,
@@ -167,6 +171,15 @@ Template.membersList.events({
 		Template.parentData(0).tabBar.setData({
 			label: 'Add_users',
 			icon: 'user',
+		});
+
+		Template.parentData(0).tabBar.open();
+	},
+	'click .js-invite'() {
+		Template.parentData(0).tabBar.setTemplate('createInviteLink');
+		Template.parentData(0).tabBar.setData({
+			label: 'Invite_Users',
+			icon: 'user-plus',
 		});
 
 		Template.parentData(0).tabBar.open();
