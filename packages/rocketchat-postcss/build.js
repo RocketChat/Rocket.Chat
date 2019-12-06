@@ -58,26 +58,28 @@ const handleFileError = (file, error) => {
 const getAbstractSyntaxTree = async (file) => {
 	const filename = file.getPathInBundle();
 
-	const isFileForPostCSS = !isInExcludedPackages(file.getPathInBundle());
+	if (isInExcludedPackages(filename)) {
+		return Object.assign(CssTools.parseCss(file.getContentsAsString(), {
+			source: filename,
+			position: true,
+		}), { filename });
+	}
 
 	try {
-		const result = await postcss(isFileForPostCSS ? postcssConfigPlugins : [])
+		const postcssResult = await postcss(postcssConfigPlugins)
 			.process(file.getContentsAsString(), {
 				from: process.cwd() + file._source.url,
 				parser: postcssConfigParser,
 			});
 
-		result.warnings().forEach((warn) => {
+		postcssResult.warnings().forEach((warn) => {
 			process.stderr.write(warn.toString());
 		});
 
-		const ast = CssTools.parseCss(result.css, {
+		return Object.assign(CssTools.parseCss(postcssResult.css, {
 			source: filename,
 			position: true,
-		});
-
-		ast.filename = filename;
-		return ast;
+		}), { filename });
 	} catch (error) {
 		if (error.name === 'CssSyntaxError') {
 			error.message = `${ error.message }\n\nCss Syntax Error.\n\n${ error.message }${ error.showSourceCode() }`;
