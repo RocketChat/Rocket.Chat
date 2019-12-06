@@ -45,7 +45,7 @@ const sameElse = function(now) {
 
 export const timeAgo = (date) => moment(date).calendar(null, {
 	lastDay: `[${ lastDay }]`,
-	sameDay,
+	sameDay: settings.get('Message_TimeFormat'),
 	lastWeek: 'dddd',
 	sameElse,
 });
