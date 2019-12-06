@@ -67,8 +67,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const match = {
 			$match: {
 				t: 'l',
-				ts: { $gte: new Date(start) },
-				closedAt: { $lte: new Date(end) },
+				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
 		const lookup = {
