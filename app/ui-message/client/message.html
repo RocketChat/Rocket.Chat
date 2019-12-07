@@ -81,7 +81,9 @@
 						{{{body}}}
 					{{/if}}
 					{{#if msg.blocks}}
-						{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
+						<div class='rc-ui-kit'>
+							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
+						</div>
 					{{/if}}
 				</div>
 			</div>

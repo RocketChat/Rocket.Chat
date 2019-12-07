@@ -43,6 +43,11 @@
 		}
 	}
 }
+.rc-ui-kit {
+	display: inline-block;
+	width: 100%;
+    max-width: 400px;
+}
 
 .message {
 	& .toggle-hidden {
