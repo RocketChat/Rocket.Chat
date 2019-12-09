@@ -11,6 +11,7 @@ import { popover } from '../../../ui-utils';
 import { templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
+import { getUserPreference } from '../../../utils';
 import FullUser from '../../../models/client/models/FullUser';
 import { getActions } from './userActions';
 
@@ -184,7 +185,8 @@ Template.userInfo.helpers({
 
 	roleTags() {
 		const user = Template.instance().user.get();
-		if (!user || !user._id) {
+		const hideRoles = getUserPreference(Meteor.userId(), 'hideRoles')
+		if (hideRoles || !user || !user._id) {
 			return;
 		}
 		const userRoles = UserRoles.findOne(user._id) || {};
