@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -8,7 +9,7 @@ import moment from 'moment';
 
 import { DateFormat } from '../../../lib';
 import { popover } from '../../../ui-utils';
-import { templateVarHandler } from '../../../utils';
+import { templateVarHandler, getUserPreference } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import FullUser from '../../../models/client/models/FullUser';
@@ -184,7 +185,8 @@ Template.userInfo.helpers({
 
 	roleTags() {
 		const user = Template.instance().user.get();
-		if (!user || !user._id) {
+		const hideRoles = getUserPreference(Meteor.userId(), 'hideRoles');
+		if (hideRoles || !user || !user._id) {
 			return;
 		}
 		const userRoles = UserRoles.findOne(user._id) || {};
