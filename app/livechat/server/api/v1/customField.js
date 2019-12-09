@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../../../api';
 import { findGuest } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
 
 API.v1.addRoute('livechat/custom.field', {
 	post() {
@@ -62,5 +63,37 @@ API.v1.addRoute('livechat/custom.fields', {
 		});
 
 		return API.v1.success({ fields });
+	},
+});
+
+API.v1.addRoute('livechat/custom-fields', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		const customFields = Promise.await(findLivechatCustomFields({
+			userId: this.userId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+
+		return API.v1.success(customFields);
+	},
+});
+
+
+API.v1.addRoute('livechat/custom-fields/:_id', { authRequired: true }, {
+	get() {
+		check(this.urlParams, {
+			_id: String,
+		});
+		const { customField } = Promise.await(findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams._id }));
+
+		return API.v1.success({
+			customField,
+		});
 	},
 });
