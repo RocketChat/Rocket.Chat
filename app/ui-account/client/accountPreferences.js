@@ -270,21 +270,6 @@ Template.accountPreferences.onCreated(function() {
 			reload = true;
 		}
 
-		const enableAutoAway = JSON.parse($('#enableAutoAway').find('input:checked').val());
-		data.enableAutoAway = enableAutoAway;
-		if (this.shouldUpdateLocalStorageSetting('enableAutoAway', enableAutoAway)) {
-			Meteor._localStorage.setItem('enableAutoAway', enableAutoAway);
-			reload = true;
-		}
-
-		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? settings.get('Accounts_Default_User_Preferences_idleTimeLimit') : parseInt($('input[name=idleTimeLimit]').val());
-		data.idleTimeLimit = idleTimeLimit;
-		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
-			Meteor._localStorage.setItem('idleTimeLimit', idleTimeLimit);
-			reload = true;
-		}
-
-
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
 				toastr.success(t('Preferences_saved'));

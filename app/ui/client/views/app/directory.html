@@ -117,7 +117,7 @@
 								<div class="table-fake-th"><span>{{_ "Domain"}}</span> {{> icon icon=(sortIcon 'origin') }}</div>
 							</th>
 							{{/if}}
-							{{#if $eq searchWorkspace 'internal'}}
+							{{#if $eq searchWorkspace 'local'}}
 							<th class="table-column-date js-sort {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
 								<div class="table-fake-th"><span>{{_ "Created_at"}}</span> {{> icon icon=(sortIcon 'createdAt') }}</div>
 							</th>
