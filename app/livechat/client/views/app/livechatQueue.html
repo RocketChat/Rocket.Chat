@@ -2,8 +2,8 @@
 	{{#if hasPermission}}
 	<fieldset>
 		<form class="form-inline" method="post">
-			<div class="livechat-current-chats-filters-wrapper">
-				<div class="livechat-current-chats-filters">
+			<div class="livechat-group-filters-wrapper">
+				<div class="livechat-group-filters-container">
 					<div class="livechat-current-chats-standard-filters">
 						<div class="form-group">
 							{{> livechatAutocompleteUser
@@ -53,14 +53,9 @@
 					</div>
 				</div>
 
-				<div class="livechat-current-chats-filters-buttons">
+				<div class="livechat-group-filters-buttons">
 					<div class="rc-button__group">
 						<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
-						{{#if hasPopoverPermissions}}
-						<button class="livechat-current-chats-extra-actions">
-							{{> icon icon="menu" block="rc-icon--default-size"}}
-						</button>
-						{{/if}}
 					</div>
 				</div>
 			</div>
