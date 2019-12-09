@@ -116,7 +116,7 @@
 			{{#if hasPermission 'edit-other-user-password'}}
 			<div class="rc-form-group rc-form-group--small rc-switch">
 				<label class="rc-switch__label" tabindex="-1">
-					<input class="rc-switch__input" type="checkbox" id="setRandomPassword" value="1" checked="{{setRandomPassword}}"/>
+					<input class="rc-switch__input" type="checkbox" id="setRandomPassword" value="1" checked="{{setRandomPassword}}" disabled="{{setRandomPasswordDisabled}}"/>
 					<span class="rc-switch__button">
 						<span class="rc-switch__button-inside"></span>
 					</span>
@@ -127,7 +127,7 @@
 			</div>
 			<div class="rc-form-group rc-form-group--small rc-switch">
 				<label class="rc-switch__label" tabindex="-1">
-					<input class="rc-switch__input" type="checkbox" id="changePassword" value="1" checked="{{requirePasswordChange}}"/>
+					<input class="rc-switch__input" type="checkbox" id="changePassword" value="1" checked="{{requirePasswordChange}}" disabled="{{requirePasswordChangeDisabled}}"/>
 					<span class="rc-switch__button">
 						<span class="rc-switch__button-inside"></span>
 					</span>
@@ -138,27 +138,29 @@
 			</div>
 			{{/if}}
 
-			<label for="roles">{{_ "Roles"}}</label>
 			<div class="rc-form-group rc-form-group--small">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Roles"}}</div>
+						<div class="rc-input__wrapper">
+							{{#let roles=role}}
+								<select id="roleSelect" class="rc-input rc-form-item-inline rc-input--small" {{disabled role}}>
+									<option value="placeholder" disabled selected>{{_ "Select_role"}}</option>
+									{{#each roles}}
+										<option value="{{_id}}">{{name}}</option>
+									{{/each}}
+								</select>
+							{{/let}}
+						</div>
+					</label>
+				</div>
 				<ul id="roles" class="chip-container current-user-roles">
 					{{#each userRoles}}
-					<li class="remove-role" title="{{this}}"><i class="icon icon-cancel-circled"></i>{{this}}</li>
+						<li class="remove-role" title="{{this}}"><i class="icon icon-cancel-circled"></i>{{this}}</li>
 					{{/each}}
 				</ul>
 			</div>
 
-			<label for="roleSelect">{{_ "Add_Role"}}</label>
-			<div class="rc-form-group rc-form-group--small rc-form-group--inline">
-				{{#let roles=role}}
-				<select id="roleSelect" class="rc-input rc-form-item-inline rc-input--small" {{disabled role}}>
-					<option value="placeholder" disabled selected>{{_ "Select_role"}}</option>
-					{{#each roles}}
-					<option value="{{_id}}">{{name}}</option>
-					{{/each}}
-				</select>
-				{{/let}}
-				<button id="addRole" class="rc-button rc-button--primary rc-form-item-inline" {{disabled role}}>{{_ 'Add_Role'}}</button>
-			</div>
 			{{#unless user}}
 			<div class="input-line">
 				<label for="joinDefaultChannels">

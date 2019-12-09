@@ -36,4 +36,14 @@ export class AppListenerBridge {
 		// 	this.orch.debugLog(e.stack);
 		// }
 	}
+
+	async livechatEvent(inte, room) {
+		const rm = this.orch.getConverters().get('rooms').convertRoom(room);
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, rm);
+
+		if (typeof result === 'boolean') {
+			return result;
+		}
+		return this.orch.getConverters().get('rooms').convertAppRoom(result);
+	}
 }
