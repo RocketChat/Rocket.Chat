@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { saveUser } from '../../../lib/server/functions/saveUser';
+import { saveUser, setUserAvatar } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
 import { Roles } from '../../../models';
-
 
 export class AppUserBridge {
 	constructor(orch) {
@@ -22,29 +21,24 @@ export class AppUserBridge {
 		return this.orch.getConverters().get('users').convertByUsername(username);
 	}
 
-	async create(user, appId) {
+	async create(user, appId, { avatarUrl }) {
 		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
 
-		user.requirePasswordChange = true;
+		let newUserId;
+		Roles.findUsersInRole('admin').forEach((adminUser, index) => {
+			if (index > 0) {
+				return;
+			}
 
-		if (typeof user.joinDefaultChannels === 'undefined') {
-			user.joinDefaultChannels = true;
-		}
+			newUserId = saveUser(adminUser._id, user);
 
-		Roles.findUsersInRole('admin').forEach((adminUser) => {
-			try {
-				const newUserId = saveUser(adminUser._id, user);
-
-				if (typeof user.active !== 'undefined') {
-					Meteor.runAsUser(adminUser._id, () => {
-						Meteor.call('setUserActiveStatus', newUserId, user.active);
-					});
-				}
-				return newUserId;
-			} catch (e) {
-				console.error(e);
+			if (avatarUrl) {
+				user._id = newUserId;
+				Meteor.runAsUser(newUserId, () => setUserAvatar(user, avatarUrl));
 			}
 		});
+
+		return newUserId;
 	}
 
 	async getActiveUserCount() {
