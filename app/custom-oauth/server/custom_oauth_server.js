@@ -370,6 +370,7 @@ export class CustomOAuth {
 			if (serviceData.username) {
 				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceName);
 				if (!user) {
+					console.log("#########  EAR>> this is the user: ", user);
 					// send GA event that a new user has registered
 					const uid = crypto.createHash('sha1').update(serviceData.username).digest('hex');
 					callbacks.run('customOauthRegisterNewUser', uid);
