@@ -1,11 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+import { sortBy } from 'underscore';
+import localforage from 'localforage';
 
 import { call } from '../../app/ui-utils/client';
+import { getConfig } from '../../app/ui-utils/client/config';
 import { SWCache } from '../../app/utils/client';
 import { fileUploadHandler } from '../../app/file-upload';
-import { ChatMessage } from '../../app/models/client';
+import { ChatMessage, CachedChatMessage } from '../../app/models/client';
 
 const action = {
 	clean: (msg) => {
@@ -19,6 +22,7 @@ const action = {
 			action.sendFile(msg);
 			return;
 		}
+
 		call('sendMessage', msg, true);
 	},
 
@@ -115,28 +119,32 @@ function triggerOfflineMsgs(messages) {
 	tempMsgs.forEach((msg) => trigger(msg));
 }
 
-Meteor.startup(() => {
-	if ('indexedDB' in window) {
-		const request = indexedDB.open('localforage');
+const retainMessages = (rid, messages) => {
+	const roomMsgs = messages.filter((msg) => rid === msg.rid);
+	const limit = parseInt(getConfig('roomListLimit')) || 50;
+	let retain = sortBy(roomMsgs.filter((msg) => !msg.temp), 'ts').reverse().slice(0,limit);
+	retain.push(...messages.filter((msg) => {rid === msg.rid && msg.temp}));
+	return retain;
+}
 
-		request.onsuccess = function(event) {
-			const db = event.target.result;
-			
-			if (db.version === 1) { return; }
-			
-			const tx = db.transaction('keyvaluepairs');
-			const store = tx.objectStore('keyvaluepairs');
-			
-			store.openCursor('chatMessage').onsuccess = function(event) {
-				const cursor = event.target.result;
-				if (cursor && cursor.value && cursor.value.records) {
-					triggerOfflineMsgs(cursor.value.records);
-				}
-			};
-		};
-		
-		request.onerror = function() {
-			console.log('Error in opening Message persistent Minimongo');
-		};
-	}
+function clearOldMessages({records: messages, ...value}) {
+	const rids = [...new Set( messages.map(msg => msg.rid)) ];
+	let retain = [];
+	rids.forEach((rid) => {
+		retain.push(...retainMessages(rid, messages));
+	});
+	value.records = retain;
+	value.updatedAt = new Date();
+	localforage.setItem('chatMessage', value).then(() => {
+		CachedChatMessage.loadFromCache();
+	});
+}
+
+Meteor.startup(() => {
+	localforage.getItem('chatMessage').then((value) => {
+		if (value && value.records) {
+			triggerOfflineMsgs(value.records);
+			clearOldMessages(value);
+		}
+	});
 });

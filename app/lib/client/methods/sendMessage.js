@@ -11,7 +11,7 @@ import { t } from '../../../utils/client';
 
 Meteor.methods({
 	sendMessage(message, offlineTrigerred = false) {
-		if (!Meteor.userId() || s.trim(message.msg) === '') {
+		if (!Meteor.userId() || s.trim(message.msg) === '' || offlineTrigerred) {
 			return false;
 		}
 		const messageAlreadySent = message._id && ChatMessage.findOne({ _id: message._id, temp: { $exists: false } });
@@ -34,10 +34,8 @@ Meteor.methods({
 		}
 		message = callbacks.run('beforeSaveMessage', message);
 		promises.run('onClientMessageReceived', message).then(function(message) {
-			if (!offlineTrigerred) {
-				ChatMessage.insert(message);
-				CachedChatMessage.save();
-			}
+			ChatMessage.insert(message);
+			CachedChatMessage.save();
 			return callbacks.run('afterSaveMessage', message);
 		});
 	},
