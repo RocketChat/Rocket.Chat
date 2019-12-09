@@ -2,8 +2,8 @@
 	{{#requiresPermission 'view-livechat-current-chats'}}
 		<fieldset>
 			<form class="form-inline" method="post">
-				<div class="livechat-current-chats-filters-wrapper">
-					<div class="livechat-current-chats-filters">
+				<div class="livechat-group-filters-wrapper">
+					<div class="livechat-group-filters-container">
 						<div class="livechat-current-chats-standard-filters">
 							<div class="form-group">
 								<label class="rc-input__label">
@@ -105,7 +105,7 @@
 						</div>
 					</div>
 
-					<div class="livechat-current-chats-filters-buttons">
+					<div class="livechat-group-filters-buttons">
 						<div class="rc-button__group">
 							<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
 							{{#if hasPopoverPermissions}}
