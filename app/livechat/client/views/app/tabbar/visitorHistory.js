@@ -9,7 +9,7 @@ import { APIClient } from '../../../../../utils/client';
 const ITEMS_COUNT = 50;
 
 Template.visitorHistory.helpers({
-	historyLoaded() {
+	isLoading() {
 		return Template.instance().isLoading.get();
 	},
 
