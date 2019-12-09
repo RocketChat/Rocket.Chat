@@ -82,7 +82,14 @@
 			<tbody>
 				{{#each queue}}
 					<tr class="rc-table-tr manage row-link" data-name="{{user.username}}">
-						<td>{{user.username}}</td>
+						<td>
+							<div class="rc-table-wrapper">
+								<div class="rc-table-avatar user-image status-{{status}}">{{> avatar username=user.username}}</div>
+								<div class="rc-table-info">
+									<span class="rc-table-title">{{user.username}}</span>
+								</div>
+							</div>
+						</td>
 						<td>{{department.name}}</td>
 						<td>{{chats}}</td>
 						<td>{{user.status}}</td>
