@@ -85,6 +85,30 @@ Meteor.startup(function() {
 		{ _id: 'view-outside-room',             roles: ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'view-broadcast-member-list',    roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'call-management',               roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'view-l-room',                   roles: ['livechat-agent', 'livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-manager',         roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-rooms',           roles: ['livechat-manager', 'admin'] },
+		{ _id: 'close-livechat-room',           roles: ['livechat-agent', 'livechat-manager', 'admin'] },
+		{ _id: 'close-others-livechat-room',    roles: ['livechat-manager', 'admin'] },
+		{ _id: 'save-others-livechat-room-info', roles: ['livechat-manager'] },
+		{ _id: 'remove-closed-livechat-rooms',  roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-analytics',       roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-queue',           roles: ['livechat-manager', 'admin'] },
+		{ _id: 'transfer-livechat-guest',       roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-livechat-managers',      roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-livechat-agents',        roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-livechat-departments',   roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-departments',     roles: ['livechat-manager', 'admin'] },
+		{ _id: 'add-livechat-department-agents', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-current-chats',   roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-real-time-monitoring', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-triggers',        roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-customfields',    roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-installation',    roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-appearance',      roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-webhooks',        roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-facebook',        roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-officeHours',     roles: ['livechat-manager', 'admin'] },
 	];
 
 	for (const permission of permissions) {
@@ -94,15 +118,17 @@ Meteor.startup(function() {
 	}
 
 	const defaultRoles = [
-		{ name: 'admin',     scope: 'Users',         description: 'Admin' },
-		{ name: 'moderator', scope: 'Subscriptions', description: 'Moderator' },
-		{ name: 'leader',    scope: 'Subscriptions', description: 'Leader' },
-		{ name: 'owner',     scope: 'Subscriptions', description: 'Owner' },
-		{ name: 'user',      scope: 'Users',         description: '' },
-		{ name: 'bot',       scope: 'Users',         description: '' },
-		{ name: 'app',       scope: 'Users',         description: '' },
-		{ name: 'guest',     scope: 'Users',         description: '' },
-		{ name: 'anonymous', scope: 'Users',         description: '' },
+		{ name: 'admin',            scope: 'Users',         description: 'Admin' },
+		{ name: 'moderator',        scope: 'Subscriptions', description: 'Moderator' },
+		{ name: 'leader',           scope: 'Subscriptions', description: 'Leader' },
+		{ name: 'owner',            scope: 'Subscriptions', description: 'Owner' },
+		{ name: 'user',             scope: 'Users',         description: '' },
+		{ name: 'bot',              scope: 'Users',         description: '' },
+		{ name: 'app',              scope: 'Users',         description: '' },
+		{ name: 'guest',            scope: 'Users',         description: '' },
+		{ name: 'anonymous',        scope: 'Users',         description: '' },
+		{ name: 'livechat-agent',   scope: 'Users',         description: 'Livechat Agent' },
+		{ name: 'livechat-manager', scope: 'Users',         description: 'Livechat Manager' },
 	];
 
 	for (const role of defaultRoles) {
