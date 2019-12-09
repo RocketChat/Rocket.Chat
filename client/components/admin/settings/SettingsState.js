@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 import toastr from 'toastr';
@@ -310,10 +311,11 @@ export const useSection = (groupId, sectionName) => {
 	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => value !== packageValue));
 	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.length === b.length && a.join() === b.join());
 
-	const { stateRef, hydrate } = useContext(SettingsContext);
+	const { stateRef, hydrate, isDisabled } = useContext(SettingsContext);
 
 	const reset = useEventCallback((filterSettings, { current: state }, hydrate) => {
-		const settings = filterSettings(state.settings);
+		const settings = filterSettings(state.settings)
+			.filter((setting) => Tracker.nonreactive(() => !isDisabled(setting))); // Ignore disabled settings
 		const persistedSettings = filterSettings(state.persistedSettings);
 
 		const changes = settings.map((setting) => {
