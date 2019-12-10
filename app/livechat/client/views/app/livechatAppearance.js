@@ -1,4 +1,3 @@
-/* eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
@@ -311,12 +310,4 @@ Template.livechatAppearance.events({
 			toastr.success(t('Settings_updated'));
 		});
 	},
-});
-
-Template.livechatAppearance.onRendered(function() {
-	Meteor.setTimeout(() => {
-		$('.colorpicker-input').each((index, el) => {
-			new jscolor(el);
-		});
-	}, 500);
 });
