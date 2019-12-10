@@ -18,7 +18,7 @@ class Invites extends Base {
 
 	// REMOVE
 	removeById(_id) {
-		return this.remove(_id);
+		return this.remove({ _id });
 	}
 }
 
