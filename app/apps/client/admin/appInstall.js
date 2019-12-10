@@ -11,6 +11,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
 import { APIClient } from '../../../utils';
@@ -19,7 +20,7 @@ import { SideNav } from '../../../ui-utils/client';
 function handleInstallError(apiError) {
 	if (!apiError.xhr || !apiError.xhr.responseJSON) { return; }
 
-	const { status, messages, error } = apiError.xhr.responseJSON;
+	const { status, messages, error, payload = null } = apiError.xhr.responseJSON;
 
 	let message;
 
@@ -31,7 +32,10 @@ function handleInstallError(apiError) {
 			message = 'There has been compiler errors. App cannot be installed';
 			break;
 		case 'app_user_error':
-			message = `${ messages.join('') }. App cannot be installed.`;
+			message = messages.join('');
+			if (payload && payload.username) {
+				message = TAPi18n.__('Apps_User_Already_Exists', { username: payload.username });
+			}
 			break;
 		default:
 			if (error) {

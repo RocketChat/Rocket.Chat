@@ -367,6 +367,7 @@
   "Apps_Marketplace_Login_Required_Title": "需要登录市场",
   "Apps_Marketplace_Login_Required_Description": "从 Rocket.Chat 市场购买应用需要在注册您的工作区并登陆。",
   "Apps_Settings": "应用的设置",
+  "Apps_User_Already_Exists": "与待安装App同名的用户 __username__ 已存在，请在安装前重命名或删除该用户。",
   "Apps_WhatIsIt": "应用程序：它们是什么？",
   "Apps_WhatIsIt_paragraph1": "管理后台的新图标！这是什么意思，什么是应用程序？",
   "Apps_WhatIsIt_paragraph2": "首先，在这种情况下的应用程序不涉及移动应用程序。事实上，最好从插件或高级集成角度考虑它们。",

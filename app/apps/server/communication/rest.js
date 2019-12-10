@@ -240,7 +240,11 @@ export class AppsRestApi {
 				}
 
 				if (aff.hasAppUserError()) {
-					return API.v1.failure({ status: 'app_user_error', message: [aff.getAppUserError()] });
+					return API.v1.failure({
+						status: 'app_user_error',
+						messages: [aff.getAppUserError().message],
+						payload: { username: aff.getAppUserError().username },
+					});
 				}
 
 				info.status = aff.getApp().getStatus();
