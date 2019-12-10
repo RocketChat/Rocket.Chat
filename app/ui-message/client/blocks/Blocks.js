@@ -25,6 +25,8 @@ Template.Blocks.onRendered(async function() {
 		}), { data: () => state.get() }),
 		this.firstNode
 	);
+	const event = new Event('rendered');
+	this.firstNode.dispatchEvent(event);
 });
 
 Template.Blocks.onDestroyed(async function() {

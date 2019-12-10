@@ -907,7 +907,11 @@ Template.room.events({
 		}
 	},
 	'load img'(e, template) {
-		return typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined;
+		template.sendToBottomIfNecessaryDebounced();
+	},
+
+	'rendered .js-block-wrapper'(e, i) {
+		i.sendToBottomIfNecessaryDebounced();
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -1190,7 +1194,7 @@ Template.room.onRendered(function() {
 		lazyloadtick();
 	};
 
-	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);
+	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 100);
 
 	template.sendToBottomIfNecessary();
 
