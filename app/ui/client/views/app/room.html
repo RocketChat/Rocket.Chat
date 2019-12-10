@@ -126,15 +126,10 @@
 									{{/if}}
 								{{/if}}
 
-								{{# if useNrr}}
-									{{# with messageContext}}
-										{{#each msg in messagesHistory}}{{> nrr nrrargs 'message' shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
-									{{/with}}
-								{{else}}
-									{{# with messageContext}}
-										{{#each msg in messagesHistory}}{{> message shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
-									{{/with}}
-								{{/if}}
+								{{# with messageContext}}
+									{{#each msg in messagesHistory}}{{> message shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+								{{/with}}
+
 								{{#if hasMoreNext}}
 									<li class="load-more">
 										{{#if isLoading}}
