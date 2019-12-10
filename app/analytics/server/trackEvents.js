@@ -12,13 +12,14 @@ Meteor.startup(() => {
 });
 
 // Send Google Analytics
-function trackEvent(category, action, label, uid) {
+function trackEvent(category, action, label, cid) {
     if (googleId) {
         HTTP.call('POST', gaEndpoint,
             { params: {
                 v: '1',
+                ds: 'server',
                 tid: googleId,
-                uid: uid,
+                cid: cid,
                 t: 'event',
                 ec: category,
                 ea: action,
