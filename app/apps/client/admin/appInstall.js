@@ -27,11 +27,12 @@ function handleInstallError(apiError) {
 		case 'storage_error':
 			message = messages.join('');
 			break;
-
 		case 'compiler_error':
 			message = 'There has been compiler errors. App cannot be installed';
 			break;
-
+		case 'app_user_error':
+			message = `${ messages.join('') }. App cannot be installed.`;
+			break;
 		default:
 			if (error) {
 				message = error;

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { saveUser, setUserAvatar } from '../../../lib/server/functions';
+import { saveUser, setUserAvatar, checkUsernameAvailability } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
 import { Roles } from '../../../models';
 
@@ -25,8 +25,16 @@ export class AppUserBridge {
 		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
 
 		let newUserId;
+		let isSuccess = true;
 		Roles.findUsersInRole('admin').forEach((adminUser, index) => {
 			if (index > 0) {
+				return;
+			}
+
+			if (!checkUsernameAvailability(user.username)) {
+				console.error(`A user with the App's username ${ user.username } has already existed, please rename or delete that user before installing the App.`);
+				isSuccess = false;
+
 				return;
 			}
 
@@ -38,7 +46,7 @@ export class AppUserBridge {
 			}
 		});
 
-		return newUserId;
+		return isSuccess && newUserId;
 	}
 
 	async getActiveUserCount() {

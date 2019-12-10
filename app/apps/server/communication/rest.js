@@ -239,6 +239,10 @@ export class AppsRestApi {
 					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
 				}
 
+				if (aff.hasAppUserError()) {
+					return API.v1.failure({ status: 'app_user_error', message: [aff.getAppUserError()] });
+				}
+
 				info.status = aff.getApp().getStatus();
 
 				return API.v1.success({
