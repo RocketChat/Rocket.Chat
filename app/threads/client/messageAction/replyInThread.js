@@ -1,21 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { chatMessages } from '../../../ui/client';
 import { addMessageToList } from '../../../ui-utils/client/lib/MessageAction';
-
-Template.room.events({
-	'click [data-message-action="reply-in-thread"]'(event, template) {
-		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
-		if ((button != null ? button.action : undefined) != null) {
-			button.action.call(this, event, template);
-		}
-	},
-});
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {

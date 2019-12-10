@@ -408,11 +408,7 @@ Template.message.helpers({
 			context = 'message';
 		}
 
-		return MessageAction.getButtons(this, context, messageGroup).map((item) => ({
-			icon: item.icon,
-			label: t(item.label),
-			id: item.id,
-		}));
+		return MessageAction.getButtons(this, context, messageGroup);
 	},
 	isSnippet() {
 		const { msg } = this;
