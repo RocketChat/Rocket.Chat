@@ -13,7 +13,7 @@ const dayFormat = ['h:mm A', 'H:mm'];
 
 Meteor.startup(() => Tracker.autorun(() => {
 	clockMode = getUserPreference(Meteor.userId(), 'clockMode', false);
-	sameDay = dayFormat[clockMode - 1] || 'h:mm A';
+	sameDay = dayFormat[clockMode - 1] || settings.get('Message_TimeFormat');
 	lastDay = t('yesterday');
 }));
 
@@ -45,7 +45,7 @@ const sameElse = function(now) {
 
 export const timeAgo = (date) => moment(date).calendar(null, {
 	lastDay: `[${ lastDay }]`,
-	sameDay: settings.get('Message_TimeFormat'),
+	sameDay,
 	lastWeek: 'dddd',
 	sameElse,
 });
