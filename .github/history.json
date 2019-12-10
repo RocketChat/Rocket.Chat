@@ -37204,6 +37204,72 @@
           ]
         }
       ]
+    },
+    "2.3.1": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15898",
+          "title": "[FIX] Default value of the Livechat WebhookUrl setting",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15937",
+          "title": "[FIX] Admin menu not showing after renamed integration permissions",
+          "userLogin": "n-se",
+          "milestone": "2.3.1",
+          "contributors": [
+            "n-se"
+          ]
+        },
+        {
+          "pr": "15934",
+          "title": "[FIX] Administration UI issues",
+          "userLogin": "tassoevan",
+          "milestone": "2.3.1",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15915",
+          "title": "[FIX] Livechat permissions being overwrite on server restart",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15897",
+          "title": "[FIX] Livechat triggers not firing",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15895",
+          "title": "[FIX] Auto load image user preference",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.1",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
