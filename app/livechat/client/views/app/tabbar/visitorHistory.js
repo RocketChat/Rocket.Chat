@@ -31,14 +31,14 @@ Template.visitorHistory.helpers({
 Template.visitorHistory.onCreated(function() {
 	const currentData = Template.currentData();
 	this.visitorId = new ReactiveVar();
-	this.isLoading = new ReactiveVar(true);
+	this.isLoading = new ReactiveVar(false);
 	this.history = new ReactiveVar([]);
 	this.offset = new ReactiveVar(0);
 	this.total = new ReactiveVar(0);
 
 	this.autorun(async () => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ currentData.rid }`);
-		if (room) {
+		if (room && room.v) {
 			this.visitorId.set(room.v._id);
 		}
 	});
@@ -46,12 +46,13 @@ Template.visitorHistory.onCreated(function() {
 	this.autorun(async () => {
 		this.isLoading.set(true);
 		const offset = this.offset.get();
-		if (currentData && currentData.rid) {
-			const { history, total } = await APIClient.v1.get(`livechat/visitors.chatHistory/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ ITEMS_COUNT }&offset=${ offset }`);
-			this.isLoading.set(false);
-			this.total.set(total);
-			this.history.set(this.history.get().concat(history));
+		if (!this.visitorId.get() || !currentData || !currentData.rid) {
+			return;
 		}
+		const { history, total } = await APIClient.v1.get(`livechat/visitors.chatHistory/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ ITEMS_COUNT }&offset=${ offset }`);
+		this.isLoading.set(false);
+		this.total.set(total);
+		this.history.set(this.history.get().concat(history));
 	});
 });
 
