@@ -383,7 +383,7 @@
 
 /* input & form styles */
 
-.rc-old input:focus {
+.rc-old :not(.rcx-input-control):focus {
 	outline: none;
 	box-shadow: 0 0 0;
 }
@@ -4196,20 +4196,6 @@ rc-old select,
 		}
 	}
 
-	& a.meteor {
-		position: fixed;
-		right: 30px;
-		bottom: 20px;
-
-		width: 100px;
-		height: 50px;
-
-		text-indent: -9999em;
-
-		background: url(images/meteor.png) no-repeat center center;
-		background-size: 100% auto;
-	}
-
 	& .share {
 		min-height: 40px;
 
@@ -5031,6 +5017,19 @@ rc-old select,
 @media (width <= 500px) {
 	.rc-old .messages-container .message-form > .formatting-tips {
 		display: none;
+	}
+
+	.cms-page {
+		padding: 0;
+
+		&__content {
+			margin: 0;
+			padding: 0 1rem 1rem;
+		}
+
+		& .cms-page-close {
+			margin-top: 10px;
+		}
 	}
 }
 

@@ -89,7 +89,9 @@
 				{{/each}}
 			{{/if}}
 			{{#each msg.attachments}}
-				{{injectIndex . @index}} {{> messageAttachment}}
+				{{injectSettings . ../settings}}
+				{{injectIndex . @index}}
+				{{> messageAttachment}}
 			{{/each}}
 
 			{{#if msg.drid}}

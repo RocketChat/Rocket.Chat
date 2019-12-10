@@ -368,6 +368,9 @@ Template.message.helpers({
 	injectIndex(data, index) {
 		data.index = index;
 	},
+	injectSettings(data, settings) {
+		data.settings = settings;
+	},
 	channelName() {
 		const { subscription } = this;
 		// const subscription = Subscriptions.findOne({ rid: this.rid });
@@ -417,7 +420,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable || _groupable) && !!(tmid && showreply && (!t || t === 'e2e'));
+		return !(groupable === false || _groupable === false) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
