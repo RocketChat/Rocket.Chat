@@ -140,39 +140,13 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_room_count',
 	});
 
-	settings.add('Livechat_agent_leave_action', 'none', {
-		type: 'select',
-		group: 'Livechat',
-		values: [
-			{ key: 'none', i18nLabel: 'None' },
-			{ key: 'forward', i18nLabel: 'Forward' },
-			{ key: 'close', i18nLabel: 'Close' },
-		],
-		i18nLabel: 'How_to_handle_open_sessions_when_agent_goes_offline',
-	});
-
-	settings.add('Livechat_agent_leave_action_timeout', 60, {
-		type: 'int',
-		group: 'Livechat',
-		enableQuery: { _id: 'Livechat_agent_leave_action', value: { $ne: 'none' } },
-		i18nLabel: 'How_long_to_wait_after_agent_goes_offline',
-		i18nDescription: 'Time_in_seconds',
-	});
-
-	settings.add('Livechat_agent_leave_comment', '', {
-		type: 'string',
-		group: 'Livechat',
-		enableQuery: { _id: 'Livechat_agent_leave_action', value: 'close' },
-		i18nLabel: 'Comment_to_leave_on_closing_session',
-	});
-
 	settings.add('Livechat_enabled_when_agent_idle', true, {
 		type: 'boolean',
 		group: 'Livechat',
 		i18nLabel: 'Accept_new_livechats_when_agent_is_idle',
 	});
 
-	settings.add('Livechat_webhookUrl', false, {
+	settings.add('Livechat_webhookUrl', '', {
 		type: 'string',
 		group: 'Livechat',
 		section: 'CRM_Integration',
@@ -474,5 +448,42 @@ Meteor.startup(function() {
 		i18nLabel: 'Data_processing_consent_text',
 		i18nDescription: 'Data_processing_consent_text_description',
 		enableQuery: { _id: 'Livechat_force_accept_data_processing_consent', value: true },
+	});
+
+	settings.add('Livechat_agent_leave_action', 'none', {
+		type: 'select',
+		group: 'Livechat',
+		section: 'Sessions',
+		values: [
+			{ key: 'none', i18nLabel: 'None' },
+			{ key: 'forward', i18nLabel: 'Forward' },
+			{ key: 'close', i18nLabel: 'Close' },
+		],
+		i18nLabel: 'How_to_handle_open_sessions_when_agent_goes_offline',
+	});
+
+	settings.add('Livechat_agent_leave_action_timeout', 60, {
+		type: 'int',
+		group: 'Livechat',
+		section: 'Sessions',
+		enableQuery: { _id: 'Livechat_agent_leave_action', value: { $ne: 'none' } },
+		i18nLabel: 'How_long_to_wait_after_agent_goes_offline',
+		i18nDescription: 'Time_in_seconds',
+	});
+
+	settings.add('Livechat_agent_leave_comment', '', {
+		type: 'string',
+		group: 'Livechat',
+		section: 'Sessions',
+		enableQuery: { _id: 'Livechat_agent_leave_action', value: 'close' },
+		i18nLabel: 'Comment_to_leave_on_closing_session',
+	});
+
+	settings.add('Livechat_visitor_inactivity_timeout', 3600, {
+		type: 'int',
+		group: 'Livechat',
+		section: 'Sessions',
+		i18nLabel: 'How_long_to_wait_to_consider_visitor_abandonment',
+		i18nDescription: 'Time_in_seconds',
 	});
 });

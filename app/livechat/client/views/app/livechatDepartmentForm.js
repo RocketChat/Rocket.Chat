@@ -5,6 +5,7 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 
+import { TabBar, RocketChatTabBar } from '../../../../ui-utils';
 import { t, handleError } from '../../../../utils';
 import { hasPermission } from '../../../../authorization';
 import { getCustomFormTemplate } from './customTemplates/register';
@@ -18,8 +19,8 @@ Template.livechatDepartmentForm.helpers({
 	agents() {
 		return Template.instance().department && !_.isEmpty(Template.instance().department.get()) ? Template.instance().department.get().agents : [];
 	},
-	selectedAgents() {
-		return _.sortBy(Template.instance().selectedAgents.get(), 'username');
+	departmentAgents() {
+		return _.sortBy(Template.instance().departmentAgents.get(), 'username');
 	},
 	showOnRegistration(value) {
 		const department = Template.instance().department.get();
@@ -29,31 +30,54 @@ Template.livechatDepartmentForm.helpers({
 		const department = Template.instance().department.get();
 		return department.showOnOfflineForm === value || (department.showOnOfflineForm === undefined && value === true);
 	},
-	agentAutocompleteSettings() {
-		return {
-			limit: 10,
-			rules: [{
-				collection: 'UserAndRoom',
-				subscription: 'userAutocomplete',
-				field: 'username',
-				template: Template.userSearch,
-				noMatchTemplate: Template.userSearchEmpty,
-				matchAll: true,
-				filter: {
-					exceptions: _.pluck(Template.instance().selectedAgents.get(), 'username'),
-				},
-				selector(match) {
-					return { term: match };
-				},
-				sort: 'username',
-			}],
-		};
+	requestTagBeforeClosingChat() {
+		const department = Template.instance().department.get();
+		return !!(department && department.requestTagBeforeClosingChat);
 	},
 	customFieldsTemplate() {
 		return getCustomFormTemplate('livechatDepartmentForm');
 	},
 	data() {
 		return { id: FlowRouter.getParam('_id') };
+	},
+	exceptionsAgents() {
+		return _.pluck(Template.instance().departmentAgents.get(), 'username');
+	},
+	agentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `@${
+				f.length === 0
+					? text
+					: text.replace(
+						new RegExp(filter.get()),
+						(part) => `<strong>${ part }</strong>`
+					)
+			}`;
+		};
+	},
+	agentConditions() {
+		return { roles: 'livechat-agent' };
+	},
+	onSelectAgents() {
+		return Template.instance().onSelectAgents;
+	},
+	selectedAgents() {
+		return Template.instance().selectedAgents.get();
+	},
+	onClickTagAgents() {
+		return Template.instance().onClickTagAgents;
+	},
+	flexData() {
+		return {
+			tabBar: Template.instance().tabBar,
+			data: Template.instance().tabBarData.get(),
+		};
+	},
+	tabBarVisible() {
+		return Object.values(TabBar.buttons.get())
+			.some((button) => button.groups
+				.some((group) => group.startsWith('livechat-department')));
 	},
 });
 
@@ -73,6 +97,7 @@ Template.livechatDepartmentForm.events({
 			const showOnRegistration = instance.$('input[name=showOnRegistration]:checked').val();
 			const email = instance.$('input[name=email]').val();
 			const showOnOfflineForm = instance.$('input[name=showOnOfflineForm]:checked').val();
+			const requestTagBeforeClosingChat = instance.$('input[name=requestTagBeforeClosingChat]:checked').val();
 
 			if (enabled !== '1' && enabled !== '0') {
 				return toastr.error(t('Please_select_enabled_yes_or_no'));
@@ -92,6 +117,7 @@ Template.livechatDepartmentForm.events({
 				description: description.trim(),
 				showOnRegistration: showOnRegistration === '1',
 				showOnOfflineForm: showOnOfflineForm === '1',
+				requestTagBeforeClosingChat: requestTagBeforeClosingChat === '1',
 				email: email.trim(),
 			};
 		}
@@ -106,7 +132,7 @@ Template.livechatDepartmentForm.events({
 		});
 
 		const departmentAgents = [];
-		instance.selectedAgents.get().forEach((agent) => {
+		instance.departmentAgents.get().forEach((agent) => {
 			agent.count = instance.$(`.count-${ agent.agentId }`).val();
 			agent.order = instance.$(`.order-${ agent.agentId }`).val();
 
@@ -134,33 +160,24 @@ Template.livechatDepartmentForm.events({
 
 	'click .add-agent'(e, instance) {
 		e.preventDefault();
-		const input = e.currentTarget.parentElement.children[0];
-		const username = input.value;
 
-		if (username.trim() === '') {
-			return toastr.error(t('Please_fill_a_username'));
-		}
+		const users = instance.selectedAgents.get();
 
-		input.value = '';
-		const agent = Template.instance().agents.get().find((agent) => agent.username === username);
-		if (!agent) {
-			return toastr.error(t('The_selected_user_is_not_an_agent'));
-		}
+		users.forEach(async (user) => {
+			const { _id, username } = user;
 
-		const agentId = agent._id;
-
-		const selectedAgents = instance.selectedAgents.get();
-		for (const oldAgent of selectedAgents) {
-			if (oldAgent.agentId === agentId) {
+			const departmentAgents = instance.departmentAgents.get();
+			if (departmentAgents.find(({ agentId }) => agentId === _id)) {
 				return toastr.error(t('This_agent_was_already_selected'));
 			}
-		}
 
-		const newAgent = _.clone(agent);
-		newAgent.agentId = agentId;
-		delete newAgent._id;
-		selectedAgents.push(newAgent);
-		instance.selectedAgents.set(selectedAgents);
+			const newAgent = _.clone(user);
+			newAgent.agentId = _id;
+			delete newAgent._id;
+			departmentAgents.push(newAgent);
+			instance.departmentAgents.set(departmentAgents);
+			instance.selectedAgents.set(instance.selectedAgents.get().filter((user) => user.username !== username));
+		});
 	},
 
 	'click button.back'(e/* , instance*/) {
@@ -171,26 +188,32 @@ Template.livechatDepartmentForm.events({
 	'click .remove-agent'(e, instance) {
 		e.preventDefault();
 
-		let selectedAgents = instance.selectedAgents.get();
-		selectedAgents = _.reject(selectedAgents, (agent) => agent._id === this._id);
-		instance.selectedAgents.set(selectedAgents);
+		instance.departmentAgents.set(instance.departmentAgents.get().filter((agent) => agent.agentId !== this.agentId));
 	},
 });
 
 Template.livechatDepartmentForm.onCreated(async function() {
 	this.department = new ReactiveVar({ enabled: true });
+	this.departmentAgents = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
-	this.agents = new ReactiveVar([]);
+	this.tabBar = new RocketChatTabBar();
+	this.tabBar.showGroup(FlowRouter.current().route.name);
+	this.tabBarData = new ReactiveVar();
 
-	const { users } = await APIClient.v1.get('livechat/users/agent');
-	this.agents.set(users);
+	this.onSelectAgents = ({ item: agent }) => {
+		this.selectedAgents.set([agent]);
+	};
+
+	this.onClickTagAgent = ({ username }) => {
+		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
+	};
 
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
 		if (id) {
 			const { department, agents } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
 			this.department.set(department);
-			this.selectedAgents.set(agents);
+			this.departmentAgents.set(agents);
 		}
 	});
 });

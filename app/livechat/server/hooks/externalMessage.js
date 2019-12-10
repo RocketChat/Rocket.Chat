@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SystemLogger } from '../../../logger';
-import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
+import { LivechatExternalMessage } from '../../../models/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 let knowledgeEnabled = false;

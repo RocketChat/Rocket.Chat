@@ -13,7 +13,11 @@
 					<div class="section">
 						<div class="section-content border-component-color">
 
-							<div class="alert">
+							<div class="preferences-page__title">
+								<h1>{{_ "E2E_Encryption_Password_Change" }}</h1>
+							</div>
+
+							<div class="preferences-page__alert">
 								{{{_ "E2E_Encryption_Password_Explanation" }}}
 							</div>
 
@@ -37,6 +41,26 @@
 										<div class="rc-input__description">{{_ 'EncryptionKey_Change_Disabled'}}</div>
 									{{/unless}}
 								{{/with}}
+							</div>
+						</div>
+					</div>
+
+					<div class="section">
+						<div class="section-content border-component-color">
+							<div class="preferences-page__title">
+								<h1>{{_ "Reset_E2E_Key" }}</h1>
+							</div>
+
+							<div class="preferences-page__alert">
+								{{{_ "E2E_Reset_Key_Explanation" }}}
+							</div>
+
+							<div class="rc-input rc-w50 padded">
+								<label class="rc-input__label">
+									<div class="rc-input__wrapper">
+										<button class="rc-button rc-button--secondary" name="reset-e2e-key" type="button" data-button="create" form="encryption">{{_ "Reset_E2E_Key"}}</button>
+									</div>
+								</label>
 							</div>
 						</div>
 					</div>

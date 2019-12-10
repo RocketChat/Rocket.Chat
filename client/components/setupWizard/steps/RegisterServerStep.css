@@ -13,6 +13,10 @@
 .SetupWizard__RegisterServerStep-content {
 	display: flex;
 	flex-direction: column;
+
+	& > .SetupWizard__RegisterServerStep__PrivacyTerms {
+		margin-top: 1rem;
+	}
 }
 
 .SetupWizard__RegisterServerStep-option.SetupWizard__RegisterServerStep-option {
