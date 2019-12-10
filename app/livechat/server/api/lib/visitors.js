@@ -1,5 +1,6 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatVisitors, Messages, LivechatRooms, Subscriptions } from '../../../../models/server/raw';
+import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
+import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
 export async function findVisitorInfo({ userId, visitorId }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
@@ -24,7 +25,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	if (!room) {
 		throw new Error('invalid-room');
 	}
-	const cursor = await Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
+	const cursor = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
@@ -50,12 +51,11 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 	if (!room) {
 		throw new Error('invalid-room');
 	}
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } });
-	if (!subscription) {
-		throw new Error('invalid-room');
+	if (!await canAccessRoomAsync(room, { _id: userId })) {
+		throw new Error('error-not-allowed');
 	}
 
-	const cursor = await LivechatRooms.findByVisitorId(visitorId, {
+	const cursor = LivechatRooms.findByVisitorId(visitorId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
