@@ -418,6 +418,40 @@ export class Users extends Base {
 		});
 	}
 
+	removeExpiredEmailCodesOfUserId(userId) {
+		this.update({ _id: userId }, {
+			$pull: {
+				emailCode: {
+					expire: { $lt: new Date() },
+				},
+			},
+		});
+	}
+
+	removeEmailCodeByUserIdAndCode(userId, code) {
+		this.update({ _id: userId }, {
+			$pull: {
+				emailCode: {
+					code,
+				},
+			},
+		});
+	}
+
+	addEmailCodeByUserId(userId, code, expire) {
+		this.update({ _id: userId }, {
+			$push: {
+				emailCode: {
+					$each: [{
+						code,
+						expire,
+					}],
+					$slice: -5,
+				},
+			},
+		});
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
