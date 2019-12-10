@@ -7,7 +7,7 @@
 	height: auto;
 	max-height: 90%;
 
-	padding: 1.5rem;
+	padding: 1rem;
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -141,21 +141,14 @@
 	&__footer {
 		display: flex;
 
+		padding: 1rem;
+
 		flex: 0 0 auto;
 
-		padding: 16px;
-
-		background: #f7f8fa;
 		justify-content: space-between;
 
 		& > .rc-button {
 			margin: 0;
-		}
-
-		&--empty {
-			padding: 0;
-
-			background: transparent;
 		}
 	}
 }

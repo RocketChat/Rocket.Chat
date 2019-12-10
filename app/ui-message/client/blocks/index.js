@@ -1,4 +1,4 @@
-import './index.css';
+import './styles.css';
 import './Blocks.js';
 import './SectionBlock';
 import './TextBlock.html';

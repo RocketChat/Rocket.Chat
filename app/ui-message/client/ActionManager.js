@@ -72,6 +72,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ viewId = 'lero', trigg
 	if ([MODAL_ACTIONS.OPEN].includes(type)) {
 		const instance = modal.push({
 			template: 'ModalBlock',
+			modifier: 'uikit',
 			data: {
 				triggerId,
 				viewId,

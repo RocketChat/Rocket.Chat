@@ -1,7 +1,18 @@
 import React from 'react';
-import { UiKitMessage as uiKitMessage, kitContext, UiKitModal as uiKitModal } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitMessage as uiKitMessage, kitContext, UiKitModal as uiKitModal, messageParser, modalParser } from '@rocket.chat/fuselage-ui-kit';
 
+import { renderMessageBody } from '../../../ui-utils/client';
 import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
+
+messageParser.text = ({ text, type } = {}) => {
+	if (type !== 'mrkdwn') {
+		return text;
+	}
+
+	return <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
+};
+
+modalParser.text = messageParser.text;
 
 const contextDefault = {
 	action: console.log,

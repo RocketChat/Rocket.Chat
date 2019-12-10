@@ -11,3 +11,8 @@
 .block-kit-debug.debug legend {
 	display: initial;
 }
+
+.rc-modal--uikit {
+	width: 680px;
+	max-width: 100%;
+}
