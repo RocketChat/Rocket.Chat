@@ -1,14 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
-import { t } from '../../../utils';
+import { t, APIClient } from '../../../utils';
 
-function getInviteLink(instance, inviteData) {
-	Meteor.call('findOrCreateInvite', inviteData, function(error, result) {
-		if (error || !result) {
+function getInviteLink(instance, rid, days, maxUses) {
+	APIClient.v1.post('findOrCreateInvite', {
+		rid,
+		days,
+		maxUses,
+	}).then((result) => {
+		if (!result) {
 			toastr.error(t('Failed_to_generate_invite_link'));
 			return;
 		}
@@ -16,6 +19,8 @@ function getInviteLink(instance, inviteData) {
 		instance.inviteData.set(result);
 		instance.url.set(result.url);
 		instance.isEditing.set(false);
+	}).catch(() => {
+		toastr.error(t('Failed_to_generate_invite_link'));
 	});
 }
 
@@ -40,12 +45,14 @@ Template.createInviteLink.helpers({
 		}
 
 		if (data.expires) {
+			const expiration = new Date(data.expires);
+
 			if (data.maxUses) {
 				const usesLeft = data.maxUses - data.uses;
-				return t('Your invite link will expire on {date} or after {usesLeft} uses.').replace('{date}', data.expires.toLocaleDateString()).replace('{usesLeft}', usesLeft);
+				return t('Your invite link will expire on {date} or after {usesLeft} uses.').replace('{date}', expiration.toLocaleDateString()).replace('{usesLeft}', usesLeft);
 			}
 
-			return t('Your invite link will expire on {date}.').replace('{date}', data.expires.toLocaleDateString());
+			return t('Your invite link will expire on {date}.').replace('{date}', expiration.toLocaleDateString());
 		}
 
 		if (data.maxUses) {
@@ -67,14 +74,11 @@ Template.createInviteLink.events({
 	'click .js-confirm-invite'(e, instance) {
 		e.preventDefault();
 
-		const inviteData = {
-			rid: this.rid,
-		};
+		const { rid } = this;
+		const days = parseInt(s.trim($('#expiration_days').val()));
+		const maxUses = parseInt(s.trim($('#max_uses').val()));
 
-		inviteData.days = parseInt(s.trim($('#expiration_days').val()));
-		inviteData.maxUses = parseInt(s.trim($('#max_uses').val()));
-
-		getInviteLink(instance, inviteData);
+		getInviteLink(instance, rid, days, maxUses);
 	},
 });
 
@@ -84,5 +88,5 @@ Template.createInviteLink.onCreated(function() {
 	this.url = new ReactiveVar('');
 	this.inviteData = new ReactiveVar(null);
 
-	getInviteLink(this, { rid: this.data.rid });
+	getInviteLink(this, this.data.rid);
 });

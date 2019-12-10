@@ -1,9 +1,7 @@
-import s from 'underscore.string';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Meteor } from 'meteor/meteor';
 
-import { t } from '../../../utils';
+import { t, APIClient } from '../../../utils';
 
 Template.adminInvites.helpers({
 	isReady() {
@@ -63,7 +61,7 @@ Template.adminInvites.onCreated(function() {
 	this.autorun(function() {
 		const invites = [];
 
-		Meteor.call('listInvites', (error, result) => {
+		APIClient.v1.get('listInvites').then((result) => {
 			if (!result) {
 				return;
 			}
@@ -71,8 +69,8 @@ Template.adminInvites.onCreated(function() {
 			for (const invite of result) {
 				const newInvite = {
 					_id: invite._id,
-					createdAt: invite.createdAt,
-					expires: invite.expires,
+					createdAt: new Date(invite.createdAt),
+					expires: invite.expires ? new Date(invite.expires) : '',
 					hash: invite.hash,
 					days: invite.days,
 					maxUses: invite.maxUses,
@@ -85,6 +83,8 @@ Template.adminInvites.onCreated(function() {
 
 			instance.invites.set(invites);
 			instance.ready.set(true);
+		}).catch(() => {
+
 		});
 	});
 });
