@@ -44,11 +44,12 @@ Template.visitorHistory.onCreated(function() {
 	});
 
 	this.autorun(async () => {
-		this.isLoading.set(true);
-		const offset = this.offset.get();
 		if (!this.visitorId.get() || !currentData || !currentData.rid) {
 			return;
 		}
+
+		const offset = this.offset.get();
+		this.isLoading.set(true);
 		const { history, total } = await APIClient.v1.get(`livechat/visitors.chatHistory/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ ITEMS_COUNT }&offset=${ offset }`);
 		this.isLoading.set(false);
 		this.total.set(total);
