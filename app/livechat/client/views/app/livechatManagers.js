@@ -172,7 +172,7 @@ Template.livechatManagers.onCreated(function() {
 		this.state.set('loading', true);
 		let url = `livechat/users/manager?count=${ MANAGERS_COUNT }&offset=${ offset }`;
 		if (filter) {
-			url += `&text=${ filter }`;
+			url += `&text=${ encodeURIComponent(filter) }`;
 		}
 		const { users, total } = await APIClient.v1.get(url);
 		this.total.set(total);
