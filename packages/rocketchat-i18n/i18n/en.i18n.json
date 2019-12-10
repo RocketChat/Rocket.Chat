@@ -432,7 +432,7 @@
   "AutoLinker_StripPrefix_Description": "Short display. e.g. https://rocket.chat => rocket.chat",
   "AutoLinker_StripPrefix_Scheme": "AutoLinker Strip prefix for Scheme (http:// and https://)",
   "AutoLinker_StripPrefix_www": "AutoLinker Strip prefix for 'www.'",
-  "AutoLinker_TrailingSlash": "AutoLinker Trailing slash",
+  "AutoLinker_StripTrailingSlash": "AutoLinker Strip trailing slash",
   "AutoLinker_Truncate": "AutoLinker Truncate longer URLs",
   "AutoLinker_Truncate_Length": "AutoLinker Truncate length",
   "AutoLinker_Truncate_Location": "AutoLinker Truncate location ( end, middle or smart)",

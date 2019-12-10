@@ -430,7 +430,7 @@
   "AutoLinker_StripPrefix_Description": "例: https://rocket.chat => rocket.chat",
   "AutoLinker_StripPrefix_Scheme": "http:// や https:// の部分を省略する",
   "AutoLinker_StripPrefix_www": "'www.' の部分を省略する",
-  "AutoLinker_TrailingSlash": "URLの最後にあるスラッシュを省略する",
+  "AutoLinker_StripTrailingSlash": "URLの最後にあるスラッシュを省略する",
   "AutoLinker_Truncate": "長すぎるURLを縮めて表示する",
   "AutoLinker_Truncate_Length": "縮めたURLを表示する文字数",
   "AutoLinker_Truncate_Location": "URLのうち縮める部分（最後 or 真ん中 or スマート）",
