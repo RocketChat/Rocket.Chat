@@ -445,7 +445,16 @@ workflows:
   version: 2
   build-and-test:
     jobs:
+      - hold-all:
+        type: approval
+        filters:
+          branches:
+            only: develop
+          tags:
+            only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - build:
+        requires:
+          - hold-all
           filters:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
@@ -464,20 +473,11 @@ workflows:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-4-0: *test-mongo
-      - hold-deploy:
-          type: approval
+      - deploy:
           requires:
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
-          filters:
-            branches:
-              only: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - deploy:
-          requires:
-            - hold-deploy
           filters:
             branches:
               only: develop
