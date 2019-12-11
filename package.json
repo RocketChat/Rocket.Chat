@@ -6,44 +6,6 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"contributors": [
-		{
-			"name": "Aaron Ogle",
-			"email": "aaron.ogle@rocket.chat"
-		},
-		{
-			"name": "Bradley Hilton",
-			"email": "bradley.hilton@rocket.chat"
-		},
-		{
-			"name": "Diego Sampaio",
-			"email": "diego.sampaio@rocket.chat"
-		},
-		{
-			"name": "Gabriel Engel",
-			"email": "gabriel.engel@rocket.chat"
-		},
-		{
-			"name": "Guilherme Gazzo",
-			"email": "guilherme.gazzo@rocket.chat"
-		},
-		{
-			"name": "Karl Prieb",
-			"email": "karl.priebk@rocket.chat"
-		},
-		{
-			"name": "Marcelo Schmidt",
-			"email": "marcelo.schmidt@rocket.chat"
-		},
-		{
-			"name": "Rodrigo Nascimento",
-			"email": "rodrigo.nascimento@rocket.chat"
-		},
-		{
-			"name": "Sing Li",
-			"email": "sing.li@rocket.chat"
-		}
-	],
 	"mocha": {
 		"tests": [
 			"app/**/*.tests.js"
