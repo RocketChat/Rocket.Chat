@@ -100,30 +100,6 @@ Template.membersList.helpers({
 		return (() => roomTypes.roomTypes[roomData.t].canAddUser(roomData))();
 	},
 
-	autocompleteSettingsAddUser() {
-		return {
-			limit: 10,
-			// inputDelay: 300
-			rules: [
-				{
-					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
-					field: 'username',
-					template: Template.userSearch,
-					noMatchTemplate: Template.userSearchEmpty,
-					matchAll: true,
-					filter: {
-						exceptions: [Meteor.user().username],
-					},
-					selector(match) {
-						return { term: match };
-					},
-					sort: 'username',
-				},
-			],
-		};
-	},
-
 	showUserInfo() {
 		const webrtc = WebRTC.getInstanceByRoomId(this.rid);
 		let videoActive = undefined;

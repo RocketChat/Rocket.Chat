@@ -3,12 +3,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 
 import { settings } from '../../../settings';
 import { t } from '../../../utils';
+import { AutoComplete } from '../../../meteor-autocomplete/client';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -57,6 +57,7 @@ Template.inviteUsers.helpers({
 		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
+		console.log(Template.instance().ac.filteredList());
 		return Template.instance().ac.filteredList();
 	},
 	config() {
@@ -148,7 +149,7 @@ Template.inviteUsers.onCreated(function() {
 			{
 				// @TODO maybe change this 'collection' and/or template
 				collection: 'UserAndRoom',
-				subscription: 'userAutocomplete',
+				endpoint: 'users.autoComplete',
 				field: 'username',
 				matchAll: true,
 				filter,

@@ -6,6 +6,7 @@ import _ from 'underscore';
 import { getCaretCoordinates } from 'meteor/dandv:caret-position';
 
 import AutoCompleteRecords from './collection';
+import { APIClient } from '../../utils/client';
 
 const isServerSearch = function(rule) {
 	return _.isString(rule.collection);
@@ -108,7 +109,7 @@ export default class AutoComplete {
 		// Autosubscribe to the record set published by the server based on the filter
 		// This will tear down server subscriptions when they are no longer being used.
 		this.sub = null;
-		this.comp = Deps.autorun(() => {
+		this.comp = Deps.autorun(async () => {
 			const rule = this.matchedRule();
 			const filter = this.getFilter();
 			if (this.sub) {
@@ -124,14 +125,15 @@ export default class AutoComplete {
 				this.setLoaded(true);
 				return;
 			}
-			const [selector, options] = getFindParams(rule, filter, this.limit);
+			const [selector] = getFindParams(rule, filter, this.limit);
 
 			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
 			this.setLoaded(false);
-			const subName = rule.subscription || 'autocomplete-recordset';
-			this.sub = Meteor.subscribe(subName, selector, options, rule.collection, () => {
-				this.setLoaded(true);
-			});
+			const endpointName = rule.endpoint || 'users.autoComplete';
+			const { users } = await APIClient.v1.get(`${ endpointName }?selector=${ JSON.stringify(selector) }`);
+			AutoCompleteRecords.remove({});
+			users.forEach((user) => AutoCompleteRecords.insert(user));
+			this.setLoaded(true);
 		});
 	}
 

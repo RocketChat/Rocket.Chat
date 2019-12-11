@@ -118,7 +118,7 @@ Template.permissionsRole.helpers({
 			rules: [
 				{
 					collection: 'CachedUserList',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autoComplete',
 					field: 'username',
 					template: Template.userSearch,
 					noMatchTemplate: Template.userSearchEmpty,
