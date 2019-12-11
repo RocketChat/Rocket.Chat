@@ -1,4 +1,31 @@
 
+# 2.3.1
+`2019-12-09  ·  6 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.15.1`
+- NPM: `6.9.0`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Default value of the Livechat WebhookUrl setting ([#15898](https://github.com/RocketChat/Rocket.Chat/pull/15898))
+- Admin menu not showing after renamed integration permissions ([#15937](https://github.com/RocketChat/Rocket.Chat/pull/15937) by [@n-se](https://github.com/n-se))
+- Administration UI issues ([#15934](https://github.com/RocketChat/Rocket.Chat/pull/15934))
+- Livechat permissions being overwrite on server restart ([#15915](https://github.com/RocketChat/Rocket.Chat/pull/15915))
+- Livechat triggers not firing ([#15897](https://github.com/RocketChat/Rocket.Chat/pull/15897))
+- Auto load image user preference ([#15895](https://github.com/RocketChat/Rocket.Chat/pull/15895))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@n-se](https://github.com/n-se)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 2.3.0
 `2019-11-27  ·  13 🎉  ·  17 🚀  ·  26 🐛  ·  19 🔍  ·  25 👩‍💻👨‍💻`
 
