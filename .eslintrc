@@ -5,8 +5,7 @@
 		"__meteor_bootstrap__"        : false,
 		"__meteor_runtime_config__"   : false,
 		"Assets"                      : false,
-		"chrome"                      : false,
-		"jscolor"                     : false
+		"chrome"                      : false
   },
   "plugins": ["react"],
 	"rules": {
