@@ -353,6 +353,7 @@ jobs:
           export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
         fi;
 
+        export CIRCLE_TAG=${CIRCLE_TAG:=}
         export CIRCLE_SHA1=$GITHUB_SHA
         export CIRCLE_BUILD_NUM=$GITHUB_SHA
 
