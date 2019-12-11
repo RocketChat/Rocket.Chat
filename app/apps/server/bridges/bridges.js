@@ -15,6 +15,7 @@ import { AppSettingBridge } from './settings';
 import { AppUserBridge } from './users';
 import { AppLivechatBridge } from './livechat';
 import { AppUploadBridge } from './uploads';
+import { UiInteractionBridge } from './uiInteration';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {
@@ -35,6 +36,7 @@ export class RealAppBridges extends AppBridges {
 		this._userBridge = new AppUserBridge(orch);
 		this._livechatBridge = new AppLivechatBridge(orch);
 		this._uploadBridge = new AppUploadBridge(orch);
+		this._uiInteractionBridge = new UiInteractionBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -95,5 +97,9 @@ export class RealAppBridges extends AppBridges {
 
 	getUploadBridge() {
 		return this._uploadBridge;
+	}
+
+	getUiInteractionBridge() {
+		return this._uiInteractionBridge;
 	}
 }

@@ -122,7 +122,7 @@ export const triggerCancel = async ({ viewId, ...options }) => {
 
 Meteor.startup(() =>
 	CachedCollectionManager.onLogin(() =>
-		Notifications.onUser('interactions', ({ type, ...data }) => {
+		Notifications.onUser('uiInteraction', ({ type, ...data }) => {
 			handlePayloadUserInteraction(type, data);
 		})
 	)
