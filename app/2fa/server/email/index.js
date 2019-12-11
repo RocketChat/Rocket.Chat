@@ -28,6 +28,11 @@ export function send2FAEmail({ address, random }) {
 }
 
 export function validate(user, codeFromEmail) {
+	if (typeof codeFromEmail === 'string') {
+		// Remove non digits
+		codeFromEmail = codeFromEmail.replace(/([^\d])/g, '');
+	}
+
 	Users.removeExpiredEmailCodesOfUserId(user._id);
 
 	const valid = user.emailCode.find(({ code, expire }) => {
