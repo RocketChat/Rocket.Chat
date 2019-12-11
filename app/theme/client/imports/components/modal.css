@@ -141,9 +141,9 @@
 	&__footer {
 		display: flex;
 
-		padding: 1rem;
-
 		flex: 0 0 auto;
+
+		padding: 1rem;
 
 		justify-content: space-between;
 

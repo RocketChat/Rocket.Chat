@@ -129,7 +129,6 @@ export class AppBlockitBridge {
 			}
 
 			// TODO: validate payloads per type
-
 		});
 	}
 }
