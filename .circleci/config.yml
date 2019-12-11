@@ -453,8 +453,8 @@ workflows:
           tags:
             only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - build:
-        requires:
-          - hold-all
+          requires:
+            - hold-all
           filters:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
