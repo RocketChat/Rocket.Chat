@@ -366,7 +366,7 @@ jobs:
         aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
         bash .circleci/update-releases.sh
-        bash .circleci/snap.sh
+        # bash .circleci/snap.sh
         bash .circleci/redhat-registry.sh
 
   image-build:
