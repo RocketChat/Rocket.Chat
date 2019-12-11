@@ -464,11 +464,20 @@ workflows:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-4-0: *test-mongo
-      - deploy:
+      - hold-deploy:
+          type: approval
           requires:
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
+          filters:
+            branches:
+              only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - deploy:
+          requires:
+            - hold-deploy
           filters:
             branches:
               only: develop
