@@ -330,7 +330,7 @@ export class APIClass extends Restivus {
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](e.message, e.error);
+						result = API.v1[apiMethod](e.message, e.error, process.env.NODE_ENV === 'development' ? e.stack : undefined);
 					}
 
 					result = result || API.v1.success();
