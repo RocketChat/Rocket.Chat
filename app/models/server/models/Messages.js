@@ -120,7 +120,7 @@ export class Messages extends Base {
 
 		this.emit('dispatchEvent', event);
 
-		return RoomEvents.toV1(event);
+		return RoomEvents.toV1(event)._id;
 	}
 
 	update(...args) {
