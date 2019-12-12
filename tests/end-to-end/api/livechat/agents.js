@@ -95,11 +95,11 @@ describe('LIVECHAT - Agents', function() {
 		});
 	});
 
-	describe('livechat/agent/:agentId/departments', () => {
+	describe('livechat/agents/:agentId/departments', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-l-room', [])
 				.then(() => {
-					request.get(api(`livechat/agent/${ agent._id }/departments`))
+					request.get(api(`livechat/agents/${ agent._id }/departments`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -113,16 +113,13 @@ describe('LIVECHAT - Agents', function() {
 		it('should return an empty array of departments when the agentId is invalid', (done) => {
 			updatePermission('view-l-room', ['admin'])
 				.then(() => {
-					request.get(api('livechat/agent/invalid-id/departments'))
+					request.get(api('livechat/agents/invalid-id/departments'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('departments').and.to.be.an('array');
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('total');
-							expect(res.body).to.have.property('count');
 						})
 						.end(done);
 				});
@@ -130,16 +127,13 @@ describe('LIVECHAT - Agents', function() {
 		it('should return an array of departments when the agentId is valid', (done) => {
 			updatePermission('view-l-room', ['admin'])
 				.then(() => {
-					request.get(api(`livechat/agent/${ agent._id }/departments`))
+					request.get(api(`livechat/agents/${ agent._id }/departments`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('departments').and.to.be.an('array');
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('total');
-							expect(res.body).to.have.property('count');
 							res.body.departments.forEach((department) => {
 								expect(department.agentId).to.be.equal(agent._id);
 							});
