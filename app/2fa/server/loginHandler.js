@@ -1,9 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-import { verifyOrSend } from './email';
-import { verify } from './totp';
+import { checkCodeForUser } from './code';
 
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
@@ -14,13 +12,11 @@ Accounts.registerLoginHandler('totp', function(options) {
 });
 
 callbacks.add('onValidateLogin', (login) => {
-	if (login.type !== 'password' || !settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+	if (login.type !== 'password') {
 		return;
 	}
 
 	const { totp } = login.methodArguments[0];
 
-	verify(login.user, totp && totp.code);
-
-	verifyOrSend(login.user, totp && totp.code);
+	checkCodeForUser(login.user, totp && totp.code);
 }, callbacks.priority.MEDIUM, '2fa');

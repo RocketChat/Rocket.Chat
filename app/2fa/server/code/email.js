@@ -8,10 +8,19 @@ import * as Mailer from '../../../mailer';
 import { Users } from '../../../models/server';
 
 export function getUserVerifiedEmails(user) {
+	if (!Array.isArray(user.emails)) {
+		return [];
+	}
 	return user.emails.filter(({ verified }) => verified);
 }
 
+export function isEnabled(user) {
+	// TODO: Check settings
+	return getUserVerifiedEmails(user).length > 0;
+}
+
 export function send2FAEmail({ address, random }) {
+	console.log('send2FAEmail', address, random);
 	Mailer.send({
 		to: address,
 		from: settings.get('From_Email'),
@@ -27,7 +36,15 @@ export function send2FAEmail({ address, random }) {
 	});
 }
 
-export function validate(user, codeFromEmail) {
+export function verify(user, codeFromEmail) {
+	if (!isEnabled(user)) {
+		return false;
+	}
+
+	if (!Array.isArray(user.emailCode)) {
+		return false;
+	}
+
 	if (typeof codeFromEmail === 'string') {
 		// Remove non digits
 		codeFromEmail = codeFromEmail.replace(/([^\d])/g, '');
@@ -48,12 +65,12 @@ export function validate(user, codeFromEmail) {
 		return false;
 	});
 
-	if (!valid) {
-		throw new Meteor.Error('totp-invalid', 'TOTP Invalid');
-	}
+	return valid;
 }
 
-export function generateCodeAndSend(user, emails) {
+export function processInvalidCode(user) {
+	console.log('processInvalidCode');
+	const emails = getUserVerifiedEmails(user);
 	const random = Random._randomString(6, '0123456789');
 
 	const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
@@ -66,24 +83,5 @@ export function generateCodeAndSend(user, emails) {
 
 	for (const { address } of emails) {
 		send2FAEmail({ address, random });
-	}
-
-	throw new Meteor.Error('totp-required', 'TOTP Required');
-}
-
-export function verifyOrSend(user, code) {
-	if (Array.isArray(user.emails)) {
-		const verifiedEmails = getUserVerifiedEmails(user);
-		if (verifiedEmails.length === 0) {
-			return;
-		}
-
-		if (!code) {
-			generateCodeAndSend(user, verifiedEmails);
-		}
-
-		if (Array.isArray(user.emailCode)) {
-			validate(user, code);
-		}
 	}
 }
