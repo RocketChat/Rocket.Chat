@@ -74,14 +74,15 @@ Template.visitorEdit.onCreated(async function() {
 
 	this.autorun(async () => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+		const { servedBy: { _id: agentId } = {} } = room || {};
+		const { departments } = await APIClient.v1.get(`livechat/agents/${ agentId }/departments`);
+		const agentDepartments = departments.map((dept) => dept.departmentId);
+		this.agentDepartments.set(agentDepartments);
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 	});
 
 	const uid = Meteor.userId();
-	const { departments } = await APIClient.v1.get(`livechat/agents/${ uid }/departments`);
-	const agentDepartments = departments.map((dept) => dept.departmentId);
-	this.agentDepartments.set(agentDepartments);
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {
 		this.availableTags.set(tagsList);
 		const agentDepartments = this.agentDepartments.get();
