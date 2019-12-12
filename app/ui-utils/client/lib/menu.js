@@ -118,11 +118,11 @@ export const menu = new class extends EventEmitter {
 		if (diff === undefined) {
 			diff = this.isRtl ? -1 * sideNavW : sideNavW;
 		}
-		this.sidebarWrap.css('width', '100%');
+
 		this.wrapper.css('overflow', 'hidden');
-		this.sidebarWrap.css('background-color', '#000');
-		this.sidebarWrap.css('opacity', map(Math.abs(diff) / width, 0, 1, -0.1, 0.8).toFixed(2));
-		this.isRtl ? this.sidebar.css('transform', `translate3d(${ (sideNavW + diff).toFixed(3) }px, 0 , 0)`) : this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0)`);
+
+		// WIDECHAT translate main content
+		this.isRtl ? this.mainContent.css('transform', `translate3d(${ (diff).toFixed(3) }px, 0 , 0)`) : this.mainContent.css('transform', `translate3d(${ (diff).toFixed(3) }px, 0 , 0)`);
 	}
 
 	touchend() {
