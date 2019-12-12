@@ -130,9 +130,9 @@ export default class AutoComplete {
 			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
 			this.setLoaded(false);
 			const endpointName = rule.endpoint || 'users.autoComplete';
-			const { users } = await APIClient.v1.get(`${ endpointName }?selector=${ JSON.stringify(selector) }`);
+			const { items } = await APIClient.v1.get(`${ endpointName }?selector=${ JSON.stringify(selector) }`);
 			AutoCompleteRecords.remove({});
-			users.forEach((user) => AutoCompleteRecords.insert(user));
+			items.forEach((item) => AutoCompleteRecords.insert(item));
 			this.setLoaded(true);
 		});
 	}

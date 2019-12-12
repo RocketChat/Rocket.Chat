@@ -864,4 +864,45 @@ describe('[Rooms]', function() {
 				.end(done);
 		});
 	});
+
+	describe('[/rooms.channelAndPrivateAutocomplete]', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+			updatePermission('view-other-user-channels', []).then(() => {
+				request.get(api('rooms.channelAndPrivateAutocomplete?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-authorized');
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			updatePermission('view-other-user-channels', ['admin']).then(() => {
+				request.get(api('rooms.channelAndPrivateAutocomplete'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					})
+					.end(done);
+			});
+		});
+		it('should return the rooms to fill auto complete', (done) => {
+			request.get(api('rooms.channelAndPrivateAutocomplete?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 });

@@ -22,6 +22,6 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
 
 	return {
-		users,
+		items: users,
 	};
 }

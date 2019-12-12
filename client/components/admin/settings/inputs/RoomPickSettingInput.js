@@ -46,7 +46,7 @@ export function RoomPickSettingInput({
 					{
 						// @TODO maybe change this 'collection' and/or template
 						collection: 'CachedChannelList',
-						subscription: 'channelAndPrivateAutocomplete',
+						endpoint: 'rooms.channelAndPrivateAutocomplete',
 						field: 'name',
 						template: Template.roomSearch,
 						noMatchTemplate: Template.roomSearchEmpty,
