@@ -315,7 +315,7 @@ export async function sendAllNotifications(message, room) {
 
 	// If the current user can add users, on public channels, if a mentioned user is not member of the channel yet, they will first join the channel and then be notified based on his preferences.
 	// If a user does not have the permissions to add users to current channel, then the mentioned user would neither be added, nor notified. The mention would only be a reference to the user.
-	if (room.t === 'c' && hasPermission(sender._id, "add-user-to-joined-room", room._id)) {
+	if (room.t === 'c' && hasPermission(sender._id, 'add-user-to-joined-room', room._id)) {
 		// get subscriptions from users already in room (to not send them a notification)
 		const mentions = [...mentionIdsWithoutGroups];
 		Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, { fields: { 'u._id': 1 } }).forEach((subscription) => {
