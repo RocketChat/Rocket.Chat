@@ -151,6 +151,7 @@ export async function getExtraConfigInfo(room) {
 
 export function findRooms({
 	agents,
+	roomName,
 	departmentId,
 	open,
 	createdAt,
@@ -162,6 +163,9 @@ export function findRooms({
 	const query = { t: 'l' };
 	if (agents) {
 		query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
+	}
+	if (roomName) {
+		query.fname = new RegExp(roomName, 'i');
 	}
 	if (departmentId) {
 		query.departmentId = departmentId;
@@ -191,7 +195,7 @@ export function findRooms({
 		query.tags = { $in: tags };
 	}
 	if (customFields) {
-		query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: customFields[key] }));
+		query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
 	}
 	return {
 		rooms: LivechatRooms.find(query, {

@@ -12,7 +12,7 @@ describe('LIVECHAT - rooms', function() {
 			createAgent()
 				.then(() => createVisitor())
 				.then((visitor) => createLivechatRoom(visitor.token))
-				.then(done);
+				.then(() => done());
 		});
 	});
 
@@ -41,6 +41,16 @@ describe('LIVECHAT - rooms', function() {
 					})
 					.end(done);
 			});
+		});
+		it('should return an error when the "roomName" query parameter is not valid', (done) => {
+			request.get(api('livechat/rooms?roomName[]=invalid'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
 		});
 		it('should return an error when the "departmentId" query parameter is not valid', (done) => {
 			request.get(api('livechat/rooms?departmentId[]=marcos'))
@@ -119,7 +129,7 @@ describe('LIVECHAT - rooms', function() {
 		it('should return an array of rooms when the query params is all valid', (done) => {
 			request.get(api(`livechat/rooms?agents[]=teste&departamentId=123&open=true&createdAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}
 			&closedAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}&tags[]=rocket
-			&customFields={"docId": "031041"}&count=3&offset=1&sort={"_updatedAt": 1}&fields={"msgs": 1}`))
+			&customFields={"docId": "031041"}&count=3&offset=1&sort={"_updatedAt": 1}&fields={"msgs": 1}&roomName=test`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

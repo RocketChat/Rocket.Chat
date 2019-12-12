@@ -174,11 +174,11 @@
 							{{/requiresPermission}}
 						</tr>
 					{{/each}}
-					{{#unless isReady}}
+					{{#if isLoading}}
 						<tr class="table-no-click">
 							<td colspan="5" class="table-loading-td">{{> loading}}</td>
 						</tr>
-					{{/unless}}
+					{{/if}}
 				</tbody>
 			{{/table}}
 		</div>
