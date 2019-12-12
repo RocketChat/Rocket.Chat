@@ -8,13 +8,7 @@
 			<div class="sidebar__toolbar">
 				{{#each toolbarButtons}}
 					{{#if searchBar}}
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__wrapper">
-									<input type="text" class="rc-input__element rc-input__element--small js-search" id="searchBar">
-								</div>
-							</label>
-						</div>
+						{{> toolbarSearchBar}}
 					{{else}}
 						<button class="sidebar__toolbar-button rc-tooltip rc-tooltip--down js-button" aria-label="{{name}}" aria-haspopup="{{hasPopup}}">
 							{{> icon block="sidebar__toolbar-button-icon" icon=icon }}
@@ -24,7 +18,7 @@
 			</div>
 		{{/with}}
 		{{#if showToolbar}}
-			{{> toolbar }}
+			{{> toolbar header=hideHeader}}
 		{{/if}}
 	</header>
 </template>

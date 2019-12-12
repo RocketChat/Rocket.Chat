@@ -58,18 +58,8 @@ Template.toolbar.helpers({
 	results() {
 		return Template.instance().resultsList.get();
 	},
-	getPlaceholder() {
-		let placeholder = TAPi18n.__('Search');
-
-		if (!Meteor.Device.isDesktop()) {
-			return placeholder;
-		} if (window.navigator.platform.toLowerCase().includes('mac')) {
-			placeholder = `${ placeholder } (\u2318+K)`;
-		} else {
-			placeholder = `${ placeholder } (\u2303+K)`;
-		}
-
-		return placeholder;
+	showHeader() {
+		return this.header;
 	},
 	popupConfig() {
 		const config = {
@@ -84,6 +74,7 @@ Template.toolbar.helpers({
 			blurOnSelectItem: true,
 			isLoading,
 			open: Template.instance().open,
+			parent: this.header ? 1 : 2,
 			getFilter(collection, filter, cb) {
 				filterText = filter;
 
@@ -186,3 +177,19 @@ Template.toolbar.onCreated(function() {
 
 	Tracker.autorun(() => !this.open.get() && toolbarSearch.close());
 });
+
+Template.toolbarSearchBar.helpers({
+	getPlaceholder() {
+		let placeholder = TAPi18n.__('Search');
+
+		if (!Meteor.Device.isDesktop()) {
+			return placeholder;
+		} if (window.navigator.platform.toLowerCase().includes('mac')) {
+			placeholder = `${ placeholder } (\u2318+K)`;
+		} else {
+			placeholder = `${ placeholder } (\u2303+K)`;
+		}
+
+		return placeholder;
+	},
+})
