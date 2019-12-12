@@ -9,3 +9,9 @@ ChatRoom.setReactionsInLastMessage = function(roomId, lastMessage) {
 ChatRoom.unsetReactionsInLastMessage = function(roomId) {
 	return this.update({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
 };
+
+ChatRoom.setLastMessage = function(roomId, lastMessage) {
+	const update = this.update({ _id: roomId }, { $set: { lastMessage } });
+	CachedChatRoom.save();
+	return update;
+};
