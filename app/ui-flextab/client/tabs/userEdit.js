@@ -152,16 +152,17 @@ Template.userEdit.events({
 		e.target.type = 'password';
 	},
 
-	'click #addRole'(e, instance) {
+	'change #roleSelect'(e, instance) {
+		const select = $('#roleSelect');
 		e.stopPropagation();
 		e.preventDefault();
-		if ($('#roleSelect').find(':selected').is(':disabled')) {
+		if (select.find(':selected').is(':disabled')) {
 			return;
 		}
 		const userRoles = [...instance.roles.get()];
-		userRoles.push($('#roleSelect').val());
+		userRoles.push(select.val());
 		instance.roles.set(userRoles);
-		$('#roleSelect').val('placeholder');
+		select.val('placeholder');
 	},
 
 	'submit form'(e, t) {
