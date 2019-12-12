@@ -29,7 +29,16 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
+    - name: Use Node.js 8.16.2
+      uses: actions/setup-node@v1
+      with:
+        node-version: "8.16.2"
+
     - uses: actions/checkout@v1
+
+    - name: check package-lock
+      run: |
+        npx package-lock-check
 
     - name: Cache node modules
       id: cache-nodemodules
@@ -49,11 +58,6 @@ jobs:
       with:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
-
-    - name: Use Node.js 8.16.2
-      uses: actions/setup-node@v1
-      with:
-        node-version: "8.16.2"
 
     - name: Install Meteor
       run: |
@@ -88,24 +92,24 @@ jobs:
       run: |
         meteor npm install
 
+    - run: npm run lint
+
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
         mongoDBVersion: "4.0"
 
-    - run: npm run lint
-
     - run: npm run testunit
 
     # To reduce memory need during actual build, build the packages solely first
-    - name: Build a Meteor cache
-      run: |
-        # to do this we can clear the main files and it build the rest
-        echo "" > server/main.js
-        echo "" > client/main.js
-        sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
-        meteor build --server-only --debug --directory /tmp/build-temp
-        git checkout -- server/main.js client/main.js .meteor/packages
+    # - name: Build a Meteor cache
+    #   run: |
+    #     # to do this we can clear the main files and it build the rest
+    #     echo "" > server/main.js
+    #     echo "" > client/main.js
+    #     sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
+    #     meteor build --server-only --debug --directory /tmp/build-temp
+    #     git checkout -- server/main.js client/main.js .meteor/packages
 
     - name: Reset Meteor
       if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -289,14 +293,14 @@ jobs:
         meteor npm install
 
     # To reduce memory need during actual build, build the packages solely first
-    - name: Build a Meteor cache
-      run: |
-        # to do this we can clear the main files and it build the rest
-        echo "" > server/main.js
-        echo "" > client/main.js
-        sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
-        meteor build --server-only --debug --directory /tmp/build-temp
-        git checkout -- server/main.js client/main.js .meteor/packages
+    # - name: Build a Meteor cache
+    #   run: |
+    #     # to do this we can clear the main files and it build the rest
+    #     echo "" > server/main.js
+    #     echo "" > client/main.js
+    #     sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
+    #     meteor build --server-only --debug --directory /tmp/build-temp
+    #     git checkout -- server/main.js client/main.js .meteor/packages
 
     - name: Build Rocket.Chat
       run: |
