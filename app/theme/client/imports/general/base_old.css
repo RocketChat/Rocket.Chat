@@ -162,6 +162,18 @@
 	border-width: 0 0 1px;
 }
 
+.connection-status .short-alert {
+	display: none;
+	position: absolute;
+	z-index: 1000000;
+	top: 0;
+
+	width: 100%;
+	padding: 2px;
+
+	border-width: 0 0 1px;
+}
+
 .rc-old .alert {
 	margin-bottom: 20px;
 
@@ -5160,6 +5172,12 @@ rc-old select,
 
 	.flex-tab-container.opened {
 		left: 0;
+	}
+	.connection-status .short-alert {
+			display: inline;
+	}
+	.connection-status .alert {
+		display: none;
 	}
 }
 
