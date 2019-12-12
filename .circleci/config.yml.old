@@ -43,7 +43,7 @@ test-save-npm-cache: &test-save-npm-cache
     - ./node_modules
 
 test-docker-image: &test-docker-image
-  circleci/node:8.15-stretch-browsers
+  circleci/node:8.16-stretch-browsers
 
 test-with-oplog: &test-with-oplog
   <<: *defaults
@@ -68,7 +68,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.15-stretch
+      - image: circleci/node:8.16-stretch
       - image: mongo:3.4
 
     steps:
@@ -146,7 +146,7 @@ jobs:
       - run:
           name: Build Rocket.Chat
           environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=3072
+            TOOL_NODE_FLAGS: --max_old_space_size=4096
           command: |
             if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == 'develop' ]]; then
               meteor reset;
@@ -218,7 +218,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.15-stretch
+      - image: circleci/node:8.16-stretch
 
     steps:
       - attach_workspace:
@@ -332,7 +332,7 @@ jobs:
   pr-build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.15-stretch
+      - image: circleci/node:8.16-stretch
 
     steps:
       - checkout
@@ -445,7 +445,16 @@ workflows:
   version: 2
   build-and-test:
     jobs:
+      - hold-all:
+        type: approval
+        filters:
+          branches:
+            only: develop
+          tags:
+            only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - build:
+          requires:
+            - hold-all
           filters:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
@@ -464,20 +473,11 @@ workflows:
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-4-0: *test-mongo
-      - hold-deploy:
-          type: approval
+      - deploy:
           requires:
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
-          filters:
-            branches:
-              only: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - deploy:
-          requires:
-            - hold-deploy
           filters:
             branches:
               only: develop
