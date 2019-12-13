@@ -10,7 +10,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { roomTypes, canDeleteMessage, isMobile } from '../../../utils/client';
+import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { modal } from './modal';
@@ -302,26 +302,6 @@ Meteor.startup(async function() {
 		group: 'menu',
 	});
 
-	if (isMobile()) {
-		MessageAction.addButton({
-			id: 'cancel-message',
-			icon: 'cross',
-			label: 'Cancel',
-			context: ['message', 'message-mobile', 'threads'],
-			color: 'alert',
-			action() {
-				// empty action closes the popover
-			},
-			condition({ subscription }) {
-				if (!subscription) {
-					return false;
-				}
-				return true;
-			},
-			order: 23,
-			group: 'message',
-		});
-	}
 	MessageAction.addButton({
 		id: 'report-message',
 		icon: 'report',
