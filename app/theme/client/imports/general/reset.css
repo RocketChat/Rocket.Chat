@@ -98,6 +98,7 @@ video {
 		border: 0 solid;
 	}
 }
+
 @media (max-width: 400px) {
 	html,
 	body,
