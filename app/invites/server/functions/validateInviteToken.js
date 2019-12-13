@@ -1,4 +1,8 @@
-export const validateInviteToken = (inviteData, room) => {
+import { Meteor } from 'meteor/meteor';
+
+import { Invites, Rooms } from '../../../models';
+
+export const validateInvite = (inviteData, room) => {
 	if (!inviteData) {
 		return false;
 	}
@@ -16,4 +20,15 @@ export const validateInviteToken = (inviteData, room) => {
 	}
 
 	return true;
+};
+
+export const validateInviteToken = (token) => {
+	if (!token) {
+		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'validateInviteToken', field: 'token' });
+	}
+
+	const inviteData = Invites.findOneByHash(token);
+	const room = inviteData && Rooms.findOneById(inviteData.rid, { fields: { _id: 1 } });
+
+	return validateInvite(inviteData, room);
 };

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 import toastr from 'toastr';
 
 import { settings } from '../../../../settings';
@@ -34,6 +35,7 @@ Template.invite.onCreated(function() {
 			return this.inviteIsValid.set(false);
 		}
 
+		Session.set('loginDefaultState', 'register');
 		return this.inviteIsValid.set(result.valid);
 	}).catch(() => {
 		toastr.error(t('Failed_to_validate_invite_token'));

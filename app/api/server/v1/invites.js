@@ -4,7 +4,7 @@ import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
-import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
+import { validateInvite } from '../../../invites/server/functions/validateInviteToken';
 import { Invites, Rooms } from '../../../models';
 
 API.v1.addRoute('listInvites', { authRequired: true }, {
@@ -43,7 +43,7 @@ API.v1.addRoute('validateInviteToken', { authRequired: false }, {
 		const inviteData = Invites.findOneByHash(token);
 		const room = inviteData && Rooms.findOneById(inviteData.rid);
 
-		const result = validateInviteToken(inviteData, room);
+		const result = validateInvite(inviteData, room);
 
 		return API.v1.success({ valid: result });
 	},
