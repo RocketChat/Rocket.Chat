@@ -6,12 +6,20 @@ import { Notifications } from '../../../notifications';
 import { Invites, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 
-function getInviteUrl(invite, roomName) {
+function getInviteUrl(invite) {
 	const { rid, hash } = invite;
 
-	const address = settings.get('Site_Url');
-	const host = address.replace(/https?\:\/\//i, '');
-	const url = `https://go.rocket.chat/${ roomName }?host=${ host }&rid=${ rid }&path=channel/${ roomName }&token=${ hash }`;
+	const useDirectLink = settings.get('Accounts_Registration_InviteUrlType') === 'direct';
+	// Remove the last dash if present
+	const siteUrl = settings.get('Site_Url').replace(/\/$/g, '');
+
+	if (useDirectLink) {
+		return `${ siteUrl }/invite/${ hash }`;
+	}
+
+	// Remove the protocol
+	const host = siteUrl.replace(/https?\:\/\//i, '');
+	const url = `https://go.rocket.chat/?host=${ host }&rid=${ rid }&path=invite/${ hash }`;
 
 	return url;
 }
@@ -47,29 +55,13 @@ export const findOrCreateInvite = (userId, invite) => {
 	}
 
 	// Before anything, let's check if there's an existing invite with the same settings for the same channel and user and that has not yet expired.
-	const query = {
-		rid: invite.rid,
-		userId,
-		days,
-		maxUses,
-	};
-
-	if (days > 0) {
-		query.expires = {
-			$gt: new Date(),
-		};
-	}
-
-	if (maxUses > 0) {
-		query.uses = 0;
-	}
+	const existing = Invites.findOneByUserRoomMaxUsesAndExpiration(invite.rid, userId, maxUses, days);
 
 	// If an existing invite was found, return it's hash instead of creating a new one.
-	const existing = Invites.find(query).fetch();
 	if (existing && existing.length) {
 		return {
 			hash: existing[0].hash,
-			url: getInviteUrl(existing[0], room.fname),
+			url: getInviteUrl(existing[0]),
 			days: existing[0].days,
 			maxUses: existing[0].maxUses,
 			uses: existing[0].uses,
@@ -77,7 +69,7 @@ export const findOrCreateInvite = (userId, invite) => {
 		};
 	}
 
-	const hash = Random.id();
+	const hash = Random.id(6);
 
 	// insert invite
 	const now = new Date();
@@ -103,7 +95,7 @@ export const findOrCreateInvite = (userId, invite) => {
 	Notifications.notifyLogged('updateInvites', { invite: createInvite });
 	return {
 		hash,
-		url: getInviteUrl(createInvite, room.fname),
+		url: getInviteUrl(createInvite),
 		days,
 		maxUses,
 		uses: 0,

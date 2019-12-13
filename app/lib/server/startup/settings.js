@@ -183,6 +183,20 @@ settings.addGroup('Accounts', function() {
 			type: 'string',
 			secret: true,
 		});
+		this.add('Accounts_Registration_InviteUrlType', 'proxy', {
+			type: 'select',
+			public: true,
+			values: [
+				{
+					key: 'direct',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Direct',
+				}, {
+					key: 'proxy',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Proxy',
+				},
+			],
+		});
+
 		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
 			type: 'string',
 			public: true,

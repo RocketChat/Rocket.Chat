@@ -49,18 +49,18 @@ Template.createInviteLink.helpers({
 
 			if (data.maxUses) {
 				const usesLeft = data.maxUses - data.uses;
-				return t('Your invite link will expire on {date} or after {usesLeft} uses.').replace('{date}', expiration.toLocaleDateString()).replace('{usesLeft}', usesLeft);
+				return t('Your_invite_link_will_expire_on_{date}_or_after_{usesLeft}_uses').replace('{date}', expiration.toLocaleDateString()).replace('{usesLeft}', usesLeft);
 			}
 
-			return t('Your invite link will expire on {date}.').replace('{date}', expiration.toLocaleDateString());
+			return t('Your_invite_link_will_expire_on_{date}').replace('{date}', expiration.toLocaleDateString());
 		}
 
 		if (data.maxUses) {
 			const usesLeft = data.maxUses - data.uses;
-			return t('Your invite link will expire after {usesLeft} uses.').replace('{usesLeft}', usesLeft);
+			return t('Your_invite_link_will_expire_after_{usesLeft}_uses').replace('{usesLeft}', usesLeft);
 		}
 
-		return t('Your invite link will never expire.');
+		return t('Your_invite_link_will_never_expire');
 	},
 
 });

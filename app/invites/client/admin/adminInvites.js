@@ -3,28 +3,25 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { t, APIClient } from '../../../utils';
 
+import './adminInvites.html';
+
 Template.adminInvites.helpers({
 	isReady() {
-		if (Template.instance().ready != null) {
-			return Template.instance().ready.get();
-		}
-		return undefined;
+		return Template.instance().ready.get();
 	},
 	invites() {
 		return Template.instance().invites.get();
 	},
 	isLoading() {
-		if (Template.instance().ready != null) {
-			if (!Template.instance().ready.get()) {
-				return 'btn-loading';
-			}
+		if (!Template.instance().ready.get()) {
+			return 'btn-loading';
 		}
 	},
 	daysToExpire() {
 		const { expires, days, createdAt } = this;
 
 		if (days > 0) {
-			if (expires < new Date()) {
+			if (expires < Date.now()) {
 				return t('Expired');
 			}
 
@@ -58,33 +55,31 @@ Template.adminInvites.onCreated(function() {
 	this.invites = new ReactiveVar([]);
 	this.ready = new ReactiveVar(false);
 
-	this.autorun(function() {
-		const invites = [];
+	const invites = [];
 
-		APIClient.v1.get('listInvites').then((result) => {
-			if (!result) {
-				return;
-			}
+	APIClient.v1.get('listInvites').then((result) => {
+		if (!result) {
+			return;
+		}
 
-			for (const invite of result) {
-				const newInvite = {
-					_id: invite._id,
-					createdAt: new Date(invite.createdAt),
-					expires: invite.expires ? new Date(invite.expires) : '',
-					hash: invite.hash,
-					days: invite.days,
-					maxUses: invite.maxUses,
-					rid: invite.rid,
-					userId: invite.userId,
-					uses: invite.uses,
-				};
-				invites.push(newInvite);
-			}
+		for (const invite of result) {
+			const newInvite = {
+				_id: invite._id,
+				createdAt: new Date(invite.createdAt),
+				expires: invite.expires ? new Date(invite.expires) : '',
+				hash: invite.hash,
+				days: invite.days,
+				maxUses: invite.maxUses,
+				rid: invite.rid,
+				userId: invite.userId,
+				uses: invite.uses,
+			};
+			invites.push(newInvite);
+		}
 
-			instance.invites.set(invites);
-			instance.ready.set(true);
-		}).catch(() => {
+		instance.invites.set(invites);
+		instance.ready.set(true);
+	}).catch(() => {
 
-		});
 	});
 });
