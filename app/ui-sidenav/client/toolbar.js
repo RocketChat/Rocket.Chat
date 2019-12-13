@@ -192,4 +192,4 @@ Template.toolbarSearchBar.helpers({
 
 		return placeholder;
 	},
-})
+});

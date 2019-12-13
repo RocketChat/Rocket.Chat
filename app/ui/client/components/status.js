@@ -19,10 +19,10 @@ const clearRetryInterval = function() {
 	retryHandle = null;
 };
 
-const reconnectToServer = function () {
-    if (Meteor.status().status === 'waiting') {
+const reconnectToServer = function() {
+	if (Meteor.status().status === 'waiting') {
 		nextRetry.set(new Date((new Date()).getTime() + 5000));
-		intervalId = intervalId || Meteor.setInterval( function () {
+		intervalId = intervalId || Meteor.setInterval(function() {
 			nextRetry.set(new Date((new Date()).getTime() + 5000));
 			Meteor.reconnect();
 		}, 5000);
@@ -30,7 +30,7 @@ const reconnectToServer = function () {
 		Meteor.clearInterval(intervalId);
 		intervalId = null;
 	}
-}
+};
 
 const trackStatus = function() {
 	if (Meteor.status().status === 'waiting') {
