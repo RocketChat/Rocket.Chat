@@ -66,9 +66,7 @@ Template.status.helpers({
 	},
 
 	shortMessage() {
-		if (Meteor.status().status !== 'waiting') {
-			return TAPi18n.__('meteor_short_status', { context: Meteor.status().status });
-		}
+		return TAPi18n.__('meteor_short_status', { context: Meteor.status().status });
 	},
 
 	extraMessage() {
@@ -85,6 +83,10 @@ Template.status.helpers({
 
 	showReconnect() {
 		return _.contains(['waiting', 'offline'], Meteor.status().status);
+	},
+
+	showShortReconnect() {
+		return _.contains(['offline'], Meteor.status().status);
 	},
 
 	reconnectLabel() {
