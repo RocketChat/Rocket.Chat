@@ -29,6 +29,12 @@ Template.sidebarItem.helpers({
 	lastMessageTs() {
 		return this.lastMessage && Template.instance().lastMessageTs.get();
 	},
+	lastMessageDelivered() {
+		return this.lastMessage && !this.lastMessage.temp;
+	},
+	lastMessageSentByUser() {
+		return this.lastMessage && this.lastMessage.u && (this.lastMessage.u._id === Meteor.userId());
+	},
 	mySelf() {
 		return this.t === 'd' && this.name === Template.instance().user.username;
 	},
@@ -86,7 +92,7 @@ Template.sidebarItem.onCreated(function() {
 			}
 		}
 
-		if (!currentData.lastMessage._id) {
+		if (currentData.lastMessage && !currentData.lastMessage._id) {
 			this.renderedMessage = currentData.lastMessage.msg;
 			return;
 		}
