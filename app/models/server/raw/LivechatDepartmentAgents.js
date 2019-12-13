@@ -11,4 +11,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw {
 		}
 		return this.find(query, options);
 	}
+
+	findByAgentId(agentId) {
+		return this.find({ agentId });
+	}
 }

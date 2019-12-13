@@ -1,12 +1,17 @@
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { LivechatInquiry } from './LivechatInquiry';
 import { ChatRoom } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
 import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
+
+let LivechatInquiry;
+if (Meteor.isClient) {
+	({ LivechatInquiry } = require('../client/collections/LivechatInquiry'));
+}
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {

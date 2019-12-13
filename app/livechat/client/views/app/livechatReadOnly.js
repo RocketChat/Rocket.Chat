@@ -4,9 +4,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../../models';
-import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import { call } from '../../../../ui-utils/client';
 import './livechatReadOnly.html';
+import { APIClient } from '../../../../utils/client';
 
 Template.livechatReadOnly.helpers({
 	inquiryOpen() {
@@ -48,16 +48,10 @@ Template.livechatReadOnly.onCreated(function() {
 			this.routingConfig.set(config);
 		}
 	});
-
-	this.autorun(() => {
-		const inquiry = LivechatInquiry.findOne({ status: 'queued', rid: this.rid });
+	this.autorun(async () => {
+		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${ this.rid }`);
 		this.inquiry.set(inquiry);
-
-		if (inquiry) {
-			this.subscribe('livechat:inquiry', inquiry._id);
-		}
 	});
-
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().rid }, { fields: { open: 1 } }));
 	});

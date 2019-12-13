@@ -9,8 +9,9 @@ import { KonchatNotification } from '../../../../ui';
 import { settings } from '../../../../settings';
 import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
-import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import './livechat.html';
+import { APIClient } from '../../../../utils/client';
 
 Template.livechat.helpers({
 	isActive() {
@@ -112,7 +113,7 @@ Template.livechat.events({
 	},
 });
 
-Template.livechat.onCreated(function() {
+Template.livechat.onCreated(async function() {
 	this.statusLivechat = new ReactiveVar();
 	this.routingConfig = new ReactiveVar({});
 
@@ -130,6 +131,16 @@ Template.livechat.onCreated(function() {
 			this.statusLivechat.set();
 		}
 	});
+	const { inquiries } = await APIClient.v1.get('livechat/inquiries.listWithRestrictions');
+	(inquiries || []).forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, inquiry));
 
-	this.subscribe('livechat:inquiry');
+	const livechatInquiryStreamer = new Meteor.Streamer('livechat-inquiry');
+	const events = {
+		changed: (inquiry) => {
+			delete inquiry.type;
+			LivechatInquiry.upsert({ _id: inquiry._id }, inquiry);
+		},
+		removed: (inquiry) => LivechatInquiry.remove({ rid: inquiry.rid }),
+	};
+	livechatInquiryStreamer.on('livechat-inquiry', (inquiry) => events[inquiry.type](inquiry));
 });

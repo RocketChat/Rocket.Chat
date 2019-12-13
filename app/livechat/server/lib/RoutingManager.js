@@ -9,8 +9,8 @@ import { createLivechatSubscription,
 	removeAgentFromSubscription,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Users } from '../../../models/server';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
+import { livechatInquiryStreamer } from './stream/inquiry-streamer';
 
 export const RoutingManager = {
 	methodName: null,
@@ -103,6 +103,10 @@ export const RoutingManager = {
 
 		LivechatInquiry.queueInquiry(_id);
 		this.getMethod().delegateAgent(null, inquiry);
+		livechatInquiryStreamer.emit('livechat-inquiry', {
+			type: 'changed',
+			...LivechatInquiry.findOneById(inquiry._id),
+		});
 		return true;
 	},
 
@@ -137,6 +141,10 @@ export const RoutingManager = {
 		const inq = this.assignAgent(inquiry, agent);
 
 		callbacks.run('livechat.afterTakeInquiry', inq);
+		livechatInquiryStreamer.emit('livechat-inquiry', {
+			type: 'removed',
+			rid,
+		});
 
 		return LivechatRooms.findOneById(rid);
 	},
