@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { saveUser, setUserAvatar, checkUsernameAvailability } from '../../../lib/server/functions';
-import { Users } from '../../../models/server';
-import { Roles } from '../../../models';
+import { setUserAvatar, checkUsernameAvailability } from '../../../lib/server/functions';
+import { Users } from '../../../models/server/raw';
 
 export class AppUserBridge {
 	constructor(orch) {
@@ -21,30 +20,24 @@ export class AppUserBridge {
 		return this.orch.getConverters().get('users').convertByUsername(username);
 	}
 
-	async create(user, appId, { avatarUrl }) {
+	async create(user, appId, { avatarUrl, sendWelcomeEmail, joinDefaultChannels }) {
 		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
 
 		let newUserId;
 		let isSuccess = true;
-		Roles.findUsersInRole('admin').forEach((adminUser, index) => {
-			if (index > 0) {
-				return;
-			}
 
-			if (!checkUsernameAvailability(user.username)) {
-				console.error(`A user with the App's username ${ user.username } has already existed, please rename or delete that user before installing the App.`);
-				isSuccess = false;
 
-				return;
-			}
+		if (!checkUsernameAvailability(user.username)) {
+			console.error(`A user with the App's username ${ user.username } has already existed, please rename or delete that user before installing the App.`);
+			isSuccess = false;
 
-			newUserId = saveUser(adminUser._id, user);
+			return;
+		}
 
-			if (avatarUrl) {
-				user._id = newUserId;
-				Meteor.runAsUser(newUserId, () => setUserAvatar(user, avatarUrl));
-			}
-		});
+		if (avatarUrl) {
+			user._id = newUserId;
+			Meteor.runAsUser(newUserId, () => setUserAvatar(user, avatarUrl));
+		}
 
 		return isSuccess && newUserId;
 	}
