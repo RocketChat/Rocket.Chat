@@ -150,11 +150,56 @@
 	}
 }
 
-@media (width <= 400px) {
+@media (width <= 600px) {
 	.sidebar__toolbar {
 		& .rc-input > .rc-input__label > .rc-input__wrapper > #searchBar {
 			border-color: #81868d;
 			border-radius: 15px;
+		}
+		& .rc-input {
+			margin: 0 0.25rem;
+	
+			&__wrapper {
+				padding: 0;
+	
+				color: var(--rc-color-primary-light);
+			}
+	
+			&__element {
+				color: var(--color-white);
+				border-color: var(--rc-color-primary-dark);
+				background-color: var(--rc-color-primary-darkest);
+	
+				&::placeholder {
+					color: var(--rc-color-primary-light);
+				}
+	
+				&:focus + .rc-input__icon--right {
+					display: flex;
+				}
+			}
+	
+			&__icon {
+				left: 0.5rem;
+				fill: var(--rc-color-primary-light);
+	
+				&--right {
+					right: 0.5rem;
+					left: auto;
+	
+					display: none;
+				}
+	
+				& + .rc-input__element {
+					padding: 0.5rem 1.5rem 0.5rem 2.25rem;
+				}
+	
+				&-svg--plus {
+					transform: rotate(45deg);
+	
+					font-size: 1rem;
+				}
+			}
 		}
 	}
 }
