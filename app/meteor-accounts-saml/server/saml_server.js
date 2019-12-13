@@ -55,12 +55,11 @@ Meteor.methods({
 			console.log(`Logout request from ${ JSON.stringify(providerConfig) }`);
 		}
 		// This query should respect upcoming array of SAML logins
-		const user = Meteor.users.findOne({
-			_id: Meteor.userId(),
-			'services.saml.provider': provider,
-		}, {
-			'services.saml': 1,
-		});
+		const user = Users.findOneByIdAndSAMLProvider(Meteor.userId(), provider);
+		if (!user) {
+			return;
+		}
+
 		let { nameID } = user.services.saml;
 		const sessionIndex = user.services.saml.idpSession;
 		nameID = sessionIndex;
@@ -91,7 +90,6 @@ Meteor.methods({
 		if (Accounts.saml.settings.debug) {
 			console.log(`SAML Logout Request ${ result }`);
 		}
-
 
 		return result;
 	},
