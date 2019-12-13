@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 
 import { callbacks } from '../../callbacks';
-import { checkCodeForUser } from './code';
+import { checkCodeForUser } from './code/index.ts';
 
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
