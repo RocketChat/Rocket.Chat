@@ -132,7 +132,7 @@ Template.agentInfo.events({
 						showConfirmButton: false,
 					});
 				});
-			}
+			},
 		);
 	},
 	'click .edit-agent'(e, instance) {
