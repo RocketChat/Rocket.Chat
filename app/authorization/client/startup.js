@@ -21,15 +21,12 @@ Meteor.startup(() => {
 			return hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']);
 		},
 	});
-
-	rolesStreamer.on('roles', (role) => {
-		const events = {
-			changed: () => {
-				delete role.type;
-				Roles.upsert({ _id: role.name }, role);
-			},
-			removed: () => Roles.remove({ _id: role.name }),
-		};
-		events[role.type]();
-	});
+	const events = {
+		changed: (role) => {
+			delete role.type;
+			Roles.upsert({ _id: role.name }, role);
+		},
+		removed: (role) => Roles.remove({ _id: role.name }),
+	};
+	rolesStreamer.on('roles', (role) => events[role.type](role));
 });
