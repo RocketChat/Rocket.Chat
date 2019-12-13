@@ -11,7 +11,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
+import { t, roomTypes, getUserPreference, handleError, isMobile } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
@@ -114,7 +114,7 @@ const mountPopover = (e, i, outerContext) => {
 			modifier: item.color,
 		}));
 
-		menuItems = menuItems.concat(messageItems);
+		menuItems = messageItems.concat(menuItems);
 	}
 
 	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
@@ -665,6 +665,10 @@ Template.room.events({
 			}
 
 			window.open(e.target.href);
+		}
+
+		if (isMobile()) {
+			mountPopover(e, t, this);
 		}
 	},
 
