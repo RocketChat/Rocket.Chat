@@ -122,14 +122,14 @@ function triggerOfflineMsgs(messages) {
 const retainMessages = (rid, messages) => {
 	const roomMsgs = messages.filter((msg) => rid === msg.rid);
 	const limit = parseInt(getConfig('roomListLimit')) || 50;
-	let retain = sortBy(roomMsgs.filter((msg) => !msg.temp), 'ts').reverse().slice(0,limit);
-	retain.push(...messages.filter((msg) => {rid === msg.rid && msg.temp}));
+	const retain = sortBy(roomMsgs.filter((msg) => !msg.temp), 'ts').reverse().slice(0, limit);
+	retain.push(...messages.filter((msg) => rid === msg.rid && msg.temp));
 	return retain;
-}
+};
 
-function clearOldMessages({records: messages, ...value}) {
-	const rids = [...new Set( messages.map(msg => msg.rid)) ];
-	let retain = [];
+function clearOldMessages({ records: messages, ...value }) {
+	const rids = [...new Set(messages.map((msg) => msg.rid))];
+	const retain = [];
 	rids.forEach((rid) => {
 		retain.push(...retainMessages(rid, messages));
 	});
