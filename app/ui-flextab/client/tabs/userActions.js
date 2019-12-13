@@ -104,7 +104,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			icon: 'message',
 			name: t('Conversation'),
 			action: prevent(getUser, ({ username }) =>
-				Meteor.call('createDirectMessage', username, success((result) => result.rid && FlowRouter.go('direct', { username }, FlowRouter.current().queryParams)))
+				Meteor.call('createDirectMessage', username, success((result) => result.rid && FlowRouter.go('direct', { username }, FlowRouter.current().queryParams))),
 			),
 			condition() {
 				return canDirectMessageTo(this.username);
@@ -376,7 +376,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 								timer: 2000,
 								showConfirmButton: false,
 							});
-						}))
+						})),
 					);
 				}),
 			};

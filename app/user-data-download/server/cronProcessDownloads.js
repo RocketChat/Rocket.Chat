@@ -139,7 +139,7 @@ const hideUserName = function(username, exportOperation) {
 		if (exportOperation.userData && username === exportOperation.userData.username) {
 			exportOperation.userNameTable[username] = username;
 		} else {
-			exportOperation.userNameTable[username] = `User_${ (Object.keys(exportOperation.userNameTable).length + 1) }`;
+			exportOperation.userNameTable[username] = `User_${ Object.keys(exportOperation.userNameTable).length + 1 }`;
 		}
 	}
 

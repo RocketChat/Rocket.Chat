@@ -162,7 +162,7 @@ API.v1.addRoute('spotlight', { authRequired: true }, {
 		const { query } = this.queryParams;
 
 		const result = Meteor.runAsUser(this.userId, () =>
-			Meteor.call('spotlight', query)
+			Meteor.call('spotlight', query),
 		);
 
 		return API.v1.success(result);
