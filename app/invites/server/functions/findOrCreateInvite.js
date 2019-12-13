@@ -24,6 +24,9 @@ function getInviteUrl(invite) {
 	return url;
 }
 
+const possibleDays = [0, 1, 7, 15, 30];
+const possibleUses = [0, 1, 5, 10, 25, 50, 100];
+
 export const findOrCreateInvite = (userId, invite) => {
 	if (!userId || !invite) {
 		return false;
@@ -37,14 +40,12 @@ export const findOrCreateInvite = (userId, invite) => {
 		throw new Meteor.Error('error-the-field-is-required', 'The field rid is required', { method: 'findOrCreateInvite', field: 'rid' });
 	}
 
-	const room = Rooms.findOneById(invite.rid);
+	const room = Rooms.findOneById(invite.rid, { fields: { _id: 1 } });
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'The rid field is invalid', { method: 'findOrCreateInvite', field: 'rid' });
 	}
 
 	let { days, maxUses } = invite;
-	const possibleDays = [0, 1, 7, 15, 30];
-	const possibleUses = [0, 1, 5, 10, 25, 50, 100];
 
 	if (!possibleDays.includes(days)) {
 		days = 1;

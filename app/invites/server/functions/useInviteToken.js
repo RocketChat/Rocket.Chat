@@ -10,7 +10,7 @@ export const useInviteToken = (userId, token) => {
 	}
 
 	const inviteData = Invites.findOneByHash(token);
-	const room = inviteData && Rooms.findOneById(inviteData.rid);
+	const room = inviteData && Rooms.findOneById(inviteData.rid, { fields: { _id: 1, fname: 1, t: 1 } });
 
 	if (!validateInviteToken(inviteData, room)) {
 		throw new Meteor.Error('error-invalid-or-expired-token', 'The invite token is invalid or expired.', { method: 'useInviteToken', field: 'token' });
