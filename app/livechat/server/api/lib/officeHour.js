@@ -2,7 +2,7 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { LivechatOfficeHour } from '../../../../models/server/raw';
 
 export async function findLivechatOfficeHours({ userId }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!await hasPermissionAsync(userId, 'view-livechat-officeHours')) {
 		throw new Error('error-not-authorized');
 	}
 
