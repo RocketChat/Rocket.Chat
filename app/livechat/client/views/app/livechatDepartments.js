@@ -3,7 +3,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import s from 'underscore.string';
 import _ from 'underscore';
 
 import { modal } from '../../../../ui-utils';
@@ -13,7 +12,7 @@ import { APIClient } from '../../../../utils/client';
 
 Template.livechatDepartments.helpers({
 	departments() {
-		return Template.instance().getDepartmentsWithCriteria();
+		return Template.instance().departments.get();
 	},
 	isLoading() {
 		return Template.instance().state.get('loading');
@@ -38,7 +37,7 @@ Template.livechatDepartments.helpers({
 const DEBOUNCE_TIME_FOR_SEARCH_DEPARTMENTS_IN_MS = 300;
 
 Template.livechatDepartments.events({
-	'click .remove-department'(e/* , instance*/) {
+	'click .remove-department'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -52,10 +51,11 @@ Template.livechatDepartments.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeDepartment', this._id, function(error/* , result*/) {
+			Meteor.call('livechat:removeDepartment', this._id, (error/* , result*/) => {
 				if (error) {
 					return handleError(error);
 				}
+				instance.departments.set(instance.departments.curValue.filter((department) => department._id !== this._id));
 				modal.open({
 					title: t('Removed'),
 					text: t('Department_removed'),
@@ -97,17 +97,15 @@ Template.livechatDepartments.onCreated(function() {
 
 	this.autorun(async function() {
 		const limit = instance.limit.get();
-		const { departments } = await APIClient.v1.get(`livechat/department?count=${ limit }`);
+		const filter = instance.filter.get();
+		let baseUrl = `livechat/department?count=${ limit }`;
+
+		if (filter) {
+			baseUrl += `&text=${ encodeURIComponent(filter) }`;
+		}
+
+		const { departments } = await APIClient.v1.get(baseUrl);
 		instance.departments.set(departments);
 		instance.ready.set(true);
 	});
-	this.getDepartmentsWithCriteria = function() {
-		let filter;
-
-		if (instance.filter && instance.filter.get()) {
-			filter = s.trim(instance.filter.get());
-		}
-		const regex = new RegExp(s.escapeRegExp(filter), 'i');
-		return instance.departments.get().filter((department) => department.name.match(regex));
-	};
 });

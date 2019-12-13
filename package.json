@@ -1,49 +1,11 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "2.2.0-develop",
+	"version": "3.0.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"contributors": [
-		{
-			"name": "Aaron Ogle",
-			"email": "aaron.ogle@rocket.chat"
-		},
-		{
-			"name": "Bradley Hilton",
-			"email": "bradley.hilton@rocket.chat"
-		},
-		{
-			"name": "Diego Sampaio",
-			"email": "diego.sampaio@rocket.chat"
-		},
-		{
-			"name": "Gabriel Engel",
-			"email": "gabriel.engel@rocket.chat"
-		},
-		{
-			"name": "Guilherme Gazzo",
-			"email": "guilherme.gazzo@rocket.chat"
-		},
-		{
-			"name": "Karl Prieb",
-			"email": "karl.priebk@rocket.chat"
-		},
-		{
-			"name": "Marcelo Schmidt",
-			"email": "marcelo.schmidt@rocket.chat"
-		},
-		{
-			"name": "Rodrigo Nascimento",
-			"email": "rodrigo.nascimento@rocket.chat"
-		},
-		{
-			"name": "Sing Li",
-			"email": "sing.li@rocket.chat"
-		}
-	],
 	"mocha": {
 		"tests": [
 			"app/**/*.tests.js"
@@ -98,11 +60,14 @@
 		"@babel/preset-react": "^7.0.0",
 		"@octokit/rest": "^16.1.0",
 		"@rocket.chat/eslint-config": "^0.3.0",
-		"@rocket.chat/livechat": "^1.1.6",
-		"@storybook/addon-actions": "^5.2.1",
-		"@storybook/addon-links": "^5.2.1",
-		"@storybook/addons": "^5.2.1",
-		"@storybook/react": "^5.2.1",
+		"@rocket.chat/livechat": "^1.3.0",
+		"@settlin/spacebars-loader": "^1.0.7",
+		"@storybook/addon-actions": "^5.2.4",
+		"@storybook/addon-knobs": "^5.2.4",
+		"@storybook/addon-links": "^5.2.4",
+		"@storybook/addon-viewport": "^5.2.4",
+		"@storybook/addons": "^5.2.4",
+		"@storybook/react": "^5.2.4",
 		"acorn": "^6.0.7",
 		"autoprefixer": "^9.6.1",
 		"babel-eslint": "^10.0.1",
@@ -131,6 +96,7 @@
 		"postcss-media-minmax": "^4.0.0",
 		"postcss-nested": "^4.1.0",
 		"postcss-selector-not": "^4.0.0",
+		"postcss-url": "^8.0.0",
 		"progress": "^2.0.2",
 		"proxyquire": "^2.1.0",
 		"simple-git": "^1.107.0",
@@ -142,13 +108,14 @@
 	"dependencies": {
 		"@accounts/mongo": "0.0.12",
 		"@accounts/server": "0.0.18",
-		"@babel/runtime": "^7.2.0",
+		"@babel/runtime": "^7.7.6",
 		"@google-cloud/language": "^2.0.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
-		"@rocket.chat/apps-engine": "^1.6.0",
-		"@rocket.chat/fuselage": "^0.2.0-alpha.4",
-		"@rocket.chat/icons": "^0.2.0-alpha.0",
+		"@rocket.chat/apps-engine": "^1.11.0",
+		"@rocket.chat/fuselage": "^0.2.0-dev.53",
+		"@rocket.chat/fuselage-hooks": "^0.2.0-dev.50",
+		"@rocket.chat/icons": "^0.2.0-dev.49",
 		"@slack/client": "^4.8.0",
 		"adm-zip": "^0.4.13",
 		"archiver": "^3.0.0",
@@ -207,12 +174,12 @@
 		"mailparser": "^2.4.3",
 		"marked": "^0.6.1",
 		"mem": "4.1.0",
-		"meteor-node-stubs": "^0.4.1",
+		"meteor-node-stubs": "^1.0.0",
 		"mime-db": "^1.40.0",
 		"mime-type": "^3.0.7",
 		"mkdirp": "^0.5.1",
 		"moment": "^2.22.2",
-		"moment-timezone": "^0.5.23",
+		"moment-timezone": "^0.5.27",
 		"node-dogstatsd": "^0.0.7",
 		"node-rsa": "^1.0.5",
 		"object-path": "^0.11.4",
@@ -240,7 +207,7 @@
 		"underscore.string": "^3.3.5",
 		"url-polyfill": "^1.1.5",
 		"uuid": "^3.3.2",
-		"webdav": "^2.0.0",
+		"webdav": "^2.10.0",
 		"wolfy87-eventemitter": "^5.2.5",
 		"xml-crypto": "^1.0.2",
 		"xml-encryption": "0.11.2",
@@ -263,7 +230,6 @@
 	"houston": {
 		"updateFiles": [
 			"package.json",
-			".travis/snap.sh",
 			".circleci/snap.sh",
 			".circleci/update-releases.sh",
 			".docker/Dockerfile",

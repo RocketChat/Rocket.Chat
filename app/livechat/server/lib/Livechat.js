@@ -1,5 +1,6 @@
 import dns from 'dns';
 
+import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
@@ -29,13 +30,15 @@ import {
 	LivechatOfficeHour,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { addUserRoles, removeUserFromRoles } from '../../../authorization';
+import { addUserRoles, hasRole, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
+import { normalizeTransferredByData } from './Helper';
+import { Apps } from '../../../apps/server';
 
 export const Livechat = {
 	Analytics,
@@ -48,12 +51,23 @@ export const Livechat = {
 	}),
 
 	online() {
+		if (settings.get('Livechat_accept_chats_with_no_agents')) {
+			return true;
+		}
+
+		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
+			const botAgents = Livechat.getBotAgents();
+			if (botAgents && botAgents.count() > 0) {
+				return true;
+			}
+		}
+
 		const onlineAgents = Livechat.getOnlineAgents();
 		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
 	},
 
 	getNextAgent(department) {
-		return RoutingManager.getMethod().getNextAgent(department);
+		return RoutingManager.getNextAgent(department);
 	},
 
 	getAgents(department) {
@@ -62,12 +76,22 @@ export const Livechat = {
 		}
 		return Users.findAgents();
 	},
+
 	getOnlineAgents(department) {
 		if (department) {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
 		return Users.findOnlineAgents();
 	},
+
+	getBotAgents(department) {
+		if (department) {
+			return LivechatDepartmentAgents.getBotsForDepartment(department);
+		}
+
+		return Users.findBotAgents();
+	},
+
 	getRequiredDepartment(onlineRequired = true) {
 		const departments = LivechatDepartment.findEnabledWithAgents();
 
@@ -277,6 +301,9 @@ export const Livechat = {
 		if (!room || room.t !== 'l' || !room.open) {
 			return false;
 		}
+
+		callbacks.run('livechat.beforeCloseRoom', room);
+
 		const now = new Date();
 
 		const closeData = {
@@ -319,6 +346,7 @@ export const Livechat = {
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
+			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomClosedHandler, room);
 			callbacks.run('livechat.closeRoom', room);
 		});
 
@@ -365,6 +393,7 @@ export const Livechat = {
 			'Livechat_fileupload_enabled',
 			'FileUpload_Enabled',
 			'Livechat_conversation_finished_message',
+			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',
@@ -408,7 +437,10 @@ export const Livechat = {
 	forwardOpenChats(userId) {
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = LivechatVisitors.findOneById(room.v._id);
-			this.transfer(room, guest, { departmentId: guest.department });
+			const user = Users.findOneById(userId);
+			const { _id, username, name } = user;
+			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
+			this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department });
 		});
 	},
 
@@ -439,7 +471,38 @@ export const Livechat = {
 		}
 	},
 
+	saveTransferHistory(room, transferData) {
+		const { departmentId: previousDepartment } = room;
+		const { department: nextDepartment, transferredBy, transferredTo, scope } = transferData;
+
+		check(transferredBy, Match.ObjectIncluding({
+			_id: String,
+			username: String,
+			name: String,
+			type: String,
+		}));
+
+		const { _id, username } = transferredBy;
+
+		const transfer = {
+			transferData: {
+				transferredBy,
+				ts: new Date(),
+				scope: scope || (nextDepartment ? 'department' : 'agent'),
+				...previousDepartment && { previousDepartment },
+				...nextDepartment && { nextDepartment },
+				...transferredTo && { transferredTo },
+			},
+		};
+
+		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', { _id, username }, transfer);
+	},
+
 	async transfer(room, guest, transferData) {
+		if (transferData.departmentId) {
+			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
+		}
+
 		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
@@ -467,8 +530,9 @@ export const Livechat = {
 		if (!inquiry) {
 			return false;
 		}
-
-		return RoutingManager.unassignAgent(inquiry, departmentId);
+		const transferredBy = normalizeTransferredByData(user, room);
+		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
+		return this.saveTransferHistory(room, transferData) && RoutingManager.unassignAgent(inquiry, departmentId);
 	},
 
 	sendRequest(postData, callback, trying = 1) {
@@ -592,9 +656,13 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeAgent' });
 		}
 
-		if (removeUserFromRoles(user._id, 'livechat-agent')) {
-			Users.setOperator(user._id, false);
-			this.setUserStatusLivechat(user._id, 'not-available');
+		const { _id } = user;
+
+		if (removeUserFromRoles(_id, 'livechat-agent')) {
+			Users.setOperator(_id, false);
+			Users.removeLivechatData(_id);
+			this.setUserStatusLivechat(_id, 'not-available');
+			LivechatDepartmentAgents.removeByAgentId(_id);
 			return true;
 		}
 
@@ -701,6 +769,23 @@ export const Livechat = {
 		}
 
 		return LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
+	},
+
+	saveAgentInfo(_id, agentData, agentDepartments) {
+		check(_id, Match.Maybe(String));
+		check(agentData, Object);
+		check(agentDepartments, [String]);
+
+
+		const user = Users.findOneById(_id);
+		if (!user || !hasRole(_id, 'livechat-agent')) {
+			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', { method: 'livechat:saveAgentInfo' });
+		}
+
+		Users.setLivechatData(_id, agentData);
+		LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
+
+		return true;
 	},
 
 	removeDepartment(_id) {
@@ -844,6 +929,7 @@ export const Livechat = {
 	},
 
 	notifyAgentStatusChanged(userId, status) {
+		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
 		if (!settings.get('Livechat_show_agent_info')) {
 			return;
 		}

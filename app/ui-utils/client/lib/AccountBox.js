@@ -58,12 +58,13 @@ export const AccountBox = (function() {
 			}
 		});
 	}
-	function addRoute(newRoute, router) {
+	function addRoute(newRoute, router, wait = () => {}) {
 		if (router == null) {
 			router = FlowRouter;
 		}
+		const container = newRoute.customContainer ? 'pageCustomContainer' : 'pageContainer';
 		const routeConfig = {
-			center: 'pageContainer',
+			center: container,
 			pageTemplate: newRoute.pageTemplate,
 		};
 		if (newRoute.i18nPageTitle != null) {
@@ -74,7 +75,8 @@ export const AccountBox = (function() {
 		}
 		return router.route(newRoute.path, {
 			name: newRoute.name,
-			action() {
+			async action() {
+				await wait();
 				Session.set('openedRoom');
 				return BlazeLayout.render('main', routeConfig);
 			},

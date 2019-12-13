@@ -21,7 +21,6 @@ try {
 
 const files = [
 	'./package.json',
-	'./.travis/snap.sh',
 	'./.circleci/snap.sh',
 	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',

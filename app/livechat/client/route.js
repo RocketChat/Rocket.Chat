@@ -1,12 +1,13 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { AccountBox } from '../../ui-utils';
-import './views/app/livechatDashboard.html';
 
 export const livechatManagerRoutes = FlowRouter.group({
 	prefix: '/livechat-manager',
 	name: 'livechat-manager',
 });
+
+const load = () => import('./views/admin');
 
 AccountBox.addRoute({
 	name: 'livechat-dashboard',
@@ -14,7 +15,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Livechat_Dashboard',
 	pageTemplate: 'livechatDashboard',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-current-chats',
@@ -22,7 +23,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Current_Chats',
 	pageTemplate: 'livechatCurrentChats',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-analytics',
@@ -30,7 +31,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Analytics',
 	pageTemplate: 'livechatAnalytics',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-real-time-monitoring',
@@ -38,7 +39,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Real_Time_Monitoring',
 	pageTemplate: 'livechatRealTimeMonitoring',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-managers',
@@ -46,15 +47,15 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Livechat_managers',
 	pageTemplate: 'livechatManagers',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-agents',
 	path: '/agents',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_agents',
 	pageTemplate: 'livechatAgents',
-}, livechatManagerRoutes);
+	customContainer: true,
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-departments',
@@ -62,7 +63,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Departments',
 	pageTemplate: 'livechatDepartments',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-department-edit',
@@ -70,7 +71,8 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Edit_Department',
 	pageTemplate: 'livechatDepartmentForm',
-}, livechatManagerRoutes);
+	customContainer: true,
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-department-new',
@@ -78,7 +80,8 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'New_Department',
 	pageTemplate: 'livechatDepartmentForm',
-}, livechatManagerRoutes);
+	customContainer: true,
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-triggers',
@@ -86,7 +89,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Triggers',
 	pageTemplate: 'livechatTriggers',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-trigger-edit',
@@ -94,7 +97,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Edit_Trigger',
 	pageTemplate: 'livechatTriggersForm',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-trigger-new',
@@ -102,7 +105,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'New_Trigger',
 	pageTemplate: 'livechatTriggersForm',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-installation',
@@ -110,7 +113,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Installation',
 	pageTemplate: 'livechatInstallation',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-appearance',
@@ -118,7 +121,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Appearance',
 	pageTemplate: 'livechatAppearance',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-officeHours',
@@ -126,7 +129,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Office_Hours',
 	pageTemplate: 'livechatOfficeHours',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-customfields',
@@ -134,7 +137,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Custom_Fields',
 	pageTemplate: 'livechatCustomFields',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-customfield-edit',
@@ -142,7 +145,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Edit_Custom_Field',
 	pageTemplate: 'livechatCustomFieldForm',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-customfield-new',
@@ -150,7 +153,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'New_Custom_Field',
 	pageTemplate: 'livechatCustomFieldForm',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-webhooks',
@@ -158,7 +161,7 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Webhooks',
 	pageTemplate: 'livechatIntegrationWebhook',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-facebook',
@@ -166,11 +169,11 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Facebook Messenger',
 	pageTemplate: 'livechatIntegrationFacebook',
-}, livechatManagerRoutes);
+}, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-queue',
 	path: '/livechat-queue',
 	i18nPageTitle: 'Livechat_Queue',
 	pageTemplate: 'livechatQueue',
-});
+}, null, load);
