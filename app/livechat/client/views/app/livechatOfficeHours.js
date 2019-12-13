@@ -156,6 +156,8 @@ Template.livechatOfficeHours.onCreated(async function() {
 		},
 	};
 	this.officeHours = new ReactiveVar([]);
+	this.enableOfficeHours = new ReactiveVar();
+	this.allowAgentsOnlineOutOfficeHours = new ReactiveVar();
 
 	const { officeHours } = await APIClient.v1.get('livechat/office-hours');
 	this.officeHours.set(officeHours);
@@ -164,9 +166,6 @@ Template.livechatOfficeHours.onCreated(async function() {
 		this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
 		this.dayVars[d.day].open.set(d.open);
 	});
-
-	this.enableOfficeHours = new ReactiveVar(null);
-	this.allowAgentsOnlineOutOfficeHours = new ReactiveVar(null);
 
 	this.autorun(() => {
 		this.enableOfficeHours.set(settings.get('Livechat_enable_office_hours'));
