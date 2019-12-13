@@ -9,13 +9,6 @@
 	{{> messagePopup popupConfig}}
 </template>
 
-<!-- <template name="toolbar">
-		{{#if showHeader}}
-			{{> toolbarSearchBar}}
-		{{/if}}
-		{{> messagePopup popupConfig}}
-</template> -->
-
 <template name="toolbarSearchList">
 		{{> chatRoomItem . icon=icon}}
 </template>
@@ -23,29 +16,6 @@
 <template name="toolbarSearchListEmpty">
 	{{_ "No_results_found"}}
 </template>
-
-<!-- <template name="toolbarSearchBar">
-	<div class="toolbar">
-		<form class="toolbar__wrapper" role="search">
-			<div class="toolbar__search">
-				<div class="rc-input">
-					<label class="rc-input__label">
-						<div class="rc-input__wrapper">
-							<div class="rc-input__icon">
-								{{> icon block="rc-input__icon-svg" icon="magnifier"}}
-							</div>
-							<input type="text" class="rc-input__element rc-input__element--small js-search" placeholder="{{getPlaceholder}}" id="searchBar">
-							<div class="rc-input__icon rc-input__icon--right">
-								{{> icon block="rc-input__icon-svg" icon="plus"}}
-							</div>
-						</div>
-					</label>
-				</div>
-			</div>
-		</form>
-	</div>
-</template> -->
-
 
 <template name="toolbarSearchBar">
 	<div class="toolbar__search">
