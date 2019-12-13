@@ -1,5 +1,6 @@
 <template name="status">
 	{{#unless connected}}
+		{{#if showTopStatus}}
 		<div class="alert alert-warning text-center" role="alert">
 			<strong>
 				<span class="glyphicon glyphicon-warning-sign"></span>
@@ -11,5 +12,16 @@
 				<a href="#" class="alert-link">{{reconnectLabel}}</a>
 			{{/if}}
 		</div>
+		{{else}}
+		<div class="alert-warning text-center short-alert" role="alert">
+			<strong>
+				<span class="glyphicon glyphicon-warning-sign"></span>
+				{{shortMessage}}
+			</strong>
+			{{#if showShortReconnect}}
+				<a href="#" class="alert-link">{{reconnectLabel}}</a>
+			{{/if}}
+		</div>
+		{{/if}}
 	{{/unless}}
 </template>

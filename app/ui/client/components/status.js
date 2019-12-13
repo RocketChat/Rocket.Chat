@@ -5,9 +5,13 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import './status.html';
+import { isMobile } from '../../../utils';
+
 
 const retryTime = new ReactiveVar(0);
+const nextRetry = new ReactiveVar(0);
 let retryHandle = null;
+let intervalId = null;
 
 const clearRetryInterval = function() {
 	clearInterval(retryHandle);
@@ -15,10 +19,23 @@ const clearRetryInterval = function() {
 	retryHandle = null;
 };
 
+const reconnectToServer = function () {
+    if (Meteor.status().status === 'waiting') {
+		nextRetry.set(new Date((new Date()).getTime() + 5000));
+		intervalId = intervalId || Meteor.setInterval( function () {
+			nextRetry.set(new Date((new Date()).getTime() + 5000));
+			Meteor.reconnect();
+		}, 5000);
+	} else {
+		Meteor.clearInterval(intervalId);
+		intervalId = null;
+	}
+}
+
 const trackStatus = function() {
 	if (Meteor.status().status === 'waiting') {
 		retryHandle = retryHandle || setInterval(function() {
-			const timeDiff = Meteor.status().retryTime - (new Date()).getTime();
+			const timeDiff = nextRetry.get() - (new Date()).getTime();
 			const _retryTime = (timeDiff > 0 && Math.round(timeDiff / 1000)) || 0;
 
 			retryTime.set(_retryTime);
@@ -32,6 +49,7 @@ Template.status.onDestroyed(clearRetryInterval);
 
 Template.status.onCreated(function() {
 	this.autorun(trackStatus);
+	this.autorun(reconnectToServer);
 });
 
 Template.status.helpers({
@@ -39,8 +57,16 @@ Template.status.helpers({
 		return Meteor.status().connected;
 	},
 
+	showTopStatus() {
+		return !isMobile();
+	},
+
 	message() {
 		return TAPi18n.__('meteor_status', { context: Meteor.status().status });
+	},
+
+	shortMessage() {
+		return TAPi18n.__('meteor_short_status', { context: Meteor.status().status });
 	},
 
 	extraMessage() {
@@ -49,8 +75,18 @@ Template.status.helpers({
 		}
 	},
 
+	extraShortMessage() {
+		if (Meteor.status().status === 'waiting') {
+			return TAPi18n.__('meteor_short_status_reconnect_in', { count: retryTime.get() });
+		}
+	},
+
 	showReconnect() {
 		return _.contains(['waiting', 'offline'], Meteor.status().status);
+	},
+
+	showShortReconnect() {
+		return _.contains(['offline'], Meteor.status().status);
 	},
 
 	reconnectLabel() {
