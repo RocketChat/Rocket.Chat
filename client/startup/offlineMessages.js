@@ -12,9 +12,8 @@ import { ChatMessage, CachedChatMessage } from '../../app/models/client';
 
 const action = {
 	clean: (msg) => {
-		delete msg.temp;
-		delete msg.tempActions;
-		return msg;
+		const { temp, tempActions, ...originalMsg } = msg;
+		return originalMsg;
 	},
 
 	send: (msg) => {
@@ -137,13 +136,13 @@ function clearOldMessages({ records: messages, ...value }) {
 	value.updatedAt = new Date();
 	localforage.setItem('chatMessage', value).then(() => {
 		CachedChatMessage.loadFromCache();
+		triggerOfflineMsgs(retain);
 	});
 }
 
 Meteor.startup(() => {
 	localforage.getItem('chatMessage').then((value) => {
 		if (value && value.records) {
-			triggerOfflineMsgs(value.records);
 			clearOldMessages(value);
 		}
 	});
