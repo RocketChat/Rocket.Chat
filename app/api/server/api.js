@@ -11,6 +11,7 @@ import { settings } from '../../settings';
 import { metrics } from '../../metrics';
 import { hasPermission, hasAllPermission } from '../../authorization';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
+import { checkCodeForUser } from '../../2fa/server/code';
 
 
 const logger = new Logger('API', {});
@@ -109,7 +110,7 @@ export class APIClass extends Restivus {
 		return result;
 	}
 
-	failure(result, errorType, stack) {
+	failure(result, errorType, stack, error) {
 		if (_.isObject(result)) {
 			result.success = false;
 		} else {
@@ -121,6 +122,14 @@ export class APIClass extends Restivus {
 
 			if (errorType) {
 				result.errorType = errorType;
+			}
+
+			if (error && error.details) {
+				try {
+					result.details = JSON.parse(error.details);
+				} catch (e) {
+					result.details = error.details;
+				}
 			}
 		}
 
@@ -244,6 +253,12 @@ export class APIClass extends Restivus {
 			.map(addRateLimitRuleToEveryRoute);
 	}
 
+	processTwoFactor({ userId, request }) {
+		const code = request.headers['x-2fa-code'];
+
+		checkCodeForUser(userId, code);
+	}
+
 	getFullRouteName(route, method, apiVersion = null) {
 		let prefix = `/${ this.apiPath || '' }`;
 		if (apiVersion) {
@@ -321,6 +336,10 @@ export class APIClass extends Restivus {
 							});
 						}
 
+						if (options.twoFactorRequired) {
+							api.processTwoFactor({ userId: this.userId, request: this.request });
+						}
+
 						result = originalAction.apply(this);
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
@@ -330,7 +349,7 @@ export class APIClass extends Restivus {
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](e.message, e.error);
+						result = API.v1[apiMethod](e.message, e.error, undefined, e);
 					}
 
 					result = result || API.v1.success();

@@ -397,7 +397,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.update', { authRequired: true }, {
+API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		check(this.bodyParams, {
 			userId: String,
