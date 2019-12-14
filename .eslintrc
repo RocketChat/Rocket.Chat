@@ -24,12 +24,21 @@
     "react/jsx-fragments": [
       "error",
       "syntax"
-    ],
+    ]
   },
   "settings": {
-    "react": {
-      "version": "detect",
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".ts",
+          ".tsx"
+        ]
+      }
     },
+    "react": {
+      "version": "detect"
+    }
   },
   "overrides": [
     {
