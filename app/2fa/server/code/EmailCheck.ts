@@ -6,14 +6,14 @@ import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
 import { Users } from '../../../models/server';
 import { ICodeCheck } from './ICodeCheck';
-import { IUser, IUserEmail } from '../../../../definition/IUser';
+import { IUser } from '../../../../definition/IUser';
 
 export class EmailCheck implements ICodeCheck {
-	public getUserVerifiedEmails(user: IUser): IUserEmail[] {
+	public getUserVerifiedEmails(user: IUser): string[] {
 		if (!Array.isArray(user.emails)) {
 			return [];
 		}
-		return user.emails.filter(({ verified }) => verified);
+		return user.emails.filter(({ verified }) => verified).map((e) => e.address);
 	}
 
 	public isEnabled(user: IUser): boolean {
@@ -72,7 +72,7 @@ export class EmailCheck implements ICodeCheck {
 		return !!valid;
 	}
 
-	public sendEmailCode(user: IUser): void {
+	public sendEmailCode(user: IUser): string[] {
 		const emails = this.getUserVerifiedEmails(user);
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
@@ -83,9 +83,11 @@ export class EmailCheck implements ICodeCheck {
 
 		Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
 
-		for (const { address } of emails) {
+		for (const address of emails) {
 			this.send2FAEmail(address, random);
 		}
+
+		return emails;
 	}
 
 	public processInvalidCode(user: IUser): void {

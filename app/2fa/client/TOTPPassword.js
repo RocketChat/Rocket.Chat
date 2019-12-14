@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
 
-import { modal } from '../../ui-utils';
 import { t } from '../../utils';
+import { process2faReturn } from './callWith2fa';
 
 function reportError(error, callback) {
 	if (callback) {
@@ -46,32 +46,20 @@ const { loginWithPassword } = Meteor;
 
 Meteor.loginWithPassword = function(email, password, cb) {
 	loginWithPassword(email, password, (error) => {
-		if (!error || error.error !== 'totp-required') {
-			return cb(error);
-		}
-
-		modal.open({
-			title: t('Two-factor_authentication'),
-			text: t('Open_your_authentication_app_and_enter_the_code'),
-			type: 'input',
-			inputType: 'text',
-			showCancelButton: true,
-			closeOnConfirm: true,
-			confirmButtonText: t('Verify'),
-			cancelButtonText: t('Cancel'),
-		}, (code) => {
-			if (code === false) {
-				return cb();
-			}
-
-			Meteor.loginWithPasswordAndTOTP(email, password, code, (error) => {
-				if (error && error.error === 'totp-invalid') {
-					toastr.error(t('Invalid_two_factor_code'));
-					cb();
-				} else {
-					cb(error);
-				}
-			});
+		process2faReturn({
+			error,
+			originalCallback: cb,
+			emailOrUsername: email,
+			onCode: (code) => {
+				Meteor.loginWithPasswordAndTOTP(email, password, code, (error) => {
+					if (error && error.error === 'totp-invalid') {
+						toastr.error(t('Invalid_two_factor_code'));
+						cb();
+					} else {
+						cb(error);
+					}
+				});
+			},
 		});
 	});
 };
