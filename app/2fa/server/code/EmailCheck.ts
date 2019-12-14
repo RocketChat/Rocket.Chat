@@ -46,22 +46,21 @@ export class EmailCheck implements ICodeCheck {
 			return false;
 		}
 
-		if (!Array.isArray(user.services?.emailCode)) {
+		if (!user.services || !Array.isArray(user.services?.emailCode)) {
 			return false;
 		}
 
-		if (typeof codeFromEmail === 'string') {
-			// Remove non digits
-			codeFromEmail = codeFromEmail.replace(/([^\d])/g, '');
-		}
+		// Remove non digits
+		codeFromEmail = codeFromEmail.replace(/([^\d])/g, '');
 
 		Users.removeExpiredEmailCodesOfUserId(user._id);
 
-		const valid = user.services?.emailCode.find(({ code, expire }) => {
-			if (expire < Date.now) {
+		const valid = user.services.emailCode.find(({ code, expire }) => {
+			if (expire < new Date()) {
 				return false;
 			}
 
+			console.log(codeFromEmail, code);
 			if (bcrypt.compareSync(codeFromEmail, code)) {
 				Users.removeEmailCodeByUserIdAndCode(user._id, code);
 				return true;
@@ -70,17 +69,15 @@ export class EmailCheck implements ICodeCheck {
 			return false;
 		});
 
-		return valid;
+		return !!valid;
 	}
 
-	public processInvalidCode(user: IUser): void {
-		console.log('processInvalidCode');
+	public sendEmailCode(user: IUser): void {
 		const emails = this.getUserVerifiedEmails(user);
 		const random = Random._randomString(6, '0123456789');
-
 		const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
-
 		const expire = new Date();
+
 		// TODO: Add setting to define the expiration range?
 		expire.setHours(expire.getHours() + 1);
 
@@ -89,5 +86,19 @@ export class EmailCheck implements ICodeCheck {
 		for (const { address } of emails) {
 			this.send2FAEmail(address, random);
 		}
+	}
+
+	public processInvalidCode(user: IUser): void {
+		console.log('processInvalidCode');
+
+		Users.removeExpiredEmailCodesOfUserId(user._id);
+
+		const hasValidCode = user.services?.emailCode?.find(({ expire }) => expire > new Date()) !== undefined;
+
+		if (hasValidCode) {
+			return;
+		}
+
+		this.sendEmailCode(user);
 	}
 }

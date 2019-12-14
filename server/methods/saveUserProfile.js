@@ -5,9 +5,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { saveCustomFields, passwordPolicy } from '../../app/lib';
 import { Users } from '../../app/models';
 import { settings as rcSettings } from '../../app/settings';
+import { require2fa } from '../../app/2fa/server/methodWrapper';
 
 Meteor.methods({
-	saveUserProfile(settings, customFields) {
+	saveUserProfile: require2fa(function(settings, customFields) {
 		check(settings, Object);
 		check(customFields, Match.Maybe(Object));
 
@@ -85,5 +86,5 @@ Meteor.methods({
 		}
 
 		return true;
-	},
+	}),
 });

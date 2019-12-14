@@ -82,6 +82,10 @@
           "syntax"
         ],
         "@typescript-eslint/ban-ts-ignore": "off",
+        "@typescript-eslint/indent": [
+          "error",
+          "tab"
+        ],
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/interface-name-prefix": [
           "error",

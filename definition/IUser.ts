@@ -19,7 +19,7 @@ export interface IUserEmailVerificationToken {
 
 export interface IUserEmailCode {
 	code: string;
-	expire: string;
+	expire: Date;
 }
 
 type LoginToken = ILoginToken | IPersonalAccessToken;
@@ -42,7 +42,7 @@ export interface IUserServices {
 		hashedBackup: string[];
 		secret: string;
 	};
-	emailCode: IUserEmailCode;
+	emailCode: IUserEmailCode[];
 }
 
 export interface IUserEmail {
@@ -61,31 +61,31 @@ export interface IUser {
 	_id: string;
 	createdAt: Date;
 	roles: string[];
-    type: string;
-    active: boolean;
-    username?: string;
+	type: string;
+	active: boolean;
+	username?: string;
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
 	status?: string;
-    statusConnection?: string;
-    lastLogin?: Date;
-    avatarOrigin?: string;
-    utcOffset?: number;
-    language?: string;
+	statusConnection?: string;
+	lastLogin?: Date;
+	avatarOrigin?: string;
+	utcOffset?: number;
+	language?: string;
 	statusDefault?: string;
-    oauth?: {
+	oauth?: {
 		authorizedClients: string[];
-    };
-    _updatedAt?: Date;
+	};
+	_updatedAt?: Date;
 	statusLivechat?: string;
-    e2e?: {
-        private_key: string;
-        public_key: string;
-    };
-    requirePasswordChange?: boolean;
-    customFields?: {
-        [key: string]: any;
+	e2e?: {
+		private_key: string;
+		public_key: string;
+	};
+	requirePasswordChange?: boolean;
+	customFields?: {
+		[key: string]: any;
 	};
 	settings?: IUserSettings;
 }

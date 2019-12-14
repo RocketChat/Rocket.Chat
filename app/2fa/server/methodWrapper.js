@@ -1,11 +1,9 @@
-import { Users } from '../../models';
-import { checkCodeForUser } from './code';
+import { checkCodeForUser } from './code/index.ts';
 
 export function require2fa(fn) {
 	return function(...args) {
 		if (!this.twoFactorChecked) {
-			const user = Users.findOneById(this.userId);
-			checkCodeForUser(user);
+			checkCodeForUser(this.userId);
 		}
 
 		return fn.apply(this, args);

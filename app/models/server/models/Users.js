@@ -421,7 +421,7 @@ export class Users extends Base {
 	removeExpiredEmailCodesOfUserId(userId) {
 		this.update({ _id: userId }, {
 			$pull: {
-				emailCode: {
+				'services.emailCode': {
 					expire: { $lt: new Date() },
 				},
 			},
@@ -431,7 +431,7 @@ export class Users extends Base {
 	removeEmailCodeByUserIdAndCode(userId, code) {
 		this.update({ _id: userId }, {
 			$pull: {
-				emailCode: {
+				'services.emailCode': {
 					code,
 				},
 			},
@@ -441,7 +441,7 @@ export class Users extends Base {
 	addEmailCodeByUserId(userId, code, expire) {
 		this.update({ _id: userId }, {
 			$push: {
-				emailCode: {
+				'services.emailCode': {
 					$each: [{
 						code,
 						expire,

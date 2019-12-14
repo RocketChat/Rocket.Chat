@@ -43,6 +43,9 @@
 						</div>
 						<div class="rc-modal__content-error"></div>
 					{{/if}}
+					{{#if inputActionText}}
+						<input class="rc-button rc-button--nude js-input-action" type="submit" data-button="input-action" value="{{inputActionText}}">
+					{{/if}}
 					{{#if dontAskAgain}}
 						<label class="rc-checkbox">
 							<input type="checkbox" id="dont-ask-me-again" class="rc-checkbox__input js-modal-dont-ask">

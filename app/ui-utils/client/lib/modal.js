@@ -144,6 +144,10 @@ Template.rc_modal.events({
 		e.stopPropagation();
 		modal.close();
 	},
+	'click .js-input-action'(e, instance) {
+		!this.inputAction || this.inputAction.call(instance.data.data, e, instance);
+		e.stopPropagation();
+	},
 	'click .js-close'(e) {
 		e.stopPropagation();
 		modal.cancel();
