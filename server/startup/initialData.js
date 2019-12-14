@@ -160,7 +160,7 @@ Meteor.startup(function() {
 				emails: [
 					{
 						address: 'rocketchat.internal.admin.test@rocket.chat',
-						verified: true,
+						verified: false,
 					},
 				],
 				status: 'offline',
