@@ -376,9 +376,9 @@ export class APIClass extends Restivus {
 	}
 
 	_initAuth() {
-		const loginCompatibility = (bodyParams) => {
+		const loginCompatibility = (bodyParams, request) => {
 			// Grab the username or email that the user is logging in with
-			const { user, username, email, password, code } = bodyParams;
+			const { user, username, email, password, code: bodyCode } = bodyParams;
 
 			if (password == null) {
 				return bodyParams;
@@ -387,6 +387,8 @@ export class APIClass extends Restivus {
 			if (_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length > 0) {
 				return bodyParams;
 			}
+
+			const code = bodyCode || request.headers['x-2fa-code'];
 
 			const auth = {
 				password,
@@ -427,7 +429,7 @@ export class APIClass extends Restivus {
 
 		this.addRoute('login', { authRequired: false }, {
 			post() {
-				const args = loginCompatibility(this.bodyParams);
+				const args = loginCompatibility(this.bodyParams, this.request);
 				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
