@@ -1,3 +1,4 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
@@ -169,6 +170,9 @@ export const menu = new class extends EventEmitter {
 		this.on('open', ignore(() => {
 			// WIDECHAT close main content
 			this.mainContent.css('transform', 'translate3d( 100%, 0 , 0)');
+			FlowRouter.withReplaceState(function() {
+				FlowRouter.go('/home');
+			});
 		}));
 
 		this.list = $('.rooms-list');
