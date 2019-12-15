@@ -246,7 +246,7 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 	const findCursor = Messages.findByRoomId(exportOpRoomData.roomId, { limit: 1 });
 	const count = findCursor.count();
 
-	cursor.forEach((msg) => {
+	cursor.forEach(Meteor.bindEnvironment((msg) => {
 		const messageObject = getMessageData(msg, exportOperation);
 
 		if (exportOperation.fullExport) {
@@ -282,7 +282,7 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 		}
 
 		exportOpRoomData.exportedCount++;
-	});
+	}));
 
 	if (count <= exportOpRoomData.exportedCount) {
 		exportOpRoomData.status = 'completed';
