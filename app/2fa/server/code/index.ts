@@ -45,14 +45,12 @@ export function checkCodeForUser(user: IUser | string, code: string): boolean {
 	if (typeof user === 'string') {
 		user = getUserForCheck(user);
 	}
-	console.log(user);
 
 	const [methodName, method] = getMethodByNameOrFirstActiveForUser(user);
 
 	if (!method) {
 		return true;
 	}
-	console.log(methodName, code);
 
 	if (!code) {
 		method.processInvalidCode(user, code);
@@ -61,8 +59,6 @@ export function checkCodeForUser(user: IUser | string, code: string): boolean {
 	}
 
 	const valid = method.verify(user, code);
-
-	console.log({ valid });
 
 	if (!valid) {
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', methodName);

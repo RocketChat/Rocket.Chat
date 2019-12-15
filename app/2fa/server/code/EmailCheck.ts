@@ -22,7 +22,6 @@ export class EmailCheck implements ICodeCheck {
 	}
 
 	public send2FAEmail(address: string, random: string): void {
-		console.log('send2FAEmail', address, random);
 		Mailer.send({
 			to: address,
 			from: settings.get('From_Email'),
@@ -60,7 +59,6 @@ export class EmailCheck implements ICodeCheck {
 				return false;
 			}
 
-			console.log(codeFromEmail, code);
 			if (bcrypt.compareSync(codeFromEmail, code)) {
 				Users.removeEmailCodeByUserIdAndCode(user._id, code);
 				return true;
@@ -91,8 +89,6 @@ export class EmailCheck implements ICodeCheck {
 	}
 
 	public processInvalidCode(user: IUser): void {
-		console.log('processInvalidCode');
-
 		Users.removeExpiredEmailCodesOfUserId(user._id);
 
 		const hasValidCode = user.services?.emailCode?.find(({ expire }) => expire > new Date()) !== undefined;
