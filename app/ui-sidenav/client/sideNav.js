@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 
 import { lazyloadtick } from '../../lazy-load';
 import { SideNav, menu } from '../../ui-utils';
@@ -98,7 +99,9 @@ const openMainContentIfNeeded = () => {
 	const currentRouteState = FlowRouter.current();
 	const defaults = ['/', '/home'];
 
-	if(!defaults.includes(currentRouteState.path)){
+	if (defaults.includes(currentRouteState.path)) {
+		menu.open();
+	} else {
 		menu.close();
 	}
 }
@@ -108,7 +111,10 @@ Template.sideNav.onRendered(function() {
 	menu.init();
 	lazyloadtick();
 	redirectToDefaultChannelIfNeeded();
-	openMainContentIfNeeded();
+	Tracker.autorun(function() {
+		FlowRouter.watchPathChange();
+		openMainContentIfNeeded();
+	});
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
