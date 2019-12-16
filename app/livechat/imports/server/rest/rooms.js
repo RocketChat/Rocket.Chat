@@ -2,7 +2,7 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api';
-import { findRooms } from '../../../server/api/lib/livechat';
+import { findRooms } from '../../../server/api/lib/rooms';
 
 API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 	get() {
@@ -29,7 +29,8 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 			if (customFields) {
 				customFields = JSON.parse(customFields);
 			}
-			const { rooms, total } = findRooms({
+
+			return API.v1.success(Promise.await(findRooms({
 				agents,
 				roomName,
 				departmentId,
@@ -39,15 +40,9 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 				tags,
 				customFields,
 				options: { offset, count, sort, fields },
-			});
-
-			return API.v1.success({
-				rooms,
-				count: rooms.length,
-				offset,
-				total,
-			});
+			})));
 		} catch (e) {
+			console.log(e);
 			return API.v1.failure(e);
 		}
 	},
