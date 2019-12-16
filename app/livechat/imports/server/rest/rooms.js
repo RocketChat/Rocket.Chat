@@ -42,7 +42,6 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 				options: { offset, count, sort, fields },
 			})));
 		} catch (e) {
-			console.log(e);
 			return API.v1.failure(e);
 		}
 	},
