@@ -182,6 +182,7 @@ Template.livechatCurrentChats.events({
 											}
 
 											if (result) {
+												instance.loadRooms(instance.filter.get(), instance.offset.get());
 												toastr.success(TAPi18n.__('All_closed_chats_have_been_removed'));
 											}
 										});
@@ -281,7 +282,7 @@ Template.livechatCurrentChats.events({
 		instance.filter.set(filter);
 		instance.offset.set(0);
 	},
-	'click .remove-livechat-room'(event) {
+	'click .remove-livechat-room'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -299,6 +300,7 @@ Template.livechatCurrentChats.events({
 				return;
 			}
 			await call('livechat:removeRoom', this._id);
+			instance.loadRooms(instance.filter.get(), instance.offset.get());
 			modal.open({
 				title: t('Deleted'),
 				text: t('Room_has_been_deleted'),
@@ -369,6 +371,19 @@ Template.livechatCurrentChats.onCreated(async function() {
 		return url;
 	};
 
+	this.loadRooms = async (filter, offset) => {
+		this.isLoading.set(true);
+		const { rooms, total } = await APIClient.v1.get(mountUrlWithParams(filter, offset));
+		this.total.set(total);
+		if (offset === 0) {
+			this.livechatRooms.set(rooms);
+		} else {
+			this.livechatRooms.set(this.livechatRooms.get().concat(rooms));
+		}
+		
+		this.isLoading.set(false);
+	}
+
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
 	};
@@ -378,17 +393,9 @@ Template.livechatCurrentChats.onCreated(async function() {
 	};
 
 	this.autorun(async () => {
-		this.isLoading.set(true);
 		const filter = this.filter.get();
 		const offset = this.offset.get();
-		const { rooms, total } = await APIClient.v1.get(mountUrlWithParams(filter, offset));
-		this.total.set(total);
-		if (offset === 0) {
-			this.livechatRooms.set(rooms);
-		} else {
-			this.livechatRooms.set(this.livechatRooms.get().concat(rooms));
-		}
-		this.isLoading.set(false);
+		this.loadRooms(filter, offset);
 	});
 
 	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
