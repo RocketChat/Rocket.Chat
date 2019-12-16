@@ -34,12 +34,22 @@ export class EmailCheck implements ICodeCheck {
 			from: settings.get('From_Email'),
 			subject: 'Authentication code',
 			replyTo: undefined,
-			data: undefined,
+			data: {
+				code: random.replace(/^(\d{3})/, '$1-'),
+			},
 			headers: undefined,
+			text: `
+Here is your authentication code:
+
+__code__
+
+Do not provide this code to anyone.
+If you didn't try to login in your account please ignore this email.
+`,
 			html: `
 				<p>Here is your authentication code:</p>
 				<p style="font-size: 30px;">
-					<b>${ random.replace(/^(\d{3})/, '$1-') }</b>
+					<b>__code__</b>
 				</p>
 				<p>Do not provide this code to anyone.</p>
 				<p>If you didn't try to login in your account please ignore this email.</p>
