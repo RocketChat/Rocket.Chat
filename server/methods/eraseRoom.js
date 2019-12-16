@@ -37,8 +37,12 @@ Meteor.methods({
 				throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
 			}
 		}
+		
+		console.log('------------------------ ===', rid, room);
 
 		const result = deleteRoom(rid);
+		
+		console.log('------------------------ >>>', rid);
 
 		if (Apps && Apps.isLoaded()) {
 			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);

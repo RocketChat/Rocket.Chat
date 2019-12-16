@@ -23,7 +23,7 @@ callbacks.add('afterDeleteMessage', function(message, { _id, prid } = {}) {
 	return message;
 }, callbacks.priority.LOW, 'PropagateDiscussionMetadata');
 
-callbacks.add('afterDeleteRoom', (rid) => Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => deleteRoom(_id)), 'DeleteDiscussionChain');
+// callbacks.add('afterDeleteRoom', (rid) => Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => deleteRoom(_id)), 'DeleteDiscussionChain');
 
 // TODO discussions define new fields
 callbacks.add('afterRoomNameChange', ({ rid, name, oldName }) => Rooms.update({ prid: rid, ...oldName && { topic: oldName } }, { $set: { topic: name } }, { multi: true }), 'updateTopicDiscussion');

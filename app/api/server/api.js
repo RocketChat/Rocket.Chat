@@ -323,7 +323,7 @@ export class APIClass extends Restivus {
 
 						result = originalAction.apply(this);
 					} catch (e) {
-						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+						logger.error(`${ method } ${ route } threw an error:`, e.stack);
 
 						const apiMethod = {
 							'error-too-many-requests': 'tooManyRequests',

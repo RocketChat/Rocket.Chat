@@ -114,21 +114,35 @@ export class EventsModel extends Base {
 
 		const updateQuery: any = {};
 
-		if (updateData.set) {
-			updateQuery.$set = {};
-
-			for (const [k, v] of Object.entries(updateData.set)) {
-				updateQuery.$set[`d.${ k }`] = v;
+		for (let prop in updateData) {
+			if (!prop.startsWith('_$')) {
+				updateQuery[prop] = updateData[prop];
+				continue;
 			}
+
+			const data:any = updateData[prop];
+
+			updateQuery[prop.substr(1)] = Object.keys(data).reduce((acc, k) => {
+				acc[`d.${k}`] = data[k];
+				return acc;
+			}, {} as any);
 		}
 
-		if (updateData.unset) {
-			updateQuery.$unset = {};
+		// if (updateData.set) {
+		// 	updateQuery.$set = {};
 
-			for (const [k, v] of Object.entries(updateData.unset)) {
-				updateQuery.$unset[`d.${ k }`] = v;
-			}
-		}
+		// 	for (const [k, v] of Object.entries(updateData.set)) {
+		// 		updateQuery.$set[`d.${ k }`] = v;
+		// 	}
+		// }
+
+		// if (updateData.unset) {
+		// 	updateQuery.$unset = {};
+
+		// 	for (const [k, v] of Object.entries(updateData.unset)) {
+		// 		updateQuery.$unset[`d.${ k }`] = v;
+		// 	}
+		// }
 
 		// If there is no _d (original data), create it
 		if (!existingEvent._d) {

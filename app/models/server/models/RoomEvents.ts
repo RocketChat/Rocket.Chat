@@ -116,12 +116,11 @@ class RoomEventsModel extends EventsModel {
 			mentions: message.mentions,
 			channels: message.channels,
 			reactions: message.reactions,
+			starred: message.starred,
 		};
 	}
 
 	public toV1(event: any) {
-		console.log(event);
-
 		const v1Data: any = {
 			_id: event._cid,
 			v: 1,
@@ -138,6 +137,10 @@ class RoomEventsModel extends EventsModel {
 
 		if (event.d.reactions) {
 			v1Data.reactions = event.d.reactions;
+		}
+
+		if (event.d.starred) {
+			v1Data.starred = event.d.starred;
 		}
 
 		return v1Data;

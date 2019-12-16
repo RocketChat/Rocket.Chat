@@ -75,13 +75,13 @@ export class Messages extends Base {
 	find(...args) {
 		if (args[0]) {
 			// Add a `t: msg`
-			args[0].t = EventTypeDescriptor.ROOM_MESSAGE;
+			args[0].t = EventTypeDescriptor.MESSAGE;
 		}
 
 		const cursor = RoomEvents.find.apply(RoomEvents, args);
 
 		cursor._fetch = cursor.fetch;
-		cursor.fetch = function(...args) {
+		cursor.fetch = function (...args) {
 			const results = this._fetch(args);
 
 			// Convert to V1
@@ -126,24 +126,42 @@ export class Messages extends Base {
 	update(...args) {
 		const [query, update] = args;
 
-		const _cid = query._id;
+		let _cid;
 
-		query._cid = _cid;
-		delete query._id;
+		if (query._id) {
+			_cid = query._id;
 
-		const event = RoomEvents.findOne(query);
+			query._cid = _cid;
+			delete query._id;
+		}
+
+		const v2Query = {
+			$or: [query, {}]
+		};
+
+		for (const item in query) {
+			v2Query.$or[1][`data.${item}`] = query[item];
+		}
+
+		const event = RoomEvents.findOne(v2Query);
+
+		if (!event) {
+			return null;
+		}
 
 		let d = {};
 
-		if (update.$set) {
-			d.set = RoomEvents.fromV1Data(update.$set);
-		} else if (update.$unset) {
-			d.unset = update.$unset;
-		} else {
-			d = update;
+		for (let prop in update) {
+			if (!prop.startsWith('$')) {
+				d[prop] = update[prop];
+				continue;
+			}
+
+			d[`_$${prop.substr(1)}`] = update[prop];
 		}
 
-		d._oid = event._id; // Original id
+		d._$set = d._$set || {};
+		d._$set._oid = event._id; // Original id
 
 		const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, _cid, d));
 
@@ -194,7 +212,7 @@ export class Messages extends Base {
 		const updateObj = {};
 		for (const index in visionData) {
 			if (visionData.hasOwnProperty(index)) {
-				updateObj[`attachments.0.${ index }`] = visionData[index];
+				updateObj[`attachments.0.${index}`] = visionData[index];
 			}
 		}
 
@@ -213,16 +231,16 @@ export class Messages extends Base {
 		const updateObj = {};
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`translations.${ key }`] = translation;
+			updateObj[`translations.${key}`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
-	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
+	addAttachmentTranslations = function (messageId, attachmentIndex, translations) {
 		const updateObj = {};
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
+			updateObj[`attachments.${attachmentIndex}.translations.${key}`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
@@ -672,7 +690,7 @@ export class Messages extends Base {
 		if (snippetedAt == null) { snippetedAt = 0; }
 		const query = { _id: message._id };
 
-		const msg = `\`\`\`${ message.msg }\`\`\``;
+		const msg = `\`\`\`${message.msg}\`\`\``;
 
 		const update = {
 			$set: {
