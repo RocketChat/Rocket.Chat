@@ -104,5 +104,3 @@ SyncedCron.add({
 		appsUpdateMarketplaceInfo();
 	},
 });
-
-SyncedCron.start();
