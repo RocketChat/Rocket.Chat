@@ -38,8 +38,8 @@ export async function findRooms({
 		customFields,
 		options: {
 			sort: sort || { ts: 1 },
-			skip: offset,
-			limit: count,
+			offset,
+			count,
 			fields,
 		},
 	});
