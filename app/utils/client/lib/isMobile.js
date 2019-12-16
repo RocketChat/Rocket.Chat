@@ -1,5 +1,5 @@
 export const isMobile = () => {
-	if (/Mobi/.test(navigator.userAgent)) {
+	if (window.matchMedia('(max-width: 500px)').matches) {
 		return true;
 	}
 	return false;
