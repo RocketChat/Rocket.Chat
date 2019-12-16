@@ -766,10 +766,6 @@ export class Users extends Base {
 		});
 	}
 
-	findOneByEppn(eppn) {
-		return this.findOne({ eppn });
-	}
-
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
