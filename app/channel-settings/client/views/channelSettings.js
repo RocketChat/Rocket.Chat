@@ -412,7 +412,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			canView() {
 				return roomTypes.roomTypes[room.t].allowRoomSettingChange(
 					room,
-					RoomSettingsEnum.SYSTEM_MESSAGES
+					RoomSettingsEnum.SYSTEM_MESSAGES,
 				);
 			},
 			getValue() {
@@ -425,9 +425,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'systemMessages', value).then(
 					() => {
 						toastr.success(
-							t('System_messages_setting_changed_successfully')
+							t('System_messages_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -572,9 +572,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'retentionOverrideGlobal', value).then(
 					() => {
 						toastr.success(
-							t('Retention_setting_changed_successfully')
+							t('Retention_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -596,9 +596,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'retentionMaxAge', value).then(
 					() => {
 						toastr.success(
-							t('Retention_setting_changed_successfully')
+							t('Retention_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -620,9 +620,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'retentionExcludePinned', value).then(
 					() => {
 						toastr.success(
-							t('Retention_setting_changed_successfully')
+							t('Retention_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -644,9 +644,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'retentionFilesOnly', value).then(
 					() => {
 						toastr.success(
-							t('Retention_setting_changed_successfully')
+							t('Retention_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -664,7 +664,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			save(value) {
 				return call('saveRoomSettings', room._id, 'encrypted', value).then(() => {
 					toastr.success(
-						t('Encrypted_setting_changed_successfully')
+						t('Encrypted_setting_changed_successfully'),
 					);
 				});
 			},

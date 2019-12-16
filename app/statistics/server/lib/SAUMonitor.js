@@ -317,8 +317,6 @@ export class SAUMonitorClass {
 				this.aggregate();
 			},
 		});
-
-		SyncedCron.start();
 	}
 
 	aggregate() {

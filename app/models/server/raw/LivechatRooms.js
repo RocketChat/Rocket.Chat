@@ -94,4 +94,86 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	findByVisitorId(visitorId, options) {
+		const query = {
+			t: 'l',
+			'v._id': visitorId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findRoomsWithCriteria({ agents, roomName, departmentId, open, createdAt, closedAt, tags, customFields, options = {} }) {
+		const match = {
+			$match: {
+				t: 'l',
+			},
+		};
+		if (agents) {
+			match.$match.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
+		}
+		if (roomName) {
+			match.$match.fname = new RegExp(roomName, 'i');
+		}
+		if (departmentId) {
+			match.$match.departmentId = departmentId;
+		}
+		if (open !== undefined) {
+			match.$match.open = { $exists: open };
+		}
+		if (createdAt) {
+			match.$match.ts = {};
+			if (createdAt.start) {
+				match.$match.ts.$gte = new Date(createdAt.start);
+			}
+			if (createdAt.end) {
+				match.$match.ts.$lte = new Date(createdAt.end);
+			}
+		}
+		if (closedAt) {
+			match.$match.closedAt = {};
+			if (closedAt.start) {
+				match.$match.closedAt.$gte = new Date(closedAt.start);
+			}
+			if (closedAt.end) {
+				match.$match.closedAt.$lte = new Date(closedAt.end);
+			}
+		}
+		if (tags) {
+			match.$match.tags = { $in: tags };
+		}
+		if (customFields) {
+			match.$match.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
+		}
+		const firstParams = [match];
+		if (options.offset) {
+			firstParams.push({ $skip: options.offset });
+		}
+		if (options.count) {
+			firstParams.push({ $limit: options.count });
+		}
+		if (options.sort) {
+			firstParams.push({ $sort: { name: 1 } });
+		}
+		const lookup = {
+			$lookup: {
+				from: 'rocketchat_livechat_department',
+				localField: 'departmentId',
+				foreignField: '_id',
+				as: 'department',
+			},
+		};
+		const unwind = {
+			$unwind: {
+				path: '$department',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
+		const params = [...firstParams, lookup, unwind];
+		if (options.fields) {
+			params.push({ $project: options.fields });
+		}
+		return this.col.aggregate(params).toArray();
+	}
 }
