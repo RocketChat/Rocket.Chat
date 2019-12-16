@@ -358,6 +358,7 @@ export class LivechatRooms extends Base {
 			{
 				$unwind: {
 					path: '$messages',
+					preserveNullAndEmptyArrays: true,
 				},
 			},
 			{

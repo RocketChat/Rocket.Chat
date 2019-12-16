@@ -157,7 +157,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findPercentageOfAbandonedRooms({ start, end, departmentId, options = {} }) {
+	async findPercentageOfAbandonedRooms({ start, end, departmentId, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -215,7 +215,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 						$cond: [{
 							$and: [
 								{ $ifNull: ['$rooms.metrics.visitorInactivity', false] },
-								{ $gte: ['$rooms.metrics.visitorInactivity', 1] },
+								{ $gte: ['$rooms.metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')] },
 							],
 						}, 1, 0],
 					},
