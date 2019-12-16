@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermission } from '../../../authorization';
+
 import {
 	Importers,
 	ProgressStep,
 } from '..';
 
-import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	restartImport(key) {

@@ -41,7 +41,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 const getTimeZoneOffset = function() {
 	const offset = new Date().getTimezoneOffset();
 	const absOffset = Math.abs(offset);
-	return `${ offset < 0 ? '+' : '-' }${ `00${ Math.floor(absOffset / 60) }`.slice(-2) }:${ `00${ (absOffset % 60) }`.slice(-2) }`;
+	return `${ offset < 0 ? '+' : '-' }${ `00${ Math.floor(absOffset / 60) }`.slice(-2) }:${ `00${ absOffset % 60 }`.slice(-2) }`;
 };
 
 

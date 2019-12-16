@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermission } from '../../../authorization';
+
 import {
 	Importers,
 	Selection,
@@ -7,7 +9,6 @@ import {
 	SelectionUser,
 } from '..';
 
-import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	startImport(key, input) {

@@ -25,7 +25,7 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 	Notifications.notifyLoggedInThisInstance(
 		'permissions-changed',
 		clientAction,
-		data
+		data,
 	);
 
 	if (data.level && data.level === CONSTANTS.SETTINGS_LEVEL) {
@@ -36,7 +36,7 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 		Notifications.notifyLoggedInThisInstance(
 			'private-settings-changed',
 			'updated',
-			setting
+			setting,
 		);
 	}
 });

@@ -93,7 +93,7 @@ export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUp
 	Promise.await(
 		Apps.updateAppsMarketplaceInfo(data)
 			.then(notifyAdminsAboutInvalidApps)
-			.then(notifyAdminsAboutRenewedApps)
+			.then(notifyAdminsAboutRenewedApps),
 	);
 });
 
