@@ -29,10 +29,10 @@
 			<form class="search-form" role="form">
 				<div class="rc-input__wrapper">
 					<div class="rc-input__icon">
-						{{#if isReady}}
-							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
-						{{else}}
+						{{#if isloading}}
 							{{> loading }}
+						{{else}}
+							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
 						{{/if}}
 					</div>
 					<input id="managers-filter" type="text" class="rc-input__element"

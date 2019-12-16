@@ -90,7 +90,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.author_link', (done) =>
@@ -114,7 +114,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.title_link', (done) =>
@@ -138,7 +138,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.action.url', (done) =>
@@ -169,7 +169,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('message.avatar', (done) =>
@@ -201,7 +201,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.action.image_url', (done) =>
@@ -233,7 +233,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.thumb_url', (done) =>
@@ -258,7 +258,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.author_icon', (done) =>
@@ -283,7 +283,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.image_url', (done) =>
@@ -308,7 +308,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 			it('attachment.audio_url', (done) =>
 				request.post(api('chat.postMessage'))
@@ -332,7 +332,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 			it('attachment.video_url', (done) =>
 				request.post(api('chat.postMessage'))
@@ -356,7 +356,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 		});
 
@@ -540,7 +540,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.author_link', (done) =>
@@ -564,7 +564,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.title_link', (done) =>
@@ -588,7 +588,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.action.url', (done) =>
@@ -619,7 +619,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 		});
 

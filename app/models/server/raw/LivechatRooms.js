@@ -1106,4 +1106,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	findByVisitorId(visitorId, options) {
+		const query = {
+			t: 'l',
+			'v._id': visitorId,
+		};
+
+		return this.find(query, options);
+	}
 }

@@ -48,7 +48,7 @@ Migrations.add({
 					$set: {
 						'metrics.chatDuration': (room.closedAt - room.ts) / 1000,
 					},
-				}
+				},
 			);
 		});
 
@@ -60,7 +60,7 @@ Migrations.add({
 					status: 'queued',
 				},
 			},
-			{ multi: true }
+			{ multi: true },
 		);
 	},
 });

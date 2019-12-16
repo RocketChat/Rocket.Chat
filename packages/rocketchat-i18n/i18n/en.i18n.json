@@ -2624,6 +2624,7 @@
   "remove-user_description": "Permission to remove a user from a room",
   "Remove_Admin": "Remove Admin",
   "Remove_as_leader": "Remove as leader",
+  "reset-other-user-e2e-key": "Reset Other User E2E Key",
   "Remove_as_moderator": "Remove as moderator",
   "Remove_as_owner": "Remove as owner",
   "Remove_custom_oauth": "Remove custom oauth",
