@@ -144,7 +144,7 @@ const reconfigureLimit = Meteor.bindEnvironment((name, rules, factor = 1) => {
 		rules,
 		settings.get(`DDP_Rate_Limit_${ name }_Requests_Allowed`) * factor,
 		settings.get(`DDP_Rate_Limit_${ name }_Interval_Time`) * factor,
-		callback(`limit by ${ messages[name] }`, name)
+		callback(`limit by ${ messages[name] }`, name),
 	);
 });
 
