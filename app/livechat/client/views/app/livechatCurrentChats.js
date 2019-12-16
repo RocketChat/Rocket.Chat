@@ -380,9 +380,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 		} else {
 			this.livechatRooms.set(this.livechatRooms.get().concat(rooms));
 		}
-		
 		this.isLoading.set(false);
-	}
+	};
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
