@@ -42,6 +42,10 @@ export interface IUserServices {
 		hashedBackup: string[];
 		secret: string;
 	};
+	email2fa?: {
+		enabled: boolean;
+		changedAt: Date;
+	};
 	emailCode: IUserEmailCode[];
 }
 

@@ -17,7 +17,14 @@ export class EmailCheck implements ICodeCheck {
 	}
 
 	public isEnabled(user: IUser): boolean {
-		// TODO: Check settings
+		if (!settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled')) {
+			return false;
+		}
+
+		if (!user.services?.email2fa?.enabled) {
+			return false;
+		}
+
 		return this.getUserVerifiedEmails(user).length > 0;
 	}
 

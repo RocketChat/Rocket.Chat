@@ -32,16 +32,13 @@ export function getUserForCheck(userId: string): IUser {
 		fields: {
 			emails: 1,
 			'services.totp': 1,
+			'services.email2fa': 1,
 			'services.emailCode': 1,
 		},
 	});
 }
 
 export function checkCodeForUser(user: IUser | string, code: string): boolean {
-	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
-		return true;
-	}
-
 	if (typeof user === 'string') {
 		user = getUserForCheck(user);
 	}

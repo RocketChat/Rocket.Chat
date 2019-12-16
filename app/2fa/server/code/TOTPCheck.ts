@@ -1,9 +1,14 @@
 import { TOTP } from '../lib/totp';
 import { IUser } from '../../../../definition/IUser';
+import { settings } from '../../../settings/server';
 import { ICodeCheck } from './ICodeCheck';
 
 export class TOTPCheck implements ICodeCheck {
 	public isEnabled(user: IUser): boolean {
+		if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+			return false;
+		}
+
 		return user.services?.totp?.enabled === true;
 	}
 

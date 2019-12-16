@@ -5,7 +5,7 @@ import toastr from 'toastr';
 
 import { modal } from '../../ui-utils';
 import { settings } from '../../settings';
-import { t } from '../../utils';
+import { t, handleError } from '../../utils/client';
 
 Template.accountSecurity.helpers({
 	showImage() {
@@ -31,6 +31,10 @@ Template.accountSecurity.helpers({
 		if (Template.instance().codesRemaining.get()) {
 			return t('You_have_n_codes_remaining', { number: Template.instance().codesRemaining.get() });
 		}
+	},
+	isEmailEnabled() {
+		const user = Meteor.user();
+		return user && user.services && user.services.email2fa && user.services.email2fa.enabled;
 	},
 });
 
@@ -79,6 +83,30 @@ Template.accountSecurity.events({
 					toastr.error(t('Invalid_two_factor_code'));
 				}
 			});
+		});
+	},
+
+	'click .enable-2fa-email'(event) {
+		event.preventDefault();
+
+		Meteor.call('2fa:enable-email', async (error) => {
+			if (error) {
+				handleError(error);
+			}
+
+			toastr.success(t('Two-factor_authentication_email_disabled'));
+		});
+	},
+
+	'click .disable-2fa-email'(event) {
+		event.preventDefault();
+
+		Meteor.call('2fa:disable-email', (error) => {
+			if (error) {
+				return handleError(error);
+			}
+
+			toastr.success(t('Two-factor_authentication_disabled'));
 		});
 	},
 

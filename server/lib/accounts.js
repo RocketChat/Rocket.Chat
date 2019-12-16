@@ -177,6 +177,14 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		user.type = 'user';
 	}
 
+	if (settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
+		user.services = user.services || {};
+		user.services.email2fa = {
+			enabled: true,
+			changedAt: new Date(),
+		};
+	}
+
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = Meteor.users.findOne({
