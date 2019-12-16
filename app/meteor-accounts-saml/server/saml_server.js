@@ -57,7 +57,7 @@ Meteor.methods({
 		}
 		// This query should respect upcoming array of SAML logins
 		const user = Users.findOneByIdAndSAMLProvider(Meteor.userId(), provider);
-		if (!user) {
+		if (!user || !user.services || ! user.services.saml) {
 			return;
 		}
 
