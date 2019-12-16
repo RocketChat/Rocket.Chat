@@ -351,7 +351,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 			dateRange.start = `${ moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`;
 		}
 		if (to) {
-			dateRange.end = `${ moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`;
+			dateRange.end = `${ moment(new Date(to).setHours(23, 59, 59)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`;
 		}
 		if (tags) {
 			url += `&${ mountArrayQueryParameters('tags', tags) }`;
