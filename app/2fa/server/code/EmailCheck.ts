@@ -82,9 +82,9 @@ export class EmailCheck implements ICodeCheck {
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
 		const expire = new Date();
+		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration'));
 
-		// TODO: Add setting to define the expiration range?
-		expire.setHours(expire.getHours() + 1);
+		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
 
 		Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
 
