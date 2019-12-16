@@ -85,6 +85,7 @@
 		"chimp": "^0.51.1",
 		"emojione-assets": "^4.5.0",
 		"eslint": "^6.7.2",
+		"eslint-plugin-import": "^2.19.1",
 		"eslint-plugin-react": "^7.17.0",
 		"fast-glob": "^2.2.6",
 		"husky": "^1.2.0",
