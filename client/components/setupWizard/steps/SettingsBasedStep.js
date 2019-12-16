@@ -49,9 +49,9 @@ export function SettingsBasedStep({ step, title, active }) {
 		resetFields(
 			settings
 				.filter(({ wizard }) => wizard.step === step)
-				.filter(({ type }) => ['string', 'select', 'language'].includes(type))
+				.filter(({ type }) => ['string', 'select', 'language', 'boolean'].includes(type))
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
-				.map(({ value, ...field }) => ({ ...field, value: value || '' })),
+				.map(({ value, ...field }) => ({ ...field, value: value != null ? value : '' })),
 		);
 	}, [settings, currentStep]);
 
@@ -108,6 +108,17 @@ export function SettingsBasedStep({ step, title, active }) {
 							{values
 								.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
 								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+						</SelectInput>}
+
+						{type === 'boolean' && <SelectInput
+							type='select'
+							name={_id}
+							ref={i === 0 ? autoFocusRef : undefined}
+							value={String(value)}
+							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value === 'true')}
+						>
+							<SelectInput.Option key={'true'} value={'true'}>{t('Yes')}</SelectInput.Option>
+							<SelectInput.Option key={'false'} value={'false'}>{t('No')}</SelectInput.Option>
 						</SelectInput>}
 
 						{type === 'language' && <SelectInput

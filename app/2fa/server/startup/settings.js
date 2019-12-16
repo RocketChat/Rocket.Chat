@@ -24,6 +24,10 @@ settings.addGroup('Accounts', function() {
 				_id: 'Accounts_TwoFactorAuthentication_By_Email_Enabled',
 				value: true,
 			},
+			wizard: {
+				step: 3,
+				order: 3,
+			},
 		});
 		this.add('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration', 3600, {
 			type: 'int',
