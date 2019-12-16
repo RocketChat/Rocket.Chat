@@ -326,7 +326,7 @@ To see an up to date view of what we have planned view our [milestones](https://
 
 ## How it all started
 
-Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-enabling-privately-hosted-chat-services).
+Read about [how it all started](https://www.synopsys.com/blogs/software-security/rocket-chat-privately-hosted-chat-services/).
 
 ## Awards
 [![InfoWorld Bossie Awards 2016 - Best Open Source Applications](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/bossie.png)](http://www.infoworld.com/article/3122000/open-source-tools/bossie-awards-2016-the-best-open-source-applications.html#slide4)

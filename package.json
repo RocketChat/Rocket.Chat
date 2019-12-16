@@ -6,44 +6,6 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"contributors": [
-		{
-			"name": "Aaron Ogle",
-			"email": "aaron.ogle@rocket.chat"
-		},
-		{
-			"name": "Bradley Hilton",
-			"email": "bradley.hilton@rocket.chat"
-		},
-		{
-			"name": "Diego Sampaio",
-			"email": "diego.sampaio@rocket.chat"
-		},
-		{
-			"name": "Gabriel Engel",
-			"email": "gabriel.engel@rocket.chat"
-		},
-		{
-			"name": "Guilherme Gazzo",
-			"email": "guilherme.gazzo@rocket.chat"
-		},
-		{
-			"name": "Karl Prieb",
-			"email": "karl.priebk@rocket.chat"
-		},
-		{
-			"name": "Marcelo Schmidt",
-			"email": "marcelo.schmidt@rocket.chat"
-		},
-		{
-			"name": "Rodrigo Nascimento",
-			"email": "rodrigo.nascimento@rocket.chat"
-		},
-		{
-			"name": "Sing Li",
-			"email": "sing.li@rocket.chat"
-		}
-	],
 	"mocha": {
 		"tests": [
 			"app/**/*.tests.js"
@@ -98,7 +60,7 @@
 		"@babel/preset-react": "^7.0.0",
 		"@octokit/rest": "^16.1.0",
 		"@rocket.chat/eslint-config": "^0.3.0",
-		"@rocket.chat/livechat": "^1.2.5",
+		"@rocket.chat/livechat": "^1.3.0",
 		"@settlin/spacebars-loader": "^1.0.7",
 		"@storybook/addon-actions": "^5.2.4",
 		"@storybook/addon-knobs": "^5.2.4",
@@ -146,7 +108,7 @@
 	"dependencies": {
 		"@accounts/mongo": "0.0.12",
 		"@accounts/server": "0.0.18",
-		"@babel/runtime": "^7.2.0",
+		"@babel/runtime": "^7.7.6",
 		"@google-cloud/language": "^2.0.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
@@ -212,7 +174,7 @@
 		"mailparser": "^2.4.3",
 		"marked": "^0.6.1",
 		"mem": "4.1.0",
-		"meteor-node-stubs": "^0.4.1",
+		"meteor-node-stubs": "^1.0.0",
 		"mime-db": "^1.40.0",
 		"mime-type": "^3.0.7",
 		"mkdirp": "^0.5.1",
@@ -268,7 +230,6 @@
 	"houston": {
 		"updateFiles": [
 			"package.json",
-			".travis/snap.sh",
 			".circleci/snap.sh",
 			".circleci/update-releases.sh",
 			".docker/Dockerfile",
