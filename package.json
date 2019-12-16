@@ -108,6 +108,7 @@
 		"eslint-plugin-react": "^7.14.3",
 		"fast-glob": "^2.2.6",
 		"husky": "^1.2.0",
+		"md5": "^2.2.1",
 		"mocha": "^5.2.0",
 		"mock-require": "^3.0.2",
 		"mongo-unit": "^1.4.4",

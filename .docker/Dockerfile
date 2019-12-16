@@ -2,8 +2,6 @@ FROM rocketchat/base:8
 
 ADD . /app
 
-MAINTAINER buildmaster@rocket.chat
-
 RUN set -x \
  && cd /app/bundle/programs/server \
  && npm install \
@@ -27,4 +25,4 @@ ENV DEPLOY_METHOD=docker \
 
 EXPOSE 3000
 
-CMD ["node", "main.js"]
+CMD ["/bin/bash", "/app/startup.sh"]

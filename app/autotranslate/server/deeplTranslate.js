@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
+import { logger } from './logger';
 import { settings } from '../../settings';
 
 /**
@@ -150,7 +150,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
 			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+				logger.deepl.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -185,7 +185,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					}
 				}
 			} catch (e) {
-				SystemLogger.error('Error translating message attachment', e);
+				logger.deepl.error('Error translating message attachment', e);
 			}
 		});
 		return translations;

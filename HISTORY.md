@@ -299,6 +299,22 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+# Assistify 0.9.14
+
+This release enables Microsoft Text Translator
+
+- Added Microsoft Text Translator as service to auto translate
+- Improved translated message cache
+- Fixed production deployment steps in circleCI
+- Set verification status for users added by a manager
+
+# Assistify 0.9.13
+
+This release enables Assistify to run with multiple instances on ECS.
+
+# Assistify 0.9.12
+
+This Release bumps Rocket.Chat to 1.3.2
 
 # 1.3.2
 `2019-08-14  ·  3 🐛  ·  3 🔍  ·  4 👩‍💻👨‍💻`

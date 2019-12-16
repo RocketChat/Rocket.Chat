@@ -244,8 +244,46 @@ jobs:
       - run:
           name: Publish assets
           command: |
-            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
             bash .scripts/deploy-assistify-chat.sh
+
+  image-build-prod:
+    <<: *defaults
+
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Build latest Docker image
+          command: |
+            cd /tmp/build
+            tar xzf Rocket.Chat.tar.gz
+            rm Rocket.Chat.tar.gz
+
+            if [[ $CIRCLE_BRANCH == 'master' ]]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+              echo "Build official Docker image"
+              cp ~/repo/.docker/Dockerfile .
+               cp ~/repo/.docker/startup.sh .
+              docker build -t assistify/chat:latest .
+              docker push assistify/chat:latest
+
+              # echo "Build preview Docker image"
+              # cp ~/repo/.docker-mongo/Dockerfile .
+              # cp ~/repo/.docker-mongo/entrypoint.sh .
+              # docker build -t assistify/chat.preview:develop .
+              # docker push assistify/chat.preview:develop
+
+              exit 0
+            fi;
 
   image-build:
     <<: *defaults
@@ -274,6 +312,7 @@ jobs:
 
                echo "Build official Docker image"
                cp ~/repo/.docker/Dockerfile .
+               cp ~/repo/.docker/startup.sh .
                docker build -t assistify/chat:$CIRCLE_TAG .
                docker push assistify/chat:$CIRCLE_TAG
 
@@ -305,6 +344,7 @@ jobs:
 
               echo "Build official Docker image"
               cp ~/repo/.docker/Dockerfile .
+               cp ~/repo/.docker/startup.sh .
               docker build -t assistify/chat:develop .
               docker push assistify/chat:develop
 
@@ -418,8 +458,9 @@ jobs:
 
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-            echo "Build official Docker image"
+            echo "Building custom Docker image"
             cp ~/repo/.docker/Dockerfile .
+            cp ~/repo/.docker/startup.sh .
             docker build -t assistify/chat:pr-$CIRCLE_PR_NUMBER .
             docker push assistify/chat:pr-$CIRCLE_PR_NUMBER
 
@@ -456,6 +497,7 @@ workflows:
       - deploy:
           requires:
             - image-build
+            - image-build-prod
             - test-with-oplog-mongo-3-2
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
@@ -467,14 +509,20 @@ workflows:
                 - master
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - image-build:
+      - image-build-prod:
           requires:
             - hold
           filters:
             branches:
               only:
-                - develop
                 - master
+      - image-build:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - hold:
@@ -482,13 +530,14 @@ workflows:
           requires:
             - build
           filters:
-#            branches:
-#              ignore: develop
+            branches:
+              only:
+                - master
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - pr-image-build:
           requires:
-            - hold
+            - build
           filters:
             branches:
               ignore:
