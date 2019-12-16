@@ -77,7 +77,7 @@ export class AppMessageBridge {
 			Users.findByIds(users, { fields: { _id: 1 } })
 				.fetch()
 				.forEach(({ _id }) =>
-					Notifications.notifyUser(_id, 'message', rmsg)
+					Notifications.notifyUser(_id, 'message', rmsg),
 				);
 		}
 	}

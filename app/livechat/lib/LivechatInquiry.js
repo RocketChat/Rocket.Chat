@@ -40,7 +40,7 @@ if (Meteor.isServer) {
 					sort: {
 						ts: 1,
 					},
-				}
+				},
 			);
 		}
 
