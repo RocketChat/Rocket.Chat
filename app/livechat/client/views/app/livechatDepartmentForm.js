@@ -51,7 +51,7 @@ Template.livechatDepartmentForm.helpers({
 					? text
 					: text.replace(
 						new RegExp(filter.get()),
-						(part) => `<strong>${ part }</strong>`
+						(part) => `<strong>${ part }</strong>`,
 					)
 			}`;
 		};

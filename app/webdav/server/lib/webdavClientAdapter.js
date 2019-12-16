@@ -5,7 +5,7 @@ export class WebdavClientAdapter {
 		if (cred.token) {
 			this._client = createClient(
 				serverConfig,
-				{ token: cred.token }
+				{ token: cred.token },
 			);
 		} else {
 			this._client = createClient(
@@ -13,7 +13,7 @@ export class WebdavClientAdapter {
 				{
 					username: cred.username,
 					password: cred.password,
-				}
+				},
 			);
 		}
 	}
