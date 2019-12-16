@@ -129,15 +129,21 @@
 						<div class="input-line double-col" id="emailNotificationMode">
 							<label class="setting-label">{{_ "Email_Notification_Mode"}}</label>
 							<div class="setting-field">
-								<div class="rc-select">
-									<select class="input-monitor rc-select__element" name="emailNotificationMode">
-										<option value="default" selected="{{selected 'emailNotificationMode' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultEmailNotification}})</option>
-										<option value="nothing" selected="{{selected 'emailNotificationMode' 'nothing'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
-										<option value="mentions" selected="{{selected 'emailNotificationMode' 'mentions'}}">{{_ "Email_Notification_Mode_All"}}</option>
-									</select>
-									{{> icon block="rc-select__arrow" icon="arrow-down" }}
-								</div>
-								<div class="settings-description secondary-font-color">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+								{{#with canChange=emailNotificationsAllowed}}
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="emailNotificationMode" {{ifThenElse canChange '' 'disabled'}}>
+											<option value="default" selected="{{selected 'emailNotificationMode' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultEmailNotification}})</option>
+											<option value="nothing" selected="{{selected 'emailNotificationMode' 'nothing'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+											<option value="mentions" selected="{{selected 'emailNotificationMode' 'mentions'}}">{{_ "Email_Notification_Mode_All"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
+									{{#if canChange}}
+										<div class="settings-description secondary-font-color">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+									{{else}}
+										<div class="info">{{_ "Email_Notifications_Change_Disabled"}}</div>
+									{{/if}}
+								{{/with}}
 							</div>
 						</div>
 					</div>

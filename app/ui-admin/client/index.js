@@ -1,6 +1,5 @@
 import './admin.html';
 import './adminFlex.html';
-import './adminInfo.html';
 import './rooms/adminRooms.html';
 import './rooms/adminRoomInfo.html';
 import './rooms/adminRoomInfo';
@@ -13,7 +12,6 @@ import './users/adminUserInfo.html';
 import './users/adminUsers.html';
 import './admin';
 import './adminFlex';
-import './adminInfo';
 import './rooms/adminRooms';
 import './users/adminInviteUser';
 import './users/adminUserChannels';
