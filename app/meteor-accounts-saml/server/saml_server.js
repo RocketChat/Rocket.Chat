@@ -13,6 +13,7 @@ import { SAML } from './saml_utils';
 import { Rooms, Subscriptions, CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
 import { _setUsername } from '../../lib/server/functions';
+import { Users } from '../../models/server';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
