@@ -1,5 +1,4 @@
-import { action } from '@storybook/addon-actions';
-import { withKnobs }from '@storybook/addon-knobs';
+import { withKnobs } from '@storybook/addon-knobs';
 import { MINIMAL_VIEWPORTS, INITIAL_VIEWPORTS } from '@storybook/addon-viewport/dist/defaults';
 import { addDecorator, addParameters, configure } from '@storybook/react';
 import i18next from 'i18next';
@@ -86,13 +85,16 @@ addDecorator(function RocketChatDecorator(fn) {
 		document.head.appendChild(linkElement);
 	}
 
+	// eslint-disable-next-line import/no-unresolved
+	const { default: icons } = require('!!raw-loader!../private/public/icons.svg');
+
 	return <TranslationProviderMock>
 		<style>{`
 			body {
 				background-color: white;
 			}
 		`}</style>
-		<div dangerouslySetInnerHTML={{ __html: require('!!raw-loader!../private/public/icons.svg').default }} />
+		<div dangerouslySetInnerHTML={{ __html: icons }} />
 		<div className='global-font-family color-primary-font-color'>
 			{fn()}
 		</div>

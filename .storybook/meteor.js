@@ -27,7 +27,7 @@ export const Mongo = {
 		find: () => ({
 			observe: () => {},
 			fetch: () => [],
-		})
+		}),
 	}),
 };
 
@@ -63,7 +63,7 @@ window.Blaze = Blaze;
 export const check = () => {};
 
 export const FlowRouter = {
-	route: () => {}
+	route: () => {},
 };
 
 export const BlazeLayout = {};
