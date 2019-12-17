@@ -20,7 +20,7 @@ export class AppUserBridge {
 		return this.orch.getConverters().get('users').convertByUsername(username);
 	}
 
-	async create(user, appId, { avatarUrl, sendWelcomeEmail, joinDefaultChannels }) {
+	async create(user, appId, { avatarUrl }) {
 		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
 
 		const { type } = user;
