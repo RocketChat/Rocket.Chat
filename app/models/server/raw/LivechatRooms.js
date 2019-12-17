@@ -85,7 +85,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		const params = [...firstParams, usersGroup, project];
 		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
+			params.push({ $sort: { chats: -1 } });
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
