@@ -154,7 +154,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			firstParams.push({ $limit: options.count });
 		}
 		if (options.sort) {
-			firstParams.push({ $sort: { name: 1 } });
+			firstParams.push({ $sort: options.sort });
 		}
 		const lookup = {
 			$lookup: {
