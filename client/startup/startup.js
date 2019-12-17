@@ -21,6 +21,11 @@ if (window.DISABLE_ANIMATION) {
 	toastr.options.extendedTimeOut = 0;
 }
 
+const onUserEvents = {
+	changed: (user) => Meteor.users.upsert({ _id: user._id }, user),
+	removed: (user) => Meteor.users.remove({ _id: user._id }),
+};
+
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
@@ -29,13 +34,7 @@ Meteor.startup(function() {
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 
-	Notifications.onUser('userData', ({ type, user }) => {
-		const events = {
-			changed: () => Meteor.users.upsert({ _id: user._id }, user),
-			removed: () => Meteor.users.remove({ _id: user._id }),
-		};
-		events[type]();
-	});
+	Notifications.onUser('userData', ({ type, user }) => onUserEvents[type](user));
 
 	let status = undefined;
 	Tracker.autorun(function() {
