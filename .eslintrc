@@ -47,9 +47,9 @@
         "**/*.tsx"
       ],
       "extends": [
-        "@rocket.chat/eslint-config",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
+        "plugin:@typescript-eslint/eslint-recommended",
+        "@rocket.chat/eslint-config"
       ],
       "globals": {
         "Atomics": "readonly",

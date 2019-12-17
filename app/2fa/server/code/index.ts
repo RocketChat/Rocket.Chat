@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
 import { IUser } from '../../../../definition/IUser';
