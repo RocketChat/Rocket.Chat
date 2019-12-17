@@ -339,7 +339,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 
 	const mountUrlWithParams = (filter, offset) => {
 		const { status, agents, department, from, to, tags, customFields, name: roomName } = filter;
-		let url = `livechat/rooms?count=${ ROOMS_COUNT }&offset=${ offset }`;
+		let url = `livechat/rooms?count=${ ROOMS_COUNT }&offset=${ offset }&sort={"ts": -1}`;
 		const dateRange = {};
 		if (status) {
 			url += `&open=${ status === 'opened' }`;
