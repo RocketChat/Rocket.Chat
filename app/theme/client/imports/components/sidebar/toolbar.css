@@ -113,6 +113,7 @@
 .rtl .toolbar {
 	& .rc-input__icon + .rc-input__element {
 		padding: 0.5rem 2.25rem 0.5rem 1rem;
+
 		line-height: 4.5em !important;
 	}
 }
@@ -126,23 +127,28 @@
 		& .rc-input {
 			&__wrapper {
 				padding: 0;
-				color: var(--rc-color-primary-light);
+
 				text-align: center;
+
+				color: var(--rc-color-primary-light);
 			}
+
 			&__icon {
 				left: 2rem;
+
 				&--right {
 					display: none !important;
 				}
 			}
-
 		}
+
 		& .rc-input__icon + .rc-input__element {
-			padding: 0.5rem 2.25rem 0.5rem 3rem;
+			width: 90%;
 			height: 40px !important;
+			padding: 0.5rem 2.25rem 0.5rem 3rem;
+
 			border-color: #81868d;
 			border-radius: 15px;
-			width: 90%;
 		}
 	}
 }
