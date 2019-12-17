@@ -228,8 +228,8 @@ FlowRouter.route('/register/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: async () => {
-		const { SetupWizard } = await import('./components/setupWizard/SetupWizard');
-		BlazeLayout.render(await createTemplateForComponent(SetupWizard));
+		const { SetupWizardRoute } = await import('./components/setupWizard/SetupWizardRoute');
+		BlazeLayout.render(await createTemplateForComponent(SetupWizardRoute));
 	},
 });
 
