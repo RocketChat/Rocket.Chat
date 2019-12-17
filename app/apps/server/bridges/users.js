@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 
 import { setUserAvatar, checkUsernameAvailability } from '../../../lib/server/functions';
 import { Users } from '../../../models/server/raw';
+import { Roles } from '../../../models/server/models/Roles';
 
 export class AppUserBridge {
 	constructor(orch) {
@@ -42,10 +42,34 @@ export class AppUserBridge {
 				newUserId = user._id;
 				break;
 			default:
-				throw new Meteor.Error('Creating users is not supported now!');
+				throw new Meteor.Error('error-creating-users-not-supported', 'Creating users is not supported now!', { function: 'create' });
 		}
 
 		return newUserId;
+	}
+
+	async removeAppUser(appId) {
+		this.orch.debugLog(`The App ${ appId } is removing its binding user.`);
+
+		const user = await Users.find({ appId });
+
+		if (!user) {
+			throw new Meteor.Error('error-user-not-found', 'User not found', { function: 'removeAppUser' });
+		}
+
+		try {
+			Roles.findUsersInRole((admin, index) => {
+				if (index > 0) {
+					return;
+				}
+
+				Meteor.runAsUser(admin._id, () => {
+					Meteor.call('deleteUser', user._id);
+				});
+			});
+		} catch {
+			throw new Meteor.Error('error-deleting-user', 'Errors occurred while deleting an app user.', { function: 'removeAppUser' });
+		}
 	}
 
 	async getActiveUserCount() {
