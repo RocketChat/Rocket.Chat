@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
+
+import { useSubscription } from '../hooks/useSubscription';
 
 export const SessionContext = createContext({
 	get: () => null,
@@ -9,31 +11,11 @@ export const SessionContext = createContext({
 export const useSession = (name) => {
 	const session = useContext(SessionContext);
 
-	const [value, setValue] = useState(() => session.get(name));
+	const getInitialValue = useMemo(() => session.get.bind(session, name), [session, name]);
+	const subscribe = useMemo(() => session.subscribe.bind(session, name), [session, name]);
+	const value = useSubscription(getInitialValue, subscribe);
 
-	const mounted = useRef(true);
+	const setValue = useCallback((value) => session.set(name, value), [session, name]);
 
-	useEffect(() => {
-		mounted.current = true;
-
-		return () => {
-			mounted.current = false;
-		};
-	}, [mounted]);
-
-	useEffect(() => {
-		const unsubscribe = session.subscribe(name, (newValue) => {
-			if (!mounted.current) {
-				return;
-			}
-
-			setValue(newValue);
-		});
-
-		return () => {
-			unsubscribe();
-		};
-	}, [mounted, session, name]);
-
-	return [value, useCallback((value) => session.set(name, value), [name, value])];
+	return [value, setValue];
 };

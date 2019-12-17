@@ -1,16 +1,20 @@
-import { useState } from 'react';
+import { Tracker } from 'meteor/tracker';
+import { useCallback } from 'react';
 
-import { useAutorun } from './useAutorun';
-import { useNonReactiveValue } from './useNonReactiveValue';
+import { useSubscription } from './useSubscription';
 
 export const useReactiveValue = (getValue, deps = []) => {
-	const initialValue = useNonReactiveValue(getValue);
-	const [value, setValue] = useState(() => initialValue);
+	const getInitialValue = () => Tracker.nonreactive(getValue);
 
-	useAutorun(() => {
-		const newValue = getValue();
-		setValue(() => newValue);
+	const subscribe = useCallback((fn) => {
+		const computation = Tracker.autorun(() => {
+			fn(getValue());
+		});
+
+		return () => {
+			computation.stop();
+		};
 	}, deps);
 
-	return value;
+	return useSubscription(getInitialValue, subscribe);
 };
