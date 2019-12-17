@@ -147,14 +147,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			match.$match.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
 		}
 		const firstParams = [match];
+		if (options.sort) {
+			firstParams.push({ $sort: options.sort });
+		}
 		if (options.offset) {
 			firstParams.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			firstParams.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			firstParams.push({ $sort: { name: 1 } });
 		}
 		const lookup = {
 			$lookup: {
