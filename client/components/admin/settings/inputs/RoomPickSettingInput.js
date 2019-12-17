@@ -81,7 +81,7 @@ export function RoomPickSettingInput({
 			{value.map(({ _id, name }) =>
 				<li key={_id} className='remove-room' onClick={handleRemoveRoomButtonClick(_id)}>
 					{name} <Icon name='cross' />
-				</li>
+				</li>,
 			)}
 		</ul>
 	</>;

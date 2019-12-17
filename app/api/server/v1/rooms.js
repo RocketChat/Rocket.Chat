@@ -135,8 +135,8 @@ API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 		const saveNotifications = (notifications, roomId) => {
 			Object.keys(notifications).forEach((notificationKey) =>
 				Meteor.runAsUser(this.userId, () =>
-					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey])
-				)
+					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]),
+				),
 			);
 		};
 		const { roomId, notifications } = this.bodyParams;
