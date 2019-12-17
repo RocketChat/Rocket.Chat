@@ -7,7 +7,6 @@ import { lazyloadtick } from '../../../lazy-load';
 import { isRtl } from '../../../utils';
 
 const sideNavW = 280;
-// const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
 export const menu = new class extends EventEmitter {
 	constructor() {
@@ -106,15 +105,12 @@ export const menu = new class extends EventEmitter {
 					this.diff = 0;
 				}
 			}
-			// if (map((this.diff / sideNavW), 0, 1, -.1, .8) > 0) {
 			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
-			// this.sidebarWrap.css('z-index', '9998');
 			this.translate(this.diff);
-			// }
 		}
 	}
 
-	translate(diff, /* width = sideNavW */) {
+	translate(diff) {
 		if (diff === undefined) {
 			diff = this.isRtl ? -1 * sideNavW : sideNavW;
 		}

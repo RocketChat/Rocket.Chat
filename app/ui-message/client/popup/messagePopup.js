@@ -238,7 +238,7 @@ Template.messagePopup.onRendered(function() {
 	if (this.data.getInput != null) {
 		this.input = typeof this.data.getInput === 'function' && this.data.getInput();
 	} else if (this.data.input) {
-		this.input = this.parentTemplate().find(this.data.input);
+		this.input = this.parentTemplate(this.data.parent).find(this.data.input);
 	}
 	if (this.input == null) {
 		console.error('Input not found for popup');

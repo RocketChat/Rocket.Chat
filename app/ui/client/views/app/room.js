@@ -114,7 +114,7 @@ const mountPopover = (e, i, outerContext) => {
 			modifier: item.color,
 		}));
 
-		menuItems = menuItems.concat(messageItems);
+		menuItems = messageItems.concat(menuItems);
 	}
 
 	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
@@ -671,6 +671,10 @@ Template.room.events({
 			}
 
 			window.open(e.target.href);
+		}
+
+		if (isMobile()) {
+			mountPopover(e, t, this);
 		}
 	},
 
