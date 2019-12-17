@@ -359,6 +359,7 @@
   "App_support_url": "support url",
   "App_Url_to_Install_From": "Install from URL",
   "App_Url_to_Install_From_File": "Install from file",
+  "App_user_not_allowed_to_login": "App users are not allowed to log in directly.",
   "Appearance": "Appearance",
   "Application_added": "Application added",
   "Application_Name": "Application Name",

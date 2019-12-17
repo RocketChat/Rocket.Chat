@@ -348,6 +348,7 @@
   "App_support_url": "支持网址",
   "App_Url_to_Install_From": "从 URL 安装",
   "App_Url_to_Install_From_File": "从文件安装",
+  "App_user_not_allowed_to_login": "App类型用户不允许直接登录。",
   "Appearance": "外观",
   "Application_added": "应用已添加",
   "Application_Name": "应用名称",
