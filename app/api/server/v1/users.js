@@ -657,6 +657,14 @@ API.v1.addRoute('users.2fa.disableEmail', { authRequired: true, twoFactorRequire
 	},
 });
 
+API.v1.addRoute('users.2fa.sendEmailCode', {
+	post() {
+		const { emailOrUsername } = this.bodyParams;
+
+		return API.v1.success(Meteor.call('sendEmailCode', emailOrUsername));
+	},
+});
+
 API.v1.addRoute('users.presence', { authRequired: true }, {
 	get() {
 		const { from } = this.queryParams;
