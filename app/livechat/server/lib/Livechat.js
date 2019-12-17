@@ -478,7 +478,7 @@ export const Livechat = {
 		check(transferredBy, Match.ObjectIncluding({
 			_id: String,
 			username: String,
-			name: String,
+			name: Match.Maybe(String),
 			type: String,
 		}));
 
