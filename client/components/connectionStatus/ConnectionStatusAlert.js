@@ -1,20 +1,13 @@
 import { Icon } from '@rocket.chat/fuselage';
 import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 
 import { useConnectionStatus, useReconnect } from '../../contexts/ConnectionStatusContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import './ConnectionStatusAlert.css';
 
-export function ConnectionStatusAlert() {
-	const {
-		connected,
-		retryTime,
-		status,
-	} = useConnectionStatus();
-	const reconnect = useReconnect();
+const useReconnectCountdown = (retryTime, status) => {
 	const reconnectionTimerRef = useRef();
 	const [reconnectCountdown, setReconnectCountdown] = useState(0);
-	const t = useTranslation();
 
 	useEffect(() => {
 		if (status === 'waiting') {
@@ -37,6 +30,34 @@ export function ConnectionStatusAlert() {
 		clearInterval(reconnectionTimerRef.current);
 	}, []);
 
+	return reconnectCountdown;
+};
+
+const Container = styled.div`
+	position: fixed;
+	z-index: 1000000;
+	top: 0;
+
+	width: 100%;
+	padding: 2px;
+
+	text-align: center;
+
+	color: #916302;
+	border-bottom-width: 1px;
+	background-color: #fffdf9;
+`;
+
+const RetryLink = styled.a`
+	color: var(--color-blue);
+`;
+
+export function ConnectionStatusAlert() {
+	const { connected, retryTime, status } = useConnectionStatus();
+	const reconnect = useReconnect();
+	const reconnectCountdown = useReconnectCountdown(retryTime, status);
+	const t = useTranslation();
+
 	if (connected) {
 		return null;
 	}
@@ -46,7 +67,7 @@ export function ConnectionStatusAlert() {
 		reconnect();
 	};
 
-	return <div className='ConnectionStatusAlert' role='alert'>
+	return <Container role='alert'>
 		<strong>
 			<Icon name='warning' /> {t('meteor_status', { context: status })}
 		</strong>
@@ -58,13 +79,9 @@ export function ConnectionStatusAlert() {
 
 		{['waiting', 'offline'].includes(status) && <>
 			{' '}
-			<a
-				href='#'
-				className='ConnectionStatusAlert__link'
-				onClick={handleRetryClick}
-			>
+			<RetryLink href='#' onClick={handleRetryClick}>
 				{t('meteor_status_try_now', { context: status })}
-			</a>
+			</RetryLink>
 		</>}
-	</div>;
+	</Container>;
 }
