@@ -17,8 +17,8 @@ test-install-dependencies: &test-install-dependencies
 test-run: &test-run
   name: Run Tests
   command: |
-            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
-            npm test # npm test holds an option to re-execute each test for ${ RETRY_TEST }-times - so we don't need the standard mechanism here
+    if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
+    npm test # npm test holds an option to re-execute each test for ${ RETRY_TEST }-times - so we don't need the standard mechanism here
 
 test-npm-install: &test-npm-install
   name: NPM install
@@ -153,8 +153,8 @@ jobs:
               meteor reset;
             fi
 
-            export CIRCLE_PULL_REQUEST="${CIRCLE_PULL_REQUEST:-${CIRCLE_PULL_REQUEST##*/}}"
-            if [[ -z $CIRCLE_PULL_REQUEST ]]; then
+            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+            if [[ -z $CIRCLE_PR_NUMBER ]]; then
               meteor build --server-only --directory /tmp/build-test
             else
               export METEOR_PROFILE=1000
@@ -243,7 +243,7 @@ jobs:
       - run:
           name: Publish assets
           command: |
-            bash .scripts/deploy-assistify-chat.sh
+            bash .scripts/publish-build.sh
 
   image-build: &image-build
     <<: *defaults
@@ -265,7 +265,6 @@ jobs:
             cd /tmp/build
             tar xzf Rocket.Chat.tar.gz
             rm Rocket.Chat.tar.gz
-            cp ~/repo/.docker/Dockerfile .
 
             export CIRCLE_TAG=${CIRCLE_TAG:=}
             if [[ $CIRCLE_TAG ]]; then
@@ -298,11 +297,6 @@ jobs:
               exit 0
             fi;
 
-            if [[ $CIRCLE_PULL_REQUEST ]]; then
-              docker build -t assistify/chat:pr-${CIRCLE_PULL_REQUEST##*/} .
-              docker push assistify/chat:pr-${CIRCLE_PULL_REQUEST##*/}
-            fi;
-
             if [[ $CIRCLE_BRANCH == 'develop' ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
 
@@ -320,6 +314,13 @@ jobs:
               exit 0
             fi;
 
+            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+            if [[ $CIRCLE_PR_NUMBER ]]; then
+              cp ~/repo/.docker/Dockerfile .
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker build -t assistify/chat:pr-${CIRCLE_PR_NUMBER} .
+              docker push assistify/chat:pr-${CIRCLE_PR_NUMBER}
+            fi;
   pr-build:
     <<: *build
 
