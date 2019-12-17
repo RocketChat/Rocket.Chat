@@ -4,7 +4,6 @@ import { MINIMAL_VIEWPORTS, INITIAL_VIEWPORTS } from '@storybook/addon-viewport/
 import { addDecorator, addParameters, configure } from '@storybook/react';
 import React from 'react';
 
-import { ConnectionStatusProvider } from '../client/components/providers/ConnectionStatusProvider.mock';
 import { TranslationProvider } from '../client/components/providers/TranslationProvider.mock';
 
 addParameters({
@@ -29,19 +28,17 @@ addDecorator(function RocketChatDecorator(fn) {
 		document.head.appendChild(linkElement);
 	}
 
-	return <ConnectionStatusProvider connected status='connected' reconnect={action('reconnect')}>
-		<TranslationProvider>
-			<style>{`
-				body {
-					background-color: white;
-				}
-			`}</style>
-			<div dangerouslySetInnerHTML={{ __html: require('!!raw-loader!../private/public/icons.svg').default }} />
-			<div className='global-font-family color-primary-font-color'>
-				{fn()}
-			</div>
-		</TranslationProvider>
-	</ConnectionStatusProvider>;
+	return <TranslationProvider>
+		<style>{`
+			body {
+				background-color: white;
+			}
+		`}</style>
+		<div dangerouslySetInnerHTML={{ __html: require('!!raw-loader!../private/public/icons.svg').default }} />
+		<div className='global-font-family color-primary-font-color'>
+			{fn()}
+		</div>
+	</TranslationProvider>;
 });
 
 addDecorator(withKnobs);

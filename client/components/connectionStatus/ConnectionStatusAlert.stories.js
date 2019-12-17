@@ -1,30 +1,52 @@
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
+import { ConnectionStatusContext } from '../../contexts/ConnectionStatusContext';
 import { ConnectionStatusAlert } from './ConnectionStatusAlert';
-import { ConnectionStatusProvider } from '../providers/ConnectionStatusProvider.mock';
+
+function ConnectionStatusProviderMock({
+	children,
+	connected = false,
+	status,
+	retryTime,
+	retryCount = 3,
+	reconnect = () => {},
+}) {
+	return <ConnectionStatusContext.Provider
+		children={children}
+		value={{
+			status: {
+				connected,
+				retryCount,
+				retryTime,
+				status,
+			},
+			reconnect,
+		}} />;
+}
+
 
 export default {
 	title: 'connectionStatus/ConnectionStatusAlert',
 	component: ConnectionStatusAlert,
 };
 
-export const connected = () => <ConnectionStatusProvider connected status='connected' reconnect={action('reconnect')}>
+export const connected = () => <ConnectionStatusProviderMock connected status='connected' reconnect={action('reconnect')}>
 	<ConnectionStatusAlert />
-</ConnectionStatusProvider>;
+</ConnectionStatusProviderMock>;
 
-export const connecting = () => <ConnectionStatusProvider status='connecting' reconnect={action('reconnect')}>
+export const connecting = () => <ConnectionStatusProviderMock status='connecting' reconnect={action('reconnect')}>
 	<ConnectionStatusAlert />
-</ConnectionStatusProvider>;
+</ConnectionStatusProviderMock>;
 
-export const failed = () => <ConnectionStatusProvider status='failed' reconnect={action('reconnect')}>
+export const failed = () => <ConnectionStatusProviderMock status='failed' reconnect={action('reconnect')}>
 	<ConnectionStatusAlert />
-</ConnectionStatusProvider>;
+</ConnectionStatusProviderMock>;
 
-export const waiting = () => <ConnectionStatusProvider status='waiting' retryTime={Date.now() + 300000} reconnect={action('reconnect')}>
+export const waiting = () => <ConnectionStatusProviderMock status='waiting' retryTime={Date.now() + 300000} reconnect={action('reconnect')}>
 	<ConnectionStatusAlert />
-</ConnectionStatusProvider>;
+</ConnectionStatusProviderMock>;
 
-export const offline = () => <ConnectionStatusProvider status='offline' reconnect={action('reconnect')}>
+export const offline = () => <ConnectionStatusProviderMock status='offline' reconnect={action('reconnect')}>
 	<ConnectionStatusAlert />
-</ConnectionStatusProvider>;
+</ConnectionStatusProviderMock>;
