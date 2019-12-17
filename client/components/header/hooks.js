@@ -1,18 +1,9 @@
 import { useMemo } from 'react';
 
 import { ChatSubscription } from '../../../app/models/client/models/ChatSubscription';
-import { menu } from '../../../app/ui-utils/client/lib/menu';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useSession } from '../../contexts/SessionContext';
 import { useUserPreference } from '../../hooks/useUserPreference';
-
-import './BurgerMenuButton.css';
-
-export const useSidebarState = () => {
-	const [isOpen] = useSession('isMenuOpen');
-	const toggle = () => menu.toggle();
-	return [isOpen, toggle];
-};
 
 export const useUnreadMessagesBadge = () => {
 	const alertUnreadMessages = useUserPreference('unreadAlert') !== false;

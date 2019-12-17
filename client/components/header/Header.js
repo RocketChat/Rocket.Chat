@@ -2,9 +2,10 @@ import { Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { useSidebar } from '../../contexts/SidebarContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { BurgerMenuButton } from './BurgerMenuButton';
-import { useSidebarState, useUnreadMessagesBadge } from './hooks';
+import { useUnreadMessagesBadge } from './hooks';
 
 export function Header({
 	children,
@@ -12,13 +13,13 @@ export function Header({
 	rawSectionName,
 	sectionName,
 }) {
-	const [isSidebarOpen, toggleSidebarOpen] = useSidebarState();
+	const [isSidebarOpen, setSidebarOpen] = useSidebar();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const unreadMessagesBadge = useUnreadMessagesBadge();
 	const t = useTranslation();
 
 	const handleClick = () => {
-		toggleSidebarOpen();
+		setSidebarOpen(!isSidebarOpen);
 	};
 
 	return <header className='rc-header'>

@@ -5,9 +5,14 @@ import styled from 'styled-components';
 import { useConnectionStatus, useReconnect } from '../../contexts/ConnectionStatusContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 
+const getReconnectCountdown = (retryTime) => {
+	const timeDiff = retryTime - Date.now();
+	return (timeDiff > 0 && Math.round(timeDiff / 1000)) || 0;
+};
+
 const useReconnectCountdown = (retryTime, status) => {
 	const reconnectionTimerRef = useRef();
-	const [reconnectCountdown, setReconnectCountdown] = useState(0);
+	const [reconnectCountdown, setReconnectCountdown] = useState(() => getReconnectCountdown(retryTime));
 
 	useEffect(() => {
 		if (status === 'waiting') {
@@ -16,8 +21,7 @@ const useReconnectCountdown = (retryTime, status) => {
 			}
 
 			reconnectionTimerRef.current = setInterval(() => {
-				const timeDiff = retryTime - Date.now();
-				setReconnectCountdown((timeDiff > 0 && Math.round(timeDiff / 1000)) || 0);
+				setReconnectCountdown(getReconnectCountdown(retryTime));
 			}, 500);
 			return;
 		}
