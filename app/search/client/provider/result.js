@@ -18,6 +18,13 @@ Meteor.startup(function() {
 		context: ['search'],
 		action() {
 			const { msg: message } = messageArgs(this);
+			if (Session.get('openSearchPage')) {
+				Session.set('openSearchPage', false);
+				window.setTimeout(() => {
+					RoomHistoryManager.getSurroundingMessages(message, 50);
+				}, 400);
+				return;
+			}
 			if (Session.get('openedRoom') === message.rid) {
 				return RoomHistoryManager.getSurroundingMessages(message, 50);
 			}

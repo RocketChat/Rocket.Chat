@@ -420,12 +420,7 @@
 			display: none;
 		}
 
-		&__block {
-			margin: 0 0.25rem;
-		}
-
 		&__block-action {
-			order: 2;
 
 			& + & {
 				border-left: 1px var(--color-gray) solid;
@@ -435,10 +430,24 @@
 					border-left: 0;
 				}
 			}
+			.rc-room-actions {
+				&__action {
+					.rc-room-actions__button {
+						.tab-button-icon {
+							height: 1.2em;
+						}
+					}
+				}
+			}
 		}
-
-		&__favorite {
+		&__search-button {
+			margin: 0 0.25em;
 			order: 1;
+			&__action {
+				&__icon {
+					height: 1.2em;
+				}
+			}
 		}
 
 		&__data {
