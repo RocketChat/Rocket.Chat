@@ -12,11 +12,11 @@ export function process2faReturn({ error, result, originalCallback, onCode, emai
 	const method = error.details && error.details.method;
 
 	modal.open({
-		title: t('Two-factor_authentication'),
-		text: method === 'email' ? 'Verify your email for the code we sent.' : t('Open_your_authentication_app_and_enter_the_code'), // TODO: translate
+		title: t('Two Factor Authentication'),
+		text: t(method === 'email' ? 'Verify_your_email_for_the_code_we_sent' : 'Open_your_authentication_app_and_enter_the_code'),
 		html: method === 'email',
 		type: 'input',
-		inputActionText: method === 'email' && 'Send me the code again', // TODO: translate
+		inputActionText: method === 'email' && t('Send_me_the_code_again'),
 		inputAction(e) {
 			window.a = e;
 			const { value } = e.currentTarget;

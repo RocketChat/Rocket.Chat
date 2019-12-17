@@ -34,6 +34,7 @@ export function getUserForCheck(userId: string): IUser {
 	return Users.findOneById(userId, {
 		fields: {
 			emails: 1,
+			language: 1,
 			'services.totp': 1,
 			'services.email2fa': 1,
 			'services.emailCode': 1,

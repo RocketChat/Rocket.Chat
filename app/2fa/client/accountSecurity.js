@@ -94,7 +94,7 @@ Template.accountSecurity.events({
 				handleError(error);
 			}
 
-			toastr.success(t('Two-factor_authentication_email_disabled'));
+			toastr.success(t('Two-factor_authentication_enabled'));
 		});
 	},
 

@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 
@@ -28,7 +29,11 @@ export class EmailCheck implements ICodeCheck {
 		return this.getUserVerifiedEmails(user).length > 0;
 	}
 
-	public send2FAEmail(address: string, random: string): void {
+	public send2FAEmail(address: string, random: string, user: IUser): void {
+		const language = user.language || settings.get('Language') || 'en';
+
+		const t = (s: string): string => TAPi18n.__(s, { lng: language });
+
 		Mailer.send({
 			to: address,
 			from: settings.get('From_Email'),
@@ -39,20 +44,20 @@ export class EmailCheck implements ICodeCheck {
 			},
 			headers: undefined,
 			text: `
-Here is your authentication code:
+${ t('Here_is_your_authentication_code') }
 
 __code__
 
-Do not provide this code to anyone.
-If you didn't try to login in your account please ignore this email.
+${ t('Do_not_provide_this_code_to_anyone') }
+${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
 `,
 			html: `
-				<p>Here is your authentication code:</p>
+				<p>${ t('Here_is_your_authentication_code') }</p>
 				<p style="font-size: 30px;">
 					<b>__code__</b>
 				</p>
-				<p>Do not provide this code to anyone.</p>
-				<p>If you didn't try to login in your account please ignore this email.</p>
+				<p>${ t('Do_not_provide_this_code_to_anyone') }</p>
+				<p>${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }</p>
 			`,
 		});
 	}
@@ -99,7 +104,7 @@ If you didn't try to login in your account please ignore this email.
 		Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
 
 		for (const address of emails) {
-			this.send2FAEmail(address, random);
+			this.send2FAEmail(address, random, user);
 		}
 
 		return emails;
