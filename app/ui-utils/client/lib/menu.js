@@ -7,7 +7,7 @@ import { lazyloadtick } from '../../../lazy-load';
 import { isRtl } from '../../../utils';
 
 const sideNavW = 280;
-const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+// const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
 export const menu = new class extends EventEmitter {
 	constructor() {
@@ -114,7 +114,7 @@ export const menu = new class extends EventEmitter {
 		}
 	}
 
-	translate(diff, width = sideNavW) {
+	translate(diff, /* width = sideNavW */) {
 		if (diff === undefined) {
 			diff = this.isRtl ? -1 * sideNavW : sideNavW;
 		}
@@ -122,7 +122,7 @@ export const menu = new class extends EventEmitter {
 		this.wrapper.css('overflow', 'hidden');
 
 		// WIDECHAT translate main content
-		this.isRtl ? this.mainContent.css('transform', `translate3d(${ (diff).toFixed(3) }px, 0 , 0)`) : this.mainContent.css('transform', `translate3d(${ (diff).toFixed(3) }px, 0 , 0)`);
+		this.isRtl ? this.mainContent.css('transform', `translate3d(${ diff.toFixed(3) }px, 0 , 0)`) : this.mainContent.css('transform', `translate3d(${ diff.toFixed(3) }px, 0 , 0)`);
 	}
 
 	touchend() {

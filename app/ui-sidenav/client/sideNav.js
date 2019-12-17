@@ -97,10 +97,10 @@ const openMainContentIfNeeded = () => {
 	const currentRouteState = FlowRouter.current();
 	const defaults = ['/', '/home'];
 
-	if(!defaults.includes(currentRouteState.path)){
+	if (!defaults.includes(currentRouteState.path)) {
 		menu.close();
 	}
-}
+};
 
 Template.sideNav.onRendered(function() {
 	SideNav.init();

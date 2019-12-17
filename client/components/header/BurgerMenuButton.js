@@ -66,7 +66,7 @@ export function BurgerMenuButton() {
 			'burger',
 			'menu-opened',
 		].filter(Boolean).join(' ')}
-		type='button' 
+		type='button'
 		onClick={handleClick}
 	>
 		<i className='burger__line' aria-hidden='true' />
