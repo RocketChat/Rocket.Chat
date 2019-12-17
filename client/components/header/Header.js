@@ -2,10 +2,10 @@ import { Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { useSession } from '../../contexts/SessionContext';
 import { useSidebar } from '../../contexts/SidebarContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { BurgerMenuButton } from './BurgerMenuButton';
-import { useUnreadMessagesBadge } from './hooks';
 
 export function Header({
 	children,
@@ -15,7 +15,7 @@ export function Header({
 }) {
 	const [isSidebarOpen, setSidebarOpen] = useSidebar();
 	const isLayoutEmbedded = useEmbeddedLayout();
-	const unreadMessagesBadge = useUnreadMessagesBadge();
+	const [unreadMessagesBadge] = useSession('unread');
 	const t = useTranslation();
 
 	const handleClick = () => {
