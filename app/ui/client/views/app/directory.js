@@ -30,7 +30,7 @@ function directorySearch(config, cb) {
 				return {
 					name: result.name,
 					username: result.username,
-					// If there is no email address (probably only rocket.cat) show the username)
+					// If there is no email address (rocket.cat and app users) show the username)
 					email: (result.emails && result.emails[0] && result.emails[0].address) || result.username,
 					createdAt: timeAgo(result.createdAt, t),
 					origin: result.federation && result.federation.origin,
