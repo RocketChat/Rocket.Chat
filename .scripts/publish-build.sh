@@ -45,7 +45,7 @@ if [ ${BRANCH} = master ]
       TARGET_ENVIRONMENT_TAG="production"
       DEPLOYMENT_TARGET_ENVIRONMENT="prd"
       IMAGE_TAG="latest"
-      
+
       # publish a new "latest"-file in order to make new clients be created with it
       aws s3 cp ${BUILD_FILE} s3://${AWS_BUCKET}/rocketchat/rocket-chat-latest.tar.tgz --region ${AWS_REGION} --acl bucket-owner-full-control
 
