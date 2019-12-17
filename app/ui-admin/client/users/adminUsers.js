@@ -117,7 +117,7 @@ Template.adminUsers.onCreated(function() {
 			query = {};
 		}
 		query.type = {
-			$in: ['user', 'bot'],
+			$in: ['user', 'bot', 'app'],
 		};
 
 		const limit = instance.limit && instance.limit.get();
