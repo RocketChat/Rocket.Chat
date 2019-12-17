@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
 import Users from '../../../models/server/models/Users';
-import { require2fa } from '../methodWrapper';
+import { methodsWithTwoFactor } from '../twoFactorRequired';
 
-Meteor.methods({
-	'2fa:disable-email': require2fa(function() {
+methodsWithTwoFactor({
+	'2fa:disable-email'() {
 		return Users.disableEmail2FAByUserId(Meteor.userId());
-	}),
+	},
 });

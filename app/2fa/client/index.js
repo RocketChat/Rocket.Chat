@@ -1,4 +1,4 @@
 import './accountSecurity.html';
 import './accountSecurity';
-import './callWith2fa';
+import './callWithTwoFactorRequired';
 import './TOTPPassword';

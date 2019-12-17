@@ -3,9 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { checkCodeForUser } from '../code';
 
 Meteor.methods({
-	callWith2fa({ code, ddpMethod, method, params }) {
+	callWithTwoFactorRequired({ code, ddpMethod, method, params }) {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'callWith2fa' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'callWithTwoFactorRequired' });
 		}
 
 		checkCodeForUser({ user: this.userId, code, method });

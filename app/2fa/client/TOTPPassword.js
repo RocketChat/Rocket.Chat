@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
 
 import { t } from '../../utils';
-import { process2faReturn } from './callWith2fa';
+import { process2faReturn } from './callWithTwoFactorRequired';
 
 function reportError(error, callback) {
 	if (callback) {

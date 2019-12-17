@@ -1,5 +1,5 @@
 import './startup/settings';
-import './methods/callWith2fa';
+import './methods/callWithTwoFactorRequired';
 import './methods/sendEmailCode';
 import './methods/checkCodesRemaining';
 import './methods/disable-email';
