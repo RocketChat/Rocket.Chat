@@ -7,7 +7,7 @@ import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useFocus } from '../../../hooks/useFocus';
 import { useMethod } from '../../../hooks/useMethod';
 import { Icon } from '../../basic/Icon';
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
 import { Step } from '../Step';

@@ -4,7 +4,7 @@ import React from 'react';
 import { useRoute } from '../../contexts/RouterContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
-import { useTranslation } from '../providers/TranslationProvider';
+import { useTranslation } from '../../contexts/TranslationContext';
 import './PageNotFound.css';
 
 export function PageNotFound() {

@@ -2,7 +2,7 @@ import { Icon } from '@rocket.chat/fuselage';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { useConnectionStatus, useReconnect } from '../../contexts/ConnectionStatusContext';
-import { useTranslation } from '../providers/TranslationProvider';
+import { useTranslation } from '../../contexts/TranslationContext';
 import './ConnectionStatusAlert.css';
 
 export function ConnectionStatusAlert() {

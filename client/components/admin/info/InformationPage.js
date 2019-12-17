@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from '../../basic/Link';
 import { ErrorAlert } from '../../basic/ErrorAlert';
 import { Header } from '../../header/Header';
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';
 import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';

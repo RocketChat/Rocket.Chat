@@ -2,7 +2,7 @@ import { Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import { useTranslation } from '../providers/TranslationProvider';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { BurgerMenuButton } from './BurgerMenuButton';
 import { useSidebarState, useUnreadMessagesBadge } from './hooks';
 

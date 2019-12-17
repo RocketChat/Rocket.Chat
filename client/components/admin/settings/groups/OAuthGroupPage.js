@@ -7,7 +7,7 @@ import s from 'underscore.string';
 import { call } from '../../../../../app/ui-utils/client/lib/callMethod';
 import { modal } from '../../../../../app/ui-utils/client/lib/modal';
 import { RawText } from '../../../basic/RawText';
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 

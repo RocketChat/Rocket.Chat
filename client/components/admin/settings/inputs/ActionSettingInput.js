@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React from 'react';
 import toastr from 'toastr';
 
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { handleError } from '../../../../../app/utils/client';
 
 export function ActionSettingInput({

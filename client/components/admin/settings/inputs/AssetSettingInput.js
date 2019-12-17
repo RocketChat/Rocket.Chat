@@ -4,7 +4,7 @@ import React from 'react';
 import toastr from 'toastr';
 
 import { call } from '../../../../../app/ui-utils/client/lib/callMethod';
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 
 export function AssetSettingInput({
 	_id,

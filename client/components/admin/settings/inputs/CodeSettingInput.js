@@ -2,7 +2,7 @@ import { Button, Field, Label } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { ResetSettingButton } from '../ResetSettingButton';
 
 function CodeMirror({
