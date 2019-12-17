@@ -187,14 +187,14 @@ class Katex {
 
 Tracker.autorun(async () => {
 	if (!settings.get('Katex_Enabled')) {
-		callbacks.remove('renderMessage', 'katex');
+		return callbacks.remove('renderMessage', 'katex');
 	}
 
 
 	const [katex] = await Promise.all([import('katex'), import('./style.css'), import('../katex.min.css')]);
 	const instance = new Katex(katex);
 
-	callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH - 1, 'katex');
+	callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH + 1, 'katex');
 });
 
 export default {
