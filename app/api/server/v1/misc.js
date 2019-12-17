@@ -10,6 +10,7 @@ import { settings } from '../../../settings';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
+import { StdOut } from '../../../logger/server/publish';
 
 
 // DEPRECATED
@@ -200,5 +201,11 @@ API.v1.addRoute('directory', { authRequired: true }, {
 			offset,
 			total: result.total,
 		});
+	},
+});
+
+API.v1.addRoute('stdout.queue', { authRequired: true }, {
+	get() {
+		return API.v1.success({ queue: StdOut.queue });
 	},
 });

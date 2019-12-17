@@ -6,7 +6,7 @@ import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
 
 import { settings } from '../../settings';
-import { hasPermission } from '../../authorization';
+import { hasPermission } from '../../authorization/server';
 
 export const processString = function(string, date) {
 	let obj;
@@ -52,12 +52,28 @@ export const StdOut = new class extends EventEmitter {
 	}
 }();
 
+const stdoutStreamer = new Meteor.Streamer('stdout');
+stdoutStreamer.allowWrite('none');
+stdoutStreamer.allowRead(function() {
+	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
+});
+
+const listenAndEmitStdout = () => {
+	const handler = (string, item) => {
+		stdoutStreamer.emit('stdout', {
+			...item,
+		});
+	};
+	StdOut.on('write', handler);
+};
+
+Meteor.startup(() => listenAndEmitStdout());
 
 Meteor.publish('stdout', function() {
+	console.warn('The publication "stdout" is deprecated and will be removed after version v4.0.0');
 	if (!this.userId || hasPermission(this.userId, 'view-logs') !== true) {
 		return this.ready();
 	}
-
 	const handler = (string, item) => {
 		this.added('stdout', item.id, {
 			string: item.string,
