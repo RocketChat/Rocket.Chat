@@ -594,7 +594,6 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 				sync();
 			},
 		});
-		SyncedCron.start();
 	}
 }), 500);
 

@@ -150,6 +150,7 @@ tmeasday:check-npm-versions@0.3.2
 todda00:friendly-slugs@0.6.0
 tracker@1.2.0
 twitter-oauth@1.2.0
+typescript@3.7.0
 ui@1.0.13
 underscore@1.0.10
 url@1.2.0

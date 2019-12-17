@@ -983,7 +983,7 @@ export class Users extends Base {
 	setPreferences(_id, preferences) {
 		const settingsObject = Object.assign(
 			{},
-			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] }))
+			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] })),
 		);
 
 		const update = {

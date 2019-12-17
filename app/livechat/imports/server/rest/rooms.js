@@ -2,7 +2,7 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api';
-import { findRooms } from '../../../server/api/lib/livechat';
+import { findRooms } from '../../../server/api/lib/rooms';
 
 API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 	get() {
@@ -12,12 +12,14 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
-			const { agents, departmentId, open, tags } = this.requestParams();
+			const { agents, departmentId, open, tags, roomName } = this.requestParams();
 			let { createdAt, customFields, closedAt } = this.requestParams();
 			check(agents, Match.Maybe([String]));
+			check(roomName, Match.Maybe(String));
 			check(departmentId, Match.Maybe(String));
 			check(open, Match.Maybe(String));
 			check(tags, Match.Maybe([String]));
+
 			if (createdAt) {
 				createdAt = JSON.parse(createdAt);
 			}
@@ -27,8 +29,10 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 			if (customFields) {
 				customFields = JSON.parse(customFields);
 			}
-			const { rooms, total } = findRooms({
+
+			return API.v1.success(Promise.await(findRooms({
 				agents,
+				roomName,
 				departmentId,
 				open: open && open === 'true',
 				createdAt,
@@ -36,14 +40,7 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 				tags,
 				customFields,
 				options: { offset, count, sort, fields },
-			});
-
-			return API.v1.success({
-				rooms,
-				count: rooms.length,
-				offset,
-				total,
-			});
+			})));
 		} catch (e) {
 			return API.v1.failure(e);
 		}

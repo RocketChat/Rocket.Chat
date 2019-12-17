@@ -55,7 +55,7 @@ Template.livechatAgents.helpers({
 					? text
 					: text.replace(
 						new RegExp(filter.get()),
-						(part) => `<strong>${ part }</strong>`
+						(part) => `<strong>${ part }</strong>`,
 					)
 			}`;
 		};
@@ -111,7 +111,7 @@ Template.livechatAgents.events({
 			},
 			() => {
 				Meteor.call('livechat:removeAgent', this.username, async function(
-					error /* , result*/
+					error, /* , result*/
 				) {
 					if (error) {
 						return handleError(error);
@@ -131,7 +131,7 @@ Template.livechatAgents.events({
 						showConfirmButton: false,
 					});
 				});
-			}
+			},
 		);
 	},
 
@@ -148,7 +148,7 @@ Template.livechatAgents.events({
 		state.set('loading', true);
 		try {
 			await Promise.all(
-				users.map(({ username }) => call('livechat:addAgent', username))
+				users.map(({ username }) => call('livechat:addAgent', username)),
 			);
 
 			await loadAgents(instance, limit.get(), filter.get());

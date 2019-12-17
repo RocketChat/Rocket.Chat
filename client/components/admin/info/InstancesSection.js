@@ -24,7 +24,7 @@ export function InstancesSection({ instances }) {
 				<DescriptionList.Entry label={<>{t('Instance_Record')} > {t('PID')}</>}>{instanceRecord.pid}</DescriptionList.Entry>
 				<DescriptionList.Entry label={<>{t('Instance_Record')} > {t('Created_at')}</>}>{formatDate(instanceRecord._createdAt)}</DescriptionList.Entry>
 				<DescriptionList.Entry label={<>{t('Instance_Record')} > {t('Updated_at')}</>}>{formatDate(instanceRecord._updatedAt)}</DescriptionList.Entry>
-			</DescriptionList>
+			</DescriptionList>,
 		)}
 	</>;
 }

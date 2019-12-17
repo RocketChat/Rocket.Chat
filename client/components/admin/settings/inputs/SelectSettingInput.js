@@ -43,7 +43,7 @@ export function SelectSettingInput({
 			onChange={handleChange}
 		>
 			{values.map(({ key, i18nLabel }) =>
-				<SelectInput.Option key={key} value={key}>{t(i18nLabel)}</SelectInput.Option>
+				<SelectInput.Option key={key} value={key}>{t(i18nLabel)}</SelectInput.Option>,
 			)}
 		</SelectInput>
 	</>;
