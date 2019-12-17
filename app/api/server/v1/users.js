@@ -641,6 +641,22 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('users.2fa.enableEmail', { authRequired: true }, {
+	post() {
+		Users.enableEmail2FAByUserId(this.userId);
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.2fa.disableEmail', { authRequired: true, twoFactorRequired: true }, {
+	post() {
+		Users.disableEmail2FAByUserId(this.userId);
+
+		return API.v1.success();
+	},
+});
+
 API.v1.addRoute('users.presence', { authRequired: true }, {
 	get() {
 		const { from } = this.queryParams;
