@@ -132,7 +132,7 @@ Template.adminUserStatus.onRendered(() =>
 	Tracker.afterFlush(function() {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
-	})
+	}),
 );
 
 Template.adminUserStatus.events({
