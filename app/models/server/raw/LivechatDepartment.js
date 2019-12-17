@@ -45,14 +45,14 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		if (departmentId) {
 			params.unshift(match);
 		}
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -109,14 +109,14 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		if (departmentId) {
 			params.unshift(match);
 		}
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -167,14 +167,14 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		if (departmentId) {
 			params.unshift(match);
 		}
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -231,14 +231,14 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		if (departmentId) {
 			params.unshift(match);
 		}
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -326,14 +326,14 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		if (departmentId) {
 			params.unshift(match);
 		}
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -383,14 +383,14 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		if (departmentId) {
 			params.unshift(match);
 		}
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -475,14 +475,14 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		if (departmentId) {
 			params.unshift(match);
 		}
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
