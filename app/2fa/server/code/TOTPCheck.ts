@@ -1,7 +1,7 @@
 import { TOTP } from '../lib/totp';
 import { IUser } from '../../../../definition/IUser';
 import { settings } from '../../../settings/server';
-import { ICodeCheck } from './ICodeCheck';
+import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class TOTPCheck implements ICodeCheck {
 	public isEnabled(user: IUser): boolean {
@@ -25,7 +25,10 @@ export class TOTPCheck implements ICodeCheck {
 		});
 	}
 
-	public processInvalidCode(): void {
+	public processInvalidCode(): IProcessInvalidCodeResult {
 		// Nothing to do
+		return {
+			codeGenerated: false,
+		};
 	}
 }

@@ -9,7 +9,7 @@ export function require2fa(fn) {
 		}
 
 		if (!this.twoFactorChecked) {
-			checkCodeForUser(this.userId);
+			checkCodeForUser({ user: this.userId });
 		}
 
 		return fn.apply(this, args);

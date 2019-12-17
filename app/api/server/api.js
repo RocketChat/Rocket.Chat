@@ -256,8 +256,9 @@ export class APIClass extends Restivus {
 
 	processTwoFactor({ userId, request }) {
 		const code = request.headers['x-2fa-code'];
+		const method = request.headers['x-2fa-method'];
 
-		checkCodeForUser(userId, code);
+		checkCodeForUser({ user: userId, code, method });
 	}
 
 	getFullRouteName(route, method, apiVersion = null) {

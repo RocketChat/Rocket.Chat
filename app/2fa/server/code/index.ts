@@ -26,6 +26,10 @@ export function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string):
 	return Object.entries(checkMethods).find(([, method]) => method.isEnabled(user)) || [];
 }
 
+export function getAvailableMethodNames(user: IUser): string[] | [] {
+	return Object.entries(checkMethods).filter(([, method]) => method.isEnabled(user)).map(([name]) => name) || [];
+}
+
 export function getUserForCheck(userId: string): IUser {
 	return Users.findOneById(userId, {
 		fields: {
@@ -37,27 +41,28 @@ export function getUserForCheck(userId: string): IUser {
 	});
 }
 
-export function checkCodeForUser(user: IUser | string, code: string): boolean {
+export function checkCodeForUser({ user, code, method }: { user: IUser | string; code?: string; method?: string }): boolean {
 	if (typeof user === 'string') {
 		user = getUserForCheck(user);
 	}
 
-	const [methodName, method] = getMethodByNameOrFirstActiveForUser(user);
+	const [methodName, selectedMethod] = getMethodByNameOrFirstActiveForUser(user, method);
 
-	if (!method) {
+	if (!selectedMethod) {
 		return true;
 	}
 
 	if (!code) {
-		method.processInvalidCode(user, code);
+		const data = selectedMethod.processInvalidCode(user);
+		const availableMethods = getAvailableMethodNames(user);
 
-		throw new Meteor.Error('totp-required', 'TOTP Required', methodName);
+		throw new Meteor.Error('totp-required', 'TOTP Required', { method: methodName, ...data, availableMethods });
 	}
 
-	const valid = method.verify(user, code);
+	const valid = selectedMethod.verify(user, code);
 
 	if (!valid) {
-		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', methodName);
+		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', { method: methodName });
 	}
 
 	return true;

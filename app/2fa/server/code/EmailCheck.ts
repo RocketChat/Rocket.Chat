@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
 import { Users } from '../../../models/server';
-import { ICodeCheck } from './ICodeCheck';
+import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { IUser } from '../../../../definition/IUser';
 
 export class EmailCheck implements ICodeCheck {
@@ -105,15 +105,27 @@ If you didn't try to login in your account please ignore this email.
 		return emails;
 	}
 
-	public processInvalidCode(user: IUser): void {
+	public processInvalidCode(user: IUser): IProcessInvalidCodeResult {
 		Users.removeExpiredEmailCodesOfUserId(user._id);
 
-		const hasValidCode = user.services?.emailCode?.find(({ expire }) => expire > new Date()) !== undefined;
+		// Generate new code if the there isn't any code with more than 5 minutes to expire
+		const expireWithDelta = new Date();
+		expireWithDelta.setMinutes(expireWithDelta.getMinutes() - 5);
 
-		if (hasValidCode) {
-			return;
+		const hasValidCode = user.services?.emailCode?.filter(({ expire }) => expire > expireWithDelta);
+
+		if (hasValidCode?.length) {
+			return {
+				codeGenerated: false,
+				codeCount: hasValidCode.length,
+				codeExpires: hasValidCode.map((i) => i.expire),
+			};
 		}
 
 		this.sendEmailCode(user);
+
+		return {
+			codeGenerated: true,
+		};
 	}
 }

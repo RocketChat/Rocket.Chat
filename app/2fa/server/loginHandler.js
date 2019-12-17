@@ -18,5 +18,5 @@ callbacks.add('onValidateLogin', (login) => {
 
 	const { totp } = login.methodArguments[0];
 
-	checkCodeForUser(login.user, totp && totp.code);
+	checkCodeForUser({ user: login.user, code: totp && totp.code });
 }, callbacks.priority.MEDIUM, '2fa');
