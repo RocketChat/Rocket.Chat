@@ -40,7 +40,7 @@ export function TranslationProvider({ children }) {
 					suffix: '__',
 				},
 			});
-			setContextValue(() => translate);
+			setContextValue(() => ({ language: 'en', translate }));
 		};
 		initializeI18next();
 	}, []);

@@ -7,7 +7,7 @@ const translate = (key) => key;
 
 translate.has = () => true;
 
-export const TranslationContext = createContext(translate);
+export const TranslationContext = createContext({ language: 'en', translate });
 
 const createContextValue = (language) => {
 	const translate = (key, ...replaces) => {
