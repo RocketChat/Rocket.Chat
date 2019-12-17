@@ -79,7 +79,7 @@ Template.visitorEdit.onCreated(async function() {
 	});
 
 	const uid = Meteor.userId();
-	const { departments } = await APIClient.v1.get(`livechat/agent/${ uid }/departments`);
+	const { departments } = await APIClient.v1.get(`livechat/agents/${ uid }/departments`);
 	const agentDepartments = departments.map((dept) => dept.departmentId);
 	this.agentDepartments.set(agentDepartments);
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {

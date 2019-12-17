@@ -18,7 +18,7 @@ const clearRetryInterval = function() {
 const trackStatus = function() {
 	if (Meteor.status().status === 'waiting') {
 		retryHandle = retryHandle || setInterval(function() {
-			const timeDiff = Meteor.status().retryTime - (new Date()).getTime();
+			const timeDiff = Meteor.status().retryTime - new Date().getTime();
 			const _retryTime = (timeDiff > 0 && Math.round(timeDiff / 1000)) || 0;
 
 			retryTime.set(_retryTime);

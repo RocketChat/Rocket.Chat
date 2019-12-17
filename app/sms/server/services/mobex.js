@@ -121,7 +121,7 @@ class Mobex {
 							},
 						],
 					},
-				}
+				},
 			);
 
 			result.isSuccess = true;

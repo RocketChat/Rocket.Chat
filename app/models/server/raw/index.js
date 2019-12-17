@@ -10,6 +10,10 @@ import UsersModel from '../models/Users';
 import { UsersRaw } from './Users';
 import RoomsModel from '../models/Rooms';
 import { RoomsRaw } from './Rooms';
+import LivechatOfficeHourModel from '../models/LivechatOfficeHour';
+import { LivechatOfficeHourRaw } from './LivechatOfficeHour';
+import LivechatCustomFieldModel from '../models/LivechatCustomField';
+import { LivechatCustomFieldRaw } from './LivechatCustomField';
 import LivechatTriggerModel from '../models/LivechatTrigger';
 import { LivechatTriggerRaw } from './LivechatTrigger';
 import LivechatDepartmentModel from '../models/LivechatDepartment';
@@ -24,6 +28,8 @@ import LivechatExternalMessagesModel from '../models/LivechatExternalMessages';
 import { LivechatExternalMessageRaw } from './LivechatExternalMessages';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
 import { LivechatVisitorsRaw } from './LivechatVisitors';
+import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
+import { LivechatAgentActivityRaw } from './LivechatAgentActivity';
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection());
 export const Roles = new RolesRaw(RolesModel.model.rawCollection());
@@ -31,6 +37,8 @@ export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCo
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection());
 export const Users = new UsersRaw(UsersModel.model.rawCollection());
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection());
+export const LivechatOfficeHour = new LivechatOfficeHourRaw(LivechatOfficeHourModel.model.rawCollection());
+export const LivechatCustomField = new LivechatCustomFieldRaw(LivechatCustomFieldModel.model.rawCollection());
 export const LivechatTrigger = new LivechatTriggerRaw(LivechatTriggerModel.model.rawCollection());
 export const LivechatDepartment = new LivechatDepartmentRaw(LivechatDepartmentModel.model.rawCollection());
 export const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(LivechatDepartmentAgentsModel.model.rawCollection());
@@ -38,3 +46,4 @@ export const LivechatRooms = new LivechatRoomsRaw(LivechatRoomsModel.model.rawCo
 export const Messages = new MessagesRaw(MessagesModel.model.rawCollection());
 export const LivechatExternalMessage = new LivechatExternalMessageRaw(LivechatExternalMessagesModel.model.rawCollection());
 export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection());
+export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection());

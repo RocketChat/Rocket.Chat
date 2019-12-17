@@ -49,7 +49,7 @@ Tracker.autorun(() => {
 				const walker = document.createTreeWalker(
 					checkEmojiOnly,
 					NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-					filter
+					filter,
 				);
 
 
