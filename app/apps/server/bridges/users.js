@@ -23,23 +23,27 @@ export class AppUserBridge {
 	async create(user, appId, { avatarUrl, sendWelcomeEmail, joinDefaultChannels }) {
 		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
 
+		const { type } = user;
 		let newUserId;
-		let isSuccess = true;
 
+		switch (type) {
+			case 'app':
+				if (!checkUsernameAvailability(user.username)) {
+					console.error(`A user with the App's username ${ user.username } has already existed, please rename or delete that user before installing the App.`);
+					return;
+				}
 
-		if (!checkUsernameAvailability(user.username)) {
-			console.error(`A user with the App's username ${ user.username } has already existed, please rename or delete that user before installing the App.`);
-			isSuccess = false;
+				Users.update({ _id: user._id }, { ...user, active: true }, { upsert: true });
 
-			return;
+				if (avatarUrl) {
+					Meteor.runAsUser(user._id, () => setUserAvatar(user, avatarUrl, '', 'local'));
+				}
+				break;
+			default:
+				throw new Meteor.Error('Creating users is not supported now!');
 		}
 
-		if (avatarUrl) {
-			user._id = newUserId;
-			Meteor.runAsUser(newUserId, () => setUserAvatar(user, avatarUrl));
-		}
-
-		return isSuccess && newUserId;
+		return newUserId;
 	}
 
 	async getActiveUserCount() {
