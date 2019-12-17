@@ -313,6 +313,13 @@ export class APIClass extends Restivus {
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
 					let result;
+
+					const connection = {
+						id: Random.id(),
+						close() {},
+						token: this.token,
+					};
+
 					try {
 						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response);
 
@@ -321,12 +328,6 @@ export class APIClass extends Restivus {
 								permissions: options.permissionsRequired,
 							});
 						}
-
-						const connection = {
-							id: Random.id(),
-							close() {},
-							token: this.token,
-						};
 
 						const invocation = new DDPCommon.MethodInvocation({
 							connection,
@@ -340,8 +341,6 @@ export class APIClass extends Restivus {
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
-
-						delete Accounts._accountData[connection.id];
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 
@@ -351,6 +350,8 @@ export class APIClass extends Restivus {
 						}[e.error] || 'failure';
 
 						result = API.v1[apiMethod](e.message, e.error);
+					} finally {
+						delete Accounts._accountData[connection.id];
 					}
 
 					result = result || API.v1.success();
