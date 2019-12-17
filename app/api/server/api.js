@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
@@ -327,6 +328,13 @@ export class APIClass extends Restivus {
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
 					let result;
+
+					const connection = {
+						id: Random.id(),
+						close() {},
+						token: this.token,
+					};
+
 					try {
 						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response);
 
@@ -336,11 +344,22 @@ export class APIClass extends Restivus {
 							});
 						}
 
+						const invocation = new DDPCommon.MethodInvocation({
+							connection,
+							isSimulation: false,
+							userId: this.userId,
+						});
+
+						Accounts._accountData[connection.id] = {
+							connection,
+						};
+						Accounts._setAccountData(connection.id, 'loginToken', this.token);
+
 						if (options.twoFactorRequired) {
 							api.processTwoFactor({ userId: this.userId, request: this.request });
 						}
 
-						result = originalAction.apply(this);
+						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 
@@ -350,6 +369,8 @@ export class APIClass extends Restivus {
 						}[e.error] || 'failure';
 
 						result = API.v1[apiMethod](e.message, e.error, undefined, e);
+					} finally {
+						delete Accounts._accountData[connection.id];
 					}
 
 					result = result || API.v1.success();
@@ -565,6 +586,8 @@ const getUserAuth = function _getUserAuth(...args) {
 			if (this.request.headers['x-auth-token']) {
 				token = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
 			}
+
+			this.token = token;
 
 			return {
 				userId: this.request.headers['x-user-id'],

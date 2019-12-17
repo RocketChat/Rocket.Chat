@@ -273,7 +273,7 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 	return {
 		_id,
 		username,
-		name,
+		...name && { name },
 		type,
 	};
 };
