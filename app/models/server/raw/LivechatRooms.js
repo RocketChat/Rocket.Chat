@@ -84,14 +84,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			firstParams.push(matchUsers);
 		}
 		const params = [...firstParams, usersGroup, project];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
