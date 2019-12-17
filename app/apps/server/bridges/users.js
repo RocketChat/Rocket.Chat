@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 
 import { setUserAvatar, checkUsernameAvailability } from '../../../lib/server/functions';
 import { Users } from '../../../models/server/raw';
@@ -38,6 +39,7 @@ export class AppUserBridge {
 				if (avatarUrl) {
 					Meteor.runAsUser(user._id, () => setUserAvatar(user, avatarUrl, '', 'local'));
 				}
+				newUserId = user._id;
 				break;
 			default:
 				throw new Meteor.Error('Creating users is not supported now!');
