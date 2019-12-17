@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useUserId } from '../../hooks/useUserId';
-import { useRouteParameter, useRoute } from '../providers/RouterProvider';
+import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 
 const Context = createContext({});
 

@@ -4,8 +4,8 @@ import { hasRole } from '../../../app/authorization';
 import { Users } from '../../../app/models';
 import { useSetting } from '../../hooks/useSetting';
 import { useUserId } from '../../hooks/useUserId';
+import { useRoute } from '../../contexts/RouterContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { useRoute } from '../providers/RouterProvider';
 
 export function StateChecker({ children }) {
 	const setupWizardState = useSetting('Show_Setup_Wizard');
