@@ -29,9 +29,9 @@ renderer.code = function(code, lang, escaped) {
 	let text = null;
 
 	if (!lang) {
-		text = `<pre><code class="code-colors hljs">${ (escaped ? code : s.escapeHTML(code, true)) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs">${ escaped ? code : s.escapeHTML(code, true) }</code></pre>`;
 	} else {
-		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ (escaped ? code : s.escapeHTML(code, true)) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ escaped ? code : s.escapeHTML(code, true) }</code></pre>`;
 	}
 
 	if (_.isString(msg)) {

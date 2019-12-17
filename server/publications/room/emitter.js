@@ -31,7 +31,7 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 				u._id,
 				'rooms-changed',
 				clientAction,
-				data
+				data,
 			);
 		});
 	}

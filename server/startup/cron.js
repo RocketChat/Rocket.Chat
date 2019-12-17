@@ -52,7 +52,7 @@ Meteor.startup(function() {
 		SyncedCron.add({
 			name: 'Generate and save statistics',
 			schedule(parser) {
-				return parser.cron(`${ new Date().getMinutes() } * * * *`);
+				return parser.cron('12 * * * *');
 			},
 			job: generateStatistics,
 		});
@@ -60,8 +60,7 @@ Meteor.startup(function() {
 		SyncedCron.add({
 			name: 'Cleanup OEmbed cache',
 			schedule(parser) {
-				const now = new Date();
-				return parser.cron(`${ now.getMinutes() } ${ now.getHours() } * * *`);
+				return parser.cron('24 2 * * *');
 			},
 			job: cleanupOEmbedCache,
 		});
