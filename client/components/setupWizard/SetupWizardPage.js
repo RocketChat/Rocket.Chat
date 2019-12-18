@@ -15,34 +15,33 @@ const Container = styled.div`
 	display: flex;
 	width: 100%;
 	height: 100vh;
-	background-color: var(--color-dark-05);
-	flex-flow: row nowrap;
+	background-color: var(--color-dark-05, #f1f2f4);
 	align-items: stretch;
 	justify-content: stretch;
 
-	@media (width <= 760px) {
+	@media (max-width: 760px) {
 		flex-direction: column;
 		justify-content: initial;
 	}
 `;
 
-const Steps = styled.section`
+const Wrapper = styled.section`
 	flex: 1 1 auto;
 	height: 100vh;
 	padding: 1rem;
 
-	@media (width <= 760px) {
+	@media (max-width: 760px) {
 		padding: 0;
 	}
 `;
 
-const Wrapper = styled.div`
+const Steps = styled.div`
 	overflow: auto;
 	width: 100%;
 	height: 100%;
 	padding: 1rem 3rem;
 	border-radius: 2px;
-	background-color: var(--color-white);
+	background-color: var(--color-white, white);
 	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 	justify-content: center;
 `;
@@ -78,14 +77,14 @@ export function SetupWizardPage() {
 					]}
 					currentStep={currentStep}
 				/>
-				<Steps>
-					<Wrapper>
+				<Wrapper>
+					<Steps>
 						<AdminUserInformationStep step={1} title={t('Admin_Info')} active={currentStep === 1} />
 						<SettingsBasedStep step={2} title={t('Organization_Info')} active={currentStep === 2} />
 						<SettingsBasedStep step={3} title={t('Server_Info')} active={currentStep === 3} />
 						<RegisterServerStep step={4} title={t('Register_Server')} active={currentStep === 4} />
-					</Wrapper>
-				</Steps>
+					</Steps>
+				</Wrapper>
 			</>}
 		</Container>
 	</>;
