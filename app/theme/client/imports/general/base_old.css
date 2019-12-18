@@ -3037,7 +3037,7 @@ rc-old select,
 
 			& .body {
 				display: inline;
-
+				font-size: 12px;
 				font-style: italic;
 
 				& em {
