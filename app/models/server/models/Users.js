@@ -395,7 +395,7 @@ export class Users extends Base {
 			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
 		}
 
-		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+		const query = { username, [`services.${ serviceName }.id`]: username };
 
 		return this.findOne(query, options);
 	}
