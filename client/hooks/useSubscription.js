@@ -13,12 +13,16 @@ export const useSubscription = (getInitialValue, subscribe) => {
 	}, [mounted]);
 
 	useEffect(() => {
+		let value = getInitialValue();
 		const unsubscribe = subscribe((newValue) => {
 			if (!mounted.current) {
 				return;
 			}
 
-			setValue(newValue);
+			if (value !== newValue) {
+				value = newValue;
+				setValue(newValue);
+			}
 		});
 
 		return () => {
