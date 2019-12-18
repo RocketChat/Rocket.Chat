@@ -1,3 +1,4 @@
+import { Field } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { ActionSettingInput } from './ActionSettingInput';
@@ -5,6 +6,9 @@ import { ActionSettingInput } from './ActionSettingInput';
 export default {
 	title: 'admin/settings/inputs/ActionSettingInput',
 	component: ActionSettingInput,
+	decorators: [
+		(storyFn) => <Field>{storyFn()}</Field>,
+	],
 };
 
 export const _default = () =>

@@ -1,3 +1,4 @@
+import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
@@ -6,6 +7,9 @@ import { ColorSettingInput } from './ColorSettingInput';
 export default {
 	title: 'admin/settings/inputs/ColorSettingInput',
 	component: ColorSettingInput,
+	decorators: [
+		(storyFn) => <Field>{storyFn()}</Field>,
+	],
 };
 
 export const _default = () =>

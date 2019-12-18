@@ -2,41 +2,51 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { BooleanSettingInput } from './BooleanSettingInput';
+import { LanguageSettingInput } from './LanguageSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/BooleanSettingInput',
-	component: BooleanSettingInput,
+	title: 'admin/settings/inputs/LanguageSettingInput',
+	component: LanguageSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,
 	],
 };
 
 export const _default = () =>
-	<BooleanSettingInput
+	<LanguageSettingInput
 		_id='setting_id'
 		label='Label'
+		placeholder='Placeholder'
 		onChangeValue={action('changeValue')}
+		onChangeEditor={action('changeEditor')}
 	/>;
 
 export const disabled = () =>
-	<BooleanSettingInput
+	<LanguageSettingInput
 		_id='setting_id'
 		label='Label'
+		placeholder='Placeholder'
 		disabled
 	/>;
 
-export const checked = () =>
-	<BooleanSettingInput
+export const withValue = () =>
+	<LanguageSettingInput
 		_id='setting_id'
 		label='Label'
-		value
+		placeholder='Placeholder'
+		value='en'
 	/>;
 
 export const withResetButton = () =>
-	<BooleanSettingInput
+	<LanguageSettingInput
 		_id='setting_id'
 		label='Label'
+		placeholder='Placeholder'
+		values={[
+			{ key: '1', i18nLabel: '1' },
+			{ key: '2', i18nLabel: '2' },
+			{ key: '3', i18nLabel: '3' },
+		]}
 		hasResetButton
 		onChangeValue={action('changeValue')}
 		onResetButtonClick={action('resetButtonClick')}

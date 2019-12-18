@@ -2,41 +2,55 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { BooleanSettingInput } from './BooleanSettingInput';
+import { StringSettingInput } from './StringSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/BooleanSettingInput',
-	component: BooleanSettingInput,
+	title: 'admin/settings/inputs/StringSettingInput',
+	component: StringSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,
 	],
 };
 
 export const _default = () =>
-	<BooleanSettingInput
+	<StringSettingInput
 		_id='setting_id'
 		label='Label'
+		placeholder='Placeholder'
 		onChangeValue={action('changeValue')}
+		onChangeEditor={action('changeEditor')}
 	/>;
 
 export const disabled = () =>
-	<BooleanSettingInput
+	<StringSettingInput
 		_id='setting_id'
 		label='Label'
+		placeholder='Placeholder'
 		disabled
 	/>;
 
-export const checked = () =>
-	<BooleanSettingInput
+export const withValue = () =>
+	<StringSettingInput
 		_id='setting_id'
 		label='Label'
-		value
+		value='Value'
+		placeholder='Placeholder'
+	/>;
+
+export const multiline = () =>
+	<StringSettingInput
+		_id='setting_id'
+		label='Label'
+		value={'Value\n'.repeat(10)}
+		placeholder='Placeholder'
+		multiline
 	/>;
 
 export const withResetButton = () =>
-	<BooleanSettingInput
+	<StringSettingInput
 		_id='setting_id'
 		label='Label'
+		placeholder='Placeholder'
 		hasResetButton
 		onChangeValue={action('changeValue')}
 		onResetButtonClick={action('resetButtonClick')}
