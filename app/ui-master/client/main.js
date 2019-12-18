@@ -17,7 +17,7 @@ import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
-import { updateUserData } from '../../../client/lib/userData';
+import { userReady } from '../../../client/lib/userData';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -171,13 +171,10 @@ Template.main.helpers({
 		const iframeEnabled = typeof iframeLogin !== 'undefined';
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
-	async subsReady() {
+	subsReady() {
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
-		const ready = (subscriptionsReady && settingsReady) || !Meteor.userId();
-		if (Meteor.userId()) {
-			await updateUserData();
-		}
+		const ready = !Meteor.userId() || (userReady.get() && subscriptionsReady && settingsReady);
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
@@ -263,6 +260,6 @@ Template.main.onRendered(function() {
 	});
 });
 
-Meteor.startup(async function() {
+Meteor.startup(function() {
 	return fireGlobalEvent('startup', true);
 });

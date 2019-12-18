@@ -7,10 +7,10 @@ import toastr from 'toastr';
 import hljs from 'highlight.js';
 
 import { fireGlobalEvent } from '../../app/ui-utils';
-import { Users } from '../../app/models';
 import { getUserPreference } from '../../app/utils';
 import 'highlight.js/styles/github.css';
 import { Notifications } from '../../app/notifications/client';
+import { updateUserData } from '../lib/userData';
 
 hljs.initHighlightingOnLoad();
 
@@ -22,8 +22,9 @@ if (window.DISABLE_ANIMATION) {
 }
 
 const onUserEvents = {
-	changed: (user) => Meteor.users.upsert({ _id: user._id }, user),
-	removed: (user) => Meteor.users.remove({ _id: user._id }),
+	inserted: (_id, data) => Meteor.users.insert(data),
+	updated: (_id, { diff }) => Meteor.users.upsert({ _id }, { $set: diff }),
+	removed: (_id) => Meteor.users.remove({ _id }),
 };
 
 Meteor.startup(function() {
@@ -34,25 +35,16 @@ Meteor.startup(function() {
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 
-	Notifications.onUser('userData', ({ type, user }) => onUserEvents[type](user));
-
 	let status = undefined;
-	Tracker.autorun(function() {
-		if (!Meteor.userId()) {
+	Tracker.autorun(async function() {
+		const uid = Meteor.userId();
+		if (!uid) {
 			return;
 		}
 
-		const user = Users.findOne(Meteor.userId(), {
-			fields: {
-				status: 1,
-				'settings.preferences.idleTimeLimit': 1,
-				'settings.preferences.enableAutoAway': 1,
-			},
-		});
+		await Notifications.onUser('userData', ({ type, id, ...data }) => onUserEvents[type](uid, data));
 
-		if (!user) {
-			return;
-		}
+		const user = await updateUserData(uid);
 
 		if (getUserPreference(user, 'enableAutoAway')) {
 			const idleTimeLimit = getUserPreference(user, 'idleTimeLimit') || 300;
