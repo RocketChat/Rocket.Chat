@@ -18,14 +18,14 @@ import { useLoginWithPassword } from '../../../hooks/useLoginWithPassword';
 import { useMethod } from '../../../hooks/useMethod';
 import { useSetting } from '../../../hooks/useSetting';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useSetupWizardStepsState } from '../StepsState';
+import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
 
 export function AdminUserInformationStep({ step, title, active }) {
-	const { goToNextStep } = useSetupWizardStepsState();
+	const { goToNextStep } = useSetupWizardContext();
 
 	const loginWithPassword = useLoginWithPassword();
 	const registerUser = useMethod('registerUser');

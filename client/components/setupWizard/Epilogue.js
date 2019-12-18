@@ -3,11 +3,10 @@ import React from 'react';
 
 import { useSetting } from '../../hooks/useSetting';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { Logo } from './Logo';
 import './Epilogue.css';
 
-export function Epilogue({
-	logoSrc = 'images/logo/logo.svg',
-}) {
+export function Epilogue() {
 	const t = useTranslation();
 	const [siteUrl] = useSetting('Site_Url');
 	const [, setShowSetupWizard] = useSetting('Show_Setup_Wizard');
@@ -18,7 +17,7 @@ export function Epilogue({
 
 	return <section className='SetupWizard__Epilogue'>
 		<header className='SetupWizard__Epilogue-header'>
-			<img className='SetupWizard__Epilogue-headerLogo' src={logoSrc} />
+			<Logo className='SetupWizard__Epilogue-headerLogo' />
 		</header>
 
 		<main className='SetupWizard__Epilogue-content'>

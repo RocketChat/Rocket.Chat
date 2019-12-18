@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
-import { finalStep, useSetupWizardStepsState } from './StepsState';
+import { finalStep } from './SetupWizardState';
 import { Epilogue } from './Epilogue';
 import { SideBar } from './SideBar';
 import { AdminUserInformationStep } from './steps/AdminUserInformationStep';
@@ -12,9 +12,8 @@ import { RegisterServerStep } from './steps/RegisterServerStep';
 
 import './SetupWizardPage.css';
 
-export function SetupWizardPage() {
+export function SetupWizardPage({ currentStep = 1 }) {
 	useWipeInitialPageLoading();
-	const { currentStep = 1 } = useSetupWizardStepsState();
 	const t = useTranslation();
 
 	return <>

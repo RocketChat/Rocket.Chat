@@ -6,9 +6,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../hooks/useSetting';
 import { useUserId } from '../../hooks/useUserId';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { ParametersProvider } from './ParametersProvider';
-import { StepsState } from './StepsState';
-import { SetupWizardPage } from './SetupWizardPage';
+import { SetupWizardState } from './SetupWizardState';
 
 const useRouteLock = () => {
 	const [locked, setLocked] = useState(true);
@@ -50,9 +48,5 @@ export function SetupWizardRoute() {
 		return null;
 	}
 
-	return <ParametersProvider>
-		<StepsState>
-			<SetupWizardPage />
-		</StepsState>
-	</ParametersProvider>;
+	return <SetupWizardState />;
 }

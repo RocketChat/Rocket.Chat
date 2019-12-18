@@ -9,11 +9,11 @@ import { useMethod } from '../../../hooks/useMethod';
 import { Icon } from '../../basic/Icon';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { Pager } from '../Pager';
-import { useSetupWizardParameters } from '../ParametersProvider';
+import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepContent } from '../StepContent';
 import { StepHeader } from '../StepHeader';
-import { useSetupWizardStepsState } from '../StepsState';
+
 import './RegisterServerStep.css';
 
 const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) => {
@@ -46,8 +46,8 @@ const Item = ({ children, icon, ...props }) =>
 	</li>;
 
 export function RegisterServerStep({ step, title, active }) {
-	const { canDeclineServerRegistration } = useSetupWizardParameters();
-	const { goToPreviousStep, goToFinalStep } = useSetupWizardStepsState();
+	const { canDeclineServerRegistration } = useSetupWizardContext();
+	const { goToPreviousStep, goToFinalStep } = useSetupWizardContext();
 
 	const [registerServer, setRegisterServer] = useState(true);
 	const [optInMarketingEmails, setOptInMarketingEmails] = useState(true);

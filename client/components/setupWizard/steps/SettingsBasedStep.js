@@ -8,8 +8,7 @@ import { useFocus } from '../../../hooks/useFocus';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { Pager } from '../Pager';
-import { useSetupWizardParameters } from '../ParametersProvider';
-import { useSetupWizardStepsState } from '../StepsState';
+import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
@@ -38,8 +37,8 @@ const useFields = () => {
 };
 
 export function SettingsBasedStep({ step, title, active }) {
-	const { settings } = useSetupWizardParameters();
-	const { currentStep, goToPreviousStep, goToNextStep } = useSetupWizardStepsState();
+	const { settings } = useSetupWizardContext();
+	const { currentStep, goToPreviousStep, goToNextStep } = useSetupWizardContext();
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
 
