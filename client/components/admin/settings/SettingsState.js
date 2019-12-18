@@ -164,8 +164,8 @@ export function SettingsState({ children }) {
 		});
 
 		return () => {
-			syncCollectionsHandle.stop();
-			syncStateHandle.stop();
+			syncCollectionsHandle && syncCollectionsHandle.stop();
+			syncStateHandle && syncStateHandle.stop();
 			clearTimeout(addedActionTimer);
 		};
 	}, [isLoading, collectionsRef]);

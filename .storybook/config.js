@@ -54,7 +54,7 @@ const getContextValue = () => {
 		});
 	};
 
-	translate.has = (key) => i18next.exists(key);
+	translate.has = (key) => key && i18next.exists(key);
 
 	contextValue = {
 		languages: [{

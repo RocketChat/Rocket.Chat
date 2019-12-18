@@ -28,12 +28,12 @@ export function ColorSettingInput({
 	const t = useTranslation();
 
 	const handleChange = (event) => {
-		onChangeValue(event.currentTarget.value);
+		onChangeValue && onChangeValue(event.currentTarget.value);
 	};
 
 	const handleEditorTypeChange = (event) => {
 		const editor = event.currentTarget.value.trim();
-		onChangeEditor(editor);
+		onChangeEditor && onChangeEditor(editor);
 	};
 
 	return <>

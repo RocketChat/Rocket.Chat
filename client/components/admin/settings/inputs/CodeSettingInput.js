@@ -94,7 +94,7 @@ function CodeMirror({
 export function CodeSettingInput({
 	_id,
 	label,
-	value,
+	value = '',
 	code,
 	placeholder,
 	readonly,

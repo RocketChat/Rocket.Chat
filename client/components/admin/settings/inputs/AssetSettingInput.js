@@ -6,12 +6,14 @@ import toastr from 'toastr';
 import { call } from '../../../../../app/ui-utils/client/lib/callMethod';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
+import './AssetSettingInput.css';
+
 export function AssetSettingInput({
 	_id,
 	label,
-	value,
+	value = {},
 	asset,
-	fileConstraints,
+	fileConstraints = {},
 }) {
 	const t = useTranslation();
 
@@ -56,6 +58,7 @@ export function AssetSettingInput({
 					</Button>
 					: <div className='rc-button rc-button--primary'>{t('Select_file')}
 						<input
+							className='AssetSettingInput__input'
 							type='file'
 							accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${ fileConstraints.extensions.join(', .') }`}
 							onChange={handleUpload}
