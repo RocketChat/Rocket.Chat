@@ -46,8 +46,7 @@ const Item = ({ children, icon, ...props }) =>
 	</li>;
 
 export function RegisterServerStep({ step, title, active }) {
-	const { canDeclineServerRegistration } = useSetupWizardContext();
-	const { goToPreviousStep, goToFinalStep } = useSetupWizardContext();
+	const { canDeclineServerRegistration, goToPreviousStep, goToFinalStep } = useSetupWizardContext();
 
 	const [registerServer, setRegisterServer] = useState(true);
 	const [optInMarketingEmails, setOptInMarketingEmails] = useState(true);

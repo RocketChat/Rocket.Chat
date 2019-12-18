@@ -45,8 +45,7 @@ const useFields = () => {
 };
 
 export function SettingsBasedStep({ step, title, active }) {
-	const { settings } = useSetupWizardContext();
-	const { currentStep, goToPreviousStep, goToNextStep } = useSetupWizardContext();
+	const { settings, currentStep, goToPreviousStep, goToNextStep } = useSetupWizardContext();
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
 
@@ -65,6 +64,8 @@ export function SettingsBasedStep({ step, title, active }) {
 	const t = useTranslation();
 
 	const batchSetSettings = useBatchSetSettings();
+
+	const autoFocusRef = useFocus(active);
 
 	const handleBackClick = () => {
 		goToPreviousStep();
@@ -85,8 +86,6 @@ export function SettingsBasedStep({ step, title, active }) {
 			setCommiting(false);
 		}
 	};
-
-	const autoFocusRef = useFocus(active);
 
 	if (fields.length === 0) {
 		return <Step active={active} working={commiting} onSubmit={handleSubmit}>

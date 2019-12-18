@@ -100,6 +100,7 @@ export function SetupWizardState() {
 	const goToFinalStep = useCallback(() => setCurrentStep(finalStep), []);
 
 	const value = useMemo(() => ({
+		currentStep,
 		loaded,
 		settings,
 		canDeclineServerRegistration,
@@ -107,6 +108,7 @@ export function SetupWizardState() {
 		goToNextStep,
 		goToFinalStep,
 	}), [
+		currentStep,
 		loaded,
 		settings,
 		canDeclineServerRegistration,
