@@ -1716,7 +1716,7 @@ describe('[Users]', function() {
 			});
 		});
 		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('view-outside-room', ['admin']).then(() => {
+			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
 				request.get(api('users.autoComplete'))
 					.set(credentials)
 					.query({})
