@@ -8,7 +8,7 @@ import { TabBar, SideNav, RocketChatTabBar } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { APIClient } from '../../../utils/client';
 
-const STATUSES_COUNT = 1;
+const STATUSES_COUNT = 50;
 const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 Template.adminUserStatus.helpers({
@@ -107,7 +107,11 @@ Template.adminUserStatus.onCreated(function() {
 
 	this.loadStatus = _.debounce(async (query, offset) => {
 		this.isLoading.set(true);
-		const { statuses, total } = await APIClient.v1.get(`custom-user-status.list?count=${ STATUSES_COUNT }&offset=${ offset }&query=${ JSON.stringify(query) }`);
+		const { statuses, total } = await APIClient.v1.get('custom-user-status.list', {
+			count: STATUSES_COUNT,
+			offset,
+			query: JSON.stringify(query)
+		});
 		this.total.set(total);
 		if (offset === 0) {
 			this.statuses.set(statuses);
