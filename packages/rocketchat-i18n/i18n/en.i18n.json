@@ -2747,6 +2747,8 @@
   "SAML_Custom_Logout_Behaviour_Terminate_SAML_Session": "Terminate SAML-session",
   "SAML_Custom_Private_Key": "Private Key Contents",
   "SAML_Custom_Provider": "Custom Provider",
+  "SAML_Custom_roles_overwrite_name": "Overwrite Roles",
+  "SAML_Custom_roles_overwrite_description": "Overwrites the users roles with those from SAML upon login",
   "SAML_Custom_EMail_Field": "E-Mail field name",
   "SAML_Custom_user_data_fieldmap": "User Data Field Map",
   "SAML_Custom_user_data_fieldmap_description": "Configure how user account fields (like email) are populated from a record in SAML (once found). <br/>As an example, `{\"cn\":\"name\", \"mail\":\"email\"}` will choose a person's human readable name from the cn attribute, and their email from the mail attribute.<br/>Available fields in Rocket.Chat: `name`, `email` and `username`, everything else will be saved as `customFields`.<br/>You can also use a regex to get the field value, like this: `{\"NameID\": { \"field\": \"username\", \"regex\": \"(.*)@.+$\"}, \"email\": \"email\"}`",

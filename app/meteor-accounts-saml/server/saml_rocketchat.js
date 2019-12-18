@@ -182,6 +182,13 @@ Meteor.methods({
 			i18nLabel: 'SAML_Role_Attribute_Name',
 			i18nDescription: 'SAML_Role_Attribute_Name_Description',
 		});
+		settings.add(`SAML_Custom_${name}_roles_overwrite`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_roles_overwrite_name',
+			i18nDescription: 'SAML_Custom_roles_overwrite_description'
+		});
 	},
 });
 
@@ -221,7 +228,8 @@ const getSamlConfigs = function(service) {
 			// People often overlook the instruction to remove the header and footer of the certificate on this specific setting, so let's do it for them.
 			cert: normalizeCert(settings.get(`${ service.key }_cert`)),
 		},
-		userDataFieldMap: settings.get(`${ service.key }_user_data_fieldmap`),
+		userDataFieldMap: settings.get(`${service.key}_user_data_fieldmap`),
+		rolesOverwrite: settings.get(`${service.key}_roles_overwrite`),
 	};
 };
 
@@ -256,6 +264,7 @@ const configureSamlService = function(samlConfigs) {
 	Accounts.saml.settings.debug = samlConfigs.debug;
 	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
 	Accounts.saml.settings.roleAttributeName = samlConfigs.roleAttributeName;
+	Accounts.saml.settings.rolesOverwrite = samlConfigs.rolesOverwrite;
 
 	return {
 		provider: samlConfigs.clientConfig.provider,

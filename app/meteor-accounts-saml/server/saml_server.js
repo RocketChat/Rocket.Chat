@@ -385,6 +385,10 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			updateData.emails = emails;
 		}
 
+		if (Accounts.saml.settings.rolesOverwrite === true) {
+			updateData.globalRoles = globalRoles;
+		}
+
 		Meteor.users.update({
 			_id: user._id,
 		}, {
