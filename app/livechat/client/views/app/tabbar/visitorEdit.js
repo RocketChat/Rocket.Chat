@@ -176,6 +176,7 @@ Template.visitorEdit.events({
 				toastr.error(t(err.error));
 			} else {
 				toastr.success(t('Saved'));
+				this.save();
 			}
 		});
 	},
@@ -229,10 +230,6 @@ Template.visitorEdit.events({
 			instance.tags.set(tags);
 			$('#tagInput').val('');
 		}
-	},
-
-	'click .save'() {
-		this.save();
 	},
 
 	'click .cancel'() {
