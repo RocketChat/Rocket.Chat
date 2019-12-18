@@ -4391,9 +4391,6 @@ rc-old select,
 
 		display: none;
 
-		margin: var(--default-small-padding);
-		padding: var(--default-padding);
-
 		animation-name: zoomIn;
 		animation-duration: 0.1s;
 
@@ -4404,23 +4401,9 @@ rc-old select,
 		border: 4px dashed var(--color-blue);
 		background: rgba(255, 255, 255, 0.8);
 
-		box-shadow: 0 0 0 var(--default-small-padding) rgba(255, 255, 255, 0.9);
-
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
-
-		&::before {
-			position: absolute;
-			z-index: -1;
-
-			top: calc(-1 * var(--default-small-padding));
-			right: calc(-1 * var(--default-small-padding));
-			bottom: calc(-1 * var(--default-small-padding));
-			left: calc(-1 * var(--default-small-padding));
-
-			content: '';
-		}
 	}
 
 	&.over .dropzone-overlay {
