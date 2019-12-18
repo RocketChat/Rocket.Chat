@@ -3,26 +3,38 @@ import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from '../../app/utils/client';
 import { Users } from '../../app/models/client';
+import { Notifications } from '../../app/notifications/client';
 
-export const userReady = new ReactiveVar(false);
+export const isSyncReady = new ReactiveVar(false);
 
-export const updateUserData = async (uid) => {
+function updateUser(userData) {
+	const user = Users.findOne({ _id: userData._id });
+	if (!user || userData._updatedAt > user._updatedAt) {
+		return Meteor.users.upsert({ _id: userData._id }, userData);
+	}
+	// delete data already on user's collection as those are newer
+	Object.keys(user).forEach((key) => delete userData[key]);
+	Meteor.users.update({ _id: user._id }, { $set: userData });
+}
+
+const onUserEvents = {
+	inserted: (_id, data) => Meteor.users.insert(data),
+	updated: (_id, { diff }) => Meteor.users.upsert({ _id }, { $set: diff }),
+	removed: (_id) => Meteor.users.remove({ _id }),
+};
+
+export const syncUserdata = async (uid) => {
 	if (!uid) {
 		return;
 	}
 
+	await Notifications.onUser('userData', ({ type, id, ...data }) => onUserEvents[type](uid, data));
+
 	const userData = await APIClient.v1.get('me');
 	if (userData) {
-		const user = Users.findOne({ _id: userData._id });
-		if (!user || userData._updatedAt > user._updatedAt) {
-			Meteor.users.upsert({ _id: userData._id }, userData);
-		} else {
-			// delete data already on user's collection as those are newer
-			Object.keys(user).forEach((key) => delete userData[key]);
-			Meteor.users.update({ _id: user._id }, { $set: userData });
-		}
+		updateUser(userData);
 	}
-	userReady.set(true);
+	isSyncReady.set(true);
 
 	return userData;
 };
