@@ -86,11 +86,9 @@ export const RoomManager = new function() {
 										type,
 										name,
 									};
-									
-									if(isNew) {
+									if (isNew) {
 										callbacks.run('streamNewMessage', msg);
 									}
-									
 								}
 
 								msg.name = room.name;
