@@ -5,7 +5,7 @@ import { ConnectionStatusContext } from '../../contexts/ConnectionStatusContext'
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 
 export function ConnectionStatusProvider({ children }) {
-	const status = useReactiveValue(() => ({ ...Meteor.status() }));
+	const status = useReactiveValue(() => ({ ...Meteor.status() }), []);
 
 	const contextValue = useMemo(() => ({
 		status,
