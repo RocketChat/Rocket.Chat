@@ -32,7 +32,7 @@ export function SideBar({
 						data-number={step}
 					>
 						{title}
-					</li>
+					</li>,
 				)}
 			</ol>
 		</div>

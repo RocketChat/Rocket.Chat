@@ -565,6 +565,11 @@ export const dropzoneEvents = {
 	},
 
 	'dragover .dropzone-overlay'(e) {
+		document.querySelectorAll('.over.dropzone').forEach((dropzone) => {
+			if (dropzone !== e.currentTarget.parentNode) {
+				dropzone.classList.remove('over');
+			}
+		});
 		e = e.originalEvent || e;
 		if (['move', 'linkMove'].includes(e.dataTransfer.effectAllowed)) {
 			e.dataTransfer.dropEffect = 'move';

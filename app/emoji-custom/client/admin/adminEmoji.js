@@ -117,7 +117,7 @@ Template.adminEmoji.onRendered(() =>
 	Tracker.afterFlush(function() {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
-	})
+	}),
 );
 
 Template.adminEmoji.events({

@@ -155,17 +155,17 @@ Template.createChannel.helpers({
 	roomTypesBeforeStandard() {
 		const orderLow = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
 		return roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order < orderLow
+			(roomTypeOrder) => roomTypeOrder.order < orderLow,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
+			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier],
 		).filter((roomType) => roomType.creationTemplate);
 	},
 	roomTypesAfterStandard() {
 		const orderHigh = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
 		return roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order > orderHigh
+			(roomTypeOrder) => roomTypeOrder.order > orderHigh,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
+			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier],
 		).filter((roomType) => roomType.creationTemplate);
 	},
 });

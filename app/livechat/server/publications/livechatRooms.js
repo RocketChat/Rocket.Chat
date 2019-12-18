@@ -17,6 +17,7 @@ const userCanAccessRoom = ({ _id }) => {
 };
 
 Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
+	console.warn('The publication "livechat:rooms" is deprecated and will be removed after version v4.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:rooms' }));
 	}
