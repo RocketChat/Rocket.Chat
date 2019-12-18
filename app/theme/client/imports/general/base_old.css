@@ -2517,7 +2517,7 @@ rc-old select,
 
 	& .new-message {
 		position: absolute;
-		z-index: 16;
+		z-index: 2;
 		bottom: 8px;
 		left: 50%;
 
