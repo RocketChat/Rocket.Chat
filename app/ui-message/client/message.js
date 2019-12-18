@@ -464,7 +464,7 @@ const findParentMessage = (() => {
 					repliesCount: message.tcount,
 				},
 			},
-			{ multi: true }
+			{ multi: true },
 		);
 	};
 })();

@@ -121,7 +121,7 @@ Template.adminSounds.onRendered(() =>
 	Tracker.afterFlush(function() {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
-	})
+	}),
 );
 
 Template.adminSounds.events({

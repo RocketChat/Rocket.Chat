@@ -42,7 +42,7 @@ export function LanguageSettingInput({
 			onChange={handleChange}
 		>
 			{languages.map(({ key, name }) =>
-				<SelectInput.Option key={key} value={key} dir='auto'>{name}</SelectInput.Option>
+				<SelectInput.Option key={key} value={key} dir='auto'>{name}</SelectInput.Option>,
 			)}
 		</SelectInput>
 	</>;

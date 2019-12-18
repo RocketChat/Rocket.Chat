@@ -3,7 +3,9 @@ set -euvo pipefail
 IFS=$'\n\t'
 
 # Add launchpad to known hosts
-ssh-keyscan -t rsa -H git.launchpad.net > ~/.ssh/known_hosts
+
+mkdir -p $HOME/.ssh
+ssh-keyscan -t rsa -H git.launchpad.net >> $HOME/.ssh/known_hosts
 
 echo "Preparing to trigger a snap release for $SNAP_CHANNEL channel"
 

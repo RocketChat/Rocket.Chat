@@ -133,7 +133,7 @@ Template.soundEdit.onCreated(function() {
 									handleError(uploadError);
 									console.log(uploadError);
 								}
-							}
+							},
 							);
 							delete this.soundFile;
 							toastr.success(TAPi18n.__('File_uploaded'));
