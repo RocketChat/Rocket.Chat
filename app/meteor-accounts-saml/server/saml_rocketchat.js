@@ -189,6 +189,32 @@ Meteor.methods({
 			i18nLabel: 'SAML_Custom_roles_overwrite_name',
 			i18nDescription: 'SAML_Custom_roles_overwrite_description'
 		});
+		settings.add(`SAML_Custom_${name}_join_channels_option`, 'channels_init', {
+			type: 'select',
+			values: [
+				{ key: 'channels_never', i18nLabel: 'SAML_Channels_Never'},
+				{ key: 'channels_init', i18nLabel: 'SAML_Channels_First_Logon' },
+				{ key: 'channels_always', i18nLabel: 'SAML_Channels_Every_Logon' },
+				{ key: 'channels_sync', i18nLabel: 'SAML_Channels_Sync' }
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Public_Channel_Options_Name',
+			i18nDescription: 'SAML_Public_Channel_Options_Desc'
+		});
+		settings.add(`SAML_Custom_${name}_join_privates_option`, 'privates_never', {
+			type: 'select',
+			values: [
+				{ key: 'privates_never', i18nLabel: 'SAML_Channels_Never' },
+				{ key: 'privates_init', i18nLabel: 'SAML_Channels_First_Logon' },
+				{ key: 'privates_always', i18nLabel: 'SAML_Channels_Every_Logon' },
+				{ key: 'privates_sync', i18nLabel: 'SAML_Channels_Sync' }
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Private_Channel_Options_Name',
+			i18nDescription: 'SAML_Private_Channel_Options_Desc'
+		});
 	},
 });
 
@@ -230,6 +256,8 @@ const getSamlConfigs = function(service) {
 		},
 		userDataFieldMap: settings.get(`${service.key}_user_data_fieldmap`),
 		rolesOverwrite: settings.get(`${service.key}_roles_overwrite`),
+		joinChannelsOption: settings.get(`${service.key}_join_channels_option`),
+		joinPrivatesOption: settings.get(`${service.key}_join_privates_option`),
 	};
 };
 
@@ -265,6 +293,8 @@ const configureSamlService = function(samlConfigs) {
 	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
 	Accounts.saml.settings.roleAttributeName = samlConfigs.roleAttributeName;
 	Accounts.saml.settings.rolesOverwrite = samlConfigs.rolesOverwrite;
+	Accounts.saml.settings.joinChannelsOption = samlConfigs.joinChannelsOption;
+	Accounts.saml.settings.joinPrivatesOption = samlConfigs.joinPrivatesOption;
 
 	return {
 		provider: samlConfigs.clientConfig.provider,

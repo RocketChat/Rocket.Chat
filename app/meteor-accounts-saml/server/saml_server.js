@@ -255,6 +255,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		const eduPersonPrincipalName = loginResult.profile.eppn;
 		const profileFullName = getProfileValue(loginResult.profile, nameField, regexes.name);
 		const fullName = profileFullName || loginResult.profile.displayName || loginResult.profile.username;
+		const channels = loginResult.profile.channels;
 
 		let eppnMatch = false;
 		let user = null;
@@ -332,9 +333,12 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
 
-			if (loginResult.profile.channels) {
-				const { channels } = loginResult.profile.channels;
-				Accounts.saml.subscribeToSAMLChannels(channels, user);
+			if (channels && Accounts.saml.settings.joinChannelsOption === 'channels_init') {
+				Accounts.saml.subscribeToSAMLChannels(channels, user, false, false);
+			}
+
+			if (channels && Accounts.saml.settings.joinPrivatesOption === 'privates_init') {
+				Accounts.saml.subscribeToSAMLChannels(channels, user, true, false);
 			}
 		}
 
@@ -389,6 +393,20 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			updateData.globalRoles = globalRoles;
 		}
 
+		if (channels && Accounts.saml.settings.joinChannelsOption === 'channels_always') {
+			Accounts.saml.subscribeToSAMLChannels(channels, user, false, false);
+		}
+		else if (Accounts.saml.settings.joinChannelsOption === 'channels_sync') {
+			Accounts.saml.subscribeToSAMLChannels(channels, user, false, true);
+		}
+
+		if (channels && Accounts.saml.settings.joinPrivatesOption === 'privates_always') {
+			Accounts.saml.subscribeToSAMLChannels(channels, user, true, false);
+		}
+		else if (Accounts.saml.settings.joinPrivatesOption === 'privates_sync') {
+			Accounts.saml.subscribeToSAMLChannels(channels, user, true, true);
+		}
+
 		Meteor.users.update({
 			_id: user._id,
 		}, {
@@ -413,7 +431,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 });
 
 
-Accounts.saml.subscribeToSAMLChannels = function(channels, user) {
+Accounts.saml.subscribeToSAMLChannels = function(channels, user, isPrivate = false, sync = false) {
 	try {
 		// supports either a comma separated list of channels or an array of channels passed to the channels variable
 		let channelList = [];
@@ -422,15 +440,38 @@ Accounts.saml.subscribeToSAMLChannels = function(channels, user) {
 			roomNameList = roomNameList.split(',');
 			channelList = channelList.concat(roomNameList);
 		}
+
+		// take care of removing channels first, then subscribe
+		if (sync === true) {
+			if (isPrivate === true) {
+				let currSubs = Subscriptions.findByUserIdAndType(user._id, 'p');
+			}
+			else {
+				let currSubs = Subscriptions.findByUserIdAndType(user._id, 'c');
+			}
+
+			for (let sub of currSubs) {
+				if (!channelList.includes(sub.name)) {
+					Subscriptions.removeByRoomIdAndUserId(sub.rid, user._id);
+				}
+			}
+		}
+
 		for (let roomName of channelList) {
 			roomName = roomName.trim();
 			if (!roomName) {
 				continue;
 			}
 
-			let room = Rooms.findOneByNameAndType(roomName, 'c');
+			roomType = 'c';
+			otherRoomType = 'p';
+			if (isPrivate === true) { roomType = 'p'; otherRoomType = 'c'; }
+
+			let room = Rooms.findOneByNameAndType(roomName, roomType);
 			if (!room) {
-				room = Rooms.createWithIdTypeAndName(Random.id(), 'c', roomName);
+				exists = Rooms.findOneByNameAndType(roomName, otherRoomType);
+				if (exists) { continue; }
+				room = Rooms.createWithIdTypeAndName(Random.id(), roomType, roomName);
 			}
 
 			if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
