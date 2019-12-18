@@ -251,9 +251,9 @@ Template.messageBox.helpers({
 		return Template.instance().state.get('isBlockedOrBlocker');
 	},
 	isSubscribed() {
-		const {subscription} = Template.currentData();
-		return (subscription) ? true : false;
-	}
+		const { subscription } = Template.currentData();
+		return !!subscription;
+	},
 });
 
 const handleFormattingShortcut = (event, instance) => {
