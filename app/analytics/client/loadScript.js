@@ -85,7 +85,10 @@ Template.body.onRendered(() => {
 			  if (pathArray[1] === 'direct') {
 			  	const hashedUsername = hex_sha1(pathArray[2]);
 			  	const page = document.location.pathname.replace(pathArray[2], hashedUsername);
+
+			  	ga('set', 'location', page);
 			  	ga('send', 'pageview', page);
+			  	
 			  } else {
 			  	ga('send', 'pageview');
 			  }
