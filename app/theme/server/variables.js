@@ -3,8 +3,6 @@ import { settings } from '../../settings';
 // TODO: Define registers/getters/setters for packages to work with established
 // 			heirarchy of colors instead of making duplicate definitions
 // TODO: Settings pages to show simple separation of major/minor/addon colors
-// TODO: Get major colours as swatches for minor colors in minicolors plugin
-// TODO: Minicolors settings to use rgb for alphas, hex otherwise
 // TODO: Add setting toggle to use defaults for minor colours and hide settings
 
 // New colors, used for shades on solid backgrounds

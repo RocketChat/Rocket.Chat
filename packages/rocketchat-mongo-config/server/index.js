@@ -1,5 +1,7 @@
 import tls from 'tls';
+import { PassThrough } from 'stream';
 
+import { EmailTest } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
 
 // FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
@@ -17,3 +19,11 @@ if (typeof mongoOptionStr !== 'undefined') {
 }
 
 process.env.HTTP_FORWARDED_COUNT = process.env.HTTP_FORWARDED_COUNT || '1';
+
+// Send emails to a "fake" stream instead of print them in console
+if (process.env.NODE_ENV !== 'development' || process.env.TEST_MODE) {
+	const stream = new PassThrough();
+	EmailTest.overrideOutputStream(stream);
+	stream.on('data', () => {});
+	stream.on('end', () => {});
+}

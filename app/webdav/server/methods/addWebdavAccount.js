@@ -37,7 +37,7 @@ Meteor.methods({
 				{
 					username: formData.username,
 					password: formData.pass,
-				}
+				},
 			);
 
 			const accountData = {
@@ -78,7 +78,7 @@ Meteor.methods({
 		try {
 			const client = new WebdavClientAdapter(
 				data.serverURL,
-				{ token: data.token }
+				{ token: data.token },
 			);
 
 			const accountData = {

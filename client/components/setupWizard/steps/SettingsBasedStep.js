@@ -51,7 +51,7 @@ export function SettingsBasedStep({ step, title, active }) {
 				.filter(({ wizard }) => wizard.step === step)
 				.filter(({ type }) => ['string', 'select', 'language'].includes(type))
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
-				.map(({ value, ...field }) => ({ ...field, value: value || '' }))
+				.map(({ value, ...field }) => ({ ...field, value: value || '' })),
 		);
 	}, [settings, currentStep]);
 
@@ -123,7 +123,7 @@ export function SettingsBasedStep({ step, title, active }) {
 								.sort((a, b) => a.key - b.key)
 								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
 						</SelectInput>}
-					</Field>
+					</Field>,
 				)}
 			</FieldGroup>
 		</StepContent>

@@ -91,7 +91,7 @@ export class CustomOAuth {
 
 		const loginUrl = `${ this.authorizePath
 		}${ separator }client_id=${ config.clientId
-		}&redirect_uri=${ OAuth._redirectUri(this.name, config)
+		}&redirect_uri=${ encodeURIComponent(OAuth._redirectUri(this.name, config))
 		}&response_type=code`
 			+ `&state=${ OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)
 			}&scope=${ this.scope }`;

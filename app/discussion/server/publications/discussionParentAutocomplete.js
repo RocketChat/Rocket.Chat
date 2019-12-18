@@ -4,6 +4,7 @@ import { Rooms } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 
 Meteor.publish('discussionParentAutocomplete', function(selector) {
+	console.warn('The publication "discussionParentAutocomplete" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}
