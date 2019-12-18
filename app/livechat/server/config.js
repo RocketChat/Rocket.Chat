@@ -146,7 +146,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Accept_new_livechats_when_agent_is_idle',
 	});
 
-	settings.add('Livechat_webhookUrl', false, {
+	settings.add('Livechat_webhookUrl', '', {
 		type: 'string',
 		group: 'Livechat',
 		section: 'CRM_Integration',
