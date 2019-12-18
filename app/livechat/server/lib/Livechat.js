@@ -289,7 +289,24 @@ export const Livechat = {
 			updateData.phone = phone;
 		}
 		if (livechatData) {
-			updateData.livechatData = livechatData;
+			updateData.livechatData = {};
+			const fields = LivechatCustomField.find({ scope: 'visitor' });
+			fields.forEach((field) => {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					return;
+				}
+				const value = s.trim(livechatData[field._id]);
+				if (value === '') {
+					return;
+				}
+				if (field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+					}
+				}
+				updateData.livechatData[field._id] = value;
+			});
 		}
 		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
@@ -365,6 +382,13 @@ export const Livechat = {
 		const customField = LivechatCustomField.findOneById(key);
 		if (!customField) {
 			throw new Meteor.Error('invalid-custom-field');
+		}
+
+		if (customField.regexp !== undefined && customField.regexp !== '') {
+			const regexp = new RegExp(customField.regexp);
+			if (!regexp.test(value)) {
+				throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: key }));
+			}
 		}
 
 		if (customField.scope === 'room') {

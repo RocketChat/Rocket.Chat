@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import _ from 'underscore';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Settings from './Settings';
+import { LivechatCustomField } from '../index';
 
 export class LivechatRooms extends Base {
 	constructor(...args) {
@@ -88,11 +90,23 @@ export class LivechatRooms extends Base {
 
 		if (livechatData) {
 			setData.livechatData = {};
-			for (const field in livechatData) {
-				if (livechatData.hasOwnProperty(field) && !_.isEmpty(s.trim(livechatData[field]))) {
-					setData.livechatData[field] = s.trim(livechatData[field]);
+			const fields = LivechatCustomField.find({ scope: 'room' });
+			fields.forEach((field) => {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					return;
 				}
-			}
+				const value = s.trim(livechatData[field._id]);
+				if (value === '') {
+					return;
+				}
+				if (field.regex !== undefined && field.regex !== '') {
+					const regexp = new RegExp(field.regex);
+					if (!regexp.test(value)) {
+						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+					}
+				}
+				setData.livechatData[field._id] = value;
+			});
 		}
 
 		const update = {};
