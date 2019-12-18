@@ -1,4 +1,12 @@
-import { Field, FieldGroup, Label, SelectInput, TextInput } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldGroup,
+	InputBox,
+	Label,
+	SelectInput,
+	Text,
+	TextInput,
+} from '@rocket.chat/fuselage';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { useEffect, useReducer, useState } from 'react';
 
@@ -79,6 +87,21 @@ export function SettingsBasedStep({ step, title, active }) {
 	};
 
 	const autoFocusRef = useFocus(active);
+
+	if (fields.length === 0) {
+		return <Step active={active} working={commiting} onSubmit={handleSubmit}>
+			<StepHeader number={step} title={title} />
+
+			<StepContent>
+				<FieldGroup>
+					{Array.from({ length: 5 }, (_, i) => <Field key={i}>
+						<Label text={<Text.Skeleton />} />
+						<InputBox.Skeleton />
+					</Field>)}
+				</FieldGroup>
+			</StepContent>
+		</Step>;
+	}
 
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
