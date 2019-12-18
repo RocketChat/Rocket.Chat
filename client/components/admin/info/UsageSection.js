@@ -34,9 +34,9 @@ export function UsageSection({ statistics, isLoading }) {
 			<DescriptionList.Entry label={t('Stats_Total_Uploads')}>{s(() => statistics.uploadsTotal)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Total_Uploads_Size')}>{s(() => formatMemorySize(statistics.uploadsTotalSize))}</DescriptionList.Entry>
 			{statistics && statistics.apps && <>
-					<DescriptionList.Entry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</DescriptionList.Entry>
-					<DescriptionList.Entry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</DescriptionList.Entry>
-				</>}
+				<DescriptionList.Entry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</DescriptionList.Entry>
+				<DescriptionList.Entry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</DescriptionList.Entry>
+			</>}
 			<DescriptionList.Entry label={t('Stats_Total_Integrations')}>{s(() => statistics.integrations.totalIntegrations)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Total_Incoming_Integrations')}>{s(() => statistics.integrations.totalIncoming)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Total_Active_Incoming_Integrations')}>{s(() => statistics.integrations.totalIncomingActive)}</DescriptionList.Entry>
