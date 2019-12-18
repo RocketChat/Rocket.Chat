@@ -10,8 +10,8 @@ export async function findInquiries({ userId, pagination: { offset, count, sort 
 
 	let departmentIds;
 	if (!await hasRoleAsync(this.userId, 'livechat-manager')) {
-		const departmentAgents = await LivechatDepartmentAgents.findByAgentId(userId).toArray().map((d) => d.departmentId);
-		departmentIds = await LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true }).toArray().map((d) => d._id);
+		const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map((d) => d.departmentId);
+		departmentIds = (await LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true }).toArray()).map((d) => d._id);
 	}
 
 	const filter = {

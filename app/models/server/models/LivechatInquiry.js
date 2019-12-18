@@ -30,7 +30,7 @@ export class LivechatInquiry extends Base {
 				sort: {
 					ts: 1,
 				},
-			}
+			},
 		);
 	}
 

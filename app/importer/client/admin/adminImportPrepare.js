@@ -1,9 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-
-import { Importers } from '..';
-
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -13,6 +10,8 @@ import { hasRole } from '../../../authorization';
 import { settings } from '../../../settings';
 import { t, handleError, APIClient } from '../../../utils';
 import { SideNav } from '../../../ui-utils/client';
+
+import { Importers } from '..';
 
 Template.adminImportPrepare.helpers({
 	isAdmin() {
