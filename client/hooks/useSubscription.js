@@ -1,21 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { useIsMounted } from './useIsMounted';
 
 export const useSubscription = (getInitialValue, subscribe) => {
 	const [value, setValue] = useState(getInitialValue);
-	const mounted = useRef(true);
-
-	useEffect(() => {
-		mounted.current = true;
-
-		return () => {
-			mounted.current = false;
-		};
-	}, [mounted]);
+	const isMounted = useIsMounted();
 
 	useEffect(() => {
 		let value = getInitialValue();
 		const unsubscribe = subscribe((newValue) => {
-			if (!mounted.current) {
+			if (!isMounted()) {
 				return;
 			}
 
@@ -28,7 +22,7 @@ export const useSubscription = (getInitialValue, subscribe) => {
 		return () => {
 			unsubscribe();
 		};
-	}, [mounted, subscribe]);
+	}, [isMounted, subscribe]);
 
 	return value;
 };
