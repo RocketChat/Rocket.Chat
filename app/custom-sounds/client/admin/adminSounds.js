@@ -8,7 +8,7 @@ import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 import { CustomSounds } from '../lib/CustomSounds';
 import { APIClient } from '../../../utils/client';
 
-const SOUNDS_COUNT = 25;
+const LIST_SIZE = 50;
 const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 Template.adminSounds.helpers({
@@ -37,7 +37,7 @@ Template.adminSounds.helpers({
 			}
 			const sounds = instance.sounds.get();
 			if (instance.total.get() > sounds.length) {
-				instance.offset.set(instance.offset.get() + SOUNDS_COUNT);
+				instance.offset.set(instance.offset.get() + LIST_SIZE);
 			}
 		};
 	},
@@ -96,7 +96,7 @@ Template.adminSounds.onCreated(function() {
 
 	this.loadSounds = _.debounce(async (query, offset) => {
 		this.isLoading.set(true);
-		const { sounds, total } = await APIClient.v1.get(`custom-sounds.list?count=${ SOUNDS_COUNT }&offset=${ offset }&query=${ JSON.stringify(query) }`);
+		const { sounds, total } = await APIClient.v1.get(`custom-sounds.list?count=${ LIST_SIZE }&offset=${ offset }&query=${ JSON.stringify(query) }`);
 		this.total.set(total);
 		if (offset === 0) {
 			this.sounds.set(sounds);
