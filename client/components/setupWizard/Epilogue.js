@@ -1,8 +1,8 @@
 import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useSetting } from '../../hooks/useSetting';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useSetting } from '../../hooks/useSetting';
 import { Logo } from './Logo';
 import './Epilogue.css';
 

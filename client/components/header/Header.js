@@ -1,9 +1,6 @@
 import { Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import { useSession } from '../../contexts/SessionContext';
-import { useSidebar } from '../../contexts/SidebarContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { BurgerMenuButton } from './BurgerMenuButton';
 
@@ -13,24 +10,11 @@ export function Header({
 	rawSectionName,
 	sectionName,
 }) {
-	const [isSidebarOpen, setSidebarOpen] = useSidebar();
-	const isLayoutEmbedded = useEmbeddedLayout();
-	const unreadMessagesBadge = useSession('unread');
 	const t = useTranslation();
-
-	const handleClick = () => {
-		setSidebarOpen(!isSidebarOpen);
-	};
-
 	return <header className='rc-header'>
 		<div className='rc-header__wrap'>
 			<div className='rc-header__block rc-header--burger'>
-				<BurgerMenuButton
-					isSidebarOpen={isSidebarOpen}
-					isLayoutEmbedded={isLayoutEmbedded}
-					unreadMessagesBadge={unreadMessagesBadge}
-					onClick={handleClick}
-				/>
+				<BurgerMenuButton />
 			</div>
 
 			<span className='rc-header__block'>

@@ -25,7 +25,7 @@ const useRouteLock = () => {
 		}
 
 		const isComplete = setupWizardState === 'completed';
-		const noUserLoggedInAndIsNotPending = !locked && !user && setupWizardState !== 'pending';
+		const noUserLoggedInAndIsNotPending = locked && !user && setupWizardState !== 'pending';
 		const userIsLoggedInButIsNotAdmin = !!user && !hasRole(user._id, 'admin');
 
 		const mustRedirect = isComplete || noUserLoggedInAndIsNotPending || userIsLoggedInButIsNotAdmin;

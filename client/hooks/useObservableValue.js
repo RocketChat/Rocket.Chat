@@ -14,7 +14,7 @@ export const useObservableValue = (getValue) => {
 
 		return () => {
 			mounted = false;
-			unsubscribe();
+			typeof unsubscribe === 'function' && unsubscribe();
 		};
 	}, [getValue, name]);
 

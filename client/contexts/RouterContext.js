@@ -1,12 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useMemo, useCallback } from 'react';
+
+import { useObservableValue } from '../hooks/useObservableValue';
 
 export const RouterContext = createContext({
 	navigateTo: () => {},
 	replaceWith: () => {},
 	getRouteParameter: () => {},
-	watchRouteParameter: () => {},
 	getQueryStringParameter: () => {},
-	watchQueryStringParameter: () => {},
 });
 
 export const useRoute = (pathDefinition) => {
@@ -20,19 +20,11 @@ export const useRoute = (pathDefinition) => {
 };
 
 export const useRouteParameter = (name) => {
-	const { getRouteParameter, watchRouteParameter } = useContext(RouterContext);
-	const [parameter, setParameter] = useState(getRouteParameter(name));
-
-	useEffect(() => watchRouteParameter(name, setParameter), [watchRouteParameter, name]);
-
-	return parameter;
+	const { getRouteParameter } = useContext(RouterContext);
+	return useObservableValue(useCallback((listener) => getRouteParameter(name, listener), [name]));
 };
 
 export const useQueryStringParameter = (name) => {
-	const { getQueryStringParameter, watchQueryStringParameter } = useContext(RouterContext);
-	const [parameter, setParameter] = useState(getQueryStringParameter(name));
-
-	useEffect(() => watchQueryStringParameter(name, setParameter), [watchQueryStringParameter, name]);
-
-	return parameter;
+	const { getQueryStringParameter } = useContext(RouterContext);
+	return useObservableValue(useCallback((listener) => getQueryStringParameter(name, listener), [name]));
 };

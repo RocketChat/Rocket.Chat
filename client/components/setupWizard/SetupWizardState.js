@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 
-import { useIsMounted } from '../../hooks/useIsMounted';
 import { useMethod } from '../../hooks/useMethod';
 import { useUserId } from '../../hooks/useUserId';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
@@ -44,9 +43,9 @@ const useParameters = () => {
 	const [settings, setSettings] = useState([]);
 	const [canDeclineServerRegistration, setCapableOfDeclineServerRegistration] = useState(false);
 	const getSetupWizardParameters = useMethod('getSetupWizardParameters');
-	const isMounted = useIsMounted();
 
 	useEffect(() => {
+		let mounted = true;
 		const requestParameters = async () => {
 			try {
 				const {
@@ -54,7 +53,7 @@ const useParameters = () => {
 					allowStandaloneServer,
 				} = await getSetupWizardParameters() || {};
 
-				if (!isMounted()) {
+				if (!mounted) {
 					return;
 				}
 
@@ -69,7 +68,11 @@ const useParameters = () => {
 		};
 
 		requestParameters();
-	}, [isMounted]);
+
+		return () => {
+			mounted = false;
+		};
+	}, []);
 
 	return {
 		loaded,

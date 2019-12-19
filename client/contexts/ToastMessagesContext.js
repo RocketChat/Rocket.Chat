@@ -4,4 +4,4 @@ export const ToastMessagesContext = createContext({
 	dispatch: () => {},
 });
 
-export const useDispatchToastMessage = () => useContext(ToastMessagesContext).dispatch;
+export const useToastMessageDispatch = () => useContext(ToastMessagesContext).dispatch;

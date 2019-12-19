@@ -2,12 +2,12 @@ import { CheckBox, Label, RadioButton } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
-import { handleError } from '../../../../app/utils/client';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useFocus } from '../../../hooks/useFocus';
 import { useMethod } from '../../../hooks/useMethod';
 import { Icon } from '../../basic/Icon';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
@@ -60,6 +60,8 @@ export function RegisterServerStep({ step, title, active }) {
 
 	const registerCloudWorkspace = useMethod('cloud:registerWorkspace');
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const handleBackClick = () => {
 		goToPreviousStep();
 	};
@@ -104,8 +106,7 @@ export function RegisterServerStep({ step, title, active }) {
 			setComitting(false);
 			goToFinalStep();
 		} catch (error) {
-			console.error(error);
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 			setComitting(false);
 		}
 	};

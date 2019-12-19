@@ -14,35 +14,47 @@ const replaceWith = (pathDefinition, parameters, queryStringParameters) => {
 	});
 };
 
-const getRouteParameter = (name) => Tracker.nonreactive(() => FlowRouter.getParam(name));
+const getRouteParameter = (name, listener) => {
+	if (!listener) {
+		return Tracker.nonreactive(() => FlowRouter.getParam(name));
+	}
 
-const watchRouteParameter = (name, subscriber) => {
-	const computation = Tracker.autorun(() => {
-		subscriber(FlowRouter.getParam(name));
+	const computation = Tracker.autorun(({ firstRun }) => {
+		const value = FlowRouter.getParam(name);
+		if (!firstRun) {
+			listener(value);
+		}
 	});
 
-	return () => computation.stop();
+	return () => {
+		computation.stop();
+	};
 };
 
-const getQueryStringParameter = (name) => Tracker.nonreactive(() => FlowRouter.getQueryParam(name));
+const getQueryStringParameter = (name, listener) => {
+	if (!listener) {
+		return Tracker.nonreactive(() => FlowRouter.getQueryParam(name));
+	}
 
-const watchQueryStringParameter = (name, subscriber) => {
-	const computation = Tracker.autorun(() => {
-		subscriber(FlowRouter.getQueryParam(name));
+	const computation = Tracker.autorun(({ firstRun }) => {
+		const value = FlowRouter.getQueryParam(name);
+		if (!firstRun) {
+			listener(value);
+		}
 	});
 
-	return () => computation.stop();
+	return () => {
+		computation.stop();
+	};
 };
 
-const router = {
+const contextValue = {
 	navigateTo,
 	replaceWith,
 	getRouteParameter,
-	watchRouteParameter,
 	getQueryStringParameter,
-	watchQueryStringParameter,
 };
 
 export function RouterProvider({ children }) {
-	return <RouterContext.Provider children={children} value={router} />;
+	return <RouterContext.Provider children={children} value={contextValue} />;
 }

@@ -8,30 +8,27 @@ import {
 	TextInput,
 } from '@rocket.chat/fuselage';
 import React, { useMemo, useState } from 'react';
-import toastr from 'toastr';
 
-import { handleError } from '../../../../app/utils/client';
 import { callbacks } from '../../../../app/callbacks/client';
 import { useFocus } from '../../../hooks/useFocus';
 import { useLoginWithPassword } from '../../../hooks/useLoginWithPassword';
 import { useMethod } from '../../../hooks/useMethod';
 import { useSetting } from '../../../hooks/useSetting';
+import { useSessionDispatch } from '../../../contexts/SessionContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
-import { useSessionDispatch } from '../../../contexts/SessionContext';
 
 export function AdminUserInformationStep({ step, title, active }) {
-	const { goToNextStep } = useSetupWizardContext();
-
 	const loginWithPassword = useLoginWithPassword();
 	const registerUser = useMethod('registerUser');
 	const defineUsername = useMethod('setUsername');
 
 	const setForceLogin = useSessionDispatch('forceLogin');
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
 		await registerUser({ name, username, email, pass: password });
@@ -44,14 +41,13 @@ export function AdminUserInformationStep({ step, title, active }) {
 				onRegistrationEmailSent && onRegistrationEmailSent();
 				return;
 			}
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 			throw error;
 		}
 
 		setForceLogin(false);
 
 		await defineUsername(username);
-
 		callbacks.run('usernameSet');
 	};
 
@@ -108,9 +104,10 @@ export function AdminUserInformationStep({ step, title, active }) {
 				username,
 				email,
 				password,
-				onRegistrationEmailSent: () => toastr.success(t('We_have_sent_registration_email')),
+				onRegistrationEmailSent: () => {
+					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
+				},
 			});
-			goToNextStep();
 		} catch (error) {
 			console.error(error);
 		} finally {

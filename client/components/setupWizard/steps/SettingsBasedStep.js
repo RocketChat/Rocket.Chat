@@ -7,14 +7,12 @@ import {
 	Text,
 	TextInput,
 } from '@rocket.chat/fuselage';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { useEffect, useReducer, useState } from 'react';
 
-import { handleError } from '../../../../app/utils/client';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation, useLanguages } from '../../../contexts/TranslationContext';
 import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useFocus } from '../../../hooks/useFocus';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
@@ -49,7 +47,7 @@ export function SettingsBasedStep({ step, title, active }) {
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
 
-	const languages = useReactiveValue(() => TAPi18n && TAPi18n.getLanguages(), []);
+	const languages = useLanguages();
 
 	useEffect(() => {
 		resetFields(
@@ -67,6 +65,8 @@ export function SettingsBasedStep({ step, title, active }) {
 
 	const autoFocusRef = useFocus(active);
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const handleBackClick = () => {
 		goToPreviousStep();
 	};
@@ -80,8 +80,7 @@ export function SettingsBasedStep({ step, title, active }) {
 			await batchSetSettings(fields.map(({ _id, value }) => ({ _id, value })));
 			goToNextStep();
 		} catch (error) {
-			console.error(error);
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			setCommiting(false);
 		}
