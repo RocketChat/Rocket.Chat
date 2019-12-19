@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tracker } from 'meteor/tracker';
+import { Meteor } from 'meteor/meteor';
 
 import {
 	hasPermission,
@@ -7,6 +8,7 @@ import {
 	hasAllPermission,
 } from '../../app/authorization/client/hasPermission';
 import { AuthorizationContext } from '../contexts/AuthorizationContext';
+import { hasRole } from '../../app/authorization/client';
 
 const contextValue = {
 	hasPermission: (permission, scope, listener) => {
@@ -48,6 +50,22 @@ const contextValue = {
 
 		const computation = Tracker.autorun(({ firstRun }) => {
 			const value = hasAllPermission(permissions, scope);
+			if (!firstRun) {
+				listener(value);
+			}
+		});
+
+		return () => {
+			computation.stop();
+		};
+	},
+	hasRole: (role, listener) => {
+		if (!listener) {
+			return Tracker.nonreactive(() => hasRole(Meteor.userId(), role));
+		}
+
+		const computation = Tracker.autorun(({ firstRun }) => {
+			const value = hasRole(Meteor.userId(), role);
 			if (!firstRun) {
 				listener(value);
 			}

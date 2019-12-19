@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { hasRole } from '../../../app/authorization/client';
+import { useRole } from '../../contexts/AuthorizationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useUserId, useUser } from '../../contexts/UserContext';
@@ -11,6 +11,7 @@ const useRouteLock = () => {
 	const setupWizardState = useSetting('Show_Setup_Wizard');
 	const userId = useUserId();
 	const user = useUser();
+	const hasAdminRole = useRole('admin');
 	const goToHome = useRoute('home');
 
 	useEffect(() => {
@@ -24,7 +25,7 @@ const useRouteLock = () => {
 
 		const isComplete = setupWizardState === 'completed';
 		const noUserLoggedInAndIsNotPending = locked && !user && setupWizardState !== 'pending';
-		const userIsLoggedInButIsNotAdmin = !!user && !hasRole(userId, 'admin');
+		const userIsLoggedInButIsNotAdmin = !!user && !hasAdminRole;
 
 		const mustRedirect = isComplete || noUserLoggedInAndIsNotPending || userIsLoggedInButIsNotAdmin;
 
@@ -34,7 +35,7 @@ const useRouteLock = () => {
 		}
 
 		setLocked(false);
-	}, [setupWizardState, userId, user]);
+	}, [setupWizardState, userId, user, hasAdminRole]);
 
 	return locked;
 };
