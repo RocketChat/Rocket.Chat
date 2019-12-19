@@ -1,16 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { ConnectionStatusContext } from '../../contexts/ConnectionStatusContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 
 export function ConnectionStatusProvider({ children }) {
-	const status = useReactiveValue(() => ({ ...Meteor.status() }), []);
-
-	const contextValue = useMemo(() => ({
-		status,
+	const status = useReactiveValue(() => ({
+		...Meteor.status(),
 		reconnect: Meteor.reconnect,
-	}), [status]);
+	}), []);
 
-	return <ConnectionStatusContext.Provider children={children} value={contextValue} />;
+	return <ConnectionStatusContext.Provider children={children} value={status} />;
 }

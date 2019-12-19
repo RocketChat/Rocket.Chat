@@ -1,14 +1,11 @@
 import { createContext, useContext } from 'react';
 
 export const ConnectionStatusContext = createContext({
-	status: {
-		connected: true,
-		status: 'connected',
-		retryCount: 0,
-	},
+	connected: true,
+	retryCount: 0,
+	retryTime: 0,
+	status: 'connected',
 	reconnect: () => {},
 });
 
-export const useConnectionStatus = () => useContext(ConnectionStatusContext).status;
-
-export const useReconnect = () => useContext(ConnectionStatusContext).reconnect;
+export const useConnectionStatus = () => useContext(ConnectionStatusContext);

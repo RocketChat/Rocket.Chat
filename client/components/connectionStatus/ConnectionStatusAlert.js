@@ -1,7 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useConnectionStatus, useReconnect } from '../../contexts/ConnectionStatusContext';
+import { useConnectionStatus } from '../../contexts/ConnectionStatusContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import './ConnectionStatusAlert.css';
 
@@ -38,8 +38,7 @@ const useReconnectCountdown = (retryTime, status) => {
 };
 
 export function ConnectionStatusAlert() {
-	const { connected, retryTime, status } = useConnectionStatus();
-	const reconnect = useReconnect();
+	const { connected, retryTime, status, reconnect } = useConnectionStatus();
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
 	const t = useTranslation();
 
@@ -49,7 +48,7 @@ export function ConnectionStatusAlert() {
 
 	const handleRetryClick = (event) => {
 		event.preventDefault();
-		reconnect();
+		reconnect && reconnect();
 	};
 
 	return <div className='ConnectionStatusAlert' role='alert'>
