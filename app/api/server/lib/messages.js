@@ -115,3 +115,28 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 		total,
 	};
 }
+
+export async function findDiscussionsFromRoom({ uid, roomId, pagination: { offset, count, sort } }) {
+	const room = await Rooms.findOneById(roomId);
+
+	if (!await canAccessRoomAsync(room, { _id: uid })) {
+		throw new Error('error-not-allowed');
+	}
+
+	const cursor = Messages.findDiscussionsByRoom(roomId, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+	});
+
+	const total = await cursor.count();
+
+	const messages = await cursor.toArray();
+
+	return {
+		messages,
+		count: messages.length,
+		offset,
+		total,
+	};
+}
