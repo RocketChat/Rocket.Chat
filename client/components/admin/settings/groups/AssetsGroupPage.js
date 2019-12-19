@@ -1,7 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { call } from '../../../../../app/ui-utils/client/lib/callMethod';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useMethod } from '../../../../hooks/useMethod';
