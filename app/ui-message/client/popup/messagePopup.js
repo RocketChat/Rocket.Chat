@@ -9,6 +9,7 @@ import { Template } from 'meteor/templating';
 import { toolbarSearch } from '../../../ui-sidenav';
 import { lazyloadtick } from '../../../lazy-load';
 import './messagePopup.html';
+import { isMobile } from '../../../utils/client';
 
 const keys = {
 	TAB: 9,
@@ -19,6 +20,8 @@ const keys = {
 	ARROW_RIGHT: 39,
 	ARROW_DOWN: 40,
 };
+
+let touchMoved = false;
 
 function getCursorPosition(input) {
 	if (input == null) {
@@ -80,6 +83,9 @@ Template.messagePopup.onCreated(function() {
 		return _id;
 	});
 	template.up = () => {
+		if (isMobile()) {
+			return;
+		}
 		const current = template.find('.popup-item.selected');
 		const previous = $(current).prev('.popup-item')[0] || template.find('.popup-item:last-child');
 		if (previous != null) {
@@ -90,6 +96,9 @@ Template.messagePopup.onCreated(function() {
 		}
 	};
 	template.down = () => {
+		if (isMobile()) {
+			return;
+		}
 		const current = template.find('.popup-item.selected');
 		const next = $(current).next('.popup-item')[0] || template.find('.popup-item');
 		if (next && next.classList.contains('popup-item')) {
@@ -100,7 +109,7 @@ Template.messagePopup.onCreated(function() {
 		}
 	};
 	template.verifySelection = () => {
-		if (!template.open.curValue) {
+		if (!template.open.curValue || isMobile()) {
 			return;
 		}
 		const current = template.find('.popup-item.selected');
@@ -278,7 +287,7 @@ Template.messagePopup.events({
 		lazyloadtick();
 	},
 	'mouseenter .popup-item'(e) {
-		if (e.currentTarget.className.indexOf('selected') > -1) {
+		if (e.currentTarget.className.indexOf('selected') > -1 || isMobile()) {
 			return;
 		}
 		const template = Template.instance();
@@ -289,11 +298,36 @@ Template.messagePopup.events({
 		e.currentTarget.className += ' selected sidebar-item__popup-active';
 		return template.value.set(this._id);
 	},
-	'mousedown .popup-item, touchstart .popup-item'() {
+	'mousedown .popup-item'() {
 		const template = Template.instance();
 		template.clickingItem = true;
 	},
-	'mouseup .popup-item, touchend .popup-item'() {
+	'touchstart .popup-item'() {
+		touchMoved = false;
+	},
+	'touchmove .popup-item'(e) {
+		const { touches } = e.originalEvent;
+		if (touches && touches.length) {
+			const deltaX = Math.abs(lastTouchX - touches[0].pageX);
+			const deltaY = Math.abs(lastTouchY - touches[0].pageY);
+			if (deltaX > 5 || deltaY > 5) {
+				touchMoved = true;
+			}
+		}
+	},
+	'touchend .popup-item'() {
+		const template = Template.instance();
+		if (!touchMoved) {
+			template.value.set(this._id);
+			template.enterValue();
+			template.open.set(false);
+		}
+	},
+	'mouseup .popup-item'() {
+		// To prevent refreshing of page in Mobile client.
+		if (isMobile()) {
+			return;
+		}
 		const template = Template.instance();
 		template.clickingItem = false;
 		template.value.set(this._id);
