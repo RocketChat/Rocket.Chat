@@ -69,7 +69,7 @@ Template.channelSettingsDefault.onCreated(function() {
 	this.isFavorite = new ReactiveVar();
 	this.autorun(() => {
 		const { rid } = Template.currentData();
-		const room = AdminChatRoom.findOne(rid, { fields: { default: 1, favorite: 1} });
+		const room = AdminChatRoom.findOne(rid, { fields: { default: 1, favorite: 1 } });
 		this.isDefault.set(room && room.default);
 		this.isFavorite.set(room && room.favorite);
 	});
