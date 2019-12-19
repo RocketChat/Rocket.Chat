@@ -27,7 +27,8 @@ const createTranslateFunction = (language) => {
 		});
 	};
 
-	translate.has = (key, { lng = language, ...options } = {}) => !!key && TAPi18next.exists(key, { ...options, lng });
+	translate.has = (key, { lng = language, ...options } = {}) =>
+		!!key && TAPi18next.exists(key, { ns: 'project', lng, ...options });
 
 	return translate;
 };
