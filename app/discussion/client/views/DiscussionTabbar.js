@@ -60,7 +60,7 @@ Template.discussionsTabbar.onCreated(function() {
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
-		const { messages, total } = await APIClient.v1.get(`chat.getDiscussionsOfARoom?roomId=${ this.rid }&count=${ limit }`);
+		const { messages, total } = await APIClient.v1.get(`chat.getDiscussions?roomId=${ this.rid }&count=${ limit }`);
 
 		upsertMessageBulk({ msgs: messages }, this.messages);
 

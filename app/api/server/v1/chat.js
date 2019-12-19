@@ -9,7 +9,7 @@ import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
 import { settings } from '../../../settings';
-import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsOfARoom } from '../lib/messages';
+import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from '../lib/messages';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -681,7 +681,7 @@ API.v1.addRoute('chat.getSnippetedMessages', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('chat.getDiscussionsOfARoom', { authRequired: true }, {
+API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
 	get() {
 		const { roomId } = this.queryParams;
 		const { sort } = this.parseJsonQuery();
@@ -690,7 +690,7 @@ API.v1.addRoute('chat.getDiscussionsOfARoom', { authRequired: true }, {
 		if (!roomId) {
 			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 		}
-		const messages = Promise.await(findDiscussionsOfARoom({
+		const messages = Promise.await(findDiscussionsFromRoom({
 			uid: this.userId,
 			roomId,
 			pagination: {

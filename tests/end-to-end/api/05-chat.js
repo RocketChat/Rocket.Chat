@@ -1624,9 +1624,9 @@ describe('[Chat]', function() {
 		});
 	});
 
-	describe('[/chat.getDiscussionsOfARoom]', () => {
+	describe('[/chat.getDiscussions]', () => {
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request.get(api('chat.getDiscussionsOfARoom'))
+			request.get(api('chat.getDiscussions'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -1638,7 +1638,7 @@ describe('[Chat]', function() {
 		});
 
 		it('should return an error when the roomId is invalid', (done) => {
-			request.get(api('chat.getDiscussionsOfARoom?roomId=invalid-room'))
+			request.get(api('chat.getDiscussions?roomId=invalid-room'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -1650,7 +1650,7 @@ describe('[Chat]', function() {
 		});
 
 		it('should return the discussions of a room', (done) => {
-			request.get(api('chat.getDiscussionsOfARoom?roomId=GENERAL'))
+			request.get(api('chat.getDiscussions?roomId=GENERAL'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
