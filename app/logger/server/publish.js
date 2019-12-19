@@ -58,19 +58,17 @@ stdoutStreamer.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
 });
 
-const listenAndEmitStdout = () => {
+Meteor.startup(() => {
 	const handler = (string, item) => {
 		stdoutStreamer.emit('stdout', {
 			...item,
 		});
 	};
 	StdOut.on('write', handler);
-};
-
-Meteor.startup(() => listenAndEmitStdout());
+});
 
 Meteor.publish('stdout', function() {
-	console.warn('The publication "stdout" is deprecated and will be removed after version v4.0.0');
+	console.warn('The publication "stdout" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId || hasPermission(this.userId, 'view-logs') !== true) {
 		return this.ready();
 	}
