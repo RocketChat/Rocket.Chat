@@ -9,7 +9,7 @@ API.v1.addRoute('oauth-apps.list', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('oauth-apps.getOne', { authRequired: true }, {
+API.v1.addRoute('oauth-apps.get', { authRequired: true }, {
 	get() {
 		const { clientId, appId } = this.queryParams;
 		if (!clientId && !appId) {

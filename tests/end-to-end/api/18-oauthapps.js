@@ -38,9 +38,9 @@ describe('[OAuthApps]', function() {
 		});
 	});
 
-	describe('[/oauth-apps.getOne]', () => {
+	describe('[/oauth-apps.get]', () => {
 		it('should return a single oauthApp by id', (done) => {
-			request.get(api('oauth-apps.getOne?appId=zapier'))
+			request.get(api('oauth-apps.get?appId=zapier'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -51,7 +51,7 @@ describe('[OAuthApps]', function() {
 				.end(done);
 		});
 		it('should return a single oauthApp by client id', (done) => {
-			request.get(api('oauth-apps.getOne?clientId=zapier'))
+			request.get(api('oauth-apps.get?clientId=zapier'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {

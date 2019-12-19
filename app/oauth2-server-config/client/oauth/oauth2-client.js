@@ -32,7 +32,7 @@ FlowRouter.route('/oauth/error/:error', {
 
 Template.authorize.onCreated(async function() {
 	this.oauthApp = new ReactiveVar({});
-	const { oauthApp } = await APIClient.v1.get(`oauth-apps.getOne?clientId=${ this.data.client_id() }`);
+	const { oauthApp } = await APIClient.v1.get(`oauth-apps.get?clientId=${ this.data.client_id() }`);
 	this.oauthApp.set(oauthApp);
 });
 
