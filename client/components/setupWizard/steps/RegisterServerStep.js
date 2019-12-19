@@ -2,18 +2,17 @@ import { CheckBox, Label, RadioButton } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
+import { useMethod } from '../../../contexts/ServerContext';
 import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFocus } from '../../../hooks/useFocus';
-import { useMethod } from '../../../hooks/useMethod';
 import { Icon } from '../../basic/Icon';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepContent } from '../StepContent';
 import { StepHeader } from '../StepHeader';
-
 import './RegisterServerStep.css';
 
 const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) => {

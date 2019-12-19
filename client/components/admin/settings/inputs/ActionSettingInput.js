@@ -1,9 +1,9 @@
 import { Button, Field } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useMethod } from '../../../../hooks/useMethod';
 
 export function ActionSettingInput({
 	_id,

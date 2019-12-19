@@ -1,13 +1,12 @@
 import { Button } from '@rocket.chat/fuselage';
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import s from 'underscore.string';
 
 import { modal } from '../../../../../app/ui-utils/client/lib/modal';
 import { RawText } from '../../../basic/RawText';
+import { useAbsoluteUrl, useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useMethod } from '../../../../hooks/useMethod';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 
@@ -17,9 +16,11 @@ export function OAuthGroupPage({ group }) {
 
 	const sectionIsCustomOAuth = (sectionName) => sectionName && /^Custom OAuth:\s.+/.test(sectionName);
 
+	const getAbsoluteUrl = useAbsoluteUrl();
+
 	const callbackURL = (sectionName) => {
 		const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
-		return Meteor.absoluteUrl(`_oauth/${ id }`);
+		return getAbsoluteUrl(`_oauth/${ id }`);
 	};
 
 	const dispatchToastMessage = useToastMessageDispatch();
