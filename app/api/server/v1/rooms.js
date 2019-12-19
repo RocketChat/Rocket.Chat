@@ -276,7 +276,7 @@ API.v1.addRoute('rooms.getDiscussions', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('rooms.channelAndPrivateAutocomplete', { authRequired: true }, {
+API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, {
 	get() {
 		const { selector } = this.queryParams;
 		if (!selector) {

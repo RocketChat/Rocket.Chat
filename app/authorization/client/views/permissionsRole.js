@@ -95,7 +95,7 @@ Template.permissionsRole.helpers({
 			rules: [
 				{
 					collection: 'CachedChannelList',
-					endpoint: 'rooms.channelAndPrivateAutocomplete',
+					endpoint: 'rooms.autocomplete.channelAndPrivate',
 					field: 'name',
 					template: Template.roomSearch,
 					noMatchTemplate: Template.roomSearchEmpty,
