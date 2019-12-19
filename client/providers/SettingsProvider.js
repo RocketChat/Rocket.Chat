@@ -1,8 +1,8 @@
 import React from 'react';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../../app/settings/client';
-import { SettingsContext } from '../../contexts/SettingsContext';
+import { settings } from '../../app/settings/client';
+import { SettingsContext } from '../contexts/SettingsContext';
 
 const contextValue = {
 	get: (name, listener) => {

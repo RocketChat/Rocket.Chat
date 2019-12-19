@@ -2,7 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 import React from 'react';
 
-import { RouterContext } from '../../contexts/RouterContext';
+import { RouterContext } from '../contexts/RouterContext';
 
 const navigateTo = (pathDefinition, parameters, queryStringParameters) => {
 	FlowRouter.go(pathDefinition, parameters, queryStringParameters);

@@ -1,8 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 
-import { TranslationContext } from '../../contexts/TranslationContext';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { TranslationContext } from '../contexts/TranslationContext';
+import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const createTranslateFunction = (language) => {
 	const translate = (key, ...replaces) => {

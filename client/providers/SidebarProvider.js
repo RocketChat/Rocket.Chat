@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { menu } from '../../../app/ui-utils/client';
-import { SidebarContext } from '../../contexts/SidebarContext';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { menu } from '../../app/ui-utils/client';
+import { SidebarContext } from '../contexts/SidebarContext';
+import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const getOpen = () => menu.isOpen();
 

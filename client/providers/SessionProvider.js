@@ -2,7 +2,7 @@ import React from 'react';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
-import { SessionContext } from '../../contexts/SessionContext';
+import { SessionContext } from '../contexts/SessionContext';
 
 const contextValue = {
 	get: (name, listener) => {
