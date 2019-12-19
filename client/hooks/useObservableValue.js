@@ -1,26 +1,22 @@
 import { useEffect, useState } from 'react';
 
-import { useIsMounted } from './useIsMounted';
-
-export const useObservableValue = (getInitialValue, subscribe) => {
-	const [value, setValue] = useState(getInitialValue);
-	const isMounted = useIsMounted();
+export const useObservableValue = (getValue) => {
+	const [value, setValue] = useState(() => getValue());
 
 	useEffect(() => {
-		let oldValue = value;
-		const listener = (newValue) => {
-			if (!isMounted()) {
-				return;
-			}
+		let mounted = true;
 
-			if (oldValue !== newValue) {
-				oldValue = newValue;
+		const unsubscribe = getValue((newValue) => {
+			if (mounted) {
 				setValue(newValue);
 			}
-		};
+		});
 
-		return subscribe(listener);
-	}, [isMounted, subscribe]);
+		return () => {
+			mounted = false;
+			unsubscribe();
+		};
+	}, [getValue, name]);
 
 	return value;
 };

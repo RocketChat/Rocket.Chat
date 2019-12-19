@@ -7,7 +7,6 @@ import {
 	PasswordInput,
 	TextInput,
 } from '@rocket.chat/fuselage';
-import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
 import toastr from 'toastr';
 
@@ -23,6 +22,7 @@ import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
+import { useSessionDispatch } from '../../../contexts/SessionContext';
 
 export function AdminUserInformationStep({ step, title, active }) {
 	const { goToNextStep } = useSetupWizardContext();
@@ -30,6 +30,8 @@ export function AdminUserInformationStep({ step, title, active }) {
 	const loginWithPassword = useLoginWithPassword();
 	const registerUser = useMethod('registerUser');
 	const defineUsername = useMethod('setUsername');
+
+	const setForceLogin = useSessionDispatch('forceLogin');
 
 	const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
 		await registerUser({ name, username, email, pass: password });
@@ -46,7 +48,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 			throw error;
 		}
 
-		Session.set('forceLogin', false);
+		setForceLogin(false);
 
 		await defineUsername(username);
 

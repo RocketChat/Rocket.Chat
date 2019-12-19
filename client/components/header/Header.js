@@ -15,7 +15,7 @@ export function Header({
 }) {
 	const [isSidebarOpen, setSidebarOpen] = useSidebar();
 	const isLayoutEmbedded = useEmbeddedLayout();
-	const [unreadMessagesBadge] = useSession('unread');
+	const unreadMessagesBadge = useSession('unread');
 	const t = useTranslation();
 
 	const handleClick = () => {

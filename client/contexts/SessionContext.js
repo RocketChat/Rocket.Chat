@@ -1,21 +1,18 @@
-import { createContext, useCallback, useContext, useMemo } from 'react';
+import { createContext, useCallback, useContext } from 'react';
 
 import { useObservableValue } from '../hooks/useObservableValue';
 
 export const SessionContext = createContext({
-	get: () => null,
-	subscribe: () => () => {},
+	get: () => {},
 	set: () => {},
 });
 
 export const useSession = (name) => {
-	const session = useContext(SessionContext);
+	const { get } = useContext(SessionContext);
+	return useObservableValue((listener) => get(name, listener));
+};
 
-	const getInitialValue = useMemo(() => session.get.bind(session, name), [session, name]);
-	const subscribe = useMemo(() => session.subscribe.bind(session, name), [session, name]);
-	const value = useObservableValue(getInitialValue, subscribe);
-
-	const setValue = useCallback((value) => session.set(name, value), [session, name]);
-
-	return [value, setValue];
+export const useSessionDispatch = (name) => {
+	const { set } = useContext(SessionContext);
+	return useCallback((value) => set(name, value), [set, name]);
 };

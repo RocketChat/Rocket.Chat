@@ -3,42 +3,21 @@ import { useCallback } from 'react';
 
 import { useObservableValue } from './useObservableValue';
 
-export const useReactiveValue = (getValue, deps = []) => {
-	const getInitialValue = () => Tracker.nonreactive(getValue);
+const wrapGetValue = (getValue) => (listener) => {
+	if (!listener) {
+		return Tracker.nonreactive(getValue);
+	}
 
-	const subscribe = useCallback((fn) => {
-		const computation = Tracker.autorun((c) => {
-			const value = getValue();
-			if (!c.firstRun) {
-				fn(value);
-			}
-		});
+	const computation = Tracker.autorun(({ firstRun }) => {
+		const value = getValue();
+		if (!firstRun) {
+			listener(value);
+		}
+	});
 
-		return () => {
-			computation.stop();
-		};
-	}, deps);
-
-	return useObservableValue(getInitialValue, subscribe);
+	return () => {
+		computation.stop();
+	};
 };
 
-// export const useReactiveValue = (getValue, deps = []) => {
-// 	const [value, setValue] = useState(() => Tracker.nonreactive(getValue));
-
-// 	useEffect(() => {
-// 		let oldValue = value;
-// 		const computation = Tracker.autorun(() => {
-// 			const newValue = getValue();
-// 			if (newValue !== oldValue) {
-// 				oldValue = newValue;
-// 				setValue(newValue);
-// 			}
-// 		});
-
-// 		return () => {
-// 			computation.stop();
-// 		};
-// 	}, deps);
-
-// 	return value;
-// };
+export const useReactiveValue = (getValue, deps = []) => useObservableValue(useCallback(wrapGetValue(getValue), deps));

@@ -13,10 +13,8 @@ const dispatch = ({ type, message, title, options }) => {
 	toastr[type](message, title, options);
 };
 
+const contextValue = { dispatch };
+
 export function ToastMessagesProvider({ children }) {
-	return <ToastMessagesContext.Provider
-		children={children}
-		value={{
-			dispatch,
-		}} />;
+	return <ToastMessagesContext.Provider children={children} value={contextValue} />;
 }

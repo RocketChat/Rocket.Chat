@@ -4,11 +4,17 @@ import { Tracker } from 'meteor/tracker';
 
 import { SessionContext } from '../../contexts/SessionContext';
 
-const session = {
-	get: (name) => Session.get(name),
-	subscribe: (name, listener) => {
-		const computation = Tracker.autorun(() => {
-			listener(Session.get(name));
+const contextValue = {
+	get: (name, listener) => {
+		if (!listener) {
+			return Tracker.nonreactive(() => Session.get(name));
+		}
+
+		const computation = Tracker.autorun(({ firstRun }) => {
+			const value = Session.get(name);
+			if (!firstRun) {
+				listener(value);
+			}
 		});
 
 		return () => {
@@ -21,5 +27,5 @@ const session = {
 };
 
 export function SessionProvider({ children }) {
-	return <SessionContext.Provider children={children} value={session} />;
+	return <SessionContext.Provider children={children} value={contextValue} />;
 }
