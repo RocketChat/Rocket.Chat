@@ -52,7 +52,7 @@ Template.channelSettingsDefault.events({
 	'click .save'(e, t) {
 		e.preventDefault();
 
-		Meteor.call('saveRoomSettings', this.rid, 'default', {default : t.isDefault.get(), favorite : t.isFavorite.get()}, (err/* , result*/) => {
+		Meteor.call('saveRoomSettings', this.rid, 'default', { default: t.isDefault.get(), favorite: t.isFavorite.get() }, (err/* , result*/) => {
 			if (err) {
 				return handleError(err);
 			}
@@ -69,7 +69,7 @@ Template.channelSettingsDefault.onCreated(function() {
 	this.isFavorite = new ReactiveVar();
 	this.autorun(() => {
 		const { rid } = Template.currentData();
-		const room = AdminChatRoom.findOne(rid, { fields: { default: 1, favorite: 1} })
+		const room = AdminChatRoom.findOne(rid, { fields: { default: 1, favorite: 1} });
 		this.isDefault.set(room && room.default);
 		this.isFavorite.set(room && room.favorite);
 	});

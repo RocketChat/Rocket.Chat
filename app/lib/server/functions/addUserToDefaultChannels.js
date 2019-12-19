@@ -17,7 +17,7 @@ export const addUserToDefaultChannels = function(user, silenced) {
 			});
 
 			// Add room as Favorite
-			if(room.favorite) {
+			if (room.favorite) {
 				Subscriptions.setFavoriteByRoomIdAndUserId(room._id, user._id);
 			}
 

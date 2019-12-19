@@ -842,9 +842,9 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				default: defaultValue,
-				...favorite && { favorite }
+				...favorite && { favorite },
 			},
-			...!favorite && { $unset: { favorite: 1} },
+			...!favorite && { $unset: { favorite: 1 } },
 		};
 
 		return this.update(query, update);
