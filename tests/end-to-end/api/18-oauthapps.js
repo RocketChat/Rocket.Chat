@@ -11,10 +11,10 @@ describe('[OAuthApps]', function() {
 
 	before((done) => getCredentials(done));
 
-	describe('[/oauthApps.list]', () => {
+	describe('[/oauth-apps.list]', () => {
 		it('should return an error when the user does not have the necessary permission', (done) => {
 			updatePermission('manage-oauth-apps', []).then(() => {
-				request.get(api('oauthApps.list'))
+				request.get(api('oauth-apps.list'))
 					.set(credentials)
 					.expect(400)
 					.expect((res) => {
@@ -26,7 +26,7 @@ describe('[OAuthApps]', function() {
 		});
 		it('should return an array of oauth apps', (done) => {
 			updatePermission('manage-oauth-apps', ['admin']).then(() => {
-				request.get(api('oauthApps.list'))
+				request.get(api('oauth-apps.list'))
 					.set(credentials)
 					.expect(200)
 					.expect((res) => {
@@ -38,9 +38,9 @@ describe('[OAuthApps]', function() {
 		});
 	});
 
-	describe('[/oauthApps.getOne]', () => {
+	describe('[/oauth-apps.getOne]', () => {
 		it('should return a single oauthApp by id', (done) => {
-			request.get(api('oauthApps.getOne?appId=zapier'))
+			request.get(api('oauth-apps.getOne?appId=zapier'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -51,7 +51,7 @@ describe('[OAuthApps]', function() {
 				.end(done);
 		});
 		it('should return a single oauthApp by client id', (done) => {
-			request.get(api('oauthApps.getOne?clientId=zapier'))
+			request.get(api('oauth-apps.getOne?clientId=zapier'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {

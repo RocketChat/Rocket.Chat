@@ -18,7 +18,7 @@ Template.oauthApp.onCreated(async function() {
 		active: true,
 	});
 	if (params && params.id) {
-		const { oauthApp } = await APIClient.v1.get(`oauthApps.getOne?appId=${ params.id }`);
+		const { oauthApp } = await APIClient.v1.get(`oauth-apps.getOne?appId=${ params.id }`);
 		this.oauthApp.set(oauthApp);
 	}
 });

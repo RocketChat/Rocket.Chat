@@ -9,7 +9,7 @@ import { APIClient } from '../../../../utils/client';
 
 Template.oauthApps.onCreated(async function() {
 	this.oauthApps = new ReactiveVar([]);
-	const { oauthApps } = await APIClient.v1.get('oauthApps.list');
+	const { oauthApps } = await APIClient.v1.get('oauth-apps.list');
 	this.oauthApps.set(oauthApps);
 });
 

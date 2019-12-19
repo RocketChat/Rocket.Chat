@@ -1,7 +1,7 @@
 import { API } from '../api';
 import { findOAuthApps, findOneAuthApp } from '../lib/oauthApps';
 
-API.v1.addRoute('oauthApps.list', { authRequired: true }, {
+API.v1.addRoute('oauth-apps.list', { authRequired: true }, {
 	get() {
 		return API.v1.success({
 			oauthApps: Promise.await(findOAuthApps({ uid: this.userId })),
@@ -9,7 +9,7 @@ API.v1.addRoute('oauthApps.list', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('oauthApps.getOne', { authRequired: true }, {
+API.v1.addRoute('oauth-apps.getOne', { authRequired: true }, {
 	get() {
 		const { clientId, appId } = this.queryParams;
 		if (!clientId && !appId) {
