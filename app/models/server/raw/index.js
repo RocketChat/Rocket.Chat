@@ -28,8 +28,10 @@ import LivechatExternalMessagesModel from '../models/LivechatExternalMessages';
 import { LivechatExternalMessageRaw } from './LivechatExternalMessages';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
 import { LivechatVisitorsRaw } from './LivechatVisitors';
+import LivechatInquiryModel from '../models/LivechatInquiry';
 import { LivechatInquiryRaw } from './LivechatInquiry';
 import CustomUserStatusModel from '../models/CustomUserStatus';
+import { CustomUserStatusRaw } from './CustomUserStatus';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import { LivechatAgentActivityRaw } from './LivechatAgentActivity';
 
