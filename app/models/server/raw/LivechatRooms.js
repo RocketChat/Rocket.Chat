@@ -84,14 +84,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			firstParams.push(matchUsers);
 		}
 		const params = [...firstParams, usersGroup, project];
+		if (options.sort) {
+			params.push({ $sort: { chats: -1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -145,14 +145,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const params = [...firstParams, group, presentationProject];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -246,14 +246,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -333,14 +333,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -420,14 +420,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -491,14 +491,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const params = [...firstParams, departmentsGroup, ...projects];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -579,14 +579,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -689,14 +689,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, messagesLookup, messagesProject, transferProject, transferGroup, presentationProject];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -1095,14 +1095,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, serviceTimeProject, roomsGroup, presentationProject];
+		if (options.sort) {
+			params.push({ $sort: { name: 1 } });
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
