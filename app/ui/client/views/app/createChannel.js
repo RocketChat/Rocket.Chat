@@ -349,7 +349,7 @@ Template.createChannel.onCreated(function() {
 				// @TODO maybe change this 'collection' and/or template
 
 					collection: 'UserAndRoom',
-					endpoint: 'users.autoComplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					filter,

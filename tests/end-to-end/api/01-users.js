@@ -1701,10 +1701,10 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.autoComplete]', () => {
+	describe('[/users.autocomplete]', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-outside-room', []).then(() => {
-				request.get(api('users.autoComplete?selector={}'))
+				request.get(api('users.autocomplete?selector={}'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -1717,7 +1717,7 @@ describe('[Users]', function() {
 		});
 		it('should return an error when the required parameter "selector" is not provided', (done) => {
 			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
-				request.get(api('users.autoComplete'))
+				request.get(api('users.autocomplete'))
 					.set(credentials)
 					.query({})
 					.expect('Content-Type', 'application/json')
@@ -1730,7 +1730,7 @@ describe('[Users]', function() {
 			});
 		});
 		it('should return the users to fill auto complete', (done) => {
-			request.get(api('users.autoComplete?selector={}'))
+			request.get(api('users.autocomplete?selector={}'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

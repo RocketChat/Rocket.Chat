@@ -39,7 +39,7 @@ Template.mailMessagesInstructions.helpers({
 			rules: [
 				{
 					collection: 'CachedChannelList',
-					endpoint: 'users.autoComplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					template: Template.userSearch,
 					noMatchTemplate: Template.userSearchEmpty,
@@ -253,7 +253,7 @@ Template.mailMessagesInstructions.onCreated(function() {
 			rules: [
 				{
 					collection: 'UserAndRoom',
-					endpoint: 'users.autoComplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					filter,

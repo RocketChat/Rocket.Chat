@@ -136,7 +136,7 @@ Template.cleanHistory.onCreated(function() {
 			rules: [
 				{
 					collection: 'UserAndRoom',
-					endpoint: 'users.autoComplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					doNotChangeWidth: false,
