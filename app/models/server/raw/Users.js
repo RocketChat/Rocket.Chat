@@ -157,7 +157,7 @@ export class UsersRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		if (options.sort) {
-			params.push({ $sort: { username: 1 } });
+			params.push({ $sort: options.sort || { username: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -208,7 +208,7 @@ export class UsersRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		if (options.sort) {
-			params.push({ $sort: { username: 1 } });
+			params.push({ $sort: options.sort || { username: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -260,7 +260,7 @@ export class UsersRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		if (options.sort) {
-			params.push({ $sort: { username: 1 } });
+			params.push({ $sort: options.sort || { username: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
