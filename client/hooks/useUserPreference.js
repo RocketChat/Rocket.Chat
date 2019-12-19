@@ -1,6 +1,6 @@
 import { getUserPreference } from '../../app/utils/client';
+import { useUserId } from '../contexts/UserContext';
 import { useReactiveValue } from './useReactiveValue';
-import { useUserId } from './useUserId';
 
 export const useUserPreference = (key, defaultValue = undefined) => {
 	const userId = useUserId();
