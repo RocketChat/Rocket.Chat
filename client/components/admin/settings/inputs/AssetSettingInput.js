@@ -1,11 +1,9 @@
 import { Button, Icon, Label } from '@rocket.chat/fuselage';
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React from 'react';
 import toastr from 'toastr';
 
-import { handleError } from '../../../../../app/utils/client';
+import { call } from '../../../../../app/ui-utils/client/lib/callMethod';
 import { useTranslation } from '../../../providers/TranslationProvider';
 
 export function AssetSettingInput({
@@ -30,22 +28,19 @@ export function AssetSettingInput({
 		}
 
 		Object.values(files).forEach((blob) => {
-			toastr.info(TAPi18n.__('Uploading_file'));
+			toastr.info(t('Uploading_file'));
 			const reader = new FileReader();
 			reader.readAsBinaryString(blob);
-			reader.onloadend = () => Meteor.call('setAsset', reader.result, blob.type, asset, function(err) {
-				if (err != null) {
-					handleError(err);
-					console.log(err);
-					return;
-				}
-				return toastr.success(TAPi18n.__('File_uploaded'));
-			});
+			reader.onloadend = () =>
+				call('setAsset', reader.result, blob.type, asset)
+					.then(() => {
+						toastr.success(t('File_uploaded'));
+					});
 		});
 	};
 
 	const handleDeleteButtonClick = () => {
-		Meteor.call('unsetAsset', asset);
+		call('unsetAsset', asset);
 	};
 
 	return <>

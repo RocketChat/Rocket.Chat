@@ -1,8 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-
-import { Importers } from '..';
-
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -12,6 +9,8 @@ import { hasRole } from '../../../authorization';
 import { t, APIClient } from '../../../utils';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { SideNav } from '../../../ui-utils/client';
+
+import { Importers } from '..';
 
 Template.adminImportHistory.helpers({
 	isAdmin() {

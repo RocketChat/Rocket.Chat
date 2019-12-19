@@ -40,7 +40,7 @@ Migrations.add({
 				// use upsert to account for GENERAL room created by initialData
 				target.upsert({
 					_id: doc._id,
-				}, doc)
+				}, doc),
 			);
 
 			const rawSource = source.rawCollection();

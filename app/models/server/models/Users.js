@@ -757,6 +757,15 @@ export class Users extends Base {
 		return this.find({ active: true, isRemote: true }, options);
 	}
 
+	getSAMLByIdAndSAMLProvider(_id, provider) {
+		return this.findOne({
+			_id,
+			'services.saml.provider': provider,
+		}, {
+			'services.saml': 1,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -983,7 +992,7 @@ export class Users extends Base {
 	setPreferences(_id, preferences) {
 		const settingsObject = Object.assign(
 			{},
-			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] }))
+			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] })),
 		);
 
 		const update = {
