@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { WebdavAccounts } from '../../../models';
-import { webdavStreamer } from '../lib/webdavStreamer';
+import { Notifications } from '../../../notifications/server';
 
 Meteor.methods({
 	removeWebdavAccount(accountId) {
@@ -14,10 +14,12 @@ Meteor.methods({
 
 		const removed = WebdavAccounts.removeByUserAndId(accountId, Meteor.userId());
 		if (removed) {
-			webdavStreamer.emit('webdavAccounts', {
+			Notifications.notifyUser(Meteor.userId(), 'webdav', {
 				type: 'removed',
-				_id: accountId,
+				account: { _id: accountId },
 			});
 		}
+
+		return removed;
 	},
 });
