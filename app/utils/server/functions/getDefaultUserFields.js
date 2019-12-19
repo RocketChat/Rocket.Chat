@@ -27,4 +27,5 @@ export const getDefaultUserFields = () => ({
 	statusLivechat: 1,
 	banners: 1,
 	'oauth.authorizedClients': 1,
+	_updatedAt: 1,
 });

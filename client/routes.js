@@ -85,14 +85,6 @@ const createTemplateForComponent = async (
 	return name;
 };
 
-FlowRouter.subscriptions = function() {
-	Tracker.autorun(() => {
-		if (Meteor.userId()) {
-			this.register('userData', Meteor.subscribe('userData'));
-		}
-	});
-};
-
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
