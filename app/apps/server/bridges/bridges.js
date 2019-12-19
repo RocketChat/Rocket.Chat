@@ -15,7 +15,7 @@ import { AppSettingBridge } from './settings';
 import { AppUserBridge } from './users';
 import { AppLivechatBridge } from './livechat';
 import { AppUploadBridge } from './uploads';
-import { UiInteractionBridge } from './uiInteration';
+import { UiInteractionBridge } from './uiInteraction';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {

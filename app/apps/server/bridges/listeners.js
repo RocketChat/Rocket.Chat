@@ -37,7 +37,7 @@ export class AppListenerBridge {
 		// }
 	}
 
-	async blockitEvent(inte, action) {
+	async uiKitInteractionEvent(inte, action) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, action);
 
 		// try {

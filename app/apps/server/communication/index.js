@@ -1,11 +1,6 @@
 import { AppMethods } from './methods';
 import { AppsRestApi } from './rest';
-import { AppEvents, AppServerNotifier, AppServerListener } from './websockets';
+import { AppUIKitInteractionApi } from './uikit';
+import { AppEvents, AppServerListener, AppServerNotifier } from './websockets';
 
-export {
-	AppMethods,
-	AppsRestApi,
-	AppEvents,
-	AppServerNotifier,
-	AppServerListener,
-};
+export { AppUIKitInteractionApi, AppMethods, AppsRestApi, AppEvents, AppServerNotifier, AppServerListener };

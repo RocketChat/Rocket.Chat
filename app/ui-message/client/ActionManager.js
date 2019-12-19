@@ -92,7 +92,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }
 
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 
-	const { type: interactionType, ...data } = await APIClient.post(`apps/blockit/${ appId }/`, { type, actionId, payload, mid, rid, triggerId });
+	const { type: interactionType, ...data } = await APIClient.post(`apps/uikit/${ appId }/`, { type, actionId, payload, mid, rid, triggerId });
 	return handlePayloadUserInteraction(interactionType, data);
 };
 

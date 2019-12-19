@@ -1,16 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
-import { RealAppBridges, AppBlockitBridge } from './bridges';
-import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
-import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
-import { AppRealStorage, AppRealLogsStorage } from './storage';
-import { settings } from '../../settings';
-import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
 import { Logger } from '../../logger';
-import { AppVisitorsConverter } from './converters/visitors';
-import { AppUploadsConverter } from './converters/uploads';
+import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
+import { settings } from '../../settings';
+import { RealAppBridges } from './bridges';
+import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppDepartmentsConverter } from './converters/departments';
+import { AppUploadsConverter } from './converters/uploads';
+import { AppVisitorsConverter } from './converters/visitors';
+import { AppRealLogsStorage, AppRealStorage } from './storage';
+
 
 class AppServerOrchestrator {
 	constructor() {
@@ -46,7 +47,7 @@ class AppServerOrchestrator {
 		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
-		this._communicators.set('blockit', new AppBlockitBridge(this, this._manager));
+		this._communicators.set('uikit', new AppUIKitInteractionApi(this, this._manager));
 
 		this._isInitialized = true;
 	}

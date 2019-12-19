@@ -39,9 +39,9 @@ router.use((req, res, next) => {
 	next();
 });
 
-apiServer.use('/api/apps/blockit/', router);
+apiServer.use('/api/apps/uikit/', router);
 
-export class AppBlockitBridge {
+export class AppUIKitInteractionApi {
 	constructor(orch) {
 		this.orch = orch;
 
@@ -83,7 +83,7 @@ export class AppBlockitBridge {
 					};
 
 					try {
-						const result = Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
+						const result = Promise.await(this.orch.getBridges().getListenerBridge().uiKitInteractionEvent('IUIKitInteractionHandler', action));
 
 						res.send(result);
 					} catch (e) {
@@ -118,7 +118,7 @@ export class AppBlockitBridge {
 					};
 
 					try {
-						const result = Promise.await(this.orch.getBridges().getListenerBridge().blockitEvent('IBlockitActionHandler', action));
+						const result = Promise.await(this.orch.getBridges().getListenerBridge().uiKitInteractionEvent('IUIKitInteractionHandler', action));
 
 						res.send(result);
 					} catch (e) {
