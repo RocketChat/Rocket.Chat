@@ -28,8 +28,8 @@ import LivechatExternalMessagesModel from '../models/LivechatExternalMessages';
 import { LivechatExternalMessageRaw } from './LivechatExternalMessages';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
 import { LivechatVisitorsRaw } from './LivechatVisitors';
-import LivechatInquiryModel from '../models/LivechatInquiry';
 import { LivechatInquiryRaw } from './LivechatInquiry';
+import CustomUserStatusModel from '../models/CustomUserStatus';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import { LivechatAgentActivityRaw } from './LivechatAgentActivity';
 
@@ -49,4 +49,5 @@ export const Messages = new MessagesRaw(MessagesModel.model.rawCollection());
 export const LivechatExternalMessage = new LivechatExternalMessageRaw(LivechatExternalMessagesModel.model.rawCollection());
 export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection());
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection());
+export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.model.rawCollection());
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection());
