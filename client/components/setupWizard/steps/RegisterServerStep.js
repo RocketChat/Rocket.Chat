@@ -2,9 +2,9 @@ import { CheckBox, Label, RadioButton } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
+import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useFocus } from '../../../hooks/useFocus';
 import { useMethod } from '../../../hooks/useMethod';
 import { Icon } from '../../basic/Icon';
@@ -56,7 +56,7 @@ export function RegisterServerStep({ step, title, active }) {
 
 	const [commiting, setComitting] = useState(false);
 
-	const batchSetSettings = useBatchSetSettings();
+	const batchSetSettings = useBatchSettingsDispatch();
 
 	const registerCloudWorkspace = useMethod('cloud:registerWorkspace');
 

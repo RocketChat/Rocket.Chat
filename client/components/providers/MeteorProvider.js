@@ -3,6 +3,7 @@ import React from 'react';
 import { ConnectionStatusProvider } from './ConnectionStatusProvider';
 import { RouterProvider } from './RouterProvider';
 import { SessionProvider } from './SessionProvider';
+import { SettingsProvider } from './SettingsProvider';
 import { SidebarProvider } from './SidebarProvider';
 import { TranslationProvider } from './TranslationProvider';
 import { ToastMessagesProvider } from './ToastMessagesProvider';
@@ -14,7 +15,9 @@ export function MeteorProvider({ children }) {
 				<SessionProvider>
 					<SidebarProvider>
 						<ToastMessagesProvider>
-							{children}
+							<SettingsProvider>
+								{children}
+							</SettingsProvider>
 						</ToastMessagesProvider>
 					</SidebarProvider>
 				</SessionProvider>

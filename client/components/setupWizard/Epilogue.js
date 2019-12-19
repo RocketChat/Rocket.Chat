@@ -1,15 +1,15 @@
 import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { useSetting, useSettingDispatch } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useSetting } from '../../hooks/useSetting';
 import { Logo } from './Logo';
 import './Epilogue.css';
 
 export function Epilogue() {
 	const t = useTranslation();
-	const [siteUrl] = useSetting('Site_Url');
-	const [, setShowSetupWizard] = useSetting('Show_Setup_Wizard');
+	const siteUrl = useSetting('Site_Url');
+	const setShowSetupWizard = useSettingDispatch('Show_Setup_Wizard');
 
 	const handleClick = () => {
 		setShowSetupWizard('completed');

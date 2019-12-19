@@ -10,13 +10,13 @@ import {
 import React, { useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../app/callbacks/client';
+import { useSessionDispatch } from '../../../contexts/SessionContext';
+import { useSetting } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFocus } from '../../../hooks/useFocus';
 import { useLoginWithPassword } from '../../../hooks/useLoginWithPassword';
 import { useMethod } from '../../../hooks/useMethod';
-import { useSetting } from '../../../hooks/useSetting';
-import { useSessionDispatch } from '../../../contexts/SessionContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { Pager } from '../Pager';
@@ -51,7 +51,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 		callbacks.run('usernameSet');
 	};
 
-	const [regexpForUsernameValidation] = useSetting('UTF8_Names_Validation');
+	const regexpForUsernameValidation = useSetting('UTF8_Names_Validation');
 	const usernameRegExp = useMemo(() => new RegExp(`^${ regexpForUsernameValidation }$`), [regexpForUsernameValidation]);
 	const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
 

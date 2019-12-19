@@ -6,8 +6,8 @@ import React, { createContext, useCallback, useContext, useEffect, useLayoutEffe
 import toastr from 'toastr';
 
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
-import { handleError } from '../../../../app/utils/client/lib/handleError';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
+import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEventCallback } from '../../../hooks/useEventCallback';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
@@ -251,8 +251,10 @@ export const useGroup = (groupId) => {
 	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
 	const sections = useSelector((state) => Array.from(new Set(filterSettings(state.settings).map(({ section }) => section || ''))), (a, b) => a.length === b.length && a.join() === b.join());
 
-	const batchSetSettings = useBatchSetSettings();
+	const batchSetSettings = useBatchSettingsDispatch();
 	const { stateRef, hydrate } = useContext(SettingsContext);
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings) => {
 		const settings = filterSettings(state.settings);
@@ -274,14 +276,14 @@ export const useGroup = (groupId) => {
 
 				TAPi18n._loadLanguage(lng)
 					.then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })))
-					.catch(handleError);
+					.catch((error) => dispatchToastMessage({ type: 'error', message: error }));
 
 				return;
 			}
 
 			toastr.success(TAPi18n.__('Settings_updated'));
 		} catch (error) {
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, filterSettings, stateRef, batchSetSettings);
 

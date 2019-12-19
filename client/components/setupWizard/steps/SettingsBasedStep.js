@@ -9,9 +9,9 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useEffect, useReducer, useState } from 'react';
 
+import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation, useLanguages } from '../../../contexts/TranslationContext';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
@@ -61,7 +61,7 @@ export function SettingsBasedStep({ step, title, active }) {
 
 	const t = useTranslation();
 
-	const batchSetSettings = useBatchSetSettings();
+	const batchSetSettings = useBatchSettingsDispatch();
 
 	const autoFocusRef = useFocus(active);
 
