@@ -3,7 +3,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 	if (!await hasPermissionAsync(uid, 'view-other-user-channels')) {
-		throw new Error('error-not-authorized');
+		return { items: [] };
 	}
 	const options = {
 		fields: {

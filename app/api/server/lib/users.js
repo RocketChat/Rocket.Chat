@@ -3,7 +3,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 
 export async function findUsersToAutocomplete({ uid, selector }) {
 	if (!await hasPermissionAsync(uid, 'view-outside-room')) {
-		throw new Error('error-not-authorized');
+		return { items: [] };
 	}
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
