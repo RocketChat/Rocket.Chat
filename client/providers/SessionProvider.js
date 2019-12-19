@@ -1,26 +1,11 @@
 import React from 'react';
 import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
 
 import { SessionContext } from '../contexts/SessionContext';
+import { createObservableFromReactive } from './createObservableFromReactive';
 
 const contextValue = {
-	get: (name, listener) => {
-		if (!listener) {
-			return Tracker.nonreactive(() => Session.get(name));
-		}
-
-		const computation = Tracker.autorun(({ firstRun }) => {
-			const value = Session.get(name);
-			if (!firstRun) {
-				listener(value);
-			}
-		});
-
-		return () => {
-			computation.stop();
-		};
-	},
+	get: createObservableFromReactive((name) => Session.get(name)),
 	set: (name, value) => {
 		Session.set(name, value);
 	},

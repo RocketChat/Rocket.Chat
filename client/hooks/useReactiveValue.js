@@ -1,23 +1,21 @@
+import { useState, useEffect } from 'react';
 import { Tracker } from 'meteor/tracker';
-import { useCallback } from 'react';
 
-import { useObservableValue } from './useObservableValue';
+export const useReactiveValue = (getValue, deps = []) => {
+	const [value, setValue] = useState(() => Tracker.nonreactive(getValue));
 
-const wrapGetValue = (getValue) => (listener) => {
-	if (!listener) {
-		return Tracker.nonreactive(getValue);
-	}
+	useEffect(() => {
+		const computation = Tracker.autorun(({ firstRun }) => {
+			const newValue = getValue();
+			if (!firstRun) {
+				setValue(() => newValue);
+			}
+		});
 
-	const computation = Tracker.autorun(({ firstRun }) => {
-		const value = getValue();
-		if (!firstRun) {
-			listener(value);
-		}
-	});
+		return () => {
+			computation.stop();
+		};
+	}, deps);
 
-	return () => {
-		computation.stop();
-	};
+	return value;
 };
-
-export const useReactiveValue = (getValue, deps = []) => useObservableValue(useCallback(wrapGetValue(getValue), deps));

@@ -276,8 +276,6 @@ export const useGroup = (groupId) => {
 					|| changes.filter(({ _id }) => _id === 'Language').shift().value
 					|| 'en';
 
-				dispatchToastMessage;
-
 				try {
 					await loadLanguage(lng);
 					dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
