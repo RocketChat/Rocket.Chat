@@ -9,7 +9,11 @@
 				<form class="search-form" role="form">
 					<div class="rc-input__wrapper">
 						<div class="rc-input__icon">
-							{{#if isReady}} {{> icon block="rc-input__icon-svg" icon="magnifier" }} {{else}} {{> loading }} {{/if}}
+							{{#if isLoading}}
+								{{> loading }}
+							{{else}}
+								{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+							{{/if}}
 						</div>
 						<input id="user-status-filter" type="text" class="rc-input__element" placeholder="{{_ " Search "}}" autofocus dir="auto">
 					</div>
@@ -57,16 +61,18 @@
 							</td>
 						</tr>
 						{{/each}}
+						{{#if isLoading}}
+							<tr class="table-no-click">
+								<td class="table-loading-td">{{> loading}}</td>
+							</tr>
+						{{/if}}
 					</tbody>
 					{{/table}}
-					{{#if hasMore}}
-					<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
-					{{/if}}
 				{{/unless}}
 			</div>
 		</section>
 		{{#with flexData}}
-		{{> flexTabBar}}
+			{{> flexTabBar}}
 		{{/with}}
 	</div>
 </template>
