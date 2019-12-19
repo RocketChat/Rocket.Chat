@@ -1334,7 +1334,7 @@ Template.room.onRendered(function() {
 			}
 		});
 	}
-	callbacks.add('streamMessage', (msg) => {
+	callbacks.add('streamNewMessage', (msg) => {
 		if (rid !== msg.rid || msg.editedAt) {
 			return;
 		}
