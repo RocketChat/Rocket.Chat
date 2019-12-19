@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 
 import { TranslationContext } from '../../contexts/TranslationContext';
@@ -47,6 +47,7 @@ export function TranslationProvider({ children }) {
 		return result;
 	}, []);
 	const language = useReactiveValue(() => TAPi18n.getLanguage());
+	const loadLanguage = useCallback((language) => TAPi18n._loadLanguage(language), []);
 	const translate = useMemo(() => createTranslateFunction(language), [language]);
 
 	return <TranslationContext.Provider
@@ -54,6 +55,7 @@ export function TranslationProvider({ children }) {
 		value={{
 			languages,
 			language,
+			loadLanguage,
 			translate,
 		}}
 	/>;

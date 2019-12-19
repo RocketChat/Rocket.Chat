@@ -1,13 +1,13 @@
 import { Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
-import toastr from 'toastr';
 import s from 'underscore.string';
 
-import { call } from '../../../../../app/ui-utils/client/lib/callMethod';
 import { modal } from '../../../../../app/ui-utils/client/lib/modal';
 import { RawText } from '../../../basic/RawText';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useMethod } from '../../../../hooks/useMethod';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 
@@ -22,11 +22,19 @@ export function OAuthGroupPage({ group }) {
 		return Meteor.absoluteUrl(`_oauth/${ id }`);
 	};
 
-	const handleRefreshOAuthServicesButtonClick = () => {
-		toastr.info(t('Refreshing'));
-		call('refreshOAuthService').then(() => {
-			toastr.success(t('Done'));
-		});
+	const dispatchToastMessage = useToastMessageDispatch();
+	const refreshOAuthService = useMethod('refreshOAuthService');
+	const addOAuthService = useMethod('addOAuthService');
+	const removeOAuthService = useMethod('removeOAuthService');
+
+	const handleRefreshOAuthServicesButtonClick = async () => {
+		dispatchToastMessage({ type: 'info', message: t('Refreshing') });
+		try {
+			await refreshOAuthService();
+			dispatchToastMessage({ type: 'success', message: t('Done') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
 	};
 
 	const handleAddCustomOAuthButtonClick = () => {
@@ -37,7 +45,7 @@ export function OAuthGroupPage({ group }) {
 			showCancelButton: true,
 			closeOnConfirm: true,
 			inputPlaceholder: t('Custom_oauth_unique_name'),
-		}, (inputValue) => {
+		}, async (inputValue) => {
 			if (inputValue === false) {
 				return false;
 			}
@@ -45,7 +53,11 @@ export function OAuthGroupPage({ group }) {
 				modal.showInputError(t('Name_cant_be_empty'));
 				return false;
 			}
-			call('addOAuthService', inputValue);
+			try {
+				await addOAuthService(inputValue);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 		});
 	};
 
@@ -66,8 +78,12 @@ export function OAuthGroupPage({ group }) {
 						confirmButtonText: t('Yes_delete_it'),
 						cancelButtonText: t('Cancel'),
 						closeOnConfirm: true,
-					}, () => {
-						call('removeOAuthService', id);
+					}, async () => {
+						try {
+							await removeOAuthService(id);
+						} catch (error) {
+							dispatchToastMessage({ type: 'error', message: error });
+						}
 					});
 				};
 

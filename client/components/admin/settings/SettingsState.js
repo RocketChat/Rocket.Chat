@@ -1,15 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
-import toastr from 'toastr';
 
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
 import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEventCallback } from '../../../hooks/useEventCallback';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationContext';
 
 const SettingsContext = createContext({});
 
@@ -255,6 +254,8 @@ export const useGroup = (groupId) => {
 	const { stateRef, hydrate } = useContext(SettingsContext);
 
 	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
+	const loadLanguage = useLoadLanguage();
 
 	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings) => {
 		const settings = filterSettings(state.settings);
@@ -274,14 +275,18 @@ export const useGroup = (groupId) => {
 					|| changes.filter(({ _id }) => _id === 'Language').shift().value
 					|| 'en';
 
-				TAPi18n._loadLanguage(lng)
-					.then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })))
-					.catch((error) => dispatchToastMessage({ type: 'error', message: error }));
+				dispatchToastMessage;
 
+				try {
+					await loadLanguage(lng);
+					dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
 				return;
 			}
 
-			toastr.success(TAPi18n.__('Settings_updated'));
+			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
