@@ -757,6 +757,15 @@ export class Users extends Base {
 		return this.find({ active: true, isRemote: true }, options);
 	}
 
+	getSAMLByIdAndSAMLProvider(_id, provider) {
+		return this.findOne({
+			_id,
+			'services.saml.provider': provider,
+		}, {
+			'services.saml': 1,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
