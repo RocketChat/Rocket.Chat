@@ -56,7 +56,7 @@ Meteor.methods({
 			console.log(`Logout request from ${ JSON.stringify(providerConfig) }`);
 		}
 		// This query should respect upcoming array of SAML logins
-		const user = Users.findOneByIdAndSAMLProvider(Meteor.userId(), provider);
+		const user = Users.getSAMLByIdAndSAMLProvider(Meteor.userId(), provider);
 		if (!user || !user.services || ! user.services.saml) {
 			return;
 		}

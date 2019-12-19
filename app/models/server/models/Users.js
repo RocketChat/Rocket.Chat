@@ -757,7 +757,7 @@ export class Users extends Base {
 		return this.find({ active: true, isRemote: true }, options);
 	}
 
-	findOneByIdAndSAMLProvider(_id, provider) {
+	getSAMLByIdAndSAMLProvider(_id, provider) {
 		return this.findOne({
 			_id,
 			'services.saml.provider': provider,
@@ -992,7 +992,7 @@ export class Users extends Base {
 	setPreferences(_id, preferences) {
 		const settingsObject = Object.assign(
 			{},
-			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] }))
+			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] })),
 		);
 
 		const update = {
