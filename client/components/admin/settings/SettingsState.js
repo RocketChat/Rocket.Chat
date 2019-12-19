@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
@@ -9,6 +8,7 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useEventCallback } from '../../../hooks/useEventCallback';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationContext';
+import { useUser } from '../../../contexts/UserContext';
 
 const SettingsContext = createContext({});
 
@@ -256,8 +256,9 @@ export const useGroup = (groupId) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 	const loadLanguage = useLoadLanguage();
+	const user = useUser();
 
-	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings) => {
+	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings, user) => {
 		const settings = filterSettings(state.settings);
 
 		const changes = settings.filter(({ changed }) => changed)
@@ -271,7 +272,7 @@ export const useGroup = (groupId) => {
 			await batchSetSettings(changes);
 
 			if (changes.some(({ _id }) => _id === 'Language')) {
-				const lng = Meteor.user().language
+				const lng = user.language
 					|| changes.filter(({ _id }) => _id === 'Language').shift().value
 					|| 'en';
 
@@ -290,7 +291,7 @@ export const useGroup = (groupId) => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, filterSettings, stateRef, batchSetSettings);
+	}, filterSettings, stateRef, batchSetSettings, user);
 
 	const cancel = useEventCallback((filterSettings, { current: state }, hydrate) => {
 		const settings = filterSettings(state.settings);

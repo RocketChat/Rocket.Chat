@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod, useServerInformation } from '../../../contexts/ServerContext';
-import { useAdminSideNav } from '../hooks';
+import { useAdminSideNav } from '../../../hooks/useAdminSideNav';
 import { InformationPage } from './InformationPage';
 
 export function InformationRoute() {

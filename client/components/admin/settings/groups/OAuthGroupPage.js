@@ -2,11 +2,11 @@ import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 import s from 'underscore.string';
 
-import { modal } from '../../../../../app/ui-utils/client/lib/modal';
 import { RawText } from '../../../basic/RawText';
 import { useAbsoluteUrl, useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useModal } from '../../../../hooks/useModal';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 
@@ -27,6 +27,7 @@ export function OAuthGroupPage({ group }) {
 	const refreshOAuthService = useMethod('refreshOAuthService');
 	const addOAuthService = useMethod('addOAuthService');
 	const removeOAuthService = useMethod('removeOAuthService');
+	const modal = useModal();
 
 	const handleRefreshOAuthServicesButtonClick = async () => {
 		dispatchToastMessage({ type: 'info', message: t('Refreshing') });
