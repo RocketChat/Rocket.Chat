@@ -1702,15 +1702,15 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.autocomplete]', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+		it('should return an empty list when the user does not have the necessary permission', (done) => {
 			updatePermission('view-outside-room', []).then(() => {
 				request.get(api('users.autocomplete?selector={}'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
 					})
 					.end(done);
 			});
