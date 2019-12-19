@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../hooks/useMethod';
-import { useViewStatisticsPermission } from '../../../hooks/usePermissions';
 import { useRocketChatInformation } from '../../../hooks/useRocketChatInformation';
 import { useAdminSideNav } from '../hooks';
 import { InformationPage } from './InformationPage';
@@ -9,7 +9,7 @@ import { InformationPage } from './InformationPage';
 export function InformationRoute() {
 	useAdminSideNav();
 
-	const canViewStatistics = useViewStatisticsPermission();
+	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);
 	const [statistics, setStatistics] = useState({});

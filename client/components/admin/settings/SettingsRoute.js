@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useAtLeastOnePermission } from '../../../hooks/usePermissions';
+import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useAdminSideNav } from '../hooks';
 import { GroupSelector } from './GroupSelector';
 import { NotAuthorizedPage } from './NotAuthorizedPage';

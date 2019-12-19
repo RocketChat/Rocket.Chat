@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { AuthorizationProvider } from './AuthorizationProvider';
 import { ConnectionStatusProvider } from './ConnectionStatusProvider';
 import { RouterProvider } from './RouterProvider';
 import { SessionProvider } from './SessionProvider';
@@ -18,7 +19,9 @@ export function MeteorProvider({ children }) {
 						<ToastMessagesProvider>
 							<SettingsProvider>
 								<UserProvider>
-									{children}
+									<AuthorizationProvider>
+										{children}
+									</AuthorizationProvider>
 								</UserProvider>
 							</SettingsProvider>
 						</ToastMessagesProvider>
