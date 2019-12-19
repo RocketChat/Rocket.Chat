@@ -57,7 +57,6 @@ Template.inviteUsers.helpers({
 		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
-		console.log(Template.instance().ac.filteredList());
 		return Template.instance().ac.filteredList();
 	},
 	config() {
