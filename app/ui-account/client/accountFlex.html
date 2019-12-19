@@ -16,7 +16,9 @@
 					{{> sidebarItem menuItem "Profile" "user" "account" "profile" }}
 				{{/if}}
 
-				{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
+				{{#if twoFactorEnabled}}
+					{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
+				{{/if}}
 
 				{{#if encryptionEnabled}}
 					{{> sidebarItem menuItem "Encryption" "key" "account" "encryption" }}
