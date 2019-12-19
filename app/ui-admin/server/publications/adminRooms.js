@@ -34,6 +34,7 @@ Meteor.publish('adminRooms', function(filter, types = [], limit) {
 			msgs: 1,
 			archived: 1,
 			tokenpass: 1,
+			favorite: 1,
 		},
 		limit,
 		sort: {

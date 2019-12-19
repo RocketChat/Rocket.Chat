@@ -2848,6 +2848,7 @@
   "set-readonly": "Set ReadOnly",
   "set-readonly_description": "Permission to set a channel to read only channel",
   "Set_as_leader": "Set as leader",
+  "Set_as_favorite": "Set as favorite",
   "Set_as_moderator": "Set as moderator",
   "Set_as_owner": "Set as owner",
   "Settings": "Settings",

@@ -191,7 +191,7 @@ Meteor.methods({
 					Rooms.setJoinCodeById(rid, String(value));
 					break;
 				case 'default':
-					Rooms.saveDefaultById(rid, value);
+					Rooms.saveDefaultById(rid, value.default, value.favorite);
 					break;
 				case 'retentionEnabled':
 					Rooms.saveRetentionEnabledById(rid, value);

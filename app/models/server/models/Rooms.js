@@ -835,13 +835,16 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveDefaultById(_id, defaultValue) {
+	saveDefaultById(_id, defaultValue, favoriteValue) {
 		const query = { _id };
+		const favorite = defaultValue && !!favoriteValue;
 
 		const update = {
 			$set: {
-				default: defaultValue === 'true',
+				default: defaultValue,
+				...favorite && { favorite }
 			},
+			...!favorite && { $unset: { favorite: 1} },
 		};
 
 		return this.update(query, update);

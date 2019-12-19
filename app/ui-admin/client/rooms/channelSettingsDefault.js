@@ -16,11 +16,11 @@ Template.channelSettingsDefault.helpers({
 		return Template.instance().editing.get() === field;
 	},
 	roomDefault() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
-
-		if (room) {
-			return room.default;
-		}
+		// console.log("default", Template.instance().isDefault.get());
+		return Template.instance().isDefault.get();
+	},
+	isFavorite() {
+		return Template.instance().isFavorite.get();
 	},
 	defaultDescription() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
@@ -32,6 +32,12 @@ Template.channelSettingsDefault.helpers({
 });
 
 Template.channelSettingsDefault.events({
+	'change input[name=default]'(e, t) {
+		t.isDefault.set(e.currentTarget.value === 'true');
+	},
+	'change input[name=favorite]'(e, t) {
+		t.isFavorite.set(e.currentTarget.checked);
+	},
 	'click [data-edit]'(e, t) {
 		e.preventDefault();
 		t.editing.set($(e.currentTarget).data('edit'));
@@ -46,7 +52,7 @@ Template.channelSettingsDefault.events({
 	'click .save'(e, t) {
 		e.preventDefault();
 
-		Meteor.call('saveRoomSettings', this.rid, 'default', $('input[name=default]:checked').val(), (err/* , result*/) => {
+		Meteor.call('saveRoomSettings', this.rid, 'default', {default : t.isDefault.get(), favorite : t.isFavorite.get()}, (err/* , result*/) => {
 			if (err) {
 				return handleError(err);
 			}
@@ -59,4 +65,12 @@ Template.channelSettingsDefault.events({
 
 Template.channelSettingsDefault.onCreated(function() {
 	this.editing = new ReactiveVar();
+	this.isDefault = new ReactiveVar();
+	this.isFavorite = new ReactiveVar();
+	this.autorun(() => {
+		const { rid } = Template.currentData();
+		const room = AdminChatRoom.findOne(rid, { fields: { default: 1, favorite: 1} })
+		this.isDefault.set(room && room.default);
+		this.isFavorite.set(room && room.favorite);
+	});
 });
