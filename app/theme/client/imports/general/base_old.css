@@ -1838,6 +1838,7 @@ rc-old select,
 		position: relative;
 
 		height: 28px;
+		display: flex;
 
 		& .upload-progress-progress {
 			position: absolute;
@@ -1851,19 +1852,20 @@ rc-old select,
 		}
 
 		& .upload-progress-text {
-			position: absolute;
 			z-index: 2;
 			right: 0;
 			left: 0;
 
 			overflow: hidden;
 
-			width: 85%;
+			width: 50%;
 
 			height: 100%;
 			padding: 0 10px;
 
 			text-overflow: ellipsis;
+			flex-grow: 1;
+   			white-space: nowrap;
 
 			& > a {
 				float: right;
