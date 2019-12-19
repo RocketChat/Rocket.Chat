@@ -79,7 +79,7 @@
 					{{#if isBlockedOrBlocker}}
 						{{_ "room_is_blocked"}}
 					{{else}}
-						{{> messageBoxReadOnly rid=rid}}
+						{{> messageBoxReadOnly rid=rid isSubscribed=isSubscribed}}
 					{{/if}}
 				</div>
 			{{/if}}
