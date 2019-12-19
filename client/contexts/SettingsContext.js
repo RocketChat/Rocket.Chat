@@ -10,7 +10,7 @@ export const SettingsContext = createContext({
 
 export const useSetting = (name) => {
 	const { get } = useContext(SettingsContext);
-	return useObservableValue((listener) => get(name, listener), [name]);
+	return useObservableValue((listener) => get(name, listener));
 };
 
 export const useSettingDispatch = (name) => {
