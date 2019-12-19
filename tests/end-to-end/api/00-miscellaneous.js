@@ -132,7 +132,7 @@ describe('miscellaneous', function() {
 					'hideAvatars',
 					'hideFlexTab',
 					'sendOnEnter',
-					'roomCounterSidebar',
+					// 'roomCounterSidebar',
 					'idleTimeLimit',
 					'sidebarShowFavorites',
 					'sidebarShowUnread',

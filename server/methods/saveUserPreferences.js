@@ -29,7 +29,7 @@ Meteor.methods({
 			hideAvatars: Match.Optional(Boolean),
 			hideFlexTab: Match.Optional(Boolean),
 			sendOnEnter: Match.Optional(String),
-			roomCounterSidebar: Match.Optional(Boolean),
+			// roomCounterSidebar: Match.Optional(Boolean),
 			idleTimeLimit: Match.Optional(Number),
 			sidebarShowFavorites: Match.Optional(Boolean),
 			sidebarShowUnread: Match.Optional(Boolean),
