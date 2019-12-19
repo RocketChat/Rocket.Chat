@@ -4,7 +4,7 @@ import { Subscriptions } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 
-function findUsers({ rid, status, skip, limit }) {
+function findUsers({ rid, status, active, skip, limit }) {
 	return Subscriptions.model.rawCollection().aggregate([
 		{ $match: { rid } },
 		{
@@ -22,9 +22,11 @@ function findUsers({ rid, status, skip, limit }) {
 				'u.name': 1,
 				'u.username': 1,
 				'u.status': 1,
+				'u.active': 1,
 			},
 		},
 		...status ? [{ $match: { 'u.status': status } }] : [],
+		...active ? [{ $match: { 'u.active': active } }] : [],
 		{
 			$sort: {
 				[settings.get('UI_Use_Real_Name') ? 'u.name' : 'u.username']: 1,
@@ -58,12 +60,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
-		const users = await findUsers({ rid, status: { $ne: 'offline' }, limit, skip });
+		const total = Subscriptions.findActiveByRoomIdWhenUsernameExists(rid).count();
+		const users = await findUsers({ rid, status: { $ne: 'offline' }, active: { $ne: false }, limit, skip });
 		if (showAll && (!limit || users.length < limit)) {
 			const offlineUsers = await findUsers({
 				rid,
 				status: { $eq: 'offline' },
+				active: { $ne: false },
 				limit: limit ? limit - users.length : 0,
 				skip: skip || 0,
 			});
@@ -73,6 +76,7 @@ Meteor.methods({
 				records: users.concat(offlineUsers),
 			};
 		}
+
 
 		return {
 			total,

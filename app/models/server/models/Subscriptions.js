@@ -630,6 +630,12 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
+	findActiveByRoomIdWhenUsernameExists(rid, options) {
+		const query = { rid, 'u.username': { $exists: 1 }, inactive: { $exists: false } };
+
+		return this.find(query, options);
+	}
+
 	findUnreadByUserId(userId) {
 		const query = {
 			'u._id': userId,
