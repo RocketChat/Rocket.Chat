@@ -1,4 +1,5 @@
 import { BaseRaw } from './BaseRaw';
+import { getValue } from '../../../settings/server/raw';
 
 export class LivechatDepartmentRaw extends BaseRaw {
 	findAllRooms({ start, end, answered, departmentId, options = {} }) {
