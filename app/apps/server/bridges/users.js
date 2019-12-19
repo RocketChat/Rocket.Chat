@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { setUserAvatar, checkUsernameAvailability } from '../../../lib/server/functions';
-import { Users } from '../../../models/server/raw';
-import { Roles } from '../../../models/server/models/Roles';
+import { Users, Roles } from '../../../models';
+
 
 export class AppUserBridge {
 	constructor(orch) {
@@ -49,16 +49,16 @@ export class AppUserBridge {
 	}
 
 	async removeAppUser(appId) {
-		this.orch.debugLog(`The App ${ appId } is removing its binding user.`);
+		this.orch.debugLog(`The App's user is being removed: ${ appId }`);
 
-		const user = await Users.find({ appId });
+		const user = Users.findOne({ appId });
 
 		if (!user) {
 			throw new Meteor.Error('error-user-not-found', 'User not found', { function: 'removeAppUser' });
 		}
 
 		try {
-			Roles.findUsersInRole((admin, index) => {
+			Roles.findUsersInRole('admin').forEach((admin, index) => {
 				if (index > 0) {
 					return;
 				}
@@ -67,8 +67,8 @@ export class AppUserBridge {
 					Meteor.call('deleteUser', user._id);
 				});
 			});
-		} catch {
-			throw new Meteor.Error('error-deleting-user', 'Errors occurred while deleting an app user.', { function: 'removeAppUser' });
+		} catch (err) {
+			throw new Meteor.Error('error-deleting-user', `Errors occurred while deleting an app user: ${ err }`, { function: 'removeAppUser' });
 		}
 	}
 
