@@ -16,7 +16,6 @@ const emitNotification = (action, payload = {}) => {
 };
 
 LivechatDepartmentAgents.on('change', ({ clientAction, id }) => {
-	console.log('mudando dados..');
 	switch (clientAction) {
 		case 'inserted':
 		case 'updated':
