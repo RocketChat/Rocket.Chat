@@ -5,11 +5,9 @@ export const useReactiveValue = (getValue, deps = []) => {
 	const [value, setValue] = useState(() => Tracker.nonreactive(getValue));
 
 	useEffect(() => {
-		const computation = Tracker.autorun(({ firstRun }) => {
+		const computation = Tracker.autorun(() => {
 			const newValue = getValue();
-			if (!firstRun) {
-				setValue(() => newValue);
-			}
+			setValue(() => newValue);
 		});
 
 		return () => {

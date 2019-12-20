@@ -8,11 +8,9 @@ export const createObservableFromReactive = (fn) => (...fnArgs) => {
 		return Tracker.nonreactive(() => fn(...args));
 	}
 
-	const computation = Tracker.autorun(({ firstRun }) => {
+	const computation = Tracker.autorun(() => {
 		const value = fn(...args);
-		if (!firstRun) {
-			listener(value);
-		}
+		listener(value);
 	});
 
 	return () => {

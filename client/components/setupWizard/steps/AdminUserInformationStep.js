@@ -17,9 +17,9 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useLoginWithPassword } from '../../../contexts/UserContext';
 import { useCallbacks } from '../../../hooks/useCallbacks';
 import { useFocus } from '../../../hooks/useFocus';
+import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
 
 export function AdminUserInformationStep({ step, title, active }) {
