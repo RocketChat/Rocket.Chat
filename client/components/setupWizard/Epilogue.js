@@ -1,4 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Box, Button, Margins, Tile } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useSetting, useSettingDispatch } from '../../contexts/SettingsContext';
@@ -15,19 +15,25 @@ export function Epilogue() {
 		setShowSetupWizard('completed');
 	};
 
-	return <section className='SetupWizard__Epilogue'>
-		<header className='SetupWizard__Epilogue-header'>
+	return <Box is='section' className='SetupWizard__Epilogue'>
+		<Box is='header' className='SetupWizard__Epilogue-header'>
 			<Logo className='SetupWizard__Epilogue-headerLogo' />
-		</header>
+		</Box>
 
-		<main className='SetupWizard__Epilogue-content'>
-			<span className='SetupWizard__Epilogue-runningHead'>{t('Launched_successfully')}</span>
-			<h1 className='SetupWizard__Epilogue-title'>{t('Your_workspace_is_ready')}</h1>
-			<span className='SetupWizard__Epilogue-linkLabel'>{t('Your_server_link')}</span>
-			<span className='SetupWizard__Epilogue-link'>{siteUrl}</span>
-			<Button primary onClick={handleClick} className='SetupWizard__Epilogue__goToWorkspace'>
-				{t('Go_to_your_workspace')}
-			</Button>
-		</main>
-	</section>;
+		<Tile is='main' padding='44'>
+			<Margins all='32'>
+				<Box>
+					<Box is='span' textColor='hint' className='SetupWizard__Epilogue-runningHead'>
+						{t('Launched_successfully')}
+					</Box>
+					<Margins blockEnd='32'>
+						<Box is='h1' textColor='default' className='SetupWizard__Epilogue-title'>{t('Your_workspace_is_ready')}</Box>
+					</Margins>
+					<Box textColor='default' textStyle='micro' className='SetupWizard__Epilogue-linkLabel'>{t('Your_server_link')}</Box>
+					<Box textColor='primary' textStyle='p1' className='SetupWizard__Epilogue-link'>{siteUrl}</Box>
+					<Button primary onClick={handleClick}>{t('Go_to_your_workspace')}</Button>
+				</Box>
+			</Margins>
+		</Tile>
+	</Box>;
 }

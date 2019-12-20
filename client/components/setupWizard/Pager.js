@@ -6,7 +6,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 export function Pager({ disabled, onBackClick, isContinueEnabled = true }) {
 	const t = useTranslation();
 
-	return <ButtonGroup align='start'>
+	return <ButtonGroup align='end'>
 		{onBackClick ? <Button type='button' disabled={disabled} onClick={onBackClick} className='SetupWizard__back'>
 			{t('Back')}
 		</Button> : null}
