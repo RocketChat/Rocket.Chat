@@ -63,54 +63,43 @@ Template.visitorInfo.helpers({
 	},
 
 	customRoomFields() {
-		const fields = [];
-		let livechatData = {};
-		const data = Template.currentData();
-		if (data && data.rid) {
-			const room = Template.instance().room.get();
-			if (room) {
-				livechatData = _.extend(livechatData, room.livechatData);
-			}
+		const customFields = Template.instance().customFields.get();
+		if (!customFields || customFields.length === 0) {
+			return [];
 		}
 
-		if (!_.isEmpty(livechatData)) {
-			for (const _id in livechatData) {
-				if (livechatData.hasOwnProperty(_id)) {
-					const customFields = Template.instance().customFields.get();
-					if (customFields) {
-						const field = _.findWhere(customFields, { _id });
-						if (field && field.visibility !== 'hidden' && field.scope === 'room') {
-							fields.push({ label: field.label, value: livechatData[_id] });
-						}
-					}
-				}
+		const fields = [];
+		const room = Template.instance().room.get();
+		const { livechatData = {} } = room || {};
+
+		Object.keys(livechatData).forEach((key) => {
+			const field = _.findWhere(customFields, { _id: key });
+			if (field && field.visibility !== 'hidden' && field.scope === 'room') {
+				fields.push({ label: field.label, value: livechatData[key] });
 			}
-			return fields;
-		}
+		});
+
+		return fields;
 	},
 
 	customVisitorFields() {
-		const fields = [];
-		let livechatData = {};
-		const user = Template.instance().user.get();
-		if (user) {
-			livechatData = _.extend(livechatData, user.livechatData);
+		const customFields = Template.instance().customFields.get();
+		if (!customFields || customFields.length === 0) {
+			return [];
 		}
 
-		if (!_.isEmpty(livechatData)) {
-			for (const _id in livechatData) {
-				if (livechatData.hasOwnProperty(_id)) {
-					const customFields = Template.instance().customFields.get();
-					if (customFields) {
-						const field = _.findWhere(customFields, { _id });
-						if (field && field.visibility !== 'hidden' && field.scope === 'visitor') {
-							fields.push({ label: field.label, value: livechatData[_id] });
-						}
-					}
-				}
+		const fields = [];
+		const user = Template.instance().user.get();
+		const { livechatData = {} } = user || {};
+
+		Object.keys(livechatData).forEach((key) => {
+			const field = _.findWhere(customFields, { _id: key });
+			if (field && field.visibility !== 'hidden' && field.scope === 'visitor') {
+				fields.push({ label: field.label, value: livechatData[key] });
 			}
-			return fields;
-		}
+		});
+
+		return fields;
 	},
 
 	createdAt() {
