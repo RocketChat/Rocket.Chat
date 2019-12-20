@@ -16,7 +16,7 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
-import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
@@ -153,19 +153,18 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const { username, _id } = this.getUserFromParams();
+		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
 		const params = {
 			userId: this.userId,
 			filter: username,
 			limit: 1,
 		};
-		const userNotApprovedYet = !username;
-		if (userNotApprovedYet) {
-			params.userIdToGetData = _id;
-		}
 
-		const result = getFullUserData(params);
+		const result = userId
+			? getFullUserDataById({ userId: this.userId, filterId: userId })
+			: getFullUserData(params);
+
 		if (!result || result.count() !== 1) {
 			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
