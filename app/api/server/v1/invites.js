@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
+import { removeInvite } from '../../../invites/server/functions/removeInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
@@ -17,6 +18,15 @@ API.v1.addRoute('findOrCreateInvite', { authRequired: true }, {
 	post() {
 		const { rid, days, maxUses } = this.bodyParams;
 		const result = findOrCreateInvite(this.userId, { rid, days, maxUses });
+
+		return API.v1.success(result);
+	},
+});
+
+API.v1.addRoute('removeInvite/:_id', { authRequired: true }, {
+	delete() {
+		const { _id } = this.urlParams;
+		const result = removeInvite(this.userId, { _id });
 
 		return API.v1.success(result);
 	},

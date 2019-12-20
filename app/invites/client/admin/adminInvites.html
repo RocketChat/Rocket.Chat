@@ -12,10 +12,10 @@
 					{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
 					<thead>
 						<tr class="admin-table-row">
-							<th class="content-background-color border-component-color" width="30%">
+							<th class="content-background-color border-component-color" width="20%">
 								<div class="table-fake-th">{{_ "Token"}}</div>
 							</th>
-							<th class="content-background-color border-component-color" width="20%">
+							<th class="content-background-color border-component-color" width="35%">
 								<div class="table-fake-th">{{_ "Created_at"}}</div>
 							</th>
 							<th class="content-background-color border-component-color" width="20%">
@@ -24,7 +24,7 @@
 							<th class="content-background-color border-component-color" width="10%">
 								<div class="table-fake-th">{{_ "Uses"}}</div>
 							</th>
-							<th class="content-background-color border-component-color" width="20%">
+							<th class="content-background-color border-component-color" width="15%">
 								<div class="table-fake-th">{{_ "Uses_left"}}</div>
 							</th>
 						</tr>
@@ -60,7 +60,14 @@
 								<div class="rc-table-wrapper">
 									<div class="rc-table-info">
 										<span class="rc-table-title">{{maxUsesLeft}}</span></div>
-								</div>
+
+
+								<button class="rc-apps-section__app-menu-trigger js-remove" data-id="{{_id}}">
+									<svg class="rc-icon rc-icon--default-size rc-icon--default-size--menu" aria-hidden="true">
+										<use xlink:href="#icon-cross"></use>
+									</svg>
+								</button>
+							</div>
 							</td>
 						</tr>
 						{{/each}}
