@@ -13,7 +13,7 @@ import { ChannelSettings } from '../../../channel-settings';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 import { APIClient } from '../../../utils/client';
 
-const ROOMS_COUNT = 50;
+const LIST_SIZE = 50;
 const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 Template.adminRooms.helpers({
@@ -62,7 +62,7 @@ Template.adminRooms.helpers({
 			}
 			const rooms = instance.rooms.get();
 			if (instance.total.get() > rooms.length) {
-				instance.offset.set(instance.offset.get() + ROOMS_COUNT);
+				instance.offset.set(instance.offset.get() + LIST_SIZE);
 			}
 		};
 	},
@@ -133,7 +133,7 @@ Template.adminRooms.onCreated(function() {
 
 	this.loadRooms = _.debounce(async (types = [], filter, offset) => {
 		this.isLoading.set(true);
-		let url = `rooms.adminRooms?count=${ ROOMS_COUNT }&offset=${ offset }&${ mountTypesQueryParameter(types) }`;
+		let url = `rooms.adminRooms?count=${ LIST_SIZE }&offset=${ offset }&${ mountTypesQueryParameter(types) }`;
 		if (filter) {
 			url += `filter=${ encodeURIComponent(filter) }`;
 		}
@@ -148,6 +148,11 @@ Template.adminRooms.onCreated(function() {
 	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
 
 	const allowedTypes = ['c', 'd', 'p'];
+	this.autorun(() => {
+		instance.filter.get();
+		instance.types.get();
+		instance.offset.set(0);
+	});
 	this.autorun(() => {
 		const filter = instance.filter.get();
 		const offset = instance.offset.get();
@@ -182,7 +187,6 @@ Template.adminRooms.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-		t.offset.set(0);
 	},
 	'change [name=room-type]'(e, t) {
 		t.types.set(t.getSearchTypes());
