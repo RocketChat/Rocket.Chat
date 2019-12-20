@@ -76,4 +76,17 @@ export class RoomsRaw extends BaseRaw {
 		};
 		return this.find(query, options);
 	}
+
+	findChannelAndPrivateByNameStarting(name, options) {
+		const nameRegex = new RegExp(`^${ s.escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+		};
+
+		return this.find(query, options);
+	}
 }

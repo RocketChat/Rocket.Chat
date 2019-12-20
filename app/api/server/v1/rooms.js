@@ -4,7 +4,7 @@ import Busboy from 'busboy';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete } from '../lib/rooms';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -135,8 +135,8 @@ API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 		const saveNotifications = (notifications, roomId) => {
 			Object.keys(notifications).forEach((notificationKey) =>
 				Meteor.runAsUser(this.userId, () =>
-					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey])
-				)
+					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]),
+				),
 			);
 		};
 		const { roomId, notifications } = this.bodyParams;
@@ -291,6 +291,20 @@ API.v1.addRoute('rooms.adminRooms', { authRequired: true }, {
 				count,
 				sort,
 			},
+		})));
+	},
+});
+
+API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findChannelAndPrivateAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
 		})));
 	},
 });

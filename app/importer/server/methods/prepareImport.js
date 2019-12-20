@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
+import { hasPermission } from '../../../authorization';
+
 import { Importers } from '..';
 
-import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	prepareImport(key, dataURI, contentType, fileName) {

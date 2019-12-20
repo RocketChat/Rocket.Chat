@@ -4,7 +4,6 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import toastr from 'toastr';
 import _ from 'underscore';
 
@@ -12,6 +11,7 @@ import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { t, roomTypes } from '../../../../utils';
 import { hasAllPermission } from '../../../../authorization';
+import { AutoComplete } from '../../../../meteor-autocomplete/client';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -155,17 +155,17 @@ Template.createChannel.helpers({
 	roomTypesBeforeStandard() {
 		const orderLow = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
 		return roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order < orderLow
+			(roomTypeOrder) => roomTypeOrder.order < orderLow,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
+			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier],
 		).filter((roomType) => roomType.creationTemplate);
 	},
 	roomTypesAfterStandard() {
 		const orderHigh = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
 		return roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order > orderHigh
+			(roomTypeOrder) => roomTypeOrder.order > orderHigh,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
+			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier],
 		).filter((roomType) => roomType.creationTemplate);
 	},
 });
@@ -349,7 +349,7 @@ Template.createChannel.onCreated(function() {
 				// @TODO maybe change this 'collection' and/or template
 
 					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					filter,

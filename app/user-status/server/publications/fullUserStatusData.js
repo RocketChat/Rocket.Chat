@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { CustomUserStatus } from '../../../models';
 
 Meteor.publish('fullUserStatusData', function(filter, limit) {
+	console.warn('The publication "fullUserStatusData" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}
