@@ -9,10 +9,11 @@ import hljs from 'highlight.js';
 import toastr from 'toastr';
 
 import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { modal, SideNav } from '../../../ui-utils';
-import { t, handleError, APIClient } from '../../../utils/client';
+import { t, handleError } from '../../../utils/client';
 import { integrations } from '../../lib/rocketchat';
+import { getIntegration } from '../getIntegration';
 
 Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCreated() {
 	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
@@ -49,25 +50,7 @@ Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCr
 		});
 	};
 
-	const integration = await (async () => {
-		const reqParams = {
-			integrationId: params.id,
-		};
-
-		if (!hasAllPermission('manage-outgoing-integrations')) {
-			if (!hasAllPermission('manage-own-outgoing-integrations')) {
-				toastr.error(TAPi18n.__('No_integration_found'));
-				FlowRouter.go('admin-integrations');
-				return;
-			}
-			reqParams.createdBy = Meteor.userId();
-		}
-
-		const { integration } = await APIClient.v1.get('integrations.get', reqParams);
-
-		return integration;
-	})();
-
+	const integration = getIntegration(params.id, Meteor.userId());
 	if (!integration) {
 		toastr.error(TAPi18n.__('No_integration_found'));
 		FlowRouter.go('admin-integrations');

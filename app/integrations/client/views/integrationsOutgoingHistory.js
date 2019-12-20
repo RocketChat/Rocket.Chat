@@ -10,10 +10,11 @@ import moment from 'moment';
 import toastr from 'toastr';
 
 import { handleError } from '../../../utils';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { integrations } from '../../lib/rocketchat';
 import { SideNav } from '../../../ui-utils/client';
 import { APIClient } from '../../../utils/client';
+import { getIntegration } from '../getIntegration';
 
 const HISTORY_COUNT = 25;
 
@@ -25,15 +26,8 @@ Template.integrationsOutgoingHistory.onCreated(async function _integrationsOutgo
 	this.total = new ReactiveVar(0);
 
 	if (params && params.id) {
-		let integration;
-		const baseUrl = `integrations.get?integrationId=${ params.id }`;
-		if (hasAllPermission('manage-outgoing-integrations')) {
-			const { integration: record } = await APIClient.v1.get(baseUrl);
-			integration = record;
-		} else if (hasAllPermission('manage-own-outgoing-integrations')) {
-			const { integration: record } = await APIClient.v1.get(`${ baseUrl }&createdBy=${ Meteor.userId() }`);
-			integration = record;
-		}
+		const integration = getIntegration(params.id, Meteor.userId());
+
 		if (!integration) {
 			toastr.error(TAPi18n.__('No_integration_found'));
 			return FlowRouter.go('admin-integrations');

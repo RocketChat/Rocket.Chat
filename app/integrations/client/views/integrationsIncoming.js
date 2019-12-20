@@ -8,10 +8,10 @@ import hljs from 'highlight.js';
 import toastr from 'toastr';
 
 import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
-import { hasAtLeastOnePermission, hasAllPermission } from '../../../authorization';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { modal, SideNav } from '../../../ui-utils/client';
 import { t, handleError } from '../../../utils';
-import { APIClient } from '../../../utils/client';
+import { getIntegration } from '../getIntegration';
 
 Template.integrationsIncoming.onCreated(async function _incomingIntegrationsOnCreated() {
 	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
@@ -20,12 +20,8 @@ Template.integrationsIncoming.onCreated(async function _incomingIntegrationsOnCr
 		username: 'rocket.cat',
 	});
 	if (params && params.id) {
-		const baseUrl = `integrations.get?integrationId=${ params.id }`;
-		if (hasAllPermission('manage-incoming-integrations')) {
-			const { integration } = await APIClient.v1.get(baseUrl);
-			this.integration.set(integration);
-		} else if (hasAllPermission('manage-own-incoming-integrations')) {
-			const { integration } = await APIClient.v1.get(`${ baseUrl }&createdBy=${ Meteor.userId() }`);
+		const integration = getIntegration(params.id, Meteor.userId());
+		if (integration) {
 			this.integration.set(integration);
 		}
 	}
