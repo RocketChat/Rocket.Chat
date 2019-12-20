@@ -43,7 +43,7 @@ function startProcess(opts, callback) {
 	const proc = spawn(
 		opts.command,
 		opts.params,
-		opts.options
+		opts.options,
 	);
 
 	if (opts.waitForMessage) {

@@ -38,7 +38,7 @@ const createTemplateForComponent = async (
 	component,
 	props = {},
 	// eslint-disable-next-line new-cap
-	renderContainerView = () => HTML.DIV()
+	renderContainerView = () => HTML.DIV(),
 ) => {
 	const name = component.displayName || component.name;
 
@@ -83,14 +83,6 @@ const createTemplateForComponent = async (
 	});
 
 	return name;
-};
-
-FlowRouter.subscriptions = function() {
-	Tracker.autorun(() => {
-		if (Meteor.userId()) {
-			this.register('userData', Meteor.subscribe('userData'));
-		}
-	});
 };
 
 FlowRouter.route('/', {

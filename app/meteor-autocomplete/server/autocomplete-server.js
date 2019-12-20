@@ -9,6 +9,7 @@ const Autocomplete = class {
 };
 
 Meteor.publish('autocomplete-recordset', function(selector, options, collName) {
+	console.warn('The publication "autocomplete-recordset" is deprecated and will be removed after version v3.0.0');
 	const collection = global[collName];
 
 	// This is a semi-documented Meteor feature:

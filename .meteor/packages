@@ -17,6 +17,7 @@ ddp-rate-limiter@1.0.7
 ddp-common@1.4.0
 dynamic-import@0.5.1
 ecmascript@0.13.0
+typescript
 ejson@1.1.0
 email@1.2.3
 fastclick@1.0.13
@@ -57,7 +58,6 @@ jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
 keepnox:perfect-scrollbar
-mizzao:autocomplete
 mizzao:timesync
 mrt:reactive-store
 mystor:device-detection
@@ -96,3 +96,4 @@ webapp@1.7.5
 webapp-hashing@1.0.9
 rocketchat:oauth2-server
 rocketchat:i18n
+dandv:caret-position

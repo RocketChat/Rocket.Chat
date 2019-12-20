@@ -25,7 +25,7 @@ Meteor.publish('snippetedMessages', function(rid, limit = 50) {
 		{
 			sort: { ts: -1 },
 			limit,
-		}
+		},
 	).observeChanges({
 		added(_id, record) {
 			publication.added('rocketchat_snippeted_message', _id, record);
