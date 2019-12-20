@@ -46,8 +46,12 @@ Meteor.methods({
 		}
 
 		if (settings.get('Accounts_RegistrationForm') === 'Secret URL' && (!formData.secretURL || formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))) {
-			if (!formData.secretURL || !validateInviteToken(formData.secretURL)) {
-				throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
+			if (formData.secretURL) {
+				try {
+					validateInviteToken(formData.secretURL);
+				} catch (e) {
+					throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
+				}
 			}
 		}
 

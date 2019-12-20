@@ -15,12 +15,14 @@ class Invites extends Base {
 
 		if (daysToExpire > 0) {
 			query.expires = {
-				$gt: Date.now(),
+				$gt: new Date(),
 			};
 		}
 
 		if (maxUses > 0) {
-			query.uses = 0;
+			query.uses = {
+				$lt: maxUses,
+			};
 		}
 
 		return this.findOne(query);

@@ -4,6 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
 import { t, APIClient } from '../../../utils';
+import { formatDateAndTime } from '../../../lib/client/lib/formatDate';
 
 function getInviteLink(instance, rid, days, maxUses) {
 	APIClient.v1.post('findOrCreateInvite', {
@@ -49,10 +50,10 @@ Template.createInviteLink.helpers({
 
 			if (data.maxUses) {
 				const usesLeft = data.maxUses - data.uses;
-				return TAPi18n.__('Your_invite_link_will_expire_on__date__or_after__usesLeft__uses', { date: expiration.toLocaleDateString(), usesLeft });
+				return TAPi18n.__('Your_invite_link_will_expire_on__date__or_after__usesLeft__uses', { date: formatDateAndTime(expiration), usesLeft });
 			}
 
-			return TAPi18n.__('Your_invite_link_will_expire_on__date__', { date: expiration.toLocaleDateString() });
+			return TAPi18n.__('Your_invite_link_will_expire_on__date__', { date: formatDateAndTime(expiration) });
 		}
 
 		if (data.maxUses) {

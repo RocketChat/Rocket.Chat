@@ -3,10 +3,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import moment from 'moment';
 
 import { t, APIClient } from '../../../utils';
+import { formatDateAndTime } from '../../../lib/client/lib/formatDate';
 
 import './adminInvites.html';
 
 Template.adminInvites.helpers({
+	formatDateAndTime,
 	invites() {
 		return Template.instance().invites.get();
 	},
@@ -18,7 +20,7 @@ Template.adminInvites.helpers({
 				return t('Expired');
 			}
 
-			return moment(expires).diff(moment(createdAt), 'days');
+			return moment(expires).fromNow();
 		}
 
 		return t('Never');
@@ -35,11 +37,6 @@ Template.adminInvites.helpers({
 		}
 
 		return t('Unlimited');
-	},
-	creationDate() {
-		const { createdAt } = this;
-
-		return createdAt.toLocaleDateString();
 	},
 });
 

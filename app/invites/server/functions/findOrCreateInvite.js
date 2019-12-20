@@ -56,27 +56,21 @@ export const findOrCreateInvite = (userId, invite) => {
 	}
 
 	// Before anything, let's check if there's an existing invite with the same settings for the same channel and user and that has not yet expired.
-	const existing = Invites.findOneByUserRoomMaxUsesAndExpiration(invite.rid, userId, maxUses, days);
+	const existing = Invites.findOneByUserRoomMaxUsesAndExpiration(userId, invite.rid, maxUses, days);
 
 	// If an existing invite was found, return it's _id instead of creating a new one.
 	if (existing) {
-		return {
-			_id: existing._id,
-			url: getInviteUrl(existing),
-			days: existing.days,
-			maxUses: existing.maxUses,
-			uses: existing.uses,
-			expires: existing.expires,
-		};
+		existing.url = getInviteUrl(existing);
+		return existing;
 	}
 
 	const _id = Random.id(6);
 
 	// insert invite
-	const now = new Date();
+	const createdAt = new Date();
 	let expires = null;
 	if (days > 0) {
-		expires = new Date(now);
+		expires = new Date(createdAt);
 		expires.setDate(expires.getDate() + days);
 	}
 
@@ -86,20 +80,14 @@ export const findOrCreateInvite = (userId, invite) => {
 		maxUses,
 		rid: invite.rid,
 		userId,
-		createdAt: now,
+		createdAt,
 		expires,
 		uses: 0,
 	};
 
 	Invites.create(createInvite);
-
 	Notifications.notifyUser(userId, 'updateInvites', { invite: createInvite });
-	return {
-		_id,
-		url: getInviteUrl(createInvite),
-		days,
-		maxUses,
-		uses: 0,
-		expires,
-	};
+	
+	createInvite.url = getInviteUrl(createInvite);
+	return createInvite;
 };
