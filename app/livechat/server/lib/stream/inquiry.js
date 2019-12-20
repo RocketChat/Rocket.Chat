@@ -20,12 +20,16 @@ LivechatInquiry.find({}).observeChanges({
 		}
 		emitEvent(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, mountDataToEmit('added', record));
 	},
-	changed(_id) {
+	changed(_id, record) {
+		const isUpdatingDepartment = record && record.department;
 		const inquiry = LivechatInquiry.findOneById(_id);
-		if (inquiry && inquiry.department) {
-			return emitEvent(`${ LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER }/${ inquiry.department }`, mountDataToEmit('changed', inquiry));
+		if (inquiry && !inquiry.department) {
+			return emitEvent(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, mountDataToEmit('changed', inquiry));
 		}
-		emitEvent(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, mountDataToEmit('changed', inquiry));
+		if (isUpdatingDepartment) {
+			emitEvent(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, mountDataToEmit('changed', inquiry));
+		}
+		return emitEvent(`${ LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER }/${ inquiry.department }`, mountDataToEmit('changed', inquiry));
 	},
 	removed(_id) {
 		const inquiry = LivechatInquiry.trashFindOneById(_id);
