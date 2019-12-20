@@ -9,7 +9,7 @@ const livechatInquiryStreamer = new Meteor.Streamer('livechat-inquiry');
 export const initializeLivechatInquiryStream = async (userId) => {
 	const collection = getLivechatInquiryCollection();
 
-	const { inquiries } = await APIClient.v1.get('livechat/inquiries.listWithRestrictions');
+	const { inquiries } = await APIClient.v1.get('livechat/inquiries.listWithRestrictions?sort={"ts": 1}');
 	(inquiries || []).forEach((inquiry) => collection.upsert({ _id: inquiry._id }, inquiry));
 	const { departments } = await APIClient.v1.get(`livechat/agents/${ userId }/departments`);
 
