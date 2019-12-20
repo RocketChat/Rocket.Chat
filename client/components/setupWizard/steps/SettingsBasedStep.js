@@ -1,18 +1,18 @@
-import { Input, Field, FieldGroup, Label } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, Label, SelectInput, TextInput } from '@rocket.chat/fuselage';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { useEffect, useReducer, useState } from 'react';
 
 import { handleError } from '../../../../app/utils/client';
+import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
 import { useFocus } from '../../../hooks/useFocus';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
-import { batchSetSettings } from '../functions';
 
 const useFields = () => {
 	const reset = 'RESET';
@@ -37,15 +37,13 @@ const useFields = () => {
 	return { fields, resetFields, setFieldValue };
 };
 
-export function SettingsBasedStep({ step, title }) {
+export function SettingsBasedStep({ step, title, active }) {
 	const { settings } = useSetupWizardParameters();
 	const { currentStep, goToPreviousStep, goToNextStep } = useSetupWizardStepsState();
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
 
-	const active = step === currentStep;
-
-	const languages = useReactiveValue(() => TAPi18n.getLanguages(), []);
+	const languages = useReactiveValue(() => TAPi18n && TAPi18n.getLanguages(), []);
 
 	useEffect(() => {
 		resetFields(
@@ -53,11 +51,13 @@ export function SettingsBasedStep({ step, title }) {
 				.filter(({ wizard }) => wizard.step === step)
 				.filter(({ type }) => ['string', 'select', 'language'].includes(type))
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
-				.map(({ value, ...field }) => ({ ...field, value: value || '' }))
+				.map(({ value, ...field }) => ({ ...field, value: value || '' })),
 		);
 	}, [settings, currentStep]);
 
 	const t = useTranslation();
+
+	const batchSetSettings = useBatchSetSettings();
 
 	const handleBackClick = () => {
 		goToPreviousStep();
@@ -88,43 +88,42 @@ export function SettingsBasedStep({ step, title }) {
 			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
 					<Field key={i}>
-						<Label text={t(i18nLabel)}>
-							{type === 'string' && <Input
-								type='text'
-								name={_id}
-								ref={i === 0 ? autoFocusRef : undefined}
-								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							/>}
+						<Label text={t(i18nLabel)} />
+						{type === 'string' && <TextInput
+							type='text'
+							name={_id}
+							ref={i === 0 ? autoFocusRef : undefined}
+							value={value}
+							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+						/>}
 
-							{type === 'select' && <Input
-								type='select'
-								name={_id}
-								placeholder={t('Select_an_option')}
-								ref={i === 0 ? autoFocusRef : undefined}
-								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							>
-								{values
-									.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
-									.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
-							</Input>}
+						{type === 'select' && <SelectInput
+							type='select'
+							name={_id}
+							placeholder={t('Select_an_option')}
+							ref={i === 0 ? autoFocusRef : undefined}
+							value={value}
+							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+						>
+							{values
+								.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
+								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+						</SelectInput>}
 
-							{type === 'language' && <Input
-								type='select'
-								name={_id}
-								placeholder={t('Default')}
-								ref={i === 0 ? autoFocusRef : undefined}
-								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							>
-								{Object.entries(languages)
-									.map(([key, { name }]) => ({ label: name, value: key }))
-									.sort((a, b) => a.key - b.key)
-									.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
-							</Input>}
-						</Label>
-					</Field>
+						{type === 'language' && <SelectInput
+							type='select'
+							name={_id}
+							placeholder={t('Default')}
+							ref={i === 0 ? autoFocusRef : undefined}
+							value={value}
+							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+						>
+							{Object.entries(languages)
+								.map(([key, { name }]) => ({ label: name, value: key }))
+								.sort((a, b) => a.key - b.key)
+								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+						</SelectInput>}
+					</Field>,
 				)}
 			</FieldGroup>
 		</StepContent>

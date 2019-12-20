@@ -131,7 +131,7 @@ Template.emojiEdit.onCreated(function() {
 									handleError(uploadError);
 									console.log(uploadError);
 								}
-							}
+							},
 							);
 							delete this.emojiFile;
 							toastr.success(TAPi18n.__('File_uploaded'));

@@ -104,7 +104,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			icon: 'message',
 			name: t('Conversation'),
 			action: prevent(getUser, ({ username }) =>
-				Meteor.call('createDirectMessage', username, success((result) => result.rid && FlowRouter.go('direct', { username }, FlowRouter.current().queryParams)))
+				Meteor.call('createDirectMessage', username, success((result) => result.rid && FlowRouter.go('direct', { username }, FlowRouter.current().queryParams))),
 			),
 			condition() {
 				return canDirectMessageTo(this.username);
@@ -376,7 +376,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 								timer: 2000,
 								showConfirmButton: false,
 							});
-						}))
+						})),
 					);
 				}),
 			};
@@ -511,21 +511,6 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						user.active = true;
 					}))
 				),
-			};
-		}, () => {
-			if (hideAdminControls || !hasPermission('reset-other-user-e2e-key')) {
-				return;
-			}
-			if (!settings.get('E2E_Enable')) {
-				return;
-			}
-
-			return {
-				group: 'admin',
-				icon: 'key',
-				id: 'reset-e2e',
-				name: t('Reset_E2E_Key'),
-				action: prevent(getUser, ({ _id }) => Meteor.call('e2e.resetUserE2EKey', _id, success(() => toastr.success(t('User_e2e_key_was_reset'))))),
 			};
 		}];
 

@@ -19,6 +19,7 @@ import './views/app/fullModal.html';
 import './views/app/home.html';
 import './views/app/notAuthorized.html';
 import './views/app/pageContainer.html';
+import './views/app/pageCustomContainer.html';
 import './views/app/pageSettingsContainer.html';
 import './views/app/room.html';
 import './views/app/roomSearch.html';

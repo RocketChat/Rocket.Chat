@@ -9,10 +9,20 @@ import { hasAllPermission } from '../../../authorization';
 import { SideNav } from '../../../ui-utils/client';
 import './viewLogs.html';
 import './viewLogs.css';
+import { APIClient } from '../../../utils/client';
 
-Template.viewLogs.onCreated(function() {
-	this.subscribe('stdout');
+const stdoutStreamer = new Meteor.Streamer('stdout');
+
+Template.viewLogs.onCreated(async function() {
+	const { queue } = await APIClient.v1.get('stdout.queue');
+	(queue || []).forEach((item) => stdout.insert(item));
+	stdoutStreamer.on('stdout', (item) => stdout.insert(item));
 	this.atBottom = true;
+});
+
+Template.viewLogs.onDestroyed(() => {
+	stdout.remove({});
+	stdoutStreamer.removeListener('stdout');
 });
 
 Template.viewLogs.helpers({

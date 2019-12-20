@@ -237,6 +237,20 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
+	setLivechatData(userId, data = {}) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				livechat: data,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	closeOffice() {
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'not-available'));
 	}
@@ -257,6 +271,7 @@ export class Users extends Base {
 				phone: 1,
 				customFields: 1,
 				status: 1,
+				livechat: 1,
 			},
 		};
 
@@ -742,6 +757,15 @@ export class Users extends Base {
 		return this.find({ active: true, isRemote: true }, options);
 	}
 
+	getSAMLByIdAndSAMLProvider(_id, provider) {
+		return this.findOne({
+			_id,
+			'services.saml.provider': provider,
+		}, {
+			'services.saml': 1,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -968,7 +992,7 @@ export class Users extends Base {
 	setPreferences(_id, preferences) {
 		const settingsObject = Object.assign(
 			{},
-			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] }))
+			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] })),
 		);
 
 		const update = {
@@ -1149,6 +1173,20 @@ export class Users extends Base {
 	// REMOVE
 	removeById(_id) {
 		return this.remove(_id);
+	}
+
+	removeLivechatData(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$unset: {
+				livechat: true,
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	/*

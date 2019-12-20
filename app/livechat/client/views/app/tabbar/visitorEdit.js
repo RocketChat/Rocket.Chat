@@ -5,7 +5,6 @@ import toastr from 'toastr';
 
 import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
-import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
 
@@ -63,8 +62,12 @@ Template.visitorEdit.onCreated(async function() {
 	this.agentDepartments = new ReactiveVar([]);
 	this.availableUserTags = new ReactiveVar([]);
 
-	this.autorun(() => {
-		this.visitor.set(LivechatVisitor.findOne({ _id: Template.currentData().visitorId }));
+	this.autorun(async () => {
+		const { visitorId } = Template.currentData();
+		if (visitorId) {
+			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+			this.visitor.set(visitor);
+		}
 	});
 
 	const rid = Template.currentData().roomId;
@@ -76,12 +79,11 @@ Template.visitorEdit.onCreated(async function() {
 	});
 
 	const uid = Meteor.userId();
-	const { departments } = await APIClient.v1.get(`livechat/agent/${ uid }/departments`);
+	const { departments } = await APIClient.v1.get(`livechat/agents/${ uid }/departments`);
 	const agentDepartments = departments.map((dept) => dept.departmentId);
 	this.agentDepartments.set(agentDepartments);
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {
 		this.availableTags.set(tagsList);
-		const uid = Meteor.userId();
 		const agentDepartments = this.agentDepartments.get();
 		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
 		const tags = this.availableTags.get() || [];

@@ -2,8 +2,8 @@
 	{{#requiresPermission 'view-livechat-current-chats'}}
 		<fieldset>
 			<form class="form-inline" method="post">
-				<div class="livechat-current-chats-filters-wrapper">
-					<div class="livechat-current-chats-filters">
+				<div class="livechat-group-filters-wrapper">
+					<div class="livechat-group-filters-container">
 						<div class="livechat-current-chats-standard-filters">
 							<div class="form-group">
 								<label class="rc-input__label">
@@ -19,7 +19,7 @@
 									list=selectedAgents
 									onSelect=onSelectAgents
 									collection='UserAndRoom'
-									subscription='userAutocomplete'
+									endpoint='users.autocomplete'
 									field='username'
 									sort='username'
 									label="Served_By"
@@ -75,7 +75,7 @@
 							</div>
 
 							<div class="form-group">
-								<button class="rc-button rc-button--secondary add-filter-button livechat-current-chats-add-filter-button">{{> icon icon="plus" }}</button>
+								<button type="button" class="rc-button rc-button--secondary add-filter-button livechat-current-chats-add-filter-button">{{> icon icon="plus" }}</button>
 							</div>
 						</div>
 
@@ -105,7 +105,7 @@
 						</div>
 					</div>
 
-					<div class="livechat-current-chats-filters-buttons">
+					<div class="livechat-group-filters-buttons">
 						<div class="rc-button__group">
 							<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
 							{{#if hasPopoverPermissions}}
@@ -158,7 +158,7 @@
 									</div>
 								</div>
 							</td>
-							<td>{{lookupDepartment.name}}</td>
+							<td>{{department.name}}</td>
 							<td>{{servedBy}}</td>
 							<td>{{startedAt}}</td>
 							<td>{{lastMessage}}</td>
@@ -174,11 +174,11 @@
 							{{/requiresPermission}}
 						</tr>
 					{{/each}}
-					{{#unless isReady}}
+					{{#if isLoading}}
 						<tr class="table-no-click">
 							<td colspan="5" class="table-loading-td">{{> loading}}</td>
 						</tr>
-					{{/unless}}
+					{{/if}}
 				</tbody>
 			{{/table}}
 		</div>

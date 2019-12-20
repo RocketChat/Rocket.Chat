@@ -6,6 +6,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
+import { saveRegistrationData } from './saveRegistrationData';
 
 export function connectWorkspace(token) {
 	const { connectToCloud } = retrieveRegistrationStatus();
@@ -46,13 +47,7 @@ export function connectWorkspace(token) {
 		return false;
 	}
 
-	Settings.updateValueById('Cloud_Workspace_Id', data.workspaceId);
-	Settings.updateValueById('Cloud_Workspace_Name', data.client_name);
-	Settings.updateValueById('Cloud_Workspace_Client_Id', data.client_id);
-	Settings.updateValueById('Cloud_Workspace_Client_Secret', data.client_secret);
-	Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', data.client_secret_expires_at);
-	Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
-	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
+	Promise.await(saveRegistrationData(data));
 
 	// Now that we have the client id and secret, let's get the access token
 	const accessToken = getWorkspaceAccessToken(true);

@@ -1,4 +1,4 @@
-import './RocketChat.font.css';
+import './rocketchat.font.css';
 import '../app/chatpal-search/client/style.css';
 import '../app/theme/client/main.css';
 import '../app/theme/client/vendor/photoswipe.css';
@@ -36,3 +36,4 @@ import '../app/ui-clean-history/client/views/stylesheets/cleanHistory.css';
 import '../app/ui-vrecord/client/vrecord.css';
 import '../app/videobridge/client/stylesheets/video.less';
 import '../app/wordpress/client/wordpress-login-button.css';
+import '../app/meteor-autocomplete/client/autocomplete.css';

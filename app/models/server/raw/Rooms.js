@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
@@ -29,5 +31,18 @@ export class RoomsRaw extends BaseRaw {
 
 		const [statistic] = await this.col.aggregate(aggregate).toArray();
 		return statistic;
+	}
+
+	findChannelAndPrivateByNameStarting(name, options) {
+		const nameRegex = new RegExp(`^${ s.escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+		};
+
+		return this.find(query, options);
 	}
 }

@@ -225,6 +225,12 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Notification_Duration',
 		});
+		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Notification_RequireInteraction',
+			i18nDescription: 'Notification_RequireInteraction_Description',
+		});
 		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
 			type: 'select',
 			values: [
@@ -1153,6 +1159,24 @@ settings.addGroup('Push', function() {
 	});
 	this.add('Push_debug', false, {
 		type: 'boolean',
+		public: true,
+		alert: 'Push_Setting_Requires_Restart_Alert',
+		enableQuery: {
+			_id: 'Push_enable',
+			value: true,
+		},
+	});
+	this.add('Push_send_interval', 5000, {
+		type: 'int',
+		public: true,
+		alert: 'Push_Setting_Requires_Restart_Alert',
+		enableQuery: {
+			_id: 'Push_enable',
+			value: true,
+		},
+	});
+	this.add('Push_send_batch_size', 10, {
+		type: 'int',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
 		enableQuery: {
@@ -2620,6 +2644,10 @@ settings.addGroup('Setup_Wizard', function() {
 				value: true,
 			},
 			secret: true,
+		});
+
+		this.add('Cloud_Service_Agree_PrivacyTerms', false, {
+			type: 'boolean',
 		});
 
 		this.add('Cloud_Workspace_Id', '', {

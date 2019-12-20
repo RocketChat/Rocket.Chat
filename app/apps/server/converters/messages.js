@@ -135,6 +135,7 @@ export class AppMessagesConverter {
 			attachments,
 			reactions: message.reactions,
 			parseUrls: message.parseUrls,
+			token: message.token,
 		};
 
 		return Object.assign(newMessage, message._unmappedProperties_);

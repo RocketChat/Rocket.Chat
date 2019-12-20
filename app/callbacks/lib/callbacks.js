@@ -50,13 +50,13 @@ const createCallbackTimed = (hook, callbacks) =>
 		callbacks
 			.map(wrapCallback)
 			.map(handleResult)
-			.reduce(pipe, identity)
+			.reduce(pipe, identity),
 	);
 
 const create = (hook, cbs) =>
 	(timed ? createCallbackTimed(hook, cbs) : createCallback(hook, cbs));
 const combinedCallbacks = new Map();
-this.combinedCallbacks = combinedCallbacks;
+
 /*
 * Callback priorities
 */
@@ -79,7 +79,7 @@ callbacks.add = function(
 	hook,
 	callback,
 	priority = callbacks.priority.MEDIUM,
-	id = Random.id()
+	id = Random.id(),
 ) {
 	callbacks[hook] = getHooks(hook);
 	if (callbacks[hook].find((cb) => cb.id === id)) {
