@@ -13,8 +13,7 @@ const emitNotification = (action, payload = {}) => {
 		action,
 		...payload,
 	});
-
-}
+};
 
 LivechatDepartmentAgents.on('change', ({ clientAction, id }) => {
 	console.log('mudando dados..');
