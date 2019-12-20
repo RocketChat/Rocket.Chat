@@ -150,15 +150,13 @@ export class UsersRaw extends BaseRaw {
 					},
 				},
 			}];
-		const params = [match, lookup, ...projects];
+		const sort = { $sort: options.sort || { username: 1 } };
+		const params = [match, lookup, ...projects, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: options.sort || { username: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -201,15 +199,13 @@ export class UsersRaw extends BaseRaw {
 					chatsDuration: { $ceil: { $sum: '$rooms.metrics.chatDuration' } },
 				},
 			}];
-		const params = [match, lookup, ...projects];
+		const sort = { $sort: options.sort || { username: 1 } };
+		const params = [match, lookup, ...projects, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: options.sort || { username: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -253,15 +249,13 @@ export class UsersRaw extends BaseRaw {
 		if (fullReport) {
 			presentationProject.$project['sessions.serviceHistory'] = 1;
 		}
-		const params = [match, lookup, sessionProject, presentationProject];
+		const sort = { $sort: options.sort || { username: 1 } };
+		const params = [match, lookup, sessionProject, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: options.sort || { username: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}

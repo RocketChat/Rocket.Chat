@@ -83,10 +83,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (Object.keys(matchUsers.$match)) {
 			firstParams.push(matchUsers);
 		}
-		const params = [...firstParams, usersGroup, project];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { chats: -1 } });
-		}
+		const sort = { $sort: options.sort || { chats: -1 } };
+		const params = [...firstParams, usersGroup, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -144,10 +142,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, group, presentationProject];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { name: 1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, group, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -245,10 +241,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { name: 1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -332,10 +326,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { name: 1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -419,10 +411,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { name: 1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -490,10 +480,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, ...projects];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { name: 1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, ...projects, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -578,10 +566,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { name: 1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -688,10 +674,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, messagesLookup, messagesProject, transferProject, transferGroup, presentationProject];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { name: 1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, messagesLookup, messagesProject, transferProject, transferGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -1094,10 +1078,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, serviceTimeProject, roomsGroup, presentationProject];
-		if (options.sort) {
-			params.push({ $sort: options.sort || { name: 1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, serviceTimeProject, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -1158,10 +1140,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (customFields) {
 			match.$match.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
 		}
-		const firstParams = [match];
-		if (options.sort) {
-			firstParams.push({ $sort: options.sort || { ts: -1 } });
-		}
+		const sort = { $sort: options.sort || { name: 1 } };
+		const firstParams = [match, sort];
 		if (options.offset) {
 			firstParams.push({ $skip: options.offset });
 		}
