@@ -62,7 +62,7 @@ API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 		});
 
 		Meteor.runAsUser(this.userId, () =>
-			Meteor.call('readMessages', this.bodyParams.rid)
+			Meteor.call('readMessages', this.bodyParams.rid),
 		);
 
 		return API.v1.success();
@@ -77,7 +77,7 @@ API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () =>
-			Meteor.call('unreadMessages', firstUnreadMessage, roomId)
+			Meteor.call('unreadMessages', firstUnreadMessage, roomId),
 		);
 
 		return API.v1.success();

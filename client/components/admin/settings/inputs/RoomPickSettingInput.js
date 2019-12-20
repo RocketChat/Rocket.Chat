@@ -46,7 +46,7 @@ export function RoomPickSettingInput({
 					{
 						// @TODO maybe change this 'collection' and/or template
 						collection: 'CachedChannelList',
-						subscription: 'channelAndPrivateAutocomplete',
+						endpoint: 'rooms.autocomplete.channelAndPrivate',
 						field: 'name',
 						template: Template.roomSearch,
 						noMatchTemplate: Template.roomSearchEmpty,
@@ -81,7 +81,7 @@ export function RoomPickSettingInput({
 			{value.map(({ _id, name }) =>
 				<li key={_id} className='remove-room' onClick={handleRemoveRoomButtonClick(_id)}>
 					{name} <Icon name='cross' />
-				</li>
+				</li>,
 			)}
 		</ul>
 	</>;

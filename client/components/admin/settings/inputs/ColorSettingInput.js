@@ -100,7 +100,7 @@ export function ColorSettingInput({
 					onChange={handleEditorTypeChange}
 				>
 					{allowedTypes && allowedTypes.map((allowedType) =>
-						<SelectInput.Option key={allowedType} value={allowedType}>{t(allowedType)}</SelectInput.Option>
+						<SelectInput.Option key={allowedType} value={allowedType}>{t(allowedType)}</SelectInput.Option>,
 					)}
 				</SelectInput>
 			</Field>

@@ -20,7 +20,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 		ignoreDiscussion,
 		ts,
 		fromUsers,
-		{ fields: { 'file._id': 1, pinned: 1 }, limit }
+		{ fields: { 'file._id': 1, pinned: 1 }, limit },
 	).forEach((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;
