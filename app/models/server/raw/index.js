@@ -28,6 +28,8 @@ import LivechatExternalMessagesModel from '../models/LivechatExternalMessages';
 import { LivechatExternalMessageRaw } from './LivechatExternalMessages';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
 import { LivechatVisitorsRaw } from './LivechatVisitors';
+import EmojiCustomModel from '../models/EmojiCustom';
+import { EmojiCustomRaw } from './EmojiCustom';
 import WebdavAccountsModel from '../models/WebdavAccounts';
 import { WebdavAccountsRaw } from './WebdavAccounts';
 import OAuthAppsModel from '../models/OAuthApps';
@@ -54,6 +56,7 @@ export const LivechatRooms = new LivechatRoomsRaw(LivechatRoomsModel.model.rawCo
 export const Messages = new MessagesRaw(MessagesModel.model.rawCollection());
 export const LivechatExternalMessage = new LivechatExternalMessageRaw(LivechatExternalMessagesModel.model.rawCollection());
 export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection());
+export const EmojiCustom = new EmojiCustomRaw(EmojiCustomModel.model.rawCollection());
 export const WebdavAccounts = new WebdavAccountsRaw(WebdavAccountsModel.model.rawCollection());
 export const OAuthApps = new OAuthAppsRaw(OAuthAppsModel.model.rawCollection());
 export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawCollection());
