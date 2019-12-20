@@ -49,24 +49,34 @@ Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCr
 		});
 	};
 
-	if (params && params.id) {
-		let integration;
-		const baseUrl = `integrations.getOne?integrationId=${ params.id }`;
-		if (hasAllPermission('manage-outgoing-integrations')) {
-			const { integration: record } = await APIClient.v1.get(baseUrl);
-			integration = record;
-		} else if (hasAllPermission('manage-own-outgoing-integrations')) {
-			const { integration: record } = await APIClient.v1.get(`${ baseUrl }&createdBy=${ Meteor.userId() }`);
-			integration = record;
-		}
-		if (integration) {
-			integration.hasScriptError = integration.scriptEnabled && integration.scriptError;
-			this.record.set(integration);
-		} else {
+	const integration = await (async () => {
+		const reqParams = {
+			integrationId: params.id,
+		};
+
+		if (!hasAllPermission('manage-outgoing-integrations')) {
 			toastr.error(TAPi18n.__('No_integration_found'));
 			FlowRouter.go('admin-integrations');
+			return;
 		}
+
+		if (hasAllPermission('manage-own-outgoing-integrations')) {
+			reqParams.createdBy = Meteor.userId();
+		}
+
+		const { integration } = await APIClient.v1.get('integrations.get', reqParams);
+
+		return integration;
+	})();
+
+	if (!integration) {
+		toastr.error(TAPi18n.__('No_integration_found'));
+		FlowRouter.go('admin-integrations');
+		return;
 	}
+
+	integration.hasScriptError = integration.scriptEnabled && integration.scriptError;
+	this.record.set(integration);
 });
 
 Template.integrationsOutgoing.helpers({

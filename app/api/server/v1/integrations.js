@@ -174,7 +174,7 @@ API.v1.addRoute('integrations.remove', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('integrations.getOne', { authRequired: true }, {
+API.v1.addRoute('integrations.get', { authRequired: true }, {
 	get() {
 		const { integrationId, createdBy } = this.queryParams;
 		if (!integrationId) {

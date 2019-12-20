@@ -26,7 +26,7 @@ Template.integrationsOutgoingHistory.onCreated(async function _integrationsOutgo
 
 	if (params && params.id) {
 		let integration;
-		const baseUrl = `integrations.getOne?integrationId=${ params.id }`;
+		const baseUrl = `integrations.get?integrationId=${ params.id }`;
 		if (hasAllPermission('manage-outgoing-integrations')) {
 			const { integration: record } = await APIClient.v1.get(baseUrl);
 			integration = record;

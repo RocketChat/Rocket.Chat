@@ -258,9 +258,9 @@ describe('[Incoming Integrations]', function() {
 		});
 	});
 
-	describe('[/integrations.getOne]', () => {
+	describe('[/integrations.get]', () => {
 		it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
-			request.get(api('integrations.getOne'))
+			request.get(api('integrations.get'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -273,7 +273,7 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
-				request.get(api(`integrations.getOne?integrationId=${ integration._id }`))
+				request.get(api(`integrations.get?integrationId=${ integration._id }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -287,7 +287,7 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
-				request.get(api(`integrations.getOne?integrationId=${ integrationCreatedByAnUser._id }`))
+				request.get(api(`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -301,7 +301,7 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return an error when the user sends an invalid integration', (done) => {
 			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request.get(api('integrations.getOne?integrationId=invalid'))
+				request.get(api('integrations.get?integrationId=invalid'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -317,7 +317,7 @@ describe('[Incoming Integrations]', function() {
 			updatePermission('manage-incoming-integrations', [])
 				.then(() => updatePermission('manage-own-incoming-integrations', ['user']))
 				.then(() => {
-					request.get(api(`integrations.getOne?integrationId=${ integrationCreatedByAnUser._id }`))
+					request.get(api(`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`))
 						.set(userCredentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -332,7 +332,7 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return the integration successfully', (done) => {
 			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request.get(api(`integrations.getOne?integrationId=${ integration._id }`))
+				request.get(api(`integrations.get?integrationId=${ integration._id }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)

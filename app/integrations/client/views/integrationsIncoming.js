@@ -20,7 +20,7 @@ Template.integrationsIncoming.onCreated(async function _incomingIntegrationsOnCr
 		username: 'rocket.cat',
 	});
 	if (params && params.id) {
-		const baseUrl = `integrations.getOne?integrationId=${ params.id }`;
+		const baseUrl = `integrations.get?integrationId=${ params.id }`;
 		if (hasAllPermission('manage-incoming-integrations')) {
 			const { integration } = await APIClient.v1.get(baseUrl);
 			this.integration.set(integration);
