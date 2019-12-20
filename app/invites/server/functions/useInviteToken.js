@@ -29,6 +29,7 @@ export const useInviteToken = (userId, token) => {
 		room: {
 			rid: inviteData.rid,
 			fname: room.fname,
+			name: room.name,
 			t: room.t,
 		},
 	};

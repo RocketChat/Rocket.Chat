@@ -7,7 +7,7 @@ import { Invites, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 
 function getInviteUrl(invite) {
-	const { rid, _id } = invite;
+	const { _id } = invite;
 
 	const useDirectLink = settings.get('Accounts_Registration_InviteUrlType') === 'direct';
 	// Remove the last dash if present
@@ -19,7 +19,11 @@ function getInviteUrl(invite) {
 
 	// Remove the protocol
 	const host = siteUrl.replace(/https?\:\/\//i, '');
-	const url = `https://go.rocket.chat/?host=${ host }&rid=${ rid }&path=invite/${ _id }`;
+	const url = `https://go.rocket.chat/?host=${ host }&path=invite/${ _id }`;
+
+	if (siteUrl.includes('http://')) {
+		return `${ url }&secure=no`;
+	}
 
 	return url;
 }
