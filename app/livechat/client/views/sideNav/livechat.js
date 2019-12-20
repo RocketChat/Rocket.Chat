@@ -135,7 +135,7 @@ Template.livechat.onCreated(function() {
 
 	this.subscribe('livechat:inquiry');
 
-	this.updateAgentDepartments = (/*data*/) => {
+	this.updateAgentDepartments = (/* data */) => {
 		// TODO: reload agent departments and the inquiries..
 	};
 
