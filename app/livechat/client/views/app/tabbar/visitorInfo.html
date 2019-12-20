@@ -10,10 +10,10 @@
 			{{#with user}}
 				<div class="info">
 					{{#if name}}
-						<h3 title="{{name}}">{{name}} <i class="status-{{status}}"></i></h3>
+						<h2 title="{{name}}">{{name}} <i class="status-{{status}}"></i></h2>
 						<p class="secondary-font-color">{{username}}</p>
 					{{else}}
-						<h3 title="{{username}}">{{username}} <i class="status-{{status}}"></i></h3>
+						<h2 title="{{username}}">{{username}} <i class="status-{{status}}"></i></h2>
 					{{/if}}
 					<ul>
 						{{#if utc}}<li><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</li>{{/if}}
@@ -35,7 +35,7 @@
 				<h3>{{_ "Conversation"}}</h3>
 				<ul>
 					{{#with room}}
-						<li><strong>{{_ "Agent"}}</strong>: {{servedBy.username}}</li>
+						{{#if servedBy}}<li><strong>{{_ "Agent"}}</strong>: {{servedBy.username}}</li>{{/if}}
 						{{#if facebook}}<li><i class="icon-facebook"></i>{{_ "Facebook_Page"}}: {{facebook.page.name}}</li>{{/if}}
 						{{#if sms}}<li><i class="i con-mobile"></i>{{_ "SMS_Enabled"}}</li>{{/if}}
 						{{#if topic}}<li><strong>{{_ "Topic"}}</strong>: {{{RocketChatMarkdown topic}}}</li>{{/if}}
