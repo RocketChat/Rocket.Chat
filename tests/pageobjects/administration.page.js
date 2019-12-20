@@ -303,10 +303,6 @@ class Administration extends Page {
 
 	get accountsEmailNotificationModeReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
 
-	// get accountsRoomCounterSidebar() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
-
-	// get accountsRoomCounterSidebarReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
-
 	get accountsNewRoomNotification() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_newRoomNotification"]'); }
 
 	get accountsNewRoomNotificationReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_newRoomNotification"]'); }
