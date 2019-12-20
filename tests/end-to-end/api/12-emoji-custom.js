@@ -250,9 +250,9 @@ describe('[EmojiCustom]', function() {
 		});
 	});
 
-	describe('[/emoji-custom.listWithPagination]', () => {
+	describe('[/emoji-custom.all]', () => {
 		it('should return emojis', (done) => {
-			request.get(api('emoji-custom.listWithPagination'))
+			request.get(api('emoji-custom.all'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {

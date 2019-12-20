@@ -7,7 +7,7 @@ import _ from 'underscore';
 import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 import { APIClient } from '../../../utils/client';
 
-const EMOJIS_COUNT = 25;
+const LIST_SIZE = 50;
 const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 Template.adminEmoji.helpers({
@@ -35,7 +35,7 @@ Template.adminEmoji.helpers({
 			}
 			const emojis = instance.emojis.get();
 			if (instance.total.get() > emojis.length) {
-				instance.offset.set(instance.offset.get() + EMOJIS_COUNT);
+				instance.offset.set(instance.offset.get() + LIST_SIZE);
 			}
 		};
 	},
@@ -91,7 +91,7 @@ Template.adminEmoji.onCreated(async function() {
 
 	this.loadEmojis = _.debounce(async (query, offset) => {
 		this.isLoading.set(true);
-		const { emojis, total } = await APIClient.v1.get(`emoji-custom.listWithPagination?count=${ EMOJIS_COUNT }&offset=${ offset }&query=${ JSON.stringify(query) }`);
+		const { emojis, total } = await APIClient.v1.get(`emoji-custom.all?count=${ LIST_SIZE }&offset=${ offset }&query=${ JSON.stringify(query) }`);
 		this.total.set(total);
 		if (offset === 0) {
 			this.emojis.set(emojis);

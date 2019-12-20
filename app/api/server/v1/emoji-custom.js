@@ -52,7 +52,7 @@ API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('emoji-custom.listWithPagination', { authRequired: true }, {
+API.v1.addRoute('emoji-custom.all', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, query } = this.parseJsonQuery();
