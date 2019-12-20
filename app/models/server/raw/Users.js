@@ -1,4 +1,5 @@
 import moment from 'moment';
+import s from 'underscore.string';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -263,6 +264,40 @@ export class UsersRaw extends BaseRaw {
 			params.push({ $sort: options.sort || { username: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
+	}
+
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
+		if (exceptions == null) { exceptions = []; }
+		if (conditions == null) { conditions = {}; }
+		if (options == null) { options = {}; }
+		if (!Array.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+		const query = {
+			$or: [{
+				username: termRegex,
+			}, {
+				name: termRegex,
+			}],
+			active: true,
+			type: {
+				$in: ['user', 'bot'],
+			},
+			$and: [{
+				username: {
+					$exists: true,
+				},
+			}, {
+				username: {
+					$nin: exceptions,
+				},
+			}],
+			...conditions,
+		};
+
+		return this.find(query, options);
 	}
 
 	countAllAgentsStatus({ departmentId = undefined }) {

@@ -19,6 +19,7 @@ import {
 import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
+import { findUsersToAutocomplete } from '../lib/users';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -683,5 +684,19 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 			requested: result.requested,
 			exportOperation: result.exportOperation,
 		});
+	},
+});
+
+API.v1.addRoute('users.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findUsersToAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
 	},
 });

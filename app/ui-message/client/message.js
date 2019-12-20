@@ -601,10 +601,6 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		if (!templateInstance) {
 			return;
 		}
-
-		if (currentNode.classList.contains('own') === true) {
-			templateInstance.atBottom = true;
-		}
 		templateInstance.sendToBottomIfNecessary();
 	}
 };

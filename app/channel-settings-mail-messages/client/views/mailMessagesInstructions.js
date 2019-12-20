@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 
@@ -11,6 +10,7 @@ import { ChatRoom } from '../../../models';
 import { t, isEmail, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import resetSelection from '../resetSelection';
+import { AutoComplete } from '../../../meteor-autocomplete/client';
 
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
@@ -39,7 +39,7 @@ Template.mailMessagesInstructions.helpers({
 			rules: [
 				{
 					collection: 'CachedChannelList',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					template: Template.userSearch,
 					noMatchTemplate: Template.userSearchEmpty,
@@ -253,7 +253,7 @@ Template.mailMessagesInstructions.onCreated(function() {
 			rules: [
 				{
 					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					filter,
