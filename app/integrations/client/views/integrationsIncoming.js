@@ -20,7 +20,7 @@ Template.integrationsIncoming.onCreated(async function _incomingIntegrationsOnCr
 		username: 'rocket.cat',
 	});
 	if (params && params.id) {
-		const integration = getIntegration(params.id, Meteor.userId());
+		const integration = await getIntegration(params.id, Meteor.userId());
 		if (integration) {
 			this.integration.set(integration);
 		}

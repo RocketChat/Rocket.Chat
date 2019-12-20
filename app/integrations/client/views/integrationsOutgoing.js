@@ -50,7 +50,7 @@ Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCr
 		});
 	};
 
-	const integration = getIntegration(params.id, Meteor.userId());
+	const integration = await getIntegration(params.id, Meteor.userId());
 	if (!integration) {
 		toastr.error(TAPi18n.__('No_integration_found'));
 		FlowRouter.go('admin-integrations');

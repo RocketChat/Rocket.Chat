@@ -15,6 +15,7 @@ import { integrations } from '../../lib/rocketchat';
 import { SideNav } from '../../../ui-utils/client';
 import { APIClient } from '../../../utils/client';
 import { getIntegration } from '../getIntegration';
+import { integrationHistoryStreamer } from '../streamer';
 
 const HISTORY_COUNT = 25;
 
@@ -26,7 +27,27 @@ Template.integrationsOutgoingHistory.onCreated(async function _integrationsOutgo
 	this.total = new ReactiveVar(0);
 
 	if (params && params.id) {
-		const integration = getIntegration(params.id, Meteor.userId());
+		integrationHistoryStreamer.on(params.id, ({ type, id, diff, data }) => {
+			const histories = this.history.get();
+
+			if (type === 'inserted') {
+				this.history.set([{ ...data }].concat(histories));
+				return;
+			}
+
+			if (type === 'updated') {
+				const history = histories.find(({ _id }) => _id === id);
+				Object.assign(history, diff);
+				this.history.set(histories);
+				return;
+			}
+
+			if (type === 'removed') {
+				this.history.set([]);
+			}
+		});
+
+		const integration = await getIntegration(params.id, Meteor.userId());
 
 		if (!integration) {
 			toastr.error(TAPi18n.__('No_integration_found'));
@@ -149,6 +170,8 @@ Template.integrationsOutgoingHistory.events({
 			}
 
 			toastr.success(TAPi18n.__('Integration_History_Cleared'));
+
+			t.history.set([]);
 		});
 	},
 
