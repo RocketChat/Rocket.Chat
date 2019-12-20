@@ -37,7 +37,7 @@ export async function findRooms({
 		tags,
 		customFields,
 		options: {
-			sort: sort || { ts: 1 },
+			sort: sort || { ts: -1 },
 			offset,
 			count,
 			fields,

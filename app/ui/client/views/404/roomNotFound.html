@@ -1,10 +1,11 @@
 <template name="roomNotFound">
 	<section class="page-container page-list content-background-color">
-		{{> header sectionName="Room_not_found"}}
-		<div class="content room-not-found error-color">
-			<i class="icon-attention"></i>
-			<div>
-				{{#with data}}
+		<!-- {{> headerMessage}} -->
+		{{#with data}}
+			{{> header sectionName=headerMessage}}
+			<div class="content room-not-found error-color">
+				<i class="icon-attention"></i>
+				<div>
 					{{#if $eq type 'c'}}
 						{{{_ 'No_channel_with_name_%s_was_found' name}}}
 					{{/if}}
@@ -22,8 +23,8 @@
 							{{/if}}
 						{{/if}}
 					{{/if}}
-				{{/with}}
+				</div>
 			</div>
-		</div>
+		{{/with}}
 	</section>
 </template>

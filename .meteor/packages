@@ -58,7 +58,6 @@ jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
 keepnox:perfect-scrollbar
-mizzao:autocomplete
 mizzao:timesync
 mrt:reactive-store
 mystor:device-detection
@@ -97,3 +96,4 @@ webapp@1.7.5
 webapp-hashing@1.0.9
 rocketchat:oauth2-server
 rocketchat:i18n
+dandv:caret-position

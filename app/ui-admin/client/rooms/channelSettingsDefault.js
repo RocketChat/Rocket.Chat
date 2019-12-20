@@ -4,26 +4,24 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
-import { AdminChatRoom } from './adminRooms';
 import { t, handleError } from '../../../utils';
 
 Template.channelSettingsDefault.helpers({
 	canMakeDefault() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.t === 'c';
 	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
 	},
 	roomDefault() {
-		// console.log("default", Template.instance().isDefault.get());
 		return Template.instance().isDefault.get();
 	},
 	isFavorite() {
 		return Template.instance().isFavorite.get();
 	},
 	defaultDescription() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
+		const room = Template.instance().room.get();
 		if (room && room.default) {
 			return t('True');
 		}
@@ -51,14 +49,14 @@ Template.channelSettingsDefault.events({
 	},
 	'click .save'(e, t) {
 		e.preventDefault();
-
-		Meteor.call('saveRoomSettings', this.rid, 'default', { default: t.isDefault.get(), favorite: t.isFavorite.get() }, (err/* , result*/) => {
+		console.log(t);
+		Meteor.call('saveRoomSettings', t.room.get()._id, 'default', { default: t.isDefault.get(), favorite: t.isFavorite.get() }, (err/* , result*/) => {
 			if (err) {
 				return handleError(err);
 			}
 			toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 		});
-
+		t.onSuccess();
 		t.editing.set();
 	},
 });
@@ -67,10 +65,13 @@ Template.channelSettingsDefault.onCreated(function() {
 	this.editing = new ReactiveVar();
 	this.isDefault = new ReactiveVar();
 	this.isFavorite = new ReactiveVar();
+	this.room = new ReactiveVar();
+	this.onSuccess = this.data.data.onsuccess;
 	this.autorun(() => {
-		const { rid } = Template.currentData();
-		const room = AdminChatRoom.findOne(rid, { fields: { default: 1, favorite: 1 } });
+		const { room } = Template.currentData().data;
+		console.log(room);
 		this.isDefault.set(room && room.default);
 		this.isFavorite.set(room && room.favorite);
+		this.room.set(room);
 	});
 });
