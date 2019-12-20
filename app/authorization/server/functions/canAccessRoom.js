@@ -18,8 +18,8 @@ export const roomAccessValidators = [
 			return;
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-		if (subscription) {
+		const exists = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
+		if (exists) {
 			return true;
 		}
 	},

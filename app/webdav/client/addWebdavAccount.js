@@ -24,14 +24,14 @@ Template.addWebdavAccount.events({
 			return;
 		}
 		instance.loading.set(true);
-		Meteor.call('addWebdavAccount', formData, function(error, response) {
+		Meteor.call('addWebdavAccount', formData, function(error, success) {
 			modal.close();
 			instance.loading.set(false);
 			if (error) {
 				return toastr.error(t(error.error));
 			}
-			if (!response.success) {
-				return toastr.error(t(response.message));
+			if (!success) {
+				return toastr.error(t('Error'));
 			}
 			toastr.success(t('webdav-account-saved'));
 		});

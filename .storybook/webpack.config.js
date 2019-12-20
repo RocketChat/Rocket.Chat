@@ -33,12 +33,12 @@ module.exports = async ({ config }) => {
 
 	config.plugins.push(new webpack.NormalModuleReplacementPlugin(
 		/^meteor/,
-		require.resolve('./meteor.js'),
+		require.resolve('./mocks/meteor.js'),
 	));
 
 	config.plugins.push(new webpack.NormalModuleReplacementPlugin(
 		/\.\/server\/index.js/,
-		require.resolve('./empty.js'),
+		require.resolve('./mocks/empty.js'),
 	));
 
 	config.mode = 'development';

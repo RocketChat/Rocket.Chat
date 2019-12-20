@@ -57,7 +57,7 @@ const createTemplateForComponent = async (
 
 	const React = await import('react');
 	const ReactDOM = await import('react-dom');
-	const { MeteorProvider } = await import('./components/providers/MeteorProvider');
+	const { MeteorProvider } = await import('./providers/MeteorProvider');
 
 	function TemplateComponent() {
 		return React.createElement(component, Template[name].props.get());
@@ -220,8 +220,8 @@ FlowRouter.route('/register/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: async () => {
-		const { SetupWizard } = await import('./components/setupWizard/SetupWizard');
-		BlazeLayout.render(await createTemplateForComponent(SetupWizard));
+		const { SetupWizardRoute } = await import('./components/setupWizard/SetupWizardRoute');
+		BlazeLayout.render(await createTemplateForComponent(SetupWizardRoute));
 	},
 });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { DescriptionList } from './DescriptionList';
 
 export function CommitSection({ info }) {
