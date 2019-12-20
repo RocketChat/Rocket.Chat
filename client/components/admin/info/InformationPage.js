@@ -1,10 +1,9 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button, Callout, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { Link } from '../../basic/Link';
-import { ErrorAlert } from '../../basic/ErrorAlert';
 import { Header } from '../../header/Header';
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';
 import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';
@@ -40,7 +39,7 @@ export function InformationPage({
 
 		<div className='content'>
 			{alertOplogForMultipleInstances
-				&& <ErrorAlert title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}>
+				&& <Callout type='danger' title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}>
 					<p>
 						{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}
 					</p>
@@ -49,7 +48,7 @@ export function InformationPage({
 							{t('Click_here_for_more_info')}
 						</Link>
 					</p>
-				</ErrorAlert>}
+				</Callout>}
 
 			{canViewStatistics && <RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />}
 			<CommitSection info={info} />

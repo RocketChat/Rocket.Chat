@@ -5,7 +5,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { ResetSettingButton } from '../ResetSettingButton';
 
 export function SelectSettingInput({
@@ -16,7 +16,7 @@ export function SelectSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
-	values,
+	values = [],
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -24,7 +24,7 @@ export function SelectSettingInput({
 	const t = useTranslation();
 
 	const handleChange = (event) => {
-		onChangeValue(event.currentTarget.value);
+		onChangeValue && onChangeValue(event.currentTarget.value);
 	};
 
 	return <>

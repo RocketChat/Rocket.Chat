@@ -1,15 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
-import toastr from 'toastr';
 
 import { PrivateSettingsCachedCollection } from '../../../../app/ui-admin/client/SettingsCachedCollection';
-import { handleError } from '../../../../app/utils/client/lib/handleError';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
+import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEventCallback } from '../../../hooks/useEventCallback';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationContext';
+import { useUser } from '../../../contexts/UserContext';
 
 const SettingsContext = createContext({});
 
@@ -164,8 +163,8 @@ export function SettingsState({ children }) {
 		});
 
 		return () => {
-			syncCollectionsHandle.stop();
-			syncStateHandle.stop();
+			syncCollectionsHandle && syncCollectionsHandle.stop();
+			syncStateHandle && syncStateHandle.stop();
 			clearTimeout(addedActionTimer);
 		};
 	}, [isLoading, collectionsRef]);
@@ -251,10 +250,15 @@ export const useGroup = (groupId) => {
 	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
 	const sections = useSelector((state) => Array.from(new Set(filterSettings(state.settings).map(({ section }) => section || ''))), (a, b) => a.length === b.length && a.join() === b.join());
 
-	const batchSetSettings = useBatchSetSettings();
+	const batchSetSettings = useBatchSettingsDispatch();
 	const { stateRef, hydrate } = useContext(SettingsContext);
 
-	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings) => {
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
+	const loadLanguage = useLoadLanguage();
+	const user = useUser();
+
+	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings, user) => {
 		const settings = filterSettings(state.settings);
 
 		const changes = settings.filter(({ changed }) => changed)
@@ -268,22 +272,24 @@ export const useGroup = (groupId) => {
 			await batchSetSettings(changes);
 
 			if (changes.some(({ _id }) => _id === 'Language')) {
-				const lng = Meteor.user().language
+				const lng = user.language
 					|| changes.filter(({ _id }) => _id === 'Language').shift().value
 					|| 'en';
 
-				TAPi18n._loadLanguage(lng)
-					.then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })))
-					.catch(handleError);
-
+				try {
+					await loadLanguage(lng);
+					dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
 				return;
 			}
 
-			toastr.success(TAPi18n.__('Settings_updated'));
+			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, filterSettings, stateRef, batchSetSettings);
+	}, filterSettings, stateRef, batchSetSettings, user);
 
 	const cancel = useEventCallback((filterSettings, { current: state }, hydrate) => {
 		const settings = filterSettings(state.settings);

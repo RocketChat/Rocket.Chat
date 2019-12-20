@@ -1,7 +1,7 @@
 import { Accordion, Button, FieldGroup, Paragraph, Text } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { Setting } from './Setting';
 import { useSection } from './SettingsState';
 
