@@ -10,6 +10,8 @@ import { settings } from '../../../../settings';
 import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
+import { Notifications } from '../../../../notifications/client';
+
 import './livechat.html';
 import { initializeLivechatInquiryStream } from '../../lib/stream/inquiry';
 
@@ -137,4 +139,10 @@ Template.livechat.onCreated(function() {
 	} else {
 		initializeLivechatInquiryStream(Meteor.userId());
 	}
+
+	this.updateAgentDepartments = (/* data */) => {
+		// TODO: reload agent departments and the inquiries..
+	};
+
+	Notifications.onUser('departmentAgentData', (payload) => this.updateAgentDepartments(payload));
 });
