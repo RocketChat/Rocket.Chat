@@ -11,9 +11,9 @@ import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
 import { Notifications } from '../../../../notifications/client';
+import { initializeLivechatInquiryStream, removeInquiriesByDepartment, addInquiriesAndListenerByDepartment } from '../../lib/stream/inquiry';
 
 import './livechat.html';
-import { initializeLivechatInquiryStream } from '../../lib/stream/inquiry';
 
 Template.livechat.helpers({
 	isActive() {
@@ -139,9 +139,16 @@ Template.livechat.onCreated(function() {
 	} else {
 		initializeLivechatInquiryStream(Meteor.userId());
 	}
+	this.updateAgentDepartments = ({ action, departmentId }) => {
+		switch (action) {
+			case 'inserted':
+				addInquiriesAndListenerByDepartment(departmentId);
+				break;
 
-	this.updateAgentDepartments = (/* data */) => {
-		// TODO: reload agent departments and the inquiries..
+			case 'removed':
+				removeInquiriesByDepartment(departmentId);
+				break;
+		}
 	};
 
 	Notifications.onUser('departmentAgentData', (payload) => this.updateAgentDepartments(payload));

@@ -1,11 +1,31 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw';
 import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole';
-import { getValue } from '../../../../settings/server/raw';
 
-export async function findInquiries({ userId, pagination: { offset, count, sort } }) {
+export async function findInquiries({ userId, department, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
+	}
+
+	const options = {
+		limit: count,
+		sort: sort || { ts: -1 },
+		skip: offset,
+	};
+
+	if (department) {
+		const cursor = LivechatInquiry.find({ status: 'queued', department }, options);
+
+		const total = await cursor.count();
+
+		const inquiries = await cursor.toArray();
+
+		return {
+			inquiries,
+			count: inquiries.length,
+			offset,
+			total,
+		};
 	}
 
 	let departmentIds;
@@ -17,12 +37,6 @@ export async function findInquiries({ userId, pagination: { offset, count, sort 
 	const filter = {
 		status: 'queued',
 		...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } },
-	};
-
-	const options = {
-		limit: Math.min(parseInt(await getValue('Livechat_guest_pool_max_number_incoming_livechats_displayed')), count),
-		sort: sort || { ts: -1 },
-		skip: offset,
 	};
 
 	const cursor = LivechatInquiry.find(filter, options);

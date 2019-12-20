@@ -68,13 +68,15 @@ API.v1.addRoute('livechat/inquiries.take', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('livechat/inquiries.listWithRestrictions', { authRequired: true }, {
+API.v1.addRoute('livechat/inquiries.all', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
+		const { department } = this.requestParams();
 
 		return API.v1.success(Promise.await(findInquiries({
 			userId: this.userId,
+			department,
 			pagination: {
 				offset,
 				count,

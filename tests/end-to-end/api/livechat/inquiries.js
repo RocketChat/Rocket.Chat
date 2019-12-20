@@ -43,10 +43,10 @@ describe('LIVECHAT - inquiries', function() {
 		});
 	});
 
-	describe('livechat/inquiries.listWithRestrictions', () => {
+	describe('livechat/inquiries.all', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-l-room', []).then(() => {
-				request.get(api('livechat/inquiries.listWithRestrictions'))
+				request.get(api('livechat/inquiries.all'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -60,7 +60,7 @@ describe('LIVECHAT - inquiries', function() {
 		it('should return an array of inquiries', (done) => {
 			updatePermission('view-l-room', ['admin'])
 				.then(() => {
-					request.get(api('livechat/inquiries.listWithRestrictions'))
+					request.get(api('livechat/inquiries.all'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
