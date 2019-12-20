@@ -28,9 +28,8 @@ Meteor.startup(function() {
 	Tracker.autorun(() => {
 		const accounts = WebdavAccounts.find();
 
-
 		if (accounts.count() === 0) {
-			return messageBox.actions.remove(/webdav-upload-/ig);
+			return messageBox.actions.remove('WebDAV', /webdav-upload-/ig);
 		}
 
 		accounts.forEach((account) => {

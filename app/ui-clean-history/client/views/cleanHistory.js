@@ -3,13 +3,13 @@ import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import moment from 'moment';
 
 import { ChatRoom } from '../../../models';
 import { t, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import { modal, call } from '../../../ui-utils';
+import { AutoComplete } from '../../../meteor-autocomplete/client';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -89,30 +89,6 @@ Template.cleanHistory.helpers({
 			},
 		};
 	},
-	autocompleteSettings() {
-		return {
-			limit: 10,
-			rules: [
-				{
-					collection: 'CachedChannelList',
-					subscription: 'userAutocomplete',
-					field: 'username',
-					template: Template.userSearch,
-					noMatchTemplate: Template.userSearchEmpty,
-					matchAll: true,
-					filter: {
-						exceptions: Template.instance().selectedUsers.get(),
-					},
-					selector(match) {
-						return {
-							term: match,
-						};
-					},
-					sort: 'username',
-				},
-			],
-		};
-	},
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
 	},
@@ -160,7 +136,7 @@ Template.cleanHistory.onCreated(function() {
 			rules: [
 				{
 					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					doNotChangeWidth: false,

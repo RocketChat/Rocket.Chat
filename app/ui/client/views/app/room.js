@@ -627,6 +627,12 @@ export const dropzoneEvents = {
 
 Template.room.events({
 	...dropzoneEvents,
+	'click [data-message-action]'(event, template) {
+		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
+		if ((button != null ? button.action : undefined) != null) {
+			button.action.call(this, event, template);
+		}
+	},
 	'click .js-follow-thread'() {
 		const { msg } = messageArgs(this);
 		call('followMessage', { mid: msg._id });

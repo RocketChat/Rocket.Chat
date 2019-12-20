@@ -107,10 +107,6 @@ function messageActionsTest() {
 				mainContent.messageActionMenu.isVisible().should.be.true;
 			});
 
-			it('it should show the reply action', () => {
-				mainContent.messageReply.isVisible().should.be.true;
-			});
-
 			it('it should show the edit action', () => {
 				mainContent.messageEdit.isVisible().should.be.true;
 			});
@@ -157,7 +153,7 @@ function messageActionsTest() {
 		describe('[Usage]', () => {
 			describe('Reply:', () => {
 				before(() => {
-					mainContent.openMessageActionMenu();
+					mainContent.lastMessage.moveToObject();
 				});
 				it('it should reply the message', () => {
 					mainContent.selectAction('reply');
