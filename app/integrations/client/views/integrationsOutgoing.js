@@ -55,12 +55,11 @@ Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCr
 		};
 
 		if (!hasAllPermission('manage-outgoing-integrations')) {
-			toastr.error(TAPi18n.__('No_integration_found'));
-			FlowRouter.go('admin-integrations');
-			return;
-		}
-
-		if (hasAllPermission('manage-own-outgoing-integrations')) {
+			if (!hasAllPermission('manage-own-outgoing-integrations')) {
+				toastr.error(TAPi18n.__('No_integration_found'));
+				FlowRouter.go('admin-integrations');
+				return;
+			}
 			reqParams.createdBy = Meteor.userId();
 		}
 
