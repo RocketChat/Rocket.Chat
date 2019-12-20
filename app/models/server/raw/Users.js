@@ -1,4 +1,5 @@
 import moment from 'moment';
+import s from 'underscore.string';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -262,6 +263,124 @@ export class UsersRaw extends BaseRaw {
 		if (options.sort) {
 			params.push({ $sort: { username: 1 } });
 		}
+		return this.col.aggregate(params).toArray();
+	}
+
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
+		if (exceptions == null) { exceptions = []; }
+		if (conditions == null) { conditions = {}; }
+		if (options == null) { options = {}; }
+		if (!Array.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+		const query = {
+			$or: [{
+				username: termRegex,
+			}, {
+				name: termRegex,
+			}],
+			active: true,
+			type: {
+				$in: ['user', 'bot'],
+			},
+			$and: [{
+				username: {
+					$exists: true,
+				},
+			}, {
+				username: {
+					$nin: exceptions,
+				},
+			}],
+			...conditions,
+		};
+
+		return this.find(query, options);
+	}
+
+	countAllAgentsStatus({ departmentId = undefined }) {
+		const match = {
+			$match: {
+				roles: { $in: ['livechat-agent'] },
+			},
+		};
+		const group = {
+			$group: {
+				_id: null,
+				offline: {
+					$sum: {
+						$cond: [{
+							$or: [{
+								$and: [
+									{ $eq: ['$status', 'offline'] },
+									{ $eq: ['$statusLivechat', 'available'] },
+								],
+							},
+							{ $eq: ['$statusLivechat', 'not-available'] },
+							],
+						}, 1, 0],
+					},
+				},
+				away: {
+					$sum: {
+						$cond: [{
+							$and: [
+								{ $eq: ['$status', 'away'] },
+								{ $eq: ['$statusLivechat', 'available'] },
+							],
+						}, 1, 0],
+					},
+				},
+				busy: {
+					$sum: {
+						$cond: [{
+							$and: [
+								{ $eq: ['$status', 'busy'] },
+								{ $eq: ['$statusLivechat', 'available'] },
+							],
+						}, 1, 0],
+					},
+				},
+				available: {
+					$sum: {
+						$cond: [{
+							$and: [
+								{ $eq: ['$status', 'online'] },
+								{ $eq: ['$statusLivechat', 'available'] },
+							],
+						}, 1, 0],
+					},
+				},
+			},
+		};
+		const lookup = {
+			$lookup: {
+				from: 'rocketchat_livechat_department_agents',
+				localField: '_id',
+				foreignField: 'agentId',
+				as: 'departments',
+			},
+		};
+		const unwind = {
+			$unwind: {
+				path: '$departments',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
+		const departmentsMatch = {
+			$match: {
+				'departments.departmentId': departmentId,
+			},
+		};
+		const params = [match];
+		if (departmentId) {
+			params.push(lookup);
+			params.push(unwind);
+			params.push(departmentsMatch);
+		}
+		params.push(group);
 		return this.col.aggregate(params).toArray();
 	}
 }

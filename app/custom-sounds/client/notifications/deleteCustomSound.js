@@ -6,6 +6,6 @@ import { CustomSounds } from '../lib/CustomSounds';
 
 Meteor.startup(() =>
 	CachedCollectionManager.onLogin(() =>
-		Notifications.onAll('deleteCustomSound', (data) => CustomSounds.remove(data.soundData))
-	)
+		Notifications.onAll('deleteCustomSound', (data) => CustomSounds.remove(data.soundData)),
+	),
 );

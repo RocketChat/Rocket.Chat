@@ -20,7 +20,7 @@ class CustomSoundsClass {
 			sound.src = this.getURL(sound);
 		}
 		const audio = $('<audio />', { id: sound._id, preload: true }).append(
-			$('<source />', { src: sound.src })
+			$('<source />', { src: sound.src }),
 		);
 		const list = this.list.get();
 		list[sound._id] = sound;
@@ -81,5 +81,5 @@ Meteor.startup(() =>
 				CustomSounds.add(sound);
 			}
 		});
-	})
+	}),
 );

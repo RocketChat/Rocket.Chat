@@ -4,6 +4,7 @@ import s from 'underscore.string';
 import { CustomSounds } from '../../../models';
 
 Meteor.publish('customSounds', function(filter, limit) {
+	console.warn('The publication "customSounds" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}
