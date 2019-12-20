@@ -466,7 +466,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						Meteor.call('setAdminStatus', _id, false, success(() => {
 							toastr.success(t('User_is_no_longer_an_admin'));
 							user.roles = user.roles.filter((role) => role !== 'admin');
-						}))
+						})),
 					),
 				};
 			}
@@ -478,7 +478,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					Meteor.call('setAdminStatus', user._id, true, success(() => {
 						toastr.success(t('User_is_now_an_admin'));
 						user.roles.push('admin');
-					}))
+					})),
 				),
 			};
 		}, () => {
@@ -496,7 +496,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						Meteor.call('setUserActiveStatus', user._id, false, success(() => {
 							toastr.success(t('User_has_been_deactivated'));
 							user.active = false;
-						}))
+						})),
 					),
 				};
 			}
@@ -509,7 +509,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					Meteor.call('setUserActiveStatus', user._id, true, success(() => {
 						toastr.success(t('User_has_been_activated'));
 						user.active = true;
-					}))
+					})),
 				),
 			};
 		}];
