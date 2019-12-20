@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { WebdavAccounts } from '../../../models';
+import { Notifications } from '../../../notifications/server';
 
 Meteor.methods({
 	removeWebdavAccount(accountId) {
@@ -11,6 +12,14 @@ Meteor.methods({
 
 		check(accountId, String);
 
-		return WebdavAccounts.removeByUserAndId(accountId, Meteor.userId());
+		const removed = WebdavAccounts.removeByUserAndId(accountId, Meteor.userId());
+		if (removed) {
+			Notifications.notifyUser(Meteor.userId(), 'webdav', {
+				type: 'removed',
+				account: { _id: accountId },
+			});
+		}
+
+		return removed;
 	},
 });
