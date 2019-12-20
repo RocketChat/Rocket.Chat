@@ -58,6 +58,7 @@ Template.emojiEdit.onCreated(function() {
 	}
 
 	this.tabBar = Template.currentData().tabBar;
+	this.onSuccess = Template.currentData().onSuccess;
 
 	this.cancel = (form, name) => {
 		form.reset();
@@ -143,6 +144,7 @@ Template.emojiEdit.onCreated(function() {
 					} else {
 						toastr.success(t('Custom_Emoji_Added_Successfully'));
 					}
+					this.onSuccess();
 
 					this.cancel(form, emojiData.name);
 				}
