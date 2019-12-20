@@ -47,7 +47,7 @@ Template.adminInvites.onCreated(async function() {
 	const instance = this;
 	this.invites = new ReactiveVar([]);
 
-	const result = (await APIClient.v1.get('listInvites')) || [];
+	const result = await APIClient.v1.get('listInvites') || [];
 
 	const invites = result.map((data) => ({
 		...data,
