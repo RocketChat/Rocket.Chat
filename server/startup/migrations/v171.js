@@ -3,12 +3,14 @@ import {
 } from '../../../app/migrations';
 import {
 	Users,
+	Settings,
 } from '../../../app/models';
 
 
 Migrations.add({
 	version: 171,
 	up() {
+		Settings.remove({ _id: 'Accounts_Default_User_Preferences_roomCounterSidebar' });
 		return Users.update(
 			{
 				'settings.preferences.roomCounterSidebar': {
