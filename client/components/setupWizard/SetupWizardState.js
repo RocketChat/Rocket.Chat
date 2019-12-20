@@ -49,8 +49,8 @@ const useParameters = () => {
 		const requestParameters = async () => {
 			try {
 				const {
-					settings,
-					allowStandaloneServer,
+					settings = [],
+					allowStandaloneServer = false,
 				} = await getSetupWizardParameters() || {};
 
 				if (!mounted) {
