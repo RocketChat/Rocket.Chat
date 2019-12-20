@@ -50,14 +50,14 @@ Template.invite.onCreated(function() {
 		const user = Meteor.user();
 		if (user) {
 			APIClient.v1.post('useInviteToken', { token }).then((result) => {
-				if (!result || !result.fname) {
+				if (!result || !result.room || !result.room.fname) {
 					toastr.error(t('Failed_to_activate_invite_token'));
 					return;
 				}
 
-				const roomName = result.fname.toLowerCase();
+				const roomName = result.room.fname.toLowerCase();
 
-				if (result.t === 'p') {
+				if (result.room.t === 'p') {
 					FlowRouter.go(`/group/${ roomName }`);
 				} else {
 					FlowRouter.go(`/channel/${ roomName }`);

@@ -26,8 +26,10 @@ export const useInviteToken = (userId, token) => {
 	}
 
 	return {
-		rid: inviteData.rid,
-		fname: room.fname,
+		room: {
+			rid: inviteData.rid,
+			fname: room.fname,
+		},
 		t: room.t,
 	};
 };
