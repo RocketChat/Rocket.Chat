@@ -99,10 +99,10 @@ Template.adminUsers.onCreated(function() {
 		template: 'adminUserInfo',
 		order: 3,
 	});
-	this.autorun(async () => {
+
+	this.loadUsers = async (filter, offset) => {
 		this.ready.set(false);
-		const filter = instance.filter.get();
-		const offset = instance.offset.get();
+
 		const query = {
 			$or: [
 				{ 'emails.address': { $regex: filter, $options: 'i' } },
@@ -121,6 +121,13 @@ Template.adminUsers.onCreated(function() {
 			this.users.set(this.users.get().concat(users));
 		}
 		this.ready.set(true);
+	};
+
+	this.autorun(async () => {
+		const filter = instance.filter.get();
+		const offset = instance.offset.get();
+
+		this.loadUsers(filter, offset);
 	});
 });
 
@@ -148,7 +155,15 @@ Template.adminUsers.events({
 	}, DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS),
 	'click .user-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(instance.users.get().find((user) => user._id === this._id));
+		instance.tabBarData.set({
+			...instance.users.get().find((user) => user._id === this._id),
+			onChange() {
+				const filter = instance.filter.get();
+				const offset = instance.offset.get();
+
+				instance.loadUsers(filter, offset);
+			},
+		});
 		instance.tabBar.open('admin-user-info');
 	},
 	'click .info-tabs button'(e) {

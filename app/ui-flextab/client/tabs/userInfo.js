@@ -167,8 +167,13 @@ Template.userInfo.helpers({
 		const data = Template.currentData();
 		return {
 			user: instance.user.get(),
-			back(username) {
+			back({ _id, username }) {
 				instance.editingUser.set();
+
+				if (_id) {
+					data.onChange && data.onChange();
+					return instance.loadUser({ _id });
+				}
 
 				if (username != null) {
 					const user = instance.user.get();
@@ -267,18 +272,29 @@ Template.userInfo.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
 	this.nowInterval = setInterval(() => this.now.set(moment()), 30000);
 
-	this.autorun(async () => {
+	this.loadUser = async ({ _id, username }) => {
 		this.loadingUserInfo.set(true);
-		const data = Template.currentData();
-		let filter;
-		if (data && data.username != null) {
-			filter = `username=${ data.username }`;
-		} else if (data && data._id != null) {
-			filter = `userId=${ data._id }`;
+
+		const params = {};
+
+		if (_id != null) {
+			params.userId = _id;
+		} else if (username != null) {
+			params.username = username;
 		}
-		const { user } = await APIClient.v1.get(`users.info?${ filter }`);
+
+		const { user } = await APIClient.v1.get('users.info', params);
 		this.user.set(user);
 		this.loadingUserInfo.set(false);
+	};
+
+	this.autorun(async () => {
+		const data = Template.currentData();
+		if (!data) {
+			return;
+		}
+
+		this.loadUser(data);
 	});
 
 	this.autorun(() => {
