@@ -1,10 +1,10 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../providers/TranslationProvider';
+import { useRoute } from '../../contexts/RouterContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
-import { useRoute } from '../providers/RouterProvider';
+import { useTranslation } from '../../contexts/TranslationContext';
 import './PageNotFound.css';
 
 export function PageNotFound() {

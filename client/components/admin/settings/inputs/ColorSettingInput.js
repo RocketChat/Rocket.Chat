@@ -7,7 +7,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { ResetSettingButton } from '../ResetSettingButton';
 
 export function ColorSettingInput({
@@ -28,12 +28,12 @@ export function ColorSettingInput({
 	const t = useTranslation();
 
 	const handleChange = (event) => {
-		onChangeValue(event.currentTarget.value);
+		onChangeValue && onChangeValue(event.currentTarget.value);
 	};
 
 	const handleEditorTypeChange = (event) => {
 		const editor = event.currentTarget.value.trim();
-		onChangeEditor(editor);
+		onChangeEditor && onChangeEditor(editor);
 	};
 
 	return <>
