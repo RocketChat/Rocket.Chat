@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { Header } from '../../header/Header';
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { Section } from './Section';
 
 const Wrapper = styled.div`

@@ -20,7 +20,7 @@ export function IntSettingInput({
 	onResetButtonClick,
 }) {
 	const handleChange = (event) => {
-		onChangeValue(parseInt(event.currentTarget.value, 10));
+		onChangeValue && onChangeValue(parseInt(event.currentTarget.value, 10));
 	};
 
 	return <>
