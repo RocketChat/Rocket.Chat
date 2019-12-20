@@ -76,6 +76,7 @@ import './lib/RoutingManager';
 import './lib/routing/External';
 import './lib/routing/ManualSelection';
 import './lib/routing/AutoSelection';
+import './lib/stream/departmentAgents';
 import './sendMessageBySMS';
 import './unclosedLivechats';
 import './publications/customFields';

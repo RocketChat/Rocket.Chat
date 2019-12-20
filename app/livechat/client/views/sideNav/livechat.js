@@ -10,6 +10,8 @@ import { settings } from '../../../../settings';
 import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+import { Notifications } from '../../../../notifications/client';
+
 import './livechat.html';
 
 Template.livechat.helpers({
@@ -132,4 +134,10 @@ Template.livechat.onCreated(function() {
 	});
 
 	this.subscribe('livechat:inquiry');
+
+	this.updateAgentDepartments = (/* data */) => {
+		// TODO: reload agent departments and the inquiries..
+	};
+
+	Notifications.onUser('departmentAgentData', (payload) => this.updateAgentDepartments(payload));
 });
