@@ -1,3 +1,4 @@
+import { Box, Headline, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -11,15 +12,17 @@ export function SideBar({
 }) {
 	const t = useTranslation();
 
-	return <aside className='SetupWizard__SideBar'>
+	return <Box is='aside' className='SetupWizard__SideBar'>
 		<header className='SetupWizard__SideBar-header'>
 			<Logo className='SetupWizard__SideBar-headerLogo' src={logoSrc} />
 			<span className='SetupWizard__SideBar-headerTag'>{t('Setup_Wizard')}</span>
 		</header>
 
 		<div className='SetupWizard__SideBar-content'>
-			<h2 className='SetupWizard__SideBar-title'>{t('Setup_Wizard')}</h2>
-			<p className='SetupWizard__SideBar-text'>{t('Setup_Wizard_Info')}</p>
+			<Headline level={2}>{t('Setup_Wizard')}</Headline>
+			<Margins blockEnd='16'>
+				<Box is='p' textColor='hint' textStyle='p1'>{t('Setup_Wizard_Info')}</Box>
+			</Margins>
 
 			<ol className='SetupWizard__SideBar-steps'>
 				{steps.map(({ step, title }) =>
@@ -37,5 +40,5 @@ export function SideBar({
 				)}
 			</ol>
 		</div>
-	</aside>;
+	</Box>;
 }

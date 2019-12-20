@@ -1,4 +1,4 @@
-import { Text } from '@rocket.chat/fuselage';
+import { Subtitle, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -6,11 +6,11 @@ import { DescriptionList } from './DescriptionList';
 import { formatMemorySize } from './formatters';
 
 export function UsageSection({ statistics, isLoading }) {
-	const s = (fn) => (isLoading ? <Text.Skeleton animated width={'1/2'} /> : fn());
+	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 	const t = useTranslation();
 
 	return <>
-		<h3>{t('Usage')}</h3>
+		<Subtitle>{t('Usage')}</Subtitle>
 		<DescriptionList>
 			<DescriptionList.Entry label={t('Stats_Total_Users')}>{s(() => statistics.totalUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Active_Users')}>{s(() => statistics.activeUsers)}</DescriptionList.Entry>

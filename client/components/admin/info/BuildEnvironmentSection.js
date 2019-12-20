@@ -1,3 +1,4 @@
+import { Subtitle } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -9,7 +10,7 @@ export function BuildEnvironmentSection({ info }) {
 	const build = info && (info.compile || info.build);
 
 	return <>
-		<h3>{t('Build_Environment')}</h3>
+		<Subtitle>{t('Build_Environment')}</Subtitle>
 		<DescriptionList>
 			<DescriptionList.Entry label={t('OS_Platform')}>{build.platform}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('OS_Arch')}>{build.arch}</DescriptionList.Entry>

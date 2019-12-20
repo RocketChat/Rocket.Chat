@@ -4,6 +4,7 @@ import {
 	FieldGroup,
 	Icon,
 	Label,
+	Margins,
 	PasswordInput,
 	TextInput,
 } from '@rocket.chat/fuselage';
@@ -20,7 +21,6 @@ import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import { StepContent } from '../StepContent';
 
 export function AdminUserInformationStep({ step, title, active }) {
 	const loginWithPassword = useLoginWithPassword();
@@ -119,7 +119,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<StepContent>
+		<Margins blockEnd='32'>
 			<FieldGroup>
 				<Field>
 					<Label text={t('Name')} />
@@ -170,7 +170,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 					/>
 				</Field>
 			</FieldGroup>
-		</StepContent>
+		</Margins>
 
 		<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />
 	</Step>;
