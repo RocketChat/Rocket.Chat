@@ -33,6 +33,7 @@ import './v1/users';
 import './v1/video-conference';
 import './v1/autotranslate';
 import './v1/webdav';
+import './v1/oauthapps';
 import './v1/custom-sounds';
 import './v1/custom-user-status';
 
