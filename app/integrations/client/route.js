@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
@@ -10,9 +9,6 @@ const dynamic = () => {
 
 FlowRouter.route('/admin/integrations', {
 	name: 'admin-integrations',
-	subscriptions() {
-		this.register('integrations', Meteor.subscribe('integrations'));
-	},
 	async action() {
 		await dynamic();
 		return BlazeLayout.render('main', {
@@ -24,9 +20,6 @@ FlowRouter.route('/admin/integrations', {
 
 FlowRouter.route('/admin/integrations/new', {
 	name: 'admin-integrations-new',
-	subscriptions() {
-		this.register('integrations', Meteor.subscribe('integrations'));
-	},
 	async action() {
 		await dynamic();
 		return BlazeLayout.render('main', {
@@ -38,9 +31,6 @@ FlowRouter.route('/admin/integrations/new', {
 
 FlowRouter.route('/admin/integrations/incoming/:id?', {
 	name: 'admin-integrations-incoming',
-	subscriptions() {
-		this.register('integrations', Meteor.subscribe('integrations'));
-	},
 	async action(params) {
 		await dynamic();
 		return BlazeLayout.render('main', {
