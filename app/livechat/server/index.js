@@ -97,5 +97,6 @@ import './publications/livechatInquiries';
 import './publications/livechatOfficeHours';
 import './api';
 import './api/rest';
+import './lib/stream/inquiry';
 
 export { Livechat } from './lib/Livechat';

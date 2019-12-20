@@ -39,7 +39,6 @@ import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData } from './Helper';
 import { Apps } from '../../../apps/server';
-import { livechatInquiryStreamer } from './stream/inquiry-streamer';
 
 export const Livechat = {
 	Analytics,
@@ -329,10 +328,6 @@ export const Livechat = {
 		const { _id: rid, servedBy } = room;
 		LivechatRooms.closeByRoomId(rid, closeData);
 		LivechatInquiry.removeByRoomId(rid);
-		livechatInquiryStreamer.emit('livechat-inquiry', {
-			type: 'removed',
-			rid,
-		});
 
 		const message = {
 			t: 'livechat-close',
@@ -881,10 +876,6 @@ export const Livechat = {
 	notifyGuestStatusChanged(token, status) {
 		LivechatInquiry.updateVisitorStatus(token, status);
 		LivechatRooms.updateVisitorStatus(token, status);
-		livechatInquiryStreamer.emit('livechat-inquiry', {
-			type: 'changed',
-			...LivechatInquiry.findOneByToken(token),
-		});
 	},
 
 	sendOfflineMessage(data = {}) {

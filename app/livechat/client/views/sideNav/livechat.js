@@ -9,9 +9,9 @@ import { KonchatNotification } from '../../../../ui';
 import { settings } from '../../../../settings';
 import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
-import { LivechatInquiry } from '../../collections/LivechatInquiry';
+import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
 import './livechat.html';
-import { APIClient } from '../../../../utils/client';
+import { initializeLivechatInquiryStream } from '../../lib/stream/inquiry';
 
 Template.livechat.helpers({
 	isActive() {
@@ -52,12 +52,13 @@ Template.livechat.helpers({
 	},
 
 	inquiries() {
-		const inqs = LivechatInquiry.find({
+		const inqs = getLivechatInquiryCollection().find({
 			status: 'queued',
 		}, {
 			sort: {
 				ts: 1,
 			},
+			limit: settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed'),
 		});
 
 		// for notification sound
@@ -113,7 +114,7 @@ Template.livechat.events({
 	},
 });
 
-Template.livechat.onCreated(async function() {
+Template.livechat.onCreated(function() {
 	this.statusLivechat = new ReactiveVar();
 	this.routingConfig = new ReactiveVar({});
 
@@ -131,16 +132,9 @@ Template.livechat.onCreated(async function() {
 			this.statusLivechat.set();
 		}
 	});
-	const { inquiries } = await APIClient.v1.get('livechat/inquiries.listWithRestrictions');
-	(inquiries || []).forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, inquiry));
-
-	const livechatInquiryStreamer = new Meteor.Streamer('livechat-inquiry');
-	const events = {
-		changed: (inquiry) => {
-			delete inquiry.type;
-			LivechatInquiry.upsert({ _id: inquiry._id }, inquiry);
-		},
-		removed: (inquiry) => LivechatInquiry.remove({ rid: inquiry.rid }),
-	};
-	livechatInquiryStreamer.on('livechat-inquiry', (inquiry) => events[inquiry.type](inquiry));
+	if (!settings.get('Livechat_enable_inquiry_fetch_by_stream')) {
+		this.subscribe('livechat:inquiry');
+	} else {
+		initializeLivechatInquiryStream(Meteor.userId());
+	}
 });
