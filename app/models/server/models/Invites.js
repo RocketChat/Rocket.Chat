@@ -3,12 +3,6 @@ import { Base } from './_Base';
 class Invites extends Base {
 	constructor() {
 		super('invites');
-
-		this.tryEnsureIndex({ hash: 1 });
-	}
-
-	findOneByHash(hash) {
-		return this.findOne({ hash });
 	}
 
 	findOneByUserRoomMaxUsesAndExpiration(userId, rid, maxUses, daysToExpire) {

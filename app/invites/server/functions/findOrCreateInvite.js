@@ -3,23 +3,23 @@ import { Random } from 'meteor/random';
 
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
-import { Invites, Rooms } from '../../../models';
+import { Invites, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 
 function getInviteUrl(invite) {
-	const { rid, hash } = invite;
+	const { rid, _id } = invite;
 
 	const useDirectLink = settings.get('Accounts_Registration_InviteUrlType') === 'direct';
 	// Remove the last dash if present
 	const siteUrl = settings.get('Site_Url').replace(/\/$/g, '');
 
 	if (useDirectLink) {
-		return `${ siteUrl }/invite/${ hash }`;
+		return `${ siteUrl }/invite/${ _id }`;
 	}
 
 	// Remove the protocol
 	const host = siteUrl.replace(/https?\:\/\//i, '');
-	const url = `https://go.rocket.chat/?host=${ host }&rid=${ rid }&path=invite/${ hash }`;
+	const url = `https://go.rocket.chat/?host=${ host }&rid=${ rid }&path=invite/${ _id }`;
 
 	return url;
 }
@@ -40,8 +40,8 @@ export const findOrCreateInvite = (userId, invite) => {
 		throw new Meteor.Error('error-the-field-is-required', 'The field rid is required', { method: 'findOrCreateInvite', field: 'rid' });
 	}
 
-	const room = Rooms.findOneById(invite.rid, { fields: { _id: 1 } });
-	if (!room) {
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, { fields: { _id: 1 } });
+	if (!subscription) {
 		throw new Meteor.Error('error-invalid-room', 'The rid field is invalid', { method: 'findOrCreateInvite', field: 'rid' });
 	}
 
@@ -58,19 +58,19 @@ export const findOrCreateInvite = (userId, invite) => {
 	// Before anything, let's check if there's an existing invite with the same settings for the same channel and user and that has not yet expired.
 	const existing = Invites.findOneByUserRoomMaxUsesAndExpiration(invite.rid, userId, maxUses, days);
 
-	// If an existing invite was found, return it's hash instead of creating a new one.
-	if (existing && existing.length) {
+	// If an existing invite was found, return it's _id instead of creating a new one.
+	if (existing) {
 		return {
-			hash: existing[0].hash,
-			url: getInviteUrl(existing[0]),
-			days: existing[0].days,
-			maxUses: existing[0].maxUses,
-			uses: existing[0].uses,
-			expires: existing[0].expires,
+			_id: existing._id,
+			url: getInviteUrl(existing),
+			days: existing.days,
+			maxUses: existing.maxUses,
+			uses: existing.uses,
+			expires: existing.expires,
 		};
 	}
 
-	const hash = Random.id(6);
+	const _id = Random.id(6);
 
 	// insert invite
 	const now = new Date();
@@ -81,7 +81,7 @@ export const findOrCreateInvite = (userId, invite) => {
 	}
 
 	const createInvite = {
-		hash,
+		_id,
 		days,
 		maxUses,
 		rid: invite.rid,
@@ -93,9 +93,9 @@ export const findOrCreateInvite = (userId, invite) => {
 
 	Invites.create(createInvite);
 
-	Notifications.notifyLogged('updateInvites', { invite: createInvite });
+	Notifications.notifyUser(userId, 'updateInvites', { invite: createInvite });
 	return {
-		hash,
+		_id,
 		url: getInviteUrl(createInvite),
 		days,
 		maxUses,

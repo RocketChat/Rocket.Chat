@@ -185,7 +185,6 @@ settings.addGroup('Accounts', function() {
 		});
 		this.add('Accounts_Registration_InviteUrlType', 'proxy', {
 			type: 'select',
-			public: true,
 			values: [
 				{
 					key: 'direct',

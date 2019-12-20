@@ -1,7 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
-import s from 'underscore.string';
 
 import { t, APIClient } from '../../../utils';
 
@@ -49,15 +49,15 @@ Template.createInviteLink.helpers({
 
 			if (data.maxUses) {
 				const usesLeft = data.maxUses - data.uses;
-				return t('Your_invite_link_will_expire_on_{date}_or_after_{usesLeft}_uses').replace('{date}', expiration.toLocaleDateString()).replace('{usesLeft}', usesLeft);
+				return TAPi18n.__('Your_invite_link_will_expire_on__date__or_after__usesLeft__uses', { date: expiration.toLocaleDateString(), usesLeft });
 			}
 
-			return t('Your_invite_link_will_expire_on_{date}').replace('{date}', expiration.toLocaleDateString());
+			return TAPi18n.__('Your_invite_link_will_expire_on__date__', { date: expiration.toLocaleDateString() });
 		}
 
 		if (data.maxUses) {
 			const usesLeft = data.maxUses - data.uses;
-			return t('Your_invite_link_will_expire_after_{usesLeft}_uses').replace('{usesLeft}', usesLeft);
+			return TAPi18n.__('Your_invite_link_will_expire_after__usesLeft__uses', { usesLeft });
 		}
 
 		return t('Your_invite_link_will_never_expire');
@@ -75,8 +75,8 @@ Template.createInviteLink.events({
 		e.preventDefault();
 
 		const { rid } = this;
-		const days = parseInt(s.trim($('#expiration_days').val()));
-		const maxUses = parseInt(s.trim($('#max_uses').val()));
+		const days = parseInt($('#expiration_days').val().trim());
+		const maxUses = parseInt($('#max_uses').val().trim());
 
 		getInviteLink(instance, rid, days, maxUses);
 	},

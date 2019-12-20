@@ -4,8 +4,7 @@ import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
-import { validateInvite } from '../../../invites/server/functions/validateInviteToken';
-import { Invites, Rooms } from '../../../models';
+import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
 
 API.v1.addRoute('listInvites', { authRequired: true }, {
 	get() {
@@ -40,10 +39,7 @@ API.v1.addRoute('validateInviteToken', { authRequired: false }, {
 			throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'validateInviteToken', field: 'token' });
 		}
 
-		const inviteData = Invites.findOneByHash(token);
-		const room = inviteData && Rooms.findOneById(inviteData.rid);
-
-		const result = validateInvite(inviteData, room);
+		const result = validateInviteToken(token);
 
 		return API.v1.success({ valid: result });
 	},

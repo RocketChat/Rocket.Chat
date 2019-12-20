@@ -55,31 +55,20 @@ Template.adminInvites.onCreated(function() {
 	this.invites = new ReactiveVar([]);
 	this.ready = new ReactiveVar(false);
 
-	const invites = [];
-
 	APIClient.v1.get('listInvites').then((result) => {
 		if (!result) {
 			return;
 		}
 
-		for (const invite of result) {
-			const newInvite = {
-				_id: invite._id,
-				createdAt: new Date(invite.createdAt),
-				expires: invite.expires ? new Date(invite.expires) : '',
-				hash: invite.hash,
-				days: invite.days,
-				maxUses: invite.maxUses,
-				rid: invite.rid,
-				userId: invite.userId,
-				uses: invite.uses,
-			};
-			invites.push(newInvite);
-		}
+		const invites = result.map((data) => ({
+			...data,
+			createdAt: new Date(data.createdAt),
+			expires: data.expires ? new Date(data.expires) : '',
+		}));
 
 		instance.invites.set(invites);
 		instance.ready.set(true);
-	}).catch(() => {
-
+	}).catch((err) => {
+		throw err;
 	});
 });
