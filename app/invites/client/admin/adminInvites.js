@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import moment from 'moment';
 
 import { t, APIClient } from '../../../utils';
 
@@ -25,7 +26,7 @@ Template.adminInvites.helpers({
 				return t('Expired');
 			}
 
-			return Math.ceil((expires - createdAt) / (1000 * 60 * 60 * 24));
+			return moment(expires).diff(moment(createdAt), 'days');
 		}
 
 		return t('Never');
