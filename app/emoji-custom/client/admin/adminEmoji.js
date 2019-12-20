@@ -102,6 +102,11 @@ Template.adminEmoji.onCreated(async function() {
 	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
 
 	this.autorun(() => {
+		this.filter.get();
+		this.offset.set(0);
+	});
+
+	this.autorun(() => {
 		const filter = this.filter.get() && this.filter.get().trim();
 		const offset = this.offset.get();
 		if (filter) {
@@ -132,6 +137,5 @@ Template.adminEmoji.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-		t.offset.set(0);
 	},
 });
