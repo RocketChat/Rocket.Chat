@@ -1,7 +1,7 @@
 import {
 	Field,
 	Label,
-	SelectInput,
+	Select,
 } from '@rocket.chat/fuselage';
 import React from 'react';
 
@@ -32,19 +32,16 @@ export function SelectSettingInput({
 			<Label htmlFor={_id} text={label} title={_id} />
 			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 		</Field.Row>
-		<SelectInput
+		<Select
 			data-qa-setting-id={_id}
 			id={_id}
 			value={value}
 			placeholder={placeholder}
 			disabled={disabled}
 			readOnly={readonly}
-			autoComplete={autocomplete === false ? 'off' : undefined}
 			onChange={handleChange}
-		>
-			{values.map(({ key, i18nLabel }) =>
-				<SelectInput.Option key={key} value={key}>{t(i18nLabel)}</SelectInput.Option>,
+			option={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)],
 			)}
-		</SelectInput>
+		/>
 	</>;
 }
