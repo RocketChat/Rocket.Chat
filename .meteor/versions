@@ -86,7 +86,6 @@ meteorspark:util@0.2.0
 minifier-css@1.4.3
 minifier-js@2.5.1
 minimongo@1.4.5
-mizzao:autocomplete@0.5.1
 mizzao:timesync@0.3.4
 mobile-experience@1.0.5
 mobile-status-bar@1.0.14
