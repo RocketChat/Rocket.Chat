@@ -7,16 +7,8 @@ import { t, APIClient } from '../../../utils';
 import './adminInvites.html';
 
 Template.adminInvites.helpers({
-	isReady() {
-		return Template.instance().ready.get();
-	},
 	invites() {
 		return Template.instance().invites.get();
-	},
-	isLoading() {
-		if (!Template.instance().ready.get()) {
-			return 'btn-loading';
-		}
 	},
 	daysToExpire() {
 		const { expires, days, createdAt } = this;
@@ -51,25 +43,17 @@ Template.adminInvites.helpers({
 	},
 });
 
-Template.adminInvites.onCreated(function() {
+Template.adminInvites.onCreated(async function() {
 	const instance = this;
 	this.invites = new ReactiveVar([]);
-	this.ready = new ReactiveVar(false);
 
-	APIClient.v1.get('listInvites').then((result) => {
-		if (!result) {
-			return;
-		}
+	const result = (await APIClient.v1.get('listInvites')) || [];
 
-		const invites = result.map((data) => ({
-			...data,
-			createdAt: new Date(data.createdAt),
-			expires: data.expires ? new Date(data.expires) : '',
-		}));
+	const invites = result.map((data) => ({
+		...data,
+		createdAt: new Date(data.createdAt),
+		expires: data.expires ? new Date(data.expires) : '',
+	}));
 
-		instance.invites.set(invites);
-		instance.ready.set(true);
-	}).catch((err) => {
-		throw err;
-	});
+	instance.invites.set(invites);
 });
