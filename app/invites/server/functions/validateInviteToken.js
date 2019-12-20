@@ -18,11 +18,11 @@ export const validateInviteToken = (token) => {
 	}
 
 	if (inviteData.expires && inviteData.expires <= Date.now()) {
-		throw new Meteor.Error('error-invite-expired', 'The invite token has expired.', { method: 'validateInviteToken', field: 'expires'});
+		throw new Meteor.Error('error-invite-expired', 'The invite token has expired.', { method: 'validateInviteToken', field: 'expires' });
 	}
 
 	if (inviteData.maxUses > 0 && inviteData.uses >= inviteData.maxUses) {
-		throw new Meteor.Error('error-invite-expired', 'The invite token has expired.', { method: 'validateInviteToken', field: 'maxUses'});
+		throw new Meteor.Error('error-invite-expired', 'The invite token has expired.', { method: 'validateInviteToken', field: 'maxUses' });
 	}
 
 	return {

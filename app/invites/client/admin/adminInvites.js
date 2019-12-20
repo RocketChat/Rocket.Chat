@@ -13,7 +13,7 @@ Template.adminInvites.helpers({
 		return Template.instance().invites.get();
 	},
 	daysToExpire() {
-		const { expires, days, createdAt } = this;
+		const { expires, days } = this;
 
 		if (days > 0) {
 			if (expires < Date.now()) {

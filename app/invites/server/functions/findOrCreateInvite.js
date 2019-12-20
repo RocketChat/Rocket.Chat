@@ -87,7 +87,7 @@ export const findOrCreateInvite = (userId, invite) => {
 
 	Invites.create(createInvite);
 	Notifications.notifyUser(userId, 'updateInvites', { invite: createInvite });
-	
+
 	createInvite.url = getInviteUrl(createInvite);
 	return createInvite;
 };
