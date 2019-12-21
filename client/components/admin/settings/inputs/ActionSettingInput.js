@@ -1,11 +1,9 @@
 import { Button, Field } from '@rocket.chat/fuselage';
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React from 'react';
-import toastr from 'toastr';
 
-import { useTranslation } from '../../../providers/TranslationProvider';
-import { handleError } from '../../../../../app/utils/client';
+import { useMethod } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 
 export function ActionSettingInput({
 	_id,
@@ -16,19 +14,17 @@ export function ActionSettingInput({
 }) {
 	const t = useTranslation();
 
-	const handleClick = async () => {
-		Meteor.call(value, (err, data) => {
-			if (err) {
-				err.details = Object.assign(err.details || {}, {
-					errorTitle: 'Error',
-				});
-				handleError(err);
-				return;
-			}
+	const dispatchToastMessage = useToastMessageDispatch();
+	const actionMethod = useMethod(value);
 
+	const handleClick = async () => {
+		try {
+			const data = await actionMethod();
 			const args = [data.message].concat(data.params);
-			toastr.success(TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success'));
-		});
+			dispatchToastMessage({ type: 'success', message: t(...args) });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
 	};
 
 	return <>

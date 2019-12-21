@@ -7,29 +7,29 @@ import {
 	PasswordInput,
 	TextInput,
 } from '@rocket.chat/fuselage';
-import { Session } from 'meteor/session';
 import React, { useMemo, useState } from 'react';
-import toastr from 'toastr';
 
-import { handleError } from '../../../../app/utils/client';
-import { callbacks } from '../../../../app/callbacks/client';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useSessionDispatch } from '../../../contexts/SessionContext';
+import { useSetting } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useLoginWithPassword } from '../../../contexts/UserContext';
+import { useCallbacks } from '../../../hooks/useCallbacks';
 import { useFocus } from '../../../hooks/useFocus';
-import { useLoginWithPassword } from '../../../hooks/useLoginWithPassword';
-import { useMethod } from '../../../hooks/useMethod';
-import { useSetting } from '../../../hooks/useSetting';
-import { useTranslation } from '../../providers/TranslationProvider';
-import { useSetupWizardStepsState } from '../StepsState';
+import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import { Pager } from '../Pager';
 import { StepContent } from '../StepContent';
 
 export function AdminUserInformationStep({ step, title, active }) {
-	const { goToNextStep } = useSetupWizardStepsState();
-
 	const loginWithPassword = useLoginWithPassword();
 	const registerUser = useMethod('registerUser');
 	const defineUsername = useMethod('setUsername');
+
+	const setForceLogin = useSessionDispatch('forceLogin');
+	const callbacks = useCallbacks();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
 		await registerUser({ name, username, email, pass: password });
@@ -42,14 +42,13 @@ export function AdminUserInformationStep({ step, title, active }) {
 				onRegistrationEmailSent && onRegistrationEmailSent();
 				return;
 			}
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 			throw error;
 		}
 
-		Session.set('forceLogin', false);
+		setForceLogin(false);
 
 		await defineUsername(username);
-
 		callbacks.run('usernameSet');
 	};
 
@@ -106,9 +105,10 @@ export function AdminUserInformationStep({ step, title, active }) {
 				username,
 				email,
 				password,
-				onRegistrationEmailSent: () => toastr.success(t('We_have_sent_registration_email')),
+				onRegistrationEmailSent: () => {
+					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
+				},
 			});
-			goToNextStep();
 		} catch (error) {
 			console.error(error);
 		} finally {

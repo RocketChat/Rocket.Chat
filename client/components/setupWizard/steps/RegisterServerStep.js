@@ -2,18 +2,17 @@ import { CheckBox, Label, RadioButton } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
-import { handleError } from '../../../../app/utils/client';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFocus } from '../../../hooks/useFocus';
-import { useMethod } from '../../../hooks/useMethod';
 import { Icon } from '../../basic/Icon';
-import { useTranslation } from '../../providers/TranslationProvider';
 import { Pager } from '../Pager';
-import { useSetupWizardParameters } from '../ParametersProvider';
+import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepContent } from '../StepContent';
 import { StepHeader } from '../StepHeader';
-import { useSetupWizardStepsState } from '../StepsState';
 import './RegisterServerStep.css';
 
 const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) => {
@@ -46,8 +45,7 @@ const Item = ({ children, icon, ...props }) =>
 	</li>;
 
 export function RegisterServerStep({ step, title, active }) {
-	const { canDeclineServerRegistration } = useSetupWizardParameters();
-	const { goToPreviousStep, goToFinalStep } = useSetupWizardStepsState();
+	const { canDeclineServerRegistration, goToPreviousStep, goToFinalStep } = useSetupWizardContext();
 
 	const [registerServer, setRegisterServer] = useState(true);
 	const [optInMarketingEmails, setOptInMarketingEmails] = useState(true);
@@ -57,9 +55,11 @@ export function RegisterServerStep({ step, title, active }) {
 
 	const [commiting, setComitting] = useState(false);
 
-	const batchSetSettings = useBatchSetSettings();
+	const batchSetSettings = useBatchSettingsDispatch();
 
 	const registerCloudWorkspace = useMethod('cloud:registerWorkspace');
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleBackClick = () => {
 		goToPreviousStep();
@@ -105,8 +105,7 @@ export function RegisterServerStep({ step, title, active }) {
 			setComitting(false);
 			goToFinalStep();
 		} catch (error) {
-			console.error(error);
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 			setComitting(false);
 		}
 	};
