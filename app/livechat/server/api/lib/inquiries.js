@@ -19,28 +19,16 @@ export async function findInquiries({ userId, department, pagination: { offset, 
 		skip: offset,
 	};
 
-	if (department) {
-		if ((!await hasRoleAsync(userId, 'livechat-manager') || !await hasRoleAsync(userId, 'admin')) || (departmentIds && Array.isArray(departmentIds) && !departmentIds.includes(department))) {
-			throw new Error('error-not-authorized');
-		}
-		const cursor = LivechatInquiry.find({ status: 'queued', department }, options);
-
-		const total = await cursor.count();
-
-		const inquiries = await cursor.toArray();
-
-		return {
-			inquiries,
-			count: inquiries.length,
-			offset,
-			total,
-		};
-	}
-
 	const filter = {
 		status: 'queued',
-		...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } },
+		...departmentIds && departmentIds.length > 0 && !department && { department: { $in: departmentIds } },
 	};
+	if (department) {
+		if ((!await hasRoleAsync(userId, 'livechat-manager') && !await hasRoleAsync(userId, 'admin')) || (departmentIds && Array.isArray(departmentIds) && !departmentIds.includes(department))) {
+			throw new Error('error-not-authorized');
+		}
+		filter.department = department;
+	}
 
 	const cursor = LivechatInquiry.find(filter, options);
 

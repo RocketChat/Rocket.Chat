@@ -66,7 +66,7 @@ export const removeInquiriesByDepartment = (department) => {
 
 export const addInquiriesAndListenerByDepartment = async (department) => {
 	const collection = getLivechatInquiryCollection();
-	await updateInquiries(await getInquiriesFromAPI(`livechat/inquiries.all?sort={"ts": 1}&department=${ department }`));
+	await updateInquiries(await getInquiriesFromAPI(`livechat/inquiries.queued?sort={"ts": 1}&department=${ department }`));
 	appendListenerToDepartment(department, collection);
 	agentDepartments.push(department);
 };
