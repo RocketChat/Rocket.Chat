@@ -5,27 +5,17 @@ import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
 import { Invites, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
+import { getURL } from '../../../utils/lib/getURL';
 
 function getInviteUrl(invite) {
 	const { _id } = invite;
 
 	const useDirectLink = settings.get('Accounts_Registration_InviteUrlType') === 'direct';
-	// Remove the last dash if present
-	const siteUrl = settings.get('Site_Url').replace(/\/$/g, '');
 
-	if (useDirectLink) {
-		return `${ siteUrl }/invite/${ _id }`;
-	}
-
-	// Remove the protocol
-	const host = siteUrl.replace(/https?\:\/\//i, '');
-	const url = `https://go.rocket.chat/?host=${ host }&path=invite/${ _id }`;
-
-	if (siteUrl.includes('http://')) {
-		return `${ url }&secure=no`;
-	}
-
-	return url;
+	return getURL(`invite/${ _id }`, {
+		full: useDirectLink,
+		cloud: !useDirectLink,
+	});
 }
 
 const possibleDays = [0, 1, 7, 15, 30];
