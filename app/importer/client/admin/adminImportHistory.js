@@ -174,6 +174,10 @@ Template.adminImportHistory.helpers({
 		const date = new Date(this.msg.ts);
 		return date.toLocaleString();
 	},
+	translate(type) {
+		return t(type);
+	},
+
 });
 
 Template.adminImportHistory.events({
@@ -190,9 +194,6 @@ Template.adminImportHistory.onCreated(function() {
 	APIClient.get('v1/getLatestImportOperations').then((data) => {
 		instance.history.set(data);
 		instance.preparing.set(false);
-		instance.history.curValue.forEach((val) => {
-			val.type = t(val.type);
-		});
 	}).catch((error) => {
 		if (error) {
 			toastr.error(t('Failed_To_Load_Import_Data'));
