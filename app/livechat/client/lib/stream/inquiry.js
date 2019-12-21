@@ -40,7 +40,7 @@ const getAgentsDepartments = async (userId) => {
 };
 
 const getDepartments = async () => {
-	const { departments } = await APIClient.v1.get('livechat//department');
+	const { departments } = await APIClient.v1.get('livechat/department');
 	return departments;
 };
 

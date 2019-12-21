@@ -24,7 +24,7 @@ export async function findInquiries({ userId, department, pagination: { offset, 
 		...departmentIds && departmentIds.length > 0 && !department && { department: { $in: departmentIds } },
 	};
 	if (department) {
-		if ((!await hasRoleAsync(userId, 'livechat-manager') && !await hasRoleAsync(userId, 'admin')) || (departmentIds && Array.isArray(departmentIds) && !departmentIds.includes(department))) {
+		if (!await hasRoleAsync(userId, 'livechat-manager') && !await hasRoleAsync(userId, 'admin') && departmentIds && Array.isArray(departmentIds) && !departmentIds.includes(department)) {
 			throw new Error('error-not-authorized');
 		}
 		filter.department = department;

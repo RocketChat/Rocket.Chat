@@ -491,7 +491,9 @@ Meteor.startup(function() {
 	settings.add('Livechat_enable_inquiry_fetch_by_stream', true, {
 		type: 'boolean',
 		group: 'Livechat',
+		section: 'Routing',
 		public: true,
 		i18nLabel: 'Enable_inquiry_fetch_by_stream',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Manual_Selection' },
 	});
 });
