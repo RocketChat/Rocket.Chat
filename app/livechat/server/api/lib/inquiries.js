@@ -7,6 +7,12 @@ export async function findInquiries({ userId, department, pagination: { offset, 
 		throw new Error('error-not-authorized');
 	}
 
+	let departmentIds;
+	if (!await hasRoleAsync(userId, 'livechat-manager')) {
+		const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map((d) => d.departmentId);
+		departmentIds = (await LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true }).toArray()).map((d) => d._id);
+	}
+
 	const options = {
 		limit: count,
 		sort: sort || { ts: -1 },
@@ -14,6 +20,9 @@ export async function findInquiries({ userId, department, pagination: { offset, 
 	};
 
 	if (department) {
+		if ((!await hasRoleAsync(userId, 'livechat-manager') || !await hasRoleAsync(userId, 'admin')) || (departmentIds && Array.isArray(departmentIds) && !departmentIds.includes(department))) {
+			throw new Error('error-not-authorized');
+		}
 		const cursor = LivechatInquiry.find({ status: 'queued', department }, options);
 
 		const total = await cursor.count();
@@ -26,12 +35,6 @@ export async function findInquiries({ userId, department, pagination: { offset, 
 			offset,
 			total,
 		};
-	}
-
-	let departmentIds;
-	if (!await hasRoleAsync(this.userId, 'livechat-manager')) {
-		const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map((d) => d.departmentId);
-		departmentIds = (await LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true }).toArray()).map((d) => d._id);
 	}
 
 	const filter = {

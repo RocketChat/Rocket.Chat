@@ -68,7 +68,7 @@ API.v1.addRoute('livechat/inquiries.take', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('livechat/inquiries.all', { authRequired: true }, {
+API.v1.addRoute('livechat/inquiries.queued', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();

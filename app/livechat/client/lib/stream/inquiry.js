@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { APIClient } from '../../../../utils/client';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
 import { LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER } from '../../../lib/stream/constants';
+import { hasRole } from '../../../../authorization/client';
 
 const livechatInquiryStreamer = new Meteor.Streamer('livechat-inquiry');
 let agentDepartments = [];
@@ -33,9 +34,13 @@ const updateInquiries = async (inquiries) => {
 	(inquiries || []).forEach((inquiry) => collection.upsert({ _id: inquiry._id }, inquiry));
 };
 
-const addListenerForeachDepartment = async (userId) => {
-	const collection = getLivechatInquiryCollection();
+const getDepartments = async (userId) => {
 	const { departments } = await APIClient.v1.get(`livechat/agents/${ userId }/departments`);
+	return departments;
+};
+
+const addListenerForeachDepartment = async (userId, departments) => {
+	const collection = getLivechatInquiryCollection();
 	agentDepartments = departments.map((department) => department.departmentId);
 	if (departments && Array.isArray(departments) && departments.length) {
 		departments.forEach((department) => appendListenerToDepartment(department.departmentId, collection));
@@ -44,9 +49,12 @@ const addListenerForeachDepartment = async (userId) => {
 
 export const initializeLivechatInquiryStream = async (userId) => {
 	const collection = getLivechatInquiryCollection();
-	await updateInquiries(await getInquiriesFromAPI('livechat/inquiries.all?sort={"ts": 1}'));
-	await addListenerForeachDepartment(userId);
-	livechatInquiryStreamer.on(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
+	await updateInquiries(await getInquiriesFromAPI('livechat/inquiries.queued?sort={"ts": 1}'));
+	const departments = await getDepartments(userId);
+	await addListenerForeachDepartment(userId, departments);
+	if (departments.length === 0 || hasRole(userId, 'livechat-manager')) {
+		livechatInquiryStreamer.on(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
+	}
 };
 
 export const removeInquiriesByDepartment = (department) => {

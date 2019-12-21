@@ -60,7 +60,7 @@ Template.livechat.helpers({
 			sort: {
 				ts: 1,
 			},
-			limit: settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed'),
+			limit: Template.instance().inquiriesLimit.get(),
 		});
 
 		// for notification sound
@@ -119,6 +119,7 @@ Template.livechat.events({
 Template.livechat.onCreated(function() {
 	this.statusLivechat = new ReactiveVar();
 	this.routingConfig = new ReactiveVar({});
+	this.inquiriesLimit = new ReactiveVar();
 
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {
 		if (config) {
@@ -150,6 +151,7 @@ Template.livechat.onCreated(function() {
 				break;
 		}
 	};
+	this.autorun(() => this.inquiriesLimit.set(settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed')));
 
 	Notifications.onUser('departmentAgentData', (payload) => this.updateAgentDepartments(payload));
 });
