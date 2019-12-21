@@ -34,8 +34,13 @@ const updateInquiries = async (inquiries) => {
 	(inquiries || []).forEach((inquiry) => collection.upsert({ _id: inquiry._id }, inquiry));
 };
 
-const getDepartments = async (userId) => {
+const getAgentsDepartments = async (userId) => {
 	const { departments } = await APIClient.v1.get(`livechat/agents/${ userId }/departments`);
+	return departments;
+};
+
+const getDepartments = async () => {
+	const { departments } = await APIClient.v1.get('livechat//department');
 	return departments;
 };
 
@@ -50,9 +55,10 @@ const addListenerForeachDepartment = async (userId, departments) => {
 export const initializeLivechatInquiryStream = async (userId) => {
 	const collection = getLivechatInquiryCollection();
 	await updateInquiries(await getInquiriesFromAPI('livechat/inquiries.queued?sort={"ts": 1}'));
-	const departments = await getDepartments(userId);
+	const agentDepartments = await getAgentsDepartments(userId);
+	const departments = await getDepartments();
 	await addListenerForeachDepartment(userId, departments);
-	if (departments.length === 0 || hasRole(userId, 'livechat-manager')) {
+	if (!departments.length || agentDepartments.length === 0 || hasRole(userId, 'livechat-manager')) {
 		livechatInquiryStreamer.on(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
 	}
 };
