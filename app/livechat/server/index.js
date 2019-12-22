@@ -76,6 +76,8 @@ import './lib/routing/External';
 import './lib/routing/ManualSelection';
 import './lib/routing/AutoSelection';
 import './lib/stream/departmentAgents';
+import './lib/stream/inquiry';
+import './lib/stream/queueManager';
 import './sendMessageBySMS';
 import './unclosedLivechats';
 import './publications/customFields';
@@ -98,6 +100,5 @@ import './publications/livechatInquiries';
 import './publications/livechatOfficeHours';
 import './api';
 import './api/rest';
-import './lib/stream/inquiry';
 
 export { Livechat } from './lib/Livechat';

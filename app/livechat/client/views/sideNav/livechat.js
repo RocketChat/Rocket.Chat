@@ -11,7 +11,7 @@ import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
 import { Notifications } from '../../../../notifications/client';
-import { initializeLivechatInquiryStream, removeInquiriesByDepartment } from '../../lib/stream/inquiry';
+import { initializeLivechatInquiryStream, removeInquiriesByDepartment } from '../../lib/stream/queueManager';
 
 import './livechat.html';
 
