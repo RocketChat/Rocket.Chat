@@ -7,6 +7,7 @@ import _ from 'underscore';
 
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
+import { ChatSubscription } from '../../../models/client';
 
 const shownName = function(user) {
 	if (!user) {
@@ -47,6 +48,10 @@ export const MsgTyping = new class {
 
 	addStream(rid) {
 		if (rooms[rid]) {
+			return;
+		}
+		const subscription = ChatSubscription.findOne({ rid });
+		if (!subscription) {
 			return;
 		}
 		rooms[rid] = function(username, typing) {
