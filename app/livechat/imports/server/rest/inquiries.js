@@ -77,6 +77,7 @@ API.v1.addRoute('livechat/inquiries.queued', { authRequired: true }, {
 		return API.v1.success(Promise.await(findInquiries({
 			userId: this.userId,
 			department,
+			status: 'queued',
 			pagination: {
 				offset,
 				count,

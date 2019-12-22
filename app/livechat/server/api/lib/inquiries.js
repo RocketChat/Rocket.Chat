@@ -2,16 +2,38 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw';
 import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole';
 
-export async function findInquiries({ userId, department, pagination: { offset, count, sort } }) {
+const agentDepartments = async (userId) => {
+	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
+	return (await LivechatDepartment.find({ _id: { $in: agentDepartments }, enabled: true }).toArray()).map(({ _id }) => _id);
+}
+
+const applyDepartmentRestrictions = async (userId, filterDepartment) => {
+	if (await hasRoleAsync(userId, 'livechat-manager')) {
+		return filterDepartment;
+	}
+
+	const allowedDepartments = await agentDepartments(userId);
+	if (allowedDepartments && Array.isArray(allowedDepartments) && allowedDepartments.length > 0) {
+		if (!filterDepartment) {
+			return { $in: allowedDepartments };
+		}
+
+		if (!allowedDepartments.includes(department)) {
+			throw new Error('error-not-authorized');
+		}
+
+		return filterDepartment;
+	}
+
+	return { $exists: false };
+}
+
+export async function findInquiries({ userId, department: filterDepartment, status, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
 
-	let departmentIds;
-	if (!await hasRoleAsync(userId, 'livechat-manager')) {
-		const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map((d) => d.departmentId);
-		departmentIds = (await LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true }).toArray()).map((d) => d._id);
-	}
+	const department = await applyDepartmentRestrictions(userId, filterDepartment);
 
 	const options = {
 		limit: count,
@@ -20,20 +42,12 @@ export async function findInquiries({ userId, department, pagination: { offset, 
 	};
 
 	const filter = {
-		status: 'queued',
-		...departmentIds && departmentIds.length > 0 && !department && { department: { $in: departmentIds } },
+		...status && { status },
+		...department && { department },
 	};
-	if (department) {
-		if (!await hasRoleAsync(userId, 'livechat-manager') && !await hasRoleAsync(userId, 'admin') && departmentIds && Array.isArray(departmentIds) && !departmentIds.includes(department)) {
-			throw new Error('error-not-authorized');
-		}
-		filter.department = department;
-	}
 
 	const cursor = LivechatInquiry.find(filter, options);
-
 	const total = await cursor.count();
-
 	const inquiries = await cursor.toArray();
 
 	return {
