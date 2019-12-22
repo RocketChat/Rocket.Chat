@@ -11,7 +11,7 @@ import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
 import { Notifications } from '../../../../notifications/client';
-import { initializeLivechatInquiryStream, removeInquiriesByDepartment, addInquiriesAndListenerByDepartment } from '../../lib/stream/inquiry';
+import { initializeLivechatInquiryStream, removeInquiriesByDepartment } from '../../lib/stream/inquiry';
 
 import './livechat.html';
 
@@ -141,14 +141,9 @@ Template.livechat.onCreated(function() {
 		initializeLivechatInquiryStream(Meteor.userId());
 	}
 	this.updateAgentDepartments = ({ action, departmentId }) => {
-		switch (action) {
-			case 'inserted':
-				addInquiriesAndListenerByDepartment(departmentId);
-				break;
-
-			case 'removed':
-				removeInquiriesByDepartment(departmentId);
-				break;
+		initializeLivechatInquiryStream(Meteor.userId());
+		if (action === 'removed') {
+			removeInquiriesByDepartment(departmentId);
 		}
 	};
 	this.autorun(() => this.inquiriesLimit.set(settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed')));

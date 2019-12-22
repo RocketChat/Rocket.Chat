@@ -52,12 +52,22 @@ const addListenerForeachDepartment = async (userId, departments) => {
 	}
 };
 
+const removeDepartmentsListeners = (departments) => {
+	(departments || []).forEach((department) => removeListenerOfDepartment(department._id));
+};
+
+const removeGlobalListener = () => {
+	livechatInquiryStreamer.removeListener(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER);
+};
+
 export const initializeLivechatInquiryStream = async (userId) => {
 	const collection = getLivechatInquiryCollection();
+	const departments = await getDepartments();
+	removeDepartmentsListeners(departments);
+	removeGlobalListener();
 	await updateInquiries(await getInquiriesFromAPI('livechat/inquiries.queued?sort={"ts": 1}'));
 	const agentDepartments = await getAgentsDepartments(userId);
-	const departments = await getDepartments();
-	await addListenerForeachDepartment(userId, departments);
+	await addListenerForeachDepartment(userId, agentDepartments);
 	if (!departments.length || agentDepartments.length === 0 || hasRole(userId, 'livechat-manager')) {
 		livechatInquiryStreamer.on(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
 	}
@@ -66,13 +76,4 @@ export const initializeLivechatInquiryStream = async (userId) => {
 export const removeInquiriesByDepartment = (department) => {
 	const collection = getLivechatInquiryCollection();
 	collection.remove({ department });
-	removeListenerOfDepartment(department);
-	agentDepartments = agentDepartments.filter((agentDepartment) => agentDepartment !== department);
-};
-
-export const addInquiriesAndListenerByDepartment = async (department) => {
-	const collection = getLivechatInquiryCollection();
-	await updateInquiries(await getInquiriesFromAPI(`livechat/inquiries.queued?sort={"ts": 1}&department=${ department }`));
-	appendListenerToDepartment(department, collection);
-	agentDepartments.push(department);
 };
