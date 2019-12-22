@@ -83,4 +83,3 @@ Template.livechatReadOnly.onDestroyed(function() {
 		inquiryDataStream.removeListener(inquiry._id, this.updateInquiry);
 	}
 });
-
