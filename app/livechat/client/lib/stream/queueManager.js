@@ -38,7 +38,7 @@ const updateInquiries = async (inquiries) => {
 };
 
 const getAgentsDepartments = async (userId) => {
-	const { departments } = await APIClient.v1.get(`livechat/agents/${ userId }/departments`);
+	const { departments } = await APIClient.v1.get(`livechat/agents/${ userId }/departments?enabledDepartmentsOnly=true`);
 	return departments;
 };
 

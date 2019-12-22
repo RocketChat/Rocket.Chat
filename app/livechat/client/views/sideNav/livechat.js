@@ -12,6 +12,7 @@ import { t, handleError, getUserPreference } from '../../../../utils';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
 import { Notifications } from '../../../../notifications/client';
 import { initializeLivechatInquiryStream, removeInquiriesByDepartment } from '../../lib/stream/queueManager';
+import { APIClient } from '../../../../utils/client';
 
 import './livechat.html';
 
@@ -140,9 +141,10 @@ Template.livechat.onCreated(function() {
 	} else {
 		initializeLivechatInquiryStream(Meteor.userId());
 	}
-	this.updateAgentDepartments = ({ action, departmentId }) => {
+	this.updateAgentDepartments = async ({ action, departmentId }) => {
 		initializeLivechatInquiryStream(Meteor.userId());
-		if (action === 'removed') {
+		const { department } = await APIClient.v1.get(`livechat/department/${ departmentId }`);
+		if (action === 'removed' || (department && !department.enabled)) {
 			removeInquiriesByDepartment(departmentId);
 		}
 	};
