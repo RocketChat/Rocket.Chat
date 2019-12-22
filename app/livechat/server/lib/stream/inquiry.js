@@ -16,9 +16,9 @@ const mountDataToEmit = (type, data) => ({ type, ...data });
 LivechatInquiry.find({}).observeChanges({
 	added(_id, record) {
 		if (record && record.department) {
-			return emitEvent(`${ LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER }/${ record.department }`, mountDataToEmit('added', record));
+			return emitEvent(`${ LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER }/${ record.department }`, mountDataToEmit('added', { ...record, _id }));
 		}
-		emitEvent(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, mountDataToEmit('added', record));
+		emitEvent(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER, mountDataToEmit('added', { ...record, _id }));
 	},
 	changed(_id, record) {
 		const isUpdatingDepartment = record && record.department;

@@ -34,6 +34,7 @@ Template.livechatReadOnly.events({
 		const inquiry = instance.inquiry.get();
 		const { _id } = inquiry;
 		await call('livechat:takeInquiry', _id);
+		instance.loadInquiry(inquiry.rid);
 	},
 });
 
@@ -48,10 +49,11 @@ Template.livechatReadOnly.onCreated(function() {
 			this.routingConfig.set(config);
 		}
 	});
-	this.autorun(async () => {
-		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${ this.rid }`);
+	this.loadInquiry = async (roomId) => {
+		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${ roomId }`);
 		this.inquiry.set(inquiry);
-	});
+	};
+	this.autorun(() => this.loadInquiry(this.rid));
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().rid }, { fields: { open: 1 } }));
 	});
