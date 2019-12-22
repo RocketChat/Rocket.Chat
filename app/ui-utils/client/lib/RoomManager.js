@@ -68,7 +68,6 @@ export const RoomManager = new function() {
 					if (room != null) {
 						record.rid = room._id;
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
-
 						if (record.streamActive !== true) {
 							record.streamActive = true;
 							msgStream.on(record.rid, async (msg) => {
@@ -98,7 +97,6 @@ export const RoomManager = new function() {
 
 								return fireGlobalEvent('new-message', msg);
 							});
-
 							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 						}

@@ -1231,6 +1231,7 @@
   "Enable": "Enable",
   "Enable_Auto_Away": "Enable Auto Away",
   "Enable_Desktop_Notifications": "Enable Desktop Notifications",
+  "Enable_inquiry_fetch_by_stream": "Enable inquiry data fetch from server using a stream",
   "Enable_Svg_Favicon": "Enable SVG favicon",
   "Enable_two-factor_authentication": "Enable two-factor authentication",
   "Enabled": "Enabled",

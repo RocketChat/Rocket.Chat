@@ -1152,6 +1152,7 @@
   "Enable": "Habilitar",
   "Enable_Auto_Away": "Habilitar Auto Ausência",
   "Enable_Desktop_Notifications": "Habilitar Notificações Desktop",
+  "Enable_inquiry_fetch_by_stream": "Habilitar carga de dados de novos inquéritos de Livechat utilizando stream",
   "Enable_Svg_Favicon": "Ativar SVG favicon",
   "Enable_two-factor_authentication": "Ativar autenticação de dois fatores",
   "Enabled": "Ativado",
