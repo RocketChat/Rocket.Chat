@@ -52,6 +52,15 @@ TabBar.addButton({
 	order: 2,
 });
 
+TabBar.addButton({
+	groups: ['channel', 'group'],
+	id: 'createInviteLink',
+	i18nTitle: 'Invite_Users',
+	icon: 'user-plus',
+	template: 'createInviteLink',
+	order: 2,
+});
+
 
 TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],

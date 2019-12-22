@@ -9,6 +9,7 @@ import { ChatRoom, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
+import { hasPermission } from '../../../authorization';
 
 Template.membersList.helpers({
 	ignored() {
@@ -100,6 +101,10 @@ Template.membersList.helpers({
 		return (() => roomTypes.roomTypes[roomData.t].canAddUser(roomData))();
 	},
 
+	canInviteUser() {
+		return hasPermission('create-invite-links');
+	},
+
 	showUserInfo() {
 		const webrtc = WebRTC.getInstanceByRoomId(this.rid);
 		let videoActive = undefined;
@@ -139,13 +144,25 @@ Template.membersList.helpers({
 
 Template.membersList.events({
 	'click .js-add'() {
-		Template.parentData(0).tabBar.setTemplate('inviteUsers');
-		Template.parentData(0).tabBar.setData({
+		const { tabBar } = Template.currentData();
+
+		tabBar.setTemplate('inviteUsers');
+		tabBar.setData({
 			label: 'Add_users',
 			icon: 'user',
 		});
 
-		Template.parentData(0).tabBar.open();
+		tabBar.open();
+	},
+	'click .js-invite'() {
+		const { tabBar } = Template.currentData();
+		tabBar.setTemplate('createInviteLink');
+		tabBar.setData({
+			label: 'Invite_Users',
+			icon: 'user-plus',
+		});
+
+		tabBar.open();
 	},
 	'submit .js-search-form'(event) {
 		event.preventDefault();

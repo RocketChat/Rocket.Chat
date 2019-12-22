@@ -217,6 +217,14 @@ FlowRouter.route('/register/:hash', {
 	},
 });
 
+FlowRouter.route('/invite/:hash', {
+	name: 'invite',
+
+	action(/* params */) {
+		BlazeLayout.render('invite');
+	},
+});
+
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: async () => {
