@@ -1,7 +1,7 @@
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw {
-	findOneByRoomId(rid) {
+	findOneQueuedByRoomId(rid) {
 		const query = {
 			rid,
 			status: 'queued',

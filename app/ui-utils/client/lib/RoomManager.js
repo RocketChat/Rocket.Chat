@@ -69,7 +69,6 @@ export const RoomManager = new function() {
 						record.rid = room._id;
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
 						if (record.streamActive !== true) {
-							const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
 							record.streamActive = true;
 							msgStream.on(record.rid, async (msg) => {
 								// Should not send message to room if room has not loaded all the current messages
@@ -78,6 +77,7 @@ export const RoomManager = new function() {
 								}
 								// Do not load command messages into channel
 								if (msg.t !== 'command') {
+									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
 									const isNew = !ChatMessage.findOne(msg._id);
 									upsertMessage({ msg, subscription });
 
@@ -97,10 +97,8 @@ export const RoomManager = new function() {
 
 								return fireGlobalEvent('new-message', msg);
 							});
-							if (subscription) {
-								Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
-								Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
-							}
+							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 						}
 					}
 
