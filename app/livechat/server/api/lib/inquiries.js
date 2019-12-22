@@ -5,7 +5,7 @@ import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole
 const agentDepartments = async (userId) => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
 	return (await LivechatDepartment.find({ _id: { $in: agentDepartments }, enabled: true }).toArray()).map(({ _id }) => _id);
-}
+};
 
 const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 	if (await hasRoleAsync(userId, 'livechat-manager')) {
@@ -18,7 +18,7 @@ const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 			return { $in: allowedDepartments };
 		}
 
-		if (!allowedDepartments.includes(department)) {
+		if (!allowedDepartments.includes(filterDepartment)) {
 			throw new Error('error-not-authorized');
 		}
 
@@ -26,7 +26,7 @@ const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 	}
 
 	return { $exists: false };
-}
+};
 
 export async function findInquiries({ userId, department: filterDepartment, status, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
