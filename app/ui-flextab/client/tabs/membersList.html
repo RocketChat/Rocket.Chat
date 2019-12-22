@@ -50,8 +50,13 @@
 		</div>
 
 		{{#if canAddUser}}
-			<button class="rc-button rc-button--primary js-add">{{> icon block="rc-input__icon-svg" icon="plus"}}{{_ "Invite_Users"}}</button>
+			<button class="rc-button rc-button--primary js-add">{{> icon block="rc-input__icon-svg" icon="plus"}}{{_ "Add_users"}}</button>
 		{{/if}}
+
+		{{#if canInviteUser}}
+			<button class="rc-button rc-button--primary js-invite">{{> icon block="rc-input__icon-svg" icon="user-plus"}}{{_ "Invite_Users"}}</button>
+		{{/if}}
+
 		{{/with}}
 	{{/if}}
 	<div class="rc-user-info-container flex-nav animated{{#unless showUserInfo}} animated-hidden{{/unless}}">
