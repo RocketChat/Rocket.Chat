@@ -59,6 +59,7 @@ const removeGlobalListener = () => {
 
 export const initializeLivechatInquiryStream = async (userId) => {
 	const collection = getLivechatInquiryCollection();
+	collection.remove({});
 	if (agentDepartments.length) {
 		removeDepartmentsListeners(agentDepartments);
 	}
@@ -69,9 +70,4 @@ export const initializeLivechatInquiryStream = async (userId) => {
 	if (agentDepartments.length === 0 || hasRole(userId, 'livechat-manager')) {
 		livechatQueueStreamer.on(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
 	}
-};
-
-export const removeInquiriesByDepartment = (department) => {
-	const collection = getLivechatInquiryCollection();
-	collection.remove({ department });
 };

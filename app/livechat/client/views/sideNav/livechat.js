@@ -11,8 +11,7 @@ import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
 import { Notifications } from '../../../../notifications/client';
-import { initializeLivechatInquiryStream, removeInquiriesByDepartment } from '../../lib/stream/queueManager';
-import { APIClient } from '../../../../utils/client';
+import { initializeLivechatInquiryStream } from '../../lib/stream/queueManager';
 
 import './livechat.html';
 
@@ -141,13 +140,7 @@ Template.livechat.onCreated(function() {
 	} else {
 		initializeLivechatInquiryStream(Meteor.userId());
 	}
-	this.updateAgentDepartments = async ({ action, departmentId }) => {
-		initializeLivechatInquiryStream(Meteor.userId());
-		const { department } = await APIClient.v1.get(`livechat/department/${ departmentId }`);
-		if (action === 'removed' || (department && !department.enabled)) {
-			removeInquiriesByDepartment(departmentId);
-		}
-	};
+	this.updateAgentDepartments = () => initializeLivechatInquiryStream(Meteor.userId());
 	this.autorun(() => this.inquiriesLimit.set(settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed')));
 
 	Notifications.onUser('departmentAgentData', (payload) => this.updateAgentDepartments(payload));
