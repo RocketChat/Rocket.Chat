@@ -21,11 +21,18 @@ Template.channelSettingsDefault.helpers({
 		return Template.instance().isFavorite.get();
 	},
 	defaultDescription() {
-		const room = Template.instance().room.get();
-		if (room && room.default) {
-			return t('True');
+		const { room, isDefault, isFavorite } = { room: Template.instance().room.get(), isDefault: Template.instance().isDefault.get(), isFavorite: Template.instance().isFavorite.get() };
+		let description = t('False');
+
+		if (room && isDefault) {
+			description = t('True');
+
+			if (isFavorite) {
+				description += `, ${ t('Set_as_favorite') }`;
+			}
+			return description;
 		}
-		return t('False');
+		return description;
 	},
 });
 
@@ -69,7 +76,7 @@ Template.channelSettingsDefault.onCreated(function() {
 	this.autorun(() => {
 		const { room } = Template.currentData().data;
 		this.isDefault.set(room && room.default);
-		this.isFavorite.set(room && room.favorite);
+		this.isFavorite.set(room && room.favorite && room.default);
 		this.room.set(room);
 	});
 });
