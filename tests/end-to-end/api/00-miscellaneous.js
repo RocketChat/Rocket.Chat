@@ -8,14 +8,32 @@ describe('miscellaneous', function() {
 
 	describe('API default', () => {
 		// Required by mobile apps
-		it('/info', (done) => {
-			request.get('/api/info')
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('version');
-				})
-				.end(done);
+		describe('/info', () => {
+			let version;
+			it('should return "version", "build", "commit" and "marketplaceApiVersion" when the user is logged in', (done) => {
+				request.get('/api/info')
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.info).to.have.property('version').and.to.be.a('string');
+						expect(res.body.info).to.have.property('build').and.to.be.an('object');
+						expect(res.body.info).to.have.property('commit').and.to.be.an('object');
+						expect(res.body.info).to.have.property('marketplaceApiVersion').and.to.be.a('string');
+						version = res.body.info.version;
+					})
+					.end(done);
+			});
+			it('should return only "version" and the version info must be different qhen the user is not logged in', (done) => {
+				request.get('/api/info')
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('version');
+						expect(version).to.not.be.equal(res.body.version);
+					})
+					.end(done);
+			});
 		});
 	});
 
