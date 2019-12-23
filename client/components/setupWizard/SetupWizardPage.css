@@ -11,10 +11,10 @@
 
 	&__wrapper {
 		display: flex;
-		flex-flow: column nowrap;
 		flex: 1 1 auto;
 
 		height: 100vh;
+		flex-flow: column nowrap;
 	}
 
 	&__steps {
@@ -26,8 +26,9 @@
 @media (width <= 760px) {
 	.SetupWizard {
 		flex-direction: column;
-		justify-content: stretch;
+
 		min-height: 100vh;
+		justify-content: stretch;
 
 		&__wrapper {
 			min-height: 0;

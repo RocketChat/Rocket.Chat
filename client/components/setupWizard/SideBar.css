@@ -3,8 +3,9 @@
 		display: flex;
 		overflow: hidden;
 		flex: 0 1 350px;
-		flex-flow: column nowrap;
+
 		max-height: 100vh;
+		flex-flow: column nowrap;
 	}
 
 	.SetupWizard__SideBar-header {
@@ -157,7 +158,7 @@
 }
 
 @media (width <= 760px) {
-	.SetupWizard__SideBar{
+	.SetupWizard__SideBar {
 		&.SetupWizard__SideBar {
 			flex-basis: auto;
 		}
