@@ -161,9 +161,8 @@ export class LivechatVisitors extends Base {
 		}
 
 		if (data.livechatData) {
-			setData.livechatData = {};
 			Object.keys(data.livechatData).forEach((key) => {
-				setData.livechatData[key] = s.trim(data.livechatData[key]);
+				setData[`livechatData.${ key }`] = s.trim(data.livechatData[key]);
 			});
 		}
 
