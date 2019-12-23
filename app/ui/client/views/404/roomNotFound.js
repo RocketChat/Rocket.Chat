@@ -23,10 +23,6 @@ Template.roomNotFound.helpers({
 	headerMessage() {
 		const { type } = Template.currentData();
 
-		if (type === 'd') {
-			return 'User_not_found';
-		}
-
-		return 'Room_not_found';
+		return type === 'd' ? 'User_not_found' : 'Room_not_found';
 	},
 });
