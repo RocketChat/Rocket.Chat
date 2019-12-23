@@ -4410,6 +4410,7 @@ rc-old select,
 
 			border: 4px dashed var(--color-blue);
 		}
+
 		&--disabled {
 			color: var(--color-red);
 

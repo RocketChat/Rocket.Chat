@@ -255,16 +255,16 @@ const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
 Template.room.helpers({
 	dragAndDrop() {
-        return settings.get('FileUpload_Enabled') && ("dropzone--disabled");
-    },
+		return settings.get('FileUpload_Enabled') && 'dropzone--disabled';
+	},
 
-    isDisabled() {
-        return settings.get('FileUpload_Enabled') ? 'dropzone-overlay--enabled' : 'dropzone-overlay--disabled';
-    },
+	isDisabled() {
+		return settings.get('FileUpload_Enabled') ? 'dropzone-overlay--enabled' : 'dropzone-overlay--disabled';
+	},
 
-    dragAndDropLabel() {
-        return settings.get('FileUpload_Enabled') ? 'Drop_to_upload_file' : 'FileUpload_Disabled';
-    },
+	dragAndDropLabel() {
+		return settings.get('FileUpload_Enabled') ? 'Drop_to_upload_file' : 'FileUpload_Disabled';
+	},
 	useNrr() {
 		const useNrr = getConfig('useNrr');
 		return useNrr === 'true' || useNrr !== 'false';
@@ -597,10 +597,10 @@ export const dropzoneEvents = {
 
 		e.stopPropagation();
 
-		if(!userCanDrop() || !settings.get('FileUpload_Enabled')){
-            e.preventDefault();
-            return false;
-        }
+		if (!userCanDrop() || !settings.get('FileUpload_Enabled')) {
+			e.preventDefault();
+			return false;
+		}
 
 		let files = (e.dataTransfer && e.dataTransfer.files) || [];
 
