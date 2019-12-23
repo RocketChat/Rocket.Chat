@@ -49,7 +49,6 @@ Template.channelSettingsDefault.events({
 	},
 	'click .save'(e, t) {
 		e.preventDefault();
-		console.log(t);
 		Meteor.call('saveRoomSettings', t.room.get()._id, 'default', { default: t.isDefault.get(), favorite: t.isFavorite.get() }, (err/* , result*/) => {
 			if (err) {
 				return handleError(err);
@@ -66,10 +65,9 @@ Template.channelSettingsDefault.onCreated(function() {
 	this.isDefault = new ReactiveVar();
 	this.isFavorite = new ReactiveVar();
 	this.room = new ReactiveVar();
-	this.onSuccess = this.data.data.onsuccess;
+	this.onSuccess = this.data.data.onSuccess;
 	this.autorun(() => {
 		const { room } = Template.currentData().data;
-		console.log(room);
 		this.isDefault.set(room && room.default);
 		this.isFavorite.set(room && room.favorite);
 		this.room.set(room);
