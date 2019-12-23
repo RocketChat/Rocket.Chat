@@ -7,9 +7,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { toolbarSearch } from '../../../ui-sidenav';
+import { isMobile } from '../../../utils/client';
 import { lazyloadtick } from '../../../lazy-load';
 import './messagePopup.html';
-import { isMobile } from '../../../utils/client';
 
 const keys = {
 	TAB: 9,
@@ -22,6 +22,8 @@ const keys = {
 };
 
 let touchMoved = false;
+let lastTouchX = null;
+let lastTouchY = null;
 
 function getCursorPosition(input) {
 	if (input == null) {
@@ -302,7 +304,12 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		template.clickingItem = true;
 	},
-	'touchstart .popup-item'() {
+	'touchstart .popup-item'(e) {
+		const { touches } = e.originalEvent;
+		if (touches && touches.length) {
+			lastTouchX = touches[0].pageX;
+			lastTouchY = touches[0].pageY;
+		}
 		touchMoved = false;
 	},
 	'touchmove .popup-item'(e) {
@@ -315,12 +322,14 @@ Template.messagePopup.events({
 			}
 		}
 	},
-	'touchend .popup-item'() {
+	'touchend .popup-item'(e) {
 		const template = Template.instance();
 		if (!touchMoved) {
 			template.value.set(this._id);
 			template.enterValue();
 			template.open.set(false);
+			e.preventDefault();
+			e.stopPropagation();
 		}
 	},
 	'mouseup .popup-item'() {

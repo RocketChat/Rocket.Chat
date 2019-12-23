@@ -78,8 +78,6 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
-let touchMoved = false;
-
 function getConfig(e) {
 	const canLeave = () => {
 		const roomData = Session.get(`roomData${ this.rid }`);
@@ -208,13 +206,6 @@ Template.sidebarItem.events({
 		return menu.close();
 	},
 	'touchstart .sidebar-item__link'(e, t) {
-		const { touches } = e.originalEvent;
-		if (touches && touches.length) {
-			lastTouchX = touches[0].pageX;
-			lastTouchY = touches[0].pagey;
-		}
-		touchMoved = false;
-
 		if (e.originalEvent.touches.length !== 1) {
 			return;
 		}
@@ -228,18 +219,7 @@ Template.sidebarItem.events({
 		clearTimeout(t.touchtime);
 		t.touchtime = setTimeout(doLongTouch, 500);
 	},
-	'touchend .sidebar-item__link, touchcancel .sidebar-item__link'(e, t) {
-		clearTimeout(t.touchtime);
-	},
-	'touchmove .sidebar-item__link'(e, t) {
-		const { touches } = e.originalEvent;
-		if (touches && touches.length) {
-			const deltaX = Math.abs(lastTouchX - touches[0].pageX);
-			const deltaY = Math.abs(lastTouchY - touches[0].pageY);
-			if (deltaX > 5 || deltaY > 5) {
-				touchMoved = true;
-			}
-		}
+	'touchend .sidebar-item__link, touchcancel .sidebar-item__link, touchmove .sidebar-item__link'(e, t) {
 		clearTimeout(t.touchtime);
 	},
 	'click .sidebar-item__menu'(e) {
