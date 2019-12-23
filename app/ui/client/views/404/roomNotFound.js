@@ -3,8 +3,6 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-// const { type } = Template.currentData();
-
 Template.roomNotFound.helpers({
 	data() {
 		return Session.get('roomNotFound');
@@ -13,8 +11,6 @@ Template.roomNotFound.helpers({
 		return Blaze._escape(this.name);
 	},
 	sameUser() {
-		console.log(Template.currentData());
-
 		const user = Meteor.user();
 		return user && user.username === this.name;
 	},
@@ -23,14 +19,5 @@ Template.roomNotFound.helpers({
 	},
 	customErrorMessage() {
 		return this.error.reason;
-	},
-	headerMessage() {
-		const { type } = Template.currentData();
-
-		if (type === 'd') {
-			return 'User_not_found';
-		}
-
-		return 'Room_not_found';
 	},
 });
