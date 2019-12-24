@@ -12,7 +12,7 @@
 			{{/unless}}
 			<div class="messages-container-wrapper">
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
-					<div class="dropzone-overlay {{isDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
+					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 					{{#unless embeddedVersion}}
 						{{#if announcement}}
 						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline announcement}}">

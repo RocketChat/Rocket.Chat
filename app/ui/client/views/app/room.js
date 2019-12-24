@@ -253,18 +253,28 @@ callbacks.add('enter-room', wipeFailedUploads);
 
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
-Template.room.helpers({
+export const dropzoneHelpers = {
 	dragAndDrop() {
 		return settings.get('FileUpload_Enabled') && 'dropzone--disabled';
 	},
 
-	isDisabled() {
+	isDropzoneDisabled() {
 		return settings.get('FileUpload_Enabled') ? 'dropzone-overlay--enabled' : 'dropzone-overlay--disabled';
 	},
 
 	dragAndDropLabel() {
-		return settings.get('FileUpload_Enabled') ? 'Drop_to_upload_file' : 'FileUpload_Disabled';
+		if (!userCanDrop) {
+			return 'error-not-allowed';
+		}
+		if (!settings.get('FileUpload_Enabled')) {
+			return 'FileUpload_Disabled';
+		}
+		return 'Drop_to_upload_file';
 	},
+};
+
+Template.room.helpers({
+	...dropzoneHelpers,
 	useNrr() {
 		const useNrr = getConfig('useNrr');
 		return useNrr === 'true' || useNrr !== 'false';
@@ -596,9 +606,9 @@ export const dropzoneEvents = {
 		const e = event.originalEvent || event;
 
 		e.stopPropagation();
+		e.preventDefault();
 
 		if (!userCanDrop() || !settings.get('FileUpload_Enabled')) {
-			e.preventDefault();
 			return false;
 		}
 
