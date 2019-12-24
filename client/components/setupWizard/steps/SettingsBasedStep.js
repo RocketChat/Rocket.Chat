@@ -111,6 +111,7 @@ export function SettingsBasedStep({ step, title, active }) {
 						<Label htmlFor={_id} text={t(i18nLabel)} />
 						{type === 'string' && <TextInput
 							type='text'
+							data-qa={_id}
 							id={_id}
 							name={_id}
 							ref={i === 0 ? autoFocusRef : undefined}
@@ -120,6 +121,7 @@ export function SettingsBasedStep({ step, title, active }) {
 
 						{type === 'select' && <SelectInput
 							type='select'
+							data-qa={_id}
 							id={_id}
 							name={_id}
 							placeholder={t('Select_an_option')}
@@ -134,6 +136,7 @@ export function SettingsBasedStep({ step, title, active }) {
 
 						{type === 'language' && <SelectInput
 							type='select'
+							data-qa={_id}
 							id={_id}
 							name={_id}
 							placeholder={t('Default')}

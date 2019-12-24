@@ -10,8 +10,8 @@ export function RuntimeEnvironmentSection({ statistics, isLoading }) {
 	const t = useTranslation();
 
 	return <>
-		<Subtitle>{t('Runtime_Environment')}</Subtitle>
-		<DescriptionList>
+		<Subtitle data-qa='runtime-env-title'>{t('Runtime_Environment')}</Subtitle>
+		<DescriptionList data-qa='runtime-env-list'>
 			<DescriptionList.Entry label={t('OS_Type')}>{s(() => statistics.os.type)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('OS_Platform')}>{s(() => statistics.os.platform)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('OS_Arch')}>{s(() => statistics.os.arch)}</DescriptionList.Entry>

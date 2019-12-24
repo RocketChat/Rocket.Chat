@@ -9,8 +9,8 @@ export function CommitSection({ info }) {
 	const { commit = {} } = info;
 
 	return <>
-		<Subtitle>{t('Commit')}</Subtitle>
-		<DescriptionList>
+		<Subtitle data-qa='commit-title'>{t('Commit')}</Subtitle>
+		<DescriptionList data-qa='commit-list'>
 			<DescriptionList.Entry label={t('Hash')}>{commit.hash}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Date')}>{commit.date}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Branch')}>{commit.branch}</DescriptionList.Entry>

@@ -26,7 +26,7 @@ export function FinalStep() {
 					</Margins>
 					<Box textColor='default' textStyle='micro' className='SetupWizard__FinalStep-linkLabel'>{t('Your_server_link')}</Box>
 					<Box textColor='primary' textStyle='p1' className='SetupWizard__FinalStep-link'>{siteUrl}</Box>
-					<Button primary onClick={handleClick}>{t('Go_to_your_workspace')}</Button>
+					<Button primary data-qa='go-to-workspace' onClick={handleClick}>{t('Go_to_your_workspace')}</Button>
 				</Box>
 			</Margins>
 		</Tile>

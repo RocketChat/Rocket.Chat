@@ -19,7 +19,7 @@ export function SetupWizardPage({ currentStep = 1 }) {
 
 	return <>
 		<ConnectionStatusAlert />
-		<Box componentClassName='SetupWizard'>
+		<Box className='SetupWizard' data-qa='setup-wizard'>
 			{(currentStep === finalStep && <FinalStep />)
 			|| <>
 				<SideBar
