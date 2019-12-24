@@ -50,7 +50,13 @@ export const replaceEscaped = (str, data = {}) => replace(str, {
 		return ret;
 	}, {}),
 });
-export const wrap = (html, data = {}) => replaceEscaped(body.replace('{{body}}', html), data);
+export const wrap = (html, data = {}) => {
+	if (settings.get('email_plain_text_only')) {
+		return replace(html, data);
+	}
+
+	return replaceEscaped(body.replace('{{body}}', html), data);
+};
 export const inlinecss = (html) => juice.inlineContent(html, Settings.get('email_style'));
 export const getTemplate = (template, fn, escape = true) => {
 	let html = '';
@@ -101,6 +107,10 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 
 	if (!text) {
 		text = stripHtml(html);
+	}
+
+	if (settings.get('email_plain_text_only')) {
+		html = undefined;
 	}
 
 	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));

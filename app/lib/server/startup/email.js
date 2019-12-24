@@ -2,6 +2,10 @@ import { settings } from '../../../settings';
 
 settings.addGroup('Email', function() {
 	this.section('Style', function() {
+		this.add('email_plain_text_only', false, {
+			type: 'boolean',
+		});
+
 		this.add('email_style', `html, body, .body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
 
 	body, .body {
@@ -103,6 +107,10 @@ settings.addGroup('Email', function() {
 			multiline: true,
 			i18nLabel: 'email_style_label',
 			i18nDescription: 'email_style_description',
+			enableQuery: {
+				_id: 'email_plain_text_only',
+				value: true,
+			},
 		});
 	});
 
