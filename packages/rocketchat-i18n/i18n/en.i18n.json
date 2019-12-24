@@ -2883,7 +2883,7 @@
   "Should_be_a_URL_of_an_image": "Should be a URL of an image.",
   "Should_exists_a_user_with_this_username": "The user must already exist.",
   "Show_Setup_Wizard": "Show Setup Wizard",
-  "Show_top_navbar_embedded_layout": "Show top navbar in embedded layout",
+  "UI_Show_top_navbar_embedded_layout": "Show top navbar in embedded layout",
   "Show_agent_email": "Show agent email",
   "Show_agent_info": "Show agent information",
   "Show_all": "Show All",
