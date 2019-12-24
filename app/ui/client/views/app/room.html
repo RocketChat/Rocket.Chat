@@ -1,7 +1,7 @@
 <template name="room">
 	<div class="main-content-flex">
 		<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
-			{{# unless embeddedVersion}}
+			{{# if showTopNavbar}}
 				{{# headerRoom}}
 					{{#with flexData}}
 						<div class="rc-header__block rc-header__block-action">
@@ -9,7 +9,7 @@
 						</div>
 					{{/with}}
 				{{/headerRoom}}
-			{{/unless}}
+			{{/if}}
 			<div class="messages-container-wrapper">
 				<div class="messages-container-main dropzone">
 					<div class="dropzone-overlay background-transparent-darkest color-content-background-color">{{_ "Drop_to_upload_file"}}</div>

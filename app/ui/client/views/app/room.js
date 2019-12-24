@@ -269,6 +269,10 @@ Template.room.helpers({
 		return Layout.isEmbedded();
 	},
 
+	showTopNavbar() {
+		return !Layout.isEmbedded() || settings.get('Show_top_navbar_embedded_layout');
+	},
+
 	subscribed() {
 		const { state } = Template.instance();
 		return state.get('subscribed');
