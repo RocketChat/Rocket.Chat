@@ -1,6 +1,6 @@
-import './functions/get';
-import './functions/save';
 import './methods/getStatistics';
 import './startup/monitor';
 
-export { statistics } from './statisticsNamespace';
+export { statistics } from './lib/statistics';
+export { getLastStatistics } from './functions/getLastStatistics';
+export { getStatistics } from './functions/getStatistics';

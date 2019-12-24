@@ -1159,6 +1159,7 @@
   "Domains": "Domains",
   "Domains_allowed_to_embed_the_livechat_widget": "Comma-separated list of domains allowed to embed the livechat widget. Leave blank to allow all domains.",
   "Downloading_file_from_external_URL": "Downloading file from external URL",
+  "Download_Info": "Download Info",
   "Download_My_Data": "Download My Data (HTML)",
   "Download_Snippet": "Download",
   "Drop_to_upload_file": "Drop to upload file",

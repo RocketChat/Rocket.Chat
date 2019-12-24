@@ -18,6 +18,7 @@ export function InformationPage({
 	statistics,
 	instances,
 	onClickRefreshButton,
+	onClickDownloadInfo,
 }) {
 	const t = useTranslation();
 
@@ -30,11 +31,14 @@ export function InformationPage({
 	return <section className='page-container'>
 		<Header rawSectionName={t('Info')} hideHelp>
 			{canViewStatistics
-				&& <Header.ActionBlock>
+				&& <Header.ButtonSection>
+					<Button disabled={isLoading} external type='button' onClick={onClickDownloadInfo}>
+						<Icon name='download' /> {t('Download_Info')}
+					</Button>
 					<Button disabled={isLoading} primary type='button' onClick={onClickRefreshButton}>
 						<Icon name='reload' /> {t('Refresh')}
 					</Button>
-				</Header.ActionBlock>}
+				</Header.ButtonSection>}
 		</Header>
 
 		<div className='content'>
