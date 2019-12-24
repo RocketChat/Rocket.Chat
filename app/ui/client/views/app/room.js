@@ -270,7 +270,7 @@ Template.room.helpers({
 	},
 
 	showTopNavbar() {
-		return !Layout.isEmbedded() || settings.get('Show_top_navbar_embedded_layout');
+		return !Layout.isEmbedded() || settings.get('UI_Show_top_navbar_embedded_layout');
 	},
 
 	subscribed() {
