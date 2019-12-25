@@ -365,6 +365,9 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	injectMessage(data, msg) {
+		data.msg = msg;
+	},
 	injectIndex(data, index) {
 		data.index = index;
 	},

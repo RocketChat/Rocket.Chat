@@ -71,11 +71,18 @@ Template.messageAttachment.helpers({
 	injectSettings(data, settings) {
 		data.settings = settings;
 	},
+	injectMessage(data, msg) {
+		data.msg = msg;
+	},
 	isFile() {
 		return this.type === 'file';
 	},
 	isPDF() {
-		if (this.type === 'file' && this.title_link.endsWith('.pdf') && Template.parentData().msg.file) {
+		if (
+			this.type === 'file'
+			&& this.title_link.endsWith('.pdf')
+			&& Template.parentData().msg.file
+		) {
 			this.fileId = Template.parentData().msg.file._id;
 			return true;
 		}

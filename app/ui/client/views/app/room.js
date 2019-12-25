@@ -254,10 +254,6 @@ callbacks.add('enter-room', wipeFailedUploads);
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
 Template.room.helpers({
-	useNrr() {
-		const useNrr = getConfig('useNrr');
-		return useNrr === 'true' || useNrr !== 'false';
-	},
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -477,10 +473,6 @@ Template.room.helpers({
 
 	hideAvatar() {
 		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
-	},
-
-	userCanDrop() {
-		return userCanDrop(this._id);
 	},
 
 	toolbarButtons() {

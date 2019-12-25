@@ -89,6 +89,7 @@
 				{{/each}}
 			{{/if}}
 			{{#each msg.attachments}}
+				{{injectMessage . ../msg}}
 				{{injectSettings . ../settings}}
 				{{injectIndex . @index}}
 				{{> messageAttachment}}
