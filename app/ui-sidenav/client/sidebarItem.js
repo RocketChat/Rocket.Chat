@@ -198,6 +198,95 @@ Template.sidebarItem.events({
 
 		popover.open(config);
 	},
+	'contextmenu .sidebar-item'(e) {
+		e.stopPropagation(); // to not close the menu
+		e.preventDefault();
+
+		const canLeave = () => {
+			const roomData = Session.get(`roomData${ this.rid }`);
+
+			if (!roomData) { return false; }
+
+			if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
+			if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
+
+			return !(((roomData.cl != null) && !roomData.cl) || ['d', 'l'].includes(roomData.t));
+		};
+
+		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
+		const isFavorite = () => {
+			const sub = ChatSubscription.findOne({ rid: this.rid }, { fields: { f: 1 } });
+			if (((sub != null ? sub.f : undefined) != null) && sub.f) {
+				return true;
+			}
+			return false;
+		};
+
+		const items = [{
+			icon: 'eye-off',
+			name: t('Hide_room'),
+			type: 'sidebar-item',
+			id: 'hide',
+		}];
+
+		if (this.alert) {
+			items.push({
+				icon: 'flag',
+				name: t('Mark_read'),
+				type: 'sidebar-item',
+				id: 'read',
+			});
+		} else {
+			items.push({
+				icon: 'flag',
+				name: t('Mark_unread'),
+				type: 'sidebar-item',
+				id: 'unread',
+			});
+		}
+
+		if (canFavorite) {
+			items.push({
+				icon: 'star',
+				name: t(isFavorite() ? 'Unfavorite' : 'Favorite'),
+				modifier: isFavorite() ? 'star-filled' : 'star',
+				type: 'sidebar-item',
+				id: 'favorite',
+			});
+		}
+
+		if (canLeave()) {
+			items.push({
+				icon: 'sign-out',
+				name: t('Leave_room'),
+				type: 'sidebar-item',
+				id: 'leave',
+				modifier: 'error',
+			});
+		}
+
+		const config = {
+			popoverClass: 'sidebar-item',
+			columns: [
+				{
+					groups: [
+						{
+							items,
+						},
+					],
+				},
+			],
+			data: {
+				template: this.t,
+				rid: this.rid,
+				name: this.name,
+			},
+			currentTarget: e.currentTarget,
+			offsetHorizontal: -e.currentTarget.clientWidth,
+		};
+
+		popover.open(config);
+	},
 });
 
 Template.sidebarItemIcon.helpers({
