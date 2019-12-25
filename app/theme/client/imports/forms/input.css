@@ -55,7 +55,7 @@ textarea.rc-input__element {
 	&__element {
 		width: 100%;
 		height: 2.5rem;
-		padding: 0 1rem;
+		padding: 0.5rem 0 0.5rem 1rem;
 
 		text-align: start;
 
