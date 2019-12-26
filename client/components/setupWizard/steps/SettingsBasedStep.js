@@ -3,8 +3,9 @@ import {
 	FieldGroup,
 	InputBox,
 	Label,
+	Margins,
 	SelectInput,
-	Text,
+	Skeleton,
 	TextInput,
 } from '@rocket.chat/fuselage';
 import React, { useEffect, useReducer, useState } from 'react';
@@ -17,7 +18,6 @@ import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import { StepContent } from '../StepContent';
 
 const useFields = () => {
 	const reset = 'RESET';
@@ -90,27 +90,29 @@ export function SettingsBasedStep({ step, title, active }) {
 		return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 			<StepHeader number={step} title={title} />
 
-			<StepContent>
+			<Margins blockEnd='32'>
 				<FieldGroup>
 					{Array.from({ length: 5 }, (_, i) => <Field key={i}>
-						<Label text={<Text.Skeleton />} />
+						<Label text={<Skeleton />} />
 						<InputBox.Skeleton />
 					</Field>)}
 				</FieldGroup>
-			</StepContent>
+			</Margins>
 		</Step>;
 	}
 
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<StepContent>
+		<Margins blockEnd='32'>
 			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
 					<Field key={i}>
-						<Label text={t(i18nLabel)} />
+						<Label htmlFor={_id} text={t(i18nLabel)} />
 						{type === 'string' && <TextInput
 							type='text'
+							data-qa={_id}
+							id={_id}
 							name={_id}
 							ref={i === 0 ? autoFocusRef : undefined}
 							value={value}
@@ -119,6 +121,8 @@ export function SettingsBasedStep({ step, title, active }) {
 
 						{type === 'select' && <SelectInput
 							type='select'
+							data-qa={_id}
+							id={_id}
 							name={_id}
 							placeholder={t('Select_an_option')}
 							ref={i === 0 ? autoFocusRef : undefined}
@@ -132,6 +136,8 @@ export function SettingsBasedStep({ step, title, active }) {
 
 						{type === 'language' && <SelectInput
 							type='select'
+							data-qa={_id}
+							id={_id}
 							name={_id}
 							placeholder={t('Default')}
 							ref={i === 0 ? autoFocusRef : undefined}
@@ -146,7 +152,7 @@ export function SettingsBasedStep({ step, title, active }) {
 					</Field>,
 				)}
 			</FieldGroup>
-		</StepContent>
+		</Margins>
 
 		<Pager
 			disabled={commiting}
