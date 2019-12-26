@@ -1,8 +1,24 @@
 import { Meteor } from 'meteor/meteor';
+import { SHA256 } from 'meteor/sha';
 import toastr from 'toastr';
 
 import { modal } from '../../ui-utils';
 import { t } from '../../utils';
+
+const methods = {
+	totp: {
+		text: 'Open_your_authentication_app_and_enter_the_code',
+	},
+	email: {
+		text: 'Verify_your_email_for_the_code_we_sent',
+		html: true,
+	},
+	password: {
+		title: 'Please_enter_your_password',
+		text: 'For_your_security_you_must_enter_your_current_password_to_continue',
+		inputType: 'password',
+	},
+};
 
 export function process2faReturn({ error, result, originalCallback, onCode, emailOrUsername }) {
 	if (!error || error.error !== 'totp-required') {
@@ -12,20 +28,19 @@ export function process2faReturn({ error, result, originalCallback, onCode, emai
 	const method = error.details && error.details.method;
 
 	modal.open({
-		title: t('Two Factor Authentication'),
-		text: t(method === 'email' ? 'Verify_your_email_for_the_code_we_sent' : 'Open_your_authentication_app_and_enter_the_code'),
-		html: method === 'email',
+		title: t(methods[method].title || 'Two Factor Authentication'),
+		text: t(methods[method].text),
+		html: methods[method].html,
 		type: 'input',
 		inputActionText: method === 'email' && t('Send_me_the_code_again'),
 		inputAction(e) {
-			window.a = e;
 			const { value } = e.currentTarget;
-			e.currentTarget.value = 'Sending';
+			e.currentTarget.value = t('Sending');
 			Meteor.call('sendEmailCode', emailOrUsername, () => {
 				e.currentTarget.value = value;
 			});
 		},
-		inputType: 'text',
+		inputType: methods[method].inputType || 'text',
 		showCancelButton: true,
 		closeOnConfirm: true,
 		confirmButtonText: t('Verify'),
@@ -33,6 +48,10 @@ export function process2faReturn({ error, result, originalCallback, onCode, emai
 	}, (code) => {
 		if (code === false) {
 			return originalCallback(new Meteor.Error('totp-canceled'));
+		}
+
+		if (method === 'password') {
+			code = SHA256(code);
 		}
 		onCode(code, method);
 	});

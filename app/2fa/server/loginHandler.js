@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 
 import { callbacks } from '../../callbacks';
-import { checkCodeForUser } from './code/index.ts';
+import { checkCodeForUser } from './code/index';
 
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
@@ -18,5 +18,5 @@ callbacks.add('onValidateLogin', (login) => {
 
 	const { totp } = login.methodArguments[0];
 
-	checkCodeForUser({ user: login.user, code: totp && totp.code });
+	checkCodeForUser({ user: login.user, code: totp && totp.code, options: { disablePasswordFallback: true } });
 }, callbacks.priority.MEDIUM, '2fa');
