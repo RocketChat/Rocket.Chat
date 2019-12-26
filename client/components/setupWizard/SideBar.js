@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { useTranslation } from '../providers/TranslationProvider';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { Logo } from './Logo';
 import './SideBar.css';
 
 export function SideBar({
@@ -12,7 +13,7 @@ export function SideBar({
 
 	return <aside className='SetupWizard__SideBar'>
 		<header className='SetupWizard__SideBar-header'>
-			<img className='SetupWizard__SideBar-headerLogo' src={logoSrc} />
+			<Logo className='SetupWizard__SideBar-headerLogo' src={logoSrc} />
 			<span className='SetupWizard__SideBar-headerTag'>{t('Setup_Wizard')}</span>
 		</header>
 
