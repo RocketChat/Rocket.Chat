@@ -16,9 +16,10 @@ import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
+const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted', 'defaultFavorite'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
+		console.log(settings);
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -191,7 +192,7 @@ Meteor.methods({
 					Rooms.setJoinCodeById(rid, String(value));
 					break;
 				case 'default':
-					Rooms.saveDefaultById(rid, value.default, value.favorite);
+					Rooms.saveDefaultById(rid, value);
 					break;
 				case 'retentionEnabled':
 					Rooms.saveRetentionEnabledById(rid, value);
@@ -210,6 +211,10 @@ Meteor.methods({
 					break;
 				case 'encrypted':
 					Rooms.saveEncryptedById(rid, value);
+					break;
+				case 'defaultFavorite':
+					console.log(value);
+					Rooms.saveDefaultFavoriteById(rid, value);
 					break;
 			}
 		});

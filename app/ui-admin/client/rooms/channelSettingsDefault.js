@@ -17,17 +17,17 @@ Template.channelSettingsDefault.helpers({
 	roomDefault() {
 		return Template.instance().isDefault.get();
 	},
-	isFavorite() {
-		return Template.instance().isFavorite.get();
+	isDefaultFavorite() {
+		return Template.instance().isDefaultFavorite.get();
 	},
 	defaultDescription() {
-		const { room, isDefault, isFavorite } = { room: Template.instance().room.get(), isDefault: Template.instance().isDefault.get(), isFavorite: Template.instance().isFavorite.get() };
+		const { room, isDefault, isDefaultFavorite } = { room: Template.instance().room.get(), isDefault: Template.instance().isDefault.get(), isDefaultFavorite: Template.instance().isDefaultFavorite.get() };
 		let description = t('False');
 
 		if (room && isDefault) {
 			description = t('True');
 
-			if (isFavorite) {
+			if (isDefaultFavorite) {
 				description += `, ${ t('Set_as_favorite') }`;
 			}
 			return description;
@@ -41,7 +41,7 @@ Template.channelSettingsDefault.events({
 		t.isDefault.set(e.currentTarget.value === 'true');
 	},
 	'change input[name=favorite]'(e, t) {
-		t.isFavorite.set(e.currentTarget.checked);
+		t.isDefaultFavorite.set(e.currentTarget.checked);
 	},
 	'click [data-edit]'(e, t) {
 		e.preventDefault();
@@ -56,7 +56,7 @@ Template.channelSettingsDefault.events({
 	},
 	'click .save'(e, t) {
 		e.preventDefault();
-		Meteor.call('saveRoomSettings', t.room.get()._id, 'default', { default: t.isDefault.get(), favorite: t.isFavorite.get() }, (err/* , result*/) => {
+		Meteor.call('saveRoomSettings', t.room.get()._id, { default: t.isDefault.get(), defaultFavorite: t.isDefault.get() && t.isDefaultFavorite.get() }, (err/* , result*/) => {
 			if (err) {
 				return handleError(err);
 			}
@@ -70,13 +70,13 @@ Template.channelSettingsDefault.events({
 Template.channelSettingsDefault.onCreated(function() {
 	this.editing = new ReactiveVar();
 	this.isDefault = new ReactiveVar();
-	this.isFavorite = new ReactiveVar();
+	this.isDefaultFavorite = new ReactiveVar();
 	this.room = new ReactiveVar();
 	this.onSuccess = this.data.data.onSuccess;
 	this.autorun(() => {
 		const { room } = Template.currentData().data;
 		this.isDefault.set(room && room.default);
-		this.isFavorite.set(room && room.favorite && room.default);
+		this.isDefaultFavorite.set(room && room.defaultFavorite && room.default);
 		this.room.set(room);
 	});
 });

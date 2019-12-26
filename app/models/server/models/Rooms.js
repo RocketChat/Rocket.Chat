@@ -835,17 +835,27 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveDefaultById(_id, defaultValue, favoriteValue) {
+	saveDefaultById(_id, defaultValue) {
 		const query = { _id };
-		const favorite = defaultValue && !!favoriteValue;
 
 		const update = {
 			$set: {
 				default: defaultValue,
-				...favorite && { favorite },
 			},
-			...!favorite && { $unset: { favorite: 1 } },
 		};
+
+		return this.update(query, update);
+	}
+
+	saveDefaultFavoriteById(_id, defaultFavorite) {
+		const query = { _id };
+
+		const update = {
+			...defaultFavorite && { $set: {	defaultFavorite } },
+			...!defaultFavorite && { $unset: {	defaultFavorite: 1 } },
+		};
+
+		console.log(update);
 
 		return this.update(query, update);
 	}

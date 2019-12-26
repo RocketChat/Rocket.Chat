@@ -18,7 +18,7 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		unmuted: 1,
 		ro: 1,
 		default: 1,
-		favorite: 1,
+		defaultFavorite: 1,
 		topic: 1,
 		msgs: 1,
 		archived: 1,
