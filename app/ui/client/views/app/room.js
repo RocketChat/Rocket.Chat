@@ -263,7 +263,7 @@ export const dropzoneHelpers = {
 	},
 
 	dragAndDropLabel() {
-		if (!userCanDrop) {
+		if (!userCanDrop(this._id)) {
 			return 'error-not-allowed';
 		}
 		if (!settings.get('FileUpload_Enabled')) {
@@ -608,7 +608,7 @@ export const dropzoneEvents = {
 		e.stopPropagation();
 		e.preventDefault();
 
-		if (!userCanDrop() || !settings.get('FileUpload_Enabled')) {
+		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
 			return false;
 		}
 
