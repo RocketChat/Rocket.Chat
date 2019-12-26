@@ -27,9 +27,9 @@ export const messageBlockWithContext = (context) => (props) => {
 	</kitContext.Provider>);
 };
 export const modalBlockWithContext = (context) => (props) => {
-	const data = useReactiveValue(props.data);
+	const { view } = useReactiveValue(props.data);
 	return (<kitContext.Provider value={context}>
-		{uiKitModal(data)}
+		{uiKitModal(view)}
 	</kitContext.Provider>);
 };
 
