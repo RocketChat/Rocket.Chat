@@ -108,9 +108,11 @@ export function SettingsBasedStep({ step, title, active }) {
 			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
 					<Field key={i}>
-						<Label text={t(i18nLabel)} />
+						<Label htmlFor={_id} text={t(i18nLabel)} />
 						{type === 'string' && <TextInput
 							type='text'
+							data-qa={_id}
+							id={_id}
 							name={_id}
 							ref={i === 0 ? autoFocusRef : undefined}
 							value={value}
@@ -119,6 +121,8 @@ export function SettingsBasedStep({ step, title, active }) {
 
 						{type === 'select' && <SelectInput
 							type='select'
+							data-qa={_id}
+							id={_id}
 							name={_id}
 							placeholder={t('Select_an_option')}
 							ref={i === 0 ? autoFocusRef : undefined}
@@ -132,6 +136,8 @@ export function SettingsBasedStep({ step, title, active }) {
 
 						{type === 'language' && <SelectInput
 							type='select'
+							data-qa={_id}
+							id={_id}
 							name={_id}
 							placeholder={t('Default')}
 							ref={i === 0 ? autoFocusRef : undefined}

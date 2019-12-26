@@ -10,7 +10,7 @@ export async function findQueueMetrics({ userId, agentId, includeOfflineAgents, 
 		agentId,
 		includeOfflineAgents,
 		options: {
-			sort: sort || { chats: 1 },
+			sort: sort || { chats: -1 },
 			offset,
 			count,
 		} });

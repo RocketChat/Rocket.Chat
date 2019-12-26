@@ -10,6 +10,17 @@ export class SubscriptionsRaw extends BaseRaw {
 		return this.col.findOne(query, options);
 	}
 
+	countByRoomIdAndUserId(rid, uid) {
+		const query = {
+			rid,
+			'u._id': uid,
+		};
+
+		const cursor = this.col.find(query);
+
+		return cursor.count();
+	}
+
 	isUserInRole(uid, roleName, rid) {
 		if (rid == null) {
 			return;

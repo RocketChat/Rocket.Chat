@@ -10,8 +10,8 @@ export function UsageSection({ statistics, isLoading }) {
 	const t = useTranslation();
 
 	return <>
-		<Subtitle>{t('Usage')}</Subtitle>
-		<DescriptionList>
+		<Subtitle data-qa='usage-title'>{t('Usage')}</Subtitle>
+		<DescriptionList data-qa='usage-list'>
 			<DescriptionList.Entry label={t('Stats_Total_Users')}>{s(() => statistics.totalUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Active_Users')}>{s(() => statistics.activeUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Non_Active_Users')}>{s(() => statistics.nonActiveUsers)}</DescriptionList.Entry>

@@ -127,6 +127,7 @@ export function RegisterServerStep({ step, title, active }) {
 				<div className='SetupWizard__RegisterServerStep-content'>
 					<Option
 						ref={autoFocusRef}
+						data-qa='register-server'
 						label={t('Register_Server_Registered')}
 						name='registerServer'
 						value='true'
@@ -155,6 +156,7 @@ export function RegisterServerStep({ step, title, active }) {
 						</Label>
 					</Option>
 					<Option
+						data-qa='register-server-standalone'
 						label={t('Register_Server_Standalone')}
 						name='registerServer'
 						value='false'
@@ -176,7 +178,7 @@ export function RegisterServerStep({ step, title, active }) {
 					<Label text={<>{t('Register_Server_Registered_I_Agree')} <a href='https://rocket.chat/terms'>{t('Terms')}</a> & <a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a></>} position='end' className='SetupWizard__RegisterServerStep__PrivacyTerms'>
 						<CheckBox
 							name='agreeTermsAndPrivacy'
-							data-qa-agree-terms
+							data-qa='agree-terms-and-privacy'
 							disabled={!registerServer}
 							checked={agreeTermsAndPrivacy}
 							onChange={({ currentTarget: { checked } }) => {

@@ -1,4 +1,4 @@
-import { Callout, Field, InputBox, Label, Skeleton } from '@rocket.chat/fuselage';
+import { Callout, Field, InputBox, Label, Margins, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -48,7 +48,9 @@ const MemoizedSetting = React.memo(function MemoizedSetting({
 	return <Field>
 		<InputComponent {...inputProps} />
 		{hint && <Field.Hint>{hint}</Field.Hint>}
-		{callout && <Callout type='warning' title={callout} />}
+		<Margins block='16'>
+			{callout && <Callout type='warning' children={callout} />}
+		</Margins>
 	</Field>;
 });
 

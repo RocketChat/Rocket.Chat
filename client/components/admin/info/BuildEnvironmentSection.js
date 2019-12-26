@@ -10,8 +10,8 @@ export function BuildEnvironmentSection({ info }) {
 	const build = info && (info.compile || info.build);
 
 	return <>
-		<Subtitle>{t('Build_Environment')}</Subtitle>
-		<DescriptionList>
+		<Subtitle data-qa='build-env-title'>{t('Build_Environment')}</Subtitle>
+		<DescriptionList data-qa='build-env-list'>
 			<DescriptionList.Entry label={t('OS_Platform')}>{build.platform}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('OS_Arch')}>{build.arch}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('OS_Release')}>{build.osRelease}</DescriptionList.Entry>
