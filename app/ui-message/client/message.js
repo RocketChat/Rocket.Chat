@@ -604,7 +604,7 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		if (!templateInstance) {
 			return;
 		}
-		templateInstance.sendToBottomIfNecessary();
+		templateInstance.sendToBottomIfNecessaryDebounced();
 	}
 };
 

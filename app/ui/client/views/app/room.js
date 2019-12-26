@@ -916,7 +916,7 @@ Template.room.events({
 		}
 	},
 	'load img'(e, template) {
-		return typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined;
+		return template.sendToBottomIfNecessaryDebounced();
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -1138,7 +1138,13 @@ Template.room.onCreated(function() {
 		},
 	});
 
-	this.sendToBottomIfNecessary = () => {};
+	this.sendToBottomIfNecessary = () => {
+		if (this.atBottom === true) {
+			this.sendToBottom();
+		}
+
+		lazyloadtick();
+	};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
@@ -1191,17 +1197,9 @@ Template.room.onRendered(function() {
 		template.atBottom = template.isAtBottom(100);
 	};
 
-	template.sendToBottomIfNecessary = function() {
-		if (template.atBottom === true) {
-			template.sendToBottom();
-		}
+	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 50);
 
-		lazyloadtick();
-	};
-
-	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);
-
-	template.sendToBottomIfNecessary();
+	template.sendToBottomIfNecessaryDebounced();
 
 	if (window.MutationObserver) {
 		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
