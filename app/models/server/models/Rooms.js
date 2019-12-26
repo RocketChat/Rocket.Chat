@@ -855,8 +855,6 @@ export class Rooms extends Base {
 			...!defaultFavorite && { $unset: {	defaultFavorite: 1 } },
 		};
 
-		console.log(update);
-
 		return this.update(query, update);
 	}
 
