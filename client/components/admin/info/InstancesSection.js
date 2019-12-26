@@ -1,3 +1,4 @@
+import { Subtitle } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -12,7 +13,7 @@ export function InstancesSection({ instances }) {
 	}
 
 	return <>
-		<h3>{t('Broadcast_Connected_Instances')}</h3>
+		<Subtitle>{t('Broadcast_Connected_Instances')}</Subtitle>
 		{instances.map(({ address, broadcastAuth, currentStatus, instanceRecord }, i) =>
 			<DescriptionList key={i}>
 				<DescriptionList.Entry label={t('Address')}>{address}</DescriptionList.Entry>
