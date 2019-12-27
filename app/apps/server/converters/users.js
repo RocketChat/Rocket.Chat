@@ -50,6 +50,8 @@ export class AppUsersConverter {
 				return UserType.USER;
 			case 'bot':
 				return UserType.BOT;
+			case 'app':
+				return UserType.APP;
 			case '':
 			case undefined:
 				return UserType.UNKNOWN;
