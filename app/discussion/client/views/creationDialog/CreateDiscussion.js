@@ -9,7 +9,7 @@ import toastr from 'toastr';
 import { roomTypes } from '../../../../utils/client';
 import { callbacks } from '../../../../callbacks/client';
 import { ChatRoom, ChatSubscription } from '../../../../models/client';
-import { call } from '../../../../ui-utils/client';
+import { call, offlineAction } from '../../../../ui-utils/client';
 
 import './CreateDiscussion.html';
 
@@ -96,6 +96,9 @@ Template.CreateDiscussion.events({
 	},
 	async 'submit #create-discussion, click .js-save-discussion'(event, instance) {
 		event.preventDefault();
+		if (offlineAction('Creating discussion room')) {
+			return;
+		}
 		const parentChannel = instance.parentChannel.get();
 
 		const { pmid } = instance;
