@@ -1,6 +1,20 @@
 
 # 2.4.0 (Under Release Candidate Process)
 
+## 2.4.0-rc.1
+`2019-12-26  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Update components ([#16053](https://github.com/RocketChat/Rocket.Chat/pull/16053))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 2.4.0-rc.0
 `2019-12-22  ·  4 🎉  ·  28 🚀  ·  20 🐛  ·  17 🔍  ·  21 👩‍💻👨‍💻`
 
