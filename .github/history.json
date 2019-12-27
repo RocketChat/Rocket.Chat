@@ -38039,6 +38039,31 @@
           ]
         }
       ]
+    },
+    "2.4.0-rc.2": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [],
+      "pull_requests": [
+        {
+          "pr": "16084",
+          "title": "Regression: Missing button to copy Invite links",
+          "userLogin": "ggazzo",
+          "milestone": "2.4.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16062",
+          "title": "[FIX] Registration form was hidden when login form was disabled",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
