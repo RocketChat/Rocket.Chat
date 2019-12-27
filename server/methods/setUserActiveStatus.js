@@ -33,7 +33,7 @@ Meteor.methods({
 
 		// Users without username can't do anything, so there is no need to check for owned rooms
 		if (user.username != null) {
-			relinquishRoomOwnerships(user._id);
+			relinquishRoomOwnerships(user._id, false);
 		}
 
 		Users.setUserActive(userId, active);
