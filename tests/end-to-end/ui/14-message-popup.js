@@ -32,7 +32,7 @@ const createTestUser = async ({ email, name, username, password, isMentionable }
 			active: true,
 			roles: ['user'],
 			joinDefaultChannels: true,
-			verified: false,
+			verified: true,
 		})
 		.end(done),
 	);
