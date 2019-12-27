@@ -14,7 +14,7 @@ export function SelectSettingInput({
 	value,
 	placeholder,
 	readonly,
-	autocomplete,
+	// autocomplete,
 	disabled,
 	values = [],
 	hasResetButton,
