@@ -23,6 +23,7 @@ export const deleteUser = function(userId) {
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
 		const roomCache = [];
+		const roomsToRemove = [];
 
 		// Iterate through all the rooms the user is subscribed to, to check if they are the last owner of any of them.
 		Subscriptions.db.findByUserId(userId).forEach((subscription) => {
@@ -32,36 +33,37 @@ export const deleteUser = function(userId) {
 				subscribers: null,
 			};
 
-			// DMs can always be deleted, so let's ignore it on this check
-			if (roomData.t !== 'd') {
-				// If the user is an owner on this room
-				if (hasRole(user._id, 'owner', subscription.rid)) {
-					// Fetch the number of owners
-					const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
-					// If it's only one, then this user is the only owner.
-					if (numOwners === 1) {
-						// Let's check how many subscribers the room has.
-						const options = { sort: { ts: 1 } };
-						const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
-						roomData.subscribers = subscribersCursor.count();
+			// If the user is an owner on this room and it's not a DM
+			if (roomData.t !== 'd' && hasRole(user._id, 'owner', subscription.rid)) {
+				// Fetch the number of owners
+				const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
+				// If it's only one, then this user is the only owner.
+				if (numOwners === 1) {
+					// Let's check how many subscribers the room has.
+					const options = { sort: { ts: 1 } };
+					const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
+					roomData.subscribers = subscribersCursor.count();
 
-						if (roomData.subscribers > 1) {
-							let changedOwner = false;
-							subscribersCursor.forEach((subscription) => {
-								if (changedOwner || subscription.u._id === user._id) {
-									return false;
-								}
+					let changedOwner = false;
 
-								addUserRoles(subscription.u._id, 'owner', subscription.rid);
-								changedOwner = true;
-								return false;
-							});
-						} else if (roomData.t === 'c') {
-							// If the user is the only subscriber of a public channel, then we need to abort the deletion
-							throw new Meteor.Error('error-user-is-last-owner', `To delete this user you'll need to set a new owner to the following room: ${ subscription.name }.`, {
-								method: 'deleteUser',
-							});
+					subscribersCursor.forEach((subscriber) => {
+						if (changedOwner || subscriber.u._id === user._id) {
+							return false;
 						}
+
+						const newOwner = Users.findOneById(subscriber.u._id);
+						if (!newOwner || !newOwner.active) {
+							return true;
+						}
+
+						addUserRoles(subscriber.u._id, 'owner', subscriber.rid);
+						changedOwner = true;
+						return false;
+					});
+
+					// If there's no subscriber available to be the new owner, we can remove this room.
+					if (!changedOwner) {
+						roomsToRemove.push(subscription.rid);
 					}
 				}
 			}
@@ -91,7 +93,7 @@ export const deleteUser = function(userId) {
 			}
 
 			// Remove DMs and non-channel rooms with only 1 user (the one being deleted)
-			if (roomData.t === 'd' || (roomData.t !== 'c' && roomData.subscribers === 1)) {
+			if (roomData.t === 'd' || (roomData.t !== 'c' && roomData.subscribers === 1) || roomsToRemove.includes(roomData.rid)) {
 				Subscriptions.removeByRoomId(roomData.rid);
 				FileUpload.removeFilesByRoomId(roomData.rid);
 				Messages.removeByRoomId(roomData.rid);
