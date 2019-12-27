@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { FileUpload } from '../../../file-upload';
 import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models';
-import { hasRole, getUsersInRole } from '../../../authorization';
+import { hasRole, getUsersInRole, addUserRoles } from '../../../authorization';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
 
@@ -40,17 +40,24 @@ export const deleteUser = function(userId) {
 					const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
 					// If it's only one, then this user is the only owner.
 					if (numOwners === 1) {
-						// If the user is the last owner of a public channel, then we need to abort the deletion
-						if (roomData.t === 'c') {
-							throw new Meteor.Error('error-user-is-last-owner', `To delete this user you'll need to set a new owner to the following room: ${ subscription.name }.`, {
-								method: 'deleteUser',
-							});
-						}
-
-						// For private groups, let's check how many subscribers it has. If the user is the only subscriber, then it will be eliminated and doesn't need to abort the deletion
-						roomData.subscribers = Subscriptions.findByRoomId(subscription.rid).count();
+						// Let's check how many subscribers the room has.
+						const options = { sort: { ts: 1 } };
+						const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
+						roomData.subscribers = subscribersCursor.count();
 
 						if (roomData.subscribers > 1) {
+							let changedOwner = false;
+							subscribersCursor.forEach((subscription) => {
+								if (changedOwner || subscription.u._id === user._id) {
+									return false;
+								}
+
+								addUserRoles(subscription.u._id, 'owner', subscription.rid);
+								changedOwner = true;
+								return false;
+							});
+						} else if (roomData.t === 'c') {
+							// If the user is the only subscriber of a public channel, then we need to abort the deletion
 							throw new Meteor.Error('error-user-is-last-owner', `To delete this user you'll need to set a new owner to the following room: ${ subscription.name }.`, {
 								method: 'deleteUser',
 							});
