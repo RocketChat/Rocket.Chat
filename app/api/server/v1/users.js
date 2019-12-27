@@ -588,7 +588,7 @@ API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		const { tokenName } = this.bodyParams;
 		if (!tokenName) {
@@ -600,7 +600,7 @@ API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		const { tokenName } = this.bodyParams;
 		if (!tokenName) {
@@ -633,7 +633,7 @@ API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		const { tokenName } = this.bodyParams;
 		if (!tokenName) {
