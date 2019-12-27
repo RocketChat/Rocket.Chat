@@ -23,7 +23,7 @@ Template.Blocks.onRendered(async function() {
 			appId: this.data.appId,
 			rid: this.data.rid,
 		}), { data: () => state.get() }),
-		this.firstNode
+		this.firstNode,
 	);
 	const event = new Event('rendered');
 	this.firstNode.dispatchEvent(event);

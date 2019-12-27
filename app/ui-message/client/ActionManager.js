@@ -124,6 +124,6 @@ Meteor.startup(() =>
 	CachedCollectionManager.onLogin(() =>
 		Notifications.onUser('uiInteraction', ({ type, ...data }) => {
 			handlePayloadUserInteraction(type, data);
-		})
-	)
+		}),
+	),
 );

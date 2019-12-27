@@ -3,9 +3,9 @@ import {
 	Label,
 	UrlInput,
 } from '@rocket.chat/fuselage';
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
+import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
 import { ResetSettingButton } from '../ResetSettingButton';
 
 export function RelativeUrlSettingInput({
@@ -20,8 +20,10 @@ export function RelativeUrlSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }) {
+	const getAbsoluteUrl = useAbsoluteUrl();
+
 	const handleChange = (event) => {
-		onChangeValue(event.currentTarget.value);
+		onChangeValue && onChangeValue(event.currentTarget.value);
 	};
 
 	return <>
@@ -32,7 +34,7 @@ export function RelativeUrlSettingInput({
 		<UrlInput
 			data-qa-setting-id={_id}
 			id={_id}
-			value={Meteor.absoluteUrl(value)}
+			value={getAbsoluteUrl(value)}
 			placeholder={placeholder}
 			disabled={disabled}
 			readOnly={readonly}

@@ -1,18 +1,23 @@
-import { Field, FieldGroup, Label, SelectInput, TextInput } from '@rocket.chat/fuselage';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import {
+	Field,
+	FieldGroup,
+	InputBox,
+	Label,
+	Margins,
+	SelectInput,
+	Skeleton,
+	TextInput,
+} from '@rocket.chat/fuselage';
 import React, { useEffect, useReducer, useState } from 'react';
 
-import { handleError } from '../../../../app/utils/client';
-import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
+import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation, useLanguages } from '../../../contexts/TranslationContext';
 import { useFocus } from '../../../hooks/useFocus';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useTranslation } from '../../providers/TranslationProvider';
 import { Pager } from '../Pager';
-import { useSetupWizardParameters } from '../ParametersProvider';
-import { useSetupWizardStepsState } from '../StepsState';
+import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import { StepContent } from '../StepContent';
 
 const useFields = () => {
 	const reset = 'RESET';
@@ -38,12 +43,11 @@ const useFields = () => {
 };
 
 export function SettingsBasedStep({ step, title, active }) {
-	const { settings } = useSetupWizardParameters();
-	const { currentStep, goToPreviousStep, goToNextStep } = useSetupWizardStepsState();
+	const { settings, currentStep, goToPreviousStep, goToNextStep } = useSetupWizardContext();
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
 
-	const languages = useReactiveValue(() => TAPi18n && TAPi18n.getLanguages(), []);
+	const languages = useLanguages();
 
 	useEffect(() => {
 		resetFields(
@@ -57,7 +61,11 @@ export function SettingsBasedStep({ step, title, active }) {
 
 	const t = useTranslation();
 
-	const batchSetSettings = useBatchSetSettings();
+	const batchSetSettings = useBatchSettingsDispatch();
+
+	const autoFocusRef = useFocus(active);
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleBackClick = () => {
 		goToPreviousStep();
@@ -72,19 +80,31 @@ export function SettingsBasedStep({ step, title, active }) {
 			await batchSetSettings(fields.map(({ _id, value }) => ({ _id, value })));
 			goToNextStep();
 		} catch (error) {
-			console.error(error);
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			setCommiting(false);
 		}
 	};
 
-	const autoFocusRef = useFocus(active);
+	if (fields.length === 0) {
+		return <Step active={active} working={commiting} onSubmit={handleSubmit}>
+			<StepHeader number={step} title={title} />
+
+			<Margins blockEnd='32'>
+				<FieldGroup>
+					{Array.from({ length: 5 }, (_, i) => <Field key={i}>
+						<Label text={<Skeleton />} />
+						<InputBox.Skeleton />
+					</Field>)}
+				</FieldGroup>
+			</Margins>
+		</Step>;
+	}
 
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<StepContent>
+		<Margins blockEnd='32'>
 			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
 					<Field key={i}>
@@ -126,7 +146,7 @@ export function SettingsBasedStep({ step, title, active }) {
 					</Field>,
 				)}
 			</FieldGroup>
-		</StepContent>
+		</Margins>
 
 		<Pager
 			disabled={commiting}

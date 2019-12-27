@@ -1,10 +1,10 @@
-import { Callout, Field, InputBox, Label, Text } from '@rocket.chat/fuselage';
+import { Callout, Field, InputBox, Label, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { MarkdownText } from '../../basic/MarkdownText';
 import { RawText } from '../../basic/RawText';
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
 import { StringSettingInput } from './inputs/StringSettingInput';
@@ -121,11 +121,11 @@ export function Setting({ settingId }) {
 	/>;
 }
 
-Setting.Skeleton = function Skeleton() {
+Setting.Skeleton = function SettingSkeleton() {
 	return <Field>
 		<Label>
-			<Text.Skeleton animated width='1/4' />
+			<Skeleton width='25%' />
 		</Label>
-		<InputBox.Skeleton animated />
+		<InputBox.Skeleton />
 	</Field>;
 };
