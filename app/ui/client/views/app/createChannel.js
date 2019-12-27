@@ -11,6 +11,7 @@ import _ from 'underscore';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { t, roomTypes } from '../../../../utils';
+import { offlineAction } from '../../../../ui-utils';
 import { hasAllPermission } from '../../../../authorization';
 
 const acEvents = {
@@ -226,6 +227,9 @@ Template.createChannel.events({
 	'submit .create-channel__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
+		if (offlineAction('Creating channel')) {
+			return;
+		}
 		const name = e.target.name.value;
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();

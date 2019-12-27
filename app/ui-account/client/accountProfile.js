@@ -8,7 +8,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { modal, SideNav } from '../../ui-utils';
+import { modal, SideNav, offlineAction } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
@@ -303,7 +303,7 @@ Template.accountProfile.onCreated(function() {
 			customFields[this.name] = $(this).val() || '';
 		});
 
-		if (Object.keys(data).length + Object.keys(customFields).length === 0) {
+		if (Object.keys(data).length + Object.keys(customFields).length === 0 || offlineAction('Updating profile')) {
 			return cb && cb();
 		}
 		Meteor.call('saveUserProfile', data, customFields, function(error, results) {
