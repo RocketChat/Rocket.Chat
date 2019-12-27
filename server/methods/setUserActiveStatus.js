@@ -6,6 +6,7 @@ import * as Mailer from '../../app/mailer';
 import { hasPermission } from '../../app/authorization';
 import { Users, Subscriptions } from '../../app/models';
 import { settings } from '../../app/settings';
+import { relinquishRoomOwnerships } from '../../app/lib';
 
 Meteor.methods({
 	setUserActiveStatus(userId, active) {
@@ -28,6 +29,11 @@ Meteor.methods({
 
 		if (!user) {
 			return false;
+		}
+
+		// Users without username can't do anything, so there is no need to check for owned rooms
+		if (user.username != null) {
+			relinquishRoomOwnerships(user._id);
 		}
 
 		Users.setUserActive(userId, active);

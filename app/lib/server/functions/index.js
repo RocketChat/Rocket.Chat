@@ -18,6 +18,7 @@ export { isTheLastMessage } from './isTheLastMessage';
 export { loadMessageHistory } from './loadMessageHistory';
 export { processWebhookMessage } from './processWebhookMessage';
 export { removeUserFromRoom } from './removeUserFromRoom';
+export { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 export { saveCustomFields } from './saveCustomFields';
 export { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutValidation';
 export { saveUser } from './saveUser';
