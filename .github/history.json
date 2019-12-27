@@ -38023,6 +38023,22 @@
           ]
         }
       ]
+    },
+    "2.4.0-rc.1": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [],
+      "pull_requests": [
+        {
+          "pr": "16053",
+          "title": "Regression: Update components",
+          "userLogin": "tassoevan",
+          "milestone": "2.4.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
