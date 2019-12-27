@@ -47,7 +47,7 @@ const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
-const handlePayloadUserInteraction = (type, { /* appId,*/ viewId = 'lero', triggerId, ...data }) => {
+const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
@@ -55,6 +55,9 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ viewId = 'lero', trigg
 	if (!appId) {
 		return;
 	}
+
+	// TODO not sure this will always have 'view.id'
+	const { view: { id: viewId } } = data;
 
 	if (!viewId) {
 		return;
