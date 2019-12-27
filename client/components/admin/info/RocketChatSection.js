@@ -1,4 +1,4 @@
-import { Text } from '@rocket.chat/fuselage';
+import { Skeleton, Subtitle } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -6,14 +6,14 @@ import { formatDate, formatHumanReadableTime } from './formatters';
 import { DescriptionList } from './DescriptionList';
 
 export function RocketChatSection({ info, statistics, isLoading }) {
-	const s = (fn) => (isLoading ? <Text.Skeleton animated width={'1/2'} /> : fn());
+	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 	const t = useTranslation();
 
 	const appsEngineVersion = info && info.marketplaceApiVersion;
 
 	return <>
-		<h3>{t('Rocket.Chat')}</h3>
-		<DescriptionList>
+		<Subtitle data-qa='rocket-chat-title'>{t('Rocket.Chat')}</Subtitle>
+		<DescriptionList data-qa='rocket-chat-list'>
 			<DescriptionList.Entry label={t('Version')}>{s(() => statistics.version)}</DescriptionList.Entry>
 			{appsEngineVersion && <DescriptionList.Entry label={t('Apps_Engine_Version')}>{appsEngineVersion}</DescriptionList.Entry>}
 			<DescriptionList.Entry label={t('DB_Migration')}>{s(() => statistics.migration.version)}</DescriptionList.Entry>
