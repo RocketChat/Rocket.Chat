@@ -4843,6 +4843,12 @@ rc-old select,
 	& .user.user-card-message {
 		margin-left: -5px;
 	}
+
+	& svg.thread-icons--thread {
+		left: 0;
+		margin: 0 3px;
+		position: relative;
+	}
 }
 
 .rc-old .messages-box:not(.compact) .hide-avatars .message.sequential .info {
