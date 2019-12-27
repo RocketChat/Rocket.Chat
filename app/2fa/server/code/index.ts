@@ -65,11 +65,23 @@ export function getFingerprintFromConnection(connection: IMethodConnection): str
 	return crypto.createHash('md5').update(data).digest('hex');
 }
 
-export function isAuthorizedForToken(connection: IMethodConnection, user: IUser): boolean {
+export function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
 	const currentToken = Accounts._getLoginToken(connection.id);
 	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === currentToken);
 
-	if (!tokenObject || !tokenObject.twoFactorAuthorizedUntil || !tokenObject.twoFactorAuthorizedHash) {
+	if (!tokenObject) {
+		return false;
+	}
+
+	if (tokenObject.bypassTwoFactor === true) {
+		return true;
+	}
+
+	if (options.disableRememberMe === true) {
+		return false;
+	}
+
+	if (!tokenObject.twoFactorAuthorizedUntil || !tokenObject.twoFactorAuthorizedHash) {
 		return false;
 	}
 
@@ -104,7 +116,7 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		user = getUserForCheck(user);
 	}
 
-	if (options.disableRememberMe !== true && connection && isAuthorizedForToken(connection, user)) {
+	if (connection && isAuthorizedForToken(connection, user, options)) {
 		return true;
 	}
 

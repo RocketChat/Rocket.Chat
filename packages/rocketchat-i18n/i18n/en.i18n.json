@@ -2680,6 +2680,7 @@
   "Reporting": "Reporting",
   "Request_comment_when_closing_conversation": "Request comment when closing conversation",
   "Request_tag_before_closing_chat": "Request tag(s) before closing conversation",
+  "Require": "Require",
   "Require_all_tokens": "Require all tokens",
   "Require_any_token": "Require any token",
   "Require_password_change": "Require password change",

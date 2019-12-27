@@ -13,6 +13,7 @@ export interface IPersonalAccessToken extends ILoginToken {
 	createdAt: Date;
 	lastTokenPart: string;
 	name?: string;
+	bypassTwoFactor?: boolean;
 }
 
 export interface IUserEmailVerificationToken {
@@ -26,7 +27,7 @@ export interface IUserEmailCode {
 	expire: Date;
 }
 
-type LoginToken = ILoginToken | IPersonalAccessToken;
+type LoginToken = ILoginToken & IPersonalAccessToken;
 
 export interface IUserServices {
 	password?: {

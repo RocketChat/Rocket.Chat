@@ -624,6 +624,7 @@ API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
 				name: loginToken.name,
 				createdAt: loginToken.createdAt,
 				lastTokenPart: loginToken.lastTokenPart,
+				bypassTwoFactor: loginToken.bypassTwoFactor,
 			}));
 
 		return API.v1.success({

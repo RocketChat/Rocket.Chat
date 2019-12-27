@@ -2500,6 +2500,7 @@
   "Reporting": "Relatórios",
   "Request_comment_when_closing_conversation": "Solicitar comentário ao encerrar a conversa",
   "Request_tag_before_closing_chat": "Solicitar tag(s) antes de encerrar a conversa",
+  "Require": "Exigir",
   "Require_all_tokens": "Exigir todos os tokens",
   "Require_any_token": "Exigir qualquer token",
   "Require_password_change": "Exigir alteração de senha",

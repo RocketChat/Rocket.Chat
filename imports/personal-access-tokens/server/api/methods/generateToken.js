@@ -6,7 +6,7 @@ import { hasPermission } from '../../../../../app/authorization';
 import { Users } from '../../../../../app/models';
 
 Meteor.methods({
-	'personalAccessTokens:generateToken'({ tokenName }) {
+	'personalAccessTokens:generateToken'({ tokenName, bypassTwoFactor }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:generateToken' });
 		}
@@ -31,6 +31,7 @@ Meteor.methods({
 				createdAt: new Date(),
 				lastTokenPart: token.slice(-6),
 				name: tokenName,
+				bypassTwoFactor,
 			},
 		});
 		return token;

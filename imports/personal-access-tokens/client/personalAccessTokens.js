@@ -26,6 +26,9 @@ Template.accountTokens.helpers({
 	dateFormated(date) {
 		return moment(date).format('L LT');
 	},
+	twoFactor(bypassTwoFactor) {
+		return bypassTwoFactor ? t('Ignore') : t('Require');
+	},
 });
 
 const showSuccessModal = (token) => {
@@ -40,6 +43,7 @@ const showSuccessModal = (token) => {
 	}, () => {
 	});
 };
+
 Template.accountTokens.events({
 	'submit #form-tokens'(e, instance) {
 		e.preventDefault();
@@ -47,7 +51,8 @@ Template.accountTokens.events({
 		if (tokenName === '') {
 			return toastr.error(t('Please_fill_a_token_name'));
 		}
-		Meteor.call('personalAccessTokens:generateToken', { tokenName }, (error, token) => {
+		const bypassTwoFactor = $('#bypassTwoFactor').val() === 'true';
+		Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }, (error, token) => {
 			if (error) {
 				return toastr.error(t(error.error));
 			}
