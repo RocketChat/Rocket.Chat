@@ -5,6 +5,7 @@ import { Integrations } from '../../../models/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../lib/mountQueriesBasedOnPermission';
 
 Meteor.publish('integrations', function _integrationPublication() {
+	console.warn('The publication "integrations" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

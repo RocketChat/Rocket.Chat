@@ -1362,6 +1362,9 @@ Template.room.onRendered(function() {
 });
 
 callbacks.add('enter-room', (sub) => {
+	if (!sub) {
+		return;
+	}
 	const isAReplyInDMFromChannel = FlowRouter.getQueryParam('reply') && sub.t === 'd';
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
