@@ -1,6 +1,25 @@
 
 # 2.4.0 (Under Release Candidate Process)
 
+## 2.4.0-rc.2
+`2019-12-27  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Registration form was hidden when login form was disabled ([#16062](https://github.com/RocketChat/Rocket.Chat/pull/16062))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Missing button to copy Invite links ([#16084](https://github.com/RocketChat/Rocket.Chat/pull/16084))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 2.4.0-rc.1
 `2019-12-26  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
