@@ -1,10 +1,14 @@
 export interface ILoginToken {
 	hashedToken: string;
+	twoFactorAuthorizedUntil?: Date;
+	twoFactorAuthorizedHash?: string;
+}
+
+export interface IMeteorLoginToken extends ILoginToken {
 	when: Date;
 }
 
-export interface IPersonalAccessToken {
-	hashedToken: string;
+export interface IPersonalAccessToken extends ILoginToken {
 	type: 'personalAccessToken';
 	createdAt: Date;
 	lastTokenPart: string;

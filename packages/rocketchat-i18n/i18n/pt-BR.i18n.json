@@ -206,6 +206,8 @@
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta máximo",
   "Accounts_UserAddedEmail_Default": "<h1>Bem-vindo ao <strong>[Site_Name]</strong></h1>.<p> Vá para <a href=\"[Site_URL]\">[Site_URL]</a> e experimente a melhor solução de chat com código aberto da atualidade! </p><p> Você pode fazer o login usando seu e-mail: [email] e senha: [password]. Pode ser pedida a mudança da senha após o seu primeiro login.",
   "Accounts_TwoFactorAuthentication_MaxDelta_Description": "O Delta máximo determina quantos tokens são válidos em qualquer momento. Os tokens são gerados a cada 30 segundos e são válidos por (30 * Delta máximo) segundos. <br/>Exemplo: com um Delta máximo configurado para 10, cada token pode ser usado até 300 segundos antes ou depois do timestamp. Isso é útil quando o relógio do cliente não está corretamente sincronizado com o servidor.",
+  "Accounts_TwoFactorAuthentication_RememberFor": "Lembrar a autenticação por (segundos)",
+  "Accounts_TwoFactorAuthentication_RememberFor_Description": "Não requisitar a autenticação de dois fatores se já requisitada anteriormente dentro do tempo determinado.",
   "Accounts_UseDefaultBlockedDomainsList": "Use Lista Padrão de Domínios Bloqueados",
   "Accounts_UseDNSDomainCheck": "Use verificação de Domínio DNS",
   "Accounts_UserAddedEmailSubject_Default": "Você foi adicionado ao [Site_Name]",

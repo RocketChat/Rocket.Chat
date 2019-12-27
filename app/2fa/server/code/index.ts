@@ -1,11 +1,16 @@
-import { Meteor } from 'meteor/meteor';
+import crypto from 'crypto';
 
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+
+import { settings } from '../../../settings/server';
 import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { IUser } from '../../../../definition/IUser';
 import { ICodeCheck } from './ICodeCheck';
 import { Users } from '../../../models/server';
+import { IMethodConnection } from '../../../../definition/IMethodThisType';
 
 interface IMethods {
 	[key: string]: ICodeCheck;
@@ -13,6 +18,7 @@ interface IMethods {
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
+	disableRememberMe?: boolean;
 }
 
 export const totpCheck = new TOTPCheck();
@@ -45,13 +51,61 @@ export function getUserForCheck(userId: string): IUser {
 			'services.email2fa': 1,
 			'services.emailCode': 1,
 			'services.password': 1,
+			'services.resume.loginTokens': 1,
 		},
 	});
 }
 
-export function checkCodeForUser({ user, code, method, options = {} }: { user: IUser | string; code?: string; method?: string; options?: ITwoFactorOptions }): boolean {
+export function getFingerprintFromConnection(connection: IMethodConnection): string {
+	const data = JSON.stringify({
+		userAgent: connection.httpHeaders['user-agent'],
+		clientAddress: connection.clientAddress,
+	});
+
+	return crypto.createHash('md5').update(data).digest('hex');
+}
+
+export function isAuthorizedForToken(connection: IMethodConnection, user: IUser): boolean {
+	const currentToken = Accounts._getLoginToken(connection.id);
+	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === currentToken);
+
+	if (!tokenObject || !tokenObject.twoFactorAuthorizedUntil || !tokenObject.twoFactorAuthorizedHash) {
+		return false;
+	}
+
+	if (tokenObject.twoFactorAuthorizedUntil < new Date()) {
+		return false;
+	}
+
+	if (tokenObject.twoFactorAuthorizedHash !== getFingerprintFromConnection(connection)) {
+		return false;
+	}
+
+	return true;
+}
+
+export function rememberAuthorization(connection: IMethodConnection, user: IUser): void {
+	const currentToken = Accounts._getLoginToken(connection.id);
+
+	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor'));
+
+	if (rememberFor <= 0) {
+		return;
+	}
+
+	const expires = new Date();
+	expires.setSeconds(expires.getSeconds() + rememberFor);
+
+	Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, currentToken, getFingerprintFromConnection(connection), expires);
+}
+
+export function checkCodeForUser({ user, code, method, options = {}, connection }: { user: IUser | string; code?: string; method?: string; options?: ITwoFactorOptions; connection?: IMethodConnection }): boolean {
 	if (typeof user === 'string') {
 		user = getUserForCheck(user);
+	}
+
+	if (options.disableRememberMe !== true && connection && isAuthorizedForToken(connection, user)) {
+		return true;
 	}
 
 	let [methodName, selectedMethod] = getMethodByNameOrFirstActiveForUser(user, method);
@@ -75,6 +129,10 @@ export function checkCodeForUser({ user, code, method, options = {} }: { user: I
 
 	if (!valid) {
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', { method: methodName });
+	}
+
+	if (options.disableRememberMe !== true && connection) {
+		rememberAuthorization(connection, user);
 	}
 
 	return true;

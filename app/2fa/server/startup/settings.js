@@ -36,5 +36,9 @@ settings.addGroup('Accounts', function() {
 				value: true,
 			},
 		});
+
+		this.add('Accounts_TwoFactorAuthentication_RememberFor', 300, {
+			type: 'int',
+		});
 	});
 });

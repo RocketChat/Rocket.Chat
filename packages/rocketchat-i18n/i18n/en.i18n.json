@@ -214,6 +214,8 @@
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
   "Accounts_UserAddedEmail_Default": "<h1>Welcome to <strong>[Site_Name]</strong></h1><p>Go to <a href=\"[Site_URL]\">[Site_URL]</a> and try the best open source chat solution available today!</p><p>You may login using your email: [email] and password: [password]. You may be required to change it after your first login.",
   "Accounts_TwoFactorAuthentication_MaxDelta_Description": "The Maximum Delta determines how many tokens are valid at any given time. Tokens are generated every 30 seconds, and are valid for (30 * Maximum Delta) seconds. <br/>Example: With a Maximum Delta set to 10, each token can be used up to 300 seconds before or after it's timestamp. This is useful when the client's clock is not properly synced with the server.",
+  "Accounts_TwoFactorAuthentication_RememberFor": "Remember Two Factor for (seconds)",
+  "Accounts_TwoFactorAuthentication_RememberFor_Description": "Do not request two factor authorization code if it was already provided before in the given time.",
   "Accounts_UseDefaultBlockedDomainsList": "Use Default Blocked Domains List",
   "Accounts_UseDNSDomainCheck": "Use DNS Domain Check",
   "Accounts_UserAddedEmailSubject_Default": "You have been added to [Site_Name]",

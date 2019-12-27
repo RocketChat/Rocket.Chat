@@ -1082,6 +1082,18 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
+		return this.update({
+			_id,
+			'services.resume.loginTokens.hashedToken': token,
+		}, {
+			$set: {
+				'services.resume.loginTokens.$.twoFactorAuthorizedHash': hash,
+				'services.resume.loginTokens.$.twoFactorAuthorizedUntil': until,
+			},
+		});
+	}
+
 	setUtcOffset(_id, utcOffset) {
 		const query = {
 			_id,

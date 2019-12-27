@@ -8,6 +8,8 @@ declare module 'meteor/random' {
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
 		function _bcryptRounds(): number;
+
+		function _getLoginToken(connectionId: string): string | undefined;
 	}
 }
 

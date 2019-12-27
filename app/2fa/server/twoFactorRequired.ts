@@ -11,7 +11,7 @@ export function twoFactorRequired(fn: Function, options: ITwoFactorOptions) {
 		}
 
 		if (!this.twoFactorChecked) {
-			checkCodeForUser({ user: this.userId, options });
+			checkCodeForUser({ user: this.userId, options, connection: this.connection || undefined });
 		}
 
 		return fn.apply(this, args);

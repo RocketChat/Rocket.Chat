@@ -9,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'callWithTwoFactorRequired' });
 		}
 
-		checkCodeForUser({ user: this.userId, code, method, options: methodOptions[ddpMethod] });
+		checkCodeForUser({ user: this.userId, code, method, options: methodOptions[ddpMethod], connection: this.connection || undefined });
 
 		this.twoFactorChecked = true;
 		return Meteor.server.method_handlers[ddpMethod].apply(this, params);
