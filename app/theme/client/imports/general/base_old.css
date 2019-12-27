@@ -4846,8 +4846,10 @@ rc-old select,
 
 	& svg.thread-icons--thread {
 		left: 0;
-		margin: 0 3px;
+
 		position: relative;
+		
+		margin: 0 3px;
 	}
 }
 
