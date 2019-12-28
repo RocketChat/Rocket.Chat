@@ -1,44 +1,11 @@
 
-# 2.4.0 (Under Release Candidate Process)
+# 2.4.0
+`2019-12-27  ·  4 🎉  ·  28 🚀  ·  21 🐛  ·  19 🔍  ·  21 👩‍💻👨‍💻`
 
-## 2.4.0-rc.3
-`2019-12-27`
-
-## 2.4.0-rc.2
-`2019-12-27  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Registration form was hidden when login form was disabled ([#16062](https://github.com/RocketChat/Rocket.Chat/pull/16062))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Missing button to copy Invite links ([#16084](https://github.com/RocketChat/Rocket.Chat/pull/16084))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@rodrigok](https://github.com/rodrigok)
-
-## 2.4.0-rc.1
-`2019-12-26  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Update components ([#16053](https://github.com/RocketChat/Rocket.Chat/pull/16053))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@tassoevan](https://github.com/tassoevan)
-
-## 2.4.0-rc.0
-`2019-12-22  ·  4 🎉  ·  28 🚀  ·  20 🐛  ·  17 🔍  ·  21 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
 
 ### 🎉 New features
 
@@ -100,6 +67,7 @@
 - Server crash on sync with no response ([#15919](https://github.com/RocketChat/Rocket.Chat/pull/15919))
 - Don't throw an error when a message is prevented from apps engine ([#15850](https://github.com/RocketChat/Rocket.Chat/pull/15850) by [@wreiske](https://github.com/wreiske))
 - Thread Replies in Search ([#15841](https://github.com/RocketChat/Rocket.Chat/pull/15841))
+- Registration form was hidden when login form was disabled ([#16062](https://github.com/RocketChat/Rocket.Chat/pull/16062))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -121,6 +89,8 @@
 - LingoHub based on develop ([#15939](https://github.com/RocketChat/Rocket.Chat/pull/15939))
 - [CHORE] Replace findOne with findOneById methods (Omnichannel) ([#15894](https://github.com/RocketChat/Rocket.Chat/pull/15894))
 - Merge master into develop & Set version to 3.0.0-develop ([#15872](https://github.com/RocketChat/Rocket.Chat/pull/15872))
+- Regression: Update components ([#16053](https://github.com/RocketChat/Rocket.Chat/pull/16053))
+- Regression: Missing button to copy Invite links ([#16084](https://github.com/RocketChat/Rocket.Chat/pull/16084))
 
 </details>
 
