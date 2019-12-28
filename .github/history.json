@@ -37303,7 +37303,11 @@
     "2.4.0-rc.0": {
       "node_version": "8.17.0",
       "npm_version": "6.13.4",
-      "mongo_versions": [],
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
       "pull_requests": [
         {
           "pr": "16043",
@@ -38027,7 +38031,11 @@
     "2.4.0-rc.1": {
       "node_version": "8.17.0",
       "npm_version": "6.13.4",
-      "mongo_versions": [],
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
       "pull_requests": [
         {
           "pr": "16053",
@@ -38043,7 +38051,11 @@
     "2.4.0-rc.2": {
       "node_version": "8.17.0",
       "npm_version": "6.13.4",
-      "mongo_versions": [],
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
       "pull_requests": [
         {
           "pr": "16084",
@@ -38064,6 +38076,16 @@
           ]
         }
       ]
+    },
+    "2.4.0-rc.3": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }
