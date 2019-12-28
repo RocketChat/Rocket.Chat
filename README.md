@@ -377,6 +377,13 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 # Development
 
 ## Quick start for code developers
+
+### Setup on Online IDE
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/https://github.com/RocketChat/Rocket.Chat)
+
+### Setup on system
+
 Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
