@@ -37,6 +37,7 @@ body {
 @media (width <= 500px) {
 	body {
 		position: fixed;
+		font-size: 1rem;
 	}
 }
 
