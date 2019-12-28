@@ -172,9 +172,7 @@ Template.sidebarItem.onCreated(function() {
 		const currentData = Template.currentData();
 
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
-			if (!isMobile()) {
-				return clearInterval(this.timeAgoInterval);
-			}
+			return clearInterval(this.timeAgoInterval);
 		}
 
 		if (currentData.lastMessage && !currentData.lastMessage._id) {
