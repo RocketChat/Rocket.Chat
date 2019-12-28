@@ -152,7 +152,7 @@
 								{{/unless}}
 								{{#unless emailVerified}}
 									<div class="rc-input__error">
-										<button class="rc-button rc-button--small" id="resend-verification-email">{{_ "Resend_verification_email"}}</button>
+										<button class="rc-button rc-button--small" id="resend-verification-email"  {{canResendEmailConf 'disabled'}}>{{_ "Resend_verification_email"}}</button>
 									</div>
 								{{/unless}}
 							</div>

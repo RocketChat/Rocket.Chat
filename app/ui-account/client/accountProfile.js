@@ -142,6 +142,13 @@ Template.accountProfile.helpers({
 			return ret;
 		}
 	},
+	canResendEmailConf(ret) {
+		const instance = Template.instance();
+		const email = instance.email.get();
+		if (!email || !validateEmail(email)) {
+			return ret;
+		}
+	},
 	allowDeleteOwnAccount() {
 		return settings.get('Accounts_AllowDeleteOwnAccount');
 	},
