@@ -235,6 +235,7 @@
 		}
 	},
 	"houston": {
+		"metadata": ".scripts/houstonMetadata.js",
 		"updateFiles": [
 			"package.json",
 			".circleci/snap.sh",
