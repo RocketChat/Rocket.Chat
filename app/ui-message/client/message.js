@@ -416,7 +416,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable || _groupable) && !!(tmid && showreply && (!t || t === 'e2e'));
+		return !(groupable === false || _groupable === false) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -464,7 +464,7 @@ const findParentMessage = (() => {
 					repliesCount: message.tcount,
 				},
 			},
-			{ multi: true }
+			{ multi: true },
 		);
 	};
 })();
@@ -600,10 +600,6 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		const templateInstance = view && view.templateInstance();
 		if (!templateInstance) {
 			return;
-		}
-
-		if (currentNode.classList.contains('own') === true) {
-			templateInstance.atBottom = true;
 		}
 		templateInstance.sendToBottomIfNecessary();
 	}

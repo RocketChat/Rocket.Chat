@@ -152,16 +152,17 @@ Template.userEdit.events({
 		e.target.type = 'password';
 	},
 
-	'click #addRole'(e, instance) {
+	'change #roleSelect'(e, instance) {
+		const select = $('#roleSelect');
 		e.stopPropagation();
 		e.preventDefault();
-		if ($('#roleSelect').find(':selected').is(':disabled')) {
+		if (select.find(':selected').is(':disabled')) {
 			return;
 		}
 		const userRoles = [...instance.roles.get()];
-		userRoles.push($('#roleSelect').val());
+		userRoles.push(select.val());
 		instance.roles.set(userRoles);
-		$('#roleSelect').val('placeholder');
+		select.val('placeholder');
 	},
 
 	'submit form'(e, t) {
@@ -182,11 +183,11 @@ Template.userEdit.onCreated(function() {
 
 	const { tabBar } = Template.currentData();
 
-	this.cancel = (form, username) => {
+	this.cancel = (form, data) => {
 		form.reset();
 		this.$('input[type=checkbox]').prop('checked', true);
 		if (this.user) {
-			return this.data.back(username);
+			return this.data.back(data);
 		}
 		return tabBar.close();
 	};
@@ -283,7 +284,7 @@ Template.userEdit.onCreated(function() {
 				return handleError(error);
 			}
 			toastr.success(userData._id ? t('User_updated_successfully') : t('User_added_successfully'));
-			this.cancel(form, userData.username);
+			this.cancel(form, userData);
 		});
 	};
 });

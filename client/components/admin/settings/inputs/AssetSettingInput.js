@@ -1,19 +1,24 @@
 import { Button, Icon, Label } from '@rocket.chat/fuselage';
 import { Random } from 'meteor/random';
 import React from 'react';
-import toastr from 'toastr';
 
-import { call } from '../../../../../app/ui-utils/client/lib/callMethod';
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useMethod } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import './AssetSettingInput.css';
 
 export function AssetSettingInput({
 	_id,
 	label,
-	value,
+	value = {},
 	asset,
-	fileConstraints,
+	fileConstraints = {},
 }) {
 	const t = useTranslation();
+
+	const dispatchToastMessage = useToastMessageDispatch();
+	const setAsset = useMethod('setAsset');
+	const unsetAsset = useMethod('unsetAsset');
 
 	const handleUpload = (event) => {
 		event = event.originalEvent || event;
@@ -28,19 +33,26 @@ export function AssetSettingInput({
 		}
 
 		Object.values(files).forEach((blob) => {
-			toastr.info(t('Uploading_file'));
+			dispatchToastMessage({ type: 'info', message: t('Uploading_file') });
 			const reader = new FileReader();
 			reader.readAsBinaryString(blob);
-			reader.onloadend = () =>
-				call('setAsset', reader.result, blob.type, asset)
-					.then(() => {
-						toastr.success(t('File_uploaded'));
-					});
+			reader.onloadend = async () => {
+				try {
+					await setAsset(reader.result, blob.type, asset);
+					dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			};
 		});
 	};
 
-	const handleDeleteButtonClick = () => {
-		call('unsetAsset', asset);
+	const handleDeleteButtonClick = async () => {
+		try {
+			await unsetAsset(asset);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
 	};
 
 	return <>
@@ -56,6 +68,7 @@ export function AssetSettingInput({
 					</Button>
 					: <div className='rc-button rc-button--primary'>{t('Select_file')}
 						<input
+							className='AssetSettingInput__input'
 							type='file'
 							accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${ fileConstraints.extensions.join(', .') }`}
 							onChange={handleUpload}

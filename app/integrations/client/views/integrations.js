@@ -1,12 +1,13 @@
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { integrations } from '../../lib/rocketchat';
-import { ChatIntegrations } from '../collections';
 import { SideNav } from '../../../ui-utils/client';
+import { APIClient } from '../../../utils/client';
 
 Template.integrations.helpers({
 	hasPermission() {
@@ -18,7 +19,7 @@ Template.integrations.helpers({
 		]);
 	},
 	integrations() {
-		return ChatIntegrations.find();
+		return Template.instance().integrations.get();
 	},
 	dateFormated(date) {
 		return moment(date).format('L LT');
@@ -33,4 +34,11 @@ Template.integrations.onRendered(() => {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
 	});
+});
+
+Template.integrations.onCreated(async function() {
+	this.integrations = new ReactiveVar([]);
+
+	const { integrations } = await APIClient.v1.get('integrations.list');
+	this.integrations.set(integrations);
 });

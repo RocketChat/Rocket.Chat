@@ -16,9 +16,10 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
-import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
+import { findUsersToAutocomplete } from '../lib/users';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -152,14 +153,18 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const { username } = this.getUserFromParams();
+		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
-
-		const result = getFullUserData({
+		const params = {
 			userId: this.userId,
 			filter: username,
 			limit: 1,
-		});
+		};
+
+		const result = userId
+			? getFullUserDataById({ userId: this.userId, filterId: userId })
+			: getFullUserData(params);
+
 		if (!result || result.count() !== 1) {
 			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
@@ -683,5 +688,19 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 			requested: result.requested,
 			exportOperation: result.exportOperation,
 		});
+	},
+});
+
+API.v1.addRoute('users.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findUsersToAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
 	},
 });
