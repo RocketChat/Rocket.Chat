@@ -433,6 +433,15 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	highlightedMsg(msg) {
+		const message = msg.msg;
+		const search = msg.searchedText;
+		const regex = new RegExp(search, 'gi');
+		const res = message.replace(regex, function(str) {
+			return `<mark>${ str }</mark>`;
+		});
+		return res;
+	},
 });
 
 

@@ -78,7 +78,11 @@
 					{{#if isDecrypting}}
 						<span>******</span>
 					{{else}}
-						{{{body}}}
+						{{#if msg.searchedText}}
+							{{{highlightedMsg msg}}}
+						{{else}}
+							{{{body}}}
+						{{/if}}
 					{{/if}}
 				</div>
 			</div>
