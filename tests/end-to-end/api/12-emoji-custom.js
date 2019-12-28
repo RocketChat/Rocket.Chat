@@ -250,6 +250,22 @@ describe('[EmojiCustom]', function() {
 		});
 	});
 
+	describe('[/emoji-custom.all]', () => {
+		it('should return emojis', (done) => {
+			request.get(api('emoji-custom.all'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('emojis').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+	});
+
+
 	describe('[/emoji-custom.delete]', () => {
 		it('should throw an error when trying delete custom emoji without the required param "emojid"', (done) => {
 			request.post(api('emoji-custom.delete'))

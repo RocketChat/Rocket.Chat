@@ -7,10 +7,10 @@
 					<form class="search-form" role="form">
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								{{#if isReady}}
-									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
-								{{else}}
+								{{#if isLoading}}
 									{{> loading }}
+								{{else}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
 								{{/if}}
 							</div>
 							<input id="sound-filter" type="text" class="rc-input__element"
@@ -43,13 +43,13 @@
 										</div>
 									</div>
 								</td>
-                                                                <td width="20%">
-                                                                        <div class="rc-table-wrapper">
-                                                                                {{>icon _id=_id icon="play" block="icon-play-circled"}}
-                                                                                {{>icon _id=_id icon="pause" block="icon-pause-circled"}}
-                                                                                {{>icon _id=_id icon="ban" block="icon-reset-circled"}}
-                                                                        </div>
-                                                                </td>
+								<td width="20%">
+										<div class="rc-table-wrapper">
+												{{>icon _id=_id icon="play" block="icon-play-circled"}}
+												{{>icon _id=_id icon="pause" block="icon-pause-circled"}}
+												{{>icon _id=_id icon="ban" block="icon-reset-circled"}}
+										</div>
+								</td>
 							</tr>
 							{{else}}
 								{{# with searchText}}
@@ -58,11 +58,11 @@
 									</tr>
 								{{/with}}
 							{{/each}}
-							{{#unless isReady}}
+							{{#if isLoading}}
 							<tr class="table-no-click">
 								<td class="table-loading-td">{{> loading}}</td>
 							</tr>
-							{{/unless}}
+							{{/if}}
 						</tbody>
 					{{/table}}
 				{{/requiresPermission}}

@@ -3,6 +3,8 @@ import { boolean, text } from '@storybook/addon-knobs/react';
 import React from 'react';
 
 import { BurgerMenuButton } from './BurgerMenuButton';
+import { SidebarContext } from '../../contexts/SidebarContext';
+import { SessionContext } from '../../contexts/SessionContext';
 
 export default {
 	title: 'header/BurgerMenuButton',
@@ -19,7 +21,26 @@ export const _default = () => <BurgerMenuButton
 	unreadMessagesBadge={text('unreadMessagesBadge')}
 	onClick={action('click')}
 />;
+_default.story = {
+	decorators: [
+		(fn) => <SidebarContext.Provider children={fn()} value={[false, action('setSidebarOpen')]} />,
+	],
+};
 
-export const whenSidebarOpen = () => <BurgerMenuButton isSidebarOpen />;
+export const whenSidebarOpen = () => <BurgerMenuButton />;
+whenSidebarOpen.story = {
+	decorators: [
+		(fn) => <SidebarContext.Provider children={fn()} value={[true, action('setSidebarOpen')]} />,
+	],
+};
 
-export const unreadMessagesBadge = () => <BurgerMenuButton unreadMessagesBadge='99' />;
+export const unreadMessagesBadge = () => <BurgerMenuButton />;
+unreadMessagesBadge.story = {
+	decorators: [
+		(fn) => <SessionContext.Provider value={{
+			get: (name) => name === 'unread' && '99',
+		}}>
+			<SidebarContext.Provider children={fn()} value={[false, action('setSidebarOpen')]} />
+		</SessionContext.Provider>,
+	],
+};

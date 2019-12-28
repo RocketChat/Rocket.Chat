@@ -565,6 +565,11 @@ export const dropzoneEvents = {
 	},
 
 	'dragover .dropzone-overlay'(e) {
+		document.querySelectorAll('.over.dropzone').forEach((dropzone) => {
+			if (dropzone !== e.currentTarget.parentNode) {
+				dropzone.classList.remove('over');
+			}
+		});
 		e = e.originalEvent || e;
 		if (['move', 'linkMove'].includes(e.dataTransfer.effectAllowed)) {
 			e.dataTransfer.dropEffect = 'move';
@@ -622,6 +627,12 @@ export const dropzoneEvents = {
 
 Template.room.events({
 	...dropzoneEvents,
+	'click [data-message-action]'(event, template) {
+		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
+		if ((button != null ? button.action : undefined) != null) {
+			button.action.call(this, event, template);
+		}
+	},
 	'click .js-follow-thread'() {
 		const { msg } = messageArgs(this);
 		call('followMessage', { mid: msg._id });
@@ -815,7 +826,7 @@ Template.room.events({
 				RoomHistoryManager.getMoreNext(this._id);
 			}
 		}
-	}, 500),
+	}, 100),
 
 	'click .new-message'(event, instance) {
 		instance.atBottom = true;
@@ -1189,7 +1200,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessary = function() {
-		if (template.atBottom === true && template.isAtBottom() !== true) {
+		if (template.atBottom === true) {
 			template.sendToBottom();
 		}
 
@@ -1209,18 +1220,15 @@ Template.room.onRendered(function() {
 	}
 	// observer.disconnect()
 
-	template.onWindowResize = () =>
-		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced());
+	template.onWindowResize = () => template.sendToBottomIfNecessaryDebounced();
+
 	window.addEventListener('resize', template.onWindowResize);
 
 	const wheelHandler = (() => {
 		const fn = _.throttle(function() {
 			template.checkIfScrollIsAtBottom();
 		}, 50);
-		return () => {
-			template.atBottom = false;
-			fn();
-		};
+		return fn;
 	})();
 	wrapper.addEventListener('mousewheel', wheelHandler);
 
@@ -1329,10 +1337,15 @@ Template.room.onRendered(function() {
 			}
 		});
 	}
-	callbacks.add('streamMessage', (msg) => {
+	callbacks.add('streamNewMessage', (msg) => {
 		if (rid !== msg.rid || msg.editedAt) {
 			return;
 		}
+
+		if (msg.u._id === Meteor.userId()) {
+			return template.sendToBottom();
+		}
+
 		if (!template.isAtBottom()) {
 			newMessage.classList.remove('not');
 		}
@@ -1351,6 +1364,9 @@ Template.room.onRendered(function() {
 });
 
 callbacks.add('enter-room', (sub) => {
+	if (!sub) {
+		return;
+	}
 	const isAReplyInDMFromChannel = FlowRouter.getQueryParam('reply') && sub.t === 'd';
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
