@@ -605,6 +605,7 @@
   "Chatpal_Welcome": "Enjoy your search!",
   "Chatpal_Window_Size": "Index Window Size",
   "Chatpal_Window_Size_Description": "The size of index windows in hours (on bootstrapping)",
+  "Check_your_internet_connection": "__action__ is not allowed in offline mode. Check your internet connection",
   "Choose_a_room": "Choose a room",
   "Choose_messages": "Choose messages",
   "Choose_the_alias_that_will_appear_before_the_username_in_messages": "Choose the alias that will appear before the username in messages.",

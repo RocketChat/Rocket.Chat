@@ -7,6 +7,7 @@ export { call } from './lib/callMethod';
 export { erase, hide, leave } from './lib/ChannelActions';
 export { MessageAction } from './lib/MessageAction';
 export { messageBox } from './lib/messageBox';
+export { offlineAction } from './lib/offlineAction';
 export { popover } from './lib/popover';
 export { readMessage } from './lib/readMessages';
 export { RoomManager } from './lib/RoomManager';
