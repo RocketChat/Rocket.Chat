@@ -1,6 +1,7 @@
 import { Session } from 'meteor/session';
 
 import { TabBar } from '../../ui-utils';
+import { isMobile, share } from '../../utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';
 
@@ -69,4 +70,15 @@ TabBar.addButton({
 	icon: 'keyboard',
 	template: 'keyboardShortcuts',
 	order: 4,
+});
+
+TabBar.addButton({
+	groups: ['channel', 'group', 'direct'],
+	id: 'share',
+	i18nTitle: 'Share',
+	icon: 'share',
+	template: 'share',
+	order: 500,
+	condition: () => isMobile(),
+	action: () => { share(); },
 });
