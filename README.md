@@ -12,7 +12,7 @@
 [![Coverage Status](https://coveralls.io/repos/RocketChat/Rocket.Chat/badge.svg)](https://coveralls.io/r/RocketChat/Rocket.Chat)
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
-
+[![Gitpod](https://img.shields.io/badge/Gitpod-Rocket.Chat-green.svg?style=flat)](https://gitpod.io/#https://github.com/RocketChat/Rocket.Chat)
 
 * [**NEW!** Help Wanted](#help-wanted)
 * [Community](#community)
