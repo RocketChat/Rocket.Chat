@@ -23,4 +23,4 @@ export { SWCache } from './lib/swCache';
 export { mime } from '../lib/mimeTypes';
 export { isMobile } from './lib/isMobile';
 export { hex_sha1 } from './lib/sha1';
-export { share } from './lib/share';
+export { share, shareApp, shareRoom } from './lib/share';

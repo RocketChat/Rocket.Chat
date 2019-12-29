@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
-import { t, getUserPreference, handleError, isMobile, share } from '../../utils';
+import { t, getUserPreference, handleError, isMobile, shareApp } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
@@ -289,7 +289,7 @@ const toolbarButtons = (user) => [{
 			icon: 'share',
 			type: 'open',
 			action: () => {
-				share();
+				shareApp();
 				popover.close();
 			},
 		};

@@ -1,7 +1,7 @@
 import { Session } from 'meteor/session';
 
 import { TabBar } from '../../ui-utils';
-import { isMobile, share } from '../../utils';
+import { isMobile, shareRoom } from '../../utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';
 
@@ -80,5 +80,5 @@ TabBar.addButton({
 	template: 'share',
 	order: 500,
 	condition: () => isMobile(),
-	action: () => { share(); },
+	action: () => { shareRoom(); },
 });
