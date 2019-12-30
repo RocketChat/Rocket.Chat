@@ -1,7 +1,7 @@
 <template name="ModalBlock">
 	<header class="rc-modal__header">
 		<h1 class="rc-modal__title">
-			 {{>TextBlock title}}
+			 {{>TextBlock title=view.title.text}}
 		</h1>
 	</header>
 	<section class="rc-modal__content">
@@ -10,7 +10,7 @@
 		</form>
 	</section>
 	<footer class="rc-modal__footer">
-		{{> ButtonElement form=viewId id="blockkit-cancel" value="cancel" type="button" text=close}}
-		{{> ButtonElement form=viewId text=submit}}
+		{{> ButtonElement form=viewId id="blockkit-cancel" value="cancel" type="button" text=view.close}}
+		{{> ButtonElement form=viewId text=view.submit}}
 	</footer>
 </template>
