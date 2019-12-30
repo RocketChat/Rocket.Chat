@@ -23,8 +23,8 @@ export function SelectSettingInput({
 }) {
 	const t = useTranslation();
 
-	const handleChange = (event) => {
-		onChangeValue && onChangeValue(event.currentTarget.value);
+	const handleChange = ([value]) => {
+		onChangeValue && onChangeValue(value);
 	};
 
 	return <>

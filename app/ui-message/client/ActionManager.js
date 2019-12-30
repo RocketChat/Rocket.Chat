@@ -88,16 +88,17 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	}
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }) => {
+export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }) => new Promise(async (resolve, reject) => {
 	const triggerId = generateTriggerId(appId);
 
 	const payload = rest.payload || rest;
 
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
+	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
 
 	const { type: interactionType, ...data } = await APIClient.post(`apps/uikit/${ appId }/`, { type, actionId, payload, mid, rid, triggerId });
-	return handlePayloadUserInteraction(interactionType, data);
-};
+	return resolve(handlePayloadUserInteraction(interactionType, data));
+});
 
 export const triggerBlockAction = (options) => triggerAction({ type: ACTION_TYPES.ACTION, ...options });
 export const triggerSubmitView = async ({ viewId, ...options }) => {

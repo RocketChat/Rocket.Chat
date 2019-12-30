@@ -93,7 +93,7 @@ export class AppUIKitInteractionApi {
 					break;
 
 				case 'viewCancel':
-					res.status(200);
+					res.sendStatus(200);
 					break;
 
 				case 'viewSubmit': {

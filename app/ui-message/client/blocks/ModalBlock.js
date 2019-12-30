@@ -11,7 +11,7 @@ Template.ModalBlock.onRendered(async function() {
 	const ReactDOM = await import('react-dom');
 	const state = new ReactiveVar();
 
-	const { viewId } = this.data;
+	const { viewId, appId } = this.data;
 
 	this.autorun(() => {
 		state.set(Template.currentData());
@@ -28,54 +28,51 @@ Template.ModalBlock.onRendered(async function() {
 	ActionManager.on(viewId, handleUpdate);
 
 	this.state = new ReactiveDict({});
-
 	ReactDOM.render(
-		React.createElement(modalBlockWithContext({
-			action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
-				ActionManager.triggerBlockAction({ actionId, appId, value, blockId, mid });
-			},
-			state: ({ actionId, value, /* ,appId, */blockId = 'default' }) => {
-				this.state.set(actionId, {
-					blockId,
-					value,
-				});
-			},
-			appId: this.data.appId,
-
-		}), { data: () => state.get() }),
-		this.find('.js-modal-block'),
+		React.createElement(
+			modalBlockWithContext({
+				onClose: () => ActionManager.triggerCancel({ appId, viewId }),
+				onSubmit: () => ActionManager.triggerSubmitView({
+					viewId,
+					appId,
+					payload: {
+						view: {
+							id: viewId,
+							state: Object.entries(this.state.all()).reduce(
+								(obj, [key, { blockId, value }]) => {
+									obj[blockId] = obj[blockId] || {};
+									obj[blockId][key] = value;
+									return obj;
+								},
+								{},
+							),
+						},
+					},
+				}),
+				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
+					ActionManager.triggerBlockAction({
+						actionId,
+						appId,
+						value,
+						blockId,
+						mid,
+					});
+				},
+				state: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
+					this.state.set(actionId, {
+						blockId,
+						value,
+					});
+				},
+				...this.data,
+			}),
+			{ data: () => state.get() },
+		),
+		this.find('.js-modal-block').parentElement.parentElement,
 	);
 });
 Template.ModalBlock.onDestroyed(async function() {
 	const ReactDOM = await import('react-dom');
 	const node = this.find('.js-modal-block');
 	node && ReactDOM.unmountComponentAtNode(node);
-});
-
-Template.ModalBlock.events({
-	'click #blockkit-cancel'(e, i) {
-		e.preventDefault();
-		const { appId, viewId } = i.data;
-
-		ActionManager.triggerCancel({ appId, viewId });
-	},
-	'submit form'(e, i) {
-		e.preventDefault();
-
-		const { appId, viewId } = i.data;
-		ActionManager.triggerSubmitView({
-			viewId,
-			appId,
-			payload: {
-				view: {
-					id: viewId,
-					state: Object.entries(i.state.all()).reduce((obj, [key, { blockId, value }]) => {
-						obj[blockId] = obj[blockId] || {};
-						obj[blockId][key] = value;
-						return obj;
-					}, {}),
-				},
-			},
-		});
-	},
 });
