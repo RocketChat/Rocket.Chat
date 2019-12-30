@@ -61,7 +61,6 @@ const toUtf8 = function(contentType, body) {
 };
 
 const getUrlContent = function(urlObj, redirectCount = 5, callback) {
-	console.log("teste");
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -73,26 +72,15 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	};
 
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
-
-	console.log("parsedUrl", parsedUrl);
 	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
 		return callback();
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
-	console.log("safePorts", safePorts);
-	console.log("teste", safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol));
-
 	if (safePorts.length > 0 && ((parsedUrl.port && !safePorts.includes(parsedUrl.port)) || (!parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)))) {
 		return callback();
 	}
-
-	// const ignoredProtocols = ['http:', 'ftp:'];
-	// console.log(parsedUrl);
-	// if (ignoredProtocols.length > 0 && parsedUrl.protocol && ignoredProtocols.includes(parsedUrl.protocol)) {
-	// 	return callback();
-	// }
 
 	const data = callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
