@@ -5,26 +5,29 @@ import _ from 'underscore';
 import { VideoRecorder } from '../../ui';
 
 export const VRecDialog = new class {
-	constructor() {
-		this.opened = false;
-		this.initiated = false;
-		this.width = 400;
-		this.height = 290;
-	}
+	opened = false;
 
-	init(templateData) {
-		if (this.initiated) {
-			return;
-		}
+	dialogView = null;
 
-		this.initiated = true;
-		return Blaze.renderWithData(Template.vrecDialog, templateData, document.body);
+	width = 400;
+
+	height = 290;
+
+
+	init() {
+		this.dialogView = Blaze.render(Template.vrecDialog, document.body);
 	}
 
 	open(source, { rid, tmid }) {
 		if (!this.initiated) {
-			this.init({ rid, tmid, input: source.querySelector('.js-input-message') });
+			this.init();
 		}
+
+		this.dialogView.templateInstance().update({
+			rid,
+			tmid,
+			input: source.querySelector('.js-input-message'),
+		});
 
 		this.source = source;
 		const dialog = $('.vrec-dialog');
