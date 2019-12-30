@@ -9,17 +9,12 @@ export const VRecDialog = new class {
 
 	dialogView = null;
 
-	width = 400;
-
-	height = 290;
-
-
 	init() {
 		this.dialogView = Blaze.render(Template.vrecDialog, document.body);
 	}
 
 	open(source, { rid, tmid }) {
-		if (!this.initiated) {
+		if (!this.dialogView) {
 			this.init();
 		}
 
@@ -31,7 +26,7 @@ export const VRecDialog = new class {
 
 		this.source = source;
 		const dialog = $('.vrec-dialog');
-		this.setPosition(dialog, source);
+		this.dialogView.templateInstance().setPosition(dialog, source);
 		dialog.addClass('show');
 		this.opened = true;
 
@@ -41,38 +36,9 @@ export const VRecDialog = new class {
 	close() {
 		$('.vrec-dialog').removeClass('show');
 		this.opened = false;
-		$(window).off('resize', this.remove);
 		if (this.video != null) {
 			return VideoRecorder.stop();
 		}
-	}
-
-	setPosition(dialog, source, anchor = 'left') {
-		const _set = () => {
-			const sourcePos = $(source).offset();
-			let top = sourcePos.top - this.height - 5;
-
-			if (top < 0) {
-				top = 10;
-			}
-			if (anchor === 'left') {
-				let right = window.innerWidth - (sourcePos.left + source.offsetWidth - 25);
-				if (right < 0) {
-					right = 10;
-				}
-				return dialog.css({ top: `${ top }px`, right: `${ right }px` });
-			}
-			let left = (sourcePos.left - this.width) + 100;
-			if (left < 0) {
-				left = 10;
-			}
-			return dialog.css({ top: `${ top }px`, left: `${ left }px` });
-		};
-
-		const set = _.debounce(_set, 2000);
-		_set();
-		this.remove = set;
-		$(window).on('resize', set);
 	}
 
 	initializeCamera() {

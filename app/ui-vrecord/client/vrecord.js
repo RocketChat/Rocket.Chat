@@ -1,8 +1,7 @@
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { VariableContext } from 'twilio/lib/rest/serverless/v1/service/environment/variable';
+import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
 import { VideoRecorder, fileUpload } from '../../ui';
@@ -53,6 +52,9 @@ Template.vrecDialog.events({
 });
 
 Template.vrecDialog.onCreated(function() {
+	this.width = 400;
+	this.height = 290;
+
 	this.rid = new ReactiveVar();
 	this.tmid = new ReactiveVar();
 	this.input = new ReactiveVar();
@@ -61,4 +63,36 @@ Template.vrecDialog.onCreated(function() {
 		this.tmid.set(tmid);
 		this.input.set(input);
 	};
+
+	this.setPosition = function(dialog, source, anchor = 'left') {
+		const _set = () => {
+			const sourcePos = $(source).offset();
+			let top = sourcePos.top - this.height - 5;
+
+			if (top < 0) {
+				top = 10;
+			}
+			if (anchor === 'left') {
+				let right = window.innerWidth - (sourcePos.left + source.offsetWidth - 25);
+				if (right < 0) {
+					right = 10;
+				}
+				return dialog.css({ top: `${ top }px`, right: `${ right }px` });
+			}
+			let left = (sourcePos.left - this.width) + 100;
+			if (left < 0) {
+				left = 10;
+			}
+			return dialog.css({ top: `${ top }px`, left: `${ left }px` });
+		};
+
+		const set = _.debounce(_set, 2000);
+		_set();
+		this.remove = set;
+		$(window).on('resize', set);
+	};
+});
+
+Template.vrecDialog.onDestroyed(function() {
+	$(window).off('resize', this.remove);
 });
