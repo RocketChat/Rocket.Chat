@@ -2,7 +2,7 @@
 	display: flex;
 
 	width: 100%;
-	height: 100vh;
+	min-height: 100vh;
 
 	background-color: var(--color-dark-05);
 	align-items: stretch;
@@ -10,22 +10,15 @@
 	justify-content: center;
 
 	&__wrapper {
+		display: flex;
 		flex: 1 1 auto;
 
 		height: 100vh;
-		padding: 1rem;
+		flex-flow: column nowrap;
 	}
 
 	&__steps {
-		overflow: auto;
-
-		width: 100%;
-		height: 100%;
-		padding: 1rem 3rem;
-
-		border-radius: 2px;
-		background-color: var(--color-white);
-		box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+		flex: 1 1 auto;
 		justify-content: center;
 	}
 }
@@ -33,10 +26,12 @@
 @media (width <= 760px) {
 	.SetupWizard {
 		flex-direction: column;
-		justify-content: initial;
+
+		min-height: 100vh;
+		justify-content: stretch;
 
 		&__wrapper {
-			padding: 0;
+			min-height: 0;
 		}
 	}
 }
