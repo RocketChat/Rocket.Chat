@@ -655,7 +655,7 @@ API.v1.addRoute('users.2fa.enableEmail', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.2fa.disableEmail', { authRequired: true, twoFactorRequired: true }, {
+API.v1.addRoute('users.2fa.disableEmail', { authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } }, {
 	post() {
 		Meteor.call('2fa:disable-email');
 

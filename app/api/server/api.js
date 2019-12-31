@@ -336,6 +336,8 @@ export class APIClass extends Restivus {
 						id: Random.id(),
 						close() {},
 						token: this.token,
+						httpHeaders: this.request.headers,
+						clientAddress: requestIp,
 					};
 
 					try {
