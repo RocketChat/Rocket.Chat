@@ -1,4 +1,4 @@
-import { Text } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -18,9 +18,9 @@ export function Header({
 			</div>
 
 			<span className='rc-header__block'>
-				<Text is='h1' headline defaultColor>
+				<Box is='h1' textStyle='h1' textColor='default'>
 					{rawSectionName || t(sectionName)}
-				</Text>
+				</Box>
 			</span>
 
 			{children}
