@@ -365,7 +365,7 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
-	injectMessage(data, msg) {
+	injectMessage(data, { attachments, urls, ...msg }) {
 		data.msg = msg;
 	},
 	injectIndex(data, index) {
