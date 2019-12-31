@@ -491,22 +491,8 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		}
 	}
 
-	executeTriggers(...args) {
-		logger.outgoing.debug('Execute Trigger:', args[0]);
-
-		const argObject = this.eventNameArgumentsToObject(...args);
-		const { event, message, room } = argObject;
-
-		// Each type of event should have an event and a room attached, otherwise we
-		// wouldn't know how to handle the trigger nor would we have anywhere to send the
-		// result of the integration
-		if (!event) {
-			return;
-		}
-
+	getTriggersToExecute(room, message) {
 		const triggersToExecute = [];
-
-		logger.outgoing.debug('Starting search for triggers for the room:', room ? room._id : '__any');
 		if (room) {
 			switch (room.t) {
 				case 'd':
@@ -573,6 +559,25 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 					break;
 			}
 		}
+		return triggersToExecute;
+	}
+
+	executeTriggers(...args) {
+		logger.outgoing.debug('Execute Trigger:', args[0]);
+
+		const argObject = this.eventNameArgumentsToObject(...args);
+		const { event, message, room } = argObject;
+
+		// Each type of event should have an event and a room attached, otherwise we
+		// wouldn't know how to handle the trigger nor would we have anywhere to send the
+		// result of the integration
+		if (!event) {
+			return;
+		}
+
+		logger.outgoing.debug('Starting search for triggers for the room:', room ? room._id : '__any');
+
+		const triggersToExecute = this.getTriggersToExecute(room, message);
 
 		if (this.triggers.__any) {
 			// For outgoing integration which don't rely on rooms.

@@ -207,69 +207,74 @@ class FlexTab extends Page {
 
 	operateFlexTab(desiredTab, desiredState) {
 		// desiredState true=open false=closed
-		switch (desiredTab) {
-			case 'info':
+		const desiredTabs = {
+			info() {
 				if ((!this.channelSettings.isVisible() && desiredState) || (this.channelSettings.isVisible() && !desiredState)) {
 					this.channelTab.waitForVisible(5000);
 					this.channelTab.click();
 					this.channelSettings.waitForVisible(5000, !desiredState);
 				}
-				break;
+			},
 
-			case 'search':
+			search() {
 				if ((!this.messageSearchBar.isVisible() && desiredState) || (this.messageSearchBar.isVisible() && !desiredState)) {
 					this.searchTab.waitForVisible(5000);
 					this.searchTab.click();
 					this.messageSearchBar.waitForVisible(5000, !desiredState);
 				}
-				break;
+			},
 
-			case 'members':
+			members() {
 				if ((!this.avatarImage.isVisible() && desiredState) || (this.userSearchBar.isVisible() && !desiredState)) {
 					this.membersTab.waitForVisible(5000);
 					this.membersTab.click();
 					this.avatarImage.waitForVisible(5000, !desiredState);
 				}
-				break;
+			},
 
-			case 'notifications':
+			notifications() {
 				if ((!this.notificationsSettings.isVisible() && desiredState) || (this.notificationsSettings.isVisible() && !desiredState)) {
 					this.notificationsTab.waitForVisible(5000);
 					this.notificationsTab.click();
 					this.notificationsSettings.waitForVisible(5000, !desiredState);
 				}
-				break;
-			case 'files':
+			},
+
+			files() {
 				if ((!this.filesTabContent.isVisible() && desiredState) || (this.filesTabContent.isVisible() && !desiredState)) {
 					this.filesTab.waitForVisible(5000);
 					this.filesTab.click();
 					this.filesTabContent.waitForVisible(5000, !desiredState);
 				}
-				break;
+			},
 
-			case 'mentions':
+			mentions() {
 				if ((!this.mentionsTabContent.isVisible() && desiredState) || (this.mentionsTabContent.isVisible() && !desiredState)) {
 					this.mentionsTab.waitForVisible(5000);
 					this.mentionsTab.click();
 					this.mentionsTabContent.waitForVisible(5000, !desiredState);
 				}
-				break;
+			},
 
-			case 'starred':
+			starred() {
 				if ((!this.starredTabContent.isVisible() && desiredState) || (this.starredTabContent.isVisible() && !desiredState)) {
 					this.starredTab.waitForVisible(5000);
 					this.starredTab.click();
 					this.starredTabContent.waitForVisible(5000, !desiredState);
 				}
-				break;
+			},
 
-			case 'pinned':
+			pinned() {
 				if ((!this.pinnedTabContent.isVisible() && desiredState) || (this.pinnedTabContent.isVisible() && !desiredState)) {
 					this.pinnedTab.waitForVisible(5000);
 					this.pinnedTab.click();
 					this.pinnedTabContent.waitForVisible(5000, !desiredState);
 				}
-				break;
+			},
+		};
+
+		if (desiredTabs[desiredTab]) {
+			desiredTabs[desiredTab]();
 		}
 	}
 
