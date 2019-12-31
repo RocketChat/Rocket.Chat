@@ -7,4 +7,4 @@ methodsWithTwoFactor({
 	'2fa:disable-email'() {
 		return Users.disableEmail2FAByUserId(Meteor.userId());
 	},
-});
+}, { disableRememberMe: true });
