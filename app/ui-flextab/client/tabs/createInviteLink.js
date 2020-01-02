@@ -2,6 +2,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
+import Clipboard from 'clipboard';
 
 import { t, APIClient } from '../../../utils';
 import { formatDateAndTime } from '../../../lib/client/lib/formatDate';
@@ -67,6 +68,9 @@ Template.createInviteLink.helpers({
 });
 
 Template.createInviteLink.events({
+	'click .js-copy'(event, i) {
+		$(event.currentTarget).attr('data-clipboard-text', i.url.get());
+	},
 	'click .js-edit-invite'(e, instance) {
 		e.preventDefault();
 		instance.isEditing.set(true);
@@ -90,4 +94,9 @@ Template.createInviteLink.onCreated(function() {
 	this.inviteData = new ReactiveVar(null);
 
 	getInviteLink(this, this.data.rid);
+
+	const clipboard = new Clipboard('.js-copy');
+	clipboard.on('success', function() {
+		toastr.success(TAPi18n.__('Copied'));
+	});
 });
