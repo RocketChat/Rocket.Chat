@@ -85,7 +85,9 @@
 
 			{{#if hasOembed}}
 				{{#each msg.urls}}
-					{{injectIndex . @index}} {{> oembedBaseWidget}}
+					{{injectMessage . ../msg}}
+					{{injectIndex . @index}}
+					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
 			{{#each msg.attachments}}

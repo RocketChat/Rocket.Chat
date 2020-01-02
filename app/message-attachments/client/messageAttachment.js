@@ -71,7 +71,7 @@ Template.messageAttachment.helpers({
 	injectSettings(data, settings) {
 		data.settings = settings;
 	},
-	injectMessage(data, msg) {
+	injectMessage(data, { attachments, ...msg }) {
 		data.msg = msg;
 	},
 	isFile() {
