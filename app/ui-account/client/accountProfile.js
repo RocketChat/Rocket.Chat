@@ -135,13 +135,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (
-			!avatar
-			&& user.name === realname
-			&& user.username === username
-			&& getUserEmailAddress(user) === email
-			&& statusText === user.statusText
-			&& !password) {
+		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password) {
 			return ret;
 		}
 		if (password !== confirmationPassword || !validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
