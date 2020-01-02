@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { baseURI } from './baseuri';
+import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
 
 export const APIClient = {
 	delete(endpoint, params) {
@@ -43,26 +44,34 @@ export const APIClient = {
 		return query;
 	},
 
-	_jqueryCall(method, endpoint, params, body) {
+	_jqueryCall(method, endpoint, params, body, headers = {}) {
 		const query = APIClient._generateQueryFromParams(params);
 
 		return new Promise(function _rlRestApiGet(resolve, reject) {
 			jQuery.ajax({
 				method,
 				url: `${ baseURI }api/${ endpoint }${ query }`,
-				headers: {
+				headers: Object.assign({
 					'Content-Type': 'application/json',
 					'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
 					'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
-				},
+				}, headers),
 				data: JSON.stringify(body),
 				success: function _rlGetSuccess(result) {
 					resolve(result);
 				},
 				error: function _rlGetFailure(xhr, status, errorThrown) {
-					const error = new Error(errorThrown);
-					error.xhr = xhr;
-					reject(error);
+					APIClient.processTwoFactorError({
+						xhr,
+						params: [method, endpoint, params, body, headers],
+						resolve,
+						reject,
+						originalCallback() {
+							const error = new Error(errorThrown);
+							error.xhr = xhr;
+							reject(error);
+						},
+					});
 				},
 			});
 		});
@@ -95,6 +104,23 @@ export const APIClient = {
 					reject(error);
 				},
 			});
+		});
+	},
+
+	processTwoFactorError({ xhr, params, originalCallback, resolve, reject }) {
+		if (!xhr.responseJSON || !xhr.responseJSON.errorType) {
+			return originalCallback();
+		}
+
+		process2faReturn({
+			error: xhr.responseJSON,
+			originalCallback,
+			onCode(code, method) {
+				const headers = params[params.length - 1];
+				headers['x-2fa-code'] = code;
+				headers['x-2fa-method'] = method;
+				APIClient._jqueryCall(...params).then(resolve).catch(reject);
+			},
 		});
 	},
 

@@ -21,11 +21,15 @@ const methods = {
 };
 
 export function process2faReturn({ error, result, originalCallback, onCode, emailOrUsername }) {
-	if (!error || error.error !== 'totp-required') {
+	if (!error || (error.error !== 'totp-required' && error.errorType !== 'totp-required')) {
 		return originalCallback(error, result);
 	}
 
 	const method = error.details && error.details.method;
+
+	if (!emailOrUsername && Meteor.user()) {
+		emailOrUsername = Meteor.user().username;
+	}
 
 	modal.open({
 		title: t(methods[method].title || 'Two Factor Authentication'),
