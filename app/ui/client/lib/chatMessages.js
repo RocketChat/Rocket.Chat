@@ -27,6 +27,7 @@ import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
+import { generateTriggerId } from '../../../ui-message/client/ActionManager.js';
 
 
 const messageBoxState = {
@@ -406,7 +407,8 @@ export class ChatMessages {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
-							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => {
+							const triggerId = generateTriggerId();
+							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
 								typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject });
 							});
 						}

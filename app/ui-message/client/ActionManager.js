@@ -44,6 +44,7 @@ const invalidateTriggerId = (id) => {
 const generateTriggerId = (appId) => {
 	const triggerId = Random.id();
 	triggersId.set(triggerId, appId);
+	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 	return triggerId;
 };
 
@@ -93,7 +94,6 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }
 
 	const payload = rest.payload || rest;
 
-	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
 
 	const { type: interactionType, ...data } = await APIClient.post(`apps/uikit/${ appId }/`, { type, actionId, payload, mid, rid, triggerId });

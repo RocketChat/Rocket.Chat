@@ -24,7 +24,6 @@ slashCommands.run = function _runningSlashCommand(command, params, message, trig
 		if (!message || !message.rid) {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
-
 		return slashCommands.commands[command].callback(command, params, message, triggerId);
 	}
 };
