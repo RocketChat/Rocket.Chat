@@ -274,7 +274,7 @@ class FlexTab extends Page {
 		};
 
 		if (desiredTabs[desiredTab]) {
-			desiredTabs[desiredTab]();
+			desiredTabs[desiredTab].call(this);
 		}
 	}
 
