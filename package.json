@@ -28,7 +28,7 @@
 		"lint": "meteor npm run stylelint && meteor npm run eslint",
 		"jslint": "eslint --ext .js,.jsx .",
 		"tslint": "eslint --ext .ts,.tsx .",
-		"eslint": "eslint --ext .js,.ts,.jsx,.tsx .",
+		"eslint": "meteor npm run jslint && meteor npm run tslint",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\"",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
