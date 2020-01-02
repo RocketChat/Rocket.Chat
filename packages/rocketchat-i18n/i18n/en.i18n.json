@@ -207,7 +207,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Enable Two Factor Authentication via Email",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Users with email verified and the option enabled in their profile page will receive an email with a temporary code to authorize certain actions like login, save the profile, etc.",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Auto opt in new users for Two Factor via Email",
-  "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "New users will have the Two Factor Authentication via Email enabled by default. They will be able to disable it in the profile page.",
+  "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "New users will have the Two Factor Authentication via Email enabled by default. They will be able to disable it in their profile page.",
   "Accounts_TwoFactorAuthentication_By_Email_Code_Expiration": "Time to expire the code sent via email in seconds",
   "Accounts_TwoFactorAuthentication_Enabled": "Enable Two Factor Authentication via TOTP",
   "Accounts_TwoFactorAuthentication_Enabled_Description": "Users can setup their Two Factor Authentication using any TOTP app, like Google Authenticator or Authy",
