@@ -457,15 +457,18 @@ export class AppsRestApi {
 			delete() {
 				const prl = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					Promise.await(manager.remove(prl.getID()));
-
-					const info = prl.getInfo();
-					info.status = prl.getStatus();
-
-					return API.v1.success({ app: info });
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+
+				manager.remove(prl.getID())
+					.then(() => {
+						const info = prl.getInfo();
+						info.status = prl.getStatus();
+
+						API.v1.success({ app: info });
+					})
+					.catch((err) => API.v1.failure(err));
 			},
 		});
 

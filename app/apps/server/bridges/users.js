@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { setUserAvatar, checkUsernameAvailability } from '../../../lib/server/functions';
-import { Users, Roles } from '../../../models';
+import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
+import { Users } from '../../../models';
 
 
 export class AppUserBridge {
@@ -53,23 +53,18 @@ export class AppUserBridge {
 
 		const user = Users.findOne({ appId });
 
+		// It's actually not a problem if there is no App user to delete - just means we don't need to do anything more.
 		if (!user) {
-			throw new Meteor.Error('error-user-not-found', 'User not found', { function: 'removeAppUser' });
+			return true;
 		}
 
 		try {
-			Roles.findUsersInRole('admin').forEach((admin, index) => {
-				if (index > 0) {
-					return;
-				}
-
-				Meteor.runAsUser(admin._id, () => {
-					Meteor.call('deleteUser', user._id);
-				});
-			});
+			deleteUser(user.id);
 		} catch (err) {
 			throw new Meteor.Error('error-deleting-user', `Errors occurred while deleting an app user: ${ err }`, { function: 'removeAppUser' });
 		}
+
+		return true;
 	}
 
 	async getActiveUserCount() {
