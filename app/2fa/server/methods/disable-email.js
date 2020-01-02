@@ -5,6 +5,8 @@ import { methodsWithTwoFactor } from '../twoFactorRequired';
 
 methodsWithTwoFactor({
 	'2fa:disable-email'() {
-		return Users.disableEmail2FAByUserId(Meteor.userId());
+		Users.disableEmail2FAByUserId(Meteor.userId());
+
+		return true;
 	},
 }, { disableRememberMe: true });
