@@ -375,7 +375,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
-					Meteor.users.update(this.userId, {
+					Meteor.users.update(user._id, {
 						$set: {
 							status: this.bodyParams.status,
 							statusDefault: this.bodyParams.status,
