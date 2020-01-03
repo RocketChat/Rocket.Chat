@@ -2849,6 +2849,8 @@ rc-old select,
 
 		opacity: 1;
 
+		word-break: break-word;
+
 		& > h1 {
 			font-size: 3em;
 			line-height: 1em;
