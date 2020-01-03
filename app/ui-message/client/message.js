@@ -365,8 +365,8 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
-	injectMessage(data, { attachments, urls, ...msg }) {
-		data.msg = msg;
+	injectMessage(data, { _id, rid }) {
+		data.msg = { _id, rid };
 	},
 	injectIndex(data, index) {
 		data.index = index;
@@ -614,12 +614,3 @@ Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the
 		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 	});
 });
-
-Template.message.onViewRendered = function() {
-	const args = messageArgs(Template.currentData());
-	// processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	return this._domrange.onAttached((domRange) => {
-		const currentNode = domRange.lastNode();
-		processSequentials({ currentNode, ...args });
-	});
-};
