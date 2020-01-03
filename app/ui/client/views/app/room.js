@@ -902,17 +902,21 @@ Template.room.events({
 	},
 
 	'click .collapse-switch'(e) {
-		const { msg } = messageArgs(this);
+		const { msg: { _id } } = messageArgs(this);
 		const index = $(e.currentTarget).data('index');
 		const collapsed = $(e.currentTarget).data('collapsed');
-		const id = msg._id;
 
-		if ((msg != null ? msg.attachments : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
+		const msg = ChatMessage.findOne(_id);
+		if (!msg) {
+			return;
 		}
 
-		if ((msg != null ? msg.urls : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
+		if (msg.attachments) {
+			ChatMessage.update({ _id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
+		}
+
+		if (msg.urls) {
+			ChatMessage.update({ _id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
 		}
 	},
 	'load img'(e, template) {

@@ -71,8 +71,8 @@ Template.messageAttachment.helpers({
 	injectSettings(data, settings) {
 		data.settings = settings;
 	},
-	injectMessage(data, { ...msg }) {
-		data.msg = msg;
+	injectMessage(data, { rid, _id }) {
+		data.msg = { _id, rid };
 	},
 	isFile() {
 		return this.type === 'file';
