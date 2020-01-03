@@ -1738,31 +1738,44 @@ describe('[Users]', function() {
 			}).end(() => updatePermission('edit-other-user-info', ['admin']).then(done));
 			user = undefined;
 		});
-		it('should set other user status to online', (done) => {
-			request.post(api('users.setStatus'))
-				.set(userCredentials)
+		it('should set other user status to busy', (done) => {
+			const testUsername = `testuserdelete${ +new Date() }`;
+			let targetUser;
+			request.post(api('users.register'))
+				.set(credentials)
 				.send({
-					status: 'online',
-					userId: targetUser._id,
+					email: `${ testUsername }.@teste.com`,
+					username: `${ testUsername }test`,
+					name: testUsername,
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					targetUser = res.body.user;
 				})
 				.end(() => {
-					request.get(api('users.getStatus'))
+					request.post(api('users.setStatus'))
 						.set(userCredentials)
 						.send({
-							status: 'online',
+							status: 'busy',
 							userId: targetUser._id,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
-							expect(res.body).to.have.property('status', 'online');
+							expect(res.body).to.have.property('success', true);
 						})
-						.end(done);
+						.end(() => {
+							request.get(api(`users.getStatus?userId=${ targetUser._id }`))
+								.set(userCredentials)
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.property('status', 'busy');
+								})
+								.end(done);
+						});
 				});
 		});
 	});
