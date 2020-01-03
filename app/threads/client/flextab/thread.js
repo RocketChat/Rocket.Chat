@@ -9,7 +9,6 @@ import { normalizeThreadMessage, call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
-import { lazyloadtick } from '../../../lazy-load';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents } from '../../../ui/client/views/app/room';
 import './thread.html';
@@ -25,7 +24,6 @@ Template.thread.events({
 		return close && close();
 	},
 	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
-		lazyloadtick();
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
 	}, 50),
 	'load img'() {

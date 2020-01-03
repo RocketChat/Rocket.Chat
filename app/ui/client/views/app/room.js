@@ -34,7 +34,6 @@ import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { promises } from '../../../../promises/client';
 import { hasAllPermission, hasRole } from '../../../../authorization';
-import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
@@ -795,8 +794,6 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
-		lazyloadtick();
-
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
@@ -1013,8 +1010,6 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
-
-	lazyloadtick();
 	const rid = this.data._id;
 
 	this.onFile = (filesToUpload) => {
@@ -1146,8 +1141,6 @@ Template.room.onCreated(function() {
 		if (this.atBottom === true) {
 			this.sendToBottom();
 		}
-
-		lazyloadtick();
 	};
 }); // Update message to re-render DOM
 
