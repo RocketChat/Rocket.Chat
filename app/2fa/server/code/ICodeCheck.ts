@@ -7,6 +7,8 @@ export interface IProcessInvalidCodeResult {
 }
 
 export interface ICodeCheck {
+	readonly name: string;
+
 	isEnabled(user: IUser): boolean;
 
 	verify(user: IUser, code: string): boolean;

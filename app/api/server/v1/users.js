@@ -649,7 +649,7 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true, twoFact
 
 API.v1.addRoute('users.2fa.enableEmail', { authRequired: true }, {
 	post() {
-		Meteor.call('2fa:enable-email');
+		Users.enableEmail2FAByUserId(this.userId);
 
 		return API.v1.success();
 	},
@@ -657,7 +657,7 @@ API.v1.addRoute('users.2fa.enableEmail', { authRequired: true }, {
 
 API.v1.addRoute('users.2fa.disableEmail', { authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } }, {
 	post() {
-		Meteor.call('2fa:disable-email');
+		Users.disableEmail2FAByUserId(this.userId);
 
 		return API.v1.success();
 	},

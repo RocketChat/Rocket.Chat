@@ -4,6 +4,8 @@ import { settings } from '../../../settings/server';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class TOTPCheck implements ICodeCheck {
+	public readonly name = 'totp';
+
 	public isEnabled(user: IUser): boolean {
 		if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
 			return false;

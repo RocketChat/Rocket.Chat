@@ -10,7 +10,9 @@ import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { IUser } from '../../../../definition/IUser';
 
 export class EmailCheck implements ICodeCheck {
-	public getUserVerifiedEmails(user: IUser): string[] {
+	public readonly name = 'email';
+
+	private getUserVerifiedEmails(user: IUser): string[] {
 		if (!Array.isArray(user.emails)) {
 			return [];
 		}
@@ -29,7 +31,7 @@ export class EmailCheck implements ICodeCheck {
 		return this.getUserVerifiedEmails(user).length > 0;
 	}
 
-	public send2FAEmail(address: string, random: string, user: IUser): void {
+	private send2FAEmail(address: string, random: string, user: IUser): void {
 		const language = user.language || settings.get('Language') || 'en';
 
 		const t = (s: string): string => TAPi18n.__(s, { lng: language });
