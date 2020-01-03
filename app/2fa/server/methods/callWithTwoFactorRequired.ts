@@ -12,6 +12,6 @@ Meteor.methods({
 		checkCodeForUser({ user: this.userId, code, method, options: methodOptions[ddpMethod], connection: this.connection || undefined });
 
 		this.twoFactorChecked = true;
-		return Meteor.server.method_handlers[ddpMethod].apply(this, params);
+		return Meteor.call(ddpMethod, ...params);
 	},
 });

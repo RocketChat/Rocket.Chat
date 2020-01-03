@@ -4,6 +4,8 @@ import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { IUser } from '../../../../definition/IUser';
 
 export class PasswordCheckFallback implements ICodeCheck {
+	public readonly name = 'password';
+
 	public isEnabled(user: IUser): boolean {
 		return user.services?.password?.bcrypt != null;
 	}

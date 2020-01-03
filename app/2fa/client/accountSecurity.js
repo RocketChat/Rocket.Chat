@@ -5,7 +5,7 @@ import toastr from 'toastr';
 
 import { modal } from '../../ui-utils';
 import { settings } from '../../settings';
-import { t, handleError } from '../../utils/client';
+import { t, handleError, APIClient } from '../../utils/client';
 
 Template.accountSecurity.helpers({
 	showImage() {
@@ -89,7 +89,7 @@ Template.accountSecurity.events({
 	'click .enable-2fa-email'(event) {
 		event.preventDefault();
 
-		Meteor.call('2fa:enable-email', async (error) => {
+		APIClient.v1.post('users.2fa.enableEmail').catch(async (error) => {
 			if (error) {
 				handleError(error);
 			}
@@ -101,7 +101,7 @@ Template.accountSecurity.events({
 	'click .disable-2fa-email'(event) {
 		event.preventDefault();
 
-		Meteor.call('2fa:disable-email', (error) => {
+		APIClient.v1.post('users.2fa.disableEmail').catch((error) => {
 			if (error) {
 				return handleError(error);
 			}

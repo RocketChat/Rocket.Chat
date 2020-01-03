@@ -12,10 +12,6 @@ import { ICodeCheck } from './ICodeCheck';
 import { Users } from '../../../models/server';
 import { IMethodConnection } from '../../../../definition/IMethodThisType';
 
-interface IMethods {
-	[key: string]: ICodeCheck;
-}
-
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
 	disableRememberMe?: boolean;
@@ -25,21 +21,21 @@ export const totpCheck = new TOTPCheck();
 export const emailCheck = new EmailCheck();
 export const passwordCheckFallback = new PasswordCheckFallback();
 
-export const checkMethods: IMethods = {
-	totp: totpCheck,
-	email: emailCheck,
-};
+export const checkMethods = new Map<string, ICodeCheck>();
 
-export function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): [string, ICodeCheck] | [] {
-	if (name && name in checkMethods) {
-		return [name, checkMethods[name]];
+checkMethods.set(totpCheck.name, totpCheck);
+checkMethods.set(emailCheck.name, emailCheck);
+
+export function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeCheck | undefined {
+	if (name && checkMethods.has(name)) {
+		return checkMethods.get(name);
 	}
 
-	return Object.entries(checkMethods).find(([, method]) => method.isEnabled(user)) || [];
+	return Array.from(checkMethods.values()).find((method) => method.isEnabled(user));
 }
 
 export function getAvailableMethodNames(user: IUser): string[] | [] {
-	return Object.entries(checkMethods).filter(([, method]) => method.isEnabled(user)).map(([name]) => name) || [];
+	return Array.from(checkMethods).filter(([, method]) => method.isEnabled(user)).map(([name]) => name) || [];
 }
 
 export function getUserForCheck(userId: string): IUser {
@@ -111,11 +107,15 @@ export function rememberAuthorization(connection: IMethodConnection, user: IUser
 	Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, currentToken, getFingerprintFromConnection(connection), expires);
 }
 
-export function checkCodeForUser({ user, code, method, options = {}, connection }: { user: IUser | string; code?: string; method?: string; options?: ITwoFactorOptions; connection?: IMethodConnection }): boolean {
-	if (process.env.TEST_MODE) {
-		return true;
-	}
+interface ICheckCodeForUser {
+	user: IUser | string;
+	code?: string;
+	method?: string;
+	options?: ITwoFactorOptions;
+	connection?: IMethodConnection;
+}
 
+function _checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): boolean {
 	if (typeof user === 'string') {
 		user = getUserForCheck(user);
 	}
@@ -124,27 +124,26 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		return true;
 	}
 
-	let [methodName, selectedMethod] = getMethodByNameOrFirstActiveForUser(user, method);
+	let selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
 
 	if (!selectedMethod) {
 		if (options.disablePasswordFallback || !passwordCheckFallback.isEnabled(user)) {
 			return true;
 		}
 		selectedMethod = passwordCheckFallback;
-		methodName = 'password';
 	}
 
 	if (!code) {
 		const data = selectedMethod.processInvalidCode(user);
 		const availableMethods = getAvailableMethodNames(user);
 
-		throw new Meteor.Error('totp-required', 'TOTP Required', { method: methodName, ...data, availableMethods });
+		throw new Meteor.Error('totp-required', 'TOTP Required', { method: selectedMethod.name, ...data, availableMethods });
 	}
 
 	const valid = selectedMethod.verify(user, code);
 
 	if (!valid) {
-		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', { method: methodName });
+		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', { method: selectedMethod.name });
 	}
 
 	if (options.disableRememberMe !== true && connection) {
@@ -153,3 +152,5 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 
 	return true;
 }
+
+export const checkCodeForUser = process.env.TEST_MODE ? (): boolean => true : _checkCodeForUser;
