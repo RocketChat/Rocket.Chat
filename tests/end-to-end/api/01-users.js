@@ -1735,7 +1735,7 @@ describe('[Users]', function() {
 		after((done) => {
 			request.post(api('users.delete')).set(credentials).send({
 				userId: user._id,
-			}).end(() => updatePermission('edit-other-user-active-status', ['admin']).then(done));
+			}).end(() => updatePermission('edit-other-user-info', ['admin']).then(done));
 			user = undefined;
 		});
 		it('should set other user status to online', (done) => {
