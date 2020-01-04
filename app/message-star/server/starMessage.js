@@ -28,6 +28,8 @@ Meteor.methods({
 			Rooms.updateLastMessageStar(room._id, Meteor.userId(), message.starred);
 		}
 
+		console.log('-------------------------', message);
+
 		return Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
 	},
 });

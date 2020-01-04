@@ -6,5 +6,6 @@ export interface IEDataMessage {
     mentions?: Array<string>;
     channels?: Array<string>;
     reactions?: Array<object>;
+    pinned?: Array<object>;
     starred?: Array<object>;
 }

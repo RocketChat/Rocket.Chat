@@ -23,7 +23,7 @@ class RoomEventsModel extends EventsModel {
 		super('message');
 
 		// this.tryEnsureIndex({ 'context.roomId': 1 });
-		// this.tryEnsureIndex({ 'd.msg': 'text' }, { sparse: true });
+		this.tryEnsureIndex({ 'd.msg': 'text' }, { sparse: true });
 	}
 
 	public ensureSrc(src: string) {

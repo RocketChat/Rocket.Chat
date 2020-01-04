@@ -37,6 +37,10 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
+	registerEventDispatcher(callback) {
+		this.dispatchEvent = callback;
+	}
+
 	setReactions(messageId, reactions) {
 		return this.update({ _id: messageId }, { $set: { reactions } });
 	}
@@ -72,7 +76,40 @@ export class Messages extends Base {
 	//
 	// Overriding some methods to add V1<->V2 conversion
 	//
+	getV2Query(query) {
+		let _cid;
+
+		console.log('Messages getV2Query: before', JSON.stringify(query));
+
+		if (query._id) {
+			_cid = query._id;
+
+			query._cid = _cid;
+			delete query._id;
+		}
+
+		const v2Query = {
+			$or: [query, {}]
+		};
+
+		for (const item in query) {
+			if (item.startsWith('$')) continue;
+
+			v2Query.$or[1][`d.${item}`] = query[item];
+		}
+
+		console.log('Messages getV2Query: after', JSON.stringify(v2Query));
+
+		return { _cid, v2Query };
+	}
+
 	find(...args) {
+		args[0] = args[0] || {};
+
+		const { v2Query } = this.getV2Query(args[0]);
+
+		args[0] = v2Query;
+
 		if (args[0]) {
 			// Add a `t: msg`
 			args[0].t = EventTypeDescriptor.MESSAGE;
@@ -118,7 +155,7 @@ export class Messages extends Base {
 
 		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, RoomEvents.fromV1Data(message)));
 
-		this.emit('dispatchEvent', event);
+		Promise.await(this.dispatchEvent(event));
 
 		return RoomEvents.toV1(event)._id;
 	}
@@ -126,22 +163,7 @@ export class Messages extends Base {
 	update(...args) {
 		const [query, update] = args;
 
-		let _cid;
-
-		if (query._id) {
-			_cid = query._id;
-
-			query._cid = _cid;
-			delete query._id;
-		}
-
-		const v2Query = {
-			$or: [query, {}]
-		};
-
-		for (const item in query) {
-			v2Query.$or[1][`data.${item}`] = query[item];
-		}
+		const { _cid, v2Query } = this.getV2Query(query);
 
 		const event = RoomEvents.findOne(v2Query);
 
@@ -165,7 +187,7 @@ export class Messages extends Base {
 
 		const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, _cid, d));
 
-		this.emit('dispatchEvent', editEvent);
+		Promise.await(this.dispatchEvent(editEvent));
 
 		return RoomEvents.toV1(editEvent);
 	}

@@ -23,4 +23,4 @@ export async function dispatchEvent(event, domains) {
 	await dispatchEvents([event], domains);
 }
 
-Messages.on('dispatchEvent', dispatchEvent);
+Messages.registerEventDispatcher(dispatchEvent);
