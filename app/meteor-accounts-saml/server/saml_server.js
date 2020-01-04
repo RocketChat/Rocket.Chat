@@ -333,7 +333,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			}
 
 			newUser.name = newUser.name || _guessNameFromUsername(newUser.username); // Make sure every user has a name as well
-			
+
 			const languages = TAPi18n.getLanguages();
 			if (languages[loginResult.profile.language]) {
 				newUser.language = loginResult.profile.language;
