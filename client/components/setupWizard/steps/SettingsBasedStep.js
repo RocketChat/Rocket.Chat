@@ -1,18 +1,18 @@
-import { Input, InputGroup } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, Label, SelectInput, TextInput } from '@rocket.chat/fuselage';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import React, { Fragment, useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 
 import { handleError } from '../../../../app/utils/client';
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useBatchSetSettings } from '../../../hooks/useBatchSetSettings';
+import { useFocus } from '../../../hooks/useFocus';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { Pager } from '../Pager';
 import { useSetupWizardParameters } from '../ParametersProvider';
 import { useSetupWizardStepsState } from '../StepsState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 import { StepContent } from '../StepContent';
-import { batchSetSettings } from '../functions';
-import { useFocus } from '../../../hooks/useFocus';
 
 const useFields = () => {
 	const reset = 'RESET';
@@ -37,15 +37,13 @@ const useFields = () => {
 	return { fields, resetFields, setFieldValue };
 };
 
-export function SettingsBasedStep({ step, title }) {
+export function SettingsBasedStep({ step, title, active }) {
 	const { settings } = useSetupWizardParameters();
 	const { currentStep, goToPreviousStep, goToNextStep } = useSetupWizardStepsState();
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
 
-	const active = step === currentStep;
-
-	const languages = useReactiveValue(() => TAPi18n.getLanguages(), []);
+	const languages = useReactiveValue(() => TAPi18n && TAPi18n.getLanguages(), []);
 
 	useEffect(() => {
 		resetFields(
@@ -58,6 +56,8 @@ export function SettingsBasedStep({ step, title }) {
 	}, [settings, currentStep]);
 
 	const t = useTranslation();
+
+	const batchSetSettings = useBatchSetSettings();
 
 	const handleBackClick = () => {
 		goToPreviousStep();
@@ -85,23 +85,20 @@ export function SettingsBasedStep({ step, title }) {
 		<StepHeader number={step} title={title} />
 
 		<StepContent>
-			<InputGroup>
+			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
-					<Fragment key={i}>
-						{type === 'string'
-						&& <Input
+					<Field key={i}>
+						<Label text={t(i18nLabel)} />
+						{type === 'string' && <TextInput
 							type='text'
-							label={t(i18nLabel)}
 							name={_id}
 							ref={i === 0 ? autoFocusRef : undefined}
 							value={value}
 							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
 						/>}
 
-						{type === 'select'
-						&& <Input
+						{type === 'select' && <SelectInput
 							type='select'
-							label={t(i18nLabel)}
 							name={_id}
 							placeholder={t('Select_an_option')}
 							ref={i === 0 ? autoFocusRef : undefined}
@@ -110,13 +107,11 @@ export function SettingsBasedStep({ step, title }) {
 						>
 							{values
 								.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
-								.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
-						</Input>}
+								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+						</SelectInput>}
 
-						{type === 'language'
-						&& <Input
+						{type === 'language' && <SelectInput
 							type='select'
-							label={t(i18nLabel)}
 							name={_id}
 							placeholder={t('Default')}
 							ref={i === 0 ? autoFocusRef : undefined}
@@ -126,11 +121,11 @@ export function SettingsBasedStep({ step, title }) {
 							{Object.entries(languages)
 								.map(([key, { name }]) => ({ label: name, value: key }))
 								.sort((a, b) => a.key - b.key)
-								.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
-						</Input>}
-					</Fragment>
+								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+						</SelectInput>}
+					</Field>
 				)}
-			</InputGroup>
+			</FieldGroup>
 		</StepContent>
 
 		<Pager

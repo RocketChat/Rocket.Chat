@@ -25,6 +25,7 @@ Meteor.methods({
 			videoCall: null,
 			fileUpload: null,
 			conversationFinishedMessage: null,
+			conversationFinishedText: null,
 			nameFieldRegistrationForm: null,
 			emailFieldRegistrationForm: null,
 			agentsAlias: '',
@@ -80,6 +81,7 @@ Meteor.methods({
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
 		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
+		info.conversationFinishedText = initSettings.Livechat_conversation_finished_text;
 		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;

@@ -490,13 +490,14 @@ describe('[Administration]', () => {
 					admin.generalLanguageReset.click();
 				});
 
-				it('it should show invalid self signed certs checkboxes', () => {
-					admin.generalSelfSignedCertsFalse.isVisible().should.be.true;
-					admin.generalSelfSignedCertsTrue.isVisible().should.be.true;
+				it('it should show invalid self signed certs toggle', () => {
+					admin.generalSelfSignedCerts.$('..').isVisible().should.be.true;
 				});
 
-				it('it should change the invalid self signed certs checkboxes', () => {
-					admin.generalSelfSignedCertsTrue.click();
+				it('it should change the invalid self signed certs toggle', () => {
+					if (!admin.generalSelfSignedCerts.isSelected()) {
+						admin.generalSelfSignedCerts.$('..').click();
+					}
 				});
 
 				it('it should show the reset button', () => {
@@ -509,12 +510,13 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show favorite rooms checkboxes', () => {
-					admin.generalFavoriteRoomFalse.isVisible().should.be.true;
-					admin.generalFavoriteRoomTrue.isVisible().should.be.true;
+					admin.generalFavoriteRoom.$('..').isVisible().should.be.true;
 				});
 
-				it('it should change the favorite rooms checkboxes', () => {
-					admin.generalFavoriteRoomFalse.click();
+				it('it should change the favorite rooms toggle', () => {
+					if (admin.generalFavoriteRoom.isSelected()) {
+						admin.generalFavoriteRoom.$('..').click();
+					}
 				});
 
 				it('it should show the reset button', () => {
@@ -561,13 +563,14 @@ describe('[Administration]', () => {
 					admin.generalCdnPrefixReset.click();
 				});
 
-				it('it should show the force SSL checkboxes', () => {
-					admin.generalForceSSLTrue.isVisible().should.be.true;
-					admin.generalForceSSLFalse.isVisible().should.be.true;
+				it('it should show the force SSL toggle', () => {
+					admin.generalForceSSL.$('..').isVisible().should.be.true;
 				});
 
-				it('it should change the force ssl checkboxes', () => {
-					admin.generalForceSSLTrue.click();
+				it('it should change the force ssl toggle', () => {
+					if (!admin.generalForceSSL.isSelected()) {
+						admin.generalForceSSL.$('..').click();
+					}
 				});
 
 				it('it should show the reset button', () => {
@@ -616,24 +619,21 @@ describe('[Administration]', () => {
 
 			describe('iframe:', () => {
 				before(() => {
-					admin.generalButtonExpandIframe.waitForVisible(5000);
-					admin.generalButtonExpandIframe.click();
-					admin.generalIframeSendTrue.waitForVisible(5000);
-					admin.generalIframeSendTrue.scroll();
+					admin.generalSectionIframeIntegration.waitForVisible(5000);
+					admin.generalSectionIframeIntegration.$('[aria-expanded="false"]').click();
+					admin.generalIframeSend.$('..').scroll();
 				});
 
-				it('it should show iframe send checkboxes', () => {
-					admin.generalIframeSendTrue.isVisible().should.be.true;
-					admin.generalIframeSendFalse.isVisible().should.be.true;
+				it('it should show iframe send toggle', () => {
+					admin.generalIframeSend.$('..').isVisible().should.be.true;
 				});
 
 				it('it should show send origin field', () => {
 					admin.generalIframeSendTargetOrigin.isVisible().should.be.true;
 				});
 
-				it('it should show iframe send checkboxes', () => {
-					admin.generalIframeRecieveFalse.isVisible().should.be.true;
-					admin.generalIframeRecieveTrue.isVisible().should.be.true;
+				it('it should show iframe send toggle', () => {
+					admin.generalIframeRecieve.$('..').isVisible().should.be.true;
 				});
 
 				it('it should show send origin field', () => {
@@ -643,9 +643,8 @@ describe('[Administration]', () => {
 
 			describe('notifications:', () => {
 				before(() => {
-					admin.generalButtonExpandNotifications.waitForVisible(5000);
-					admin.generalButtonExpandNotifications.click();
-					admin.generalNotificationsMaxRoomMembers.waitForVisible(5000);
+					admin.generalSectionNotifications.waitForVisible(5000);
+					admin.generalSectionNotifications.$('[aria-expanded="false"]').click();
 					admin.generalNotificationsMaxRoomMembers.scroll();
 				});
 
@@ -656,8 +655,8 @@ describe('[Administration]', () => {
 
 			describe('rest api:', () => {
 				before(() => {
-					admin.generalButtonExpandRest.waitForVisible(5000);
-					admin.generalButtonExpandRest.click();
+					admin.generalSectionRestApi.waitForVisible(5000);
+					admin.generalSectionRestApi.$('[aria-expanded="false"]').click();
 					admin.generalRestApiUserLimit.waitForVisible(5000);
 					admin.generalRestApiUserLimit.scroll();
 				});
@@ -669,22 +668,20 @@ describe('[Administration]', () => {
 
 			describe('reporting:', () => {
 				before(() => {
-					admin.generalButtonExpandReporting.waitForVisible(5000);
-					admin.generalButtonExpandReporting.click();
-					admin.generalReportingTrue.waitForVisible(5000);
-					admin.generalReportingTrue.scroll();
+					admin.generalSectionReporting.waitForVisible(5000);
+					admin.generalSectionReporting.$('[aria-expanded="false"]').click();
+					admin.generalReporting.$('..').scroll();
 				});
 
-				it('it should show the report to rocket.chat checkboxes', () => {
-					admin.generalReportingTrue.isVisible().should.be.true;
-					admin.generalReportingFalse.isVisible().should.be.true;
+				it('it should show the report to rocket.chat toggle', () => {
+					admin.generalReporting.$('..').isVisible().should.be.true;
 				});
 			});
 
 			describe('stream cast:', () => {
 				before(() => {
-					admin.generalButtonExpandStreamCast.waitForVisible(5000);
-					admin.generalButtonExpandStreamCast.click();
+					admin.generalSectionStreamCast.waitForVisible(5000);
+					admin.generalSectionStreamCast.$('[aria-expanded="false"]').click();
 					admin.generalStreamCastAdress.waitForVisible(5000);
 					admin.generalStreamCastAdress.scroll();
 				});
@@ -694,10 +691,10 @@ describe('[Administration]', () => {
 				});
 			});
 
-			describe('stream cast:', () => {
+			describe('utf8:', () => {
 				before(() => {
-					admin.generalButtonExpandUTF8.waitForVisible(5000);
-					admin.generalButtonExpandUTF8.click();
+					admin.generalSectionUTF8.waitForVisible(5000);
+					admin.generalSectionUTF8.$('[aria-expanded="false"]').click();
 					admin.generalUTF8Regex.waitForVisible(5000);
 					admin.generalUTF8Regex.scroll();
 				});
@@ -707,8 +704,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the utf8 names slug checkboxes', () => {
-					admin.generalUTF8NamesSlugTrue.isVisible().should.be.true;
-					admin.generalUTF8NamesSlugFalse.isVisible().should.be.true;
+					admin.generalUTF8NamesSlug.$('..').isVisible().should.be.true;
 				});
 			});
 		});
@@ -723,22 +719,20 @@ describe('[Administration]', () => {
 
 			describe('default user preferences', () => {
 				before(() => {
-					if (admin.accountsButtonCollapseDefaultUserPreferences.isVisible()) {
-						admin.accountsButtonCollapseDefaultUserPreferences.click();
+					if (admin.accountsSectionDefaultUserPreferences.$('[aria-expanded="true"]').isVisible()) {
+						admin.accountsSectionDefaultUserPreferences.$('[aria-expanded="true"]').click();
 					}
-					admin.accountsButtonExpandDefaultUserPreferences.waitForVisible(5000);
-					admin.accountsButtonExpandDefaultUserPreferences.click();
+					admin.accountsSectionDefaultUserPreferences.$('[aria-expanded="false"]').waitForVisible(5000);
+					admin.accountsSectionDefaultUserPreferences.$('[aria-expanded="false"]').click();
 					admin.accountsNotificationDuration.waitForVisible(5000);
 				});
 
 				it('it should show the enable auto away field', () => {
-					admin.accountsEnableAutoAwayTrue.scroll();
-					admin.accountsEnableAutoAwayTrue.isVisible().should.be.true;
-					admin.accountsEnableAutoAwayFalse.isVisible().should.be.true;
+					admin.accountsEnableAutoAway.$('..').scroll();
+					admin.accountsEnableAutoAway.$('..').isVisible().should.be.true;
 				});
 				it('the enable auto away field value should be true', () => {
-					admin.accountsEnableAutoAwayTrue.isSelected().should.be.true;
-					admin.accountsEnableAutoAwayFalse.isSelected().should.be.false;
+					admin.accountsEnableAutoAway.isSelected().should.be.true;
 				});
 
 				it('it should show the idle timeout limit field', () => {
@@ -782,103 +776,83 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the unread tray icon alert field', () => {
-					admin.accountsUnreadAlertTrue.scroll();
-					admin.accountsUnreadAlertTrue.isVisible().should.be.true;
-					admin.accountsUnreadAlertFalse.isVisible().should.be.true;
+					admin.accountsUnreadAlert.$('..').scroll();
+					admin.accountsUnreadAlert.$('..').isVisible().should.be.true;
 				});
 				it('the unread tray icon alert field value should be true', () => {
-					admin.accountsUnreadAlertTrue.isSelected().should.be.true;
-					admin.accountsUnreadAlertFalse.isSelected().should.be.false;
+					admin.accountsUnreadAlert.isSelected().should.be.true;
 				});
 
 				it('it should show the use emojis field', () => {
-					admin.accountsUseEmojisTrue.scroll();
-					admin.accountsUseEmojisTrue.isVisible().should.be.true;
-					admin.accountsUseEmojisFalse.isVisible().should.be.true;
+					admin.accountsUseEmojis.$('..').scroll();
+					admin.accountsUseEmojis.$('..').isVisible().should.be.true;
 				});
 				it('the use emojis field value should be true', () => {
-					admin.accountsUseEmojisTrue.isSelected().should.be.true;
-					admin.accountsUseEmojisFalse.isSelected().should.be.false;
+					admin.accountsUseEmojis.isSelected().should.be.true;
 				});
 
 				it('it should show the convert ascii to emoji field', () => {
-					admin.accountsConvertAsciiEmojiTrue.scroll();
-					admin.accountsConvertAsciiEmojiTrue.isVisible().should.be.true;
-					admin.accountsConvertAsciiEmojiFalse.isVisible().should.be.true;
+					admin.accountsConvertAsciiEmoji.$('..').scroll();
+					admin.accountsConvertAsciiEmoji.$('..').isVisible().should.be.true;
 				});
 				it('the convert ascii to emoji field value should be true', () => {
-					admin.accountsConvertAsciiEmojiTrue.isSelected().should.be.true;
-					admin.accountsConvertAsciiEmojiFalse.isSelected().should.be.false;
+					admin.accountsConvertAsciiEmoji.isSelected().should.be.true;
 				});
 
 				it('it should show the auto load images field', () => {
-					admin.accountsAutoImageLoadTrue.scroll();
-					admin.accountsAutoImageLoadTrue.isVisible().should.be.true;
-					admin.accountsAutoImageLoadFalse.isVisible().should.be.true;
+					admin.accountsAutoImageLoad.$('..').scroll();
+					admin.accountsAutoImageLoad.$('..').isVisible().should.be.true;
 				});
 				it('the auto load images field value should be true', () => {
-					admin.accountsAutoImageLoadTrue.isSelected().should.be.true;
-					admin.accountsAutoImageLoadFalse.isSelected().should.be.false;
+					admin.accountsAutoImageLoad.isSelected().should.be.true;
 				});
 
 				it('it should show the save mobile bandwidth field', () => {
-					admin.accountsSaveMobileBandwidthTrue.scroll();
-					admin.accountsSaveMobileBandwidthTrue.isVisible().should.be.true;
-					admin.accountsSaveMobileBandwidthFalse.isVisible().should.be.true;
+					admin.accountsSaveMobileBandwidth.$('..').scroll();
+					admin.accountsSaveMobileBandwidth.$('..').isVisible().should.be.true;
 				});
 				it('the save mobile bandwidth field value should be true', () => {
-					admin.accountsSaveMobileBandwidthTrue.isSelected().should.be.true;
-					admin.accountsSaveMobileBandwidthFalse.isSelected().should.be.false;
+					admin.accountsSaveMobileBandwidth.isSelected().should.be.true;
 				});
 
 				it('it should show the collapse embedded media by default field', () => {
-					admin.accountsCollapseMediaByDefaultTrue.scroll();
-					admin.accountsCollapseMediaByDefaultTrue.isVisible().should.be.true;
-					admin.accountsCollapseMediaByDefaultFalse.isVisible().should.be.true;
+					admin.accountsCollapseMediaByDefault.$('..').scroll();
+					admin.accountsCollapseMediaByDefault.$('..').isVisible().should.be.true;
 				});
 				it('the collapse embedded media by default field value should be false', () => {
-					admin.accountsCollapseMediaByDefaultTrue.isSelected().should.be.false;
-					admin.accountsCollapseMediaByDefaultFalse.isSelected().should.be.true;
+					admin.accountsCollapseMediaByDefault.isSelected().should.be.false;
 				});
 
 				it('it should show the hide usernames field', () => {
-					admin.accountsHideUsernamesTrue.scroll();
-					admin.accountsHideUsernamesTrue.isVisible().should.be.true;
-					admin.accountsHideUsernamesFalse.isVisible().should.be.true;
+					admin.accountsHideUsernames.$('..').scroll();
+					admin.accountsHideUsernames.$('..').isVisible().should.be.true;
 				});
 				it('the hide usernames field value should be false', () => {
-					admin.accountsHideUsernamesTrue.isSelected().should.be.false;
-					admin.accountsHideUsernamesFalse.isSelected().should.be.true;
+					admin.accountsHideUsernames.isSelected().should.be.false;
 				});
 
 				it('it should show the hide roles field', () => {
-					admin.accountsHideRolesTrue.scroll();
-					admin.accountsHideRolesTrue.isVisible().should.be.true;
-					admin.accountsHideRolesFalse.isVisible().should.be.true;
+					admin.accountsHideRoles.$('..').scroll();
+					admin.accountsHideRoles.$('..').isVisible().should.be.true;
 				});
 				it('the hide roles field value should be false', () => {
-					admin.accountsHideRolesTrue.isSelected().should.be.false;
-					admin.accountsHideRolesFalse.isSelected().should.be.true;
+					admin.accountsHideRoles.isSelected().should.be.false;
 				});
 
 				it('it should show the hide right sidebar with click field', () => {
-					admin.accountsHideFlexTabTrue.scroll();
-					admin.accountsHideFlexTabTrue.isVisible().should.be.true;
-					admin.accountsHideFlexTabFalse.isVisible().should.be.true;
+					admin.accountsHideFlexTab.$('..').scroll();
+					admin.accountsHideFlexTab.$('..').isVisible().should.be.true;
 				});
 				it('the hide right sidebar with click field value should be false', () => {
-					admin.accountsHideFlexTabTrue.isSelected().should.be.false;
-					admin.accountsHideFlexTabFalse.isSelected().should.be.true;
+					admin.accountsHideFlexTab.isSelected().should.be.false;
 				});
 
 				it('it should show the hide avatars field', () => {
-					admin.accountsHideAvatarsTrue.scroll();
-					admin.accountsHideAvatarsTrue.isVisible().should.be.true;
-					admin.accountsHideAvatarsFalse.isVisible().should.be.true;
+					admin.accountsHideAvatars.$('..').scroll();
+					admin.accountsHideAvatars.$('..').isVisible().should.be.true;
 				});
 				it('the hide avatars field value should be false', () => {
-					admin.accountsHideAvatarsTrue.isSelected().should.be.false;
-					admin.accountsHideAvatarsFalse.isSelected().should.be.true;
+					admin.accountsHideAvatars.isSelected().should.be.false;
 				});
 
 				it('it should show the enter key behavior field', () => {
@@ -908,13 +882,11 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the room counter sidebar field', () => {
-					admin.accountsRoomCounterSidebarTrue.scroll();
-					admin.accountsRoomCounterSidebarTrue.isVisible().should.be.true;
-					admin.accountsRoomCounterSidebarFalse.isVisible().should.be.true;
+					admin.accountsRoomCounterSidebar.$('..').scroll();
+					admin.accountsRoomCounterSidebar.$('..').isVisible().should.be.true;
 				});
 				it('the room counter sidebar field value should be false', () => {
-					admin.accountsRoomCounterSidebarTrue.isSelected().should.be.false;
-					admin.accountsRoomCounterSidebarFalse.isSelected().should.be.true;
+					admin.accountsRoomCounterSidebar.isSelected().should.be.false;
 				});
 
 				it('it should show the new room notification field', () => {

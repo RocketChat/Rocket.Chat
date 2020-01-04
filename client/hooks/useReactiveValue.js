@@ -1,18 +1,15 @@
-import { Tracker } from 'meteor/tracker';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+
+import { useAutorun } from './useAutorun';
+import { useNonReactiveValue } from './useNonReactiveValue';
 
 export const useReactiveValue = (getValue, deps = []) => {
-	const [value, setValue] = useState(getValue);
+	const initialValue = useNonReactiveValue(getValue);
+	const [value, setValue] = useState(() => initialValue);
 
-	useEffect(() => {
-		const computation = Tracker.autorun(() => {
-			const newValue = getValue();
-			setValue(() => newValue);
-		});
-
-		return () => {
-			computation.stop();
-		};
+	useAutorun(() => {
+		const newValue = getValue();
+		setValue(() => newValue);
 	}, deps);
 
 	return value;

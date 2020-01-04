@@ -7,7 +7,8 @@ import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
 
 function openAdminView() {
-	admin.open('admin/Layout');
+	admin.open('admin/info');
+	admin.infoRocketChatTable.waitForVisible(5000);
 }
 
 function logoutRocketchat() {

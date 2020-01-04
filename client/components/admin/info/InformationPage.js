@@ -1,15 +1,10 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { call } from '../../../../app/ui-utils/client/lib/callMethod';
-import { useViewStatisticsPermission } from '../../../hooks/usePermissions';
-import { useTranslation } from '../../../hooks/useTranslation';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { Info } from '../../../../app/utils';
-import { SideNav } from '../../../../app/ui-utils/client/lib/SideNav';
-import { Header } from '../../header/Header';
 import { Link } from '../../basic/Link';
 import { ErrorAlert } from '../../basic/ErrorAlert';
+import { Header } from '../../header/Header';
+import { useTranslation } from '../../providers/TranslationProvider';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';
 import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';
@@ -17,95 +12,30 @@ import { BuildEnvironmentSection } from './BuildEnvironmentSection';
 import { UsageSection } from './UsageSection';
 import { InstancesSection } from './InstancesSection';
 
-const useStatistics = (canViewStatistics) => {
-	const [isLoading, setLoading] = useState(true);
-	const [statistics, setStatistics] = useState({});
-	const [instances, setInstances] = useState([]);
-	const [fetchStatistics, setFetchStatistics] = useState(() => () => ({}));
-
-	useEffect(() => {
-		let didCancel = false;
-
-		const fetchStatistics = async () => {
-			if (!canViewStatistics) {
-				setStatistics(null);
-				setInstances(null);
-				return;
-			}
-
-			setLoading(true);
-
-			try {
-				const [statistics, instances] = await Promise.all([
-					call('getStatistics'),
-					call('instances/get'),
-				]);
-
-				if (didCancel) {
-					return;
-				}
-
-				setStatistics(statistics);
-				setInstances(instances);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		setFetchStatistics(() => fetchStatistics);
-
-		fetchStatistics();
-
-		return () => {
-			didCancel = true;
-		};
-	}, [canViewStatistics]);
-
-	return {
-		isLoading,
-		statistics,
-		instances,
-		fetchStatistics,
-	};
-};
-
-export function InformationPage() {
-	const canViewStatistics = useViewStatisticsPermission();
-
-	const {
-		isLoading,
-		statistics,
-		instances,
-		fetchStatistics,
-	} = useStatistics(canViewStatistics);
-
-	const info = useReactiveValue(() => Info, []);
-
+export function InformationPage({
+	canViewStatistics,
+	isLoading,
+	info,
+	statistics,
+	instances,
+	onClickRefreshButton,
+}) {
 	const t = useTranslation();
 
-	const handleRefreshClick = () => {
-		if (isLoading) {
-			return;
-		}
-
-		fetchStatistics();
-	};
-
-	useEffect(() => {
-		SideNav.setFlex('adminFlex');
-		SideNav.openFlex();
-	}, []);
+	if (!info) {
+		return null;
+	}
 
 	const alertOplogForMultipleInstances = statistics && statistics.instanceCount > 1 && !statistics.oplogEnabled;
 
-	return <section className='page-container page-list Admin__InformationPage'>
+	return <section className='page-container'>
 		<Header rawSectionName={t('Info')} hideHelp>
 			{canViewStatistics
-				&& <div className='rc-header__block rc-header__block-action'>
-					<Button primary type='button' onClick={handleRefreshClick}>
+				&& <Header.ActionBlock>
+					<Button disabled={isLoading} primary type='button' onClick={onClickRefreshButton}>
 						<Icon name='reload' /> {t('Refresh')}
 					</Button>
-				</div>}
+				</Header.ActionBlock>}
 		</Header>
 
 		<div className='content'>
@@ -121,11 +51,11 @@ export function InformationPage() {
 					</p>
 				</ErrorAlert>}
 
-			<RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />
+			{canViewStatistics && <RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />}
 			<CommitSection info={info} />
-			<RuntimeEnvironmentSection statistics={statistics} isLoading={isLoading} />
+			{canViewStatistics && <RuntimeEnvironmentSection statistics={statistics} isLoading={isLoading} />}
 			<BuildEnvironmentSection info={info} />
-			<UsageSection statistics={statistics} isLoading={isLoading} />
+			{canViewStatistics && <UsageSection statistics={statistics} isLoading={isLoading} />}
 			<InstancesSection instances={instances} />
 		</div>
 	</section>;

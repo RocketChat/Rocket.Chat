@@ -21,6 +21,7 @@ export class AppMessagesConverter {
 
 		const map = {
 			id: '_id',
+			threadId: 'tmid',
 			reactions: 'reactions',
 			parseUrls: 'parseUrls',
 			text: 'msg',
@@ -118,6 +119,7 @@ export class AppMessagesConverter {
 
 		const newMessage = {
 			_id: message.id || Random.id(),
+			tmid: message.threadId,
 			rid: room._id,
 			u,
 			msg: message.text,

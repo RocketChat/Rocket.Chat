@@ -7,8 +7,9 @@ import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 
 import { KonchatNotification } from '../app/ui';
 import { ChatSubscription } from '../app/models';
@@ -39,16 +40,28 @@ const createTemplateForComponent = async (
 	// eslint-disable-next-line new-cap
 	renderContainerView = () => HTML.DIV()
 ) => {
-	const React = await import('react');
-	const ReactDOM = await import('react-dom');
-
 	const name = component.displayName || component.name;
 
 	if (!name) {
 		throw new Error('the component must have a name');
 	}
 
+	if (Template[name]) {
+		Template[name].props.set(props);
+		return name;
+	}
+
 	Template[name] = new Blaze.Template(name, renderContainerView);
+
+	Template[name].props = new ReactiveVar(props);
+
+	const React = await import('react');
+	const ReactDOM = await import('react-dom');
+	const { MeteorProvider } = await import('./components/providers/MeteorProvider');
+
+	function TemplateComponent() {
+		return React.createElement(component, Template[name].props.get());
+	}
 
 	Template[name].onRendered(() => {
 		Template.instance().autorun((computation) => {
@@ -56,7 +69,10 @@ const createTemplateForComponent = async (
 				Template.instance().container = Template.instance().firstNode;
 			}
 
-			ReactDOM.render(React.createElement(component, props), Template.instance().firstNode);
+			ReactDOM.render(
+				React.createElement(MeteorProvider, {
+					children: React.createElement(TemplateComponent),
+				}), Template.instance().firstNode);
 		});
 	});
 
@@ -217,60 +233,21 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
-FlowRouter.route('/admin/users', {
-	name: 'admin-users',
-	action() {
-		BlazeLayout.render('main', { center: 'adminUsers' });
-	},
-});
-
-FlowRouter.route('/admin/rooms', {
-	name: 'admin-rooms',
-	action() {
-		BlazeLayout.render('main', { center: 'adminRooms' });
-	},
-});
-
-FlowRouter.route('/admin/import', {
-	name: 'admin-import',
-	action() {
-		BlazeLayout.render('main', { center: 'adminImport' });
-	},
-});
-
-FlowRouter.route('/admin/import/history', {
-	name: 'admin-import-history',
-	action() {
-		BlazeLayout.render('main', { center: 'adminImportHistory' });
-	},
-});
-
-FlowRouter.route('/admin/import/prepare/:importer', {
-	name: 'admin-import-prepare',
-	action() {
-		BlazeLayout.render('main', { center: 'adminImportPrepare' });
-	},
-});
-
-FlowRouter.route('/admin/import/progress/:importer', {
-	name: 'admin-import-progress',
-	action() {
-		BlazeLayout.render('main', { center: 'adminImportProgress' });
-	},
-});
-
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
 	action: async ({ group = 'info' } = {}) => {
 		switch (group) {
 			case 'info': {
-				const { InformationPage } = await import('./components/admin/info/InformationPage');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationPage) });
+				const { InformationRoute } = await import('./components/admin/info/InformationRoute');
+				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute) });
 				break;
 			}
 
-			default:
-				BlazeLayout.render('main', { center: 'admin' });
+			default: {
+				const { SettingsRoute } = await import('./components/admin/settings/SettingsRoute');
+				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }) });
+				// BlazeLayout.render('main', { center: 'admin' });
+			}
 		}
 	},
 });
