@@ -1801,6 +1801,7 @@ describe('[Users]', function() {
 						.set(userCredentials)
 						.send({
 							status: 'busy',
+							message: '',
 							userId: targetUser._id,
 						})
 						.expect('Content-Type', 'application/json')
