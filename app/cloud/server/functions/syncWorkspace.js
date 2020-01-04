@@ -17,17 +17,28 @@ export function syncWorkspace(reconnectCheck = false) {
 	const stats = statistics.get();
 
 	const address = settings.get('Site_Url');
+	const siteName = settings.get('Site_Name');
+	const website = settings.get('Website');
+
+	const setupComplete = settings.get('Show_Setup_Wizard') === 'completed';
+
+	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
 
 	const info = {
 		uniqueId: stats.uniqueId,
 		address,
-		contactName: stats.wizard.contactName,
-		contactEmail: stats.wizard.contactEmail,
-		accountName: stats.wizard.organizationName,
-		siteName: stats.wizard.siteName,
+		siteName,
+		website,
+		organizationType,
+		industry,
+		orgSize,
+		country,
+		language,
+		workspaceType,
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
+		setupComplete,
 	};
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
@@ -61,7 +72,7 @@ export function syncWorkspace(reconnectCheck = false) {
 
 	const { data } = result;
 
-	if (data.publicKey) {
+	if (data && data.publicKey) {
 		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	}
 

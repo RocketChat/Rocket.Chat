@@ -1,16 +1,24 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { FileUpload } from '../../../file-upload';
-import { Users, Subscriptions, Messages, Rooms, Integrations, FederationPeers } from '../../../models';
+import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models';
 import { hasRole, getUsersInRole } from '../../../authorization';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
 
 export const deleteUser = function(userId) {
 	const user = Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1 },
+		fields: { username: 1, avatarOrigin: 1, federation: 1 },
 	});
+
+	if (user.federation) {
+		const existingSubscriptions = Subscriptions.find({ 'u._id': user._id }).count();
+
+		if (existingSubscriptions > 0) {
+			throw new Meteor.Error('FEDERATION_Error_user_is_federated_on_rooms');
+		}
+	}
 
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
@@ -78,7 +86,7 @@ export const deleteUser = function(userId) {
 			// Remove DMs and non-channel rooms with only 1 user (the one being deleted)
 			if (roomData.t === 'd' || (roomData.t !== 'c' && roomData.subscribers === 1)) {
 				Subscriptions.removeByRoomId(roomData.rid);
-				Messages.removeFilesByRoomId(roomData.rid);
+				FileUpload.removeFilesByRoomId(roomData.rid);
 				Messages.removeByRoomId(roomData.rid);
 				Rooms.removeById(roomData.rid);
 			}
@@ -98,6 +106,6 @@ export const deleteUser = function(userId) {
 
 	Users.removeById(userId); // Remove user from users database
 
-	// Refresh the peers list
-	FederationPeers.refreshPeers();
+	// Refresh the servers list
+	FederationServers.refreshServers();
 };

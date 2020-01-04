@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import toastr from 'toastr';
 import s from 'underscore.string';
@@ -12,7 +13,7 @@ Template.accountEncryption.helpers({
 		return settings.get('E2E_Enable');
 	},
 	allowKeyChange() {
-		return localStorage.getItem('public_key') && localStorage.getItem('private_key');
+		return Meteor._localStorage.getItem('public_key') && Meteor._localStorage.getItem('private_key');
 	},
 	canConfirmNewKey() {
 		const encryptionKey = Template.instance().encryptionKey.get();
@@ -43,6 +44,11 @@ Template.accountEncryption.events({
 	},
 	'input [name=confirmation-encryptionKey]'(e, instance) {
 		instance.confirmationEncryptionKey.set(e.target.value);
+	},
+	'click button[name=reset-e2e-key]'(e, instance) {
+		e.preventDefault();
+
+		return instance.resetKey();
 	},
 	'submit form'(e, instance) {
 		e.preventDefault();
@@ -82,5 +88,13 @@ Template.accountEncryption.onCreated(function() {
 	this.clearForm = function() {
 		this.find('[name=encryptionKey]').value = '';
 		this.find('[name=confirmation-encryptionKey]').value = '';
+	};
+
+	this.resetKey = function() {
+		Meteor.call('e2e.resetOwnE2EKey', (error, result) => {
+			if (result) {
+				toastr.success(t('User_e2e_key_was_reset'));
+			}
+		});
 	};
 });

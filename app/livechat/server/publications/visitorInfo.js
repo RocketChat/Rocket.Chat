@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms, LivechatVisitors } from '../../../models';
+import { LivechatRooms, LivechatVisitors } from '../../../models';
 
 Meteor.publish('livechat:visitorInfo', function({ rid: roomId }) {
+	console.warn('The publication "livechat:visitorInfo" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorInfo' }));
 	}
@@ -12,7 +13,7 @@ Meteor.publish('livechat:visitorInfo', function({ rid: roomId }) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorInfo' }));
 	}
 
-	const room = Rooms.findOneById(roomId);
+	const room = LivechatRooms.findOneById(roomId);
 
 	if (room && room.v && room.v._id) {
 		return LivechatVisitors.findById(room.v._id);

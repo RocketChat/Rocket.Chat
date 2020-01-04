@@ -253,7 +253,7 @@
 	height: 100%;
 
 	&--new {
-		padding: 0 1.5rem;
+		padding: 1.5rem;
 	}
 
 	&__content {
@@ -276,6 +276,15 @@
 		flex: 1;
 
 		width: 100%;
+	}
+
+	&__title {
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+
+	&__alert {
+		margin-bottom: 20px;
 	}
 }
 

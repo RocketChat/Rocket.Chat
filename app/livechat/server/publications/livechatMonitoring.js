@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { LivechatRooms } from '../../../models';
 
 Meteor.publish('livechat:monitoring', function(date) {
+	console.warn('The publication "livechat:monitoring" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:monitoring' }));
 	}
@@ -23,7 +24,7 @@ Meteor.publish('livechat:monitoring', function(date) {
 
 	const self = this;
 
-	const handle = Rooms.getAnalyticsMetricsBetweenDate('l', date).observeChanges({
+	const handle = LivechatRooms.getAnalyticsMetricsBetweenDate('l', date).observeChanges({
 		added(id, fields) {
 			self.added('livechatMonitoring', id, fields);
 		},

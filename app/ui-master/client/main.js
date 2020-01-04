@@ -15,8 +15,9 @@ import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
-import { tooltip } from '../../tooltip';
+import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
+import { isSyncReady } from '../../../client/lib/userData';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -171,11 +172,9 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const routerReady = FlowRouter.subsReady('userData');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
-
-		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = !Meteor.userId() || (isSyncReady.get() && subscriptionsReady && settingsReady);
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
@@ -228,7 +227,7 @@ Template.main.helpers({
 });
 
 Template.main.events({
-	'click .burger'() {
+	'click div.burger'() {
 		return menu.toggle();
 	},
 });

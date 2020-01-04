@@ -1,5 +1,4 @@
 export { t, isRtl } from '../lib/tapi18n';
-export { isChrome, isFirefox } from './lib/browsers';
 export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
 export { isEmail } from '../lib/isEmail';
@@ -21,3 +20,4 @@ export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient } from './lib/RestApiClient';
 export { canDeleteMessage } from './lib/canDeleteMessage';
 export { mime } from '../lib/mimeTypes';
+export { secondsToHHMMSS } from '../lib/timeConverter';

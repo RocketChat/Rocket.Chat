@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Users, Messages } from '../../../models';
 
 Meteor.publish('mentionedMessages', function(rid, limit = 50) {
+	console.warn('The publication "mentionedMessages" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

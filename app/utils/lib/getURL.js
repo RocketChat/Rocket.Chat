@@ -1,28 +1,60 @@
-import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { isURL } from './isURL';
 import { settings } from '../../settings';
 
-export const getURL = (path, { cdn = true, full = false } = {}) => {
+function getCloudUrl(path, _site_url) {
+	const siteUrl = s.rtrim(_site_url, '/');
+
+	// Remove the protocol
+	const host = siteUrl.replace(/https?\:\/\//i, '');
+	path = s.ltrim(path, '/');
+	const url = `https://go.rocket.chat/?host=${ encodeURIComponent(host) }&path=${ encodeURIComponent(path) }`;
+
+	if (siteUrl.includes('http://')) {
+		return `${ url }&secure=no`;
+	}
+
+	return url;
+}
+
+export const _getURL = (path, { cdn, full, cloud, _cdn_prefix, _root_url_path_prefix, _site_url }) => {
 	if (isURL(path)) {
 		return path;
 	}
 
-	const cdnPrefix = s.rtrim(s.trim(settings.get('CDN_PREFIX') || ''), '/');
-	const pathPrefix = s.rtrim(s.trim(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''), '/');
+	const [_path, _query] = path.split('?');
+	path = _path;
+	const query = _query ? `?${ _query }` : '';
 
-	let basePath;
+	const siteUrl = s.rtrim(s.trim(_site_url || ''), '/');
+	const cdnPrefix = s.rtrim(s.trim(_cdn_prefix || ''), '/');
+	const pathPrefix = s.rtrim(s.trim(_root_url_path_prefix || ''), '/');
 
 	const finalPath = s.ltrim(s.trim(path), '/');
 
+	const url = s.rtrim(`${ pathPrefix }/${ finalPath }`, '/') + query;
+
 	if (cdn && cdnPrefix !== '') {
-		basePath = cdnPrefix + pathPrefix;
-	} else if (full) {
-		return Meteor.absoluteUrl(finalPath);
-	} else {
-		basePath = pathPrefix;
+		return cdnPrefix + url;
 	}
 
-	return `${ basePath }/${ finalPath }`;
+	if (full) {
+		return siteUrl + url;
+	}
+
+	if (cloud) {
+		return getCloudUrl(url, siteUrl);
+	}
+
+	return url;
 };
+
+export const getURL = (path, { cdn = true, full = false, cloud = false } = {}) => _getURL(path, {
+	cdn,
+	full,
+	cloud,
+	_cdn_prefix: settings.get('CDN_PREFIX'),
+	_root_url_path_prefix: __meteor_runtime_config__.ROOT_URL_PATH_PREFIX,
+	_site_url: settings.get('Site_Url'),
+});

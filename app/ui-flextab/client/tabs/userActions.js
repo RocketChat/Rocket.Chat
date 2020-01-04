@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import _ from 'underscore';
 
@@ -10,7 +10,7 @@ import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../m
 import { modal } from '../../../ui-utils';
 import { t, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
-import { hasPermission, hasAllPermission, hasRole, userHasAllPermission } from '../../../authorization';
+import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization';
 
 const canSetLeader = () => hasAllPermission('set-leader', Session.get('openedRoom'));
 
@@ -75,7 +75,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 		return user && user.username === username;
 	};
 
-	const hasAdminRole = () => user && user._id && hasRole(user._id, 'admin');
+	const hasAdminRole = () => user && user.roles && user.roles.find((role) => role === 'admin');
 
 	const getUser = function getUser(fn, ...args) {
 		if (!user) {
@@ -104,7 +104,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			icon: 'message',
 			name: t('Conversation'),
 			action: prevent(getUser, ({ username }) =>
-				Meteor.call('createDirectMessage', username, success((result) => result.rid && FlowRouter.go('direct', { username }, FlowRouter.current().queryParams)))
+				Meteor.call('createDirectMessage', username, success((result) => result.rid && FlowRouter.go('direct', { username }, FlowRouter.current().queryParams))),
 			),
 			condition() {
 				return canDirectMessageTo(this.username);
@@ -376,7 +376,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 								timer: 2000,
 								showConfirmButton: false,
 							});
-						}))
+						})),
 					);
 				}),
 			};
@@ -462,14 +462,24 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					group: 'admin',
 					icon: 'key',
 					name: t('Remove_Admin'),
-					action: prevent(getUser, ({ _id }) => Meteor.call('setAdminStatus', _id, false, success(() => toastr.success(t('User_is_no_longer_an_admin'))))),
+					action: prevent(getUser, ({ _id }) =>
+						Meteor.call('setAdminStatus', _id, false, success(() => {
+							toastr.success(t('User_is_no_longer_an_admin'));
+							user.roles = user.roles.filter((role) => role !== 'admin');
+						})),
+					),
 				};
 			}
 			return {
 				group: 'admin',
 				icon: 'key',
 				name: t('Make_Admin'),
-				action: prevent(getUser, ({ _id }) => Meteor.call('setAdminStatus', _id, true, success(() => toastr.success(t('User_is_now_an_admin'))))),
+				action: prevent(getUser, (user) =>
+					Meteor.call('setAdminStatus', user._id, true, success(() => {
+						toastr.success(t('User_is_now_an_admin'));
+						user.roles.push('admin');
+					})),
+				),
 			};
 		}, () => {
 			if (hideAdminControls || !hasPermission('edit-other-user-active-status')) {
@@ -482,7 +492,12 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					id: 'deactivate',
 					name: t('Deactivate'),
 					modifier: 'alert',
-					action: prevent(getUser, ({ _id }) => Meteor.call('setUserActiveStatus', _id, false, success(() => toastr.success(t('User_has_been_deactivated'))))),
+					action: prevent(getUser, (user) =>
+						Meteor.call('setUserActiveStatus', user._id, false, success(() => {
+							toastr.success(t('User_has_been_deactivated'));
+							user.active = false;
+						})),
+					),
 				};
 			}
 			return {
@@ -490,22 +505,12 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				icon: 'user',
 				id: 'activate',
 				name: t('Activate'),
-				action: prevent(getUser, ({ _id }) => Meteor.call('setUserActiveStatus', _id, true, success(() => toastr.success(t('User_has_been_activated'))))),
-			};
-		}, () => {
-			if (hideAdminControls || !hasPermission('reset-other-user-e2e-key')) {
-				return;
-			}
-			if (!settings.get('E2E_Enable')) {
-				return;
-			}
-
-			return {
-				group: 'admin',
-				icon: 'key',
-				id: 'reset-e2e',
-				name: t('Reset_E2E_Key'),
-				action: prevent(getUser, ({ _id }) => Meteor.call('e2e.resetUserE2EKey', _id, success(() => toastr.success(t('User_e2e_key_was_reset'))))),
+				action: prevent(getUser, (user) =>
+					Meteor.call('setUserActiveStatus', user._id, true, success(() => {
+						toastr.success(t('User_has_been_activated'));
+						user.active = true;
+					})),
+				),
 			};
 		}];
 

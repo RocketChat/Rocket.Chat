@@ -17,13 +17,13 @@ Meteor.methods({
 			});
 		}
 
-		if (!Meteor.userId()) {
+		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'saveUserProfile',
 			});
 		}
 
-		const user = Users.findOneById(Meteor.userId());
+		const user = Users.findOneById(this.userId);
 
 		function checkPassword(user = {}, typedPassword) {
 			if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
@@ -31,7 +31,7 @@ Meteor.methods({
 			}
 
 			const passCheck = Accounts._checkPassword(user, {
-				digest: typedPassword,
+				digest: typedPassword.toLowerCase(),
 				algorithm: 'sha-256',
 			});
 
@@ -73,15 +73,21 @@ Meteor.methods({
 
 			passwordPolicy.validate(settings.newPassword);
 
-			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
+			Accounts.setPassword(this.userId, settings.newPassword, {
 				logout: false,
 			});
+
+			try {
+				Meteor.call('removeOtherTokens');
+			} catch (e) {
+				Accounts._clearAllLoginTokens(this.userId);
+			}
 		}
 
-		Users.setProfile(Meteor.userId(), {});
+		Users.setProfile(this.userId, {});
 
 		if (customFields && Object.keys(customFields).length) {
-			saveCustomFields(Meteor.userId(), customFields);
+			saveCustomFields(this.userId, customFields);
 		}
 
 		return true;

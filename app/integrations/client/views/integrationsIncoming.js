@@ -2,21 +2,29 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
 
 import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
-import { hasAtLeastOnePermission, hasAllPermission } from '../../../authorization';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { modal, SideNav } from '../../../ui-utils/client';
 import { t, handleError } from '../../../utils';
-import { ChatIntegrations } from '../collections';
+import { getIntegration } from '../getIntegration';
 
-Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated() {
+Template.integrationsIncoming.onCreated(async function _incomingIntegrationsOnCreated() {
+	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
+	this.integration = new ReactiveVar({});
 	this.record = new ReactiveVar({
 		username: 'rocket.cat',
 	});
+	if (params && params.id) {
+		const integration = await getIntegration(params.id, Meteor.userId());
+		if (integration) {
+			this.integration.set(integration);
+		}
+	}
 });
 
 Template.integrationsIncoming.helpers({
@@ -24,27 +32,25 @@ Template.integrationsIncoming.helpers({
 	exampleUser,
 	exampleSettings,
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission([
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		]);
+	},
+
+	canDelete() {
+		return this.params && this.params() && typeof this.params().id !== 'undefined';
 	},
 
 	data() {
-		const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
-
-		if (params && params.id) {
-			let data;
-			if (hasAllPermission('manage-integrations')) {
-				data = ChatIntegrations.findOne({ _id: params.id });
-			} else if (hasAllPermission('manage-own-integrations')) {
-				data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
-			}
-
-			if (data) {
-				const completeToken = `${ data._id }/${ data.token }`;
-				data.url = Meteor.absoluteUrl(`hooks/${ completeToken }`);
-				data.completeToken = completeToken;
-				Template.instance().record.set(data);
-				return data;
-			}
+		const data = Template.instance().integration.get();
+		if (data) {
+			const completeToken = `${ data._id }/${ data.token }`;
+			data.url = Meteor.absoluteUrl(`hooks/${ completeToken }`);
+			data.completeToken = completeToken;
+			data.hasScriptError = data.scriptEnabled && data.scriptError;
+			Template.instance().record.set(data);
+			return data;
 		}
 
 		return Template.instance().record.curValue;
@@ -141,7 +147,7 @@ Template.integrationsIncoming.events({
 		t.record.set(value);
 	},
 
-	'click .submit > .delete': () => {
+	'click .rc-header__section-button > .delete': () => {
 		const params = Template.instance().data.params();
 
 		modal.open({
@@ -184,7 +190,7 @@ Template.integrationsIncoming.events({
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
 	},
 
-	'click .submit > .save': () => {
+	'click .rc-header__section-button > .save': () => {
 		const enabled = $('[name=enabled]:checked').val().trim();
 		const name = $('[name=name]').val().trim();
 		const alias = $('[name=alias]').val().trim();

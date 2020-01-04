@@ -1,7 +1,7 @@
 <template name="livechatCustomFields">
-	{{#requiresPermission 'view-livechat-manager'}}
+	{{#requiresPermission 'view-livechat-customfields'}}
 		<div class="rc-table-content">
-			{{#table fixed='true'}}
+			{{#table fixed='true' onScroll=onTableScroll}}
 				<thead>
 					<tr>
 						<th><div class="table-fake-th">{{_ "Field"}}</div></th>

@@ -1,3 +1,0 @@
-type Mutation {
-	deleteChannel(channelId: String!): Boolean
-}

@@ -3,19 +3,20 @@ import Busboy from 'busboy';
 
 import { EmojiCustom } from '../../../models';
 import { API } from '../api';
+import { findEmojisCustom } from '../lib/emoji-custom';
 
 // DEPRECATED
-// Will be removed after v1.12.0
+// Will be removed after v3.0.0
 API.v1.addRoute('emoji-custom', { authRequired: true }, {
 	get() {
-		const warningMessage = 'The endpoint "emoji-custom" is deprecated and will be removed after version v1.12.0';
+		const warningMessage = 'The endpoint "emoji-custom" is deprecated and will be removed after version v3.0.0';
 		console.warn(warningMessage);
 		const { query } = this.parseJsonQuery();
 		const emojis = Meteor.call('listEmojiCustom', query);
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'emoji-custom',
-			versionWillBeRemoved: '1.12.0',
+			versionWillBeRemoved: '3.0.0',
 			response: {
 				emojis,
 			},
@@ -48,6 +49,22 @@ API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
 				remove: [],
 			},
 		});
+	},
+});
+
+API.v1.addRoute('emoji-custom.all', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
+
+		return API.v1.success(Promise.await(findEmojisCustom({
+			query,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		})));
 	},
 });
 

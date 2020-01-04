@@ -9,7 +9,7 @@ describe('[EmojiCustom]', function() {
 
 	before((done) => getCredentials(done));
 	// DEPRECATED
-	// Will be removed after v1.12.0
+	// Will be removed after v3.0.0
 	describe('[/emoji-custom]', () => {
 		it('should return emojis', (done) => {
 			request.get(api('emoji-custom'))
@@ -81,12 +81,15 @@ describe('[EmojiCustom]', function() {
 
 	describe('[/emoji-custom.update]', () => {
 		before((done) => {
-			request.get(api('emoji-custom'))
+			request.get(api('emoji-custom.list'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('emojis').and.to.be.a('array');
-					createdCustomEmoji = res.body.emojis.find((emoji) => emoji.name === customEmojiName);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.not.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+
+					createdCustomEmoji = res.body.emojis.update.find((emoji) => emoji.name === customEmojiName);
 				})
 				.end(done);
 		});
@@ -246,6 +249,22 @@ describe('[EmojiCustom]', function() {
 				.end(done);
 		});
 	});
+
+	describe('[/emoji-custom.all]', () => {
+		it('should return emojis', (done) => {
+			request.get(api('emoji-custom.all'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('emojis').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+	});
+
 
 	describe('[/emoji-custom.delete]', () => {
 		it('should throw an error when trying delete custom emoji without the required param "emojid"', (done) => {

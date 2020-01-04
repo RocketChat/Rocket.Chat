@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
@@ -16,9 +16,10 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
-import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
+import { findUsersToAutocomplete } from '../lib/users';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -31,6 +32,7 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			roles: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
 			requirePasswordChange: Match.Maybe(Boolean),
+			setRandomPassword: Match.Maybe(Boolean),
 			sendWelcomeEmail: Match.Maybe(Boolean),
 			verified: Match.Maybe(Boolean),
 			customFields: Match.Maybe(Object),
@@ -58,7 +60,9 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			});
 		}
 
-		return API.v1.success({ user: Users.findOneById(newUserId, { fields: API.v1.defaultFieldsToExclude }) });
+		const { fields } = this.parseJsonQuery();
+
+		return API.v1.success({ user: Users.findOneById(newUserId, { fields }) });
 	},
 });
 
@@ -149,14 +153,18 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const { username } = this.getUserFromParams();
+		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
-
-		const result = getFullUserData({
+		const params = {
 			userId: this.userId,
 			filter: username,
 			limit: 1,
-		});
+		};
+
+		const result = userId
+			? getFullUserDataById({ userId: this.userId, filterId: userId })
+			: getFullUserData(params);
+
 		if (!result || result.count() !== 1) {
 			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
@@ -229,8 +237,9 @@ API.v1.addRoute('users.register', { authRequired: false }, {
 
 		// Now set their username
 		Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
+		const { fields } = this.parseJsonQuery();
 
-		return API.v1.success({ user: Users.findOneById(userId, { fields: API.v1.defaultFieldsToExclude }) });
+		return API.v1.success({ user: Users.findOneById(userId, { fields }) });
 	},
 });
 
@@ -369,7 +378,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(user._id, () => {
-			if (this.bodyParams.message) {
+			if (this.bodyParams.message || this.bodyParams.message.length === 0) {
 				setStatusText(user._id, this.bodyParams.message);
 			}
 			if (this.bodyParams.status) {
@@ -426,8 +435,9 @@ API.v1.addRoute('users.update', { authRequired: true }, {
 				Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.data.active);
 			});
 		}
+		const { fields } = this.parseJsonQuery();
 
-		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: API.v1.defaultFieldsToExclude }) });
+		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields }) });
 	},
 });
 
@@ -507,6 +517,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
 				desktopNotificationDuration: Match.Maybe(Number),
+				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
 				messageViewMode: Match.Maybe(Number),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
@@ -525,28 +536,21 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});
+		if (this.bodyParams.userId && this.bodyParams.userId !== this.userId && !hasPermission(this.userId, 'edit-other-user-info')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
+		}
 		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
-		const userData = {
-			_id: userId,
-			settings: {
-				preferences: this.bodyParams.data,
-			},
-		};
-
-		if (this.bodyParams.data.language) {
-			const { language } = this.bodyParams.data;
-			delete this.bodyParams.data.language;
-			userData.language = language;
+		if (!Users.findOneById(userId)) {
+			throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 		}
 
-		Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
+		Meteor.runAsUser(userId, () => Meteor.call('saveUserPreferences', this.bodyParams.data));
 		const user = Users.findOneById(userId, {
 			fields: {
 				'settings.preferences': 1,
 				language: 1,
 			},
 		});
-
 		return API.v1.success({
 			user: {
 				_id: user._id,
@@ -672,5 +676,31 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 			users: Users.findUsersNotOffline(options).fetch(),
 			full: true,
 		});
+	},
+});
+
+API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
+	get() {
+		const { fullExport = false } = this.queryParams;
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }));
+
+		return API.v1.success({
+			requested: result.requested,
+			exportOperation: result.exportOperation,
+		});
+	},
+});
+
+API.v1.addRoute('users.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findUsersToAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
 	},
 });

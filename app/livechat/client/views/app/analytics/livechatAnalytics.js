@@ -71,7 +71,7 @@ const updateAnalyticsChart = () => {
 		chartOptions: templateInstance.chartOptions.get(),
 	};
 
-	Meteor.call('livechat:getAnalyticsChartData', options, function(error, result) {
+	Meteor.call('livechat:getAnalyticsChartData', options, async function(error, result) {
 		if (error) {
 			return handleError(error);
 		}
@@ -80,7 +80,7 @@ const updateAnalyticsChart = () => {
 			console.log('livechat:getAnalyticsChartData => Missing Data');
 		}
 
-		chartContext = drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, [result.chartLabel], result.dataLabels, [result.dataPoints]);
+		chartContext = await drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, [result.chartLabel], result.dataLabels, [result.dataPoints]);
 	});
 
 	Meteor.call('livechat:getAgentOverviewData', options, function(error, result) {

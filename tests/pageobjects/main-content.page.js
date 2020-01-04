@@ -4,9 +4,9 @@ class MainContent extends Page {
 	get mainContent() { return browser.element('.main-content'); }
 
 	// Main Content Header (Channel Title Area)
-	get emptyFavoriteStar() { return browser.element('.rc-header__toggle-favorite.empty'); }
+	get emptyFavoriteStar() { return browser.element('.js-favorite .rc-header__icon--star'); }
 
-	get favoriteStar() { return browser.element('.rc-header__toggle-favorite.favorite-room'); }
+	get favoriteStar() { return browser.element('.js-favorite .rc-header__icon--star-filled'); }
 
 	get channelTitle() { return browser.element('.rc-header__name'); }
 
@@ -60,7 +60,7 @@ class MainContent extends Page {
 
 	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
 
-	get messageReply() { return browser.element('[data-id="reply-in-thread"][data-type="message-action"]'); }
+	get messageReply() { return browser.element('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]'); }
 
 	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
 

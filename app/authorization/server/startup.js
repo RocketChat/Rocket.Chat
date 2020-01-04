@@ -1,7 +1,9 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
 
-import { Roles, Permissions } from '../../models';
+import { Roles, Permissions, Settings } from '../../models';
+import { settings } from '../../settings/server';
+import { getSettingPermissionId, CONSTANTS } from '../lib';
 
 Meteor.startup(function() {
 	// Note:
@@ -10,6 +12,7 @@ Meteor.startup(function() {
 	// 2. admin, moderator, and user roles should not be deleted as they are referened in the code.
 	const permissions = [
 		{ _id: 'access-permissions',            roles: ['admin'] },
+		{ _id: 'access-setting-permissions', 	roles: ['admin'] },
 		{ _id: 'add-oauth-service',             roles: ['admin'] },
 		{ _id: 'add-user-to-joined-room',       roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'add-user-to-any-c-room',        roles: ['admin'] },
@@ -19,7 +22,6 @@ Meteor.startup(function() {
 		{ _id: 'assign-admin-role',             roles: ['admin'] },
 		{ _id: 'assign-roles',                  roles: ['admin'] },
 		{ _id: 'ban-user',                      roles: ['admin', 'owner', 'moderator'] },
-		{ _id: 'bulk-create-c',                 roles: ['admin'] },
 		{ _id: 'bulk-register-user',            roles: ['admin'] },
 		{ _id: 'create-c',                      roles: ['admin', 'user', 'bot'] },
 		{ _id: 'create-d',                      roles: ['admin', 'user', 'bot'] },
@@ -30,6 +32,7 @@ Meteor.startup(function() {
 		{ _id: 'delete-c',                      roles: ['admin', 'owner'] },
 		{ _id: 'delete-d',                      roles: ['admin'] },
 		{ _id: 'delete-message',                roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'delete-own-message',            roles: ['admin', 'user'] },
 		{ _id: 'delete-p',                      roles: ['admin', 'owner'] },
 		{ _id: 'delete-user',                   roles: ['admin'] },
 		{ _id: 'edit-message',                  roles: ['admin', 'owner', 'moderator'] },
@@ -47,14 +50,16 @@ Meteor.startup(function() {
 		{ _id: 'manage-assets',                 roles: ['admin'] },
 		{ _id: 'manage-emoji',                  roles: ['admin'] },
 		{ _id: 'manage-user-status',            roles: ['admin'] },
-		{ _id: 'manage-integrations',           roles: ['admin'] },
-		{ _id: 'manage-own-integrations',       roles: ['admin'] },
+		{ _id: 'manage-outgoing-integrations',  roles: ['admin'] },
+		{ _id: 'manage-incoming-integrations',  roles: ['admin'] },
+		{ _id: 'manage-own-outgoing-integrations', roles: ['admin'] },
+		{ _id: 'manage-own-incoming-integrations', roles: ['admin'] },
 		{ _id: 'manage-oauth-apps',             roles: ['admin'] },
+		{ _id: 'manage-selected-settings', 		roles: ['admin'] },
 		{ _id: 'mention-all',                   roles: ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mention-here',                  roles: ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mute-user',                     roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'remove-user',                   roles: ['admin', 'owner', 'moderator'] },
-		{ _id: 'reset-other-user-e2e-key',      roles: ['admin'] },
 		{ _id: 'run-import',                    roles: ['admin'] },
 		{ _id: 'run-migration',                 roles: ['admin'] },
 		{ _id: 'set-moderator',                 roles: ['admin', 'owner'] },
@@ -80,6 +85,31 @@ Meteor.startup(function() {
 		{ _id: 'view-outside-room',             roles: ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'view-broadcast-member-list',    roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'call-management',               roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'create-invite-links',           roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'view-l-room',                   roles: ['livechat-agent', 'livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-manager',         roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-rooms',           roles: ['livechat-manager', 'admin'] },
+		{ _id: 'close-livechat-room',           roles: ['livechat-agent', 'livechat-manager', 'admin'] },
+		{ _id: 'close-others-livechat-room',    roles: ['livechat-manager', 'admin'] },
+		{ _id: 'save-others-livechat-room-info', roles: ['livechat-manager'] },
+		{ _id: 'remove-closed-livechat-rooms',  roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-analytics',       roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-queue',           roles: ['livechat-manager', 'admin'] },
+		{ _id: 'transfer-livechat-guest',       roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-livechat-managers',      roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-livechat-agents',        roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-livechat-departments',   roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-departments',     roles: ['livechat-manager', 'admin'] },
+		{ _id: 'add-livechat-department-agents', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-current-chats',   roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-real-time-monitoring', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-triggers',        roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-customfields',    roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-installation',    roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-appearance',      roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-webhooks',        roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-facebook',        roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-officeHours',     roles: ['livechat-manager', 'admin'] },
 	];
 
 	for (const permission of permissions) {
@@ -89,17 +119,92 @@ Meteor.startup(function() {
 	}
 
 	const defaultRoles = [
-		{ name: 'admin',     scope: 'Users',         description: 'Admin' },
-		{ name: 'moderator', scope: 'Subscriptions', description: 'Moderator' },
-		{ name: 'leader',    scope: 'Subscriptions', description: 'Leader' },
-		{ name: 'owner',     scope: 'Subscriptions', description: 'Owner' },
-		{ name: 'user',      scope: 'Users',         description: '' },
-		{ name: 'bot',       scope: 'Users',         description: '' },
-		{ name: 'guest',     scope: 'Users',         description: '' },
-		{ name: 'anonymous', scope: 'Users',         description: '' },
+		{ name: 'admin',            scope: 'Users',         description: 'Admin' },
+		{ name: 'moderator',        scope: 'Subscriptions', description: 'Moderator' },
+		{ name: 'leader',           scope: 'Subscriptions', description: 'Leader' },
+		{ name: 'owner',            scope: 'Subscriptions', description: 'Owner' },
+		{ name: 'user',             scope: 'Users',         description: '' },
+		{ name: 'bot',              scope: 'Users',         description: '' },
+		{ name: 'guest',            scope: 'Users',         description: '' },
+		{ name: 'anonymous',        scope: 'Users',         description: '' },
+		{ name: 'livechat-agent',   scope: 'Users',         description: 'Livechat Agent' },
+		{ name: 'livechat-manager', scope: 'Users',         description: 'Livechat Manager' },
 	];
 
 	for (const role of defaultRoles) {
 		Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true, mandatory2fa: false } });
 	}
+
+	const getPreviousPermissions = function(settingId) {
+		const previousSettingPermissions = {};
+
+		const selector = { level: CONSTANTS.SETTINGS_LEVEL };
+		if (settingId) {
+			selector.settingId = settingId;
+		}
+
+		Permissions.find(selector).fetch().forEach(
+			function(permission) {
+				previousSettingPermissions[permission._id] = permission;
+			});
+		return previousSettingPermissions;
+	};
+
+	const createSettingPermission = function(setting, previousSettingPermissions) {
+		const permissionId = getSettingPermissionId(setting._id);
+		const permission = {
+			_id: permissionId,
+			level: CONSTANTS.SETTINGS_LEVEL,
+			// copy those setting-properties which are needed to properly publish the setting-based permissions
+			settingId: setting._id,
+			group: setting.group,
+			section: setting.section,
+			sorter: setting.sorter,
+		};
+		// copy previously assigned roles if available
+		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
+			permission.roles = previousSettingPermissions[permissionId].roles;
+		} else {
+			permission.roles = [];
+		}
+		if (setting.group) {
+			permission.groupPermissionId = getSettingPermissionId(setting.group);
+		}
+		if (setting.section) {
+			permission.sectionPermissionId = getSettingPermissionId(setting.section);
+		}
+		Permissions.upsert(permission._id, { $set: permission });
+		delete previousSettingPermissions[permissionId];
+	};
+
+	const createPermissionsForExistingSettings = function() {
+		const previousSettingPermissions = getPreviousPermissions();
+
+		Settings.findNotHidden().fetch().forEach((setting) => {
+			createSettingPermission(setting, previousSettingPermissions);
+		});
+
+		// remove permissions for non-existent settings
+		for (const obsoletePermission in previousSettingPermissions) {
+			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
+				Permissions.remove({ _id: obsoletePermission });
+			}
+		}
+	};
+
+	// for each setting which already exists, create a permission to allow changing just this one setting
+	createPermissionsForExistingSettings();
+
+	// register a callback for settings for be create in higher-level-packages
+	const createPermissionForAddedSetting = function(settingId) {
+		const previousSettingPermissions = getPreviousPermissions(settingId);
+		const setting = Settings.findOneById(settingId);
+		if (setting) {
+			if (!setting.hidden) {
+				createSettingPermission(setting, previousSettingPermissions);
+			}
+		}
+	};
+
+	settings.onload('*', createPermissionForAddedSetting);
 });

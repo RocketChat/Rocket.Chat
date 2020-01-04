@@ -1,29 +1,30 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
 
-import { hasRole } from '../../../authorization';
-import { Info } from '../../../utils';
-import { Users } from '../../../models';
-import { settings } from '../../../settings';
+import { hasRole, hasPermission } from '../../../authorization/server';
+import { Info } from '../../../utils/server';
+import { Users } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
+import { StdOut } from '../../../logger/server/publish';
 
 
 // DEPRECATED
-// Will be removed after v1.12.0
+// Will be removed after v3.0.0
 API.v1.addRoute('info', { authRequired: false }, {
 	get() {
-		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v1.12.0';
+		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v3.0.0';
 		console.warn(warningMessage);
 		const user = this.getLoggedInUser();
 
 		if (user && hasRole(user._id, 'admin')) {
 			return API.v1.success(this.deprecationWarning({
 				endpoint: 'info',
-				versionWillBeRemoved: '1.12.0',
+				versionWillBeRemoved: '3.0.0',
 				response: {
 					info: Info,
 				},
@@ -32,7 +33,7 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'info',
-			versionWillBeRemoved: '1.12.0',
+			versionWillBeRemoved: '3.0.0',
 			response: {
 				info: {
 					version: Info.version,
@@ -162,7 +163,7 @@ API.v1.addRoute('spotlight', { authRequired: true }, {
 		const { query } = this.queryParams;
 
 		const result = Meteor.runAsUser(this.userId, () =>
-			Meteor.call('spotlight', query)
+			Meteor.call('spotlight', query),
 		);
 
 		return API.v1.success(result);
@@ -200,5 +201,14 @@ API.v1.addRoute('directory', { authRequired: true }, {
 			offset,
 			total: result.total,
 		});
+	},
+});
+
+API.v1.addRoute('stdout.queue', { authRequired: true }, {
+	get() {
+		if (!hasPermission(this.userId, 'view-logs')) {
+			return API.v1.unauthorized();
+		}
+		return API.v1.success({ queue: StdOut.queue });
 	},
 });

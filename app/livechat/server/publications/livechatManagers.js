@@ -3,11 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission, getUsersInRole } from '../../../authorization';
 
 Meteor.publish('livechat:managers', function() {
+	console.warn('The publication "livechat:managers" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:managers' }));
 	}
 
-	if (!hasPermission(this.userId, 'view-livechat-rooms')) {
+	if (!hasPermission(this.userId, 'manage-livechat-managers')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:managers' }));
 	}
 

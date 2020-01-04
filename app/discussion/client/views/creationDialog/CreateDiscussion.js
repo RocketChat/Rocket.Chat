@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { Blaze } from 'meteor/blaze';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
 import { roomTypes } from '../../../../utils/client';
 import { callbacks } from '../../../../callbacks/client';
 import { ChatRoom, ChatSubscription } from '../../../../models/client';
 import { call } from '../../../../ui-utils/client';
+import { AutoComplete } from '../../../../meteor-autocomplete/client';
 
 import './CreateDiscussion.html';
 
@@ -29,7 +29,7 @@ Template.CreateDiscussion.helpers({
 	},
 	createIsDisabled() {
 		const { parentChannel, discussionName } = Template.instance();
-		return parentChannel.get() && discussionName.get() ? '' : 'disabled';
+		return parentChannel.get() && discussionName.get().trim() ? '' : 'disabled';
 	},
 	parentChannel() {
 		const instance = Template.instance();
@@ -278,7 +278,7 @@ Template.SearchCreateDiscussion.onCreated(function() {
 	this.onClickTag = this.data.onClickTag;
 	this.deleteLastItem = this.data.deleteLastItem;
 
-	const { collection, subscription, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
+	const { collection, endpoint, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
 	this.ac = new AutoComplete(
 		{
 			selector: {
@@ -293,7 +293,7 @@ Template.SearchCreateDiscussion.onCreated(function() {
 			rules: [
 				{
 					collection,
-					subscription,
+					endpoint,
 					field,
 					matchAll: true,
 					// filter,

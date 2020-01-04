@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
@@ -41,6 +40,20 @@ Template.userEdit.helpers({
 
 	requirePasswordChange() {
 		return !Template.instance().user || Template.instance().user.requirePasswordChange;
+	},
+
+	requirePasswordChangeDisabled() {
+		// when setting a random password, requiring a password change is mandatory
+		return !Template.instance().user || Template.instance().requiringPasswordReset.get();
+	},
+
+	setRandomPasswordDisabled() {
+		// when creating a new user, setting a random password is mandatory
+		return !Template.instance().user;
+	},
+
+	setRandomPassword() {
+		return !Template.instance().user || Template.instance().user.setRandomPassword;
 	},
 
 	role() {
@@ -83,6 +96,15 @@ Template.userEdit.events({
 		template.url.set(text);
 	},
 
+	'change #setRandomPassword'(e, template) {
+		const requiring = e.currentTarget.checked;
+		template.requiringPasswordReset.set(requiring);
+
+		if (requiring) {
+			$(e.currentTarget.form).find('#changePassword')[0].checked = true;
+		}
+	},
+
 	'change .js-select-avatar-upload [type=file]'(event, template) {
 		const e = event.originalEvent || event;
 		let { files } = e.target;
@@ -122,17 +144,6 @@ Template.userEdit.events({
 		$(`[title=${ this }]`).remove();
 	},
 
-	'click #randomPassword'(e) {
-		e.stopPropagation();
-		e.preventDefault();
-		e.target.classList.add('loading');
-		$('#password').val('');
-		setTimeout(() => {
-			$('#password').val(Random.id());
-			e.target.classList.remove('loading');
-		}, 1000);
-	},
-
 	'mouseover #password'(e) {
 		e.target.type = 'text';
 	},
@@ -141,16 +152,17 @@ Template.userEdit.events({
 		e.target.type = 'password';
 	},
 
-	'click #addRole'(e, instance) {
+	'change #roleSelect'(e, instance) {
+		const select = $('#roleSelect');
 		e.stopPropagation();
 		e.preventDefault();
-		if ($('#roleSelect').find(':selected').is(':disabled')) {
+		if (select.find(':selected').is(':disabled')) {
 			return;
 		}
 		const userRoles = [...instance.roles.get()];
-		userRoles.push($('#roleSelect').val());
+		userRoles.push(select.val());
 		instance.roles.set(userRoles);
-		$('#roleSelect').val('placeholder');
+		select.val('placeholder');
 	},
 
 	'submit form'(e, t) {
@@ -165,15 +177,17 @@ Template.userEdit.onCreated(function() {
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 	this.avatar = new ReactiveVar();
 	this.url = new ReactiveVar('');
+	this.requiringPasswordReset = new ReactiveVar(false);
+
 	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 
 	const { tabBar } = Template.currentData();
 
-	this.cancel = (form, username) => {
+	this.cancel = (form, data) => {
 		form.reset();
 		this.$('input[type=checkbox]').prop('checked', true);
 		if (this.user) {
-			return this.data.back(username);
+			return this.data.back(data);
 		}
 		return tabBar.close();
 	};
@@ -186,6 +200,7 @@ Template.userEdit.onCreated(function() {
 		userData.email = s.trim(this.$('#email').val());
 		userData.verified = this.$('#verified:checked').length > 0;
 		userData.password = s.trim(this.$('#password').val());
+		userData.setRandomPassword = this.$('#setRandomPassword:checked').length > 0;
 		userData.requirePasswordChange = this.$('#changePassword:checked').length > 0;
 		userData.joinDefaultChannels = this.$('#joinDefaultChannels:checked').length > 0;
 		userData.sendWelcomeEmail = this.$('#sendWelcomeEmail:checked').length > 0;
@@ -269,7 +284,7 @@ Template.userEdit.onCreated(function() {
 				return handleError(error);
 			}
 			toastr.success(userData._id ? t('User_updated_successfully') : t('User_added_successfully'));
-			this.cancel(form, userData.username);
+			this.cancel(form, userData);
 		});
 	};
 });

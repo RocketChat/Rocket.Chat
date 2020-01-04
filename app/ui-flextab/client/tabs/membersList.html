@@ -9,11 +9,11 @@
 					<div class="rc-input__icon">
 						{{> icon block="rc-input__icon-svg" icon="magnifier"}}
 					</div>
-					<input type="text" class="rc-input__element js-filter" name="user-search" id="user-search" placeholder={{_ "Search_by_username"}} autocomplete="off" />
+					<input type="text" class="rc-input__element js-filter" name="user-search" id="user-search" placeholder={{_ "Search_by_username"}} autocomplete="off" aria-label="{{_ "Search_by_username"}}" />
 
 				</div>
 				<label class="rc-select">
-					<select class="rc-select__element js-type" name="status-type">
+					<select class="rc-select__element js-type" name="status-type" aria-label="{{_ "Status"}}">
 						<option value="online">{{_ 'online'}}</option>
 						<option value="all">{{_ 'All_users'}}</option>
 					</select>
@@ -48,10 +48,16 @@
 				<button class="rc-button rc-button--secondary show-more-users {{#if loadingMore}}loading{{/if}}">{{_ "Show_more"}}</button>
 			{{/if}}
 		</div>
+		<div class="rc-button__group rc-button__group--stretch">
+			{{#if canAddUser}}
+				<button class="rc-button rc-button--primary js-add">{{> icon block="rc-input__icon-svg" icon="plus"}}{{_ "Add_users"}}</button>
+			{{/if}}
 
-		{{#if canAddUser}}
-			<button class="rc-button rc-button--primary js-add">{{> icon block="rc-input__icon-svg" icon="plus"}}{{_ "Invite_Users"}}</button>
-		{{/if}}
+			{{#if canInviteUser}}
+				<button class="rc-button rc-button--primary js-invite">{{> icon block="rc-input__icon-svg" icon="user-plus"}}{{_ "Invite_Users"}}</button>
+			{{/if}}
+		</div>
+
 		{{/with}}
 	{{/if}}
 	<div class="rc-user-info-container flex-nav animated{{#unless showUserInfo}} animated-hidden{{/unless}}">

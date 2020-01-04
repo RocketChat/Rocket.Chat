@@ -3,31 +3,137 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { DateFormat } from '../../../lib/client';
-import { canDeleteMessage, getURL, handleError, t } from '../../../utils/client';
+import { canDeleteMessage, getURL, handleError, t, APIClient } from '../../../utils/client';
 import { popover, modal } from '../../../ui-utils/client';
+import { Rooms, Messages } from '../../../models/client';
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 
-const roomFiles = new Mongo.Collection('room_files');
+const LIST_SIZE = 50;
+const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
+
+const getFileUrl = (attachments) => {
+	if (!attachments || !attachments.length) {
+		return;
+	}
+	return attachments[0].image_url || attachments[0].audio_url || attachments[0].video_url;
+};
+
+const mountFileObject = (message) => ({
+	...message.file,
+	rid: message.rid,
+	user: message.u,
+	description: message.attachments && message.attachments[0].description,
+	url: getFileUrl(message.attachments),
+	_updatedAt: message.attachments && message.attachments[0].ts,
+});
+
+const roomTypes = {
+	c: 'channels',
+	l: 'channels',
+	d: 'im',
+	p: 'groups',
+};
+
+const fields = {
+	_id: 1,
+	userId: 1,
+	rid: 1,
+	name: 1,
+	description: 1,
+	type: 1,
+	url: 1,
+	uploadedAt: 1,
+};
 
 Template.uploadedFilesList.onCreated(function() {
 	const { rid } = Template.currentData();
+	const room = Rooms.findOne({ _id: rid });
 	this.searchText = new ReactiveVar(null);
-	this.hasMore = new ReactiveVar(true);
-	this.limit = new ReactiveVar(50);
+
+	this.showFileType = new ReactiveVar('all');
+
+	this.roomFiles = new ReactiveVar([]);
+	this.files = new Mongo.Collection(null);
+
+	this.state = new ReactiveDict({
+		limit: LIST_SIZE,
+		hasMore: true,
+	});
+
+	const messageQuery = {
+		rid,
+		'file._id': { $exists: true },
+	};
+
+	this.cursor = Messages.find(messageQuery).observe({
+		added: ({ ...message }) => {
+			this.files.upsert(message.file._id, mountFileObject(message));
+		},
+		changed: ({ ...message }) => {
+			this.files.upsert(message.file._id, mountFileObject(message));
+		},
+		removed: ({ ...message }) => {
+			this.files.remove(message.file._id);
+		},
+	});
+
+	const loadFiles = _.debounce(async (query, limit) => {
+		this.state.set('loading', true);
+
+		const { files } = await APIClient.v1.get(`${ roomTypes[room.t] }.files?roomId=${ query.rid }&limit=${ limit }&query=${ JSON.stringify(query) }&fields=${ JSON.stringify(fields) }`);
+
+		upsertMessageBulk({ msgs: files }, this.files);
+
+		this.state.set({
+			hasMore: this.state.get('limit') <= files.length,
+			loading: false,
+		});
+	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
+
+	const query = {
+		rid,
+		complete: true,
+		uploading: false,
+		_hidden: {
+			$ne: true,
+		},
+	};
 
 	this.autorun(() => {
-		this.subscribe('roomFilesWithSearchText', rid, this.searchText.get(), this.limit.get(), () => {
-			if (roomFiles.find({ rid }).fetch().length < this.limit.get()) {
-				this.hasMore.set(false);
-			}
-		});
+		this.searchText.get();
+		this.state.set('limit', LIST_SIZE);
 	});
+
+	this.autorun(() => {
+		if (this.showFileType.get() === 'all') {
+			delete query.typeGroup;
+		} else {
+			this.files.remove({});
+			query.typeGroup = this.showFileType.get();
+		}
+
+		const limit = this.state.get('limit');
+		const searchText = this.searchText.get();
+		if (!searchText) {
+			return loadFiles(query, limit);
+		}
+		this.files.remove({});
+		const regex = { $regex: searchText, $options: 'i' };
+		return loadFiles({ ...query, name: regex }, limit);
+	});
+});
+
+Template.mentionsFlexTab.onDestroyed(function() {
+	this.cursor.stop();
 });
 
 Template.uploadedFilesList.helpers({
 	files() {
-		return roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } });
+		const instance = Template.instance();
+		return instance.files.find({}, { limit: instance.state.get('limit') });
 	},
 
 	url() {
@@ -45,6 +151,12 @@ Template.uploadedFilesList.helpers({
 		if (/image/.test(this.type)) {
 			return getURL(this.url);
 		}
+	},
+
+	escapeCssUrl: (url) => url.replace(/(['"])/g, '\\$1'),
+
+	limit() {
+		return Template.instance().state.get('limit');
 	},
 	format(timestamp) {
 		return DateFormat.formatDateAndTime(timestamp);
@@ -96,12 +208,8 @@ Template.uploadedFilesList.helpers({
 		return DateFormat.formatDateAndTime(timestamp);
 	},
 
-	hasMore() {
-		return Template.instance().hasMore.get();
-	},
-
-	hasFiles() {
-		return roomFiles.find({ rid: this.rid }).count() > 0;
+	isLoading() {
+		return Template.instance().state.get('loading');
 	},
 });
 
@@ -112,14 +220,21 @@ Template.uploadedFilesList.events({
 
 	'input .uploaded-files-list__search-input'(e, t) {
 		t.searchText.set(e.target.value.trim());
-		t.hasMore.set(true);
+		t.state.set('hasMore', true);
 	},
 
 	'scroll .flex-tab__result': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
-			return t.limit.set(t.limit.get() + 50);
+			if (!t.state.get('hasMore')) {
+				return;
+			}
+			return t.state.set('limit', t.state.get('limit') + LIST_SIZE);
 		}
 	}, 200),
+
+	'change .js-type'(e, t) {
+		t.showFileType.set(e.currentTarget.value);
+	},
 
 	'click .js-action'(e) {
 		e.currentTarget.parentElement.classList.add('active');

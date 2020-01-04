@@ -151,13 +151,6 @@
 	justify-content: center;
 }
 
-.rc-old .text-left {
-	display: flex;
-
-	text-align: left;
-	justify-content: start;
-}
-
 .connection-status > .alert {
 	position: absolute;
 	z-index: 1000000;
@@ -390,7 +383,7 @@
 
 /* input & form styles */
 
-.rc-old input:focus {
+.rc-old :not(.rcx-input-control):focus {
 	outline: none;
 	box-shadow: 0 0 0;
 }
@@ -475,7 +468,7 @@ rc-old select,
 }
 
 .rc-old .-autocomplete-container {
-	top: auto !important;
+	top: auto;
 
 	width: 100%;
 
@@ -1844,6 +1837,8 @@ rc-old select,
 	& .upload-progress {
 		position: relative;
 
+		display: flex;
+
 		height: 28px;
 
 		& .upload-progress-progress {
@@ -1858,7 +1853,6 @@ rc-old select,
 		}
 
 		& .upload-progress-text {
-			position: absolute;
 			z-index: 2;
 			right: 0;
 			left: 0;
@@ -1870,7 +1864,9 @@ rc-old select,
 			height: 100%;
 			padding: 0 10px;
 
+			white-space: nowrap;
 			text-overflow: ellipsis;
+			flex-grow: 1;
 
 			& > a {
 				float: right;
@@ -2524,7 +2520,7 @@ rc-old select,
 
 	& .new-message {
 		position: absolute;
-		z-index: 16;
+		z-index: 2;
 		bottom: 8px;
 		left: 50%;
 
@@ -3087,85 +3083,6 @@ rc-old select,
 	}
 }
 
-.rc-old .compact {
-	& .message {
-		min-height: 26px;
-		padding: 5px 15px 5px 37px;
-
-		& .attachment {
-			& .attachment-title > a {
-				font-size: 0.9em;
-			}
-
-			& .attachment-author img {
-				border-radius: 2px;
-			}
-		}
-
-		& blockquote iframe {
-			width: 266px;
-			height: 150px;
-		}
-
-		& .body {
-			display: inline;
-
-			& .inline-image img {
-				max-height: 100px;
-			}
-
-			& .inline-video {
-				max-height: 150px;
-			}
-		}
-
-		& .title {
-			& .avatar-image {
-				border-radius: 2px;
-			}
-
-			& .role-tag {
-				display: none;
-			}
-		}
-
-		& .thumb {
-			left: 10px;
-
-			width: 20px;
-			height: 20px;
-			margin-left: 0;
-
-			& .avatar {
-				width: 20px;
-				height: 20px;
-			}
-		}
-
-		&.sequential {
-			& .thumb:not(.thumb-small),
-			& .user {
-				display: inline-block;
-			}
-
-			& .title {
-				position: relative;
-				left: 0;
-
-				width: auto;
-
-				text-align: left;
-				justify-content: initial;
-
-				& .time,
-				& .edited {
-					display: inline-block;
-				}
-			}
-		}
-	}
-}
-
 /* FLEX-TAB and FLEX-TAB views */
 .rc-old .main-content-flex {
 	display: flex;
@@ -3177,7 +3094,8 @@ rc-old select,
 	z-index: 2;
 
 	display: flex;
-	flex: 0 0 40px;
+
+	flex: 0 0 auto;
 
 	transform: box-shadow 0.3s;
 
@@ -3947,197 +3865,6 @@ rc-old select,
 	margin-top: 1em;
 }
 
-.rc-old .rocket-modal {
-	position: fixed;
-	z-index: 1000;
-	top: 0;
-	left: 0;
-
-	visibility: hidden;
-
-	width: 100%;
-	height: 100%;
-
-	&.fluid .modal {
-		height: 100%;
-
-		& main {
-			position: absolute;
-
-			overflow-y: scroll;
-
-			height: calc(100% - 112px);
-		}
-	}
-
-	&.opened {
-		animation: fadeIn 0.1s ease-out forwards;
-
-		& .modal {
-			animation: modalEnter 0.35s cubic-bezier(0.5, 0, 0.1, 1) forwards 0.1s;
-		}
-	}
-
-	&.closed {
-		animation: fadeOut 0.2s ease-out forwards;
-
-		& .modal {
-			animation: modalExit 0.25s cubic-bezier(0.5, 0, 0.1, 1) forwards;
-		}
-	}
-
-	&.overflow .modal {
-		overflow: visible;
-
-		& main {
-			position: relative;
-
-			overflow: visible;
-		}
-	}
-
-	& .wrapper {
-		position: relative;
-
-		display: table;
-
-		width: 100%;
-		height: 100%;
-	}
-
-	& .window {
-		position: relative;
-
-		display: table-cell;
-
-		width: 100%;
-		height: 100%;
-
-		text-align: center;
-		vertical-align: middle;
-	}
-
-	& fieldset {
-		margin-bottom: 8px;
-	}
-
-	& legend {
-		position: relative;
-		z-index: 2;
-
-		display: block;
-
-		margin-bottom: 18px;
-
-		text-transform: uppercase;
-
-		font-size: 13px;
-
-		& i {
-			margin-right: 4px;
-		}
-
-		&::before {
-			position: absolute;
-			z-index: 1;
-			top: 19px;
-			left: 0;
-
-			width: 100%;
-			height: 1px;
-
-			content: " ";
-		}
-	}
-
-	& .modal {
-		position: relative;
-
-		display: block;
-		overflow: hidden;
-
-		width: 90%;
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 56px 0;
-
-		text-align: left;
-
-		opacity: 0;
-		border-radius: var(--border-radius);
-		box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.15);
-
-		& header {
-			position: absolute;
-			z-index: 1;
-			top: 0;
-
-			width: 100%;
-			height: 55px;
-			padding: 0 25px;
-
-			text-align-last: right;
-
-			box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-
-			font-size: 14px;
-
-			& h3 {
-				display: inline-block;
-				overflow: hidden;
-
-				margin: 0;
-
-				text-align: left;
-				text-overflow: ellipsis;
-
-				font-size: 18px;
-				font-weight: 600;
-				line-height: 55px;
-			}
-
-			& .close {
-				position: absolute;
-				top: 16px;
-				right: 20px;
-
-				width: 20px;
-				height: 26px;
-
-				opacity: 1;
-
-				& i {
-					font-size: 24px;
-				}
-			}
-		}
-
-		& main {
-			display: block;
-			overflow-x: hidden;
-			overflow-y: auto;
-
-			width: 100%;
-			height: 100%;
-			padding: 20px 25px;
-		}
-
-		& footer {
-			position: absolute;
-			z-index: 1;
-			bottom: 0;
-
-			width: 100%;
-			height: 55px;
-			padding: 11px 25px 0;
-
-			text-align: right;
-
-			box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15);
-		}
-	}
-}
-
 .rc-old .avatarPrompt {
 	& header p {
 		font-size: 14px;
@@ -4325,6 +4052,7 @@ rc-old select,
 
 .rc-old.full-page {
 	display: flex;
+	overflow: auto;
 
 	width: 100%;
 	min-height: 100%;
@@ -4337,7 +4065,7 @@ rc-old select,
 
 	background-position: center;
 	background-size: cover;
-	align-items: center;
+	align-items: flex-start;
 	flex-flow: row nowrap;
 
 	& .wrapper {
@@ -4345,6 +4073,7 @@ rc-old select,
 		z-index: 10;
 
 		width: 100%;
+		margin: auto;
 		padding: 20px;
 
 		text-align: center;
@@ -4468,20 +4197,6 @@ rc-old select,
 		& div.switch-language {
 			margin-top: 20px;
 		}
-	}
-
-	& a.meteor {
-		position: fixed;
-		right: 30px;
-		bottom: 20px;
-
-		width: 100px;
-		height: 50px;
-
-		text-indent: -9999em;
-
-		background: url(images/meteor.png) no-repeat center center;
-		background-size: 100% auto;
 	}
 
 	& .share {
@@ -4679,9 +4394,6 @@ rc-old select,
 
 		display: none;
 
-		margin: var(--default-small-padding);
-		padding: var(--default-padding);
-
 		animation-name: zoomIn;
 		animation-duration: 0.1s;
 
@@ -4692,23 +4404,9 @@ rc-old select,
 		border: 4px dashed var(--color-blue);
 		background: rgba(255, 255, 255, 0.8);
 
-		box-shadow: 0 0 0 var(--default-small-padding) rgba(255, 255, 255, 0.9);
-
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
-
-		&::before {
-			position: absolute;
-			z-index: -1;
-
-			top: calc(-1 * var(--default-small-padding));
-			right: calc(-1 * var(--default-small-padding));
-			bottom: calc(-1 * var(--default-small-padding));
-			left: calc(-1 * var(--default-small-padding));
-
-			content: '';
-		}
 	}
 
 	&.over .dropzone-overlay {
@@ -4951,6 +4649,12 @@ rc-old select,
 	}
 }
 
+.rc-old .load-more {
+	position: relative;
+
+	height: 2rem;
+}
+
 .rc-old .flex-tab {
 	&__content {
 		display: flex;
@@ -5103,23 +4807,6 @@ rc-old select,
 
 .sweet-alert .sa-input-error {
 	top: 19px;
-}
-
-.rc-old .one-passsword {
-	position: absolute;
-	top: -5px;
-	right: -8px;
-
-	float: right;
-
-	width: 40px;
-	height: 40px;
-
-	opacity: 0.6;
-	background-image: url('/images/onepassword-button.png');
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: 23px;
 }
 
 .rc-old .collapse-switch {
@@ -5316,6 +5003,19 @@ rc-old select,
 @media (width <= 500px) {
 	.rc-old .messages-container .message-form > .formatting-tips {
 		display: none;
+	}
+
+	.cms-page {
+		padding: 0;
+
+		&__content {
+			margin: 0;
+			padding: 0 1rem 1rem;
+		}
+
+		& .cms-page-close {
+			margin-top: 10px;
+		}
 	}
 }
 

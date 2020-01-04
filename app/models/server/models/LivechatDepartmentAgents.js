@@ -9,10 +9,18 @@ import Users from './Users';
 export class LivechatDepartmentAgents extends Base {
 	constructor() {
 		super('livechat_department_agents');
+
+		this.tryEnsureIndex({ departmentId: 1 });
+		this.tryEnsureIndex({ agentId: 1 });
+		this.tryEnsureIndex({ username: 1 });
 	}
 
 	findByDepartmentId(departmentId) {
 		return this.find({ departmentId });
+	}
+
+	findByAgentId(agentId) {
+		return this.find({ agentId });
 	}
 
 	saveAgent(agent) {
@@ -26,6 +34,10 @@ export class LivechatDepartmentAgents extends Base {
 				order: parseInt(agent.order),
 			},
 		});
+	}
+
+	removeByAgentId(agentId) {
+		this.remove({ agentId });
 	}
 
 	removeByDepartmentIdAndAgentId(departmentId, agentId) {
@@ -93,6 +105,67 @@ export class LivechatDepartmentAgents extends Base {
 		};
 
 		return this.find(query);
+	}
+
+	getBotsForDepartment(departmentId) {
+		const agents = this.findByDepartmentId(departmentId).fetch();
+
+		if (agents.length === 0) {
+			return;
+		}
+
+		const botUsers = Users.findBotAgents(_.pluck(agents, 'username'));
+		const botUsernames = _.pluck(botUsers.fetch(), 'username');
+
+		const query = {
+			departmentId,
+			username: {
+				$in: botUsernames,
+			},
+		};
+
+		return this.find(query);
+	}
+
+	getNextBotForDepartment(departmentId) {
+		const agents = this.findByDepartmentId(departmentId).fetch();
+
+		if (agents.length === 0) {
+			return;
+		}
+
+		const botUsers = Users.findBotAgents(_.pluck(agents, 'username'));
+		const botUsernames = _.pluck(botUsers.fetch(), 'username');
+
+		const query = {
+			departmentId,
+			username: {
+				$in: botUsernames,
+			},
+		};
+
+		const sort = {
+			count: 1,
+			order: 1,
+			username: 1,
+		};
+		const update = {
+			$inc: {
+				count: 1,
+			},
+		};
+
+		const collectionObj = this.model.rawCollection();
+		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+
+		const bot = findAndModify(query, sort, update);
+		if (bot && bot.value) {
+			return {
+				agentId: bot.value.agentId,
+				username: bot.value.username,
+			};
+		}
+		return null;
 	}
 
 	findUsersInQueue(usersList) {

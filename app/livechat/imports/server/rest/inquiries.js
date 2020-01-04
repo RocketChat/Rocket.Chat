@@ -3,8 +3,8 @@ import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
-import { Users, LivechatDepartment } from '../../../../models';
-import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models';
+import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 
 API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
 	get() {
@@ -14,7 +14,7 @@ API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 		const { department } = this.requestParams();
-		const ourQuery = Object.assign({}, { status: 'open' });
+		const ourQuery = Object.assign({}, { status: 'queued' });
 		if (department) {
 			const departmentFromDB = LivechatDepartment.findOneByIdOrName(department);
 			if (departmentFromDB) {
@@ -65,5 +65,38 @@ API.v1.addRoute('livechat/inquiries.take', { authRequired: true }, {
 		} catch (e) {
 			return API.v1.failure(e);
 		}
+	},
+});
+
+API.v1.addRoute('livechat/inquiries.queued', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+		const { department } = this.requestParams();
+
+		return API.v1.success(Promise.await(findInquiries({
+			userId: this.userId,
+			department,
+			status: 'queued',
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		})));
+	},
+});
+
+API.v1.addRoute('livechat/inquiries.getOne', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		if (!roomId) {
+			return API.v1.failure('The \'roomId\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findOneInquiryByRoomId({
+			userId: this.userId,
+			roomId,
+		})));
 	},
 });

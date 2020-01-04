@@ -1,17 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization';
-import { IntegrationHistory } from '../../../models';
+import { hasAtLeastOnePermission } from '../../../authorization/server';
+import { IntegrationHistory } from '../../../models/server';
+import { mountIntegrationHistoryQueryBasedOnPermissions } from '../lib/mountQueriesBasedOnPermission';
 
 Meteor.publish('integrationHistory', function _integrationHistoryPublication(integrationId, limit = 25) {
+	console.warn('The publication "integrationHistory" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}
-
-	if (hasPermission(this.userId, 'manage-integrations')) {
-		return IntegrationHistory.findByIntegrationId(integrationId, { sort: { _updatedAt: -1 }, limit });
-	} if (hasPermission(this.userId, 'manage-own-integrations')) {
-		return IntegrationHistory.findByIntegrationIdAndCreatedBy(integrationId, this.userId, { sort: { _updatedAt: -1 }, limit });
+	if (!hasAtLeastOnePermission(this.userId, [
+		'manage-outgoing-integrations',
+		'manage-own-outgoing-integrations',
+	])) {
+		throw new Meteor.Error('not-authorized');
 	}
-	throw new Meteor.Error('not-authorized');
+
+	return IntegrationHistory.find(Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(this.userId, integrationId)), { sort: { _updatedAt: -1 }, limit });
 });

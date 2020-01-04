@@ -8,7 +8,7 @@ import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 
 import { settings } from '../../../settings/server';
@@ -23,6 +23,8 @@ import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
+import { Messages } from '../../../models/server';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -38,6 +40,10 @@ settings.get('FileUpload_MaxFileSize', function(key, value) {
 
 export const FileUpload = {
 	handlers: {},
+
+	getPath(path = '') {
+		return `/file-upload/${ path }`;
+	},
 
 	configureUploadsStore(store, name, options) {
 		const type = name.split(':').pop();
@@ -156,43 +162,42 @@ export const FileUpload = {
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
 		const height = settings.get('Accounts_AvatarSize');
+		const width = height;
 		const future = new Future();
 
 		const s = sharp(tempFilePath);
 		s.rotate();
-		// Get metadata to resize the image the first time to keep "inside" the dimensions
-		// then resize again to create the canvas around
 
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (!metadata) {
 				metadata = {};
 			}
 
-			s.flatten({ background: '#FFFFFF' })
-				.jpeg()
-				.resize({
-					width: Math.min(height || 0, metadata.width || Infinity),
-					height: Math.min(height || 0, metadata.height || Infinity),
-					fit: sharp.fit.cover,
-				})
-				.pipe(sharp()
-					.resize({
-						height,
-						width: height,
-						fit: sharp.fit.contain,
-						background: '#FFFFFF',
-					})
-				)
+			s.resize({
+				width,
+				height,
+				fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
+				background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
+			})
 				// Use buffer to get the result in memory then replace the existing file
 				// There is no option to override a file using this library
-				.toBuffer()
-				.then(Meteor.bindEnvironment((outputBuffer) => {
-					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment((err) => {
+				//
+				// BY THE SHARP DOCUMENTATION:
+				// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
+				// By default, the format will match the input image, except GIF and SVG input which become PNG output.
+				.toBuffer({ resolveWithObject: true })
+				.then(Meteor.bindEnvironment(({ data, info }) => {
+					fs.writeFile(tempFilePath, data, Meteor.bindEnvironment((err) => {
 						if (err != null) {
 							console.error(err);
 						}
-						const { size } = fs.lstatSync(tempFilePath);
-						this.getCollection().direct.update({ _id: file._id }, { $set: { size } });
+
+						this.getCollection().direct.update({ _id: file._id }, {
+							$set: {
+								size: info.size,
+								...['gif', 'svg'].includes(metadata.format) ? { type: 'image/png' } : {},
+							},
+						});
 						future.return();
 					}));
 				}));
@@ -290,6 +295,7 @@ export const FileUpload = {
 		}
 
 		let { rc_uid, rc_token, rc_rid, rc_room_type } = query;
+		const { token } = query;
 
 		if (!rc_uid && headers.cookie) {
 			rc_uid = cookie.get('rc_uid', headers.cookie);
@@ -301,7 +307,8 @@ export const FileUpload = {
 		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
 		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
+		const isAuthorizedByJWT = !settings.get('FileUpload_Enable_json_web_token_for_files') || (token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files')));
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
@@ -370,6 +377,44 @@ export const FileUpload = {
 		}
 
 		return false;
+	},
+
+	redirectToFile(fileUrl, req, res) {
+		res.removeHeader('Content-Length');
+		res.removeHeader('Cache-Control');
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
+		res.end();
+	},
+
+	proxyFile(fileName, fileUrl, forceDownload, request, req, res) {
+		res.setHeader('Content-Disposition', `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(fileName) }"`);
+
+		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
+	},
+
+	generateJWTToFileUrls({ rid, userId, fileId }) {
+		if (!settings.get('FileUpload_ProtectFiles') || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
+			return;
+		}
+		return generateJWT({
+			rid,
+			userId,
+			fileId,
+		}, settings.get('FileUpload_json_web_token_secret_for_files'));
+	},
+
+	removeFilesByRoomId(rid) {
+		Messages.find({
+			rid,
+			'file._id': {
+				$exists: true,
+			},
+		}, {
+			fields: {
+				'file._id': 1,
+			},
+		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	},
 };
 

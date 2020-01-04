@@ -1,29 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
-import { AdminChatRoom } from './adminRooms';
 import { t, handleError } from '../../../utils';
 
 Template.channelSettingsDefault.helpers({
 	canMakeDefault() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.t === 'c';
 	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
 	},
 	roomDefault() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
+		const room = Template.instance().room.get();
 
 		if (room) {
 			return room.default;
 		}
 	},
 	defaultDescription() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
+		const room = Template.instance().room.get();
 		if (room && room.default) {
 			return t('True');
 		}
@@ -52,11 +51,18 @@ Template.channelSettingsDefault.events({
 			}
 			toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 		});
-
+		t.onSuccess();
 		t.editing.set();
 	},
 });
 
 Template.channelSettingsDefault.onCreated(function() {
 	this.editing = new ReactiveVar();
+	this.room = new ReactiveVar();
+	this.onSuccess = Template.currentData().onSuccess;
+
+	this.autorun(() => {
+		const { room } = Template.currentData();
+		this.room.set(room);
+	});
 });

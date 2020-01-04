@@ -27,25 +27,25 @@ class Administration extends Page {
 
 	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }
 
-	get infoRocketChatTableTitle() { return browser.element('.content h3'); }
+	get infoRocketChatTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="rocket-chat-title"]'); }
 
-	get infoRocketChatTable() { return browser.element('.content .statistics-table'); }
+	get infoRocketChatTable() { return browser.element('[data-qa="admin-info"] [data-qa="rocket-chat-list"]'); }
 
-	get infoCommitTableTitle() { return browser.element('.content h3:nth-of-type(2)'); }
+	get infoCommitTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="commit-title"]'); }
 
-	get infoCommitTable() { return browser.element('.content .statistics-table:nth-of-type(2)'); }
+	get infoCommitTable() { return browser.element('[data-qa="admin-info"] [data-qa="commit-list"]'); }
 
-	get infoRuntimeTableTitle() { return browser.element('.content h3:nth-of-type(3)'); }
+	get infoRuntimeTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="runtime-env-title"]'); }
 
-	get infoRuntimeTable() { return browser.element('.content .statistics-table:nth-of-type(3)'); }
+	get infoRuntimeTable() { return browser.element('[data-qa="admin-info"] [data-qa="runtime-env-list"]'); }
 
-	get infoBuildTableTitle() { return browser.element('.content h3:nth-of-type(4)'); }
+	get infoBuildTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="build-env-title"]'); }
 
-	get infoBuildTable() { return browser.element('.content .statistics-table:nth-of-type(4)'); }
+	get infoBuildTable() { return browser.element('[data-qa="admin-info"] [data-qa="build-env-list"]'); }
 
-	get infoUsageTableTitle() { return browser.element('.content h3:nth-of-type(5)'); }
+	get infoUsageTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="usage-list"]'); }
 
-	get infoUsageTable() { return browser.element('.content .statistics-table:nth-of-type(5)'); }
+	get infoUsageTable() { return browser.element('[data-qa="admin-info"] [data-qa="usage-list"]'); }
 
 	get roomsSearchForm() { return browser.element('.content .search'); }
 
@@ -87,6 +87,12 @@ class Administration extends Page {
 
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
 
+	get rolesSettingsFindInput() { return browser.element('input#permissions-filter'); }
+
+	get rolesSettingsTab() { return browser.element('button[data-value="settings"]'); }
+
+	get rolesPermissionsTab() { return browser.element('button[data-value="permissions"]'); }
+
 	// permissions grids checkboxes
 
 	get rolesUserCreateC() { return browser.element('[name="perm[user][create-c]"]'); }
@@ -111,266 +117,219 @@ class Administration extends Page {
 
 	get rolesOwnerEditMessage() { return browser.element('[name="perm[owner][edit-message]"]'); }
 
+	get rolesManageSettingsPermissions() { return browser.element('[name="perm[user][manage-selected-settings]"]'); }
+
+	get rolesSettingLayoutTitle() {	return browser.element('[name="perm[user][change-setting-Layout_Home_Title]"');	}
 
 	get emojiFilter() { return browser.element('#emoji-filter'); }
 
 	// settings
 	get buttonSave() { return browser.element('button.save'); }
 
-	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(4) .expand'); }
+	get generalSectionIframeIntegration() { return browser.element('[data-qa-section="Iframe_Integration"]'); }
 
-	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(5) .expand'); }
+	get generalSectionNotifications() { return browser.element('[data-qa-section="Notifications"]'); }
 
-	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(6) .expand'); }
+	get generalSectionRestApi() { return browser.element('[data-qa-section="REST API"]'); }
 
-	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(7) .expand'); }
+	get generalSectionReporting() { return browser.element('[data-qa-section="Reporting"]'); }
 
-	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(8) .expand'); }
+	get generalSectionStreamCast() { return browser.element('[data-qa-section="Stream_Cast"]'); }
 
-	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(9) .expand'); }
+	get generalSectionUTF8() { return browser.element('[data-qa-section="UTF8"]'); }
 
-	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(10) .expand'); }
+	get generalSiteUrl() { return browser.element('[data-qa-setting-id="Site_Url"]'); }
 
-	get generalSiteUrl() { return browser.element('[name="Site_Url"]'); }
+	get generalSiteUrlReset() { return browser.element('[data-qa-reset-setting-id="Site_Url"]'); }
 
-	get generalSiteUrlReset() { return browser.element('.reset-setting[data-setting="Site_Url"]'); }
+	get generalSiteName() { return browser.element('[data-qa-setting-id="Site_Name"]'); }
 
-	get generalSiteName() { return browser.element('[name="Site_Name"]'); }
+	get generalSiteNameReset() { return browser.element('[data-qa-reset-setting-id="Site_Name"]'); }
 
-	get generalSiteNameReset() { return browser.element('.reset-setting[data-setting="Site_Name"]'); }
-
-	get generalLanguage() { return browser.element('[name="Language"]'); }
+	get generalLanguage() { return browser.element('[data-qa-setting-id="Language"]'); }
 
 	get generalLanguagePtOption() { return browser.element('[value="pt"]'); }
 
-	get generalLanguageReset() { return browser.element('.reset-setting[data-setting="Language"]'); }
+	get generalLanguageReset() { return browser.element('[data-qa-reset-setting-id="Language"]'); }
 
-	get generalSelfSignedCertsTrue() { return browser.element('label:nth-of-type(1) [name="Allow_Invalid_SelfSigned_Certs"]'); }
+	get generalSelfSignedCerts() { return browser.element('[data-qa-setting-id="Allow_Invalid_SelfSigned_Certs"]'); }
 
-	get generalSelfSignedCertsFalse() { return browser.element('label:nth-of-type(2) [name="Allow_Invalid_SelfSigned_Certs"]'); }
+	get generalSelfSignedCertsReset() { return browser.element('[data-qa-reset-setting-id="Allow_Invalid_SelfSigned_Certs"]'); }
 
-	get generalSelfSignedCertsReset() { return browser.element('.reset-setting[data-setting="Allow_Invalid_SelfSigned_Certs"]'); }
+	get generalFavoriteRoom() { return browser.element('[data-qa-setting-id="Favorite_Rooms"]'); }
 
-	get generalFavoriteRoomTrue() { return browser.element('label:nth-of-type(1) [name="Favorite_Rooms"]'); }
+	get generalFavoriteRoomReset() { return browser.element('[data-qa-reset-setting-id="Favorite_Rooms"]'); }
 
-	get generalFavoriteRoomFalse() { return browser.element('label:nth-of-type(2) [name="Favorite_Rooms"]'); }
+	get generalOpenFirstChannel() { return browser.element('[data-qa-setting-id="First_Channel_After_Login"]'); }
 
-	get generalFavoriteRoomReset() { return browser.element('.reset-setting[data-setting="Favorite_Rooms"]'); }
+	get generalOpenFirstChannelReset() { return browser.element('[data-qa-reset-setting-id="First_Channel_After_Login"]'); }
 
-	get generalOpenFirstChannel() { return browser.element('[name="First_Channel_After_Login"]'); }
+	get generalCdnPrefix() { return browser.element('[data-qa-setting-id="CDN_PREFIX"]'); }
 
-	get generalOpenFirstChannelReset() { return browser.element('.reset-setting[data-setting="First_Channel_After_Login"]'); }
+	get generalCdnPrefixReset() { return browser.element('[data-qa-reset-setting-id="CDN_PREFIX"]'); }
 
-	get generalCdnPrefix() { return browser.element('[name="CDN_PREFIX"]'); }
+	get generalForceSSL() { return browser.element('[data-qa-setting-id="Force_SSL"]'); }
 
-	get generalCdnPrefixReset() { return browser.element('.reset-setting[data-setting="CDN_PREFIX"]'); }
+	get generalForceSSLReset() { return browser.element('[data-qa-reset-setting-id="Force_SSL"]'); }
 
-	get generalForceSSLTrue() { return browser.element('label:nth-of-type(1) [name="Force_SSL"]'); }
+	get generalGoogleTagId() { return browser.element('[data-qa-setting-id="GoogleTagManager_id"]'); }
 
-	get generalForceSSLFalse() { return browser.element('label:nth-of-type(2) [name="Force_SSL"]'); }
+	get generalGoogleTagIdReset() { return browser.element('[data-qa-reset-setting-id="GoogleTagManager_id"]'); }
 
-	get generalForceSSLReset() { return browser.element('.reset-setting[data-setting="Force_SSL"]'); }
+	get generalBugsnagKey() { return browser.element('[data-qa-setting-id="Bugsnag_api_key"]'); }
 
-	get generalGoogleTagId() { return browser.element('[name="GoogleTagManager_id"]'); }
+	get generalBugsnagKeyReset() { return browser.element('[data-qa-reset-setting-id="Bugsnag_api_key"]'); }
 
-	get generalGoogleTagIdReset() { return browser.element('.reset-setting[data-setting="GoogleTagManager_id"]'); }
+	get generalIframeSend() { return browser.element('[data-qa-setting-id="Iframe_Integration_send_enable"]'); }
 
-	get generalBugsnagKey() { return browser.element('[name="Bugsnag_api_key"]'); }
+	get generalIframeSendReset() { return browser.element('[data-qa-reset-setting-id="Iframe_Integration_send_enable"]'); }
 
-	get generalBugsnagKeyReset() { return browser.element('.reset-setting[data-setting="Bugsnag_api_key"]'); }
+	get generalIframeSendTargetOrigin() { return browser.element('[data-qa-setting-id="Iframe_Integration_send_target_origin"]'); }
 
-	get generalIframeSendTrue() { return browser.element('label:nth-of-type(1) [name="Iframe_Integration_send_enable"]'); }
+	get generalIframeSendTargetOriginReset() { return browser.element('[data-qa-reset-setting-id="Iframe_Integration_send_target_origin"]'); }
 
-	get generalIframeSendFalse() { return browser.element('label:nth-of-type(2) [name="Iframe_Integration_send_enable"]'); }
+	get generalIframeRecieve() { return browser.element('[data-qa-setting-id="Iframe_Integration_receive_enable"]'); }
 
-	get generalIframeSendReset() { return browser.element('.reset-setting[data-setting="Iframe_Integration_send_enable"]'); }
+	get generalIframeRecieveOrigin() { return browser.element('[data-qa-setting-id="Iframe_Integration_receive_origin"]'); }
 
-	get generalIframeSendTargetOrigin() { return browser.element('[name="Iframe_Integration_send_target_origin"]'); }
+	get generalIframeRecieveOriginReset() { return browser.element('[data-qa-reset-setting-id="Iframe_Integration_receive_origin"]'); }
 
-	get generalIframeSendTargetOriginReset() { return browser.element('.reset-setting[data-setting="Iframe_Integration_send_target_origin"]'); }
+	get generalNotificationsMaxRoomMembers() { return browser.element('[data-qa-setting-id="Notifications_Max_Room_Members"]'); }
 
-	get generalIframeRecieveTrue() { return browser.element('label:nth-of-type(1) [name="Iframe_Integration_receive_enable"]'); }
+	get generalNotificationsMaxRoomMembersReset() { return browser.element('[data-qa-reset-setting-id="Notifications_Max_Room_Members"]'); }
 
-	get generalIframeRecieveFalse() { return browser.element('label:nth-of-type(2) [name="Iframe_Integration_receive_enable"]'); }
+	get generalRestApiUserLimit() { return browser.element('[data-qa-setting-id="API_User_Limit"]'); }
 
-	get generalIframeRecieveFalseReset() { return browser.element('.reset-setting[data-setting="Iframe_Integration_receive_enable"]'); }
+	get generalRestApiUserLimitReset() { return browser.element('[data-qa-reset-setting-id="API_User_Limit"]'); }
 
-	get generalIframeRecieveOrigin() { return browser.element('[name="Iframe_Integration_receive_origin"]'); }
+	get generalReporting() { return browser.element('[data-qa-setting-id="Statistics_reporting"]'); }
 
-	get generalIframeRecieveOriginReset() { return browser.element('.reset-setting[data-setting="Iframe_Integration_receive_origin"]'); }
+	get generalReportingReset() { return browser.element('[data-qa-reset-setting-id="Statistics_reporting"]'); }
 
-	get generalNotificationsMaxRoomMembers() { return browser.element('[name="Notifications_Max_Room_Members"]'); }
+	get generalStreamCastAdress() { return browser.element('[data-qa-setting-id="Stream_Cast_Address"]'); }
 
-	get generalNotificationsMaxRoomMembersReset() { return browser.element('.reset-setting[data-setting="Notifications_Max_Room_Members"]'); }
+	get generalStreamCastAdressReset() { return browser.element('[data-qa-reset-setting-id="Stream_Cast_Address"]'); }
 
-	get generalRestApiUserLimit() { return browser.element('[name="API_User_Limit"]'); }
+	get generalUTF8Regex() { return browser.element('[data-qa-setting-id="UTF8_Names_Validation"]'); }
 
-	get generalRestApiUserLimitReset() { return browser.element('.reset-setting[data-setting="API_User_Limit"]'); }
+	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_Names_Validation"]'); }
 
-	get generalReportingTrue() { return browser.element('label:nth-of-type(1) [name="Statistics_reporting"]'); }
+	get generalUTF8NamesSlug() { return browser.element('[data-qa-setting-id="UTF8_Names_Slugify"]'); }
 
-	get generalReportingFalse() { return browser.element('label:nth-of-type(2) [name="Statistics_reporting"]'); }
+	get generalUTF8NamesSlugReset() { return browser.element('[data-qa-reset-setting-id="UTF8_Names_Slugify"]'); }
 
-	get generalReportingReset() { return browser.element('.reset-setting[data-setting="Statistics_reporting"]'); }
-
-	get generalStreamCastAdress() { return browser.element('[name="Stream_Cast_Address"]'); }
-
-	get generalStreamCastAdressReset() { return browser.element('.reset-setting[data-setting="Stream_Cast_Address"]'); }
-
-	get generalUTF8Regex() { return browser.element('[name="UTF8_Names_Validation"]'); }
-
-	get generalUTF8RegexReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Validation"]'); }
-
-	get generalUTF8NamesSlugTrue() { return browser.element('label:nth-of-type(1) [name="UTF8_Names_Slugify"]'); }
-
-	get generalUTF8NamesSlugFalse() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
-
-	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
+	get generalLayoutTitle() { return browser.element('[data-qa-setting-id="Layout_Home_Title"]'); }
 
 	// accounts
-	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .expand'); }
+	get accountsSectionDefaultUserPreferences() { return browser.element('[data-qa-section="Accounts_Default_User_Preferences"]'); }
 
-	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .collapse'); }
+	get accountsEnableAutoAway() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 
-	get accountsEnableAutoAwayTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
+	get accountsEnableAutoAwayReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 
-	get accountsEnableAutoAwayFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
+	get accountsidleTimeLimit() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
 
-	get accountsEnableAutoAwayReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_enableAutoAway"]'); }
+	get accountsidleTimeLimitReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
 
-	get accountsidleTimeLimit() { return browser.element('[name="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
+	get accountsNotificationDuration() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
 
-	get accountsidleTimeLimitReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
+	get accountsNotificationDurationReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
 
-	get accountsNotificationDuration() { return browser.element('[name="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
+	get accountsAudioNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_audioNotifications"]'); }
 
-	get accountsNotificationDurationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
+	get accountsAudioNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_audioNotifications"]'); }
 
-	get accountsAudioNotifications() { return browser.element('[name="Accounts_Default_User_Preferences_audioNotifications"]'); }
+	get accountsDesktopNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_desktopNotifications"]'); }
 
-	get accountsAudioNotificationsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_audioNotifications"]'); }
+	get accountsDesktopNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_desktopNotifications"]'); }
 
-	get accountsDesktopNotifications() { return browser.element('[name="Accounts_Default_User_Preferences_desktopNotifications"]'); }
+	get accountsMobileNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mobileNotifications"]'); }
 
-	get accountsDesktopNotificationsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_desktopNotifications"]'); }
+	get accountsMobileNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_mobileNotifications"]'); }
 
-	get accountsMobileNotifications() { return browser.element('[name="Accounts_Default_User_Preferences_mobileNotifications"]'); }
+	get accountsUnreadAlert() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_unreadAlert"]'); }
 
-	get accountsMobileNotificationsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_mobileNotifications"]'); }
+	get accountsUnreadAlertReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_unreadAlert"]'); }
 
-	get accountsUnreadAlertTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_unreadAlert"]'); }
+	get accountsUseEmojis() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_useEmojis"]'); }
 
-	get accountsUnreadAlertFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_unreadAlert"]'); }
+	get accountsUseEmojisReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_useEmojis"]'); }
 
-	get accountsUnreadAlertReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_unreadAlert"]'); }
+	get accountsConvertAsciiEmoji() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
 
-	get accountsUseEmojisTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_useEmojis"]'); }
+	get accountsConvertAsciiEmojiReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
 
-	get accountsUseEmojisFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_useEmojis"]'); }
+	get accountsAutoImageLoad() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]'); }
 
-	get accountsUseEmojisReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_useEmojis"]'); }
+	get accountsAutoImageLoadReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]'); }
 
-	get accountsConvertAsciiEmojiTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
+	get accountsSaveMobileBandwidth() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
 
-	get accountsConvertAsciiEmojiFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
+	get accountsSaveMobileBandwidthReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
 
-	get accountsConvertAsciiEmojiReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
+	get accountsCollapseMediaByDefault() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
 
-	get accountsAutoImageLoadTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_autoImageLoad"]'); }
+	get accountsCollapseMediaByDefaultReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
 
-	get accountsAutoImageLoadFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_autoImageLoad"]'); }
+	get accountsHideUsernames() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideUsernames"]'); }
 
-	get accountsAutoImageLoadReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_autoImageLoad"]'); }
+	get accountsHideUsernamesReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideUsernames"]'); }
 
-	get accountsSaveMobileBandwidthTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
+	get accountsHideRoles() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideRoles"]'); }
 
-	get accountsSaveMobileBandwidthFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
+	get accountsHideRolesReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideRoles"]'); }
 
-	get accountsSaveMobileBandwidthReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_saveMobileBandwidth"]'); }
+	get accountsHideFlexTab() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
 
-	get accountsCollapseMediaByDefaultTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
+	get accountsHideFlexTabReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
 
-	get accountsCollapseMediaByDefaultFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
+	get accountsHideAvatars() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
 
-	get accountsCollapseMediaByDefaultReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_collapseMediaByDefault"]'); }
+	get accountsHideAvatarsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
 
-	get accountsHideUsernamesTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_hideUsernames"]'); }
+	get accountsMergeChannels() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
 
-	get accountsHideUsernamesFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_hideUsernames"]'); }
+	get accountsMergeChannelsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
 
-	get accountsHideUsernamesReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_hideUsernames"]'); }
+	get accountsSendOnEnter() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_sendOnEnter"]'); }
 
-	get accountsHideRolesTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_hideRoles"]'); }
+	get accountsSendOnEnterReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_sendOnEnter"]'); }
 
-	get accountsHideRolesFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_hideRoles"]'); }
+	get accountsMessageViewMode() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_messageViewMode"]'); }
 
-	get accountsHideRolesReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_hideRoles"]'); }
+	get accountsMessageViewModeReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_messageViewMode"]'); }
 
-	get accountsHideFlexTabTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_hideFlexTab"]'); }
+	get accountsEmailNotificationMode() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
 
-	get accountsHideFlexTabFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_hideFlexTab"]'); }
+	get accountsEmailNotificationModeReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
 
-	get accountsHideFlexTabReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_hideFlexTab"]'); }
+	get accountsRoomCounterSidebar() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
 
-	get accountsHideAvatarsTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get accountsRoomCounterSidebarReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
 
-	get accountsHideAvatarsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get accountsNewRoomNotification() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_newRoomNotification"]'); }
 
-	get accountsHideAvatarsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get accountsNewRoomNotificationReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_newRoomNotification"]'); }
 
-	get accountsMergeChannelsTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_mergeChannels"]'); }
+	get accountsNewMessageNotification() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_newMessageNotification"]'); }
 
-	get accountsMergeChannelsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_mergeChannels"]'); }
+	get accountsNewMessageNotificationReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_newMessageNotification"]'); }
 
-	get accountsMergeChannelsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_mergeChannels"]'); }
+	get accountsMuteFocusedConversations() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
 
-	get accountsSendOnEnter() { return browser.element('[name="Accounts_Default_User_Preferences_sendOnEnter"]'); }
+	get accountsMuteFocusedConversationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
 
-	get accountsSendOnEnterReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_sendOnEnter"]'); }
+	get accountsNotificationsSoundVolume() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }
 
-	get accountsMessageViewMode() { return browser.element('[name="Accounts_Default_User_Preferences_messageViewMode"]'); }
+	get accountsNotificationsSoundVolumeReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }
 
-	get accountsMessageViewModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_messageViewMode"]'); }
+	get accountsRealNameChange() { return browser.element('[data-qa-setting-id="Accounts_AllowRealNameChange"]'); }
 
-	get accountsEmailNotificationMode() { return browser.element('[name="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
+	get accountsUserStatusMessageChange() { return browser.element('[data-qa-setting-id="Accounts_AllowUserStatusMessageChange"]'); }
 
-	get accountsEmailNotificationModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
+	get accountsUsernameChange() { return browser.element('[data-qa-setting-id="Accounts_AllowUsernameChange"]'); }
 
-	get accountsRoomCounterSidebarTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
-
-	get accountsRoomCounterSidebarFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
-
-	get accountsRoomCounterSidebarReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_roomCounterSidebar"]'); }
-
-	get accountsNewRoomNotification() { return browser.element('[name="Accounts_Default_User_Preferences_newRoomNotification"]'); }
-
-	get accountsNewRoomNotificationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_newRoomNotification"]'); }
-
-	get accountsNewMessageNotification() { return browser.element('[name="Accounts_Default_User_Preferences_newMessageNotification"]'); }
-
-	get accountsNewMessageNotificationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_newMessageNotification"]'); }
-
-	get accountsMuteFocusedConversationsTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
-
-	get accountsMuteFocusedConversationsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
-
-	get accountsMuteFocusedConversationsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
-
-	get accountsNotificationsSoundVolume() { return browser.element('[name="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }
-
-	get accountsNotificationsSoundVolumeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }
-
-	get accountsRealNameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowRealNameChange"]'); }
-
-	get accountsRealNameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowRealNameChange"]'); }
-
-	get accountsUserStatusMessageChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUserStatusMessageChange"]'); }
-
-	get accountsUserStatusMessageChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUserStatusMessageChange"]'); }
-
-	get accountsUsernameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUsernameChange"]'); }
-
-	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUsernameChange"]'); }
+	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .rc-button.rc-button--nude'); }
 
 	checkUserList(user) {
 		const element = browser.element(`td=adminCreated${ user }`);
@@ -385,6 +344,7 @@ class Administration extends Page {
 	}
 
 	getUserFromList(user) {
+		browser.element('.user-info').waitForVisible(5000);
 		const element = browser.element(`td=${ user }`);
 		element.waitForVisible(5000);
 		return element;

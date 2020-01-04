@@ -3,7 +3,6 @@ import vm from 'vm';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
-import { Restivus } from 'meteor/nimble:restivus';
 import { Livechat } from 'meteor/rocketchat:livechat';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
@@ -13,59 +12,9 @@ import moment from 'moment';
 
 import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
-import { API } from '../../../api';
+import { API, APIClass, defaultRateLimiterOptions } from '../../../api';
 import * as Models from '../../../models';
-
-const Api = new Restivus({
-	enableCors: true,
-	apiPath: 'hooks/',
-	auth: {
-		user() {
-			const payloadKeys = Object.keys(this.bodyParams);
-			const payloadIsWrapped = (this.bodyParams && this.bodyParams.payload) && payloadKeys.length === 1;
-			if (payloadIsWrapped && this.request.headers['content-type'] === 'application/x-www-form-urlencoded') {
-				try {
-					this.bodyParams = JSON.parse(this.bodyParams.payload);
-				} catch ({ message }) {
-					return {
-						error: {
-							statusCode: 400,
-							body: {
-								success: false,
-								error: message,
-							},
-						},
-					};
-				}
-			}
-
-			this.integration = Models.Integrations.findOne({
-				_id: this.request.params.integrationId,
-				token: decodeURIComponent(this.request.params.token),
-			});
-
-			if (!this.integration) {
-				logger.incoming.info('Invalid integration id', this.request.params.integrationId, 'or token', this.request.params.token);
-
-				return {
-					error: {
-						statusCode: 404,
-						body: {
-							success: false,
-							error: 'Invalid integration id or token provided.',
-						},
-					},
-				};
-			}
-
-			const user = Models.Users.findOne({
-				_id: this.integration.userId,
-			});
-
-			return { user };
-		},
-	},
-});
+import { settings } from '../../../settings/server';
 
 const compiledScripts = {};
 function buildSandbox(store = {}) {
@@ -367,6 +316,98 @@ function integrationInfoRest() {
 		},
 	};
 }
+
+class WebHookAPI extends APIClass {
+	/* Webhooks are not versioned, so we must not validate we know a version before adding a rate limiter */
+	shouldAddRateLimitToRoute(options) {
+		const { rateLimiterOptions } = options;
+		return (typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
+	}
+
+	shouldVerifyRateLimit(/* route */) {
+		return settings.get('API_Enable_Rate_Limiter') === true
+			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true);
+	}
+
+	/*
+	There is only one generic route propagated to Restivus which has URL-path-parameters for the integration and the token.
+	Since the rate-limiter operates on absolute routes, we need to add a limiter to the absolute url before we can validate it
+	*/
+	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
+		const { method, url } = request;
+		const route = url.replace(`/${ this.apiPath }`, '');
+		const nameRoute = this.getFullRouteName(route, [method.toLowerCase()]);
+		// We'll be creating rate limiters on demand (when validating for the first time).
+		// This is possible since *all* integration hooks should be rate limited the same way.
+		// This way, we'll not have to add new limiters as new integrations are added
+		if (!this.getRateLimiter(nameRoute)) {
+			this.addRateLimiterRuleForRoutes({
+				routes: [route],
+				rateLimiterOptions: defaultRateLimiterOptions,
+				endpoints: {
+					post: executeIntegrationRest,
+					get: executeIntegrationRest,
+				},
+			});
+		}
+
+		const integrationForRateLimitMatch = objectForRateLimitMatch;
+		integrationForRateLimitMatch.route = nameRoute;
+
+		super.enforceRateLimit(integrationForRateLimitMatch, request, response, userId);
+	}
+}
+
+const Api = new WebHookAPI({
+	enableCors: true,
+	apiPath: 'hooks/',
+	auth: {
+		user() {
+			const payloadKeys = Object.keys(this.bodyParams);
+			const payloadIsWrapped = (this.bodyParams && this.bodyParams.payload) && payloadKeys.length === 1;
+			if (payloadIsWrapped && this.request.headers['content-type'] === 'application/x-www-form-urlencoded') {
+				try {
+					this.bodyParams = JSON.parse(this.bodyParams.payload);
+				} catch ({ message }) {
+					return {
+						error: {
+							statusCode: 400,
+							body: {
+								success: false,
+								error: message,
+							},
+						},
+					};
+				}
+			}
+
+			this.integration = Models.Integrations.findOne({
+				_id: this.request.params.integrationId,
+				token: decodeURIComponent(this.request.params.token),
+			});
+
+			if (!this.integration) {
+				logger.incoming.info('Invalid integration id', this.request.params.integrationId, 'or token', this.request.params.token);
+
+				return {
+					error: {
+						statusCode: 404,
+						body: {
+							success: false,
+							error: 'Invalid integration id or token provided.',
+						},
+					},
+				};
+			}
+
+			const user = Models.Users.findOne({
+				_id: this.integration.userId,
+			});
+
+			return { user };
+		},
+	},
+});
 
 Api.addRoute(':integrationId/:userId/:token', { authRequired: true }, {
 	post: executeIntegrationRest,
