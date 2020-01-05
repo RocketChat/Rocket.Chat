@@ -29,6 +29,6 @@ Meteor.methods({
 			});
 		}
 
-		return slashCommands.executePreview(command.cmd, command.params, command.msg, preview);
+		return slashCommands.executePreview(command.cmd, command.params, command.msg, preview, command.triggerId);
 	},
 });

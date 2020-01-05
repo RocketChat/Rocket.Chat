@@ -51,7 +51,7 @@ API.v1.addRoute('commands.list', { authRequired: true }, {
 	},
 });
 
-// Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value' }
+// Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
 API.v1.addRoute('commands.run', { authRequired: true }, {
 	post() {
 		const body = this.bodyParams;
@@ -74,7 +74,7 @@ API.v1.addRoute('commands.run', { authRequired: true }, {
 		}
 
 		const cmd = body.command.toLowerCase();
-		if (!slashCommands.commands[body.command.toLowerCase()]) {
+		if (!slashCommands.commands[cmd]) {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
@@ -96,7 +96,9 @@ API.v1.addRoute('commands.run', { authRequired: true }, {
 			message.tmid = body.tmid;
 		}
 
-		const result = Meteor.runAsUser(user._id, () => slashCommands.run(cmd, params, message));
+		const triggerId = body.triggerId;
+
+		const result = Meteor.runAsUser(user._id, () => slashCommands.run(cmd, params, message, triggerId));
 
 		return API.v1.success({ result });
 	},
@@ -137,7 +139,7 @@ API.v1.addRoute('commands.preview', { authRequired: true }, {
 
 		return API.v1.success({ preview });
 	},
-	// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif } }
+	// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', tmid: 'value', triggerId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif' } }
 	post() {
 		const body = this.bodyParams;
 		const user = this.getLoggedInUser();
@@ -162,6 +164,14 @@ API.v1.addRoute('commands.preview', { authRequired: true }, {
 			return API.v1.failure('The preview item being executed is in the wrong format.');
 		}
 
+		if (body.tmid && typeof body.tmid !== 'string') {
+			return API.v1.failure('The tmid parameter when provided must be a string.');
+		}
+
+		if (body.triggerId && typeof body.triggerId !== 'string') {
+			return API.v1.failure('The triggerId parameter when provided must be a string.');
+		}
+
 		const cmd = body.command.toLowerCase();
 		if (!slashCommands.commands[cmd]) {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
@@ -171,9 +181,24 @@ API.v1.addRoute('commands.preview', { authRequired: true }, {
 		Meteor.call('canAccessRoom', body.roomId, user._id);
 
 		const params = body.params ? body.params : '';
+		const message = {
+			rid: body.roomId,
+		}
+
+		if (body.tmid) {
+			const thread = Messages.findOneById(body.tmid);
+			if (!thread || thread.rid !== body.roomId) {
+				return API.v1.failure('Invalid thread.');
+			}
+			message.tmid = body.tmid;
+		}
 
 		Meteor.runAsUser(user._id, () => {
-			Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid: body.roomId } }, body.previewItem);
+			Meteor.call('executeSlashCommandPreview', {
+				cmd,
+				params,
+				msg: { rid: body.roomId, tmid: body.tmid },
+			}, body.previewItem, body.triggerId);
 		});
 
 		return API.v1.success();
