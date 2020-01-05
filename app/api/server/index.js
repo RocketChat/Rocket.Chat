@@ -20,6 +20,7 @@ import './v1/emoji-custom';
 import './v1/groups';
 import './v1/im';
 import './v1/integrations';
+import './v1/invites';
 import './v1/import';
 import './v1/misc';
 import './v1/permissions';
@@ -32,5 +33,9 @@ import './v1/subscriptions';
 import './v1/users';
 import './v1/video-conference';
 import './v1/autotranslate';
+import './v1/webdav';
+import './v1/oauthapps';
+import './v1/custom-sounds';
+import './v1/custom-user-status';
 
 export { API, APIClass, defaultRateLimiterOptions } from './api';

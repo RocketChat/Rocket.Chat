@@ -3,9 +3,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Livechat } from '../Livechat';
 import { RoutingManager } from '../RoutingManager';
-import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import { sendNotification } from '../../../../lib/server';
-import { LivechatRooms } from '../../../../models/server';
+import { LivechatRooms, LivechatInquiry } from '../../../../models/server';
 
 /* Manual Selection Queuing Method:
 	*

@@ -1,23 +1,104 @@
 {
-	"extends": ["@rocket.chat/eslint-config"],
-	"parser": "babel-eslint",
-	"globals": {
-		"__meteor_bootstrap__"        : false,
-		"__meteor_runtime_config__"   : false,
-		"Assets"                      : false,
-		"chrome"                      : false
+  "extends": [
+    "@rocket.chat/eslint-config"
+  ],
+  "parser": "babel-eslint",
+  "globals": {
+    "__meteor_bootstrap__": false,
+    "__meteor_runtime_config__": false,
+    "Assets": false,
+    "chrome": false,
+    "jscolor": false
   },
-  "plugins": ["react"],
-	"rules": {
-    "jsx-quotes": ["error", "prefer-single"],
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "jsx-quotes": [
+      "error",
+      "prefer-single"
+    ],
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
     "react/jsx-no-undef": "error",
-    "react/jsx-fragments": ["error", "syntax"],
+    "react/jsx-fragments": [
+      "error",
+      "syntax"
+    ],
   },
   "settings": {
     "react": {
       "version": "detect",
     },
   },
+  "overrides": [
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "extends": [
+        "@rocket.chat/eslint-config",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/eslint-recommended"
+      ],
+      "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2018,
+        "warnOnUnsupportedTypeScriptVersion": false,
+        "ecmaFeatures": {
+          "experimentalObjectRestSpread": true,
+          "legacyDecorators": true
+        }
+      },
+      "plugins": [
+        "react",
+        "@typescript-eslint"
+      ],
+      "rules": {
+        "jsx-quotes": [
+          "error",
+          "prefer-single"
+        ],
+        "react/jsx-uses-react": "error",
+        "react/jsx-uses-vars": "error",
+        "react/jsx-no-undef": "error",
+        "react/jsx-fragments": [
+          "error",
+          "syntax"
+        ],
+        "@typescript-eslint/ban-ts-ignore": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/interface-name-prefix": [
+          "error",
+          "always"
+        ]
+      },
+      "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true
+      },
+      "settings": {
+        "import/resolver": {
+          "node": {
+            "extensions": [
+              ".js",
+              ".ts",
+              ".tsx"
+            ]
+          }
+        },
+        "react": {
+          "version": "detect"
+        }
+      }
+    }
+  ]
 }

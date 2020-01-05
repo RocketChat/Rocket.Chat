@@ -1,6 +1,7 @@
+import { Subtitle } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { DescriptionList } from './DescriptionList';
 import { formatDate } from './formatters';
 
@@ -12,7 +13,7 @@ export function InstancesSection({ instances }) {
 	}
 
 	return <>
-		<h3>{t('Broadcast_Connected_Instances')}</h3>
+		<Subtitle>{t('Broadcast_Connected_Instances')}</Subtitle>
 		{instances.map(({ address, broadcastAuth, currentStatus, instanceRecord }, i) =>
 			<DescriptionList key={i}>
 				<DescriptionList.Entry label={t('Address')}>{address}</DescriptionList.Entry>
@@ -24,7 +25,7 @@ export function InstancesSection({ instances }) {
 				<DescriptionList.Entry label={<>{t('Instance_Record')} > {t('PID')}</>}>{instanceRecord.pid}</DescriptionList.Entry>
 				<DescriptionList.Entry label={<>{t('Instance_Record')} > {t('Created_at')}</>}>{formatDate(instanceRecord._createdAt)}</DescriptionList.Entry>
 				<DescriptionList.Entry label={<>{t('Instance_Record')} > {t('Updated_at')}</>}>{formatDate(instanceRecord._updatedAt)}</DescriptionList.Entry>
-			</DescriptionList>
+			</DescriptionList>,
 		)}
 	</>;
 }
