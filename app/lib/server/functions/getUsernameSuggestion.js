@@ -4,7 +4,7 @@ import { Users } from '../../../models';
 import { settings } from '../../../settings';
 
 function slug(text) {
-	return limax(text, { replacement: '.' }).replace(/[^0-9a-z-_.]/g, '');
+	return limax(text, { replacement: '.', separateNumbers: false }).replace(/[^0-9a-z-_.]/g, '');
 }
 
 function usernameIsAvaliable(username) {

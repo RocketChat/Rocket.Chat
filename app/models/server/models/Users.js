@@ -7,6 +7,23 @@ import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
+const queryStatusAgentOnline = (extraFilters = {}) => {
+	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
+		extraFilters = Object.assign(extraFilters, { statusConnection: { $ne: 'away' } });
+	}
+
+	const query = {
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		statusLivechat: 'available',
+		roles: 'livechat-agent',
+		...extraFilters,
+	};
+
+	return query;
+};
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
@@ -74,42 +91,44 @@ export class Users extends Base {
 	}
 
 	findOnlineAgents() {
+		const query = queryStatusAgentOnline();
+
+		return this.find(query);
+	}
+
+	findBotAgents(usernameList) {
 		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
+			roles: {
+				$all: ['bot', 'livechat-agent'],
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
+			...usernameList && {
+				username: {
+					$in: [].concat(usernameList),
+				},
+			},
 		};
 
 		return this.find(query);
 	}
 
-	findOneOnlineAgentByUsername(username) {
+	findOneBotAgent() {
 		const query = {
-			username,
-			status: {
-				$exists: true,
-				$ne: 'offline',
+			roles: {
+				$all: ['bot', 'livechat-agent'],
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
 		};
 
 		return this.findOne(query);
 	}
 
+	findOneOnlineAgentByUsername(username) {
+		const query = queryStatusAgentOnline({ username });
+
+		return this.findOne(query);
+	}
+
 	findOneOnlineAgentById(_id) {
-		const query = {
-			_id,
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-		};
+		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
 	}
@@ -123,29 +142,47 @@ export class Users extends Base {
 	}
 
 	findOnlineUserFromList(userList) {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-			username: {
-				$in: [].concat(userList),
-			},
+		const username = {
+			$in: [].concat(userList),
 		};
+
+		const query = queryStatusAgentOnline({ username });
 
 		return this.find(query);
 	}
 
 	getNextAgent() {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
+		const query = queryStatusAgentOnline();
+
+		const collectionObj = this.model.rawCollection();
+		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+
+		const sort = {
+			livechatCount: 1,
+			username: 1,
+		};
+
+		const update = {
+			$inc: {
+				livechatCount: 1,
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
+		};
+
+		const user = findAndModify(query, sort, update);
+		if (user && user.value) {
+			return {
+				agentId: user.value._id,
+				username: user.value.username,
+			};
+		}
+		return null;
+	}
+
+	getNextBotAgent() {
+		const query = {
+			roles: {
+				$all: ['bot', 'livechat-agent'],
+			},
 		};
 
 		const collectionObj = this.model.rawCollection();
@@ -172,6 +209,20 @@ export class Users extends Base {
 		return null;
 	}
 
+	setLastRoutingTime(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				lastRoutingTime: new Date(),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setLivechatStatus(userId, status) {
 		const query = {
 			_id: userId,
@@ -180,6 +231,20 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				statusLivechat: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setLivechatData(userId, data = {}) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				livechat: data,
 			},
 		};
 
@@ -206,6 +271,7 @@ export class Users extends Base {
 				phone: 1,
 				customFields: 1,
 				status: 1,
+				livechat: 1,
 			},
 		};
 
@@ -244,7 +310,7 @@ export class Users extends Base {
 		return { _id: userId };
 	}
 
-	setE2EPublicAndPivateKeysByUserId(userId, { public_key, private_key }) {
+	setE2EPublicAndPrivateKeysByUserId(userId, { public_key, private_key }) {
 		this.update({ _id: userId }, {
 			$set: {
 				'e2e.public_key': public_key,
@@ -477,8 +543,9 @@ export class Users extends Base {
 		return this.find({ active: true }, options);
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
 		if (exceptions == null) { exceptions = []; }
+		if (conditions == null) { conditions = {}; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
 			exceptions = [exceptions];
@@ -504,6 +571,7 @@ export class Users extends Base {
 					$nin: exceptions,
 				},
 			}],
+			...conditions,
 		};
 
 		return this.find(query, options);
@@ -541,22 +609,22 @@ export class Users extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [
 			{
 				$or: [
 					{ federation: { $exists: false } },
-					{ 'federation.peer': localPeer },
+					{ 'federation.origin': localDomain },
 				],
 			},
 		];
 		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [
 			{ federation: { $exists: true } },
-			{ 'federation.peer': { $ne: localPeer } },
+			{ 'federation.origin': { $ne: localDomain } },
 		];
 		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
@@ -1098,6 +1166,20 @@ export class Users extends Base {
 		return this.remove(_id);
 	}
 
+	removeLivechatData(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$unset: {
+				livechat: true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	/*
 Find users to send a message by email if:
 - he is not online
@@ -1133,6 +1215,16 @@ Find users to send a message by email if:
 
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
+	}
+
+	removeOlderResumeTokensByUserId(userId, fromDate) {
+		this.update(userId, {
+			$pull: {
+				'services.resume.loginTokens': {
+					when: { $lt: fromDate },
+				},
+			},
+		});
 	}
 }
 

@@ -22,8 +22,8 @@ Template.permissions.helpers({
 		} = Template.instance();
 
 		const permissionsTab = {
-			label: t('Permissons'),
-			value: 'permissons',
+			label: t('Permissions'),
+			value: 'permissions',
 			condition() {
 				return true;
 			},

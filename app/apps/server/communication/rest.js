@@ -9,8 +9,9 @@ import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
 
+const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
-	'X-Apps-Engine-Version': Info.marketplaceApiVersion,
+	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
 });
 
 const purchaseTypes = new Set(['buy', 'subscription']);
@@ -227,7 +228,7 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff.toString('base64'), false, marketplaceInfo));
+				const aff = Promise.await(manager.add(buff.toString('base64'), true, marketplaceInfo));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -236,10 +237,6 @@ export class AppsRestApi {
 
 				if (aff.getCompilerErrors().length) {
 					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
-				}
-
-				if (aff.getLicenseValidationResult().hasErrors) {
-					return API.v1.failure({ status: 'license_error', messages: aff.getLicenseValidationResult().getErrors() });
 				}
 
 				info.status = aff.getApp().getStatus();
@@ -345,7 +342,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ Info.marketplaceApiVersion }`, {
+						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ appsEngineVersionForMarketplace }`, {
 							headers,
 						});
 					} catch (e) {

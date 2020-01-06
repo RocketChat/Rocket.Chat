@@ -15,7 +15,7 @@ import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
-import { tooltip } from '../../tooltip';
+import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 
 function executeCustomScript(script) {
@@ -228,7 +228,7 @@ Template.main.helpers({
 });
 
 Template.main.events({
-	'click .burger'() {
+	'click div.burger'() {
 		return menu.toggle();
 	},
 });

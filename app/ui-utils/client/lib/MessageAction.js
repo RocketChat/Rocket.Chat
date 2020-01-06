@@ -4,7 +4,7 @@ import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
@@ -65,6 +65,8 @@ export const MessageAction = new class {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			btns[config.id] = config;
+			mem.clear(this._getButtons);
+			mem.clear(this._getButtonsByGroup);
 			return this.buttons.set(btns);
 		});
 	}
@@ -94,14 +96,14 @@ export const MessageAction = new class {
 
 	_getButtons = mem(function() {
 		return _.sortBy(_.toArray(this.buttons.get()), 'order');
-	}, { maxAge: 100 })
+	})
+
+	_getButtonsByGroup = mem(function(group) {
+		return this._getButtons().filter((button) => button.group === group);
+	})
 
 	getButtons(message, context, group) {
-		let allButtons = this._getButtons();
-
-		if (group) {
-			allButtons = allButtons.filter((button) => button.group === group);
-		}
+		const allButtons = group ? this._getButtonsByGroup(group) : this._getButtons();
 
 		if (message) {
 			return allButtons.filter(function(button) {
@@ -115,6 +117,8 @@ export const MessageAction = new class {
 	}
 
 	resetButtons() {
+		mem.clear(this._getButtons);
+		mem.clear(this._getButtonsByGroup);
 		return this.buttons.set({});
 	}
 
@@ -143,6 +147,19 @@ export const MessageAction = new class {
 
 Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
+
+	const getChatMessagesFrom = (msg) => {
+		const { rid, tmid } = msg;
+
+		if (rid) {
+			if (tmid) {
+				return chatMessages[`${ rid }-${ tmid }`];
+			}
+			return chatMessages[rid];
+		}
+		return chatMessages[Session.get('openedRoom')];
+	};
+
 	MessageAction.addButton({
 		id: 'reply-directly',
 		icon: 'reply-directly',
@@ -247,7 +264,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg } = messageArgs(this);
-			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
+			getChatMessagesFrom(msg).edit(document.getElementById(msg.tmid ? `thread-${ msg._id }` : msg._id));
 		},
 		condition({ msg: message, subscription, settings }) {
 			if (subscription == null) {
@@ -284,8 +301,8 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		color: 'alert',
 		action() {
-			const { msg: message } = messageArgs(this);
-			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
+			const { msg } = messageArgs(this);
+			getChatMessagesFrom(msg).confirmDeleteMsg(msg);
 		},
 		condition({ msg: message, subscription }) {
 			if (!subscription) {

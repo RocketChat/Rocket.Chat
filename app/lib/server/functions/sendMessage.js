@@ -6,6 +6,8 @@ import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
+import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
+import { FileUpload } from '../../../file-upload/server';
 
 /**
  * IMPORTANT
@@ -16,8 +18,26 @@ import { Markdown } from '../../../markdown/server';
  * is going to be rendered in the href attribute of a
  * link.
  */
-const ValidHref = Match.Where((value) => {
+const ValidFullURLParam = Match.Where((value) => {
 	check(value, String);
+
+	if (!isURL(value) && !value.startsWith(FileUpload.getPath())) {
+		throw new Error('Invalid href value provided');
+	}
+
+	if (/^javascript:/i.test(value)) {
+		throw new Error('Invalid href value provided');
+	}
+
+	return true;
+});
+
+const ValidPartialURLParam = Match.Where((value) => {
+	check(value, String);
+
+	if (!isRelativeURL(value) && !isURL(value) && !value.startsWith(FileUpload.getPath())) {
+		throw new Error('Invalid href value provided');
+	}
 
 	if (/^javascript:/i.test(value)) {
 		throw new Error('Invalid href value provided');
@@ -57,8 +77,8 @@ const validateAttachmentsActions = (attachmentActions) => {
 	check(attachmentActions, objectMaybeIncluding({
 		type: String,
 		text: String,
-		url: ValidHref,
-		image_url: String,
+		url: ValidFullURLParam,
+		image_url: ValidFullURLParam,
 		is_webview: Boolean,
 		webview_height_ratio: String,
 		msg: String,
@@ -71,26 +91,26 @@ const validateAttachment = (attachment) => {
 		color: String,
 		text: String,
 		ts: Match.OneOf(String, Match.Integer),
-		thumb_url: String,
+		thumb_url: ValidFullURLParam,
 		button_alignment: String,
 		actions: [Match.Any],
-		message_link: ValidHref,
+		message_link: ValidFullURLParam,
 		collapsed: Boolean,
 		author_name: String,
-		author_link: ValidHref,
-		author_icon: String,
+		author_link: ValidFullURLParam,
+		author_icon: ValidFullURLParam,
 		title: String,
-		title_link: ValidHref,
+		title_link: ValidFullURLParam,
 		title_link_download: Boolean,
 		image_dimensions: Object,
-		image_url: String,
+		image_url: ValidFullURLParam,
 		image_preview: String,
 		image_type: String,
 		image_size: Number,
-		audio_url: String,
+		audio_url: ValidFullURLParam,
 		audio_type: String,
 		audio_size: Number,
-		video_url: String,
+		video_url: ValidFullURLParam,
 		video_type: String,
 		video_size: Number,
 		fields: [Match.Any],
@@ -114,7 +134,7 @@ const validateMessage = (message) => {
 		text: String,
 		alias: String,
 		emoji: String,
-		avatar: String,
+		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
 	}));
 

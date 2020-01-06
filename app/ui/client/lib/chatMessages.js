@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
@@ -32,12 +32,12 @@ import { emoji } from '../../../emoji/client';
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
 		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-		value ? localStorage.setItem(key, value) : localStorage.removeItem(key);
+		value ? Meteor._localStorage.setItem(key, value) : Meteor._localStorage.removeItem(key);
 	}, 1000),
 
 	restoreValue: ({ rid, tmid }) => {
 		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-		return localStorage.getItem(key);
+		return Meteor._localStorage.getItem(key);
 	},
 
 	restore: ({ rid, tmid }, input) => {
@@ -57,9 +57,9 @@ const messageBoxState = {
 	},
 
 	purgeAll: () => {
-		Object.keys(localStorage)
+		Object.keys(Meteor._localStorage)
 			.filter((key) => key.indexOf('messagebox_') === 0)
-			.forEach((key) => localStorage.removeItem(key));
+			.forEach((key) => Meteor._localStorage.removeItem(key));
 	},
 };
 
@@ -267,8 +267,7 @@ export class ChatMessages {
 		}
 
 		if (msg) {
-			readMessage.enable();
-			readMessage.readNow();
+			readMessage.readNow(true);
 			$('.message.first-unread').removeClass('first-unread');
 
 			const message = await promises.run('onClientBeforeSendMessage', {
@@ -299,10 +298,13 @@ export class ChatMessages {
 
 				this.resetToDraft(this.editing.id);
 				this.confirmDeleteMsg(message, done);
+				return;
 			} catch (error) {
 				handleError(error);
 			}
 		}
+
+		return done();
 	}
 
 	async processMessageSend(message) {
@@ -491,12 +493,8 @@ export class ChatMessages {
 			}
 		}
 
-		try {
-			await call('deleteMessage', { _id });
-		} catch (error) {
-			console.error(error);
-			handleError(error);
-		}
+
+		await call('deleteMessage', { _id });
 	}
 
 	keydown(event) {

@@ -3,9 +3,9 @@ import { adminEmail, adminPassword } from '../data/user';
 
 
 class SetupWizard extends Page {
-	get nextButton() { return browser.element('.setup-wizard-forms__footer-next:enabled'); }
+	get nextButton() { return browser.element('.SetupWizard .SetupWizard__Step--active .SetupWizard__continue'); }
 
-	get goToWorkspace() { return browser.element('button.js-finish'); }
+	get goToWorkspace() { return browser.element('.SetupWizard .SetupWizard__Epilogue__goToWorkspace'); }
 
 	get organizationType() { return browser.element('select[name="Organization_Type"]'); }
 
@@ -28,6 +28,10 @@ class SetupWizard extends Page {
 	get registeredServer() { return browser.element('input[name="registerServer"][value="true"]'); }
 
 	get standaloneServer() { return browser.element('input[name="registerServer"][value="false"]'); }
+
+	get serviceTermsAndPrivacyPolicy() { return browser.element('[data-qa-agree-terms]').$('..'); }
+
+	get serviceTermsAndPrivacyPolicyCheckbox() { return browser.element('[data-qa-agree-terms]'); }
 
 	login() {
 		browser.execute(function(email, password) {

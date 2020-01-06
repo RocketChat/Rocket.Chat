@@ -2,7 +2,7 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 

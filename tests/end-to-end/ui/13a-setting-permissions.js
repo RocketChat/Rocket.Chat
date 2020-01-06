@@ -7,7 +7,8 @@ import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
 
 function openAdminView() {
-	admin.open('admin/Layout');
+	admin.open('admin/info');
+	admin.infoRocketChatTable.waitForVisible(5000);
 }
 
 function logoutRocketchat() {
@@ -36,8 +37,10 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		it('Set permission for user to manage settings', function(done) {
+			admin.rolesSettingsFindInput.waitForVisible(5000);
+			admin.rolesSettingsFindInput.setValue('manage-selected-settings');
 			admin.rolesPermissionGrid.waitForVisible(5000);
-
+			admin.rolesManageSettingsPermissions.waitForVisible(5000);
 			if (!admin.rolesManageSettingsPermissions.isSelected()) {
 				admin.rolesManageSettingsPermissions.click();
 			}
@@ -112,6 +115,10 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 		it('Cleanup permissions', function(done) {
 			admin.permissionsLink.waitForVisible(5000);
 			admin.permissionsLink.click();
+
+			admin.rolesSettingsFindInput.waitForVisible(5000);
+			admin.rolesSettingsFindInput.setValue('manage-selected-settings');
+
 			admin.rolesPermissionGrid.waitForVisible(5000);
 
 			admin.rolesManageSettingsPermissions.click();

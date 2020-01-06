@@ -1,13 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 
 import { settings } from '../../settings';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations } from '../../models';
+import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models';
 import { FileUpload } from '../../file-upload';
 import * as Mailer from '../../mailer';
 
@@ -18,7 +19,7 @@ if (settings.get('UserData_FileSystemZipPath') != null) {
 	}
 }
 
-let processingFrequency = 15;
+let processingFrequency = 2;
 if (settings.get('UserData_ProcessingFrequency') > 0) {
 	processingFrequency = settings.get('UserData_ProcessingFrequency');
 }
@@ -33,7 +34,7 @@ const writeToFile = function(fileName, content) {
 
 const createDir = function(folderName) {
 	if (!fs.existsSync(folderName)) {
-		fs.mkdirSync(folderName);
+		fs.mkdirSync(folderName, { recursive: true });
 	}
 };
 
@@ -45,18 +46,8 @@ const loadUserSubscriptions = function(exportOperation) {
 	cursor.forEach((subscription) => {
 		const roomId = subscription.rid;
 		const roomData = Rooms.findOneById(roomId);
-		let roomName = roomData && roomData.name ? roomData.name : roomId;
-		let userId = null;
-
-		if (subscription.t === 'd') {
-			userId = roomId.replace(exportUserId, '');
-			const userData = Users.findOneById(userId);
-
-			if (userData) {
-				roomName = userData.name;
-			}
-		}
-
+		const roomName = roomData && roomData.name && subscription.t !== 'd' ? roomData.name : roomId;
+		const userId = subscription.t === 'd' ? roomId.replace(exportUserId, '') : null;
 		const fileName = exportOperation.fullExport ? roomId : roomName;
 		const fileType = exportOperation.fullExport ? 'json' : 'html';
 		const targetFile = `${ fileName }.${ fileType }`;
@@ -139,6 +130,22 @@ const addToFileList = function(exportOperation, attachment) {
 	exportOperation.fileList.push(attachmentData);
 };
 
+const hideUserName = function(username, exportOperation) {
+	if (!exportOperation.userNameTable) {
+		exportOperation.userNameTable = {};
+	}
+
+	if (!exportOperation.userNameTable[username]) {
+		if (exportOperation.userData && username === exportOperation.userData.username) {
+			exportOperation.userNameTable[username] = username;
+		} else {
+			exportOperation.userNameTable[username] = `User_${ (Object.keys(exportOperation.userNameTable).length + 1) }`;
+		}
+	}
+
+	return exportOperation.userNameTable[username];
+};
+
 const getMessageData = function(msg, exportOperation) {
 	const attachments = [];
 
@@ -151,20 +158,44 @@ const getMessageData = function(msg, exportOperation) {
 		});
 	}
 
+	const username = hideUserName(msg.u.username || msg.u.name, exportOperation);
+
 	const messageObject = {
 		msg: msg.msg,
-		username: msg.u.username,
+		username,
 		ts: msg.ts,
 	};
 
 	if (attachments && attachments.length > 0) {
 		messageObject.attachments = attachments;
 	}
+
 	if (msg.t) {
 		messageObject.type = msg.t;
-	}
-	if (msg.u.name) {
-		messageObject.name = msg.u.name;
+
+		switch (msg.t) {
+			case 'uj':
+				messageObject.msg = TAPi18n.__('User_joined_channel');
+				break;
+			case 'ul':
+				messageObject.msg = TAPi18n.__('User_left');
+				break;
+			case 'au':
+				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, exportOperation), user_by: username });
+				break;
+			case 'r':
+				messageObject.msg = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: username });
+				break;
+			case 'ru':
+				messageObject.msg = TAPi18n.__('User_removed_by', { user_removed: hideUserName(msg.msg, exportOperation), user_by: username });
+				break;
+			case 'wm':
+				messageObject.msg = TAPi18n.__('Welcome', { user: username });
+				break;
+			case 'livechat-close':
+				messageObject.msg = TAPi18n.__('Conversation_finished');
+				break;
+		}
 	}
 
 	return messageObject;
@@ -199,15 +230,21 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 		}
 	}
 
-	let limit = 100;
+	let limit = 1000;
 	if (settings.get('UserData_MessageLimitPerRequest') > 0) {
 		limit = settings.get('UserData_MessageLimitPerRequest');
 	}
 
 	const skip = exportOpRoomData.exportedCount;
+	const cursor = Messages.model.rawCollection().aggregate([
+		{ $match: { rid: exportOpRoomData.roomId } },
+		{ $sort: { ts: 1 } },
+		{ $skip: skip },
+		{ $limit: limit },
+	]);
 
-	const cursor = Messages.findByRoomId(exportOpRoomData.roomId, { limit, skip });
-	const count = cursor.count();
+	const findCursor = Messages.findByRoomId(exportOpRoomData.roomId, { limit: 1 });
+	const count = findCursor.count();
 
 	cursor.forEach((msg) => {
 		const messageObject = getMessageData(msg, exportOperation);
@@ -216,40 +253,17 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 			const messageString = JSON.stringify(messageObject);
 			writeToFile(filePath, `${ messageString }\n`);
 		} else {
-			const messageType = msg.t;
-			const userName = msg.u.username || msg.u.name;
+			const messageType = messageObject.type;
 			const timestamp = msg.ts ? new Date(msg.ts).toUTCString() : '';
-			let message = msg.msg;
+			let message = messageObject.msg;
 
-			switch (messageType) {
-				case 'uj':
-					message = TAPi18n.__('User_joined_channel');
-					break;
-				case 'ul':
-					message = TAPi18n.__('User_left');
-					break;
-				case 'au':
-					message = TAPi18n.__('User_added_by', { user_added: msg.msg, user_by: msg.u.username });
-					break;
-				case 'r':
-					message = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: msg.u.username });
-					break;
-				case 'ru':
-					message = TAPi18n.__('User_removed_by', { user_removed: msg.msg, user_by: msg.u.username });
-					break;
-				case 'wm':
-					message = TAPi18n.__('Welcome', { user: msg.u.username });
-					break;
-				case 'livechat-close':
-					message = TAPi18n.__('Conversation_finished');
-					break;
-			}
+			const italicTypes = ['uj', 'ul', 'au', 'r', 'ru', 'wm', 'livechat-close'];
 
-			if (message !== msg.msg) {
+			if (italicTypes.includes(messageType)) {
 				message = `<i>${ message }</i>`;
 			}
 
-			writeToFile(filePath, `<p><strong>${ userName }</strong> (${ timestamp }):<br/>`);
+			writeToFile(filePath, `<p><strong>${ messageObject.username }</strong> (${ timestamp }):<br/>`);
 			writeToFile(filePath, message);
 
 			if (messageObject.attachments && messageObject.attachments.length > 0) {
@@ -290,9 +304,9 @@ const isDownloadFinished = function(exportOperation) {
 	return !anyDownloadPending;
 };
 
-const sendEmail = function(userId) {
-	const lastFile = UserDataFiles.findLastFileByUser(userId);
-	if (!lastFile) {
+const sendEmail = function(userId, fileId) {
+	const file = fileId ? UserDataFiles.findOneById(fileId) : UserDataFiles.findLastFileByUser(userId);
+	if (!file) {
 		return;
 	}
 	const userData = Users.findOneById(userId);
@@ -304,7 +318,7 @@ const sendEmail = function(userId) {
 	const fromAddress = settings.get('From_Email');
 	const subject = TAPi18n.__('UserDataDownload_EmailSubject');
 
-	const download_link = lastFile.url;
+	const download_link = file.url;
 	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
 
 	if (!Mailer.checkAddressFormat(emailAddress)) {
@@ -328,22 +342,26 @@ const makeZipFile = function(exportOperation) {
 		return;
 	}
 
-	const output = fs.createWriteStream(targetFile);
+	return new Promise((resolve, reject) => {
+		const output = fs.createWriteStream(targetFile);
 
-	exportOperation.generatedFile = targetFile;
+		exportOperation.generatedFile = targetFile;
 
-	const archive = archiver('zip');
+		const archive = archiver('zip');
 
-	output.on('close', () => {
+		output.on('close', () => {
+			exportOperation.status = 'uploading';
+			resolve();
+		});
+
+		archive.on('error', (err) => {
+			reject(err);
+		});
+
+		archive.pipe(output);
+		archive.directory(exportOperation.exportPath, false);
+		archive.finalize();
 	});
-
-	archive.on('error', (err) => {
-		throw err;
-	});
-
-	archive.pipe(output);
-	archive.directory(exportOperation.exportPath, false);
-	archive.finalize();
 };
 
 const uploadZipFile = function(exportOperation, callback) {
@@ -358,10 +376,15 @@ const uploadZipFile = function(exportOperation, callback) {
 
 	const { userId } = exportOperation;
 	const user = Users.findOneById(userId);
-	const userDisplayName = user ? user.name : userId;
-	const utcDate = new Date().toISOString().split('T')[0];
+	let userDisplayName = userId;
+	if (user) {
+		userDisplayName = user.name || user.username || userId;
+	}
 
-	const newFileName = encodeURIComponent(`${ utcDate }-${ userDisplayName }.zip`);
+	const utcDate = new Date().toISOString().split('T')[0];
+	const fileSuffix = exportOperation.fullExport ? '-data' : '';
+
+	const newFileName = encodeURIComponent(`${ utcDate }-${ userDisplayName }${ fileSuffix }.zip`);
 
 	const details = {
 		userId,
@@ -370,13 +393,15 @@ const uploadZipFile = function(exportOperation, callback) {
 		name: newFileName,
 	};
 
-	userDataStore.insert(details, stream, (err) => {
+	const file = userDataStore.insert(details, stream, (err) => {
 		if (err) {
 			throw new Meteor.Error('invalid-file', 'Invalid Zip File', { method: 'cronProcessDownloads.uploadZipFile' });
 		} else {
 			callback();
 		}
 	});
+
+	exportOperation.fileId = file._id;
 };
 
 const generateChannelsFile = function(exportOperation) {
@@ -399,7 +424,72 @@ const generateChannelsFile = function(exportOperation) {
 	exportOperation.status = 'exporting';
 };
 
-const continueExportOperation = function(exportOperation) {
+const generateUserFile = function(exportOperation) {
+	if (!exportOperation.userData) {
+		return;
+	}
+
+	const { username, name, statusText, emails, roles, services } = exportOperation.userData;
+
+	const dataToSave = {
+		username,
+		name,
+		statusText,
+		emails: _.pluck(emails, 'address'),
+		roles,
+		services: Object.keys(services),
+	};
+
+	const fileName = path.join(exportOperation.exportPath, exportOperation.fullExport ? 'user.json' : 'user.html');
+	startFile(fileName, '');
+
+	if (exportOperation.fullExport) {
+		writeToFile(fileName, JSON.stringify(dataToSave));
+
+		exportOperation.generatedUserFile = true;
+		return;
+	}
+
+	writeToFile(fileName, '<meta http-equiv="content-type" content="text/html; charset=utf-8">');
+	for (const key in dataToSave) {
+		if (!dataToSave.hasOwnProperty(key)) {
+			continue;
+		}
+
+		const value = dataToSave[key];
+
+		writeToFile(fileName, `<p><strong>${ key }</strong>:`);
+		if (typeof value === 'string') {
+			writeToFile(fileName, value);
+		} else if (Array.isArray(value)) {
+			writeToFile(fileName, '<br/>');
+
+			for (const item of value) {
+				writeToFile(fileName, `${ item }<br/>`);
+			}
+		}
+
+		writeToFile(fileName, '</p>');
+	}
+};
+
+const generateUserAvatarFile = function(exportOperation) {
+	if (!exportOperation.userData) {
+		return;
+	}
+
+	const file = Avatars.findOneByName(exportOperation.userData.username);
+	if (!file) {
+		return;
+	}
+
+	const filePath = path.join(exportOperation.exportPath, 'avatar');
+	if (FileUpload.copy(file, filePath)) {
+		exportOperation.generatedAvatar = true;
+	}
+};
+
+const continueExportOperation = async function(exportOperation) {
 	if (exportOperation.status === 'completed') {
 		return;
 	}
@@ -409,6 +499,14 @@ const continueExportOperation = function(exportOperation) {
 	}
 
 	try {
+		if (!exportOperation.generatedUserFile) {
+			generateUserFile(exportOperation);
+		}
+
+		if (!exportOperation.generatedAvatar) {
+			generateUserAvatarFile(exportOperation);
+		}
+
 		if (exportOperation.status === 'exporting-rooms') {
 			generateChannelsFile(exportOperation);
 		}
@@ -421,7 +519,6 @@ const continueExportOperation = function(exportOperation) {
 
 			if (isExportComplete(exportOperation)) {
 				exportOperation.status = 'downloading';
-				return;
 			}
 		}
 
@@ -437,13 +534,11 @@ const continueExportOperation = function(exportOperation) {
 				}
 
 				exportOperation.status = 'compressing';
-				return;
 			}
 		}
 
 		if (exportOperation.status === 'compressing') {
-			makeZipFile(exportOperation);
-			return;
+			await makeZipFile(exportOperation);
 		}
 
 		if (exportOperation.status === 'uploading') {
@@ -451,27 +546,30 @@ const continueExportOperation = function(exportOperation) {
 				exportOperation.status = 'completed';
 				ExportOperations.updateOperation(exportOperation);
 			});
-			return;
 		}
+
+		ExportOperations.updateOperation(exportOperation);
 	} catch (e) {
 		console.error(e);
 	}
 };
 
-function processDataDownloads() {
-	const cursor = ExportOperations.findAllPending({ limit: 1 });
-	cursor.forEach((exportOperation) => {
-		if (exportOperation.status === 'completed') {
-			return;
-		}
+async function processDataDownloads() {
+	const operation = ExportOperations.findOnePending();
+	if (!operation) {
+		return;
+	}
 
-		continueExportOperation(exportOperation);
-		ExportOperations.updateOperation(exportOperation);
+	if (operation.status === 'completed') {
+		return;
+	}
 
-		if (exportOperation.status === 'completed') {
-			sendEmail(exportOperation.userId);
-		}
-	});
+	await continueExportOperation(operation);
+	await ExportOperations.updateOperation(operation);
+
+	if (operation.status === 'completed') {
+		sendEmail(operation.userId, operation.fileId);
+	}
 }
 
 Meteor.startup(function() {
