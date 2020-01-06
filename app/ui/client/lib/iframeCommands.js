@@ -7,13 +7,21 @@ import s from 'underscore.string';
 import { AccountBox } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
+import { baseURI } from '../../../utils/client/lib/baseuri.js';
 
 const commands = {
 	go(data) {
 		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
 			return console.error('`path` not defined');
 		}
-		FlowRouter.go(data.path, null, FlowRouter.current().queryParams);
+		const newUrl = new URL(baseURI + data.path);
+
+		const newParams = Array.from(newUrl.searchParams.entries()).reduce((ret, [key, value]) => {
+			ret[key] = value;
+			return ret;
+		}, {});
+
+		FlowRouter.go(newUrl.pathname, null, { ...FlowRouter.current().queryParams, ...newParams });
 	},
 
 	'set-user-status'(data) {
