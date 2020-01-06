@@ -8,6 +8,7 @@ import { ChatSubscription } from './ChatSubscription';
 import { getConfig } from '../../../ui-utils/client/config';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
+import { callbacks } from '../../../callbacks';
 
 export const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
 
@@ -84,39 +85,43 @@ function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 	});
 }
 
-let messagesFetched = false;
-Tracker.autorun(() => {
-	if (!messagesFetched && CachedChatSubscription.ready.get()) {
-		const status = Meteor.status();
-		if (status.status !== 'connected') {
-			return;
-		}
-		messagesFetched = true;
-		const subscriptions = ChatSubscription.find(
-			{
-				open: true,
-			},
-			{
-				fields: {
-					rid: 1,
-					ls: 1,
-				},
+const messagePreFetch = (user) => {
+	let messagesFetched = false;
+	Tracker.autorun(() => {
+		if (!messagesFetched && CachedChatSubscription.ready.get()) {
+			const status = Meteor.status();
+			if (status.status !== 'connected') {
+				return;
 			}
-		);
-		const limit = parseInt(getConfig('roomListLimit')) || 50;
-		subscriptions.forEach((subscription) => {
-			const ts = undefined;
-			const { rid, ls } = subscription;
-			Meteor.call('loadHistory', rid, ts, limit, ls, (err, result) => {
-				if (err) {
-					return;
+			messagesFetched = true;
+			const subscriptions = ChatSubscription.find(
+				{
+					open: true,
+				},
+				{
+					fields: {
+						rid: 1,
+						ls: 1,
+					},
 				}
-				const { messages = [] } = result;
-				upsertMessageBulk({
-					msgs: messages.filter((msg) => msg.t !== 'command'),
-					subscription,
+			);
+			const limit = parseInt(getConfig('roomListLimit')) || 50;
+			subscriptions.forEach((subscription) => {
+				const ts = undefined;
+				const { rid, ls } = subscription;
+				Meteor.call('loadHistory', rid, ts, limit, ls, (err, result) => {
+					if (err) {
+						return;
+					}
+					const { messages = [] } = result;
+					upsertMessageBulk({
+						msgs: messages.filter((msg) => msg.t !== 'command'),
+						subscription,
+					});
 				});
 			});
-		});
-	}
-});
+		}
+	});
+}
+
+callbacks.add('afterMainReady', messagePreFetch, callbacks.priority.LOW, 'messagePreFetch');

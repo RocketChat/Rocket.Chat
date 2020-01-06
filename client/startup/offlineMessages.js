@@ -9,6 +9,7 @@ import { getConfig } from '../../app/ui-utils/client/config';
 import { SWCache } from '../../app/utils/client';
 import { fileUploadHandler } from '../../app/file-upload';
 import { ChatMessage, CachedChatMessage } from '../../app/models/client';
+import { callbacks } from '../../app/callbacks';
 
 const action = {
 	clean: (msg) => {
@@ -140,10 +141,12 @@ function clearOldMessages({ records: messages, ...value }) {
 	});
 }
 
-Meteor.startup(() => {
+const clearOldMessageAtStartup = () => {
 	localforage.getItem('chatMessage').then((value) => {
 		if (value && value.records) {
 			clearOldMessages(value);
 		}
 	});
-});
+}
+
+callbacks.add('afterMainReady', clearOldMessageAtStartup, callbacks.priority.LOW, 'clearOldMessageAtStartup');
