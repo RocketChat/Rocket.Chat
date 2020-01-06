@@ -79,8 +79,6 @@ export class Messages extends Base {
 	getV2Query(query) {
 		let _cid;
 
-		console.log('Messages getV2Query: before', JSON.stringify(query));
-
 		if (query._id) {
 			_cid = query._id;
 
@@ -88,17 +86,17 @@ export class Messages extends Base {
 			delete query._id;
 		}
 
-		const v2Query = {
-			$or: [query, {}]
-		};
+		const v2Query = {};
 
 		for (const item in query) {
 			if (item.startsWith('$')) continue;
 
-			v2Query.$or[1][`d.${item}`] = query[item];
+			if(RoomEvents.belongsToV2Root(item)) {
+				v2Query[item] = query[item];
+			} else {
+				v2Query[`d.${item}`] = query[item];
+			}
 		}
-
-		console.log('Messages getV2Query: after', JSON.stringify(v2Query));
 
 		return { _cid, v2Query };
 	}
