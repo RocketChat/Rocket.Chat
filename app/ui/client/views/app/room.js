@@ -1226,7 +1226,7 @@ Template.room.onRendered(function() {
 
 	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 50);
 
-	template.sendToBottomIfNecessaryDebounced();
+	template.sendToBottomIfNecessary();
 
 	if (window.MutationObserver) {
 		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
@@ -1241,12 +1241,9 @@ Template.room.onRendered(function() {
 
 	window.addEventListener('resize', template.onWindowResize);
 
-	const wheelHandler = (() => {
-		const fn = _.throttle(function() {
-			template.checkIfScrollIsAtBottom();
-		}, 50);
-		return fn;
-	})();
+	const wheelHandler = _.debounce(function() {
+		template.checkIfScrollIsAtBottom();
+	}, 150);
 	wrapper.addEventListener('mousewheel', wheelHandler);
 
 	wrapper.addEventListener('wheel', wheelHandler);
