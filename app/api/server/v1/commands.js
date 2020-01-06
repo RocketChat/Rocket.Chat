@@ -96,7 +96,7 @@ API.v1.addRoute('commands.run', { authRequired: true }, {
 			message.tmid = body.tmid;
 		}
 
-		const triggerId = body.triggerId;
+		const { triggerId } = body;
 
 		const result = Meteor.runAsUser(user._id, () => slashCommands.run(cmd, params, message, triggerId));
 
@@ -183,7 +183,7 @@ API.v1.addRoute('commands.preview', { authRequired: true }, {
 		const params = body.params ? body.params : '';
 		const message = {
 			rid: body.roomId,
-		}
+		};
 
 		if (body.tmid) {
 			const thread = Messages.findOneById(body.tmid);
