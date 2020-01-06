@@ -78,7 +78,12 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
-	if (safePorts.length > 0 && ((parsedUrl.port && !safePorts.includes(parsedUrl.port)) || (!parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)))) {
+
+	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
+		return callback();
+	}
+
+	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
 		return callback();
 	}
 
