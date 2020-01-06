@@ -4844,7 +4844,7 @@ rc-old select,
 		margin-left: -5px;
 	}
 
-	& svg.thread-icons--thread {
+	& .thread-icons--thread {
 		position: relative;
 
 		left: 0;
