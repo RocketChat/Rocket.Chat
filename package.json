@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "2.4.0-develop",
+	"version": "2.5.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -123,7 +123,7 @@
 		"@rocket.chat/fuselage": "^0.2.0-ui-kit.86",
 		"@rocket.chat/fuselage-hooks": "^0.2.0-dev.50",
 		"@rocket.chat/fuselage-ui-kit": "^0.2.0-ui-kit.86",
-		"@rocket.chat/icons": "^0.2.0-dev.49",
+		"@rocket.chat/icons": "^0.2.0-dev.49",git
 		"@rocket.chat/ui-kit": "^0.2.0-ui-kit.85",
 		"@slack/client": "^4.8.0",
 		"adm-zip": "^0.4.13",

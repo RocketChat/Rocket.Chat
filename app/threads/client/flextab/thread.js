@@ -11,7 +11,7 @@ import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManag
 import { Messages } from '../../../models';
 import { lazyloadtick } from '../../../lazy-load';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
-import { dropzoneEvents } from '../../../ui/client/views/app/room';
+import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
 
 const sort = { ts: 1 };
@@ -39,6 +39,7 @@ Template.thread.events({
 });
 
 Template.thread.helpers({
+	...dropzoneHelpers,
 	threadTitle() {
 		return normalizeThreadMessage(Template.currentData().mainMessage);
 	},
