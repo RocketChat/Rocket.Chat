@@ -1390,6 +1390,10 @@ settings.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
+		return this.add('UI_Show_top_navbar_embedded_layout', false, {
+			type: 'boolean',
+			public: true,
+		});
 	});
 });
 
