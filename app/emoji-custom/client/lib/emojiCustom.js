@@ -163,7 +163,7 @@ emoji.packages.emojiCustom = {
 	renderPicker: customRender,
 };
 
-Meteor.startup(() =>
+Meteor.defer(() =>
 	CachedCollectionManager.onLogin(async () => {
 		try {
 			const { emojis: { update: emojis } } = await APIClient.v1.get('emoji-custom.list');
