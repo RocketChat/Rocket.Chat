@@ -23,22 +23,16 @@ const loadImage = (el) => {
 
 const observer = featureExists && new IntersectionObserver(
 	(entries, observer) => entries.forEach((entry) => {
-		if (typeof entry.isVisible === 'undefined') {
-			entry.isVisible = true;
-		}
-
-		if (entry.isIntersecting && entry.isVisible) {
+		if (entry.isIntersecting) {
 			observer.unobserve(entry.target);
 			return loadImage(entry.target);
 		}
 	})
 	,
 	{
-		threshold: [1.0],
-		// 🆕 Track the actual visibility of the element
+		threshold: [0],
 		trackVisibility: true,
-		// 🆕 Set a minimum delay between notifications
-		delay: 100,
+		delay: 230,
 	},
 );
 
