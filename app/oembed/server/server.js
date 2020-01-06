@@ -65,6 +65,12 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		urlObj = URL.parse(urlObj);
 	}
 
+	const portsProtocol = {
+		80: 'http:',
+		8080: 'http:',
+		443: 'https:',
+	};
+
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
@@ -72,7 +78,12 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
-	if (parsedUrl.port && safePorts.length > 0 && !safePorts.includes(parsedUrl.port)) {
+
+	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
+		return callback();
+	}
+
+	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
 		return callback();
 	}
 
