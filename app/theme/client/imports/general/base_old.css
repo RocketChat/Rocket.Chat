@@ -4401,14 +4401,23 @@ rc-old select,
 
 		text-align: center;
 
-		color: var(--color-blue);
-
-		border: 4px dashed var(--color-blue);
 		background: rgba(255, 255, 255, 0.8);
 
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
+
+		&--enabled {
+			color: var(--color-blue);
+
+			border: 4px dashed var(--color-blue);
+		}
+
+		&--disabled {
+			color: var(--color-red);
+
+			border: 4px dashed var(--color-red);
+		}
 	}
 
 	&.over .dropzone-overlay {
@@ -4844,6 +4853,14 @@ rc-old select,
 
 	& .user.user-card-message {
 		margin-left: -5px;
+	}
+
+	& .thread-icons--thread {
+		position: relative;
+
+		left: 0;
+
+		margin: 0 3px;
 	}
 }
 

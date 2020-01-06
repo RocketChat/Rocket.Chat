@@ -252,7 +252,28 @@ callbacks.add('enter-room', wipeFailedUploads);
 
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
+export const dropzoneHelpers = {
+	dragAndDrop() {
+		return settings.get('FileUpload_Enabled') && 'dropzone--disabled';
+	},
+
+	isDropzoneDisabled() {
+		return settings.get('FileUpload_Enabled') ? 'dropzone-overlay--enabled' : 'dropzone-overlay--disabled';
+	},
+
+	dragAndDropLabel() {
+		if (!userCanDrop(this._id)) {
+			return 'error-not-allowed';
+		}
+		if (!settings.get('FileUpload_Enabled')) {
+			return 'FileUpload_Disabled';
+		}
+		return 'Drop_to_upload_file';
+	},
+};
+
 Template.room.helpers({
+	...dropzoneHelpers,
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -262,6 +283,10 @@ Template.room.helpers({
 
 	embeddedVersion() {
 		return Layout.isEmbedded();
+	},
+
+	showTopNavbar() {
+		return !Layout.isEmbedded() || settings.get('UI_Show_top_navbar_embedded_layout');
 	},
 
 	subscribed() {
@@ -576,6 +601,11 @@ export const dropzoneEvents = {
 		const e = event.originalEvent || event;
 
 		e.stopPropagation();
+		e.preventDefault();
+
+		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
+			return false;
+		}
 
 		let files = (e.dataTransfer && e.dataTransfer.files) || [];
 
