@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
 import { Users } from '../../../models';
@@ -21,37 +21,45 @@ export class AppUserBridge {
 		return this.orch.getConverters().get('users').convertByUsername(username);
 	}
 
-	async create(user, appId, { avatarUrl }) {
-		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
-
-		const { type } = user;
-		let newUserId;
-
-		switch (type) {
-			case 'app':
-				if (!checkUsernameAvailability(user.username)) {
-					console.error(`A user with the App's username ${ user.username } has already existed, please rename or delete that user before installing the App.`);
-					return;
-				}
-
-				Users.update({ _id: user._id }, { ...user, active: true }, { upsert: true });
-
-				if (avatarUrl) {
-					Meteor.runAsUser(user._id, () => setUserAvatar(user, avatarUrl, '', 'local'));
-				}
-				newUserId = user._id;
-				break;
-			default:
-				throw new Meteor.Error('error-creating-users-not-supported', 'Creating users is not supported now!', { function: 'create' });
-		}
-
-		return newUserId;
-	}
-
-	async removeAppUser(appId) {
-		this.orch.debugLog(`The App's user is being removed: ${ appId }`);
+	async getAppUser(appId) {
+		this.orch.debugLog(`The App ${ appId } is getting it's assigned user`);
 
 		const user = Users.findOne({ appId });
+
+		return this.orch.getConverters().get('users').convertToApp(user);
+	}
+
+	async create(userDescriptor, appId, { avatarUrl }) {
+		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
+		const user = this.orch.getConverters().get('users').convertToRocketChat(userDescriptor);
+
+		if (!user._id) {
+			user._id = Random.id();
+		}
+
+		switch (user.type) {
+			case 'app':
+				if (!checkUsernameAvailability(user.username)) {
+					throw new Error(`The username "${ user.username }" is already being used. Rename or remove the user using it to install this App`);
+				}
+
+				Users.insert(user);
+
+				if (avatarUrl) {
+					setUserAvatar(user, avatarUrl, '', 'local');
+				}
+
+				break;
+
+			default:
+				throw new Error('Creating normal users is currently not supported');
+		}
+
+		return user._id;
+	}
+
+	async remove(user, appId) {
+		this.orch.debugLog(`The App's user is being removed: ${ appId }`);
 
 		// It's actually not a problem if there is no App user to delete - just means we don't need to do anything more.
 		if (!user) {
@@ -61,7 +69,7 @@ export class AppUserBridge {
 		try {
 			deleteUser(user.id);
 		} catch (err) {
-			throw new Meteor.Error('error-deleting-user', `Errors occurred while deleting an app user: ${ err }`, { function: 'removeAppUser' });
+			throw new Error(`Errors occurred while deleting an app user: ${ err }`);
 		}
 
 		return true;

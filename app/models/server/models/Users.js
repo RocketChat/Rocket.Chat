@@ -544,7 +544,7 @@ export class Users extends Base {
 		return this.find({
 			active: true,
 			type: { $nin: ['app'] },
-			emails: { $exists: true }
+			emails: { $exists: true },
 		}, options);
 	}
 
