@@ -946,7 +946,7 @@ Template.room.events({
 			ChatMessage.update({ _id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
 		}
 	},
-	'load img'(e, template) {
+	'load .gallery-item'(e, template) {
 		return template.sendToBottomIfNecessaryDebounced();
 	},
 
@@ -1175,9 +1175,6 @@ Template.room.onCreated(function() {
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
-	if (this.messageObserver) {
-		this.messageObserver.stop();
-	}
 	if (this.rolesObserve) {
 		this.rolesObserve.stop();
 	}
@@ -1186,10 +1183,10 @@ Template.room.onDestroyed(function() {
 
 	window.removeEventListener('resize', this.onWindowResize);
 
-	this.disconnect();
+	this.observer && this.observer.disconnect();
 
 	const chatMessage = chatMessages[this.data._id];
-	return chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
+	chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
 });
 
 Template.room.onRendered(function() {
@@ -1218,7 +1215,6 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottom = function() {
-		// console.log(new Error().stack);
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
 		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 	};
@@ -1227,9 +1223,7 @@ Template.room.onRendered(function() {
 		template.atBottom = template.isAtBottom(100);
 	};
 
-	template.sendToBottomIfNecessaryDebounced = _.throttle(template.sendToBottomIfNecessary, 150);
-
-	template.sendToBottomIfNecessaryDebounced();
+	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 150);
 
 	if (window.MutationObserver) {
 		template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
@@ -1245,7 +1239,7 @@ Template.room.onRendered(function() {
 
 	const wheelHandler = _.throttle(function() {
 		template.checkIfScrollIsAtBottom();
-	}, 150);
+	}, 100);
 	wrapper.addEventListener('mousewheel', wheelHandler);
 
 	wrapper.addEventListener('wheel', wheelHandler);
@@ -1258,7 +1252,10 @@ Template.room.onRendered(function() {
 		setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
-	// wrapper.addEventListener('scroll', wheelHandler);
+	Tracker.afterFlush(() => {
+		template.sendToBottomIfNecessary();
+		wrapper.addEventListener('scroll', wheelHandler);
+	});
 
 	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 

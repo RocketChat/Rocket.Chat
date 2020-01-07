@@ -171,13 +171,6 @@ Template.message.helpers({
 			return 'false';
 		}
 	},
-	sequentialClass() {
-		const { msg, groupable } = this;
-		if (MessageTypes.isSystemMessage(msg) && !msg.tmid) {
-			return;
-		}
-		return groupable !== false && msg.groupable !== false && 'sequential';
-	},
 	avatarFromUsername() {
 		const { msg } = this;
 
@@ -600,8 +593,6 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 };
 
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-	this.autorun(() => {
-		const currentNode = this.firstNode;
-		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	});
+	const currentNode = this.firstNode;
+	processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 });

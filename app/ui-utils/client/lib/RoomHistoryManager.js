@@ -10,8 +10,7 @@ import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
-
-import { call } from '..';
+import { call } from './callMethod';
 
 export const normalizeThreadMessage = (message) => {
 	if (message.msg) {
@@ -78,6 +77,8 @@ export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessa
 }
 
 const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
+
+const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 70);
 
 export const RoomHistoryManager = new class {
 	constructor() {
@@ -158,11 +159,11 @@ export const RoomHistoryManager = new class {
 		room.loaded += messages.length;
 
 		if (messages.length < limit) {
-			return room.hasMore.set(false);
+			room.hasMore.set(false);
 		}
 
 		if (wrapper) {
-			Tracker.afterFlush(() => {
+			waitAfterFlush(() => {
 				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
 					return this.getMore(rid);
 				}
@@ -172,7 +173,7 @@ export const RoomHistoryManager = new class {
 		}
 
 		room.isLoading.set(false);
-		Tracker.afterFlush(() => {
+		waitAfterFlush(() => {
 			readMessage.refreshUnreadMark(rid);
 			return RoomManager.updateMentionsMarksOfRoom(typeName);
 		});
