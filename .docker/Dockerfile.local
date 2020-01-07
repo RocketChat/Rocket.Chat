@@ -15,7 +15,10 @@ COPY . /app
 
 WORKDIR /app
 
-RUN meteor npm install
+RUN && cd /app/bundle/programs/server \
+ && npm install \
+ && npm cache clear --force \
+ && chown -R rocketchat:rocketchat /app
 
 RUN METEOR_PROFILE=1000 meteor build --server-only --allow-superuser --debug --directory /tmp/build
 
