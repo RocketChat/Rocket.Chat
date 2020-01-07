@@ -1,5 +1,4 @@
 import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/fuselage';
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 
 import { MarkdownText } from '../../basic/MarkdownText';
@@ -84,17 +83,15 @@ export function Setting({ settingId }) {
 		setEditor(contextEditor);
 	}, [contextEditor]);
 
-	const updateContext = useDebouncedCallback((props) => update(props), 70, [update]);
-
 	const onChangeValue = useCallback((value) => {
 		setValue(value);
-		updateContext({ value });
-	}, [updateContext]);
+		update({ value });
+	}, [update]);
 
 	const onChangeEditor = useCallback((editor) => {
 		setEditor(editor);
-		updateContext({ editor });
-	}, [updateContext]);
+		update({ editor });
+	}, [update]);
 
 	const onResetButtonClick = useCallback(() => {
 		setValue(contextValue);
