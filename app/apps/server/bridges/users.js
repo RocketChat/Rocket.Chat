@@ -22,7 +22,7 @@ export class AppUserBridge {
 	}
 
 	async getAppUser(appId) {
-		this.orch.debugLog(`The App ${ appId } is getting it's assigned user`);
+		this.orch.debugLog(`The App ${ appId } is getting its assigned user`);
 
 		const user = Users.findOne({ appId });
 
