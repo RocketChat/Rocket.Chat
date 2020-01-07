@@ -12,25 +12,25 @@ const Wrapper = styled.div`
 	max-width: 590px;
 `;
 
-export function GroupPage({ children, group, headerButtons }) {
+export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabel, i18nDescription, changed }) {
 	const t = useTranslation();
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		group.save();
+		save();
 	};
 
 	const handleCancelClick = (event) => {
 		event.preventDefault();
-		group.cancel();
+		cancel();
 	};
 
 	const handleSaveClick = (event) => {
 		event.preventDefault();
-		group.save();
+		save();
 	};
 
-	if (!group) {
+	if (!_id) {
 		return <section className='page-container page-static page-settings'>
 			<Header />
 			<div className='content' />
@@ -38,13 +38,13 @@ export function GroupPage({ children, group, headerButtons }) {
 	}
 
 	return <form action='#' className='page-container' method='post' onSubmit={handleSubmit}>
-		<Header rawSectionName={t(group.i18nLabel)}>
+		<Header rawSectionName={t(i18nLabel)}>
 			<Header.ButtonSection>
-				{group.changed && <Button danger primary type='reset' onClick={handleCancelClick}>{t('Cancel')}</Button>}
+				{changed && <Button danger primary type='reset' onClick={handleCancelClick}>{t('Cancel')}</Button>}
 				<Button
 					children={t('Save_changes')}
 					className='save'
-					disabled={!group.changed}
+					disabled={!changed}
 					primary
 					type='submit'
 					onClick={handleSaveClick}
@@ -55,7 +55,7 @@ export function GroupPage({ children, group, headerButtons }) {
 
 		<div className='content'>
 			<Wrapper>
-				{t.has(group.i18nDescription) && <Paragraph hintColor>{t(group.i18nDescription)}</Paragraph>}
+				{t.has(i18nDescription) && <Paragraph hintColor>{t(i18nDescription)}</Paragraph>}
 
 				<Accordion className='page-settings'>
 					{children}
@@ -65,7 +65,7 @@ export function GroupPage({ children, group, headerButtons }) {
 	</form>;
 }
 
-GroupPage.Skeleton = function GroupPageSkeleton() {
+export function GroupPageSkeleton() {
 	const t = useTranslation();
 
 	return <div className='page-container'>
@@ -89,4 +89,6 @@ GroupPage.Skeleton = function GroupPageSkeleton() {
 			</Wrapper>
 		</div>
 	</div>;
-};
+}
+
+GroupPage.Skeleton = GroupPageSkeleton;

@@ -38,7 +38,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 	</Accordion.Item>;
 }
 
-Section.Skeleton = function SectionSkeleton() {
+export function SectionSkeleton() {
 	return <Accordion.Item
 		noncollapsible
 		title={<Skeleton />}
@@ -51,4 +51,6 @@ Section.Skeleton = function SectionSkeleton() {
 			{Array.from({ length: 10 }).map((_, i) => <Setting.Skeleton key={i} />)}
 		</FieldGroup>
 	</Accordion.Item>;
-};
+}
+
+Section.Skeleton = SectionSkeleton;
