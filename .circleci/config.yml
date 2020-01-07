@@ -358,13 +358,9 @@ workflows:
           filters:
             branches:
               only: master
-            tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - pr-image-build:
           requires:
             - build
           filters:
             branches:
               ignore: develop
-            tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
