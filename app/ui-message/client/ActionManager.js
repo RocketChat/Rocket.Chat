@@ -41,7 +41,7 @@ const invalidateTriggerId = (id) => {
 	return appId;
 };
 
-const generateTriggerId = (appId) => {
+export const generateTriggerId = (appId) => {
 	const triggerId = Random.id();
 	triggersId.set(triggerId, appId);
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
