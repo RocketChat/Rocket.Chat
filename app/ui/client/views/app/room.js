@@ -1186,6 +1186,8 @@ Template.room.onDestroyed(function() {
 
 	window.removeEventListener('resize', this.onWindowResize);
 
+	this.disconnect();
+
 	const chatMessage = chatMessages[this.data._id];
 	return chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
 });
@@ -1216,6 +1218,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottom = function() {
+		// console.log(new Error().stack);
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
 		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 	};
@@ -1224,24 +1227,23 @@ Template.room.onRendered(function() {
 		template.atBottom = template.isAtBottom(100);
 	};
 
-	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 50);
+	template.sendToBottomIfNecessaryDebounced = _.throttle(template.sendToBottomIfNecessary, 150);
 
-	template.sendToBottomIfNecessary();
+	template.sendToBottomIfNecessaryDebounced();
 
 	if (window.MutationObserver) {
-		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
+		template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
 
-		observer.observe(wrapperUl, { childList: true });
+		template.observer.observe(wrapperUl, { childList: true });
 	} else {
 		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
 	}
-	// observer.disconnect()
 
 	template.onWindowResize = () => template.sendToBottomIfNecessaryDebounced();
 
 	window.addEventListener('resize', template.onWindowResize);
 
-	const wheelHandler = _.debounce(function() {
+	const wheelHandler = _.throttle(function() {
 		template.checkIfScrollIsAtBottom();
 	}, 150);
 	wrapper.addEventListener('mousewheel', wheelHandler);
@@ -1256,7 +1258,7 @@ Template.room.onRendered(function() {
 		setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
-	wrapper.addEventListener('scroll', wheelHandler);
+	// wrapper.addEventListener('scroll', wheelHandler);
 
 	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 

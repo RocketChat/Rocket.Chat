@@ -11,6 +11,8 @@ import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 
+import { call } from '..';
+
 export const normalizeThreadMessage = (message) => {
 	if (message.msg) {
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
@@ -97,7 +99,7 @@ export const RoomHistoryManager = new class {
 		return this.histories[rid];
 	}
 
-	getMore(rid, limit = defaultLimit) {
+	async getMore(rid, limit = defaultLimit) {
 		let ts;
 		const room = this.getRoom(rid);
 
@@ -129,47 +131,48 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		Meteor.call('loadHistory', rid, ts, limit, ls, (err, result) => {
-			if (err) {
-				return;
-			}
+		const result = await call('loadHistory', rid, ts, limit, ls);
 
-			let previousHeight;
-			const { messages = [] } = result;
-			room.unreadNotLoaded.set(result.unreadNotLoaded);
-			room.firstUnread.set(result.firstUnread);
 
-			const wrapper = $('.messages-box .wrapper').get(0);
-			if (wrapper) {
-				previousHeight = wrapper.scrollHeight;
-			}
+		let previousHeight;
+		let scroll;
+		const { messages = [] } = result;
+		room.unreadNotLoaded.set(result.unreadNotLoaded);
+		room.firstUnread.set(result.firstUnread);
 
-			upsertMessageBulk({
-				msgs: messages.filter((msg) => msg.t !== 'command'),
-				subscription,
+		const wrapper = $('.messages-box .wrapper').get(0);
+		if (wrapper) {
+			previousHeight = wrapper.scrollHeight;
+			scroll = wrapper.scrollTop;
+		}
+
+		upsertMessageBulk({
+			msgs: messages.filter((msg) => msg.t !== 'command'),
+			subscription,
+		});
+
+		if (!room.loaded) {
+			room.loaded = 0;
+		}
+
+		room.loaded += messages.length;
+
+		if (messages.length < limit) {
+			return room.hasMore.set(false);
+		}
+
+		if (wrapper) {
+			Tracker.afterFlush(() => {
+				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
+					return this.getMore(rid);
+				}
+				const heightDiff = wrapper.scrollHeight - previousHeight;
+				wrapper.scrollTop = scroll + heightDiff;
 			});
+		}
 
-			if (!room.loaded) {
-				room.loaded = 0;
-			}
-
-			room.loaded += messages.length;
-
-			if (messages.length < limit) {
-				return room.hasMore.set(false);
-			}
-
-			if (wrapper) {
-				Tracker.afterFlush(() => {
-					if (wrapper.scrollHeight <= wrapper.offsetHeight) {
-						return this.getMore(rid);
-					}
-					const heightDiff = wrapper.scrollHeight - previousHeight;
-					wrapper.scrollTop += heightDiff;
-				});
-			}
-
-			room.isLoading.set(false);
+		room.isLoading.set(false);
+		Tracker.afterFlush(() => {
 			readMessage.refreshUnreadMark(rid);
 			return RoomManager.updateMentionsMarksOfRoom(typeName);
 		});
