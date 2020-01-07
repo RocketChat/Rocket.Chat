@@ -386,7 +386,7 @@
   "Apps_Marketplace_pricingPlan_yearly": "__price__ / year",
   "Apps_Marketplace_pricingPlan_yearly_perUser": "__price__ / year per user",
   "Apps_Settings": "App's Settings",
-  "Apps_User_Already_Exists": "A user with the App's username __username__ has already existed, please rename or delete that user before installing the App.",
+  "Apps_User_Already_Exists": "The username \"__username__\" is already being used. Rename or remove the user using it to install this App",
   "Apps_WhatIsIt": "Apps: What Are They?",
   "Apps_WhatIsIt_paragraph1": "A new icon in the administration area! What does this mean and what are Apps?",
   "Apps_WhatIsIt_paragraph2": "First off, Apps in this context do not refer to the mobile applications. In fact, it would be best to think of them in terms of plugins or advanced integrations.",
