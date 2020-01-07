@@ -37,6 +37,10 @@ export class AppUserBridge {
 			user._id = Random.id();
 		}
 
+		if (!user.createdAt) {
+			user.createdAt = new Date();
+		}
+
 		switch (user.type) {
 			case 'app':
 				if (!checkUsernameAvailability(user.username)) {
