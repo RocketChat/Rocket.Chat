@@ -11,5 +11,20 @@ export default {
 	],
 };
 
+export const _default = () =>
+	<Setting.Memoized
+		_id='setting-id'
+		label='Label'
+		hint='Hint'
+	/>;
+
+export const withCallout = () =>
+	<Setting.Memoized
+		_id='setting-id'
+		label='Label'
+		hint='Hint'
+		callout='Callout text'
+	/>;
+
 export const skeleton = () =>
 	<Setting.Skeleton />;

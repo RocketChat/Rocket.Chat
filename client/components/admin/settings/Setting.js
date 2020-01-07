@@ -1,6 +1,6 @@
 import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 
 import { MarkdownText } from '../../basic/MarkdownText';
 import { RawText } from '../../basic/RawText';
@@ -21,36 +21,34 @@ import { AssetSettingInput } from './inputs/AssetSettingInput';
 import { RoomPickSettingInput } from './inputs/RoomPickSettingInput';
 import { useSetting } from './SettingsState';
 
-const getInputComponentByType = (type) => ({
-	boolean: BooleanSettingInput,
-	string: StringSettingInput,
-	relativeUrl: RelativeUrlSettingInput,
-	password: PasswordSettingInput,
-	int: IntSettingInput,
-	select: SelectSettingInput,
-	language: LanguageSettingInput,
-	color: ColorSettingInput,
-	font: FontSettingInput,
-	code: CodeSettingInput,
-	action: ActionSettingInput,
-	asset: AssetSettingInput,
-	roomPick: RoomPickSettingInput,
-})[type] || GenericSettingInput;
-
-const MemoizedSetting = React.memo(function MemoizedSetting({
+export const MemoizedSetting = memo(function MemoizedSetting({
 	type,
 	hint,
 	callout,
 	...inputProps
 }) {
-	const InputComponent = getInputComponentByType(type);
+	const InputComponent = {
+		boolean: BooleanSettingInput,
+		string: StringSettingInput,
+		relativeUrl: RelativeUrlSettingInput,
+		password: PasswordSettingInput,
+		int: IntSettingInput,
+		select: SelectSettingInput,
+		language: LanguageSettingInput,
+		color: ColorSettingInput,
+		font: FontSettingInput,
+		code: CodeSettingInput,
+		action: ActionSettingInput,
+		asset: AssetSettingInput,
+		roomPick: RoomPickSettingInput,
+	}[type] || GenericSettingInput;
 
 	return <Field>
 		<InputComponent {...inputProps} />
 		{hint && <Field.Hint>{hint}</Field.Hint>}
-		<Margins block='16'>
-			{callout && <Callout type='warning' children={callout} />}
-		</Margins>
+		{callout && <Margins block='16'>
+			<Callout type='warning'>{callout}</Callout>
+		</Margins>}
 	</Field>;
 });
 
@@ -58,38 +56,39 @@ export function Setting({ settingId }) {
 	const {
 		value: contextValue,
 		editor: contextEditor,
+		update,
+		reset,
 		...setting
 	} = useSetting(settingId);
 
 	const t = useTranslation();
 
 	const [value, setValue] = useState(contextValue);
-	const setContextValue = useDebouncedCallback((value) => setting.update({ value }), 70, []);
+	const [editor, setEditor] = useState(contextEditor);
 
 	useEffect(() => {
 		setValue(contextValue);
 	}, [contextValue]);
 
-	const [editor, setEditor] = useState(contextEditor);
-	const setContextEditor = useDebouncedCallback((editor) => setting.update({ editor }), 70, []);
-
 	useEffect(() => {
 		setEditor(contextEditor);
 	}, [contextEditor]);
 
+	const updateContext = useDebouncedCallback(() => update({ value, editor }), 70, [update, value, editor]);
+
 	const onChangeValue = useCallback((value) => {
 		setValue(value);
-		setContextValue(value);
+		updateContext();
 	}, []);
 
 	const onChangeEditor = useCallback((editor) => {
 		setEditor(editor);
-		setContextEditor(editor);
+		updateContext();
 	}, []);
 
 	const onResetButtonClick = useCallback(() => {
-		setting.reset();
-	}, [setting.reset]);
+		reset();
+	}, [reset]);
 
 	const {
 		_id,
@@ -136,4 +135,5 @@ export function SettingSkeleton() {
 	</Field>;
 }
 
+Setting.Memoized = MemoizedSetting;
 Setting.Skeleton = SettingSkeleton;
