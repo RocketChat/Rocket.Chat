@@ -267,59 +267,42 @@ jobs:
             rm Rocket.Chat.tar.gz
 
             export CIRCLE_TAG=${CIRCLE_TAG:=}
-            if [[ $CIRCLE_TAG ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              echo "Build official Docker image"
+            cp ~/repo/.docker/Dockerfile .
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+            if [[ $CIRCLE_TAG ]]; then
+              echo "Build tagged Docker image"
               docker build -t assistify/chat:$CIRCLE_TAG .
               docker push assistify/chat:$CIRCLE_TAG
-
-              # echo "Build preview Docker image"
-              # cp ~/repo/.docker-mongo/Dockerfile .
-              # cp ~/repo/.docker-mongo/entrypoint.sh .
-              # docker build -t assistify/chat.preview:$CIRCLE_TAG .
-              # docker push assistify/chat.preview:$CIRCLE_TAG
-
-              if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-                docker tag assistify/chat:$CIRCLE_TAG assistify/chat:latest
-                docker push assistify/chat:latest
-
-                # docker tag assistify/chat.preview:$CIRCLE_TAG assistify/chat.preview:latest
-                # docker push assistify/chat.preview:latest
-              elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-                docker tag assistify/chat:$CIRCLE_TAG assistify/chat:release-candidate
-                docker push assistify/chat:release-candidate
-
-                docker tag assistify/chat.preview:$CIRCLE_TAG assistify/chat.preview:release-candidate
-                docker push assistify/chat.preview:release-candidate
-              fi
 
               exit 0
             fi;
 
             if [[ $CIRCLE_BRANCH == 'develop' ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              echo "Build official Docker image"
-              cp ~/repo/.docker/Dockerfile .
+              echo "Build nightly Docker image"
               docker build -t assistify/chat:develop .
               docker push assistify/chat:develop
 
-              # echo "Build preview Docker image"
-              # cp ~/repo/.docker-mongo/Dockerfile .
-              # cp ~/repo/.docker-mongo/entrypoint.sh .
-              # docker build -t assistify/chat.preview:develop .
-              # docker push assistify/chat.preview:develop
+              exit 0
+            fi;
+
+            if [[ $CIRCLE_BRANCH == 'master' ]]; then
+
+              echo "Build official Docker image"
+              docker build -t assistify/chat:latest .
+              docker push assistify/chat:latest
 
               exit 0
             fi;
 
             export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
             if [[ $CIRCLE_PR_NUMBER ]]; then
-              cp ~/repo/.docker/Dockerfile .
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker build -t assistify/chat:pr-${CIRCLE_PR_NUMBER} .
               docker push assistify/chat:pr-${CIRCLE_PR_NUMBER}
+
+              exit 0
             fi;
   pr-build:
     <<: *build
