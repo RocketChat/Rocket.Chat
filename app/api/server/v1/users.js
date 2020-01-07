@@ -20,6 +20,7 @@ import { getFullUserData, getFullUserDataById } from '../../../lib/server/functi
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
+import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -666,7 +667,18 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 	post() {
 		const { emailOrUsername } = this.bodyParams;
 
-		return API.v1.success(Meteor.call('sendEmailCode', emailOrUsername));
+		if (!emailOrUsername) {
+			throw new Meteor.Error('error-parameter-required', 'emailOrUsername is required');
+		}
+
+		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
+		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		return API.v1.success(emailCheck.sendEmailCode(getUserForCheck(userId)));
 	},
 });
 
