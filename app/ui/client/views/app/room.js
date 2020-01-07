@@ -34,7 +34,6 @@ import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { promises } from '../../../../promises/client';
 import { hasAllPermission, hasRole } from '../../../../authorization';
-import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
@@ -275,10 +274,6 @@ export const dropzoneHelpers = {
 
 Template.room.helpers({
 	...dropzoneHelpers,
-	useNrr() {
-		const useNrr = getConfig('useNrr');
-		return useNrr === 'true' || useNrr !== 'false';
-	},
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -502,10 +497,6 @@ Template.room.helpers({
 
 	hideAvatar() {
 		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
-	},
-
-	userCanDrop() {
-		return userCanDrop(this._id);
 	},
 
 	toolbarButtons() {
@@ -833,8 +824,6 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
-		lazyloadtick();
-
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
@@ -940,21 +929,25 @@ Template.room.events({
 	},
 
 	'click .collapse-switch'(e) {
-		const { msg } = messageArgs(this);
+		const { msg: { _id } } = messageArgs(this);
 		const index = $(e.currentTarget).data('index');
 		const collapsed = $(e.currentTarget).data('collapsed');
-		const id = msg._id;
 
-		if ((msg != null ? msg.attachments : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
+		const msg = ChatMessage.findOne(_id);
+		if (!msg) {
+			return;
 		}
 
-		if ((msg != null ? msg.urls : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
+		if (msg.attachments) {
+			ChatMessage.update({ _id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
+		}
+
+		if (msg.urls) {
+			ChatMessage.update({ _id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
 		}
 	},
-	'load img'(e, template) {
-		return typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined;
+	'load .gallery-item'(e, template) {
+		return template.sendToBottomIfNecessaryDebounced();
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -1047,8 +1040,6 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
-
-	lazyloadtick();
 	const rid = this.data._id;
 
 	this.onFile = (filesToUpload) => {
@@ -1176,13 +1167,14 @@ Template.room.onCreated(function() {
 		},
 	});
 
-	this.sendToBottomIfNecessary = () => {};
+	this.sendToBottomIfNecessary = () => {
+		if (this.atBottom === true) {
+			this.sendToBottom();
+		}
+	};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
-	if (this.messageObserver) {
-		this.messageObserver.stop();
-	}
 	if (this.rolesObserve) {
 		this.rolesObserve.stop();
 	}
@@ -1191,8 +1183,10 @@ Template.room.onDestroyed(function() {
 
 	window.removeEventListener('resize', this.onWindowResize);
 
+	this.observer && this.observer.disconnect();
+
 	const chatMessage = chatMessages[this.data._id];
-	return chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
+	chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
 });
 
 Template.room.onRendered(function() {
@@ -1229,37 +1223,23 @@ Template.room.onRendered(function() {
 		template.atBottom = template.isAtBottom(100);
 	};
 
-	template.sendToBottomIfNecessary = function() {
-		if (template.atBottom === true) {
-			template.sendToBottom();
-		}
-
-		lazyloadtick();
-	};
-
-	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);
-
-	template.sendToBottomIfNecessary();
+	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 150);
 
 	if (window.MutationObserver) {
-		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
+		template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
 
-		observer.observe(wrapperUl, { childList: true });
+		template.observer.observe(wrapperUl, { childList: true });
 	} else {
 		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
 	}
-	// observer.disconnect()
 
 	template.onWindowResize = () => template.sendToBottomIfNecessaryDebounced();
 
 	window.addEventListener('resize', template.onWindowResize);
 
-	const wheelHandler = (() => {
-		const fn = _.throttle(function() {
-			template.checkIfScrollIsAtBottom();
-		}, 50);
-		return fn;
-	})();
+	const wheelHandler = _.throttle(function() {
+		template.checkIfScrollIsAtBottom();
+	}, 100);
 	wrapper.addEventListener('mousewheel', wheelHandler);
 
 	wrapper.addEventListener('wheel', wheelHandler);
@@ -1272,7 +1252,10 @@ Template.room.onRendered(function() {
 		setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
-	wrapper.addEventListener('scroll', wheelHandler);
+	Tracker.afterFlush(() => {
+		template.sendToBottomIfNecessary();
+		wrapper.addEventListener('scroll', wheelHandler);
+	});
 
 	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 

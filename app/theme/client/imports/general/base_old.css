@@ -2847,6 +2847,8 @@ rc-old select,
 	& .body {
 		transition: opacity 0.3s linear;
 
+		word-break: break-word;
+
 		opacity: 1;
 
 		& > h1 {
