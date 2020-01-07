@@ -25,6 +25,10 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 	type,
 	hint,
 	callout,
+	value,
+	editor,
+	onChangeValue = () => {},
+	onChangeEditor = () => {},
 	...inputProps
 }) {
 	const InputComponent = {
@@ -44,7 +48,13 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 	}[type] || GenericSettingInput;
 
 	return <Field>
-		<InputComponent {...inputProps} />
+		<InputComponent
+			value={value}
+			editor={editor}
+			onChangeValue={onChangeValue}
+			onChangeEditor={onChangeEditor}
+			{...inputProps}
+		/>
 		{hint && <Field.Hint>{hint}</Field.Hint>}
 		{callout && <Margins block='16'>
 			<Callout type='warning'>{callout}</Callout>
@@ -74,21 +84,23 @@ export function Setting({ settingId }) {
 		setEditor(contextEditor);
 	}, [contextEditor]);
 
-	const updateContext = useDebouncedCallback(() => update({ value, editor }), 70, [update, value, editor]);
+	const updateContext = useDebouncedCallback((props) => update(props), 70, [update]);
 
 	const onChangeValue = useCallback((value) => {
 		setValue(value);
-		updateContext();
-	}, []);
+		updateContext({ value });
+	}, [updateContext]);
 
 	const onChangeEditor = useCallback((editor) => {
 		setEditor(editor);
-		updateContext();
-	}, []);
+		updateContext({ editor });
+	}, [updateContext]);
 
 	const onResetButtonClick = useCallback(() => {
+		setValue(contextValue);
+		setEditor(contextEditor);
 		reset();
-	}, [reset]);
+	}, [contextValue, contextEditor, reset]);
 
 	const {
 		_id,
