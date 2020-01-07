@@ -268,7 +268,7 @@ jobs:
 
             export CIRCLE_TAG=${CIRCLE_TAG:=}
 
-            cp ~/repo/.docker/Dockerfile .
+            cp ~/repo/.docker/Dockerfile.local ./Dockerfile
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
             if [[ $CIRCLE_TAG ]]; then
@@ -290,7 +290,7 @@ jobs:
 
             if [[ $CIRCLE_BRANCH == 'master' ]]; then
 
-              echo "Build official Docker image"
+              echo "Build latest Docker image"
               docker build -t assistify/chat:latest .
               docker push assistify/chat:latest
 
