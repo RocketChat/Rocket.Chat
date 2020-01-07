@@ -15,12 +15,11 @@ COPY . /app
 
 WORKDIR /app
 
-RUN && cd /app/bundle/programs/server \
- && npm install \
- && npm cache clear --force \
- && chown -R rocketchat:rocketchat /app
-
-RUN METEOR_PROFILE=1000 meteor build --server-only --allow-superuser --debug --directory /tmp/build
+# This dockerfile shall build the app unless a previous step (e. g. from CI) already provided a build-bundle
+RUN if [ -d /app/bundle ]; \
+        then cp -R /app /tmp/build; \
+        else meteor build --server-only --allow-superuser --debug --directory /tmp/build; \
+    fi;
 
 FROM rocketchat/base:8
 
