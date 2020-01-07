@@ -15,14 +15,11 @@ COPY . /app
 
 WORKDIR /app
 
-RUN meteor npm install \
-    && cd packages/rocketchat-livechat/.app \
-    && meteor npm install \
-    && cd -
+RUN meteor npm install
 
 RUN METEOR_PROFILE=1000 meteor build --server-only --allow-superuser --debug --directory /tmp/build
 
-FROM assistify/chat-base:stretch
+FROM rocketchat/base:8
 
 MAINTAINER buildmaster@rocket.chat
 
