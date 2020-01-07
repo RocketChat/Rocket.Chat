@@ -21,14 +21,16 @@
 				<div class="rc-input">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Presence"}}</div>
-						<div class="rc-select">
-							<select class="rc-select__element" id="statusType">
-								<option value="">{{_ "None"}}</option>
-								{{#each options}}
-									<option value="{{value}}" {{selected}}>{{name}}</option>
-								{{/each}}
-							</select>
-							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						<div class="rc-input__wrapper">
+							<div class="rc-select">
+								<select class="rc-select__element" id="statusType">
+									<option value="">{{_ "None"}}</option>
+									{{#each options}}
+										<option value="{{value}}" {{selected}}>{{name}}</option>
+									{{/each}}
+								</select>
+								{{> icon block="rc-select__arrow" icon="arrow-down" }}
+							</div>
 						</div>
 					</label>
 				</div>
