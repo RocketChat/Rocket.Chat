@@ -1,6 +1,6 @@
-import { Callout, Field, InputBox, Label, Margins, Skeleton } from '@rocket.chat/fuselage';
+import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { MarkdownText } from '../../basic/MarkdownText';
 import { RawText } from '../../basic/RawText';
@@ -77,19 +77,19 @@ export function Setting({ settingId }) {
 		setEditor(contextEditor);
 	}, [contextEditor]);
 
-	const onChangeValue = (value) => {
+	const onChangeValue = useCallback((value) => {
 		setValue(value);
 		setContextValue(value);
-	};
+	}, []);
 
-	const onChangeEditor = (editor) => {
+	const onChangeEditor = useCallback((editor) => {
 		setEditor(editor);
 		setContextEditor(editor);
-	};
+	}, []);
 
-	const onResetButtonClick = () => {
+	const onResetButtonClick = useCallback(() => {
 		setting.reset();
-	};
+	}, [setting.reset]);
 
 	const {
 		_id,
@@ -123,11 +123,17 @@ export function Setting({ settingId }) {
 	/>;
 }
 
-Setting.Skeleton = function SettingSkeleton() {
+export function SettingSkeleton() {
 	return <Field>
-		<Label>
-			<Skeleton width='25%' />
-		</Label>
-		<InputBox.Skeleton />
+		<Flex.Item align='stretch'>
+			<Field.Label>
+				<Skeleton width='25%' />
+			</Field.Label>
+		</Flex.Item>
+		<Field.Row>
+			<InputBox.Skeleton />
+		</Field.Row>
 	</Field>;
-};
+}
+
+Setting.Skeleton = SettingSkeleton;
