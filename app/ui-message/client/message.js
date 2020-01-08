@@ -98,7 +98,9 @@ Template.message.helpers({
 	body() {
 		const { msg, settings } = this;
 		if (msg.searchedText) {
-			msg.msg = msg.msg.replace(new RegExp(msg.searchedText, 'gi'), (str) => `<mark>${ str }</mark>`);
+			let message = renderBody(msg, settings);
+			message = message.replace(new RegExp(msg.searchedText, 'gi'), (str) => `<mark>${ str }</mark>`);
+			return Tracker.nonreactive(() => message);
 		}
 		return Tracker.nonreactive(() => renderBody(msg, settings));
 	},
