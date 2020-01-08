@@ -314,7 +314,6 @@ export const useSection = (groupId, sectionName) => {
 	const filterSettings = (settings) =>
 		settings.filter(({ group, section }) => group === groupId && ((!sectionName && !section) || (sectionName === section)));
 
-	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
 	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => value !== packageValue));
 	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.length === b.length && a.join() === b.join());
 
@@ -340,14 +339,13 @@ export const useSection = (groupId, sectionName) => {
 
 	return {
 		name: sectionName,
-		changed,
 		canReset,
 		settings: settingsIds,
 		reset,
 	};
 };
 
-export const usePersistedSettingActions = (persistedSetting) => {
+export const useSettingActions = (persistedSetting) => {
 	const { hydrate } = useContext(SettingsContext);
 
 	const update = useDebouncedCallback(({ value = persistedSetting.value, editor = persistedSetting.editor }) => {
@@ -359,7 +357,7 @@ export const usePersistedSettingActions = (persistedSetting) => {
 		}];
 
 		hydrate(changes);
-	}, 70, [persistedSetting]);
+	}, 70, [hydrate, persistedSetting]);
 
 	const reset = useDebouncedCallback(() => {
 		const { _id, value, packageValue, editor } = persistedSetting;
@@ -372,26 +370,32 @@ export const usePersistedSettingActions = (persistedSetting) => {
 		}];
 
 		hydrate(changes);
-	}, 70, [persistedSetting]);
+	}, 70, [hydrate, persistedSetting]);
 
 	return { update, reset };
 };
 
-export const useSetting = (_id) => {
+export const useSettingDisabledState = ({ blocked, enableQuery }) => {
 	const { isDisabled } = useContext(SettingsContext);
+	return useReactiveValue(() => isDisabled({ blocked, enableQuery }), [blocked, enableQuery]);
+};
 
+export const useSectionChangedState = (groupId, sectionName) =>
+	useSelector((state) =>
+		state.settings.some(({ group, section, changed }) =>
+			group === groupId && ((!sectionName && !section) || (sectionName === section)) && changed));
+
+export const useSetting = (_id) => {
 	const selectSetting = (settings) => settings.find((setting) => setting._id === _id);
 
 	const setting = useSelector((state) => selectSetting(state.settings));
 	const persistedSetting = useSelector((state) => selectSetting(state.persistedSettings));
-	const sectionChanged = useSelector((state) => state.settings.some(({ section, changed }) => section === setting.section && changed));
-	const disabled = useReactiveValue(() => isDisabled(setting), [setting.blocked, setting.enableQuery]);
 
-	const { update, reset } = usePersistedSettingActions(persistedSetting);
+	const { update, reset } = useSettingActions(persistedSetting);
+	const disabled = useSettingDisabledState(persistedSetting);
 
 	return {
 		...setting,
-		sectionChanged,
 		disabled,
 		update,
 		reset,

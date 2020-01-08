@@ -61,7 +61,7 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 	</Field>;
 });
 
-export function Setting({ settingId }) {
+export function Setting({ settingId, sectionChanged }) {
 	const {
 		value: contextValue,
 		editor: contextEditor,
@@ -121,6 +121,7 @@ export function Setting({ settingId }) {
 		label={label}
 		hint={hint}
 		callout={callout}
+		sectionChanged={sectionChanged}
 		{...setting}
 		value={value}
 		editor={editor}

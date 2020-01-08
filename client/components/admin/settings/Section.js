@@ -3,10 +3,12 @@ import React from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { Setting } from './Setting';
-import { useSection } from './SettingsState';
+import { useSection, useSectionChangedState } from './SettingsState';
 
 export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
 	const section = useSection(groupId, sectionName);
+	const changed = useSectionChangedState(groupId, sectionName);
+
 	const t = useTranslation();
 
 	const handleResetSectionClick = () => {
@@ -23,7 +25,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		</Paragraph>}
 
 		<FieldGroup>
-			{section.settings.map((settingId) => <Setting key={settingId} settingId={settingId} />)}
+			{section.settings.map((settingId) => <Setting key={settingId} settingId={settingId} sectionChanged={changed} />)}
 
 			{hasReset && section.canReset && <Button
 				children={t('Reset_section_settings')}
