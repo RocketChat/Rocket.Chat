@@ -109,7 +109,7 @@ settings.addGroup('Email', function() {
 			i18nDescription: 'email_style_description',
 			enableQuery: {
 				_id: 'email_plain_text_only',
-				value: true,
+				value: false,
 			},
 		});
 	});
