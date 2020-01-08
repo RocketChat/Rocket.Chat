@@ -15,7 +15,7 @@ export function FinalStep() {
 	};
 
 	return <Box is='section' className='SetupWizard__FinalStep'>
-		<Tile is='main' padding='44'>
+		<Tile is='main' padding='x40'>
 			<Margins all='32'>
 				<Box>
 					<Box is='span' textColor='hint' className='SetupWizard__FinalStep-runningHead'>

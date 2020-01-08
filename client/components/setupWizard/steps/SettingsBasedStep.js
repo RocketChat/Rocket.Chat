@@ -1,8 +1,8 @@
 import {
 	Field,
 	FieldGroup,
+	Flex,
 	InputBox,
-	Label,
 	Margins,
 	SelectInput,
 	Skeleton,
@@ -93,7 +93,11 @@ export function SettingsBasedStep({ step, title, active }) {
 			<Margins blockEnd='32'>
 				<FieldGroup>
 					{Array.from({ length: 5 }, (_, i) => <Field key={i}>
-						<Label text={<Skeleton />} />
+						<Flex.Item align='stretch'>
+							<Field.Label>
+								{<Skeleton width='50%' />}
+							</Field.Label>
+						</Flex.Item>
 						<InputBox.Skeleton />
 					</Field>)}
 				</FieldGroup>
@@ -108,47 +112,49 @@ export function SettingsBasedStep({ step, title, active }) {
 			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
 					<Field key={i}>
-						<Label htmlFor={_id} text={t(i18nLabel)} />
-						{type === 'string' && <TextInput
-							type='text'
-							data-qa={_id}
-							id={_id}
-							name={_id}
-							ref={i === 0 ? autoFocusRef : undefined}
-							value={value}
-							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-						/>}
+						<Field.Label htmlFor={_id}>{t(i18nLabel)}</Field.Label>
+						<Field.Row>
+							{type === 'string' && <TextInput
+								type='text'
+								data-qa={_id}
+								id={_id}
+								name={_id}
+								ref={i === 0 ? autoFocusRef : undefined}
+								value={value}
+								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+							/>}
 
-						{type === 'select' && <SelectInput
-							type='select'
-							data-qa={_id}
-							id={_id}
-							name={_id}
-							placeholder={t('Select_an_option')}
-							ref={i === 0 ? autoFocusRef : undefined}
-							value={value}
-							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-						>
-							{values
-								.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
-								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
-						</SelectInput>}
+							{type === 'select' && <SelectInput
+								type='select'
+								data-qa={_id}
+								id={_id}
+								name={_id}
+								placeholder={t('Select_an_option')}
+								ref={i === 0 ? autoFocusRef : undefined}
+								value={value}
+								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+							>
+								{values
+									.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
+									.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+							</SelectInput>}
 
-						{type === 'language' && <SelectInput
-							type='select'
-							data-qa={_id}
-							id={_id}
-							name={_id}
-							placeholder={t('Default')}
-							ref={i === 0 ? autoFocusRef : undefined}
-							value={value}
-							onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-						>
-							{Object.entries(languages)
-								.map(([key, { name }]) => ({ label: name, value: key }))
-								.sort((a, b) => a.key - b.key)
-								.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
-						</SelectInput>}
+							{type === 'language' && <SelectInput
+								type='select'
+								data-qa={_id}
+								id={_id}
+								name={_id}
+								placeholder={t('Default')}
+								ref={i === 0 ? autoFocusRef : undefined}
+								value={value}
+								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+							>
+								{Object.entries(languages)
+									.map(([key, { name }]) => ({ label: name, value: key }))
+									.sort((a, b) => a.key - b.key)
+									.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+							</SelectInput>}
+						</Field.Row>
 					</Field>,
 				)}
 			</FieldGroup>

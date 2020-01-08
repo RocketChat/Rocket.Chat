@@ -1,11 +1,11 @@
 import {
 	Box,
 	CheckBox,
-	Label,
+	Field,
 	Margins,
 	RadioButton,
 } from '@rocket.chat/fuselage';
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
@@ -23,6 +23,7 @@ import './RegisterServerStep.css';
 const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) => {
 	const innerRef = useRef();
 	const mergedRef = useMergedRefs(ref, innerRef);
+	const id = useUniqueId();
 
 	return <span
 		className={[
@@ -34,9 +35,12 @@ const Option = React.forwardRef(({ children, label, selected, disabled, ...props
 			innerRef.current.click();
 		}}
 	>
-		<Label text={label} position='end'>
-			<RadioButton ref={mergedRef} checked={selected} disabled={disabled} {...props} />
-		</Label>
+		<Field>
+			<Field.Row>
+				<RadioButton ref={mergedRef} id={id} checked={selected} disabled={disabled} {...props} />
+				<Field.Label htmlFor={id}>{label}</Field.Label>
+			</Field.Row>
+		</Field>
 		{children}
 	</span>;
 });
@@ -117,6 +121,9 @@ export function RegisterServerStep({ step, title, active }) {
 
 	const autoFocusRef = useFocus(active);
 
+	const agreeTermsAndPrivacyId = useUniqueId();
+	const optInMarketingEmailsId = useUniqueId();
+
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
@@ -143,17 +150,24 @@ export function RegisterServerStep({ step, title, active }) {
 							<Item icon='check'>{t('Register_Server_Registered_OAuth')}</Item>
 							<Item icon='check'>{t('Register_Server_Registered_Marketplace')}</Item>
 						</Items>
-						<Label text={t('Register_Server_Opt_In')} position='end' className='SetupWizard__RegisterServerStep__optIn'>
-							<CheckBox
-								name='optInMarketingEmails'
-								value='true'
-								disabled={!registerServer}
-								checked={optInMarketingEmails}
-								onChange={({ currentTarget: { checked } }) => {
-									setOptInMarketingEmails(checked);
-								}}
-							/>
-						</Label>
+						<Field>
+							<Field.Row>
+								<CheckBox
+									id={optInMarketingEmailsId}
+									name='optInMarketingEmails'
+									value='true'
+									disabled={!registerServer}
+									checked={optInMarketingEmails}
+									onChange={({ currentTarget: { checked } }) => {
+										setOptInMarketingEmails(checked);
+									}}
+								/>
+								<Field.Label htmlFor={optInMarketingEmailsId}>{t('Register_Server_Opt_In')}</Field.Label>
+							</Field.Row>
+						</Field>
+						<Field.Label text={t('Register_Server_Opt_In')} position='end' className='SetupWizard__RegisterServerStep__optIn'>
+
+						</Field.Label>
 					</Option>
 					<Option
 						data-qa='register-server-standalone'
@@ -175,17 +189,25 @@ export function RegisterServerStep({ step, title, active }) {
 						</Items>
 					</Option>
 
-					<Label text={<>{t('Register_Server_Registered_I_Agree')} <a href='https://rocket.chat/terms'>{t('Terms')}</a> & <a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a></>} position='end' className='SetupWizard__RegisterServerStep__PrivacyTerms'>
-						<CheckBox
-							name='agreeTermsAndPrivacy'
-							data-qa='agree-terms-and-privacy'
-							disabled={!registerServer}
-							checked={agreeTermsAndPrivacy}
-							onChange={({ currentTarget: { checked } }) => {
-								setAgreeTermsAndPrivacy(checked);
-							}}
-						/>
-					</Label>
+					<Margins all='16'>
+						<Field>
+							<Field.Row>
+								<CheckBox
+									id={agreeTermsAndPrivacyId}
+									name='agreeTermsAndPrivacy'
+									data-qa='agree-terms-and-privacy'
+									disabled={!registerServer}
+									checked={agreeTermsAndPrivacy}
+									onChange={({ currentTarget: { checked } }) => {
+										setAgreeTermsAndPrivacy(checked);
+									}}
+								/>
+								<Field.Label htmlFor={agreeTermsAndPrivacyId}>
+									{t('Register_Server_Registered_I_Agree')} <a href='https://rocket.chat/terms'>{t('Terms')}</a> & <a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a>
+								</Field.Label>
+							</Field.Row>
+						</Field>
+					</Margins>
 				</div>
 			</Box>
 		</Margins>

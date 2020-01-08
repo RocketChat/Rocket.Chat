@@ -3,7 +3,6 @@ import {
 	Field,
 	FieldGroup,
 	Icon,
-	Label,
 	Margins,
 	PasswordInput,
 	TextInput,
@@ -128,51 +127,59 @@ export function AdminUserInformationStep({ step, title, active }) {
 		<Margins blockEnd='32'>
 			<FieldGroup>
 				<Field>
-					<Label htmlFor={nameInputId} required text={t('Name')} />
-					<TextInput
-						ref={autoFocusRef}
-						id={nameInputId}
-						addon={<Icon name='user' size='20' />}
-						placeholder={t('Type_your_name')}
-						value={name}
-						onChange={({ currentTarget: { value } }) => setName(value)}
-						error={!isNameValid}
-					/>
+					<Field.Label htmlFor={nameInputId} required>{t('Name')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							ref={autoFocusRef}
+							id={nameInputId}
+							addon={<Icon name='user' size='20' />}
+							placeholder={t('Type_your_name')}
+							value={name}
+							onChange={({ currentTarget: { value } }) => setName(value)}
+							error={!isNameValid}
+						/>
+					</Field.Row>
 				</Field>
 				<Field>
-					<Label htmlFor={usernameInputId} required text={t('Username')} />
-					<TextInput
-						id={usernameInputId}
-						addon={<Icon name='at' size='20' />}
-						placeholder={t('Type_your_username')}
-						value={username}
-						onChange={({ currentTarget: { value } }) => setUsername(value)}
-						error={!isUsernameValid}
-					/>
+					<Field.Label htmlFor={usernameInputId} required>{t('Username')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							id={usernameInputId}
+							addon={<Icon name='at' size='20' />}
+							placeholder={t('Type_your_username')}
+							value={username}
+							onChange={({ currentTarget: { value } }) => setUsername(value)}
+							error={!isUsernameValid}
+						/>
+					</Field.Row>
 					{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
 				</Field>
 				<Field>
-					<Label htmlFor={emailInputId} required text={t('Organization_Email')} />
-					<EmailInput
-						id={emailInputId}
-						addon={<Icon name='mail' size='20' />}
-						placeholder={t('Type_your_email')}
-						value={email}
-						onChange={({ currentTarget: { value } }) => setEmail(value)}
-						error={!isEmailValid}
-					/>
+					<Field.Label htmlFor={emailInputId} required>{t('Organization_Email')}</Field.Label>
+					<Field.Row>
+						<EmailInput
+							id={emailInputId}
+							addon={<Icon name='mail' size='20' />}
+							placeholder={t('Type_your_email')}
+							value={email}
+							onChange={({ currentTarget: { value } }) => setEmail(value)}
+							error={!isEmailValid}
+						/>
+					</Field.Row>
 					{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
 				</Field>
 				<Field>
-					<Label htmlFor={passwordInputId} required text={t('Password')} />
-					<PasswordInput
-						id={passwordInputId}
-						addon={<Icon name='key' size='20' />}
-						placeholder={t('Type_your_password')}
-						value={password}
-						onChange={({ currentTarget: { value } }) => setPassword(value)}
-						error={!isPasswordValid}
-					/>
+					<Field.Label htmlFor={passwordInputId} required>{t('Password')}</Field.Label>
+					<Field.Row>
+						<PasswordInput
+							id={passwordInputId}
+							addon={<Icon name='key' size='20' />}
+							placeholder={t('Type_your_password')}
+							value={password}
+							onChange={({ currentTarget: { value } }) => setPassword(value)}
+							error={!isPasswordValid}
+						/>
+					</Field.Row>
 				</Field>
 			</FieldGroup>
 		</Margins>
