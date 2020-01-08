@@ -852,7 +852,7 @@ export class Rooms extends Base {
 
 		const update = {
 			...defaultFavorite && { $set: {	defaultFavorite } },
-			...!defaultFavorite && { $unset: {	defaultFavorite: 1 } },
+			...!defaultFavorite && { $unset: { defaultFavorite: 1 } },
 		};
 
 		return this.update(query, update);
