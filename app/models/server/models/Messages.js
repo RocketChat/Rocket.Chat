@@ -8,6 +8,21 @@ import { RoomEvents } from './RoomEvents';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
 
+function renameObjectKeys(object){
+	const data = {};
+	let value;
+
+	for (const key in object) {
+		const destinationKey = key.startsWith('$') ? `_$${key.substr(1)}` : key;
+		value = object[key];
+		if (typeof value === 'object' && !Array.isArray(value)) {
+			value = renameObjectKeys(value);
+		}
+		data[destinationKey] = value;
+	}
+	return data;
+}
+
 export class Messages extends Base {
 	constructor() {
 		super('message_old');
@@ -168,23 +183,12 @@ export class Messages extends Base {
 		if (!event) {
 			return null;
 		}
-
-		let d = {};
-
-		for (let prop in update) {
-			if (!prop.startsWith('$')) {
-				d[prop] = update[prop];
-				continue;
-			}
-
-			d[`_$${prop.substr(1)}`] = update[prop];
-		}
-
+		const d = renameObjectKeys(update);
 		d._$set = d._$set || {};
 		d._$set._oid = event._id; // Original id
 
 		const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, _cid, d));
-
+		
 		Promise.await(this.dispatchEvent(editEvent));
 
 		return RoomEvents.toV1(editEvent);

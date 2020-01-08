@@ -9,6 +9,27 @@ export declare interface IContextQuery { rid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
 export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d?: T }
 
+function renameObjectKeys(object: any): any {
+	const build: any = {};
+	let value: any;
+
+	for (const key in object) {
+		const destinationKey = key.startsWith('_$') ? key.substr(1) : key;
+		value = object[key];
+		build[destinationKey] = value;
+		if (typeof value === 'object' && !Array.isArray(value)) {
+			build[destinationKey] = Object.keys(value).reduce((acc, k) => {
+				acc[`d.${k}`] = value[k];
+				return acc;
+			}, {} as any);
+			value = renameObjectKeys(value);
+		} else {
+			
+		}
+	}
+	return build;
+}
+
 export class EventsModel extends Base {
 	constructor(nameOrModel: string) {
 		super(nameOrModel);
@@ -114,19 +135,24 @@ export class EventsModel extends Base {
 
 		const updateQuery: any = {};
 
-		for (let prop in updateData) {
-			if (!prop.startsWith('_$')) {
-				updateQuery[prop] = updateData[prop];
-				continue;
-			}
+		
 
-			const data:any = updateData[prop];
+		// for (let prop in updateData) {
+		// 	if (!prop.startsWith('_$')) {
+		// 		updateQuery[prop] = updateData[prop];
+		// 		continue;
+		// 	}
 
-			updateQuery[prop.substr(1)] = Object.keys(data).reduce((acc, k) => {
-				acc[`d.${k}`] = data[k];
-				return acc;
-			}, {} as any);
-		}
+		// 	const data:any = updateData[prop];
+
+		// 	updateQuery[prop.substr(1)] = Object.keys(data).reduce((acc, k) => {
+		// 		acc[`d.${k}`] = data[k];
+		// 		return acc;
+		// 	}, {} as any);
+		// }
+		console.log(updateData)
+		console.log(updateQuery)
+		console.log(renameObjectKeys(updateData))
 
 		// if (updateData.set) {
 		// 	updateQuery.$set = {};
