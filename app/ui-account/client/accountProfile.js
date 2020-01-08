@@ -138,7 +138,7 @@ Template.accountProfile.helpers({
 		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password) {
 			return ret;
 		}
-		if (password !== confirmationPassword || !validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
+		if (!validateEmail(email) || !validatePassword(password, confirmationPassword) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
 			return ret;
 		}
 	},
