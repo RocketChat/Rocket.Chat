@@ -114,14 +114,29 @@
 
 
 			{{#if hasPermission 'edit-other-user-password'}}
+			<div class="rc-form-group rc-form-group--small rc-form-group--inline" style="position: relative;">
+				<div class="rc-input rc-form-item-inline">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Password"}}</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon icon='key' }}
+							</div>
+							<input name="password" class="rc-input__element rc-input__element--small" type="password" id="password" autocomplete="off" value="" disabled="{{requirePasswordChangeDisabled}}"/>
+						</div>
+					</label>
+				</div>
+				<button id="randomPassword" class="rc-button rc-button--primary rc-form-item-inline rc-button--nude rc-button--small" style="right: 0; position: absolute; bottom: 10px; " disabled="{{requirePasswordChangeDisabled}}">{{_ 'Random'}}</button>
+			</div>
+
 			<div class="rc-form-group rc-form-group--small rc-switch">
 				<label class="rc-switch__label" tabindex="-1">
-					<input class="rc-switch__input" type="checkbox" id="setRandomPassword" value="1" checked="{{setRandomPassword}}" disabled="{{setRandomPasswordDisabled}}"/>
+					<input class="rc-switch__input" type="checkbox" id="setRandomPassword" value="1" checked="{{setRandomPassword}}"/>
 					<span class="rc-switch__button">
 						<span class="rc-switch__button-inside"></span>
 					</span>
 					<span class="rc-switch__text">
-						{{_ "Set_random_password"}}
+						{{_ "Set_random_password_and_send_by_email"}}
 					</span>
 				</label>
 			</div>
