@@ -170,6 +170,8 @@
 			{{/if}}
 
 			{{#each attachments}}
+				{{injectMessage . ../msg}}
+			 	{{injectSettings . ../settings}}
 				{{injectIndex . ../index @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>

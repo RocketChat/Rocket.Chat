@@ -51,7 +51,7 @@ export const Input = ({
 						value=''
 					>{placeholder}</option>}
 					{options.map(({ label, value }, i) =>
-						<option key={i} className='rc-select__option' value={value}>{label}</option>
+						<option key={i} className='rc-select__option' value={value}>{label}</option>,
 					)}
 				</select>
 				<Icon block='rc-select__arrow' icon='arrow-down' />

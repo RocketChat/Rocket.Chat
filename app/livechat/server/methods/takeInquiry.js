@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Users } from '../../../models/server';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { Users, LivechatInquiry } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
 Meteor.methods({

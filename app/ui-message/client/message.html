@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}">
+	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}">
 		{{#if isThreadReply}}
 			{{> messageThread parentMessage=parentMessage threadMessage=threadMessage following=msg.following avatar=msg.u.username msg=msg body=body class=bodyClass}}
 		{{else}}
@@ -85,11 +85,16 @@
 
 			{{#if hasOembed}}
 				{{#each msg.urls}}
-					{{injectIndex . @index}} {{> oembedBaseWidget}}
+					{{injectMessage . ../msg}}
+					{{injectIndex . @index}}
+					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
 			{{#each msg.attachments}}
-				{{injectIndex . @index}} {{> messageAttachment}}
+				{{injectMessage . ../msg}}
+				{{injectSettings . ../settings}}
+				{{injectIndex . @index}}
+				{{> messageAttachment}}
 			{{/each}}
 
 			{{#if msg.drid}}
@@ -128,7 +133,7 @@
 
 					<div class="message-actions__buttons">
 						{{#each action in messageActions 'message'}}
-							<button class="message-actions__button"  data-message-action="{{action.id}}">
+							<button class="message-actions__button"  data-message-action="{{action.id}}" title="{{_ action.label}}">
 									{{> icon block="message-actions__button-icon" icon=action.icon}}
 							</button>
 						{{/each}}

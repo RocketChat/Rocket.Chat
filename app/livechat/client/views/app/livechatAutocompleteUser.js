@@ -1,8 +1,8 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+import { AutoComplete } from '../../../../meteor-autocomplete/client';
 import './livechatAutocompleteUser.html';
 
 Template.livechatAutocompleteUser.helpers({
@@ -85,10 +85,12 @@ Template.livechatAutocompleteUser.onCreated(function() {
 
 	const filter = {};
 	this.autorun(() => {
-		const { exceptions } = Template.currentData();
+		const { exceptions, conditions } = Template.currentData();
 		filter.exceptions = exceptions;
+		filter.conditions = conditions;
 	});
-	const { collection, subscription, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
+
+	const { collection, endpoint, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
 	this.ac = new AutoComplete({
 		selector: {
 			anchor: '.rc-input__label',
@@ -103,7 +105,7 @@ Template.livechatAutocompleteUser.onCreated(function() {
 			{
 				filter,
 				collection,
-				subscription,
+				endpoint,
 				field,
 				matchAll: true,
 				doNotChangeWidth: false,

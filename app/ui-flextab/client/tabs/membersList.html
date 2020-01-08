@@ -48,10 +48,16 @@
 				<button class="rc-button rc-button--secondary show-more-users {{#if loadingMore}}loading{{/if}}">{{_ "Show_more"}}</button>
 			{{/if}}
 		</div>
+		<div class="rc-button__group rc-button__group--stretch">
+			{{#if canAddUser}}
+				<button class="rc-button rc-button--primary js-add">{{> icon block="rc-input__icon-svg" icon="plus"}}{{_ "Add_users"}}</button>
+			{{/if}}
 
-		{{#if canAddUser}}
-			<button class="rc-button rc-button--primary js-add">{{> icon block="rc-input__icon-svg" icon="plus"}}{{_ "Invite_Users"}}</button>
-		{{/if}}
+			{{#if canInviteUser}}
+				<button class="rc-button rc-button--primary js-invite">{{> icon block="rc-input__icon-svg" icon="user-plus"}}{{_ "Invite_Users"}}</button>
+			{{/if}}
+		</div>
+
 		{{/with}}
 	{{/if}}
 	<div class="rc-user-info-container flex-nav animated{{#unless showUserInfo}} animated-hidden{{/unless}}">

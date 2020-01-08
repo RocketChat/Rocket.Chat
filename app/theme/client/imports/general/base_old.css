@@ -383,7 +383,7 @@
 
 /* input & form styles */
 
-.rc-old input:focus {
+.rc-old :not(.rcx-input-control):focus {
 	outline: none;
 	box-shadow: 0 0 0;
 }
@@ -1837,6 +1837,8 @@ rc-old select,
 	& .upload-progress {
 		position: relative;
 
+		display: flex;
+
 		height: 28px;
 
 		& .upload-progress-progress {
@@ -1851,7 +1853,6 @@ rc-old select,
 		}
 
 		& .upload-progress-text {
-			position: absolute;
 			z-index: 2;
 			right: 0;
 			left: 0;
@@ -1863,7 +1864,9 @@ rc-old select,
 			height: 100%;
 			padding: 0 10px;
 
+			white-space: nowrap;
 			text-overflow: ellipsis;
+			flex-grow: 1;
 
 			& > a {
 				float: right;
@@ -2517,7 +2520,7 @@ rc-old select,
 
 	& .new-message {
 		position: absolute;
-		z-index: 16;
+		z-index: 2;
 		bottom: 8px;
 		left: 50%;
 
@@ -2843,6 +2846,8 @@ rc-old select,
 
 	& .body {
 		transition: opacity 0.3s linear;
+
+		word-break: break-word;
 
 		opacity: 1;
 
@@ -4196,20 +4201,6 @@ rc-old select,
 		}
 	}
 
-	& a.meteor {
-		position: fixed;
-		right: 30px;
-		bottom: 20px;
-
-		width: 100px;
-		height: 50px;
-
-		text-indent: -9999em;
-
-		background: url(images/meteor.png) no-repeat center center;
-		background-size: 100% auto;
-	}
-
 	& .share {
 		min-height: 40px;
 
@@ -4405,35 +4396,27 @@ rc-old select,
 
 		display: none;
 
-		margin: var(--default-small-padding);
-		padding: var(--default-padding);
-
 		animation-name: zoomIn;
 		animation-duration: 0.1s;
 
 		text-align: center;
 
-		color: var(--color-blue);
-
-		border: 4px dashed var(--color-blue);
 		background: rgba(255, 255, 255, 0.8);
-
-		box-shadow: 0 0 0 var(--default-small-padding) rgba(255, 255, 255, 0.9);
 
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
 
-		&::before {
-			position: absolute;
-			z-index: -1;
+		&--enabled {
+			color: var(--color-blue);
 
-			top: calc(-1 * var(--default-small-padding));
-			right: calc(-1 * var(--default-small-padding));
-			bottom: calc(-1 * var(--default-small-padding));
-			left: calc(-1 * var(--default-small-padding));
+			border: 4px dashed var(--color-blue);
+		}
 
-			content: '';
+		&--disabled {
+			color: var(--color-red);
+
+			border: 4px dashed var(--color-red);
 		}
 	}
 
@@ -4871,6 +4854,14 @@ rc-old select,
 	& .user.user-card-message {
 		margin-left: -5px;
 	}
+
+	& .thread-icons--thread {
+		position: relative;
+
+		left: 0;
+
+		margin: 0 3px;
+	}
 }
 
 .rc-old .messages-box:not(.compact) .hide-avatars .message.sequential .info {
@@ -5031,6 +5022,19 @@ rc-old select,
 @media (width <= 500px) {
 	.rc-old .messages-container .message-form > .formatting-tips {
 		display: none;
+	}
+
+	.cms-page {
+		padding: 0;
+
+		&__content {
+			margin: 0;
+			padding: 0 1rem 1rem;
+		}
+
+		& .cms-page-close {
+			margin-top: 10px;
+		}
 	}
 }
 

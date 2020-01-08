@@ -250,6 +250,10 @@ Template.messageBox.helpers({
 	isBlockedOrBlocker() {
 		return Template.instance().state.get('isBlockedOrBlocker');
 	},
+	isSubscribed() {
+		const { subscription } = Template.currentData();
+		return !!subscription;
+	},
 });
 
 const handleFormattingShortcut = (event, instance) => {
@@ -375,7 +379,13 @@ Template.messageBox.events({
 			return;
 		}
 
-		const files = [...event.originalEvent.clipboardData.items]
+		const items = [...event.originalEvent.clipboardData.items];
+
+		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
+			return;
+		}
+
+		const files = items
 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
 			.map((item) => ({
 				file: item.getAsFile(),

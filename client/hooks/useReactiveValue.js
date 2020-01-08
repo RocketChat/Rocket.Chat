@@ -1,8 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Tracker } from 'meteor/tracker';
-import { useEffect, useState } from 'react';
 
 export const useReactiveValue = (getValue, deps = []) => {
-	const [value, setValue] = useState(getValue);
+	const [value, setValue] = useState(() => Tracker.nonreactive(getValue));
 
 	useEffect(() => {
 		const computation = Tracker.autorun(() => {

@@ -1,10 +1,11 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Flex, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
-import { useRoute } from '../contexts/RouterContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import './PageNotFound.css';
 
 export function PageNotFound() {
 	useWipeInitialPageLoading();
@@ -22,17 +23,31 @@ export function PageNotFound() {
 
 	return <>
 		<ConnectionStatusAlert />
-		<section className='PageNotFound'>
-			<span className='PageNotFound__404'>404</span>
-			<span className='PageNotFound__message'>{t('Oops_page_not_found')}</span>
-			<span className='PageNotFound__description'>{t('Sorry_page_you_requested_does_not_exist_or_was_deleted')}</span>
+		<Flex.Container direction='column' justifyContent='center' alignItems='center'>
+			<Box is='section' componentClassName='PageNotFound'>
+				<Flex.Item>
+					<Box>
+						<Margins all='12'>
+							<Box componentClassName='PageNotFound__404' textColor='alternative'>404</Box>
 
-			<div className='PageNotFound__actions'>
-				<ButtonGroup>
-					<Button type='button' primary onClick={handleGoToPreviousPageClick}>{t('Return_to_previous_page')}</Button>
-					<Button type='button' primary onClick={handleGoHomeClick}>{t('Return_to_home')}</Button>
-				</ButtonGroup>
-			</div>
-		</section>
+							<Box textStyle='h1' textColor='alternative'>
+								{t('Oops_page_not_found')}
+							</Box>
+
+							<Box textStyle='p1' textColor='alternative'>
+								{t('Sorry_page_you_requested_does_not_exist_or_was_deleted')}
+							</Box>
+						</Margins>
+
+						<Margins all='32'>
+							<ButtonGroup align='center'>
+								<Button type='button' primary onClick={handleGoToPreviousPageClick}>{t('Return_to_previous_page')}</Button>
+								<Button type='button' primary onClick={handleGoHomeClick}>{t('Return_to_home')}</Button>
+							</ButtonGroup>
+						</Margins>
+					</Box>
+				</Flex.Item>
+			</Box>
+		</Flex.Container>
 	</>;
 }

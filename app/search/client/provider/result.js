@@ -99,7 +99,7 @@ Template.DefaultSearchResultTemplate.helpers({
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
-	message(msg) {
+	messageParse(msg) {
 		return { customClass: 'search', actionContext: 'search', ...msg, groupable: false };
 	},
 	messageContext,

@@ -24,12 +24,12 @@ export const preferences = {
 		enableAutoAway: true,
 		highlights: [],
 		desktopNotificationDuration: 0,
+		desktopNotificationRequireInteraction: false,
 		messageViewMode: 0,
 		hideUsernames: false,
 		hideRoles: false,
 		hideAvatars: false,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
-		roomCounterSidebar: false,
 	},
 };
