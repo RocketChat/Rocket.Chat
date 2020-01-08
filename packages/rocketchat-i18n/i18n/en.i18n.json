@@ -2789,6 +2789,8 @@
   "SAML_Default_User_Role_Description": "You can specify multiple roles, separating them with commas.",
   "SAML_Role_Attribute_Name": "Role Attribute Name",
   "SAML_Role_Attribute_Name_Description": "If this attribute is found on the SAML response, it's values will be used as role names for new users.",
+  "SAML_Role_Attribute_Sync": "Sync User Roles",
+  "SAML_Role_Attribute_Sync_Description": "Sync SAML user roles on login (overwrites local user roles).",
   "Saturday": "Saturday",
   "Save": "Save",
   "save-others-livechat-room-info": "Save Others Livechat Room Info",

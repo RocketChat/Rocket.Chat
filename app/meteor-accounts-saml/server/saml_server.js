@@ -33,7 +33,7 @@ RoutePolicy.declare('/_saml/', 'network');
  * Fetch SAML provider configs for given 'provider'.
  */
 function getSamlProviderConfig(provider) {
-	if (! provider) {
+	if (!provider) {
 		throw new Meteor.Error('no-saml-provider',
 			'SAML internal error',
 			{ method: 'getSamlProviderConfig' });
@@ -57,7 +57,7 @@ Meteor.methods({
 		}
 		// This query should respect upcoming array of SAML logins
 		const user = Users.getSAMLByIdAndSAMLProvider(Meteor.userId(), provider);
-		if (!user || !user.services || ! user.services.saml) {
+		if (!user || !user.services || !user.services.saml) {
 			return;
 		}
 
@@ -245,7 +245,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 
 	const { emailField, usernameField, nameField, userDataFieldMap, regexes } = getUserDataMapping();
-	const { defaultUserRole = 'user', roleAttributeName } = Accounts.saml.settings;
+	const { defaultUserRole = 'user', roleAttributeName, roleAttributeSync } = Accounts.saml.settings;
 
 	if (loginResult && loginResult.profile && loginResult.profile[emailField]) {
 		const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
@@ -384,6 +384,10 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			updateData.emails = emails;
 		}
 
+		if (roleAttributeSync) {
+			updateData.roles = globalRoles;
+		}
+
 		Meteor.users.update({
 			_id: user._id,
 		}, {
@@ -432,7 +436,7 @@ Accounts.saml.subscribeToSAMLChannels = function(channels, user) {
 				});
 			}
 		}
-	}	catch (err) {
+	} catch (err) {
 		console.error(err);
 	}
 };

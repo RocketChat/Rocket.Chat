@@ -2756,6 +2756,8 @@
   "SAML_Default_User_Role_Description": "Sie können mehrere Rollen angeben, indem Sie sie durch Kommas trennen.",
   "SAML_Role_Attribute_Name": "Rollenattributname",
   "SAML_Role_Attribute_Name_Description": "Wenn dieses Attribut in der SAML-Antwort gefunden wird, werden seine Werte als Rollennamen für neue Benutzer verwendet.",
+  "SAML_Role_Attribute_Sync": "Benutzerrollen synchronisieren",
+  "SAML_Role_Attribute_Sync_Description": "Synchronisiere Benutzerrollen beim Login (Überschreibt lokale Benutzerrollen).",
   "Saturday": "Samstag",
   "Save": "Speichern",
   "save-others-livechat-room-info": "Livechat-Informationen anderer Chats speichern",
