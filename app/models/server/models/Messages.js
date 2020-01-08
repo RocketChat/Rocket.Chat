@@ -1,5 +1,6 @@
 import { Match } from 'meteor/check';
 import _ from 'underscore';
+import deepMapKeys from 'deep-map-keys';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -7,21 +8,6 @@ import { settings } from '../../../settings/server/functions/settings';
 import { RoomEvents } from './RoomEvents';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
-
-function renameObjectKeys(object){
-	const data = {};
-	let value;
-
-	for (const key in object) {
-		const destinationKey = key.startsWith('$') ? `_$${key.substr(1)}` : key;
-		value = object[key];
-		if (typeof value === 'object' && !Array.isArray(value)) {
-			value = renameObjectKeys(value);
-		}
-		data[destinationKey] = value;
-	}
-	return data;
-}
 
 export class Messages extends Base {
 	constructor() {
@@ -183,7 +169,7 @@ export class Messages extends Base {
 		if (!event) {
 			return null;
 		}
-		const d = renameObjectKeys(update);
+		const d = deepMapKeys(update, k => k.replace('$', '_$'));
 		d._$set = d._$set || {};
 		d._$set._oid = event._id; // Original id
 

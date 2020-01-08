@@ -185,6 +185,7 @@
 		"core-js": "^2.5.7",
 		"cors": "^2.8.4",
 		"csv-parse": "^4.0.1",
+		"deep-map-keys": "^2.0.1",
 		"emailreplyparser": "^0.0.5",
 		"emojione": "^4.5.0",
 		"express": "^4.16.4",

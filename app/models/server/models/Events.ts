@@ -1,4 +1,6 @@
 import { SHA256 } from 'meteor/sha';
+import _ from 'lodash';
+import deepMapKeys from 'deep-map-keys';
 
 import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
@@ -8,27 +10,6 @@ import { Base } from './_Base';
 export declare interface IContextQuery { rid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
 export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d?: T }
-
-function renameObjectKeys(object: any): any {
-	const build: any = {};
-	let value: any;
-
-	for (const key in object) {
-		const destinationKey = key.startsWith('_$') ? key.substr(1) : key;
-		value = object[key];
-		build[destinationKey] = value;
-		if (typeof value === 'object' && !Array.isArray(value)) {
-			build[destinationKey] = Object.keys(value).reduce((acc, k) => {
-				acc[`d.${k}`] = value[k];
-				return acc;
-			}, {} as any);
-			value = renameObjectKeys(value);
-		} else {
-			
-		}
-	}
-	return build;
-}
 
 export class EventsModel extends Base {
 	constructor(nameOrModel: string) {
@@ -133,46 +114,12 @@ export class EventsModel extends Base {
 			.rawCollection()
 			.findOne({ ...contextQuery, _cid: eventCID });
 
-		const updateQuery: any = {};
+		let updateQuery: any = deepMapKeys(updateData, (k: any) => k.replace('_$', '$'));
 
-		
-
-		// for (let prop in updateData) {
-		// 	if (!prop.startsWith('_$')) {
-		// 		updateQuery[prop] = updateData[prop];
-		// 		continue;
-		// 	}
-
-		// 	const data:any = updateData[prop];
-
-		// 	updateQuery[prop.substr(1)] = Object.keys(data).reduce((acc, k) => {
-		// 		acc[`d.${k}`] = data[k];
-		// 		return acc;
-		// 	}, {} as any);
-		// }
-		console.log(updateData)
-		console.log(updateQuery)
-		console.log(renameObjectKeys(updateData))
-
-		// if (updateData.set) {
-		// 	updateQuery.$set = {};
-
-		// 	for (const [k, v] of Object.entries(updateData.set)) {
-		// 		updateQuery.$set[`d.${ k }`] = v;
-		// 	}
-		// }
-
-		// if (updateData.unset) {
-		// 	updateQuery.$unset = {};
-
-		// 	for (const [k, v] of Object.entries(updateData.unset)) {
-		// 		updateQuery.$unset[`d.${ k }`] = v;
-		// 	}
-		// }
-
-		// If there is no _d (original data), create it
-		if (!existingEvent._d) {
-			updateQuery.$set._d = existingEvent.d;
+		for(const prop in updateQuery) {
+			if(prop.startsWith('$')) {
+				updateQuery[prop] = _.mapKeys(updateQuery[prop], (value: any, key: any) => key.startsWith('$') ? key : `d.${key}`);
+			}
 		}
 
 		await this.model.rawCollection().update({ _id: existingEvent._id }, updateQuery);
