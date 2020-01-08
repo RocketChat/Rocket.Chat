@@ -1,8 +1,8 @@
-import { Button, Callout, Icon, Margins } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { Link } from '../../basic/Link';
-import { Header } from '../../header/Header';
+import { Page } from '../../basic/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';
@@ -27,17 +27,17 @@ export function InformationPage({
 
 	const alertOplogForMultipleInstances = statistics && statistics.instanceCount > 1 && !statistics.oplogEnabled;
 
-	return <section className='page-container' data-qa='admin-info'>
-		<Header rawSectionName={t('Info')} hideHelp>
+	return <Page data-qa='admin-info'>
+		<Page.Header title={t('Info')}>
 			{canViewStatistics
-				&& <Header.ActionBlock>
+				&& <ButtonGroup>
 					<Button disabled={isLoading} primary type='button' onClick={onClickRefreshButton}>
 						<Icon name='reload' /> {t('Refresh')}
 					</Button>
-				</Header.ActionBlock>}
-		</Header>
+				</ButtonGroup>}
+		</Page.Header>
 
-		<div className='content'>
+		<Page.Content>
 			{alertOplogForMultipleInstances
 				&& <Margins blockEnd='16'>
 					<Callout type='danger' title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}>
@@ -58,6 +58,6 @@ export function InformationPage({
 			<BuildEnvironmentSection info={info} />
 			{canViewStatistics && <UsageSection statistics={statistics} isLoading={isLoading} />}
 			<InstancesSection instances={instances} />
-		</div>
-	</section>;
+		</Page.Content>
+	</Page>;
 }

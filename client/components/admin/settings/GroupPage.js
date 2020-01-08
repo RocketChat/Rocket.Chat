@@ -1,16 +1,9 @@
-import { Accordion, Button, Paragraph, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
-import styled from 'styled-components';
+import { Accordion, Box, Button, ButtonGroup, Paragraph, Skeleton } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
 
-import { Header } from '../../header/Header';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { Section } from './Section';
-
-const Wrapper = styled.div`
-	margin: 0 auto;
-	width: 100%;
-	max-width: 590px;
-`;
+import { Page } from '../../basic/Page';
 
 export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabel, i18nDescription, changed }) {
 	const t = useTranslation();
@@ -31,15 +24,15 @@ export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabe
 	};
 
 	if (!_id) {
-		return <section className='page-container page-static page-settings'>
-			<Header />
-			<div className='content' />
-		</section>;
+		return <Page>
+			<Page.Header />
+			<Page.Content />
+		</Page>;
 	}
 
-	return <form action='#' className='page-container' method='post' onSubmit={handleSubmit}>
-		<Header rawSectionName={t(i18nLabel)}>
-			<Header.ButtonSection>
+	return <Page is='form' action='#' method='post' onSubmit={handleSubmit}>
+		<Page.Header title={t(i18nLabel)}>
+			<ButtonGroup>
 				{changed && <Button danger primary type='reset' onClick={handleCancelClick}>{t('Cancel')}</Button>}
 				<Button
 					children={t('Save_changes')}
@@ -50,45 +43,45 @@ export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabe
 					onClick={handleSaveClick}
 				/>
 				{headerButtons}
-			</Header.ButtonSection>
-		</Header>
+			</ButtonGroup>
+		</Page.Header>
 
-		<div className='content'>
-			<Wrapper>
+		<Page.Content>
+			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
 				{t.has(i18nDescription) && <Paragraph hintColor>{t(i18nDescription)}</Paragraph>}
 
 				<Accordion className='page-settings'>
 					{children}
 				</Accordion>
-			</Wrapper>
-		</div>
-	</form>;
+			</Box>
+		</Page.Content>
+	</Page>;
 }
 
 export function GroupPageSkeleton() {
 	const t = useTranslation();
 
-	return <div className='page-container'>
-		<Header rawSectionName={<Skeleton style={{ width: '20rem' }}/>}>
-			<Header.ButtonSection>
+	return <Page>
+		<Page.Header title={<Skeleton style={{ width: '20rem' }}/>}>
+			<ButtonGroup>
 				<Button
 					children={t('Save_changes')}
 					disabled
 					primary
 				/>
-			</Header.ButtonSection>
-		</Header>
+			</ButtonGroup>
+		</Page.Header>
 
-		<div className='content'>
-			<Wrapper>
+		<Page.Content>
+			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
 				<Paragraph.Skeleton />
 
 				<Accordion className='page-settings'>
 					<Section.Skeleton />
 				</Accordion>
-			</Wrapper>
-		</div>
-	</div>;
+			</Box>
+		</Page.Content>
+	</Page>;
 }
 
 GroupPage.Skeleton = GroupPageSkeleton;

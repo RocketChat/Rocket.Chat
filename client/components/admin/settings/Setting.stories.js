@@ -1,4 +1,4 @@
-import { Field, FieldGroup } from '@rocket.chat/fuselage';
+import { FieldGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { Setting } from './Setting';
