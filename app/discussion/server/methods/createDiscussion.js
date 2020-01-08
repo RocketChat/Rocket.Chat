@@ -37,7 +37,6 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
 	let message = false;
 	if (pmid) {
-
 		console.log(pmid);
 
 		message = Messages.findOne({ _id: pmid });

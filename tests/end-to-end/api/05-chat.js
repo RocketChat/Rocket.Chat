@@ -9,7 +9,7 @@ import { password } from '../../data/user';
 import { createRoom } from '../../data/rooms.helper.js';
 import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-// import { createUser, login } from '../../data/users.helper';
+import { createUser, login } from '../../data/users.helper';
 
 describe('[Chat]', function() {
 	this.retries(0);
@@ -1758,7 +1758,7 @@ describe('Threads', () => {
 					.set(credentials)
 					.query({
 						rid: testChannel._id,
-					})					
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
