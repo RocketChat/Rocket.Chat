@@ -4,32 +4,33 @@ import {
 	FieldGroup,
 	Icon,
 	Label,
+	Margins,
 	PasswordInput,
 	TextInput,
 } from '@rocket.chat/fuselage';
-import { Session } from 'meteor/session';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
-import toastr from 'toastr';
 
-import { handleError } from '../../../../app/utils/client';
-import { callbacks } from '../../../../app/callbacks/client';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useSessionDispatch } from '../../../contexts/SessionContext';
+import { useSetting } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useLoginWithPassword } from '../../../contexts/UserContext';
+import { useCallbacks } from '../../../hooks/useCallbacks';
 import { useFocus } from '../../../hooks/useFocus';
-import { useLoginWithPassword } from '../../../hooks/useLoginWithPassword';
-import { useMethod } from '../../../hooks/useMethod';
-import { useSetting } from '../../../hooks/useSetting';
-import { useTranslation } from '../../providers/TranslationProvider';
-import { useSetupWizardStepsState } from '../StepsState';
+import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import { Pager } from '../Pager';
-import { StepContent } from '../StepContent';
 
 export function AdminUserInformationStep({ step, title, active }) {
-	const { goToNextStep } = useSetupWizardStepsState();
-
 	const loginWithPassword = useLoginWithPassword();
 	const registerUser = useMethod('registerUser');
 	const defineUsername = useMethod('setUsername');
+
+	const setForceLogin = useSessionDispatch('forceLogin');
+	const callbacks = useCallbacks();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
 		await registerUser({ name, username, email, pass: password });
@@ -42,14 +43,13 @@ export function AdminUserInformationStep({ step, title, active }) {
 				onRegistrationEmailSent && onRegistrationEmailSent();
 				return;
 			}
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 			throw error;
 		}
 
-		Session.set('forceLogin', false);
+		setForceLogin(false);
 
 		await defineUsername(username);
-
 		callbacks.run('usernameSet');
 	};
 
@@ -106,9 +106,10 @@ export function AdminUserInformationStep({ step, title, active }) {
 				username,
 				email,
 				password,
-				onRegistrationEmailSent: () => toastr.success(t('We_have_sent_registration_email')),
+				onRegistrationEmailSent: () => {
+					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
+				},
 			});
-			goToNextStep();
 		} catch (error) {
 			console.error(error);
 		} finally {
@@ -116,16 +117,22 @@ export function AdminUserInformationStep({ step, title, active }) {
 		}
 	};
 
+	const nameInputId = useUniqueId();
+	const usernameInputId = useUniqueId();
+	const emailInputId = useUniqueId();
+	const passwordInputId = useUniqueId();
+
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<StepContent>
+		<Margins blockEnd='32'>
 			<FieldGroup>
 				<Field>
-					<Label text={t('Name')} />
+					<Label htmlFor={nameInputId} required text={t('Name')} />
 					<TextInput
 						ref={autoFocusRef}
-						addon={<Icon name='user' />}
+						id={nameInputId}
+						addon={<Icon name='user' size='20' />}
 						placeholder={t('Type_your_name')}
 						value={name}
 						onChange={({ currentTarget: { value } }) => setName(value)}
@@ -133,36 +140,34 @@ export function AdminUserInformationStep({ step, title, active }) {
 					/>
 				</Field>
 				<Field>
-					<Field.Row>
-						<Label text={t('Username')} />
-						{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
-					</Field.Row>
+					<Label htmlFor={usernameInputId} required text={t('Username')} />
 					<TextInput
-						addon={<Icon name='at' />}
+						id={usernameInputId}
+						addon={<Icon name='at' size='20' />}
 						placeholder={t('Type_your_username')}
 						value={username}
 						onChange={({ currentTarget: { value } }) => setUsername(value)}
 						error={!isUsernameValid}
 					/>
+					{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
 				</Field>
 				<Field>
-					<Field.Row>
-						<Label text={t('Organization_Email')} />
-						{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
-					</Field.Row>
+					<Label htmlFor={emailInputId} required text={t('Organization_Email')} />
 					<EmailInput
-						addon={<Icon name='mail' />}
+						id={emailInputId}
+						addon={<Icon name='mail' size='20' />}
 						placeholder={t('Type_your_email')}
 						value={email}
 						onChange={({ currentTarget: { value } }) => setEmail(value)}
 						error={!isEmailValid}
 					/>
+					{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
 				</Field>
 				<Field>
-					<Label text={t('Password')} />
+					<Label htmlFor={passwordInputId} required text={t('Password')} />
 					<PasswordInput
-						type='password'
-						addon={<Icon name='key' />}
+						id={passwordInputId}
+						addon={<Icon name='key' size='20' />}
 						placeholder={t('Type_your_password')}
 						value={password}
 						onChange={({ currentTarget: { value } }) => setPassword(value)}
@@ -170,7 +175,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 					/>
 				</Field>
 			</FieldGroup>
-		</StepContent>
+		</Margins>
 
 		<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />
 	</Step>;

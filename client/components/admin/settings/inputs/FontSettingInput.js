@@ -20,7 +20,7 @@ export function FontSettingInput({
 	onResetButtonClick,
 }) {
 	const handleChange = (event) => {
-		onChangeValue(event.currentTarget.value);
+		onChangeValue && onChangeValue(event.currentTarget.value);
 	};
 
 	return <>

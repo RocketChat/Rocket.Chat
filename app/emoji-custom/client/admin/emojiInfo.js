@@ -29,6 +29,7 @@ Template.emojiInfo.helpers({
 		return {
 			tabBar: this.tabBar,
 			emoji: instance.emoji.get(),
+			onSuccess: instance.onSuccess,
 			back(name) {
 				instance.editingEmoji.set();
 
@@ -76,6 +77,7 @@ Template.emojiInfo.events({
 						timer: 2000,
 						showConfirmButton: false,
 					});
+					instance.onSuccess();
 
 					instance.tabBar.close();
 				});
@@ -86,13 +88,13 @@ Template.emojiInfo.events({
 	'click .edit-emoji'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
-
 		instance.editingEmoji.set(instance.emoji.get()._id);
 	},
 });
 
 Template.emojiInfo.onCreated(function() {
 	this.emoji = new ReactiveVar();
+	this.onSuccess = Template.currentData().onSuccess;
 
 	this.editingEmoji = new ReactiveVar();
 
@@ -108,7 +110,7 @@ Template.emojiInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const data = Template.currentData();
+		const data = Template.currentData().emoji;
 		const emoji = this.emoji.get();
 		if (emoji != null && emoji.name != null) {
 			this.loadedName.set(emoji.name);
@@ -118,7 +120,7 @@ Template.emojiInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const data = Template.currentData();
+		const data = Template.currentData().emoji;
 		this.emoji.set(data);
 	});
 });

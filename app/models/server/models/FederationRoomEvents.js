@@ -1,4 +1,4 @@
-import { EventsModel, contextDefinitions, eventTypes } from './Events';
+import { EventsModel, eventTypes } from './Events';
 import { getContextQuery } from './RoomEvents';
 
 const type = 'NOT USED';

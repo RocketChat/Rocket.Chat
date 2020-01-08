@@ -4,7 +4,6 @@ import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import _ from 'underscore';
 
-import { lazyloadtick } from '../../../lazy-load';
 import { call } from '../../../ui-utils';
 import { Messages, Subscriptions } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
@@ -28,7 +27,6 @@ Template.threads.events({
 		return false;
 	},
 	'scroll .js-scroll-threads': _.throttle(({ currentTarget: e }, { incLimit }) => {
-		lazyloadtick();
 		if (e.offsetHeight + e.scrollTop <= e.scrollHeight - 50) {
 			incLimit && incLimit();
 		}

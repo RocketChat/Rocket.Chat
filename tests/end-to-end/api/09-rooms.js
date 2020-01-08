@@ -2,8 +2,8 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { password } from '../../data/user';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { imgURL } from '../../data/interactions.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { sendSimpleMessage } from '../../data/chat.helper';
+import { updatePermission/* , updateSetting */ } from '../../data/permissions.helper';
+// import { sendSimpleMessage } from '../../data/chat.helper';
 
 describe('[Rooms]', function() {
 	this.retries(0);

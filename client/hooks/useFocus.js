@@ -1,15 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const useFocus = (isFocused) => {
-	const [element, setElement] = useState(null);
+	const elementRef = useRef();
 
 	useEffect(() => {
-		if (isFocused && element) {
-			element.focus();
+		if (isFocused && elementRef.current) {
+			elementRef.current.focus();
 		}
-	}, [element, isFocused]);
+	}, [elementRef, isFocused]);
 
-	return (ref) => {
-		setElement(ref);
-	};
+	return elementRef;
 };

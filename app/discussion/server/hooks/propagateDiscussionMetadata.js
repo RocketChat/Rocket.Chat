@@ -6,14 +6,14 @@ import { deleteRoom } from '../../../lib/server';
  * We need to propagate the writing of new message in a discussion to the linking
  * system message
  */
-callbacks.add('afterSaveMessage', function (message, { _id, prid } = {}) {
+callbacks.add('afterSaveMessage', function(message, { _id, prid } = {}) {
 	if (prid) {
 		Messages.refreshDiscussionMetadata({ rid: _id }, message);
 	}
 	return message;
 }, callbacks.priority.LOW, 'PropagateDiscussionMetadata');
 
-callbacks.add('afterDeleteMessage', function (message, { _id, prid } = {}) {
+callbacks.add('afterDeleteMessage', function(message, { _id, prid } = {}) {
 	if (prid) {
 		Messages.refreshDiscussionMetadata({ rid: _id }, message);
 	}
@@ -32,7 +32,7 @@ callbacks.add('afterDeleteRoom', (rid) => {
 // TODO discussions define new fields
 callbacks.add('afterRoomNameChange', ({ rid, name, oldName }) => Rooms.update({ prid: rid, ...oldName && { topic: oldName } }, { $set: { topic: name } }, { multi: true }), 'updateTopicDiscussion');
 
-callbacks.add('afterDeleteRoom', (drid) => { 
+callbacks.add('afterDeleteRoom', (drid) => {
 	Messages.update({ drid }, {
 		$unset: {
 			dcount: 1,

@@ -114,11 +114,11 @@ export class EventsModel extends Base {
 			.rawCollection()
 			.findOne({ ...contextQuery, _cid: eventCID });
 
-		let updateQuery: any = deepMapKeys(updateData, (k: any) => k.replace('_$', '$'));
+		const updateQuery: any = deepMapKeys(updateData, (k: any) => k.replace('_$', '$'));
 
-		for(const prop in updateQuery) {
-			if(prop.startsWith('$')) {
-				updateQuery[prop] = _.mapKeys(updateQuery[prop], (value: any, key: any) => key.startsWith('$') ? key : `d.${key}`);
+		for (const prop in updateQuery) {
+			if (prop.startsWith('$')) {
+				updateQuery[prop] = _.mapKeys(updateQuery[prop], (value: any, key: any) => (key.startsWith('$') ? key : `d.${ key }`));
 			}
 		}
 

@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
@@ -171,13 +170,6 @@ Template.message.helpers({
 		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || (MessageTypes.isSystemMessage(msg) && !msg.tmid)) {
 			return 'false';
 		}
-	},
-	sequentialClass() {
-		const { msg, groupable } = this;
-		if (MessageTypes.isSystemMessage(msg) && !msg.tmid) {
-			return;
-		}
-		return groupable !== false && msg.groupable !== false && 'sequential';
 	},
 	avatarFromUsername() {
 		const { msg } = this;
@@ -365,6 +357,9 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	injectMessage(data, { _id, rid }) {
+		data.msg = { _id, rid };
+	},
 	injectIndex(data, index) {
 		data.index = index;
 	},
@@ -416,7 +411,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable || _groupable) && !!(tmid && showreply && (!t || t === 'e2e'));
+		return !(groupable === false || _groupable === false) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -464,7 +459,7 @@ const findParentMessage = (() => {
 					repliesCount: message.tcount,
 				},
 			},
-			{ multi: true }
+			{ multi: true },
 		);
 	};
 })();
@@ -594,33 +589,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		} else {
 			nextNode.classList.remove('new-day');
 		}
-	} else if (shouldCollapseReplies) {
-		const [el] = $(`#chat-window-${ msg.rid }`);
-		const view = el && Blaze.getView(el);
-		const templateInstance = view && view.templateInstance();
-		if (!templateInstance) {
-			return;
-		}
-
-		if (currentNode.classList.contains('own') === true) {
-			templateInstance.atBottom = true;
-		}
-		templateInstance.sendToBottomIfNecessary();
 	}
 };
 
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-	this.autorun(() => {
-		const currentNode = this.firstNode;
-		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	});
+	const currentNode = this.firstNode;
+	processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 });
-
-Template.message.onViewRendered = function() {
-	const args = messageArgs(Template.currentData());
-	// processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	return this._domrange.onAttached((domRange) => {
-		const currentNode = domRange.lastNode();
-		processSequentials({ currentNode, ...args });
-	});
-};

@@ -1,10 +1,10 @@
-import { Callout, Field, InputBox, Label, Text } from '@rocket.chat/fuselage';
+import { Callout, Field, InputBox, Label, Margins, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { MarkdownText } from '../../basic/MarkdownText';
 import { RawText } from '../../basic/RawText';
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
 import { StringSettingInput } from './inputs/StringSettingInput';
@@ -48,7 +48,9 @@ const MemoizedSetting = React.memo(function MemoizedSetting({
 	return <Field>
 		<InputComponent {...inputProps} />
 		{hint && <Field.Hint>{hint}</Field.Hint>}
-		{callout && <Callout type='warning' title={callout} />}
+		<Margins block='16'>
+			{callout && <Callout type='warning' children={callout} />}
+		</Margins>
 	</Field>;
 });
 
@@ -91,11 +93,11 @@ export function Setting({ settingId }) {
 
 	const {
 		_id,
+		disabled,
 		disableReset,
 		readonly,
 		type,
 		packageValue,
-		blocked,
 		i18nLabel,
 		i18nDescription,
 		alert,
@@ -104,7 +106,7 @@ export function Setting({ settingId }) {
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
 	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>, [i18nDescription]);
 	const callout = useMemo(() => alert && <RawText>{t(alert)}</RawText>, [alert]);
-	const hasResetButton = !disableReset && !readonly && type !== 'asset' && value !== packageValue && !blocked;
+	const hasResetButton = !disableReset && !readonly && type !== 'asset' && value !== packageValue && !disabled;
 
 	return <MemoizedSetting
 		type={type}
@@ -121,11 +123,11 @@ export function Setting({ settingId }) {
 	/>;
 }
 
-Setting.Skeleton = function Skeleton() {
+Setting.Skeleton = function SettingSkeleton() {
 	return <Field>
 		<Label>
-			<Text.Skeleton animated width='1/4' />
+			<Skeleton width='25%' />
 		</Label>
-		<InputBox.Skeleton animated />
+		<InputBox.Skeleton />
 	</Field>;
 };
