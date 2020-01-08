@@ -9,13 +9,14 @@ import hljs from 'highlight.js';
 import toastr from 'toastr';
 
 import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { modal, SideNav } from '../../../ui-utils';
 import { t, handleError } from '../../../utils/client';
-import { ChatIntegrations } from '../collections';
 import { integrations } from '../../lib/rocketchat';
+import { getIntegration } from '../getIntegration';
 
-Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated() {
+Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCreated() {
+	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
 	this.record = new ReactiveVar({
 		username: 'rocket.cat',
 		token: Random.id(24),
@@ -49,30 +50,15 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 		});
 	};
 
-	this.autorun(() => {
-		const id = this.data && this.data.params && this.data.params().id;
+	const integration = await getIntegration(params.id, Meteor.userId());
+	if (!integration) {
+		toastr.error(TAPi18n.__('No_integration_found'));
+		FlowRouter.go('admin-integrations');
+		return;
+	}
 
-		if (id) {
-			const sub = this.subscribe('integrations');
-			if (sub.ready()) {
-				let intRecord;
-
-				if (hasAllPermission('manage-outgoing-integrations')) {
-					intRecord = ChatIntegrations.findOne({ _id: id });
-				} else if (hasAllPermission('manage-own-outgoing-integrations')) {
-					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
-				}
-				intRecord.hasScriptError = intRecord.scriptEnabled && intRecord.scriptError;
-
-				if (intRecord) {
-					this.record.set(intRecord);
-				} else {
-					toastr.error(TAPi18n.__('No_integration_found'));
-					FlowRouter.go('admin-integrations');
-				}
-			}
-		}
-	});
+	integration.hasScriptError = integration.scriptEnabled && integration.scriptError;
+	this.record.set(integration);
 });
 
 Template.integrationsOutgoing.helpers({

@@ -1,6 +1,7 @@
+import { Subtitle } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { DescriptionList } from './DescriptionList';
 
 export function CommitSection({ info }) {
@@ -8,8 +9,8 @@ export function CommitSection({ info }) {
 	const { commit = {} } = info;
 
 	return <>
-		<h3>{t('Commit')}</h3>
-		<DescriptionList>
+		<Subtitle data-qa='commit-title'>{t('Commit')}</Subtitle>
+		<DescriptionList data-qa='commit-list'>
 			<DescriptionList.Entry label={t('Hash')}>{commit.hash}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Date')}>{commit.date}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Branch')}>{commit.branch}</DescriptionList.Entry>

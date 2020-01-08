@@ -1,17 +1,17 @@
-import { Text } from '@rocket.chat/fuselage';
+import { Skeleton, Subtitle } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { DescriptionList } from './DescriptionList';
 import { formatMemorySize, formatHumanReadableTime, formatCPULoad } from './formatters';
 
 export function RuntimeEnvironmentSection({ statistics, isLoading }) {
-	const s = (fn) => (isLoading ? <Text.Skeleton animated width={'1/2'} /> : fn());
+	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 	const t = useTranslation();
 
 	return <>
-		<h3>{t('Runtime_Environment')}</h3>
-		<DescriptionList>
+		<Subtitle data-qa='runtime-env-title'>{t('Runtime_Environment')}</Subtitle>
+		<DescriptionList data-qa='runtime-env-list'>
 			<DescriptionList.Entry label={t('OS_Type')}>{s(() => statistics.os.type)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('OS_Platform')}>{s(() => statistics.os.platform)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('OS_Arch')}>{s(() => statistics.os.arch)}</DescriptionList.Entry>

@@ -28,11 +28,11 @@ import {
 	LivechatCustomField,
 	LivechatVisitors,
 	LivechatOfficeHour,
+	LivechatInquiry,
 } from '../../../models';
 import { Logger } from '../../../logger';
 import { addUserRoles, hasRole, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';

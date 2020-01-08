@@ -871,15 +871,6 @@ describe('[Administration]', () => {
 				it('the offline email notification field value should be all', () => {
 					admin.accountsEmailNotificationMode.getValue().should.equal('mentions');
 				});
-
-				it('it should show the room counter sidebar field', () => {
-					admin.accountsRoomCounterSidebar.$('..').scroll();
-					admin.accountsRoomCounterSidebar.$('..').isVisible().should.be.true;
-				});
-				it('the room counter sidebar field value should be false', () => {
-					admin.accountsRoomCounterSidebar.isSelected().should.be.false;
-				});
-
 				it('it should show the new room notification field', () => {
 					admin.accountsNewRoomNotification.click();
 					admin.accountsNewRoomNotification.isVisible().should.be.true;

@@ -20,7 +20,7 @@ export function BooleanSettingInput({
 }) {
 	const handleChange = (event) => {
 		const value = event.currentTarget.checked;
-		onChangeValue(value);
+		onChangeValue && onChangeValue(value);
 	};
 
 	return <Field.Row>
