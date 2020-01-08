@@ -25,6 +25,6 @@ Subscriptions.on('change', ({ clientAction, id, data }) => {
 		data.u._id,
 		'subscriptions-changed',
 		clientAction,
-		data
+		data,
 	);
 });

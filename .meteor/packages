@@ -9,14 +9,15 @@ accounts-facebook@1.3.2
 accounts-github@1.4.2
 accounts-google@1.3.3
 accounts-meteor-developer@1.4.2
-accounts-password@1.5.1
+accounts-password@1.5.2
 accounts-twitter@1.4.2
 blaze-html-templates
 check@1.3.1
 ddp-rate-limiter@1.0.7
 ddp-common@1.4.0
 dynamic-import@0.5.1
-ecmascript@0.13.0-rc182.4
+ecmascript@0.13.2
+typescript@3.7.1
 ejson@1.1.0
 email@1.2.3
 fastclick@1.0.13
@@ -25,7 +26,7 @@ jquery@1.11.10
 logging@1.1.20
 meteor-base@1.4.0
 mobile-experience@1.0.5
-mongo@1.7.0-rc182.4
+mongo@1.7.0
 random@1.1.0
 rate-limit@1.0.9
 reactive-dict@1.3.0
@@ -35,7 +36,7 @@ service-configuration@1.0.11
 session@1.2.0
 shell-server@0.4.0
 spacebars
-standard-minifier-js@2.5.0-rc182.4
+standard-minifier-js@2.5.2
 tracker@1.2.0
 
 #rocketchat:google-natural-language
@@ -57,7 +58,6 @@ jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
 keepnox:perfect-scrollbar
-mizzao:autocomplete
 mizzao:timesync
 mrt:reactive-store
 mystor:device-detection
@@ -77,10 +77,10 @@ littledata:synced-cron
 
 edgee:slingshot
 jalik:ufs-local@0.2.5
-accounts-base@1.4.4
+accounts-base@1.4.5
 accounts-oauth@1.1.16
 autoupdate@1.6.0
-babel-compiler@7.4.0-rc182.4
+babel-compiler@7.4.2
 google-oauth@1.2.6
 htmljs
 less
@@ -92,8 +92,8 @@ raix:eventemitter
 routepolicy@1.1.0
 sha@1.0.9
 templating
-webapp@1.7.5-rc182.4
+webapp@1.7.5
 webapp-hashing@1.0.9
 rocketchat:oauth2-server
 rocketchat:i18n
-typescript
+dandv:caret-position

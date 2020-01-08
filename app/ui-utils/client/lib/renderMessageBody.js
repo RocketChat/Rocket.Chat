@@ -1,4 +1,5 @@
 import s from 'underscore.string';
+import md5 from 'md5';
 
 import { callbacks } from '../../../callbacks';
 
@@ -32,4 +33,4 @@ export const renderMessageBody = mem((message) => {
 
 	return (Array.isArray(tokens) ? tokens.reverse() : [])
 		.reduce((html, { token, text }) => html.replace(token, () => text), html);
-}, 500, ({ _id, _updatedAt }) => _id && _updatedAt && _id + _updatedAt);
+}, 500, (message) => md5(JSON.stringify(message)));

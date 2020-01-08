@@ -124,8 +124,8 @@ class RoomEventsModel extends EventsModel {
 	public toV1(event: any) {
 		return {
 			..._.omit(event, 'd'),
-			...event.d
-		}
+			...event.d,
+		};
 	}
 }
 

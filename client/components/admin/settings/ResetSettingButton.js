@@ -2,7 +2,7 @@ import { Button, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 import styled from 'styled-components';
 
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
 // TODO: get rid of it
 const StyledResetSettingButton = styled(Button)`

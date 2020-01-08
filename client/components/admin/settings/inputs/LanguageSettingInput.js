@@ -5,7 +5,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useLanguages } from '../../../providers/TranslationProvider';
+import { useLanguages } from '../../../../contexts/TranslationContext';
 import { ResetSettingButton } from '../ResetSettingButton';
 
 export function LanguageSettingInput({
@@ -42,7 +42,7 @@ export function LanguageSettingInput({
 			onChange={handleChange}
 		>
 			{languages.map(({ key, name }) =>
-				<SelectInput.Option key={key} value={key} dir='auto'>{name}</SelectInput.Option>
+				<SelectInput.Option key={key} value={key} dir='auto'>{name}</SelectInput.Option>,
 			)}
 		</SelectInput>
 	</>;
