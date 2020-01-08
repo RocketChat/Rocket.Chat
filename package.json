@@ -90,6 +90,7 @@
 		"husky": "^1.2.0",
 		"i18next": "^17.0.17",
 		"less-loader": "^5.0.0",
+		"md5": "^2.2.1",
 		"mocha": "^5.2.0",
 		"mock-require": "^3.0.2",
 		"mongo-unit": "^1.4.4",
