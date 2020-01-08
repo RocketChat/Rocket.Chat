@@ -1,4 +1,4 @@
-import { Accordion, Button, Paragraph, Text } from '@rocket.chat/fuselage';
+import { Accordion, Button, Paragraph, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -65,11 +65,11 @@ export function GroupPage({ children, group, headerButtons }) {
 	</form>;
 }
 
-GroupPage.Skeleton = function Skeleton() {
+GroupPage.Skeleton = function GroupPageSkeleton() {
 	const t = useTranslation();
 
 	return <div className='page-container'>
-		<Header rawSectionName={<div style={{ width: '20rem' }}><Text.Skeleton animated headline /></div>}>
+		<Header rawSectionName={<Skeleton style={{ width: '20rem' }}/>}>
 			<Header.ButtonSection>
 				<Button
 					children={t('Save_changes')}
@@ -81,7 +81,7 @@ GroupPage.Skeleton = function Skeleton() {
 
 		<div className='content'>
 			<Wrapper>
-				<Paragraph.Skeleton animated />
+				<Paragraph.Skeleton />
 
 				<Accordion className='page-settings'>
 					<Section.Skeleton />

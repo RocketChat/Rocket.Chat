@@ -1,43 +1,46 @@
-import { Blaze } from 'meteor/blaze';
-import _ from 'underscore';
 import './lazyloadImage';
 
-const getEl = (el, instance) => (instance && instance.firstNode) || el;
+const map = new WeakMap();
 
-const loadImage = (el, instance) => {
-	const element = getEl(el, instance);
+const featureExists = !!window.IntersectionObserver;
+const loadImage = (el) => {
+	const instance = map.get(el);
+
+	map.delete(el);
+
+	if (!instance) {
+		return instance.loaded.set(true);
+	}
 	const img = new Image();
-	const src = element.getAttribute('data-src');
+	const src = el.getAttribute('data-src');
 	img.onload = () => {
-		if (instance) {
-			instance.loaded.set(true);
-		} else {
-			element.className = element.className.replace('lazy-img', '');
-			element.src = src;
-		}
-		element.removeAttribute('data-src');
+		el.className = el.className.replace('lazy-img', '');
+		el.src = src;
+		el.removeAttribute('data-src');
 	};
 	img.src = src;
 };
 
-const isVisible = (el, instance) => {
-	requestAnimationFrame(() => {
-		const rect = getEl(el, instance).getBoundingClientRect();
-		if (rect.top >= -100 && rect.left >= 0 && rect.top <= (window.innerHeight || document.documentElement.clientHeight)) {
-			return loadImage(el, instance);
+const observer = featureExists && new IntersectionObserver(
+	(entries, observer) => entries.forEach((entry) => {
+		if (entry.isIntersecting) {
+			observer.unobserve(entry.target);
+			return loadImage(entry.target);
 		}
-	});
+	})
+	,
+	{
+		threshold: [0],
+		trackVisibility: true,
+		delay: 230,
+	},
+);
+
+export const addImage = (instance) => {
+	const el = instance.firstNode;
+	map.set(el, instance);
+	if (featureExists) {
+		return observer.observe(el);
+	}
+	loadImage(el);
 };
-
-window.addEventListener('resize', window.lazyloadtick);
-
-export const lazyloadtick = _.debounce(() => {
-	const lazyImg = document.querySelectorAll('.lazy-img[data-src]');
-	Array.from(lazyImg).forEach((el) =>
-		isVisible(el, Blaze.getView(el)._templateInstance),
-	);
-}, 300);
-
-window.lazyloadtick = lazyloadtick;
-
-export const addImage = (instance) => isVisible(instance.firstNode, instance);

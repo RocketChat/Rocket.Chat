@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "2.4.0-develop",
+	"version": "2.5.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -90,6 +90,7 @@
 		"husky": "^1.2.0",
 		"i18next": "^17.0.17",
 		"less-loader": "^5.0.0",
+		"md5": "^2.2.1",
 		"mocha": "^5.2.0",
 		"mock-require": "^3.0.2",
 		"mongo-unit": "^1.4.4",
@@ -120,7 +121,7 @@
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
 		"@rocket.chat/apps-engine": "^1.11.0",
-		"@rocket.chat/fuselage": "^0.2.0-dev.53",
+		"@rocket.chat/fuselage": "^0.2.0-dev.67",
 		"@rocket.chat/fuselage-hooks": "^0.2.0-dev.50",
 		"@rocket.chat/icons": "^0.2.0-dev.49",
 		"@slack/client": "^4.8.0",
@@ -236,6 +237,7 @@
 		}
 	},
 	"houston": {
+		"metadata": ".scripts/houstonMetadata.js",
 		"updateFiles": [
 			"package.json",
 			".circleci/snap.sh",
