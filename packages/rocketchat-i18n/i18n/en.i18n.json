@@ -2867,7 +2867,7 @@
   "set-moderator_description": "Permission to set other users as moderator of a channel",
   "set-owner": "Set Owner",
   "set-owner_description": "Permission to set other users as owner of a channel",
-  "Set_random_password": "Set random password",
+  "Set_random_password_and_send_by_email": "Set random password and send by email",
   "set-react-when-readonly": "Set React When ReadOnly",
   "set-react-when-readonly_description": "Permission to set the ability to react to messages in a read only channel",
   "set-readonly": "Set ReadOnly",
