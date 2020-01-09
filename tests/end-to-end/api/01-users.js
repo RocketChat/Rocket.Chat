@@ -1723,9 +1723,12 @@ describe('[Users]', function() {
 	describe('[/users.logoutOtherClients]', () => {
 		let user;
 		let userCredentials;
+		let newCredentials;
+
 		before(async () => {
 			user = await createTestUser();
 			userCredentials = await loginTestUser(user);
+			newCredentials = await loginTestUser(user);
 		});
 		after(async () => {
 			await deleteTestUser(user);
@@ -1733,17 +1736,13 @@ describe('[Users]', function() {
 		});
 
 		it('should invalidate all active sesions', async () => {
-			const newCredentials = await loginTestUser(user);
 			await request.post(api('users.logoutOtherClients'))
 				.set(newCredentials)
 				.expect(200);
-			await request.get(api('users.presence'))
+			await new Promise((resolve) => setTimeout(resolve, 5000));
+			await request.get(api('me'))
 				.set(userCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				});
+				.expect(401);
 		});
 	});
 });
