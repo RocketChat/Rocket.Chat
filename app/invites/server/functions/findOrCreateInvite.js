@@ -15,6 +15,7 @@ function getInviteUrl(invite) {
 	return getURL(`invite/${ _id }`, {
 		full: useDirectLink,
 		cloud: !useDirectLink,
+		cloud_route: 'invite',
 	});
 }
 
