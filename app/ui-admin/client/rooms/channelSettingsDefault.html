@@ -7,7 +7,7 @@
 					<label><input type="radio" name="default" class="editing" value="true" checked="{{$eq roomDefault true}}" /> {{_ "True"}}</label>
 					<label><input type="radio" name="default" value="false" checked="{{$neq roomDefault true}}" /> {{_ "False"}}</label>
 					{{#if roomDefault}}
-						<label><input type="checkbox" name="favorite" checked="{{isDefaultFavorite}}" /> {{_ "Set_as_favorite"}}</label>
+						<label><input type="checkbox" name="favorite" checked="{{isFavorite}}" /> {{_ "Set_as_favorite"}}</label>
 					{{/if}}
 					<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 					<button type="button" class="button primary save">{{_ "Save"}}</button>

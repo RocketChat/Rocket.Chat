@@ -14,12 +14,8 @@ export const addUserToDefaultChannels = function(user, silenced) {
 				unread: 1,
 				userMentions: 1,
 				groupMentions: 0,
+				...room.favorite && { f: true },
 			});
-
-			// Add room as Favorite
-			if (room.defaultFavorite) {
-				Subscriptions.setFavoriteByRoomIdAndUserId(room._id, user._id);
-			}
 
 			// Insert user joined message
 			if (!silenced) {

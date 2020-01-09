@@ -847,12 +847,12 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveDefaultFavoriteById(_id, defaultFavorite) {
+	saveFavoriteById(_id, favorite, defaultValue) {
 		const query = { _id };
 
 		const update = {
-			...defaultFavorite && { $set: {	defaultFavorite } },
-			...!defaultFavorite && { $unset: {	defaultFavorite: 1 } },
+			...favorite && defaultValue && { $set: { favorite } },
+			...(!favorite || !defaultValue) && { $unset: {	favorite: 1 } },
 		};
 
 		return this.update(query, update);
