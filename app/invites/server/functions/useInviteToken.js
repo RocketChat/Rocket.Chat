@@ -16,13 +16,18 @@ export const useInviteToken = (userId, token) => {
 	const { inviteData, room } = validateInviteToken(token);
 
 	const user = Users.findOneById(userId);
+	Users.updateInviteToken(user._id, token);
 
-	if (addUserToRoom(room._id, user)) {
-		Invites.update(inviteData._id, {
-			$inc: {
-				uses: 1,
-			},
-		});
+	Invites.update(inviteData._id, {
+		$inc: {
+			uses: 1,
+		},
+	});
+
+	// If the user already has an username, then join the invite room,
+	// If no username is set yet, then the the join will happen on the setUsername method
+	if (user.username) {
+		addUserToRoom(room._id, user);
 	}
 
 	return {

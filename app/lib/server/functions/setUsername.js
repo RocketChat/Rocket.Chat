@@ -4,10 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { FileUpload } from '../../../file-upload';
 import { settings } from '../../../settings';
-import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from '../../../models';
+import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents, Invites } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { Notifications } from '../../../notifications/server';
+import { addUserToRoom } from './addUserToRoom';
 
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
@@ -84,6 +85,14 @@ export const _setUsername = function(userId, u) {
 		const file = fileStore.model.findOneByName(previousUsername);
 		if (file) {
 			fileStore.model.updateFileNameById(file._id, username);
+		}
+	}
+
+	// If it's the first username and the user has an invite Token, then join the invite room
+	if (!previousUsername && user.inviteToken) {
+		const inviteData = Invites.findOneById(user.inviteToken);
+		if (inviteData && inviteData.rid) {
+			addUserToRoom(inviteData.rid, user);
 		}
 	}
 
