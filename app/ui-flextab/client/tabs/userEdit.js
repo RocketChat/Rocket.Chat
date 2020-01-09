@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
@@ -44,12 +45,7 @@ Template.userEdit.helpers({
 
 	requirePasswordChangeDisabled() {
 		// when setting a random password, requiring a password change is mandatory
-		return !Template.instance().user || Template.instance().requiringPasswordReset.get();
-	},
-
-	setRandomPasswordDisabled() {
-		// when creating a new user, setting a random password is mandatory
-		return !Template.instance().user;
+		return Template.instance().setRandomPassword.get();
 	},
 
 	setRandomPassword() {
@@ -98,11 +94,23 @@ Template.userEdit.events({
 
 	'change #setRandomPassword'(e, template) {
 		const requiring = e.currentTarget.checked;
-		template.requiringPasswordReset.set(requiring);
+		template.setRandomPassword.set(requiring);
 
 		if (requiring) {
 			$(e.currentTarget.form).find('#changePassword')[0].checked = true;
+			$(e.currentTarget.form).find('#password')[0].value = '';
 		}
+	},
+
+	'click #randomPassword'(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		e.target.classList.add('loading');
+		$('#password').val('');
+		setTimeout(() => {
+			$('#password').val(Random.id());
+			e.target.classList.remove('loading');
+		}, 1000);
 	},
 
 	'change .js-select-avatar-upload [type=file]'(event, template) {
@@ -176,7 +184,7 @@ Template.userEdit.onCreated(function() {
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 	this.avatar = new ReactiveVar();
 	this.url = new ReactiveVar('');
-	this.requiringPasswordReset = new ReactiveVar(false);
+	this.setRandomPassword = new ReactiveVar(!this.user);
 
 	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 

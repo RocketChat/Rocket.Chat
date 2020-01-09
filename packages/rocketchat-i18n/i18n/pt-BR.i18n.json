@@ -2640,6 +2640,7 @@
   "set-moderator_description": "Permissão para configurar outros usuários como moderador de um canal",
   "set-owner": "Proprietário do Set.",
   "set-owner_description": "Permissão para configurar outros usuários como proprietário de um canal",
+  "Set_random_password_and_send_by_email": "Setar senha aleatória e enviar por email",
   "set-react-when-readonly": "Definir Reagir quando ReadOnly",
   "set-react-when-readonly_description": "Permissão para configurar a capacidade de reagir a mensagens em um canal somente de leitura",
   "set-readonly": "Set ReadOnly",
