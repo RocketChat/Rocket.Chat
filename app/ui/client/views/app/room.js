@@ -927,25 +927,6 @@ Template.room.events({
 		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
 	},
-
-	'click .collapse-switch'(e) {
-		const { msg: { _id } } = messageArgs(this);
-		const index = $(e.currentTarget).data('index');
-		const collapsed = $(e.currentTarget).data('collapsed');
-
-		const msg = ChatMessage.findOne(_id);
-		if (!msg) {
-			return;
-		}
-
-		if (msg.attachments) {
-			ChatMessage.update({ _id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
-		}
-
-		if (msg.urls) {
-			ChatMessage.update({ _id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
-		}
-	},
 	'load .gallery-item'(e, template) {
 		return template.sendToBottomIfNecessaryDebounced();
 	},

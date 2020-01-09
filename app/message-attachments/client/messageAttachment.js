@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { DateFormat } from '../../lib';
 import { getURL } from '../../utils/client';
@@ -9,6 +10,16 @@ const colors = {
 	warning: '#FCB316',
 	danger: '#D30230',
 };
+
+Template.messageAttachment.events({
+	'click .collapse-switch'(e, t) {
+		t.isCollapsed.set(!t.isCollapsed.get());
+	},
+});
+
+Template.messageAttachment.onCreated(function() {
+	this.isCollapsed = new ReactiveVar(false);
+});
 
 Template.messageAttachment.helpers({
 	parsedText() {
@@ -46,14 +57,11 @@ Template.messageAttachment.helpers({
 		return colors[this.color] || this.color;
 	},
 	collapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
-		}
-		return false;
+		return Template.instance().isCollapsed.get();
 	},
 	mediaCollapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
+		if (Template.instance().isCollapsed.get() !== false) {
+			return true;
 		}
 		return this.settings.collapseMediaByDefault === true;
 	},
