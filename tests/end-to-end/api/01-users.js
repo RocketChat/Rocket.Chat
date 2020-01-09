@@ -1720,13 +1720,11 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.requestDataDownload]', () => {
+	describe('[/users.logoutOtherClients]', () => {
 		let user;
-		before(async () => {
-			user = await createTestUser();
-		});
 		let userCredentials;
 		before(async () => {
+			user = await createTestUser();
 			userCredentials = await loginTestUser(user);
 		});
 		after(async () => {
@@ -1736,17 +1734,16 @@ describe('[Users]', function() {
 
 		it('should invalidate all active sesions', async () => {
 			const newCredentials = await loginTestUser(user);
-			return request(api('users.logoutOtherClients'))
+			await request.post(api('users.logoutOtherClients'))
 				.set(newCredentials)
-				.expect(200)
-				.end(() => request.get(api('users.presence'))
-					.set(userCredentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end());
+				.expect(200);
+			await request.get(api('users.presence'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 });

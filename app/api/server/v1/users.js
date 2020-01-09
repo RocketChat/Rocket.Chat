@@ -688,6 +688,11 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 
 API.v1.addRoute('users.logoutOtherClients', { authRequired: true }, {
 	post() {
-		Meteor.logoutOtherClients((error) => (error ? API.v1.failure(error) : API.v1.success()));
+		try {
+			Meteor.runAsUser(this.userId, () => Meteor.call('logoutOtherClients'));
+			return API.v1.success();
+		} catch (error) {
+			return API.v1.failure(error);
+		}
 	},
 });
