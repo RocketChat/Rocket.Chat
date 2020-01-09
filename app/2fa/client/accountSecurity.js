@@ -86,28 +86,26 @@ Template.accountSecurity.events({
 		});
 	},
 
-	'click .enable-2fa-email'(event) {
+	async 'click .enable-2fa-email'(event) {
 		event.preventDefault();
 
-		APIClient.v1.post('users.2fa.enableEmail').catch(async (error) => {
-			if (error) {
-				handleError(error);
-			}
-
+		try {
+			await APIClient.v1.post('users.2fa.enableEmail');
 			toastr.success(t('Two-factor_authentication_enabled'));
-		});
+		} catch (error) {
+			handleError(error);
+		}
 	},
 
-	'click .disable-2fa-email'(event) {
+	async 'click .disable-2fa-email'(event) {
 		event.preventDefault();
 
-		APIClient.v1.post('users.2fa.disableEmail').catch((error) => {
-			if (error) {
-				return handleError(error);
-			}
-
+		try {
+			await APIClient.v1.post('users.2fa.disableEmail');
 			toastr.success(t('Two-factor_authentication_disabled'));
-		});
+		} catch (error) {
+			handleError(error);
+		}
 	},
 
 	'click .verify-code'(event, instance) {
