@@ -27,12 +27,12 @@ export const findOrCreateInvite = (userId, invite) => {
 		return false;
 	}
 
-	if (!hasPermission(userId, 'create-invite-links')) {
-		throw new Meteor.Error('not_authorized');
-	}
-
 	if (!invite.rid) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field rid is required', { method: 'findOrCreateInvite', field: 'rid' });
+	}
+
+	if (!hasPermission(userId, 'create-invite-links', invite.rid)) {
+		throw new Meteor.Error('not_authorized');
 	}
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, { fields: { _id: 1 } });

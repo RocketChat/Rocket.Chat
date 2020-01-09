@@ -1,3 +1,5 @@
+import { Session } from 'meteor/session';
+
 import { AdminBox } from '../../../ui-utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
 
@@ -6,6 +8,6 @@ AdminBox.addOption({
 	i18nLabel: 'Invites',
 	icon: 'user-plus',
 	permissionGranted() {
-		return hasAtLeastOnePermission(['create-invite-links']);
+		return hasAtLeastOnePermission(['create-invite-links'], Session.get('openedRoom'));
 	},
 });
