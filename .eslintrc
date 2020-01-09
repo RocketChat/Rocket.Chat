@@ -24,9 +24,18 @@
     "react/jsx-fragments": [
       "error",
       "syntax"
-    ],
+    ]
   },
   "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    },
     "react": {
       "version": "detect"
     }
@@ -38,9 +47,9 @@
         "**/*.tsx"
       ],
       "extends": [
-        "@rocket.chat/eslint-config",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
+        "plugin:@typescript-eslint/eslint-recommended",
+        "@rocket.chat/eslint-config"
       ],
       "globals": {
         "Atomics": "readonly",
@@ -73,6 +82,10 @@
           "syntax"
         ],
         "@typescript-eslint/ban-ts-ignore": "off",
+        "@typescript-eslint/indent": [
+          "error",
+          "tab"
+        ],
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/interface-name-prefix": [
           "error",

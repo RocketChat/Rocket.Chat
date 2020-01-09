@@ -20,3 +20,4 @@ public/livechat/
 public/pdf.worker.min.js
 imports/client/
 !/.storybook/
+*.d.ts
