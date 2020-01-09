@@ -99,7 +99,7 @@ Template.autoTranslateFlexTab.onCreated(function() {
 	this.saveSetting = () => {
 		const field = this.editing.get();
 		const subscription = Subscriptions.findOne({ rid: this.rid, 'u._id': Meteor.userId() });
-		const previousLanguage = subscription.autoTranslateLanguage;
+		const previousLanguage = subscription && subscription.autoTranslateLanguage;
 		let value;
 		switch (field) {
 			case 'autoTranslate':

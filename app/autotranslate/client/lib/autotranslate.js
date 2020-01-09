@@ -71,7 +71,7 @@ export const AutoTranslate = {
 		Tracker.autorun(() => {
 			Subscriptions.find().observeChanges({
 				changed: (id, fields) => {
-					if (fields.hasOwnProperty('autoTranslate')) {
+					if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
 						mem.clear(this.findSubscriptionByRid);
 					}
 				},
