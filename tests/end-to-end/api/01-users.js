@@ -1736,13 +1736,22 @@ describe('[Users]', function() {
 		});
 
 		it('should invalidate all active sesions', async () => {
+			async function tryMe() {
+				const result = await request.get(api('me'))
+					.set(userCredentials);
+				if (result.statusCode === 401) {
+					return Promise.reject();
+				}
+				return new Promise((resolve) => setTimeout(resolve, 2000));
+			}
+
 			await request.post(api('users.logoutOtherClients'))
 				.set(newCredentials)
 				.expect(200);
-			await new Promise((resolve) => setTimeout(resolve, 5000));
-			await request.get(api('me'))
-				.set(userCredentials)
-				.expect(401);
+
+			[...Array(20)].reduce((promise) => promise.then(tryMe), Promise.resolve()).then(() => {
+				throw Error('Test timed out');
+			});
 		});
 	});
 });
