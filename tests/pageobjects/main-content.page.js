@@ -175,8 +175,10 @@ class MainContent extends Page {
 	}
 
 	openMessageActionMenu() {
+		browser.pause(300);
 		this.lastMessage.moveToObject();
 		this.messageOptionsBtn.waitForVisible(5000);
+		browser.pause(200);
 		this.messageOptionsBtn.click();
 		this.messageActionMenu.waitForVisible(5000);
 		browser.pause(100);
