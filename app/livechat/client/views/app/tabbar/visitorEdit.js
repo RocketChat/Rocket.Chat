@@ -7,7 +7,8 @@ import { t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
-import { LivechatCustomField } from '../../../collections/LivechatCustomField';
+
+const CUSTOM_FIELDS_COUNT = 100;
 
 Template.visitorEdit.helpers({
 	visitor() {
@@ -114,10 +115,9 @@ Template.visitorEdit.onCreated(async function() {
 
 	const rid = Template.currentData().roomId;
 
-	this.subscribe('livechat:customFields');
 	this.autorun(async () => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
-		const customFields = LivechatCustomField.find().fetch();
+		const { customFields } = await APIClient.v1.get(`livechat/custom-fields?count=${ CUSTOM_FIELDS_COUNT }`);
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 		this.customFields.set(customFields || []);
