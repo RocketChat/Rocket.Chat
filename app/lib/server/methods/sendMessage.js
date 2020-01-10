@@ -101,7 +101,7 @@ Meteor.methods({
 			});
 		}
 
-		executeSendMessage(uid, message);
+		return executeSendMessage(uid, message);
 	},
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second
