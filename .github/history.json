@@ -37299,6 +37299,20 @@
           ]
         }
       ]
+    },
+    "2.3.3": {
+      "pull_requests": [
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

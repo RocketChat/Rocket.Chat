@@ -1,4 +1,16 @@
 
+# 2.3.3
+`2020-01-10  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Add missing password field back to administration area ([#16171](https://github.com/RocketChat/Rocket.Chat/pull/16171))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 2.3.2
 `2019-12-12  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
@@ -100,9 +112,9 @@
 - Livechat transfer history messages ([#15780](https://github.com/RocketChat/Rocket.Chat/pull/15780))
 - Add button to reset.css ([#15773](https://github.com/RocketChat/Rocket.Chat/pull/15773))
 - Mentions before blockquote ([#15774](https://github.com/RocketChat/Rocket.Chat/pull/15774))
-- Sidebar font color was not respecting theming ([#15745](https://github.com/RocketChat/Rocket.Chat/pull/15745) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
+- Sidebar font color was not respecting theming ([#15745](https://github.com/RocketChat/Rocket.Chat/pull/15745))
 - Add livechat agents into departments ([#15732](https://github.com/RocketChat/Rocket.Chat/pull/15732))
-- Changed cmsPage Style ([#15632](https://github.com/RocketChat/Rocket.Chat/pull/15632) by [@gabriellsh](https://github.com/gabriellsh))
+- Changed cmsPage Style ([#15632](https://github.com/RocketChat/Rocket.Chat/pull/15632))
 - Forward Livechat UI and the related permissions  ([#15718](https://github.com/RocketChat/Rocket.Chat/pull/15718))
 - line-height to show entire letters ([#15581](https://github.com/RocketChat/Rocket.Chat/pull/15581) by [@nstseek](https://github.com/nstseek))
 - Apply server side filters on Livechat lists ([#15717](https://github.com/RocketChat/Rocket.Chat/pull/15717))
@@ -110,7 +122,7 @@
 - Livechat webhook broken when sending an image ([#15699](https://github.com/RocketChat/Rocket.Chat/pull/15699) by [@tatosjb](https://github.com/tatosjb))
 - Sending messages to livechat rooms without a subscription ([#15707](https://github.com/RocketChat/Rocket.Chat/pull/15707))
 - Duplicate label 'Hide Avatars' in accounts ([#15694](https://github.com/RocketChat/Rocket.Chat/pull/15694) by [@rajvaibhavdubey](https://github.com/rajvaibhavdubey))
-- Block Show_Setup_Wizard Option ([#15623](https://github.com/RocketChat/Rocket.Chat/pull/15623) by [@gabriellsh](https://github.com/gabriellsh))
+- Block Show_Setup_Wizard Option ([#15623](https://github.com/RocketChat/Rocket.Chat/pull/15623))
 - Use Media Devices API to guess if a microphone is not available ([#15636](https://github.com/RocketChat/Rocket.Chat/pull/15636))
 - Ignore file uploads from message box if text/plain content is being pasted ([#15631](https://github.com/RocketChat/Rocket.Chat/pull/15631))
 - typo on PT-BR translation ([#15645](https://github.com/RocketChat/Rocket.Chat/pull/15645))
@@ -147,9 +159,7 @@
 - [@Exordian](https://github.com/Exordian)
 - [@Montel](https://github.com/Montel)
 - [@antkaz](https://github.com/antkaz)
-- [@gabriellsh](https://github.com/gabriellsh)
 - [@hmagarotto](https://github.com/hmagarotto)
-- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@mpdbl](https://github.com/mpdbl)
 - [@nstseek](https://github.com/nstseek)
 - [@oguhpereira](https://github.com/oguhpereira)
@@ -164,9 +174,11 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@engelgabriel](https://github.com/engelgabriel)
+- [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@mar-v](https://github.com/mar-v)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
