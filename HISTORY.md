@@ -1,4 +1,25 @@
 
+# 2.4.1
+`2020-01-10  ·  3 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Enable apps change properties of the sender on the message as before ([#16189](https://github.com/RocketChat/Rocket.Chat/pull/16189))
+- Add missing password field back to administration area ([#16171](https://github.com/RocketChat/Rocket.Chat/pull/16171))
+- JS errors on Administration page ([#16139](https://github.com/RocketChat/Rocket.Chat/pull/16139))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 2.4.0
 `2019-12-27  ·  4 🎉  ·  28 🚀  ·  21 🐛  ·  19 🔍  ·  21 👩‍💻👨‍💻`
 
