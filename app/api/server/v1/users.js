@@ -703,3 +703,13 @@ API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 		})));
 	},
 });
+
+API.v1.addRoute('users.logoutOtherClients', { authRequired: true }, {
+	post() {
+		try {
+			Meteor.runAsUser(this.userId, () => API.v1.success(Meteor.call('logoutOtherClients')));
+		} catch (error) {
+			return API.v1.failure(error);
+		}
+	},
+});
