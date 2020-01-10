@@ -823,12 +823,12 @@ Template.room.events({
 		openProfileTabOrOpenDM(e, instance, username);
 	},
 
-	'click .user-added, click .user-added-by'(e,instance){
-		if(!Meteor.userId()){
+	'click .user-added, click .user-added-by'(e, instance) {
+		if (!Meteor.userId()) {
 			return;
 		}
 		const username = e.currentTarget.innerText;
-		openProfileTabOrOpenDM(e,instance,username);
+		openProfileTabOrOpenDM(e, instance,username);
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
