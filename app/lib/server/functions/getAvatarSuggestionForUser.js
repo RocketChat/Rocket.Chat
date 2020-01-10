@@ -130,7 +130,7 @@ export function getAvatarSuggestionForUser(user) {
 			if (Array.isArray(avatar)) {
 				avatars.push(...avatar);
 			} else {
-				avatars.push(...avatar);
+				avatars.push(avatar);
 			}
 		}
 	}
