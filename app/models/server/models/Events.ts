@@ -107,10 +107,10 @@ export class EventsModel extends Base {
 		};
 	}
 
-	public async updateEventData<T extends EDataDefinition>(contextQuery: IContextQuery, eventCID: string, updateData: IEDataUpdate<T>): Promise<void> {
+	public async updateEventData<T extends EDataDefinition>(contextQuery: IContextQuery, eventCID: string, eventT: string, updateData: IEDataUpdate<T>): Promise<void> {
 		const existingEvent = await this.model
 			.rawCollection()
-			.findOne({ ...contextQuery, _cid: eventCID });
+			.findOne({ ...contextQuery, _cid: eventCID, t: eventT.substr(1) });
 
 		const updateQuery: any = {};
 

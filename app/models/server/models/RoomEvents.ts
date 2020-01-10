@@ -39,7 +39,7 @@ class RoomEventsModel extends EventsModel {
 	}
 
 	public async updateRoomEventData<T extends EDataDefinition>(event: IEvent<T>, dataToUpdate: IEDataUpdate<T>): Promise<void> {
-		return super.updateEventData(getContextQuery(event), event._cid, dataToUpdate);
+		return super.updateEventData(getContextQuery(event), event._cid, event.t, dataToUpdate);
 	}
 
 	public async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IEDataGenesis>> {
