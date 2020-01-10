@@ -4,7 +4,7 @@ rm -rf $tmpPath
 mkdir -p $tmpPath
 [ -z "$RETRY_TESTS" ] && RETRY_TESTS=1
 
-paths=("tests/end-to-end/ui/*.js" "tests/end-to-end/ui_smarti/*.js")
+paths=("tests/end-to-end/api/*.js" "tests/end-to-end/ui/*.js" "tests/end-to-end/ui_smarti/*.js")
 for path in ${paths}; do
 
   for file in $path; do
