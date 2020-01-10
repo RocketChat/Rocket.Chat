@@ -296,10 +296,7 @@ export const Livechat = {
 				return;
 			}
 			const value = s.trim(livechatData[field._id]);
-			if (value === '') {
-				return;
-			}
-			if (field.regexp !== undefined && field.regexp !== '') {
+			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 				const regexp = new RegExp(field.regexp);
 				if (!regexp.test(value)) {
 					throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
@@ -450,10 +447,7 @@ export const Livechat = {
 				return;
 			}
 			const value = s.trim(livechatData[field._id]);
-			if (value === '') {
-				return;
-			}
-			if (field.regexp !== undefined && field.regexp !== '') {
+			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 				const regexp = new RegExp(field.regexp);
 				if (!regexp.test(value)) {
 					throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));

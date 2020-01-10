@@ -86,9 +86,14 @@ export class LivechatRooms extends Base {
 			unsetData.tags = 1;
 		}
 
-		if (livechatData != null) {
+		if (livechatData) {
 			Object.keys(livechatData).forEach((key) => {
-				setData[`livechatData.${ key }`] = s.trim(livechatData[key]);
+				const value = s.trim(livechatData[key]);
+				if (value) {
+					setData[`livechatData.${ key }`] = value;
+				} else {
+					unsetData[`livechatData.${ key }`] = 1;
+				}
 			});
 		}
 
