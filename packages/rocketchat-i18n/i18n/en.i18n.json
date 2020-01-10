@@ -203,6 +203,8 @@
   "Accounts_Directory_DefaultView": "Default Directory Listing",
   "Accounts_SetDefaultAvatar": "Set Default Avatar",
   "Accounts_SetDefaultAvatar_Description": "Tries to determine default avatar based on OAuth Account or Gravatar",
+  "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Set email of external accounts as verified",
+  "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Accounts created from external services, like LDAP, OAth, etc, will have their emails verified automatically",
   "Accounts_ShowFormLogin": "Show Default Login Form",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Enable Two Factor Authentication via Email",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Users with email verified and the option enabled in their profile page will receive an email with a temporary code to authorize certain actions like login, save the profile, etc.",

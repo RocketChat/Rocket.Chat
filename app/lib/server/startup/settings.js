@@ -143,6 +143,9 @@ settings.addGroup('Accounts', function() {
 				},
 			},
 		});
+		this.add('Accounts_Verify_Email_For_External_Accounts', true, {
+			type: 'boolean',
+		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
 			public: true,
 			type: 'boolean',

@@ -119,6 +119,8 @@ Accounts.onCreateUser(function(options, user = {}) {
 	}
 
 	if (user.services) {
+		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+
 		for (const service of Object.values(user.services)) {
 			if (!user.name) {
 				user.name = service.name || service.username;
@@ -127,7 +129,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 			if (!user.emails && service.email) {
 				user.emails = [{
 					address: service.email,
-					verified: true,
+					verified,
 				}];
 			}
 		}

@@ -125,6 +125,7 @@ Accounts.registerLoginHandler(function(options) {
 	const cas_version = parseFloat(settings.get('CAS_version'));
 	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
 	const trustUsername = settings.get('CAS_trust_username');
+	const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
 
 	// We have these
 	const ext_attrs = {
@@ -201,7 +202,7 @@ Accounts.registerLoginHandler(function(options) {
 
 			// Update email
 			if (int_attrs.email) {
-				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified: true }] } });
+				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified }] } });
 			}
 		}
 	} else {
@@ -230,7 +231,7 @@ Accounts.registerLoginHandler(function(options) {
 		// Add email
 		if (int_attrs.email) {
 			_.extend(newUser, {
-				emails: [{ address: int_attrs.email, verified: true }],
+				emails: [{ address: int_attrs.email, verified }],
 			});
 		}
 
