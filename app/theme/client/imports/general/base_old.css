@@ -1837,6 +1837,8 @@ rc-old select,
 	& .upload-progress {
 		position: relative;
 
+		display: flex;
+
 		height: 28px;
 
 		& .upload-progress-progress {
@@ -1851,7 +1853,6 @@ rc-old select,
 		}
 
 		& .upload-progress-text {
-			position: absolute;
 			z-index: 2;
 			right: 0;
 			left: 0;
@@ -1863,7 +1864,9 @@ rc-old select,
 			height: 100%;
 			padding: 0 10px;
 
+			white-space: nowrap;
 			text-overflow: ellipsis;
+			flex-grow: 1;
 
 			& > a {
 				float: right;
@@ -2517,7 +2520,7 @@ rc-old select,
 
 	& .new-message {
 		position: absolute;
-		z-index: 16;
+		z-index: 2;
 		bottom: 8px;
 		left: 50%;
 
@@ -2843,6 +2846,8 @@ rc-old select,
 
 	& .body {
 		transition: opacity 0.3s linear;
+
+		word-break: break-word;
 
 		opacity: 1;
 
@@ -3469,7 +3474,7 @@ rc-old select,
 
 		white-space: normal;
 
-		& h3 {
+		& h2 {
 			overflow: hidden;
 
 			width: 100%;
@@ -3493,6 +3498,10 @@ rc-old select,
 
 				border-radius: var(--border-radius);
 			}
+		}
+
+		& h3 {
+			margin: 8px 0;
 		}
 
 		& p {
@@ -4391,35 +4400,27 @@ rc-old select,
 
 		display: none;
 
-		margin: var(--default-small-padding);
-		padding: var(--default-padding);
-
 		animation-name: zoomIn;
 		animation-duration: 0.1s;
 
 		text-align: center;
 
-		color: var(--color-blue);
-
-		border: 4px dashed var(--color-blue);
 		background: rgba(255, 255, 255, 0.8);
-
-		box-shadow: 0 0 0 var(--default-small-padding) rgba(255, 255, 255, 0.9);
 
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
 
-		&::before {
-			position: absolute;
-			z-index: -1;
+		&--enabled {
+			color: var(--color-blue);
 
-			top: calc(-1 * var(--default-small-padding));
-			right: calc(-1 * var(--default-small-padding));
-			bottom: calc(-1 * var(--default-small-padding));
-			left: calc(-1 * var(--default-small-padding));
+			border: 4px dashed var(--color-blue);
+		}
 
-			content: '';
+		&--disabled {
+			color: var(--color-red);
+
+			border: 4px dashed var(--color-red);
 		}
 	}
 
@@ -4856,6 +4857,14 @@ rc-old select,
 
 	& .user.user-card-message {
 		margin-left: -5px;
+	}
+
+	& .thread-icons--thread {
+		position: relative;
+
+		left: 0;
+
+		margin: 0 3px;
 	}
 }
 

@@ -1,5 +1,6 @@
 import { Match } from 'meteor/check';
 import _ from 'underscore';
+import deepMapKeys from 'deep-map-keys';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -89,12 +90,12 @@ export class Messages extends Base {
 		const v2Query = {};
 
 		for (const item in query) {
-			if (item.startsWith('$')) continue;
+			if (item.startsWith('$')) { continue; }
 
-			if(RoomEvents.belongsToV2Root(item)) {
+			if (RoomEvents.belongsToV2Root(item)) {
 				v2Query[item] = query[item];
 			} else {
-				v2Query[`d.${item}`] = query[item];
+				v2Query[`d.${ item }`] = query[item];
 			}
 		}
 
@@ -116,7 +117,7 @@ export class Messages extends Base {
 		const cursor = RoomEvents.find.apply(RoomEvents, args);
 
 		cursor._fetch = cursor.fetch;
-		cursor.fetch = function (...args) {
+		cursor.fetch = function(...args) {
 			const results = this._fetch(args);
 
 			// Convert to V1
@@ -126,8 +127,14 @@ export class Messages extends Base {
 		return cursor;
 	}
 
-	_findOne(method, ...args) {
-		let result = RoomEvents[method].apply(RoomEvents, args);
+	_findOne(...args) {
+		args[0] = args[0] || {};
+
+		const { v2Query } = this.getV2Query(args[0]);
+
+		args[0] = v2Query;
+
+		let result = RoomEvents.findOne.apply(RoomEvents, args);
 
 		if (result) {
 			result = RoomEvents.toV1(result);
@@ -137,15 +144,15 @@ export class Messages extends Base {
 	}
 
 	findOne(...args) {
-		return this._findOne('findOne', ...args);
+		return this._findOne(...args);
 	}
 
 	findOneById(...args) {
-		return this._findOne('findOne', { _cid: args[0] });
+		return this._findOne({ _cid: args[0] });
 	}
 
 	findOneByIds(ids, options, ...args) {
-		return this._findOne('findOne', [{ _cid: { $in: ids } }, options, ...args]);
+		return this._findOne([{ _cid: { $in: ids } }, options, ...args]);
 	}
 
 	insert(...args) {
@@ -168,18 +175,7 @@ export class Messages extends Base {
 		if (!event) {
 			return null;
 		}
-
-		let d = {};
-
-		for (let prop in update) {
-			if (!prop.startsWith('$')) {
-				d[prop] = update[prop];
-				continue;
-			}
-
-			d[`_$${prop.substr(1)}`] = update[prop];
-		}
-
+		const d = deepMapKeys(update, (k) => k.replace('$', '_$'));
 		d._$set = d._$set || {};
 		d._$set._oid = event._id; // Original id
 
@@ -232,7 +228,7 @@ export class Messages extends Base {
 		const updateObj = {};
 		for (const index in visionData) {
 			if (visionData.hasOwnProperty(index)) {
-				updateObj[`attachments.0.${index}`] = visionData[index];
+				updateObj[`attachments.0.${ index }`] = visionData[index];
 			}
 		}
 
@@ -251,16 +247,16 @@ export class Messages extends Base {
 		const updateObj = {};
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`translations.${key}`] = translation;
+			updateObj[`translations.${ key }`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
-	addAttachmentTranslations = function (messageId, attachmentIndex, translations) {
+	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
 		const updateObj = {};
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`attachments.${attachmentIndex}.translations.${key}`] = translation;
+			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
@@ -710,7 +706,7 @@ export class Messages extends Base {
 		if (snippetedAt == null) { snippetedAt = 0; }
 		const query = { _id: message._id };
 
-		const msg = `\`\`\`${message.msg}\`\`\``;
+		const msg = `\`\`\`${ message.msg }\`\`\``;
 
 		const update = {
 			$set: {

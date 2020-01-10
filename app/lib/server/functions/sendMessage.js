@@ -8,6 +8,7 @@ import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
+import { Users } from '../../../models/server';
 
 /**
  * IMPORTANT
@@ -143,9 +144,35 @@ const validateMessage = (message) => {
 	}
 };
 
-export const sendMessage = function(user, message, room, upsert = false) {
+const validateUserIdentity = (message, _id) => {
+	if (!message.alias && !message.avatar) {
+		return;
+	}
+	const forbiddenPropsToChangeWhenUserIsNotABot = ['alias', 'avatar'];
+	const user = Users.findOneById(_id, { fields: { roles: 1, name: 1 } });
+	/**
+	 * If the query returns no user, the message has likely
+	 * been sent by a Livechat Visitor, so we don't need to
+	 * validate whether the sender is a bot.
+	 */
+	if (!user) {
+		return;
+	}
+	const userIsNotABot = !user.roles.includes('bot');
+	const messageContainsAnyForbiddenProp = Object.keys(message).some((key) => forbiddenPropsToChangeWhenUserIsNotABot.includes(key));
+	if ((userIsNotABot && messageContainsAnyForbiddenProp) || (settings.get('Message_SetNameToAliasEnabled') && message.alias !== user.name)) {
+		throw new Error('You are not authorized to change message properties');
+	}
+};
+
+export const sendMessage = function(user, message, room, upsert = false, trustedSender = false) {
 	if (!user || !message || !room._id) {
 		return false;
+	}
+	const { _id, username, name } = user;
+
+	if (!trustedSender) {
+		validateUserIdentity(message, _id);
 	}
 
 	validateMessage(message);
@@ -153,7 +180,6 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (!message.ts) {
 		message.ts = new Date();
 	}
-	const { _id, username, name } = user;
 	message.u = {
 		_id,
 		username,
@@ -177,7 +203,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
+			if (settings.get('Apps_Framework_Development_Mode')) {
+				console.log('A Rocket.Chat App prevented the message sending.', message);
+			}
+
+			return;
 		}
 
 		let result;

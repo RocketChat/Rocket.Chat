@@ -9,10 +9,10 @@
 					<form class="search-form" role="form">
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								{{#if isReady}}
-									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
-								{{else}}
+								{{#if isLoading}}
 									{{> loading }}
+								{{else}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
 								{{/if}}
 							</div>
 							<input id="rooms-filter" type="text" class="rc-input__element"
@@ -22,7 +22,7 @@
 						<label><input type="checkbox" name="room-type" value="d"> {{_ "Direct_Messages"}}</label>
 						<label><input type="checkbox" name="room-type" value="p"> {{_ "Private_Groups"}}</label>
 						<label><input type="checkbox" name="room-type" value="l"> {{_ "Livechat"}}</label>
-						<label><input type="checkbox" name="room-type" value="dicussions"> {{_ "Discussions"}}</label>
+						<label><input type="checkbox" name="room-type" value="discussions"> {{_ "Discussions"}}</label>
 					</form>
 					<div class="results">
 						{{{_ "Showing_results" roomCount}}}
@@ -59,11 +59,11 @@
 							</tr>
 							{{/with}}
 							{{/each}}
-							{{#unless isReady}}
+							{{#if isLoading}}
 								<tr class="table-no-click">
 									<td class="table-loading-td" colspan="{{#if showLastMessage}}5{{else}}4{{/if}}">{{> loading}}</td>
 								</tr>
-							{{/unless}}
+							{{/if}}
 						</tbody>
 					{{/table}}
 				{{/unless}}

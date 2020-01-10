@@ -1,4 +1,6 @@
 import { SHA256 } from 'meteor/sha';
+import _ from 'lodash';
+import deepMapKeys from 'deep-map-keys';
 
 import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
@@ -112,41 +114,12 @@ export class EventsModel extends Base {
 			.rawCollection()
 			.findOne({ ...contextQuery, _cid: eventCID, t: eventT.substr(1) });
 
-		const updateQuery: any = {};
+		const updateQuery: any = deepMapKeys(updateData, (k: any) => k.replace('_$', '$'));
 
-		for (let prop in updateData) {
-			if (!prop.startsWith('_$')) {
-				updateQuery[prop] = updateData[prop];
-				continue;
+		for (const prop in updateQuery) {
+			if (prop.startsWith('$')) {
+				updateQuery[prop] = _.mapKeys(updateQuery[prop], (value: any, key: any) => (key.startsWith('$') ? key : `d.${ key }`));
 			}
-
-			const data:any = updateData[prop];
-
-			updateQuery[prop.substr(1)] = Object.keys(data).reduce((acc, k) => {
-				acc[`d.${k}`] = data[k];
-				return acc;
-			}, {} as any);
-		}
-
-		// if (updateData.set) {
-		// 	updateQuery.$set = {};
-
-		// 	for (const [k, v] of Object.entries(updateData.set)) {
-		// 		updateQuery.$set[`d.${ k }`] = v;
-		// 	}
-		// }
-
-		// if (updateData.unset) {
-		// 	updateQuery.$unset = {};
-
-		// 	for (const [k, v] of Object.entries(updateData.unset)) {
-		// 		updateQuery.$unset[`d.${ k }`] = v;
-		// 	}
-		// }
-
-		// If there is no _d (original data), create it
-		if (!existingEvent._d) {
-			updateQuery.$set._d = existingEvent.d;
 		}
 
 		await this.model.rawCollection().update({ _id: existingEvent._id }, updateQuery);

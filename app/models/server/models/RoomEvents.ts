@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from 'lodash';
 
 import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
 import { IEDataMessage } from '../../../events/definitions/data/IEDataMessage';
@@ -124,8 +124,8 @@ class RoomEventsModel extends EventsModel {
 	public toV1(event: any) {
 		return {
 			..._.omit(event, 'd'),
-			...event.d
-		}
+			...event.d,
+		};
 	}
 }
 

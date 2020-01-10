@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
@@ -178,15 +179,15 @@ export class APIClass extends Restivus {
 		return rateLimiterDictionary[route];
 	}
 
-	shouldVerifyRateLimit(route) {
+	shouldVerifyRateLimit(route, userId) {
 		return rateLimiterDictionary.hasOwnProperty(route)
 			&& settings.get('API_Enable_Rate_Limiter') === true
 			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
-			&& !(this.userId && hasPermission(this.userId, 'api-bypass-rate-limit'));
+			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'));
 	}
 
-	enforceRateLimit(objectForRateLimitMatch, request, response) {
-		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route)) {
+	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
+		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId)) {
 			return;
 		}
 
@@ -312,8 +313,15 @@ export class APIClass extends Restivus {
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
 					let result;
+
+					const connection = {
+						id: Random.id(),
+						close() {},
+						token: this.token,
+					};
+
 					try {
-						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response);
+						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
 						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
@@ -321,7 +329,18 @@ export class APIClass extends Restivus {
 							});
 						}
 
-						result = originalAction.apply(this);
+						const invocation = new DDPCommon.MethodInvocation({
+							connection,
+							isSimulation: false,
+							userId: this.userId,
+						});
+
+						Accounts._accountData[connection.id] = {
+							connection,
+						};
+						Accounts._setAccountData(connection.id, 'loginToken', this.token);
+
+						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
 					} catch (e) {
 						logger.error(`${ method } ${ route } threw an error:`, e.stack);
 
@@ -331,6 +350,8 @@ export class APIClass extends Restivus {
 						}[e.error] || 'failure';
 
 						result = API.v1[apiMethod](e.message, e.error, process.env.NODE_ENV === 'development' ? e.stack : undefined);
+					} finally {
+						delete Accounts._accountData[connection.id];
 					}
 
 					result = result || API.v1.success();
@@ -544,6 +565,8 @@ const getUserAuth = function _getUserAuth(...args) {
 			if (this.request.headers['x-auth-token']) {
 				token = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
 			}
+
+			this.token = token;
 
 			return {
 				userId: this.request.headers['x-user-id'],

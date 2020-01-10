@@ -22,13 +22,13 @@ const commonHelpers = {
 };
 function canShowAddUsersButton(rid) {
 	const canAddToChannel = hasAllPermission(
-		'add-user-to-any-c-room', rid
+		'add-user-to-any-c-room', rid,
 	);
 	const canAddToGroup = hasAllPermission(
-		'add-user-to-any-p-room', rid
+		'add-user-to-any-p-room', rid,
 	);
 	const canAddToJoinedRoom = hasAllPermission(
-		'add-user-to-joined-room', rid
+		'add-user-to-joined-room', rid,
 	);
 	if (
 		!canAddToJoinedRoom
@@ -68,7 +68,7 @@ Template.flexTabBar.helpers({
 	...commonHelpers,
 	buttons() {
 		return TabBar.getButtons().filter((button) =>
-			filterButtons(button, this.anonymous, this.data && this.data.rid)
+			filterButtons(button, this.anonymous, this.data && this.data.rid),
 		);
 	},
 	opened() {

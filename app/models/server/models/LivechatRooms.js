@@ -68,7 +68,7 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setTopicAndTagsById(_id, topic, tags) {
+	saveRoomById({ _id, topic, tags, livechatData }) {
 		const setData = {};
 		const unsetData = {};
 
@@ -84,6 +84,17 @@ export class LivechatRooms extends Base {
 			setData.tags = tags;
 		} else {
 			unsetData.tags = 1;
+		}
+
+		if (livechatData) {
+			Object.keys(livechatData).forEach((key) => {
+				const value = s.trim(livechatData[key]);
+				if (value) {
+					setData[`livechatData.${ key }`] = value;
+				} else {
+					unsetData[`livechatData.${ key }`] = 1;
+				}
+			});
 		}
 
 		const update = {};
@@ -253,10 +264,22 @@ export class LivechatRooms extends Base {
 				responseBy: {
 					_id: response.user._id,
 					username: response.user.username,
+					lastMessageTs: new Date(),
 				},
 			},
 			$unset: {
 				waitingResponse: 1,
+			},
+		});
+	}
+
+	setAgentLastMessageTs(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				'responseBy.lastMessageTs': new Date(),
 			},
 		});
 	}
@@ -323,6 +346,69 @@ export class LivechatRooms extends Base {
 
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
+
+	getAnalyticsBetweenDate(date) {
+		return this.model.rawCollection().aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
+						$lt: new Date(date.lt),	// ISODate, ts < date.lt
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_message',
+					localField: '_id',
+					foreignField: 'rid',
+					as: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$messages',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: {
+						_id: '$_id',
+						ts: '$ts',
+						departmentId: '$departmentId',
+						open: '$open',
+						servedBy: '$servedBy',
+						metrics: '$metrics',
+						msgs: '$msgs',
+					},
+					messages: {
+						$sum: {
+							$cond: [{
+								$and: [
+									{ $ifNull: ['$messages.t', false] },
+								],
+							}, 1, 0],
+						},
+					},
+				},
+			},
+			{
+				$project: {
+					_id: '$_id._id',
+					ts: '$_id.ts',
+					departmentId: '$_id.departmentId',
+					open: '$_id.open',
+					servedBy: '$_id.servedBy',
+					metrics: '$_id.metrics',
+					msgs: { $subtract: ['$_id.msgs', '$messages'] },
+				},
+			},
+
+		]);
+	}
+
 
 	closeByRoomId(roomId, closeInfo) {
 		return this.update({
