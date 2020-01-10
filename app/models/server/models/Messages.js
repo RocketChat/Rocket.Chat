@@ -872,7 +872,7 @@ export class Messages extends Base {
 
 		_.extend(record, extraData);
 
-		record._id = this.insertOrUpsert(record);
+		record._id = this.insert(record);
 		Rooms.incMsgCountById(roomId, 1);
 		return record;
 	}
@@ -901,7 +901,7 @@ export class Messages extends Base {
 
 		_.extend(record, extraData);
 
-		record._id = this.insertOrUpsert(record);
+		record._id = this.insert(record);
 		return record;
 	}
 
@@ -928,7 +928,7 @@ export class Messages extends Base {
 		}
 		Object.assign(record, extraData);
 
-		record._id = this.insertOrUpsert(record);
+		record._id = this.insert(record);
 		return record;
 	}
 

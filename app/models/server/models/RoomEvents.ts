@@ -125,7 +125,7 @@ class RoomEventsModel extends EventsModel {
 		return {
 			..._.omit(event, 'd'),
 			...event.d,
-			t: (event.d || {}).t
+			t: (event.d || {}).t,
 		};
 	}
 }
