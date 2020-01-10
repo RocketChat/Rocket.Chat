@@ -314,7 +314,7 @@ export const useSection = (groupId, sectionName) => {
 		settings.filter(({ group, section }) => group === groupId && ((!sectionName && !section) || (sectionName === section)));
 
 	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
-	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => value !== packageValue));
+	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)));
 	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.length === b.length && a.join() === b.join());
 
 	const { stateRef, hydrate, isDisabled } = useContext(SettingsContext);
@@ -376,7 +376,7 @@ export const useSetting = (_id) => {
 			_id,
 			value: packageValue,
 			editor,
-			changed: packageValue !== value,
+			changed: JSON.stringify(packageValue) !== JSON.stringify(value),
 		}];
 
 		hydrate(changes);
