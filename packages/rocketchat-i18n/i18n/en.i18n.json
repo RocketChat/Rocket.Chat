@@ -3288,7 +3288,7 @@
   "User__username__removed_from__room_name__moderators": "User __username__ removed from __room_name__ moderators",
   "User__username__removed_from__room_name__owners": "User __username__ removed from __room_name__ owners",
   "User_added": "User added",
-  "User_added_by": "User <em>__user_added__</em> added by <em>__user_by__</em>.",
+  "User_added_by": "User <button class='user-added' aria-label='__user_added__' data-username='__user_added__'>__user_added__</button> added by <button class='user-added-by' aria-label='__user_by__' data-username='__user_by__'>__user_by__</button>.",
   "User_added_successfully": "User added successfully",
   "User_and_group_mentions_only": "User and group mentions only",
   "User_default": "User default",
