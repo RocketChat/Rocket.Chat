@@ -1735,23 +1735,34 @@ describe('[Users]', function() {
 			user = undefined;
 		});
 
-		it('should invalidate all active sesions', async () => {
-			async function tryMe() {
+		it('should invalidate all active sesions', (done) => {
+			async function checkAuthenticationFails() {
 				const result = await request.get(api('me'))
 					.set(userCredentials);
-				if (result.statusCode === 401) {
-					return Promise.reject();
-				}
-				return new Promise((resolve) => setTimeout(resolve, 2000));
+				return result.statusCode === 401;
 			}
 
-			await request.post(api('users.logoutOtherClients'))
+			request.post(api('users.logoutOtherClients'))
 				.set(newCredentials)
-				.expect(200);
-
-			[...Array(20)].reduce((promise) => promise.then(tryMe), Promise.resolve()).then(() => {
-				throw Error('Test timed out');
-			});
+				.expect(200)
+				.then((resolve, reject) => {
+					/* we want to validated that the login with the "old" credentials fails
+					Howsever, the removal of the tokens is done asynchronously.
+					Thus, we check that within the next seconds, at least one try to
+					access an authentication requiring route fails */
+					let counter = 0;
+					const interval = setInterval(async () => {
+						counter++;
+						const failedAsExpected = await checkAuthenticationFails();
+						if (failedAsExpected) {
+							done();
+							clearInterval(interval);
+						}
+						if (counter > 20) {
+							reject();
+						}
+					}, 2000);
+				});
 		});
 	});
 });
