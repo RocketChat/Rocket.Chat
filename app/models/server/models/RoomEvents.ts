@@ -118,13 +118,14 @@ class RoomEventsModel extends EventsModel {
 	}
 
 	public fromV1Data(message: any): IEDataMessage {
-		return _.omit(message, this.v1ToV2RootMap);
+		return { ..._.omit(message, this.v1ToV2RootMap), t: message.t };
 	}
 
 	public toV1(event: any) {
 		return {
 			..._.omit(event, 'd'),
 			...event.d,
+			t: (event.d || {}).t
 		};
 	}
 }
