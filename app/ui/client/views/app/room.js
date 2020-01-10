@@ -828,7 +828,8 @@ Template.room.events({
 			return;
 		}
 		const username = e.currentTarget.innerText;
-		openProfileTabOrOpenDM(e, instance,username);
+
+		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
