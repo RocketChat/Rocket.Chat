@@ -38096,6 +38096,47 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "2.4.1": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16189",
+          "title": "[FIX] Enable apps change properties of the sender on the message as before",
+          "userLogin": "d-gubert",
+          "milestone": "2.4.1",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16139",
+          "title": "[FIX] JS errors on Administration page",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.4.1",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        }
+      ]
     }
   }
 }
