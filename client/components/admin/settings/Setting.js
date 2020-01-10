@@ -12,6 +12,7 @@ import { RelativeUrlSettingInput } from './inputs/RelativeUrlSettingInput';
 import { PasswordSettingInput } from './inputs/PasswordSettingInput';
 import { IntSettingInput } from './inputs/IntSettingInput';
 import { SelectSettingInput } from './inputs/SelectSettingInput';
+import { MultiSelectSettingInput } from './inputs/MultiSelectSettingInput';
 import { LanguageSettingInput } from './inputs/LanguageSettingInput';
 import { ColorSettingInput } from './inputs/ColorSettingInput';
 import { FontSettingInput } from './inputs/FontSettingInput';
@@ -27,6 +28,7 @@ const getInputComponentByType = (type) => ({
 	relativeUrl: RelativeUrlSettingInput,
 	password: PasswordSettingInput,
 	int: IntSettingInput,
+	multiselect: MultiSelectSettingInput,
 	select: SelectSettingInput,
 	language: LanguageSettingInput,
 	color: ColorSettingInput,

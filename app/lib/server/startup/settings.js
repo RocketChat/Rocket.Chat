@@ -1093,27 +1093,46 @@ settings.addGroup('Message', function() {
 		type: 'int',
 		public: true,
 	});
-	this.add('Message_HideType_uj', false, {
-		type: 'boolean',
+
+	
+	this.add('Hide_System_Messages',['manter', 'un link'], {
+		type: 'multiselect',
 		public: true,
-	});
-	this.add('Message_HideType_ul', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_ru', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_au', false, {
-		type: 'boolean',
-		public: true,
+		values: [
+			{
+				key: 'uj',
+				i18nLabel: 'Message_HideType_uj',
+			}, {
+				key: 'ul',
+				i18nLabel: 'Message_HideType_ul',
+			}, {
+				key: 'ru',
+				i18nLabel: 'Message_HideType_ru',
+			}, 
+			// {
+			// 	i18nLabel: 'Message_HideType_au',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_mute_unmute',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_r',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_ut',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_wm',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_rm',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_subscription_role_added',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_subscription_role_removed',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_room_archived',
+			// }, {
+			// 	i18nLabel: 'Message_HideType_room_unarchived',
+			// },
+		],
 	});
 
-	this.add('Message_HideType_mute_unmute', false, {
-		type: 'boolean',
-		public: true,
-	});
 
 	this.add('Message_ErasureType', 'Delete', {
 		type: 'select',

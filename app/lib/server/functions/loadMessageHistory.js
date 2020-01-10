@@ -2,23 +2,12 @@ import { settings } from '../../../settings';
 import { Messages } from '../../../models';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
-const hideMessagesOfType = [];
+const hideMessagesOfType = new Set();
 
-settings.get(/Message_HideType_.+/, function(key, value) {
-	const type = key.replace('Message_HideType_', '');
-	const types = type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type];
-
-	return types.forEach((type) => {
-		const index = hideMessagesOfType.indexOf(type);
-
-		if (value === true && index === -1) {
-			return hideMessagesOfType.push(type);
-		}
-
-		if (index > -1) {
-			return hideMessagesOfType.splice(index, 1);
-		}
-	});
+settings.get('Hide_System_Messages', function(key, values) {
+	const hiddenTypes = values.reduce((array, value) =>  [...array, ...(value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value])], []);
+	hideMessagesOfType.clear();
+	hiddenTypes.forEach(item => hideMessagesOfType.add(item))
 });
 
 export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
@@ -35,12 +24,7 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 		};
 	}
 
-	let records;
-	if (end != null) {
-		records = Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
-	} else {
-		records = Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
-	}
+	const records = end != null ? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType.entries(), options).fetch() : Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType.entries(), options).fetch();
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
