@@ -117,8 +117,8 @@ class SideNav extends Page {
 
 		this.spotlightSearch.click();
 		this.spotlightSearch.setValue(channelName);
-		browser.waitForVisible(`[aria-label='${ channelName }']`, 5000);
-		browser.click(`[aria-label='${ channelName }']`);
+		browser.waitForVisible(`.sidebar-item__link[aria-label='${ channelName }']`, 5000);
+		browser.click(`.sidebar-item__link[aria-label='${ channelName }']`);
 		browser.waitForVisible('.rc-header__name', 8000);
 		browser.waitUntil(function() {
 			return browser.getText('.rc-header__name') === channelName;

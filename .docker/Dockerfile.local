@@ -15,19 +15,17 @@ COPY . /app
 
 WORKDIR /app
 
-RUN meteor npm install \
-    && cd packages/rocketchat-livechat/.app \
-    && meteor npm install \
-    && cd -
+# This dockerfile shall build the app unless a previous step (e. g. from CI) already provided a build-bundle
+RUN if [ -d /app/bundle ]; \
+        then cp -R /app /tmp/build; \
+        else meteor build --server-only --allow-superuser --debug --directory /tmp/build; \
+    fi;
 
-RUN METEOR_PROFILE=1000 meteor build --server-only --allow-superuser --debug --directory /tmp/build
-
-FROM assistify/chat-base:stretch
+FROM rocketchat/base:8
 
 MAINTAINER buildmaster@rocket.chat
 
 COPY --from=builder /tmp/build/bundle /app/bundle
-COPY .docker/startup.sh /app/bundle/startup.sh
 
 RUN set -x \
  && ls -l /app \
@@ -53,4 +51,4 @@ ENV DEPLOY_METHOD=docker \
 
 EXPOSE 3000
 
-CMD ["/bin/bash", "startup.sh"]
+CMD ["node", "main.js"]

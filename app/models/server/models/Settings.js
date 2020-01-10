@@ -55,7 +55,7 @@ export class Settings extends Base {
 		};
 
 		if (ids.length > 0) {
-			filter._id =				{ $in: ids };
+			filter._id = { $in: ids };
 		}
 
 		return this.find(filter, { fields: { _id: 1, value: 1 } });
@@ -162,6 +162,40 @@ export class Settings extends Base {
 		};
 
 		const update = { $set: options };
+
+		return this.update(query, update);
+	}
+
+	addOptionValueById(_id, option = {}) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const { key, i18nLabel } = option;
+		const update = {
+			$addToSet: {
+				values: {
+					key,
+					i18nLabel,
+				},
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	removeOptionValueByIdAndKey(_id, key) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const update = {
+			$pull: {
+				values: { key },
+			},
+		};
 
 		return this.update(query, update);
 	}

@@ -3,6 +3,7 @@ import { slashCommands } from '../../utils';
 slashCommands.add('join', undefined, {
 	description: 'Join_the_given_channel',
 	params: '#channel',
+	permission: 'view-c-room',
 }, function(err, result, params) {
 	if (err.error === 'error-user-already-in-room') {
 		params.cmd = 'open';

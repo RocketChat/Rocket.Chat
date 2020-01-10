@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import _ from 'underscore';
 
@@ -491,21 +491,6 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				id: 'activate',
 				name: t('Activate'),
 				action: prevent(getUser, ({ _id }) => Meteor.call('setUserActiveStatus', _id, true, success(() => toastr.success(t('User_has_been_activated'))))),
-			};
-		}, () => {
-			if (hideAdminControls || !hasPermission('reset-other-user-e2e-key')) {
-				return;
-			}
-			if (!settings.get('E2E_Enable')) {
-				return;
-			}
-
-			return {
-				group: 'admin',
-				icon: 'key',
-				id: 'reset-e2e',
-				name: t('Reset_E2E_Key'),
-				action: prevent(getUser, ({ _id }) => Meteor.call('e2e.resetUserE2EKey', _id, success(() => toastr.success(t('User_e2e_key_was_reset'))))),
 			};
 		}];
 

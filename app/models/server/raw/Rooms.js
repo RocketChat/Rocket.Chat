@@ -7,20 +7,27 @@ export class RoomsRaw extends BaseRaw {
 			'u._id': uid,
 		};
 
-		return this.col.findOne(query, options);
+		return this.findOne(query, options);
 	}
 
-	isUserInRole(uid, roleName, rid) {
-		if (rid == null) {
-			return;
-		}
+	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
+		const aggregate = [
+			{
+				$match: {
+					t: 'l',
+					closedAt: { $exists: true },
+					metrics: { $exists: true },
+					'metrics.chatDuration': { $exists: true },
+					...department && { departmentId: department },
+				},
+			},
+			{ $sort: { closedAt: -1 } },
+			{ $limit: numberMostRecentChats },
+			{ $group: { _id: null, chats: { $sum: 1 }, sumChatDuration: { $sum: '$metrics.chatDuration' } } },
+			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
+		];
 
-		const query = {
-			'u._id': uid,
-			rid,
-			roles: roleName,
-		};
-
-		return this.findOne(query, { fields: { roles: 1 } });
+		const [statistic] = await this.col.aggregate(aggregate).toArray();
+		return statistic;
 	}
 }

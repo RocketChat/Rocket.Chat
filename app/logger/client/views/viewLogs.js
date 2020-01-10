@@ -5,7 +5,6 @@ import { Tracker } from 'meteor/tracker';
 
 import { ansispan } from '../ansispan';
 import { stdout } from '../viewLogs';
-import { readMessage } from '../../../ui-utils';
 import { hasAllPermission } from '../../../authorization';
 import { SideNav } from '../../../ui-utils/client';
 import './viewLogs.html';
@@ -60,8 +59,6 @@ Template.viewLogs.onRendered(function() {
 
 	this.checkIfScrollIsAtBottom = () => {
 		this.atBottom = this.isAtBottom(100);
-		readMessage.enable();
-		readMessage.read();
 	};
 
 	this.sendToBottomIfNecessary = () => {

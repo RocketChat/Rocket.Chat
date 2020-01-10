@@ -52,6 +52,7 @@ function _OAuthServicesUpdate() {
 				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
 				data.mergeRoles = settings.get(`${ service.key }-merge_roles`);
+				data.showButton = settings.get(`${ service.key }-show_button`);
 				new CustomOAuth(serviceName.toLowerCase(), {
 					serverURL: data.serverURL,
 					tokenPath: data.tokenPath,
@@ -68,6 +69,7 @@ function _OAuthServicesUpdate() {
 					mergeUsers: data.mergeUsers,
 					mergeRoles: data.mergeRoles,
 					accessTokenParam: data.accessTokenParam,
+					showButton: data.showButton,
 				});
 			}
 			if (serviceName === 'Facebook') {
@@ -83,6 +85,12 @@ function _OAuthServicesUpdate() {
 				data.clientConfig = {
 					requestPermissions: ['r_liteprofile', 'r_emailaddress'],
 				};
+			}
+
+			if (serviceName === 'Nextcloud') {
+				data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
+				data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');
+				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
 			}
 
 			ServiceConfiguration.configurations.upsert({

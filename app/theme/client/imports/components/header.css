@@ -253,21 +253,17 @@
 
 		padding: 0 0.25rem;
 
-		color: var(--header-toggle-favorite-star-color);
-
-		&.empty {
-			color: var(--header-toggle-favorite-color);
-
-			& > .rc-header__icon {
-				fill: none;
-			}
-		}
+		color: var(--header-toggle-favorite-color);
 
 		& > .rc-header__icon {
 			font-size: 2rem;
 		}
 
 		&:hover {
+			color: var(--header-toggle-favorite-star-color);
+		}
+
+		&--checked {
 			color: var(--header-toggle-favorite-star-color);
 		}
 	}

@@ -3,22 +3,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../../../settings';
-import { hasRole } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization';
 import { Users } from '../../../../models';
-import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatQueueUser } from '../../collections/LivechatQueueUser';
-import { AgentUsers } from '../../collections/AgentUsers';
 import './livechatQueue.html';
+import { APIClient } from '../../../../utils/client';
 
 Template.livechatQueue.helpers({
 	departments() {
-		return LivechatDepartment.find({
-			enabled: true,
-		}, {
-			sort: {
-				name: 1,
-			},
-		});
+		return Template.instance().departments.get().filter((department) => department.enabled === true);
 	},
 
 	users() {
@@ -37,9 +30,9 @@ Template.livechatQueue.helpers({
 		}).forEach((user) => {
 			const options = { fields: { _id: 1 } };
 			const userFilter = { _id: user.agentId, status: { $ne: 'offline' } };
-			const agentFilter = { _id: user.agentId, statusLivechat: 'available' };
+			const agent = Template.instance().agents.get().find((agent) => agent._id === user.agentId && agent.statusLivechat === 'available');
 
-			if (showOffline[this._id] || (Meteor.users.findOne(userFilter, options) && AgentUsers.findOne(agentFilter, options))) {
+			if (showOffline[this._id] || (Meteor.users.findOne(userFilter, options) && agent)) {
 				users.push(user);
 			}
 		});
@@ -49,7 +42,7 @@ Template.livechatQueue.helpers({
 
 	hasPermission() {
 		const user = Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
-		return hasRole(Meteor.userId(), 'livechat-manager') || (user.statusLivechat === 'available' && settings.get('Livechat_show_queue_list_link'));
+		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (user.statusLivechat === 'available' && settings.get('Livechat_show_queue_list_link'));
 	},
 });
 
@@ -63,10 +56,15 @@ Template.livechatQueue.events({
 	},
 });
 
-Template.livechatQueue.onCreated(function() {
+Template.livechatQueue.onCreated(async function() {
 	this.showOffline = new ReactiveVar({});
+	this.agents = new ReactiveVar([]);
+	this.departments = new ReactiveVar([]);
 
 	this.subscribe('livechat:queue');
-	this.subscribe('livechat:agents');
-	this.subscribe('livechat:departments');
+	const { users } = await APIClient.v1.get('livechat/users/agent');
+	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+
+	this.agents.set(users);
+	this.departments.set(departments);
 });

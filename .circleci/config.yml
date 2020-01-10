@@ -15,10 +15,10 @@ test-install-dependencies: &test-install-dependencies
     sudo apt-get install -y mongodb-org-shell google-chrome-stable
 
 test-run: &test-run
-          name: Run Tests
-          command: |
-            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
-            npm test # npm test holds an option to re-execute each test for ${ RETRY_TEST }-times - so we don't need the standard mechanism here
+  name: Run Tests
+  command: |
+    if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
+    npm test # npm test holds an option to re-execute each test for ${ RETRY_TEST }-times - so we don't need the standard mechanism here
 
 test-npm-install: &test-npm-install
   name: NPM install
@@ -52,7 +52,6 @@ test-with-oplog: &test-with-oplog
     TEST_MODE: "true"
     MONGO_URL: mongodb://localhost:27017/rocketchat
     MONGO_OPLOG_URL: mongodb://localhost:27017/local
-    RETRY_TESTS: 5
 
   steps:
     - attach_workspace: *attach_workspace
@@ -67,7 +66,7 @@ test-with-oplog: &test-with-oplog
 
 version: 2
 jobs:
-  build:
+  build: &build
     <<: *defaults
     docker:
       - image: circleci/node:8.15-stretch
@@ -183,16 +182,6 @@ jobs:
             - ./.meteor/local
 
       - save_cache:
-          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/node_modules
-
-      - save_cache:
-          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/.meteor/local
-
-      - save_cache:
           key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
           paths:
             - ~/.meteor
@@ -206,13 +195,6 @@ jobs:
       - store_artifacts:
           path: /tmp/build
 
-
-  test-with-oplog-mongo-3-2:
-    <<: *test-with-oplog
-    docker:
-      - image: *test-docker-image
-      - image: mongo:3.2
-        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
   test-with-oplog-mongo-3-4:
     <<: *test-with-oplog
@@ -261,48 +243,9 @@ jobs:
       - run:
           name: Publish assets
           command: |
-            bash .scripts/deploy-assistify-chat.sh
+            bash .scripts/publish-build.sh
 
-  image-build-prod:
-    <<: *defaults
-
-    docker:
-      - image: docker:17.05.0-ce-git
-
-    steps:
-      - attach_workspace:
-          at: /tmp
-
-      - checkout
-
-      - setup_remote_docker
-
-      - run:
-          name: Build latest Docker image
-          command: |
-            cd /tmp/build
-            tar xzf Rocket.Chat.tar.gz
-            rm Rocket.Chat.tar.gz
-
-            if [[ $CIRCLE_BRANCH == 'master' ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
-
-              echo "Build official Docker image"
-              cp ~/repo/.docker/Dockerfile .
-               cp ~/repo/.docker/startup.sh .
-              docker build -t assistify/chat:latest .
-              docker push assistify/chat:latest
-
-              # echo "Build preview Docker image"
-              # cp ~/repo/.docker-mongo/Dockerfile .
-              # cp ~/repo/.docker-mongo/entrypoint.sh .
-              # docker build -t assistify/chat.preview:develop .
-              # docker push assistify/chat.preview:develop
-
-              exit 0
-            fi;
-
-  image-build:
+  image-build: &image-build
     <<: *defaults
 
     docker:
@@ -324,168 +267,48 @@ jobs:
             rm Rocket.Chat.tar.gz
 
             export CIRCLE_TAG=${CIRCLE_TAG:=}
-             if [[ $CIRCLE_TAG ]]; then
-               docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-               echo "Build official Docker image"
-               cp ~/repo/.docker/Dockerfile .
-               cp ~/repo/.docker/startup.sh .
-               docker build -t assistify/chat:$CIRCLE_TAG .
-               docker push assistify/chat:$CIRCLE_TAG
+            cp ~/repo/.docker/Dockerfile.local ./Dockerfile
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-            #   # echo "Build preview Docker image"
-            #   # cp ~/repo/.docker-mongo/Dockerfile .
-            #   # cp ~/repo/.docker-mongo/entrypoint.sh .
-            #   # docker build -t assistify/chat.preview:$CIRCLE_TAG .
-            #   # docker push assistify/chat.preview:$CIRCLE_TAG
+            if [[ $CIRCLE_TAG ]]; then
+              echo "Build tagged Docker image"
+              docker build -t assistify/chat:$CIRCLE_TAG .
+              docker push assistify/chat:$CIRCLE_TAG
 
-            #   if echo "$CIRCLE_TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$' ; then
-            #     docker tag assistify/chat:$CIRCLE_TAG assistify/chat:latest
-            #     docker push assistify/chat:latest
-
-            #     docker tag assistify/chat.preview:$CIRCLE_TAG assistify/chat.preview:latest
-            #     docker push assistify/chat.preview:latest
-            #   elif echo "$CIRCLE_TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-            #     docker tag assistify/chat:$CIRCLE_TAG assistify/chat:release-candidate
-            #     docker push assistify/chat:release-candidate
-
-            #     docker tag assistify/chat.preview:$CIRCLE_TAG assistify/chat.preview:release-candidate
-            #     docker push assistify/chat.preview:release-candidate
-            #   fi
-
-               exit 0
-             fi;
+              exit 0
+            fi;
 
             if [[ $CIRCLE_BRANCH == 'develop' ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              echo "Build official Docker image"
-              cp ~/repo/.docker/Dockerfile .
-               cp ~/repo/.docker/startup.sh .
+              echo "Build nightly Docker image"
               docker build -t assistify/chat:develop .
               docker push assistify/chat:develop
 
-              # echo "Build preview Docker image"
-              # cp ~/repo/.docker-mongo/Dockerfile .
-              # cp ~/repo/.docker-mongo/entrypoint.sh .
-              # docker build -t assistify/chat.preview:develop .
-              # docker push assistify/chat.preview:develop
+              exit 0
+            fi;
+
+            if [[ $CIRCLE_BRANCH == 'master' ]]; then
+
+              echo "Build latest Docker image"
+              docker build -t assistify/chat:latest .
+              docker push assistify/chat:latest
 
               exit 0
             fi;
 
+            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+            if [[ $CIRCLE_PR_NUMBER ]]; then
+              docker build -t assistify/chat:pr-${CIRCLE_PR_NUMBER} .
+              docker push assistify/chat:pr-${CIRCLE_PR_NUMBER}
+
+              exit 0
+            fi;
   pr-build:
-    <<: *defaults
-    docker:
-      - image: circleci/node:8.15-stretch
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
-
-      - restore_cache:
-          keys:
-            - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
-
-      - run:
-          name: Install Meteor
-          command: |
-            # Restore bin from cache
-            set +e
-            METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
-            METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
-            set -e
-            LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
-            if [ -e $LAUNCHER ]
-            then
-              echo "Cached Meteor bin found, restoring it"
-              sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
-            else
-              echo "No cached Meteor bin found."
-            fi
-
-            # only install meteor if bin isn't found
-            command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
-
-      - run:
-          name: Versions
-          command: |
-            npm --versions
-            node -v
-            meteor --version
-            meteor npm --versions
-            meteor node -v
-            git version
-
-      - run:
-          name: Meteor npm install
-          command: |
-            # rm -rf node_modules
-            # rm -f package-lock.json
-            meteor npm install
-
-      - restore_cache:
-          keys:
-            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }
-
-      - run:
-          name: Build Rocket.Chat
-          environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=3072
-          command: |
-            meteor build --server-only /tmp/build-pr
-
-
-      - persist_to_workspace:
-          root: /tmp/
-          paths:
-            - build-pr
-
-      - store_artifacts:
-          path: /tmp/build-pr
+    <<: *build
 
   pr-image-build:
-    <<: *defaults
-
-    docker:
-      - image: docker:17.05.0-ce-git
-
-    steps:
-      - attach_workspace:
-          at: /tmp
-
-      - checkout
-
-      - setup_remote_docker
-
-      - run:
-          name: Build Docker image for PRs
-          command: |
-            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
-            if [[ -z $CIRCLE_PR_NUMBER ]]; then
-              exit 0
-            fi;
-
-            cd /tmp/build
-            tar xzf Rocket.Chat.tar.gz
-            rm Rocket.Chat.tar.gz
-
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-
-            echo "Building custom Docker image"
-            cp ~/repo/.docker/Dockerfile .
-            cp ~/repo/.docker/startup.sh .
-            docker build -t assistify/chat:pr-$CIRCLE_PR_NUMBER .
-            docker push assistify/chat:pr-$CIRCLE_PR_NUMBER
-
-            # echo "Build preview Docker image"
-            # cp ~/repo/.docker-mongo/Dockerfile .
-            # cp ~/repo/.docker-mongo/entrypoint.sh .
-            # docker build -t assistify/chat.preview:pr-$CIRCLE_PR_NUMBER .
-            # docker push assistify/chat.preview:pr-$CIRCLE_PR_NUMBER
+    <<: *image-build
 
 workflows:
   version: 2
@@ -495,13 +318,13 @@ workflows:
           filters:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - test-with-oplog-mongo-3-2: &test-mongo
+      - test-with-oplog-mongo-3-4: &test-mongo
           requires:
             - build
           filters:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - test-with-oplog-mongo-3-4: &test-mongo-no-pr
+      - test-with-oplog-mongo-3-6: &test-mongo-no-pr
           requires:
             - build
           filters:
@@ -509,37 +332,23 @@ workflows:
               only: develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - test-with-oplog-mongo-3-6: *test-mongo-no-pr
       - test-with-oplog-mongo-4-0: *test-mongo
       - deploy:
           requires:
-            - image-build
-            - image-build-prod
-            - test-with-oplog-mongo-3-2
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
           filters:
             branches:
-              only:
-                - develop
-                - master
+              only: develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - image-build-prod:
-          requires:
-            - hold
-          filters:
-            branches:
-              only:
-                - master
       - image-build:
           requires:
-            - build
+            - deploy
           filters:
             branches:
-              only:
-                - develop
+              only: develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - hold:
@@ -548,18 +357,10 @@ workflows:
             - build
           filters:
             branches:
-              only:
-                - master
-            tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
+              only: master
       - pr-image-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - develop
-                - master
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-
+              ignore: develop
