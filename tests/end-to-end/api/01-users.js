@@ -1752,9 +1752,9 @@ describe('[Users]', function() {
 				if (await checkAuthenticationFails()) {
 					done();
 				} else if (++counter < 20) {
-					setTimeout(tryAuthentication, 2000);
+					setTimeout(tryAuthentication, 1000);
 				} else {
-					done('Session did not validate in time');
+					done('Session did not invalidate in time');
 				}
 			}
 
