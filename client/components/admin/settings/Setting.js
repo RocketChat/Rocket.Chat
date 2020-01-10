@@ -106,7 +106,7 @@ export function Setting({ settingId }) {
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
 	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>, [i18nDescription]);
 	const callout = useMemo(() => alert && <RawText>{t(alert)}</RawText>, [alert]);
-	const hasResetButton = !disableReset && !readonly && type !== 'asset' && value !== packageValue && !disabled;
+	const hasResetButton = !disableReset && !readonly && type !== 'asset' && JSON.stringify(value) !== JSON.stringify(packageValue) && !disabled;
 
 	return <MemoizedSetting
 		type={type}
