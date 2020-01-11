@@ -6,7 +6,7 @@
 					<div class="form-group">
 
 						<div class="rc-input">
-							<div class="rc-input__title">{{_ "Role"}}</div>
+							<div class="rc-input__title rc-input__wrapper">{{_ "Role"}}</div>
 							{{#if editing}}
 								<input type="text" class="rc-input__element" name="name" autocomplete="off" value="{{_id}}" disabled>
 							{{else}}
@@ -16,12 +16,12 @@
 					</div>
 					<div class="form-group">
 						<div class="rc-input">
-							<div class="rc-input__title">{{_ "Description"}}</div>
+							<div class="rc-input__title rc-input__wrapper">{{_ "Description"}}</div>
 							<input type="text" class="rc-input__element" name="description" autocomplete="off" value="{{description}}">
 						</div>
 					</div>
 					<div class="form-group">
-						<div class="rc-input__title">{{_ "Scope"}}</div>
+						<div class="rc-input__title rc-input__wrapper">{{_ "Scope"}}</div>
 						<div class="rc-select">
 							<select name="scope" class="required rc-select__element" disabled="{{protected}}">
 								<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
@@ -30,7 +30,7 @@
 							{{> icon block="rc-select__arrow" icon="arrow-down" }}
 						</div>
 					</div>
-					<div>
+					<div class="rc-input__wrapper">
 						<label for="mandatory2fa">{{_ "Users must use Two Factor Authentication"}} :</label>
 						<input id="mandatory2fa" type="checkbox" name="mandatory2fa" checked="{{mandatory2fa}}">
 					</div>
@@ -57,7 +57,7 @@
 				{{#if $or ($eq role.scope 'Users') searchRoom}}
 					<form id="form-users" class="inline">
 						<label class="rc-input">
-							<div class="rc-input__title">{{_ "Add_user"}}</div>
+							<div class="rc-input__title rc-input__wrapper">{{_ "Add_user"}}</div>
 							{{> inputAutocomplete settings=autocompleteUsernameSettings name="username" class="search autocomplete rc-input__element" placeholder=(_ "Enter_a_username") autocomplete="off"}}
 						</label>
 						<button name="add" class="rc-button rc-button--primary add">{{_ "Add"}}</button>
