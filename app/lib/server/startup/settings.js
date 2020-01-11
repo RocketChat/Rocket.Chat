@@ -1095,8 +1095,7 @@ settings.addGroup('Message', function() {
 	});
 
 	
-	this.add('Hide_System_Messages',['manter', 'un link'], {
-		type: 'multiselect',
+	this.add('Hide_System_Messages', ['uj', 'ru'], {
 		public: true,
 		values: [
 			{
