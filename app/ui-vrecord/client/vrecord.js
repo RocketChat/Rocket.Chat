@@ -24,20 +24,43 @@ Template.vrecDialog.helpers({
 	recordDisabled() {
 		return VideoRecorder.cameraStarted.get() ? '' : 'disabled';
 	},
-});
 
-
-Template.vrecDialog.events({
-	'click .vrec-dialog .cancel'() {
-		VideoRecorder.stop();
-		VRecDialog.close();
+	time() {
+		return Template.instance().time.get();
 	},
 
-	'click .vrec-dialog .record'() {
+});
+
+const recordingInterval = new ReactiveVar(null);
+
+Template.vrecDialog.events({
+	'click .vrec-dialog .cancel'(e, t) {
+		VideoRecorder.stop();
+		VRecDialog.close();
+		t.time.set('00:00');
+		if (recordingInterval.get()) {
+			clearInterval(recordingInterval.get());
+			recordingInterval.set(null);
+		}
+	},
+
+	'click .vrec-dialog .record'(e, t) {
 		if (VideoRecorder.recording.get()) {
 			VideoRecorder.stopRecording();
+			if (recordingInterval.get()) {
+				clearInterval(recordingInterval.get());
+				recordingInterval.set(null);
+			}
 		} else {
 			VideoRecorder.record();
+			const startTime = new Date();
+			recordingInterval.set(setInterval(() => {
+				const now = new Date();
+				const distance = (now.getTime() - startTime.getTime()) / 1000;
+				const minutes = Math.floor(distance / 60);
+				const seconds = Math.floor(distance % 60);
+				t.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
+			}, 1000));
 		}
 	},
 
@@ -48,6 +71,11 @@ Template.vrecDialog.events({
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
+		instance.time.set('00:00');
+		if (recordingInterval.get()) {
+			clearInterval(recordingInterval.get());
+			recordingInterval.set(null);
+		}
 	},
 });
 
@@ -58,6 +86,7 @@ Template.vrecDialog.onCreated(function() {
 	this.rid = new ReactiveVar();
 	this.tmid = new ReactiveVar();
 	this.input = new ReactiveVar();
+	this.time = new ReactiveVar('00:00');
 	this.update = ({ rid, tmid, input }) => {
 		this.rid.set(rid);
 		this.tmid.set(tmid);
