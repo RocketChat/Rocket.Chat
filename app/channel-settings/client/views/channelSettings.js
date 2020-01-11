@@ -192,6 +192,23 @@ Template.channelSettingsEditing.events({
 		};
 		popover.open(config);
 	},
+
+	async 'keydown input[type=text]'(e, t) {
+		if (e.keyCode === 13) {
+			const { settings } = t;
+			Object.keys(settings).forEach(async (name) => {
+				const setting = settings[name];
+				const value = setting.value.get();
+				if (setting.default.get() !== value) {
+					await setting.save(value).then(() => {
+						setting.default.set(value);
+						setting.value.set(value);
+					}, console.log);
+				}
+			});
+		}
+	},
+
 	async 'click .js-save'(e, t) {
 		const { settings } = t;
 		Object.keys(settings).forEach(async (name) => {
