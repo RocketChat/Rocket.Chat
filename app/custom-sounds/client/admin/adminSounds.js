@@ -16,6 +16,9 @@ Template.adminSounds.helpers({
 		const instance = Template.instance();
 		return instance.filter && instance.filter.get();
 	},
+	isPlaying(_id) {
+		return Template.instance().isPlayingId.get() === _id;
+	},
 	customsounds() {
 		return Template.instance().sounds.get();
 	},
@@ -62,6 +65,7 @@ Template.adminSounds.onCreated(function() {
 	this.query = new ReactiveVar({});
 	this.isLoading = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
+	this.isPlayingId = new ReactiveVar('');
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
@@ -138,18 +142,24 @@ Template.adminSounds.events({
 		t.filter.set(e.currentTarget.value);
 		t.offset.set(0);
 	},
-	'click .icon-play-circled'(e) {
+	'click .icon-play-circled'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
 		CustomSounds.play(this._id);
+		const audio = document.getElementById(t.isPlayingId.get());
+		if (audio) {
+			audio.pause();
+		}
+		t.isPlayingId.set(this._id);
 	},
-	'click .icon-pause-circled'(e) {
+	'click .icon-pause-circled'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
 		const audio = document.getElementById(this._id);
 		if (audio && !audio.paused) {
 			audio.pause();
 		}
+		t.isPlayingId.set('');
 	},
 	'click .icon-reset-circled'(e) {
 		e.preventDefault();
