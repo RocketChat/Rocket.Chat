@@ -9,8 +9,10 @@
 					{{else}}
 						<button class="button primary enable" {{enableButtonDisabled}}>{{_ "Enable"}}</button>
 						{{#unless hasToken}}
+							<div class="rc-input__wrapper">
 							<p>{{_ "You_have_to_set_an_API_token_first_in_order_to_use_the_integration"}}</p>
 							<p>{{_ "Please_go_to_the_Administration_page_then_Livechat_Facebook"}}</p>
+							</div>
 						{{/unless}}
 					{{/if}}
 				</div>
