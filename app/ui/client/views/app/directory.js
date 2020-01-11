@@ -211,6 +211,8 @@ Template.directory.events({
 });
 
 Template.directory.onRendered(function() {
+	this.$('input').focus();
+	
 	function setResults(result) {
 		if (!Array.isArray(result)) {
 			result = [];
