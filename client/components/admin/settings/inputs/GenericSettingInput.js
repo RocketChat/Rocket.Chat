@@ -1,6 +1,7 @@
 import {
 	Field,
-	Label,
+	Flex,
+	Box,
 	TextInput,
 } from '@rocket.chat/fuselage';
 import React from 'react';
@@ -24,10 +25,19 @@ export function GenericSettingInput({
 	};
 
 	return <>
-		<Field.Row>
-			<Label htmlFor={_id} text={label} title={_id} />
-			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-		</Field.Row>
+		<Flex.Container>
+			<Box>
+				<Field.Label htmlFor={_id} title={_id}>
+					{label}
+				</Field.Label>
+				{hasResetButton && (
+					<ResetSettingButton
+						data-qa-reset-setting-id={_id}
+						onClick={onResetButtonClick}
+					/>
+				)}
+			</Box>
+		</Flex.Container>
 		<TextInput
 			data-qa-setting-id={_id}
 			id={_id}

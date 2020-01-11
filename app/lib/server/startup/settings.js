@@ -1094,8 +1094,9 @@ settings.addGroup('Message', function() {
 		public: true,
 	});
 
-	
+
 	this.add('Hide_System_Messages', ['uj', 'ru'], {
+		type: 'multiselect',
 		public: true,
 		values: [
 			{
@@ -1107,28 +1108,37 @@ settings.addGroup('Message', function() {
 			}, {
 				key: 'ru',
 				i18nLabel: 'Message_HideType_ru',
-			}, 
-			// {
-			// 	i18nLabel: 'Message_HideType_au',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_mute_unmute',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_r',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_ut',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_wm',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_rm',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_subscription_role_added',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_subscription_role_removed',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_room_archived',
-			// }, {
-			// 	i18nLabel: 'Message_HideType_room_unarchived',
-			// },
+			}, {
+				key: 'au',
+				i18nLabel: 'Message_HideType_au',
+			}, {
+				key: 'mute_unmute',
+				i18nLabel: 'Message_HideType_mute_unmute',
+			}, {
+				key: 'r',
+				i18nLabel: 'Message_HideType_r',
+			}, {
+				hey: 'ut',
+				i18nLabel: 'Message_HideType_ut',
+			}, {
+				key: 'wm',
+				i18nLabel: 'Message_HideType_wm',
+			}, {
+				key: 'rm',
+				i18nLabel: 'Message_HideType_rm',
+			}, {
+				key: 'subscription_role_added',
+				i18nLabel: 'Message_HideType_subscription_role_added',
+			}, {
+				key: 'subscription_role_removed',
+				i18nLabel: 'Message_HideType_subscription_role_removed',
+			}, {
+				key: 'room_archived',
+				i18nLabel: 'Message_HideType_room_archived',
+			}, {
+				key: 'room_unarchived',
+				i18nLabel: 'Message_HideType_room_unarchived',
+			},
 		],
 	});
 
