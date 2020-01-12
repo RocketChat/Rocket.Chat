@@ -84,7 +84,9 @@ export function erase(rid) {
 		html: false,
 	}, async () => {
 		await call('eraseRoom', rid);
-		FlowRouter.go('home');
+		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+			FlowRouter.go('home');
+		}
 		modal.open({
 			title: t('Deleted'),
 			text: t('Room_has_been_deleted'),

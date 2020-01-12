@@ -764,7 +764,7 @@ Template.channelSettings.events({
 		t.editing.set(false);
 	},
 	'click .js-delete'() {
-		erase(this.rid);
+		return erase(this.rid);
 	},
 });
 
