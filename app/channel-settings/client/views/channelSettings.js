@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -764,7 +765,8 @@ Template.channelSettings.events({
 		t.editing.set(false);
 	},
 	'click .js-delete'() {
-		return erase(this.rid);
+		erase(this.rid);
+		FlowRouter.go('/');
 	},
 });
 
