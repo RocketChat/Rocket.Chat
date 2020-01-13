@@ -1096,7 +1096,7 @@ settings.addGroup('Message', function() {
 
 
 	this.add('Hide_System_Messages', ['uj', 'ru'], {
-		type: 'multiselect',
+		type: 'multiSelect',
 		public: true,
 		values: [
 			{
@@ -1118,7 +1118,7 @@ settings.addGroup('Message', function() {
 				key: 'r',
 				i18nLabel: 'Message_HideType_r',
 			}, {
-				hey: 'ut',
+				key: 'ut',
 				i18nLabel: 'Message_HideType_ut',
 			}, {
 				key: 'wm',

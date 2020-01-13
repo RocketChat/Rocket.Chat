@@ -28,7 +28,7 @@ const getInputComponentByType = (type) => ({
 	relativeUrl: RelativeUrlSettingInput,
 	password: PasswordSettingInput,
 	int: IntSettingInput,
-	multiselect: MultiSelectSettingInput,
+	multiSelect: MultiSelectSettingInput,
 	select: SelectSettingInput,
 	language: LanguageSettingInput,
 	color: ColorSettingInput,
