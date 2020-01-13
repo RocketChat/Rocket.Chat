@@ -72,6 +72,9 @@ Template.loginForm.helpers({
 	manuallyApproveNewUsers() {
 		return settings.get('Accounts_ManuallyApproveNewUsers');
 	},
+	typedEmail() {
+		return s.trim(Template.instance().typedEmail);
+	},
 });
 
 Template.loginForm.events({
@@ -137,14 +140,14 @@ Template.loginForm.events({
 			return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
 				instance.loading.set(false);
 				if (error != null) {
-					if (error.error === 'no-valid-email') {
-						instance.state.set('email-verification');
-					} else if (error.error === 'error-user-is-not-activated') {
-						toastr.error(t('Wait_activation_warning'));
-					} else {
-						toastr.error(t('User_not_found_or_incorrect_password'));
+					if (error.error === 'error-invalid-email') {
+						instance.typedEmail = formData.emailOrUsername;
+						return instance.state.set('email-verification');
 					}
-					return;
+					if (error.error === 'error-user-is-not-activated') {
+						return toastr.error(t('Wait_activation_warning'));
+					}
+					return toastr.error(t('User_not_found_or_incorrect_password'));
 				}
 				Session.set('forceLogin', false);
 			});
@@ -232,7 +235,7 @@ Template.loginForm.onCreated(function() {
 				validationObj.emailOrUsername = t('Invalid_email');
 			}
 		}
-		if (state !== 'forgot-password') {
+		if (state !== 'forgot-password' && state !== 'email-verification') {
 			if (!formObj.pass) {
 				validationObj.pass = t('Invalid_pass');
 			}
