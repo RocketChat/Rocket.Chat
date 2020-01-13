@@ -118,22 +118,22 @@ describe('[Rooms]', function() {
 				})
 				.end(done);
 		});
-		// it('upload a file to room', (done) => {
-		// 	request.post(api(`rooms.upload/${ testChannel._id }`))
-		// 		.set(credentials)
-		// 		.attach('file', imgURL)
-		// 		.expect('Content-Type', 'application/json')
-		// 		.expect(200)
-		// 		.expect((res) => {
-		// 			const { message } = res.body;
-		// 			expect(res.body).to.have.property('success', true);
-		// 			expect(res.body).to.have.nested.property('message._id', message._id);
-		// 			expect(res.body).to.have.nested.property('message.rid', testChannel._id);
-		// 			expect(res.body).to.have.nested.property('message.file._id', message.file._id);
-		// 			expect(res.body).to.have.nested.property('message.file.type', message.file.type);
-		// 		})
-		// 		.end(done);
-		// });
+		it('upload a file to room', (done) => {
+			request.post(api(`rooms.upload/${ testChannel._id }`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message._id', message._id);
+					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
+					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
+					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+				})
+				.end(done);
+		});
 	});
 
 	describe('/rooms.favorite', () => {
@@ -795,7 +795,6 @@ describe('[Rooms]', function() {
 					users: ['rocket.cat'],
 					pmid: messageSent._id,
 				})
-				.expect((res) => console.log(res.body))
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -861,6 +860,75 @@ describe('[Rooms]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussions').and.to.be.an('array');
 					expect(res.body.discussions).to.have.lengthOf(1);
+				})
+				.end(done);
+		});
+	});
+
+
+	describe('[/rooms.autocomplete.channelAndPrivate]', () => {
+		it('should return an empty list when the user does not have the necessary permission', (done) => {
+			updatePermission('view-other-user-channels', []).then(() => {
+				request.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			updatePermission('view-other-user-channels', ['admin']).then(() => {
+				request.get(api('rooms.autocomplete.channelAndPrivate'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					})
+					.end(done);
+			});
+		});
+		it('should return the rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+	describe('/rooms.adminRooms', () => {
+		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
+			updatePermission('view-room-administration', []).then(() => {
+				request.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-authorized');
+					})
+					.end(() => updatePermission('view-room-administration', ['admin']).then(done));
+			});
+		});
+		it('should return a list of admin rooms', (done) => {
+			request.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
 				})
 				.end(done);
 		});

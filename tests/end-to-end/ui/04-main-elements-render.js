@@ -163,12 +163,12 @@ describe('[Main Elements Render]', function() {
 			it('it should show the last message', () => {
 				mainContent.lastMessage.isVisible().should.be.true;
 			});
-			// TODO: system messages is not working as expected
-			it.skip('it should be that the last message is from the loged user', () => {
+
+			it('it should be that the last message is from the loged user', () => {
 				mainContent.lastMessageUser.getText().should.equal(username);
 			});
-			// TODO: system messages is not working as expected
-			it.skip('it should not show the Admin tag', () => {
+
+			it('it should not show the Admin tag', () => {
 				mainContent.lastMessageUserTag.isVisible().should.be.false;
 			});
 		});
