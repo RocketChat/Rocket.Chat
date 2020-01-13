@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 
+import { expect } from 'chai';
+
 import {
 	getCredentials,
 	api,
@@ -193,7 +195,7 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.info]', () => {
-		after((done) => updatePermission('view-other-user-channels', ['admin']).then(done));
+		after(() => updatePermission('view-other-user-channels', ['admin']));
 
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
@@ -1254,7 +1256,6 @@ describe('[Users]', function() {
 		});
 
 		it('should delete user own account', (done) => {
-			browser.pause(500);
 			request.post(api('users.deleteOwnAccount'))
 				.set(userCredentials)
 				.send({
@@ -1368,7 +1369,7 @@ describe('[Users]', function() {
 						.end(done);
 				});
 			});
-			it('Grant necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', ['admin']).then(done));
+			it('Grant necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', ['admin']));
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
@@ -1470,7 +1471,7 @@ describe('[Users]', function() {
 			});
 		});
 		describe('unsuccessful cases', () => {
-			it('Remove necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', []).then(done));
+			it('Remove necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', []));
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))

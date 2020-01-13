@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
 describe('[Permissions]', function() {

@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import {
 	getCredentials,
 	api,
@@ -69,7 +71,7 @@ describe('[Chat]', function() {
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
-			it('attachment.message_link', (done) =>
+			it('attachment.message_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -89,11 +91,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.author_link', (done) =>
+			it('attachment.author_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -113,11 +114,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.title_link', (done) =>
+			it('attachment.title_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -137,11 +137,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.action.url', (done) =>
+			it('attachment.action.url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -168,11 +167,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('message.avatar', (done) =>
+			it('message.avatar', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -200,11 +198,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.action.image_url', (done) =>
+			it('attachment.action.image_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -232,11 +229,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.thumb_url', (done) =>
+			it('attachment.thumb_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -257,11 +253,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.author_icon', (done) =>
+			it('attachment.author_icon', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -282,11 +277,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.image_url', (done) =>
+			it('attachment.image_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -307,10 +301,9 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
-			it('attachment.audio_url', (done) =>
+			it('attachment.audio_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -331,10 +324,9 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
-			it('attachment.video_url', (done) =>
+			it('attachment.video_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -355,8 +347,7 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 		});
 
@@ -519,7 +510,7 @@ describe('[Chat]', function() {
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
-			it('attachment.message_link', (done) =>
+			it('attachment.message_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -539,11 +530,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.author_link', (done) =>
+			it('attachment.author_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -563,11 +553,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.title_link', (done) =>
+			it('attachment.title_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -587,11 +576,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.action.url', (done) =>
+			it('attachment.action.url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -618,8 +606,7 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 		});
 

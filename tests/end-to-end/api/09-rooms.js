@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
@@ -824,7 +826,7 @@ describe('[Rooms]', function() {
 						});
 				});
 		});
-		after((done) => closeRoom({ type: 'p', roomId: discussion._id }).then(done));
+		after(() => closeRoom({ type: 'p', roomId: discussion._id }));
 		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', (done) => {
 			request.get(api('rooms.getDiscussions'))
 				.set(credentials)

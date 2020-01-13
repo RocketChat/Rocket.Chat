@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
@@ -173,10 +175,10 @@ describe('[Groups]', function() {
 		});
 	});
 
-	it('/groups.invite', async (done) => {
+	it('/groups.invite', async () => {
 		const roomInfo = await getRoomInfo(group._id);
 
-		request.post(api('groups.invite'))
+		return request.post(api('groups.invite'))
 			.set(credentials)
 			.send({
 				roomId: group._id,
@@ -190,8 +192,7 @@ describe('[Groups]', function() {
 				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
 	it('/groups.addModerator', (done) => {
@@ -299,10 +300,10 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.invite', async (done) => {
+	it('/groups.invite', async () => {
 		const roomInfo = await getRoomInfo(group._id);
 
-		request.post(api('groups.invite'))
+		return request.post(api('groups.invite'))
 			.set(credentials)
 			.send({
 				roomId: group._id,
@@ -316,8 +317,7 @@ describe('[Groups]', function() {
 				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
 	it('/groups.addOwner', (done) => {
@@ -558,10 +558,10 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.rename', async (done) => {
+	it('/groups.rename', async () => {
 		const roomInfo = await getRoomInfo(group._id);
 
-		request.post(api('groups.rename'))
+		return request.post(api('groups.rename'))
 			.set(credentials)
 			.send({
 				roomId: group._id,
@@ -575,8 +575,7 @@ describe('[Groups]', function() {
 				expect(res.body).to.have.nested.property('group.name', `EDITED${ apiPrivateChannelName }`);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
 	describe('/groups.getIntegrations', () => {
@@ -792,9 +791,9 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-		it('change customFields', async (done) => {
+		it('change customFields', async () => {
 			const customFields = { field9: 'value9' };
-			request.post(api('groups.setCustomFields'))
+			return request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomId: cfchannel._id,
@@ -809,8 +808,7 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.customFields.field9', 'value9');
 					expect(res.body).to.have.not.nested.property('group.customFields.field0', 'value0');
-				})
-				.end(done);
+				});
 		});
 		it('get customFields using groups.info', (done) => {
 			request.get(api('groups.info'))
@@ -850,9 +848,9 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('set customFields with one nested field', async (done) => {
+		it('set customFields with one nested field', async () => {
 			const customFields = { field1: 'value1' };
-			request.post(api('groups.setCustomFields'))
+			return request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomId: cfchannel._id,
@@ -866,13 +864,12 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.nested.property('group.name', cfchannel.name);
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.customFields.field1', 'value1');
-				})
-				.end(done);
+				});
 		});
-		it('set customFields with multiple nested fields', async (done) => {
+		it('set customFields with multiple nested fields', async () => {
 			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
-			request.post(api('groups.setCustomFields'))
+			return request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomName: cfchannel.name,
@@ -889,13 +886,12 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.nested.property('group.customFields.field3', 'value3');
 					expect(res.body).to.have.nested.property('group.customFields.field4', 'value4');
 					expect(res.body).to.have.not.nested.property('group.customFields.field1', 'value1');
-				})
-				.end(done);
+				});
 		});
-		it('set customFields to empty object', async (done) => {
+		it('set customFields to empty object', async () => {
 			const customFields = {};
 
-			request.post(api('groups.setCustomFields'))
+			return request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomName: cfchannel.name,
@@ -911,10 +907,9 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.not.nested.property('group.customFields.field2', 'value2');
 					expect(res.body).to.have.not.nested.property('group.customFields.field3', 'value3');
 					expect(res.body).to.have.not.nested.property('group.customFields.field4', 'value4');
-				})
-				.end(done);
+				});
 		});
-		it('set customFields as a string -> should return 400', async (done) => {
+		it('set customFields as a string -> should return 400', (done) => {
 			const customFields = '';
 
 			request.post(api('groups.setCustomFields'))
@@ -1000,7 +995,7 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('/groups.invite', async (done) => {
+		it('/groups.invite', (done) => {
 			request.post(api('groups.invite'))
 				.set(credentials)
 				.send({
@@ -1070,7 +1065,7 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('/groups.invite', async (done) => {
+		it('/groups.invite', (done) => {
 			request.post(api('groups.invite'))
 				.set(credentials)
 				.send({

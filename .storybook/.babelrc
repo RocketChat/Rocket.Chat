@@ -6,7 +6,7 @@
         "shippedProposals": true,
         "useBuiltIns": "usage",
         "corejs": "3",
-        "modules": "commonjs",
+        "modules": "commonjs"
       }
     ],
     "@babel/preset-react",

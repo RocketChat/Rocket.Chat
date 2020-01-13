@@ -1,6 +1,6 @@
-import loginPage from '../pageobjects/login.page';
-import mainContent from '../pageobjects/main-content.page';
-import sideNav from '../pageobjects/side-nav.page';
+import loginPage from '../cypress/pageobjects/login.page';
+import mainContent from '../cypress/pageobjects/main-content.page';
+import sideNav from '../cypress/pageobjects/side-nav.page';
 
 export let publicChannelCreated = false;
 export let privateChannelCreated = false;
