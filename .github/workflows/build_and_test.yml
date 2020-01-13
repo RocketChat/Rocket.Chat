@@ -101,6 +101,9 @@ jobs:
 
     - run: npm run testunit
 
+    - name: Visual Regression
+      # if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      run: npm run test-storybook
     # To reduce memory need during actual build, build the packages solely first
     # - name: Build a Meteor cache
     #   run: |

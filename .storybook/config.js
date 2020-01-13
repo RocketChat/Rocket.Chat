@@ -1,6 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import { MINIMAL_VIEWPORTS, INITIAL_VIEWPORTS } from '@storybook/addon-viewport/dist/defaults';
 import { addDecorator, addParameters, configure } from '@storybook/react';
+import 'loki/configure-react';
 
 import { rocketChatDecorator } from './mocks/decorators';
 
