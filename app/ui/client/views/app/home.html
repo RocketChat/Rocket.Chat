@@ -3,6 +3,11 @@
 		{{> header sectionName=title}}
 		<div class="content">
 			{{{body}}}
+			{{#if isAnonymousReadAllowed}}
+				<div class="rc-button-group">
+					<button class="rc-button rc-button--primary rc-button--small js-register">{{_ "Sign_in_to_start_talking"}}</button>
+				</div>
+			{{/if}}
 		</div>
 	</section>
 </template>
