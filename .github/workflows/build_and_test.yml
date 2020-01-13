@@ -101,7 +101,7 @@ jobs:
         echo $GITHUB_SHA
 
         #aws s3 cp /tmp/build s3://rocketchatbuild/build/$GITHUB_SHA
-        aws s3 cp .docker/ s3://rocketchatbuild/build/$GITHUB_SHA/
+        aws s3 cp .docker/ s3://rocketchatbuild/build/$GITHUB_SHA/ --recursive
 
     - run: npm run lint
 
