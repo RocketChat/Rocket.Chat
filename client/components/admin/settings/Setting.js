@@ -55,7 +55,7 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 			{...inputProps}
 		/>
 		{hint && <Field.Hint>{hint}</Field.Hint>}
-		{callout && <Margins block='16'>
+		{callout && <Margins block='x16'>
 			<Callout type='warning'>{callout}</Callout>
 		</Margins>}
 	</Field>;

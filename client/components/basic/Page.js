@@ -10,10 +10,10 @@ export function Page(props) {
 }
 
 export function PageHeader({ children, title, ...props }) {
-	return <Margins all='16'>
+	return <Margins all='x16'>
 		<Flex.Container wrap='nowrap' alignItems='center'>
 			<Box style={{ minHeight: '2.75rem' }} {...props}>
-				<Margins inlineEnd='8'>
+				<Margins inlineEnd='x8'>
 					<BurgerMenuButton />
 				</Margins>
 				<Flex.Item grow='1'>

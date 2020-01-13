@@ -4,7 +4,6 @@ import {
 	Flex,
 	InputBox,
 	Margins,
-	MarginsWrapper,
 	SelectInput,
 	TextInput,
 } from '@rocket.chat/fuselage';
@@ -46,9 +45,9 @@ export function ColorSettingInput({
 				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 			</Box>
 		</Flex.Container>
-		<MarginsWrapper inline='4'>
+		<Margins inline='x4'>
 			<Field.Row>
-				<Margins inline='4'>
+				<Margins inline='x4'>
 					<Flex.Item grow={2}>
 						{editor === 'color' && <InputBox
 							data-qa-setting-id={_id}
@@ -88,7 +87,7 @@ export function ColorSettingInput({
 					</SelectInput>
 				</Margins>
 			</Field.Row>
-		</MarginsWrapper>
+		</Margins>
 		<Field.Hint>Variable name: {_id.replace(/theme-color-/, '@')}</Field.Hint>
 	</>;
 }

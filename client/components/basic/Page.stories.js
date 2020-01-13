@@ -15,7 +15,7 @@ export const _default = () =>
 	<Page>
 		<Page.Header title='Header' />
 		<Page.Content>
-			<Margins block='16'>
+			<Margins block='x16'>
 				{Array.from({ length: 60 }, (_, i) => <Tile key={i} children='Content slice' />)}
 			</Margins>
 		</Page.Content>
@@ -29,7 +29,7 @@ export const withButtonsAtTheHeader = () =>
 			</ButtonGroup>
 		</Page.Header>
 		<Page.Content>
-			<Margins block='16'>
+			<Margins block='x16'>
 				{Array.from({ length: 60 }, (_, i) => <Tile key={i} children='Content slice' />)}
 			</Margins>
 		</Page.Content>

@@ -127,7 +127,7 @@ export function RegisterServerStep({ step, title, active }) {
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<Margins blockEnd='32'>
+		<Margins blockEnd='x32'>
 			<Box>
 				<p className='SetupWizard__RegisterServerStep-text'>{t('Register_Server_Info')}</p>
 
@@ -189,7 +189,7 @@ export function RegisterServerStep({ step, title, active }) {
 						</Items>
 					</Option>
 
-					<Margins all='16'>
+					<Margins all='x16'>
 						<Field>
 							<Field.Row>
 								<CheckBox

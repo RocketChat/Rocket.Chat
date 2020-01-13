@@ -124,7 +124,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<Margins blockEnd='32'>
+		<Margins blockEnd='x32'>
 			<FieldGroup>
 				<Field>
 					<Field.Label htmlFor={nameInputId} required>{t('Name')}</Field.Label>

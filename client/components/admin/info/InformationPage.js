@@ -39,7 +39,7 @@ export function InformationPage({
 
 		<Page.Content>
 			{alertOplogForMultipleInstances
-				&& <Margins blockEnd='16'>
+				&& <Margins blockEnd='x16'>
 					<Callout type='danger' title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}>
 						<p>
 							{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}

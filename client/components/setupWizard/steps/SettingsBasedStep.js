@@ -90,7 +90,7 @@ export function SettingsBasedStep({ step, title, active }) {
 		return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 			<StepHeader number={step} title={title} />
 
-			<Margins blockEnd='32'>
+			<Margins blockEnd='x32'>
 				<FieldGroup>
 					{Array.from({ length: 5 }, (_, i) => <Field key={i}>
 						<Flex.Item align='stretch'>
@@ -108,7 +108,7 @@ export function SettingsBasedStep({ step, title, active }) {
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<Margins blockEnd='32'>
+		<Margins blockEnd='x32'>
 			<FieldGroup>
 				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
 					<Field key={i}>
@@ -151,8 +151,8 @@ export function SettingsBasedStep({ step, title, active }) {
 							>
 								{Object.entries(languages)
 									.map(([key, { name }]) => ({ label: name, value: key }))
-									.sort((a, b) => a.key - b.key)
-									.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
+									.sort((a, b) => a.value - b.value)
+									.map(({ label, value }) => <SelectInput.Option key={value} value={value} dir='auto'>{label}</SelectInput.Option>)}
 							</SelectInput>}
 						</Field.Row>
 					</Field>,

@@ -16,12 +16,12 @@ export function FinalStep() {
 
 	return <Box is='section' className='SetupWizard__FinalStep'>
 		<Tile is='main' padding='x40'>
-			<Margins all='32'>
+			<Margins all='x32'>
 				<Box>
 					<Box is='span' textColor='hint' className='SetupWizard__FinalStep-runningHead'>
 						{t('Launched_successfully')}
 					</Box>
-					<Margins blockEnd='32'>
+					<Margins blockEnd='x32'>
 						<Box is='h1' textColor='default' className='SetupWizard__FinalStep-title'>{t('Your_workspace_is_ready')}</Box>
 					</Margins>
 					<Box textColor='default' textStyle='micro' className='SetupWizard__FinalStep-linkLabel'>{t('Your_server_link')}</Box>
