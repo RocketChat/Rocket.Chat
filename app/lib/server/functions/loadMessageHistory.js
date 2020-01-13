@@ -5,9 +5,9 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 const hideMessagesOfType = new Set();
 
 settings.get('Hide_System_Messages', function(key, values) {
-	const hiddenTypes = values.reduce((array, value) =>  [...array, ...(value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value])], []);
+	const hiddenTypes = values.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []);
 	hideMessagesOfType.clear();
-	hiddenTypes.forEach(item => hideMessagesOfType.add(item))
+	hiddenTypes.forEach((item) => hideMessagesOfType.add(item));
 });
 
 export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
