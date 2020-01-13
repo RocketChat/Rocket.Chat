@@ -2847,6 +2847,8 @@ rc-old select,
 	& .body {
 		transition: opacity 0.3s linear;
 
+		word-break: break-word;
+
 		opacity: 1;
 
 		& > h1 {
@@ -3472,7 +3474,7 @@ rc-old select,
 
 		white-space: normal;
 
-		& h3 {
+		& h2 {
 			overflow: hidden;
 
 			width: 100%;
@@ -3496,6 +3498,10 @@ rc-old select,
 
 				border-radius: var(--border-radius);
 			}
+		}
+
+		& h3 {
+			margin: 8px 0;
 		}
 
 		& p {

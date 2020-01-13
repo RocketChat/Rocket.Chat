@@ -68,7 +68,7 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setTopicAndTagsById(_id, topic, tags) {
+	saveRoomById({ _id, topic, tags, livechatData }) {
 		const setData = {};
 		const unsetData = {};
 
@@ -84,6 +84,17 @@ export class LivechatRooms extends Base {
 			setData.tags = tags;
 		} else {
 			unsetData.tags = 1;
+		}
+
+		if (livechatData) {
+			Object.keys(livechatData).forEach((key) => {
+				const value = s.trim(livechatData[key]);
+				if (value) {
+					setData[`livechatData.${ key }`] = value;
+				} else {
+					unsetData[`livechatData.${ key }`] = 1;
+				}
+			});
 		}
 
 		const update = {};
