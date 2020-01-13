@@ -555,6 +555,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the force SSL toggle', () => {
+					admin.generalForceSSL.$('..').waitForVisible(5000);
 					admin.generalForceSSL.$('..').isVisible().should.be.true;
 				});
 
@@ -574,6 +575,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show google tag id field', () => {
+					admin.generalGoogleTagId.waitForVisible(5000);
 					admin.generalGoogleTagId.isVisible().should.be.true;
 				});
 
@@ -591,6 +593,7 @@ describe('[Administration]', () => {
 				});
 
 				it.skip('it should show bugsnag key field', () => {
+					admin.generalBugsnagKey.waitForVisible(5000);
 					admin.generalBugsnagKey.isVisible().should.be.true;
 				});
 
