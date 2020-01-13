@@ -175,9 +175,9 @@ export class Messages extends Base {
 		if (!event) {
 			return null;
 		}
-		const d = deepMapKeys(update, (k) => k.replace('$', '_$'));
-		d._$set = d._$set || {};
-		d._$set._oid = event._id; // Original id
+		const d = deepMapKeys(update, (k) => k.replace('$', '_csg').replace('.', '_dot'));
+		d._csgset = d._csgset || {};
+		d._csgset._oid = event._id; // Original id
 
 		const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, _cid, d));
 

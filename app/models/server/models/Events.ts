@@ -114,7 +114,7 @@ export class EventsModel extends Base {
 			.rawCollection()
 			.findOne({ ...contextQuery, _cid: eventCID, t: eventT.substr(1) });
 
-		const updateQuery: any = deepMapKeys(updateData, (k: any) => k.replace('_$', '$'));
+		const updateQuery: any = deepMapKeys(updateData, (k: any) => k.replace('_csg', '$').replace('_dot', '.'));
 
 		for (const prop in updateQuery) {
 			if (prop.startsWith('$')) {
