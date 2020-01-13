@@ -92,9 +92,7 @@ jobs:
       run: |
         meteor npm install
 
-    - run: npm run lint
-
-    - name: Publish S3
+    - name: Store build
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -102,9 +100,10 @@ jobs:
         echo $GITHUB_ACTION
         echo $GITHUB_SHA
 
-        aws s3 cp .docker/Dockerfile s3://rocketchatbuild/pr/
+        #aws s3 cp /tmp/build s3://rocketchatbuild/build/$GITHUB_SHA
+        aws s3 cp .docker/ s3://rocketchatbuild/build/$GITHUB_SHA/
 
-        exit 1
+    - run: npm run lint
 
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
