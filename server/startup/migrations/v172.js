@@ -8,7 +8,9 @@ Migrations.add({
 		Settings.upsert({
 			_id: 'Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In',
 		}, {
-			value: false,
+			$set: {
+				value: false,
+			},
 		});
 	},
 });
