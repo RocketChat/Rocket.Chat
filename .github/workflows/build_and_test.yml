@@ -92,17 +92,6 @@ jobs:
       run: |
         meteor npm install
 
-    - name: Store build
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        echo $GITHUB_ACTION
-        echo $GITHUB_SHA
-
-        #aws s3 cp /tmp/build s3://rocketchatbuild/build/$GITHUB_SHA
-        aws s3 cp .docker/ s3://rocketchatbuild/build/$GITHUB_SHA/ --recursive
-
     - run: npm run lint
 
     - name: Launch MongoDB
@@ -151,15 +140,16 @@ jobs:
 
     - name: Store build for tests
       uses: actions/upload-artifact@v1
-      with:
-        name: build-test
-        path: /tmp/Rocket.Chat.test.tar.gz
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: aws s3 cp /tmp/Rocket.Chat.test.tar.gz s3://rocketchatbuild/builds/$GITHUB_SHA/test/
 
     - name: Store build
-      uses: actions/upload-artifact@v1
-      with:
-        name: build
-        path: /tmp/build
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: aws s3 cp /tmp/build s3://rocketchatbuild/builds/$GITHUB_SHA/build/ --recursive
 
   test:
     runs-on: ubuntu-16.04
@@ -177,10 +167,11 @@ jobs:
         mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
 
     - name: Restore build for tests
-      uses: actions/download-artifact@v1
-      with:
-        name: build-test
-        path: /tmp
+      uses: actions/upload-artifact@v1
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/test/Rocket.Chat.test.tar.gz /tmp/
 
     - name: Decompress build
       run: |
@@ -348,10 +339,10 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Restore build
-      uses: actions/download-artifact@v1
-      with:
-        name: build
-        path: /tmp/build
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/build/ /tmp/build --recursive
 
     - name: Publish assets
       env:
