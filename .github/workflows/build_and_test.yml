@@ -94,6 +94,18 @@ jobs:
 
     - run: npm run lint
 
+    - name: Publish S3
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: |
+        echo $GITHUB_ACTION
+        echo $GITHUB_SHA
+
+        aws s3 cp .docker/Dockerfile s3://rocketchatbuild/pr/
+
+        exit 1
+
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
