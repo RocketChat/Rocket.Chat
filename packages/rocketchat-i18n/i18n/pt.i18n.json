@@ -191,6 +191,8 @@
   "Accounts_Directory_DefaultView": "Lista de directoria por defeito",
   "Accounts_SetDefaultAvatar": "Definir Avatar Padrão",
   "Accounts_SetDefaultAvatar_Description": "Tenta determinar o avatar padrão com base em OAuth Account ou Gravatar",
+  "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Definir o email das contas externas como verificado",
+  "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Contas criadas por serviços externos, tais como LDAP, OAth, etc, terão o email definido como verificado automáticamente",
   "Accounts_ShowFormLogin": "Mostrar formulário de login",
   "Accounts_TwoFactorAuthentication_Enabled": "Activar autenticação com dois parâmetros",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta máximo",

@@ -1,14 +1,28 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models/server';
+import {
+	Migrations,
+} from '../../../app/migrations';
+import {
+	Users,
+	Settings,
+} from '../../../app/models';
+
 
 Migrations.add({
 	version: 171,
 	up() {
-		// Disable auto opt in for existant installations
-		Settings.upsert({
-			_id: 'Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In',
-		}, {
-			value: false,
-		});
+		Settings.remove({ _id: 'Accounts_Default_User_Preferences_roomCounterSidebar' });
+		return Users.update(
+			{
+				'settings.preferences.roomCounterSidebar': {
+					$exists: true,
+				},
+			}, {
+				$unset: {
+					'settings.preferences.roomCounterSidebar': 1,
+				},
+			}, {
+				multi: true,
+			},
+		);
 	},
 });

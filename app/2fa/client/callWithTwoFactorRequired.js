@@ -3,7 +3,7 @@ import { SHA256 } from 'meteor/sha';
 import toastr from 'toastr';
 
 import { modal } from '../../ui-utils';
-import { t } from '../../utils';
+import { t, APIClient } from '../../utils/client';
 
 const methods = {
 	totp: {
@@ -40,7 +40,9 @@ export function process2faReturn({ error, result, originalCallback, onCode, emai
 		inputAction(e) {
 			const { value } = e.currentTarget;
 			e.currentTarget.value = t('Sending');
-			Meteor.call('sendEmailCode', emailOrUsername, () => {
+			APIClient.v1.post('users.2fa.sendEmailCode', {
+				emailOrUsername,
+			}).then(() => {
 				e.currentTarget.value = value;
 			});
 		},

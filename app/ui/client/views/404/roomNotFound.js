@@ -20,4 +20,9 @@ Template.roomNotFound.helpers({
 	customErrorMessage() {
 		return this.error.reason;
 	},
+	headerMessage() {
+		const { type } = Template.currentData();
+
+		return type === 'd' ? 'User_not_found' : 'Room_not_found';
+	},
 });

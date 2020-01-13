@@ -122,12 +122,14 @@ export function getDataToSyncUserData(ldapUser, user) {
 						return;
 					}
 
+					const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+
 					if (_.isObject(ldapUser[ldapField])) {
 						_.map(ldapUser[ldapField], function(item) {
-							emailList.push({ address: item, verified: true });
+							emailList.push({ address: item, verified });
 						});
 					} else {
-						emailList.push({ address: ldapUser[ldapField], verified: true });
+						emailList.push({ address: ldapUser[ldapField], verified });
 					}
 					break;
 
