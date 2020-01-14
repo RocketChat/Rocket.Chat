@@ -555,6 +555,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the force SSL toggle', () => {
+					admin.generalForceSSL.$('..').scroll();
 					admin.generalForceSSL.$('..').waitForVisible(5000);
 					admin.generalForceSSL.$('..').isVisible().should.be.true;
 				});
@@ -566,7 +567,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalForceSSLReset.waitForVisible(5000);
+					admin.generalForceSSLReset.$('..').scroll();
 					admin.generalForceSSLReset.isVisible().should.be.true;
 				});
 
@@ -575,6 +576,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show google tag id field', () => {
+					admin.generalGoogleTagId.scroll();
 					admin.generalGoogleTagId.waitForVisible(5000);
 					admin.generalGoogleTagId.isVisible().should.be.true;
 				});
@@ -584,6 +586,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
+					admin.generalGoogleTagIdReset.scroll();
 					admin.generalGoogleTagIdReset.waitForVisible(5000);
 					admin.generalGoogleTagIdReset.isVisible().should.be.true;
 				});
@@ -593,6 +596,7 @@ describe('[Administration]', () => {
 				});
 
 				it.skip('it should show bugsnag key field', () => {
+					admin.generalGoogleTagIdReset.scroll();
 					admin.generalBugsnagKey.waitForVisible(5000);
 					admin.generalBugsnagKey.isVisible().should.be.true;
 				});
@@ -602,6 +606,7 @@ describe('[Administration]', () => {
 				});
 
 				it.skip('it should show the reset button', () => {
+					admin.generalBugsnagKeyReset.scroll();
 					admin.generalBugsnagKeyReset.waitForVisible(5000);
 					admin.generalBugsnagKeyReset.isVisible().should.be.true;
 				});
