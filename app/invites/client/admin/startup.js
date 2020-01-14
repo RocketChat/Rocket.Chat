@@ -8,6 +8,6 @@ AdminBox.addOption({
 	i18nLabel: 'Invites',
 	icon: 'user-plus',
 	permissionGranted() {
-		return hasAtLeastOnePermission(['create-invite-links'], Session.get('openedRoom'));
+		return hasAtLeastOnePermission(['create-invite-links']);
 	},
 });
