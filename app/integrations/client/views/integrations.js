@@ -3,11 +3,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
+import _ from 'underscore';
 
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { integrations } from '../../lib/rocketchat';
 import { SideNav } from '../../../ui-utils/client';
 import { APIClient } from '../../../utils/client';
+
+const ITEMS_COUNT = 50;
 
 Template.integrations.helpers({
 	hasPermission() {
@@ -38,7 +41,25 @@ Template.integrations.onRendered(() => {
 
 Template.integrations.onCreated(async function() {
 	this.integrations = new ReactiveVar([]);
+	this.offset = new ReactiveVar(0);
+	this.total = new ReactiveVar(0);
 
-	const { integrations } = await APIClient.v1.get('integrations.list');
-	this.integrations.set(integrations);
+	this.autorun(async () => {
+		const offset = this.offset.get();
+		const { integrations, total } = await APIClient.v1.get(`integrations.list?count=${ ITEMS_COUNT }&offset=${ offset }`);
+		this.total.set(total);
+		this.integrations.set(this.integrations.get().concat(integrations));
+	});
+});
+
+Template.integrations.events({
+	'scroll .content': _.throttle(function(e, instance) {
+		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
+			const integrations = instance.integrations.get();
+			if (instance.total.get() <= integrations.length) {
+				return;
+			}
+			return instance.offset.set(instance.offset.get() + ITEMS_COUNT);
+		}
+	}, 200),
 });
