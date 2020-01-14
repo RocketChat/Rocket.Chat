@@ -3,7 +3,7 @@ import { assert } from 'chai';
 
 import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../data/user.js';
 import admin from '../pageobjects/administration.page';
-import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
+import { checkIfUserIsValid } from '../../data/checks';
 import sideNav from '../pageobjects/side-nav.page';
 
 function openAdminView() {
@@ -28,7 +28,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 			} catch (e) {
 				// most possibly already logged off since started seperately => try to continue
 			}
-			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
 			openAdminView();
 			// admin.permissionsLink.waitForVisible(5000);
 			admin.permissionsLink.click();
@@ -92,7 +92,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 	describe('Verify settings change and cleanup', function() {
 		before(() => {
 			console.log('Switching back to Admin');
-			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
 			openAdminView();
 		});
 

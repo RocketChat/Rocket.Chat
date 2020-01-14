@@ -4,7 +4,7 @@ import sideNav from '../pageobjects/side-nav.page';
 import preferencesMainContent from '../pageobjects/preferences-main-content.page';
 import admin from '../pageobjects/administration.page';
 import { username, password, email, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
-import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
+import { checkIfUserIsValid } from '../../data/checks';
 // import {imgURL} from '../../data/interactions.js';
 
 
@@ -110,7 +110,7 @@ describe('[User Preferences]', () => {
 	describe('admin', () => {
 		describe.skip('user info change forbidden:', () => {
 			before(() => {
-				checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+				checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
 				admin.open('admin/Accounts');
 				// admin.accountsRealNameChangeFalse.waitForVisible(5000);
 				admin.accountsRealNameChangeFalse.click();
