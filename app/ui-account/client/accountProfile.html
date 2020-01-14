@@ -176,6 +176,14 @@
 									{{# unless canChange}}
 										<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
 									{{/unless}}
+									{{#if confirmationPasswordInvalid}}
+										<div class="rc-input__error">
+											<div class="rc-input__error-icon">
+												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+											</div>
+											<div class="rc-input__error-message">{{_ 'Password_Confirmpassword_Mismatch'}}</div>
+										</div>
+									{{/if}}
 								{{/with}}
 							</div>
 						</div>
