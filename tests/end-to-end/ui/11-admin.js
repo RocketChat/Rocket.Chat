@@ -555,8 +555,8 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the force SSL toggle', () => {
-					admin.generalForceSSL.$('..').scroll();
-					admin.generalForceSSL.$('..').waitForVisible(5000);
+					browser.pause(500);
+					admin.generalForceSSL.moveToObject();
 					admin.generalForceSSL.$('..').isVisible().should.be.true;
 				});
 
@@ -567,7 +567,8 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalForceSSLReset.$('..').scroll();
+					browser.pause(500);
+					admin.generalForceSSLReset.moveToObject();
 					admin.generalForceSSLReset.isVisible().should.be.true;
 				});
 
@@ -769,6 +770,7 @@ describe('[Administration]', () => {
 				it('it should show the mobile notifications select field', () => {
 					admin.accountsMobileNotifications.click();
 					admin.accountsMobileNotifications.isVisible().should.be.true;
+					admin.accountsMobileNotifications.click();
 				});
 				it('the mobile notifications field value should be all', () => {
 					admin.accountsMobileNotifications.getValue().should.equal('all');
@@ -823,7 +825,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the hide usernames field', () => {
-					admin.accountsHideUsernames.$('..').scroll();
+					admin.accountsHideUsernames.scroll();
 					admin.accountsHideUsernames.$('..').isVisible().should.be.true;
 				});
 				it('the hide usernames field value should be false', () => {
@@ -831,24 +833,28 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the hide roles field', () => {
-					admin.accountsHideRoles.$('..').scroll();
-					admin.accountsHideRoles.$('..').isVisible().should.be.true;
+					admin.accountsHideRoles.moveToObject();
+					admin.accountsHideRoles.waitForVisible(5000);
+					admin.accountsHideRoles.isVisible().should.be.true;
 				});
+
 				it('the hide roles field value should be false', () => {
 					admin.accountsHideRoles.isSelected().should.be.false;
 				});
 
 				it('it should show the hide right sidebar with click field', () => {
-					admin.accountsHideFlexTab.$('..').scroll();
-					admin.accountsHideFlexTab.$('..').isVisible().should.be.true;
+					admin.accountsHideFlexTab.moveToObject();
+					admin.accountsHideFlexTab.waitForVisible(5000);
+					admin.accountsHideFlexTab.isVisible().should.be.true;
 				});
 				it('the hide right sidebar with click field value should be false', () => {
 					admin.accountsHideFlexTab.isSelected().should.be.false;
 				});
 
 				it('it should show the hide avatars field', () => {
-					admin.accountsHideAvatars.$('..').scroll();
-					admin.accountsHideAvatars.$('..').isVisible().should.be.true;
+					admin.accountsHideAvatars.scroll();
+					admin.accountsHideAvatars.waitForVisible(5000);
+					admin.accountsHideAvatars.isVisible().should.be.true;
 				});
 				it('the hide avatars field value should be false', () => {
 					admin.accountsHideAvatars.isSelected().should.be.false;
@@ -865,6 +871,7 @@ describe('[Administration]', () => {
 
 				it('it should show the messagebox view mode field', () => {
 					admin.accountsMessageViewMode.moveToObject();
+					admin.accountsMessageViewMode.waitForVisible(5000);
 					admin.accountsMessageViewMode.click();
 					admin.accountsMessageViewMode.isVisible().should.be.true;
 				});
