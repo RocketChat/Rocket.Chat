@@ -138,7 +138,7 @@
 		"aws-sdk": "^2.368.0",
 		"bad-words": "^3.0.2",
 		"bcrypt": "^3.0.7",
-		"blockstack": "18.1.0",
+		"blockstack": "19.3.0",
 		"body-parser": "1.18.3",
 		"bson": "^4.0.0",
 		"bugsnag": "^2.4.3",
