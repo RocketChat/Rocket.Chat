@@ -37,7 +37,7 @@ Template.vrecDialog.events({
 	'click .vrec-dialog .cancel'(e, t) {
 		VideoRecorder.stop();
 		VRecDialog.close();
-		t.time.set('00:00');
+		t.time.set('');
 		if (recordingInterval.get()) {
 			clearInterval(recordingInterval.get());
 			recordingInterval.set(null);
@@ -53,6 +53,7 @@ Template.vrecDialog.events({
 			}
 		} else {
 			VideoRecorder.record();
+			t.time.set('00:00');
 			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {
 				const now = new Date();
@@ -71,7 +72,7 @@ Template.vrecDialog.events({
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
-		instance.time.set('00:00');
+		instance.time.set('');
 		if (recordingInterval.get()) {
 			clearInterval(recordingInterval.get());
 			recordingInterval.set(null);
@@ -86,7 +87,7 @@ Template.vrecDialog.onCreated(function() {
 	this.rid = new ReactiveVar();
 	this.tmid = new ReactiveVar();
 	this.input = new ReactiveVar();
-	this.time = new ReactiveVar('00:00');
+	this.time = new ReactiveVar('');
 	this.update = ({ rid, tmid, input }) => {
 		this.rid.set(rid);
 		this.tmid.set(tmid);
