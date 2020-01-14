@@ -13,11 +13,11 @@ if (Meteor.isClient) {
 	({ getLivechatInquiryCollection } = require('../client/collections/LivechatInquiry'));
 }
 
-class LivechatRoomRoute extends RoomTypeRouteConfig {
+class OmnichannelRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
-			name: 'live',
-			path: '/live/:id',
+			name: 'omnichannel',
+			path: '/omnichannel/:id',
 		});
 	}
 
@@ -32,18 +32,18 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 	}
 }
 
-export default class LivechatRoomType extends RoomTypeConfig {
+export default class OmnichannelRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'l',
 			order: 5,
-			icon: 'livechat',
-			label: 'Livechat',
-			route: new LivechatRoomRoute(),
+			icon: 'omnichannel',
+			label: 'Omnichannel',
+			route: new OmnichannelRoomRoute(),
 		});
 
-		this.notSubscribedTpl = 'livechatNotSubscribed';
-		this.readOnlyTpl = 'livechatReadOnly';
+		this.notSubscribedTpl = 'omnichannelNotSubscribed';
+		this.readOnlyTpl = 'omnichannelReadOnly';
 	}
 
 	findRoom(identifier) {
@@ -84,9 +84,9 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
-				return 'Hide_Livechat_Warning';
+				return 'Hide_Omnichannel_Warning';
 			case UiTextContext.LEAVE_WARNING:
-				return 'Hide_Livechat_Warning';
+				return 'Hide_Omnichannel_Warning';
 			default:
 				return '';
 		}

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
 import { LivechatInquiry } from '../../../../models/server';
-import { LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER } from '../../../lib/stream/constants';
+import { OMNICHANNEL_INQUIRY_DATA_STREAM_OBSERVER } from '../../../lib/stream/constants';
 import { hasPermission } from '../../../../authorization/server';
 
-export const inquiryDataStream = new Meteor.Streamer(LIVECHAT_INQUIRY_DATA_STREAM_OBSERVER);
+export const inquiryDataStream = new Meteor.Streamer(OMNICHANNEL_INQUIRY_DATA_STREAM_OBSERVER);
 
 inquiryDataStream.allowWrite('none');
 

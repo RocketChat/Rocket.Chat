@@ -1,4 +1,4 @@
-import './app/livechatAutocompleteUser';
+import './app/omnichannelAutocompleteUser';
 import './app/livechatQueue';
 import './app/livechatReadOnly';
 import './app/livechatNotSubscribed.html';

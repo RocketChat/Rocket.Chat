@@ -3,5 +3,5 @@ import './roomType';
 import './route';
 import './ui';
 import './startup/notifyUnreadRooms';
-import './views/sideNav/livechat';
-import './views/sideNav/livechatFlex';
+import './views/sideNav/omnichannel';
+import './views/sideNav/omnichannelFlex';

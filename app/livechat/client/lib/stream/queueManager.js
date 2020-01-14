@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from '../../../../utils/client';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
-import { LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER } from '../../../lib/stream/constants';
+import { OMNICHANNEL_INQUIRY_QUEUE_STREAM_OBSERVER } from '../../../lib/stream/constants';
 import { hasRole } from '../../../../authorization/client';
 
-const livechatQueueStreamer = new Meteor.Streamer('livechat-queue-stream');
+const omnichannelQueueStreamer = new Meteor.Streamer('omnichannel-queue-stream');
 let agentDepartments = [];
 
 const events = {
@@ -23,9 +23,9 @@ const events = {
 	removed: (inquiry, collection) => collection.remove({ rid: inquiry.rid }),
 };
 
-const appendListenerToDepartment = (departmentId, collection) => livechatQueueStreamer.on(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`, (inquiry) => events[inquiry.type](inquiry, collection));
+const appendListenerToDepartment = (departmentId, collection) => omnichannelQueueStreamer.on(`${ OMNICHANNEL_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`, (inquiry) => events[inquiry.type](inquiry, collection));
 
-const removeListenerOfDepartment = (departmentId) => livechatQueueStreamer.removeListener(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`);
+const removeListenerOfDepartment = (departmentId) => omnichannelQueueStreamer.removeListener(`${ OMNICHANNEL_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`);
 
 const getInquiriesFromAPI = async (url) => {
 	const { inquiries } = await APIClient.v1.get(url);
@@ -54,10 +54,10 @@ const removeDepartmentsListeners = (departments) => {
 };
 
 const removeGlobalListener = () => {
-	livechatQueueStreamer.removeListener(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER);
+	livechatQueueStreamer.removeListener(OMNICHANNEL_INQUIRY_QUEUE_STREAM_OBSERVER);
 };
 
-export const initializeLivechatInquiryStream = async (userId) => {
+export const initializeOmnichannelInquiryStream = async (userId) => {
 	const collection = getLivechatInquiryCollection();
 	collection.remove({});
 	if (agentDepartments.length) {
@@ -68,6 +68,6 @@ export const initializeLivechatInquiryStream = async (userId) => {
 	agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 	await addListenerForeachDepartment(userId, agentDepartments);
 	if (agentDepartments.length === 0 || hasRole(userId, 'livechat-manager')) {
-		livechatQueueStreamer.on(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
+		omnichannelQueueStreamer.on(OMNICHANNEL_INQUIRY_QUEUE_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
 	}
 };

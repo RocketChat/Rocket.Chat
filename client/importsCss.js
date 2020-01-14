@@ -17,7 +17,7 @@ import '../app/emoji-emojione/client/emojione-sprites.css';
 import '../app/github-enterprise/client/github-enterprise-login-button.css';
 import '../app/gitlab/client/gitlab-login-button.css';
 import '../app/integrations/client/stylesheets/integrations.css';
-import '../app/livechat/client/stylesheets/livechat.less';
+import '../app/livechat/client/stylesheets/omnichannel.less';
 import '../app/livestream/client/styles/liveStreamTab.css';
 import '../app/message-action/client/stylesheets/messageAction.css';
 import '../app/message-attachments/client/stylesheets/messageAttachments.css';

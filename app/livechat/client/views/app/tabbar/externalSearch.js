@@ -27,7 +27,7 @@ Template.externalSearch.events({
 		e.stopPropagation();
 		t.offset.set(t.offset.get() + MESSAGES_COUNT);
 	},
-	'click .load-more-livechat-external-messages'(event, instance) {
+	'click .load-more-omnichannel-external-messages'(event, instance) {
 		return instance.offset.set(instance.offset.get() + MESSAGES_COUNT);
 	},
 });

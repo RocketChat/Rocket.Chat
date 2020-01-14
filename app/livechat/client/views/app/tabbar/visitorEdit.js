@@ -152,14 +152,14 @@ Template.visitorEdit.events({
 		userData.email = event.currentTarget.elements.email.value;
 		userData.phone = event.currentTarget.elements.phone.value;
 		userData.livechatData = {};
-		$('[data-visitorLivechatData=true]').each(function() {
+		$('[data-roomOmnichannelData=true]').each(function() {
 			userData.livechatData[this.name] = $(this).val() || '';
 		});
 
 		roomData.topic = event.currentTarget.elements.topic.value;
 		roomData.tags = instance.tags.get();
 		roomData.livechatData = {};
-		$('[data-roomLivechatData=true]').each(function() {
+		$('[data-roomOmnichannelData=true]').each(function() {
 			roomData.livechatData[this.name] = $(this).val() || '';
 		});
 

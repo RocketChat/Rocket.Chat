@@ -201,12 +201,12 @@ Template.visitorInfo.helpers({
 });
 
 Template.visitorInfo.events({
-	'click .edit-livechat'(event, instance) {
+	'click .edit-omnichannel'(event, instance) {
 		event.preventDefault();
 
 		instance.action.set('edit');
 	},
-	'click .close-livechat'(event) {
+	'click .close-omnichannel'(event) {
 		event.preventDefault();
 
 		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, function(error/* , result*/) {
@@ -271,7 +271,7 @@ Template.visitorInfo.events({
 		});
 	},
 
-	'click .forward-livechat'(event, instance) {
+	'click .forward-omnichannel'(event, instance) {
 		event.preventDefault();
 
 		instance.action.set('forward');
