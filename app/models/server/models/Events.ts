@@ -1,6 +1,7 @@
 import { SHA256 } from 'meteor/sha';
 import _ from 'lodash';
 import deepMapKeys from 'deep-map-keys';
+import { EJSON } from 'meteor/ejson';
 
 import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
@@ -114,7 +115,7 @@ export class EventsModel extends Base {
 			.rawCollection()
 			.findOne({ ...contextQuery, _cid: eventCID, t: eventT.substr(1) });
 
-		const updateQuery: any = deepMapKeys(updateData, (k: any) => k.replace('_csg', '$').replace('_dot', '.'));
+		const updateQuery: any = EJSON.fromJSONValue(deepMapKeys(updateData, (k: any) => k.replace('_csg', '$').replace('_dot', '.')));
 
 		for (const prop in updateQuery) {
 			if (prop.startsWith('$')) {

@@ -81,8 +81,8 @@ class RoomEventsModel extends EventsModel {
 			_cid,
 			t: EventTypeDescriptor.DELETE_MESSAGE,
 			d: {
-				deleted: true
-			}
+				deleted: true,
+			},
 		};
 
 		return super.createEvent(src, getContextQuery(roomId), stub);

@@ -1,6 +1,7 @@
 import { Match } from 'meteor/check';
 import _ from 'underscore';
 import deepMapKeys from 'deep-map-keys';
+import { EJSON } from 'meteor/ejson';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -176,7 +177,7 @@ export class Messages extends Base {
 		if (!event) {
 			return null;
 		}
-		const d = deepMapKeys(update, (k) => k.replace('$', '_csg').replace('.', '_dot'));
+		const d = deepMapKeys(EJSON.toJSONValue(update), (k) => k.replace('$', '_csg').replace('.', '_dot'));
 		d._csgset = d._csgset || {};
 		d._csgset._oid = event._id; // Original id
 
@@ -200,7 +201,7 @@ export class Messages extends Base {
 	}
 
 	remove(...args) {
-		const [query, update] = args;
+		const [query] = args;
 
 		const { _cid, v2Query } = this.getV2Query(query);
 
