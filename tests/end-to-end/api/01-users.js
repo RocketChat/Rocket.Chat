@@ -14,48 +14,7 @@ import { adminEmail, preferences, password, adminUsername } from '../../data/use
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, login } from '../../data/users.helper.js';
-
-function createTestUser() {
-	return new Promise((resolve) => {
-		const username = `user.test.${ Date.now() }`;
-		const email = `${ username }@rocket.chat`;
-		request.post(api('users.create'))
-			.set(credentials)
-			.send({ email, name: username, username, password })
-			.end((err, res) => resolve(res.body.user));
-	});
-}
-
-function loginTestUser(user) {
-	return new Promise((resolve, reject) => {
-		request.post(api('login'))
-			.send({
-				user: user.username,
-				password,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				const userCredentials = {};
-				userCredentials['X-Auth-Token'] = res.body.data.authToken;
-				userCredentials['X-User-Id'] = res.body.data.userId;
-				resolve(userCredentials);
-			})
-			.end((err) => (err ? reject(err) : resolve()));
-	});
-}
-
-function deleteTestUser(user) {
-	return new Promise((resolve) => {
-		request.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
-	});
-}
+import { createUser, login, deleteUser } from '../../data/users.helper.js';
 
 describe('[Users]', function() {
 	this.retries(0);
@@ -443,18 +402,18 @@ describe('[Users]', function() {
 	describe('[/users.setAvatar]', () => {
 		let user;
 		before(async () => {
-			user = await createTestUser();
+			user = await createUser();
 		});
 
 		let userCredentials;
 		before(async () => {
-			userCredentials = await loginTestUser(user);
+			userCredentials = await login(user);
 		});
 		before((done) => {
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
 		});
 		after(async () => {
-			await deleteTestUser(user);
+			await deleteUser(user);
 			user = undefined;
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
@@ -1767,12 +1726,12 @@ describe('[Users]', function() {
 		let newCredentials;
 
 		before(async () => {
-			user = await createTestUser();
-			userCredentials = await loginTestUser(user);
-			newCredentials = await loginTestUser(user);
+			user = await createUser();
+			userCredentials = await login(user);
+			newCredentials = await login(user);
 		});
 		after(async () => {
-			await deleteTestUser(user);
+			await deleteUser(user);
 			user = undefined;
 		});
 
