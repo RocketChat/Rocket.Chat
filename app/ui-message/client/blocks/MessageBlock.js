@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { UiKitMessage as uiKitMessage, kitContext, UiKitModal as uiKitModal, messageParser, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import { uiKitText } from '@rocket.chat/ui-kit';
-import { Modal, AnimatedWrapper, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Modal, AnimatedVisibility, ButtonGroup, Button } from '@rocket.chat/fuselage';
 
 import { renderMessageBody } from '../../../ui-utils/client';
 import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
@@ -54,10 +54,9 @@ export const modalBlockWithContext = ({
 	const { view } = useReactiveValue(props.data);
 	const ref = useRef();
 	useEffect(() => ref.current && ref.current.querySelector('input').focus(), []);
-
 	return (
 		<kitContext.Provider value={context}>
-			<AnimatedWrapper visible={1}>
+			<AnimatedVisibility visibility={AnimatedVisibility.VISIBLE}>
 				<Modal open ref={ref}>
 					<Modal.Header>
 						{/* <Modal.Thumb url={`api/apps/${ context.appId }/icon`} /> */}
@@ -65,19 +64,17 @@ export const modalBlockWithContext = ({
 						<Modal.Title>{textParser([title])}</Modal.Title>
 						<Modal.Close onClick={onClose} />
 					</Modal.Header>
-					<Modal.Container>{uiKitModal(view.blocks)}</Modal.Container>
+					<Modal.Content>{uiKitModal(view.blocks)}</Modal.Content>
 					<Modal.Footer>
 						<ButtonGroup align='end'>
-							<Button onClick={onClose}>
-								{textParser([close.text])}
-							</Button>
+							<Button onClick={onClose}>{textParser([close.text])}</Button>
 							<Button primary onClick={onSubmit}>
 								{textParser([submit.text])}
 							</Button>
 						</ButtonGroup>
 					</Modal.Footer>
 				</Modal>
-			</AnimatedWrapper>
+			</AnimatedVisibility>
 		</kitContext.Provider>
 	);
 };
