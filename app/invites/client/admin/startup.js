@@ -1,5 +1,3 @@
-import { Session } from 'meteor/session';
-
 import { AdminBox } from '../../../ui-utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
 
