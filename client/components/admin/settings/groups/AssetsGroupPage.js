@@ -7,8 +7,8 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 
-export function AssetsGroupPage({ group }) {
-	const solo = group.sections.length === 1;
+export function AssetsGroupPage({ _id, sections, ...group }) {
+	const solo = sections.length === 1;
 	const t = useTranslation();
 
 	const refreshClients = useMethod('refreshClients');
@@ -23,12 +23,12 @@ export function AssetsGroupPage({ group }) {
 		}
 	};
 
-	return <GroupPage group={group} headerButtons={<>
+	return <GroupPage _id={_id} {...group} headerButtons={<>
 		<Button onClick={handleApplyAndRefreshAllClientsButtonClick}>{t('Apply_and_refresh_all_clients')}</Button>
 	</>}>
-		{group.sections.map((sectionName) => <Section
+		{sections.map((sectionName) => <Section
 			key={sectionName}
-			groupId={group._id}
+			groupId={_id}
 			hasReset={false}
 			sectionName={sectionName}
 			solo={solo}

@@ -1,4 +1,4 @@
-import { Button, Field, Label } from '@rocket.chat/fuselage';
+import { Box, Button, Field, Flex } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -113,10 +113,12 @@ export function CodeSettingInput({
 	};
 
 	return <>
-		<Field.Row>
-			<Label htmlFor={_id} text={label} title={_id} />
-			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-		</Field.Row>
+		<Flex.Container>
+			<Box>
+				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</Box>
+		</Flex.Container>
 		<div
 			className={[
 				'code-mirror-box',

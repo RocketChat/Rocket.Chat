@@ -4,6 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
+import stripHtml from 'string-strip-html';
 
 import { settings } from '../../settings';
 
@@ -93,14 +94,19 @@ export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-
 
 export const checkAddressFormat = (from) => rfcMailPatternWithName.test(from);
 
-export const sendNoWrap = ({ to, from, replyTo, subject, html, headers }) => {
+export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) => {
 	if (!checkAddressFormat(to)) {
 		return;
 	}
-	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, headers }));
+
+	if (!text) {
+		text = stripHtml(html);
+	}
+
+	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
 };
 
-export const send = ({ to, from, replyTo, subject, html, data, headers }) => sendNoWrap({ to, from, replyTo, subject: replace(subject, data), html: wrap(html, data), headers });
+export const send = ({ to, from, replyTo, subject, html, text, data, headers }) => sendNoWrap({ to, from, replyTo, subject: replace(subject, data), text: text ? replace(text, data) : stripHtml(replace(html, data)), html: wrap(html, data), headers });
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {
