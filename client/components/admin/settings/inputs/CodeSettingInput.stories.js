@@ -8,7 +8,9 @@ export default {
 	title: 'admin/settings/inputs/CodeSettingInput',
 	component: CodeSettingInput,
 	decorators: [
-		(storyFn) => <Field>{storyFn()}</Field>,
+		(storyFn) => <div className='rc-old'>
+			<Field>{storyFn()}</Field>
+		</div>,
 	],
 };
 
