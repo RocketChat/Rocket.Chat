@@ -139,7 +139,6 @@ jobs:
         tar czf Rocket.Chat.test.tar.gz ./build-test
 
     - name: Store build for tests
-      uses: actions/upload-artifact@v1
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -167,7 +166,6 @@ jobs:
         mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
 
     - name: Restore build for tests
-      uses: actions/upload-artifact@v1
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
