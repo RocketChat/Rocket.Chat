@@ -14,12 +14,11 @@ export enum EventTypeDescriptor {
 	GENESIS = 'genesis',
 	MESSAGE = 'msg',
 	EDIT_MESSAGE = 'emsg',
+	DELETE_MESSAGE = 'dmsg',
 
 	// Not implemented
-	DELETE = 'delete',
 	ADD_USER = 'add_user',
 	REMOVE_USER = 'remove_user',
-	DELETE_MESSAGE = 'delete_message',
 	SET_MESSAGE_REACTION = 'set_message_reaction',
 	UNSET_MESSAGE_REACTION = 'unset_message_reaction',
 	MUTE_USER = 'mute_user',

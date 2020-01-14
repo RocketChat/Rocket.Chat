@@ -8,4 +8,5 @@ export interface IEDataMessage {
 	reactions?: Array<object>;
 	pinned?: Array<object>;
 	starred?: Array<object>;
+	deleted?: boolean;
 }

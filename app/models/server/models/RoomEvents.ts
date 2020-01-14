@@ -74,6 +74,20 @@ class RoomEventsModel extends EventsModel {
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
+	public async createDeleteMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string): Promise<IEvent<T>> {
+		src = this.ensureSrc(src);
+
+		const stub: IEventStub<T> = {
+			_cid,
+			t: EventTypeDescriptor.DELETE_MESSAGE,
+			d: {
+				deleted: true
+			}
+		};
+
+		return super.createEvent(src, getContextQuery(roomId), stub);
+	}
+
 	// async createDeleteRoomEvent(src, roomId) {
 	// 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_DELETE, { roomId });
 	// }

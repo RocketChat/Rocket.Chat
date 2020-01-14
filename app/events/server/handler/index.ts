@@ -11,6 +11,7 @@ const typesHandler: TypesHandler = {
 	// Room
 	msg: require('./types/room_message'), // ROOM_MESSAGE
 	emsg: require('./types/room_edit_message'), // ROOM_EDIT_MESSAGE
+	dmsg: require('./types/room_delete_message'), // ROOM_EDIT_MESSAGE
 };
 
 export async function handleEvents<T extends EDataDefinition>(events: [IEvent<T>]) {

@@ -112,6 +112,7 @@ export class Messages extends Base {
 		if (args[0]) {
 			// Add a `t: msg`
 			args[0].t = EventTypeDescriptor.MESSAGE;
+			args[0]['d.deleted'] = null;
 		}
 
 		const cursor = RoomEvents.find.apply(RoomEvents, args);
@@ -196,6 +197,24 @@ export class Messages extends Base {
 		}
 
 		return this.insert(...args);
+	}
+
+	remove(...args) {
+		const [query, update] = args;
+
+		const { _cid, v2Query } = this.getV2Query(query);
+
+		const event = RoomEvents.findOne(v2Query);
+
+		if (!event) {
+			return null;
+		}
+
+		const deleteEvent = Promise.await(RoomEvents.createDeleteMessageEvent(event.src, event.rid, _cid));
+
+		Promise.await(this.dispatchEvent(deleteEvent));
+
+		return RoomEvents.toV1(deleteEvent);
 	}
 	//
 	// ^^^
