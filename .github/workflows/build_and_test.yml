@@ -165,7 +165,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/test/Rocket.Chat.test.tar.gz /tmp/
+      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/Rocket.Chat.test.tar.gz /tmp/
 
     - name: Decompress build
       run: |
@@ -336,7 +336,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/build/Rocket.Chat.tar.gz /tmp/build --recursive
+      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/Rocket.Chat.tar.gz /tmp/build
 
     - name: Publish assets
       env:
