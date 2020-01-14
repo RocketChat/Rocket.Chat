@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { t } from '../../utils/client';
@@ -139,6 +140,12 @@ Template.emojiPicker.events({
 	'click .emoji-picker'(event) {
 		event.stopPropagation();
 		event.preventDefault();
+	},
+	'click #add-custom'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		FlowRouter.go('/admin/emoji-custom');
+		EmojiPicker.close();
 	},
 	'click .category-link'(event) {
 		event.stopPropagation();
