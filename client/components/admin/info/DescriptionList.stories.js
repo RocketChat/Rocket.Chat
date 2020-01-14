@@ -1,17 +1,18 @@
 import React from 'react';
 
 import { DescriptionList } from './DescriptionList';
+import { Page } from '../../basic/Page';
 
 export default {
 	title: 'admin/info/DescriptionList',
 	component: DescriptionList,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,
-		(fn) => <section className='page-container page-list'>
-			<div className='content'>
+		(fn) => <Page>
+			<Page.Content>
 				{fn()}
-			</div>
-		</section>,
+			</Page.Content>
+		</Page>,
 	],
 };
 
