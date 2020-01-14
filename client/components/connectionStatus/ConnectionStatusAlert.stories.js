@@ -12,11 +12,11 @@ export default {
 export const connected = () => <ConnectionStatusAlert />;
 connected.story = {
 	decorators: [
-		(fn) => <ConnectionStatusContext.Provider children={fn()} value={{
+		(fn) => <div style={{ minHeight: '100px', minWidth: '100px' }}><ConnectionStatusContext.Provider children={fn()} value={{
 			connected: true,
 			status: 'connected',
 			reconnect: action('reconnect'),
-		}} />,
+		}} /></div>,
 	],
 };
 
