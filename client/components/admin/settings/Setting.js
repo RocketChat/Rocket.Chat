@@ -1,6 +1,5 @@
-import { Callout, Field, InputBox, Label, Margins, Skeleton } from '@rocket.chat/fuselage';
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useMemo, useState } from 'react';
+import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/fuselage';
+import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 
 import { MarkdownText } from '../../basic/MarkdownText';
 import { RawText } from '../../basic/RawText';
@@ -22,76 +21,85 @@ import { AssetSettingInput } from './inputs/AssetSettingInput';
 import { RoomPickSettingInput } from './inputs/RoomPickSettingInput';
 import { useSetting } from './SettingsState';
 
-const getInputComponentByType = (type) => ({
-	boolean: BooleanSettingInput,
-	string: StringSettingInput,
-	relativeUrl: RelativeUrlSettingInput,
-	password: PasswordSettingInput,
-	int: IntSettingInput,
-	multiSelect: MultiSelectSettingInput,
-	select: SelectSettingInput,
-	language: LanguageSettingInput,
-	color: ColorSettingInput,
-	font: FontSettingInput,
-	code: CodeSettingInput,
-	action: ActionSettingInput,
-	asset: AssetSettingInput,
-	roomPick: RoomPickSettingInput,
-})[type] || GenericSettingInput;
-
-const MemoizedSetting = React.memo(function MemoizedSetting({
+export const MemoizedSetting = memo(function MemoizedSetting({
 	type,
 	hint,
 	callout,
+	value,
+	editor,
+	onChangeValue = () => {},
+	onChangeEditor = () => {},
 	...inputProps
 }) {
-	const InputComponent = getInputComponentByType(type);
+	const InputComponent = {
+		boolean: BooleanSettingInput,
+		string: StringSettingInput,
+		relativeUrl: RelativeUrlSettingInput,
+		password: PasswordSettingInput,
+		int: IntSettingInput,
+		select: SelectSettingInput,
+		multiSelect: MultiSelectSettingInput,
+		language: LanguageSettingInput,
+		color: ColorSettingInput,
+		font: FontSettingInput,
+		code: CodeSettingInput,
+		action: ActionSettingInput,
+		asset: AssetSettingInput,
+		roomPick: RoomPickSettingInput,
+	}[type] || GenericSettingInput;
 
 	return <Field>
-		<InputComponent {...inputProps} />
+		<InputComponent
+			value={value}
+			editor={editor}
+			onChangeValue={onChangeValue}
+			onChangeEditor={onChangeEditor}
+			{...inputProps}
+		/>
 		{hint && <Field.Hint>{hint}</Field.Hint>}
-		<Margins block='16'>
-			{callout && <Callout type='warning' children={callout} />}
-		</Margins>
+		{callout && <Margins block='x16'>
+			<Callout type='warning'>{callout}</Callout>
+		</Margins>}
 	</Field>;
 });
 
-export function Setting({ settingId }) {
+export function Setting({ settingId, sectionChanged }) {
 	const {
 		value: contextValue,
 		editor: contextEditor,
+		update,
+		reset,
 		...setting
 	} = useSetting(settingId);
 
 	const t = useTranslation();
 
 	const [value, setValue] = useState(contextValue);
-	const setContextValue = useDebouncedCallback((value) => setting.update({ value }), 70, []);
+	const [editor, setEditor] = useState(contextEditor);
 
 	useEffect(() => {
 		setValue(contextValue);
 	}, [contextValue]);
 
-	const [editor, setEditor] = useState(contextEditor);
-	const setContextEditor = useDebouncedCallback((editor) => setting.update({ editor }), 70, []);
-
 	useEffect(() => {
 		setEditor(contextEditor);
 	}, [contextEditor]);
 
-	const onChangeValue = (value) => {
+	const onChangeValue = useCallback((value) => {
 		setValue(value);
-		setContextValue(value);
-	};
+		update({ value });
+	}, [update]);
 
-	const onChangeEditor = (editor) => {
+	const onChangeEditor = useCallback((editor) => {
 		setEditor(editor);
-		setContextEditor(editor);
-	};
+		update({ editor });
+	}, [update]);
 
-	const onResetButtonClick = () => {
-		setting.reset();
-	};
+	const onResetButtonClick = useCallback(() => {
+		setValue(contextValue);
+		setEditor(contextEditor);
+		reset();
+	}, [contextValue, contextEditor, reset]);
 
 	const {
 		_id,
@@ -115,6 +123,7 @@ export function Setting({ settingId }) {
 		label={label}
 		hint={hint}
 		callout={callout}
+		sectionChanged={sectionChanged}
 		{...setting}
 		value={value}
 		editor={editor}
@@ -125,11 +134,18 @@ export function Setting({ settingId }) {
 	/>;
 }
 
-Setting.Skeleton = function SettingSkeleton() {
+export function SettingSkeleton() {
 	return <Field>
-		<Label>
-			<Skeleton width='25%' />
-		</Label>
-		<InputBox.Skeleton />
+		<Flex.Item align='stretch'>
+			<Field.Label>
+				<Skeleton width='25%' />
+			</Field.Label>
+		</Flex.Item>
+		<Field.Row>
+			<InputBox.Skeleton />
+		</Field.Row>
 	</Field>;
-};
+}
+
+Setting.Memoized = MemoizedSetting;
+Setting.Skeleton = SettingSkeleton;
