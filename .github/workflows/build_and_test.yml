@@ -138,17 +138,13 @@ jobs:
         cd /tmp
         tar czf Rocket.Chat.test.tar.gz ./build-test
 
-    - name: Store build for tests
+    - name: Store builds
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp /tmp/Rocket.Chat.test.tar.gz s3://rocketchatbuild/builds/$GITHUB_SHA/test/
-
-    - name: Store build
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp /tmp/build s3://rocketchatbuild/builds/$GITHUB_SHA/build/ --recursive
+      run: |
+        aws s3 cp /tmp/Rocket.Chat.test.tar.gz s3://rocketchatbuild/builds/$GITHUB_SHA/
+        aws s3 cp /tmp/build/Rocket.Chat.tar.gz s3://rocketchatbuild/builds/$GITHUB_SHA/
 
   test:
     runs-on: ubuntu-16.04
@@ -340,7 +336,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/build/ /tmp/build --recursive
+      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/build/Rocket.Chat.tar.gz /tmp/build --recursive
 
     - name: Publish assets
       env:
