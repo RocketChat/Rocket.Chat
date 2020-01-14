@@ -55,6 +55,48 @@ function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) 
 	};
 }
 
+function findGroupByIdOrName({ params, checkedArchived = true }) {
+	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
+		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+	}
+
+	const roomOptions = {
+		fields: {
+			t: 1,
+			ro: 1,
+			name: 1,
+			fname: 1,
+			prid: 1,
+			archived: 1,
+		},
+	};
+	const room = params.roomId
+		? Rooms.findOneById(params.roomId, roomOptions)
+		: Rooms.findOneByName(params.roomName, roomOptions);
+
+	if (!room || room.t !== 'p') {
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+	}
+
+
+	// discussions have their names saved on `fname` property
+	const roomName = room.prid ? room.fname : room.name;
+
+	if (checkedArchived && room.archived) {
+		throw new Meteor.Error('error-room-archived', `The group, ${ roomName }, is archived`);
+	}
+
+	const sub = Subscriptions.findByRoomId(room._id);
+
+	return {
+		rid: room._id,
+		open: sub && sub.open,
+		ro: room.ro,
+		t: room.t,
+		name: roomName,
+	};
+}
+
 API.v1.addRoute('groups.addAll', { authRequired: true }, {
 	post() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
@@ -365,12 +407,18 @@ API.v1.addRoute('groups.history', { authRequired: true }, {
 
 API.v1.addRoute('groups.info', { authRequired: true }, {
 	get() {
-		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId, checkedArchived: false });
-
+		if (!hasPermission(this.userId, 'view-room-administration')) {
+			const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId, checkedArchived: false });
+			console.log('It came here');
+			return API.v1.success({
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
+			});
+		}
+		const findResult = findGroupByIdOrName({ params: this.requestParams(), checkedArchived: false });
 		return API.v1.success({
 			group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 		});
-	},
+	},	
 });
 
 API.v1.addRoute('groups.invite', { authRequired: true }, {
