@@ -407,7 +407,7 @@ describe('[Users]', function() {
 
 		let userCredentials;
 		before(async () => {
-			userCredentials = await login(user);
+			userCredentials = await login(user, password);
 		});
 		before((done) => {
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
@@ -1727,8 +1727,8 @@ describe('[Users]', function() {
 
 		before(async () => {
 			user = await createUser();
-			userCredentials = await login(user);
-			newCredentials = await login(user);
+			userCredentials = await login(user, password);
+			newCredentials = await login(user, password);
 		});
 		after(async () => {
 			await deleteUser(user);
