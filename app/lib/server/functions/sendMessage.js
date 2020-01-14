@@ -165,13 +165,16 @@ const validateUserIdentity = (message, _id) => {
 	}
 };
 
-export const sendMessage = function(user, message, room, upsert = false) {
+export const sendMessage = function(user, message, room, upsert = false, trustedSender = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
 	const { _id, username, name } = user;
 
-	validateUserIdentity(message, _id);
+	if (!trustedSender) {
+		validateUserIdentity(message, _id);
+	}
+
 	validateMessage(message);
 
 	if (!message.ts) {

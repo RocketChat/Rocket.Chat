@@ -3,9 +3,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { t } from '../../utils';
 
-const dynamic = () => {
-	import('./views');
-};
+const dynamic = () => import('./views');
 
 FlowRouter.route('/admin/integrations', {
 	name: 'admin-integrations',
