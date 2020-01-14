@@ -27,7 +27,7 @@ import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
-import { generateTriggerId } from '../../../ui-message/client/ActionManager.js';
+import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 
 
 const messageBoxState = {
