@@ -823,7 +823,7 @@ Template.room.events({
 		openProfileTabOrOpenDM(e, instance, username);
 	},
 
-	'click .user-added, click .user-added-by'(e, instance) {
+	'click .open-flexTab'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
 		}
