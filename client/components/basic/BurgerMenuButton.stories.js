@@ -7,7 +7,7 @@ import { SidebarContext } from '../../contexts/SidebarContext';
 import { SessionContext } from '../../contexts/SessionContext';
 
 export default {
-	title: 'header/BurgerMenuButton',
+	title: 'basic/BurgerMenuButton',
 	component: BurgerMenuButton,
 	decorators: [(fn) => <div style={{ margin: '1rem' }}>{fn()}</div>],
 	parameters: {
