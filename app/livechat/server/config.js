@@ -7,11 +7,11 @@ Meteor.startup(function() {
 
 	settings.add('Livechat_enabled', false, { type: 'boolean', group: 'Omnichannel', public: true });
 
-	settings.add('Livechat_title', 'Rocket.Chat', { 
-		type: 'string', 
-		group: 'Omnichannel', 
+	settings.add('Livechat_title', 'Rocket.Chat', {
+		type: 'string',
+		group: 'Omnichannel',
 		section: 'Livechat',
-		public: true 
+		public: true
 	});
 
 	settings.add('Livechat_title_color', '#C1272D', {
@@ -85,26 +85,26 @@ Meteor.startup(function() {
 		i18nLabel: 'Offline_success_message',
 	});
 
-	settings.add('Livechat_allow_switching_departments', true, { 
-		type: 'boolean', 
+	settings.add('Livechat_allow_switching_departments', true, {
+		type: 'boolean',
 		group: 'Omnichannel',
-		section: 'Livechat',		
-		public: true, 
-		i18nLabel: 'Allow_switching_departments' 
+		section: 'Livechat',
+		public: true,
+		i18nLabel: 'Allow_switching_departments'
 	});
 
 	settings.add('Livechat_show_agent_info', true, {
-		type: 'boolean', 
-		group: 'Omnichannel', 
-		section: 'Livechat',		
-		public: true, 
-		i18nLabel: 'Show_agent_info' 
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+		i18nLabel: 'Show_agent_info'
 	});
 
 	settings.add('Livechat_show_agent_email', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
-		section: 'Livechat',		
+		section: 'Livechat',
 		public: true,
 		enableQuery: { _id: 'Livechat_show_agent_info', value: true },
 		i18nLabel: 'Show_agent_email',
@@ -113,7 +113,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_registration_form', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
-		section: 'Livechat',		
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Show_preregistration_form',
 	});
@@ -121,7 +121,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_name_field_registration_form', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
-		section: 'Livechat',		
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Show_name_field',
 	});
@@ -129,7 +129,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_email_field_registration_form', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
-		section: 'Livechat',		
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Show_email_field',
 	});
@@ -137,7 +137,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_conversation_finished_message', '', {
 		type: 'string',
 		group: 'Omnichannel',
-		section: 'Livechat',						
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Conversation_finished_message',
 	});
@@ -146,7 +146,7 @@ Meteor.startup(function() {
 		type: 'string',
 		multiline: true,
 		group: 'Omnichannel',
-		section: 'Livechat',				
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Conversation_finished_text',
 	});
@@ -273,7 +273,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_history_monitor_type', 'url', {
 		type: 'select',
 		group: 'Omnichannel',
-		section: 'Livechat',		
+		section: 'Livechat',
 		i18nLabel: 'Monitor_history_for_changes_on',
 		values: [
 			{ key: 'url', i18nLabel: 'Page_URL' },
@@ -284,7 +284,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_Visitor_navigation_as_a_message', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
-		section: 'Livechat',		
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Send_Visitor_navigation_history_as_a_message',
 	});
@@ -346,7 +346,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_registration_form_message', '', {
 		type: 'string',
 		group: 'Omnichannel',
-		section: 'Livechat',		
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Livechat_registration_form_message',
 	});
@@ -354,7 +354,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_AllowedDomainsList', '', {
 		type: 'string',
 		group: 'Omnichannel',
-		section: 'Livechat',		
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Livechat_AllowedDomainsList',
 		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget',
@@ -477,7 +477,7 @@ Meteor.startup(function() {
 		type: 'string',
 		multiline: true,
 		group: 'Omnichannel',
-		section: 'GDPR',		
+		section: 'GDPR',
 		public: true,
 		i18nLabel: 'Data_processing_consent_text',
 		i18nDescription: 'Data_processing_consent_text_description',
