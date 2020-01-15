@@ -123,8 +123,6 @@
 		height: 30px !important;
 		margin: -3px -10px;
 		padding: 0 var(--sidebar-extra-small-default-padding) var(--sidebar-small-default-padding);
-	}
-}
 
 		& .rc-input {
 			&__wrapper {
