@@ -10,7 +10,7 @@ Meteor.startup(function() {
 		group: 'Omnichannel',
 		public: true,
 		i18nLabel: 'Omnichannel_enabled',
-	 });
+	});
 
 	settings.add('Livechat_title', 'Rocket.Chat', {
 		type: 'string',
