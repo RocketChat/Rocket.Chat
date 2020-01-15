@@ -1,8 +1,4 @@
-import {
-	Field,
-	Label,
-	InputBox,
-} from '@rocket.chat/fuselage';
+import { Box, Field, Flex, InputBox } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { ResetSettingButton } from '../ResetSettingButton';
@@ -24,20 +20,24 @@ export function IntSettingInput({
 	};
 
 	return <>
+		<Flex.Container>
+			<Box>
+				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</Box>
+		</Flex.Container>
 		<Field.Row>
-			<Label htmlFor={_id} text={label} title={_id} />
-			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			<InputBox
+				data-qa-setting-id={_id}
+				id={_id}
+				type='number'
+				value={value}
+				placeholder={placeholder}
+				disabled={disabled}
+				readOnly={readonly}
+				autoComplete={autocomplete === false ? 'off' : undefined}
+				onChange={handleChange}
+			/>
 		</Field.Row>
-		<InputBox
-			data-qa-setting-id={_id}
-			id={_id}
-			type='number'
-			value={value}
-			placeholder={placeholder}
-			disabled={disabled}
-			readOnly={readonly}
-			autoComplete={autocomplete === false ? 'off' : undefined}
-			onChange={handleChange}
-		/>
 	</>;
 }
