@@ -1,8 +1,8 @@
 import './app/omnichannelAutocompleteUser';
-import './app/livechatQueue';
-import './app/livechatReadOnly';
-import './app/livechatNotSubscribed.html';
-import './app/livechatRoomTagSelector';
+import './app/omnichannelQueue';
+import './app/omnichannelReadOnly';
+import './app/omnichannelNotSubscribed.html';
+import './app/omnichannelRoomTagSelector';
 import './app/tabbar/agentEdit';
 import './app/tabbar/agentInfo';
 import './app/tabbar/externalSearch';

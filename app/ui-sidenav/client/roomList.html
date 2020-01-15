@@ -1,6 +1,6 @@
 <template name="roomList">
-	{{#if isLivechat}}
-		{{> livechat . }}
+	{{#if isOmnichannel}}
+		{{> omnichannel . }}
 	{{else}}
 		{{#with rooms}}
 			{{#if shouldAppear .. .}}

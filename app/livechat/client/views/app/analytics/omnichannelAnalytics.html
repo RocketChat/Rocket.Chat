@@ -1,0 +1,100 @@
+<template name="omnichannelAnalytics">
+	{{#requiresPermission 'view-livechat-analytics'}}
+	<form class="form-inline">
+		<div class="form-group rc-select">
+			<select id="omnichannel-analytics-options" class="required input-monitor rc-select__element">
+				{{#each analyticsAllOptions}}
+				<option class="rc-select__option" value="{{value}}" selected="{{selected value}}" dir="auto">{{_ name}}</option>
+				{{/each}}
+			</select>
+			<i class="icon-angle-down"></i>
+		</div>
+
+		<div class="form-group omnichannel-analytics-header">
+			{{#if showLeftNavButton}}
+			<button class="omnichannel-daterange-prev">
+				<i class="icon-left-circled"></i>
+			</button>
+			{{/if}}
+			<button class="rc-tooltip rc-tooltip--down js-button omnichannel-date-picker-btn">
+				{{#with daterange}}
+				<span class="omnichannel-datarange-from">{{from}}</span>
+				<span class="fade">{{_ "to" }}</span>
+				<span class="omnichannel-datarange-to">{{to}}</span>
+				{{/with}}
+			</button>
+			{{#if showRightNavButton}}
+			<button class="omnichannel-daterange-next">
+				<i class="icon-right-circled"></i>
+			</button>
+			{{/if}}
+		</div>
+	</form>
+	<div class="section">
+		<div class="section-content border-component-color">
+			<div class="omnichannel-analytics-overview">
+				{{#each analyticsOverviewData}}
+				<div class="omnichannel-analytics-ov-col">
+					{{#each this}}
+					<div class="omnichannel-analytics-ov-case">
+						<span class="value">{{value}}</span>
+						<span class="title">{{_ title}}</span>
+					</div>
+					{{/each}}
+				</div>
+				{{/each}}
+			</div>
+		</div>
+	</div>
+	<div class="omnichannel-analytics-table">
+		<div class="omnichannel-analytics-flex-container">
+			<div class="omnichannel-analytics-chart-col">
+				<div class="section omnichannel-chart-section">
+					<div class="section-content border-component-color omnichannel-chart-section-content">
+						<div class="rc-select omnichannel-chart-options">
+							<select id="omnichannel-analytics-chart-options" class="required input-monitor rc-select__element">
+								{{#with analyticsOptions}} {{#each chartOptions}}
+								<option class="rc-select__option" value="{{value}}" selected="{{selected value}}" dir="auto">{{_ name}}</option>
+								{{/each}} {{/with}}
+							</select>
+							<i class="icon-angle-down"></i>
+						</div>
+						<div class="omnichannel-analytics-chart-container">
+							<canvas id="omnichannel-analytics-chart"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="omnichannel-analytics-chart-ov-col">
+				<div class="section omnichannel-chart-section">
+					<div class="section-content border-component-color omnichannel-chart-section-content">
+						<div class="omnichannel-chart-ov-content">
+							<div class="list">
+								<table class="secondary-background-color">
+									{{#with agentOverviewData}}
+									<thead>
+										<tr class="table-row">
+											{{#each head}}
+											<th class="content-background-color border-component-color">{{_ name}}</th>
+											{{/each}}
+										</tr>
+									</thead>
+									<tbody>
+										{{#each data}}
+										<tr>
+											<td class="border-component-color border-component-td">{{name}}</td>
+											<td class="border-component-color">{{value}}</td>
+										</tr>
+										{{/each}}
+									</tbody>
+									{{/with}}
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{/requiresPermission}}
+</template>

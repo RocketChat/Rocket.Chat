@@ -11,7 +11,7 @@
 <template name="sidebarItem">
 	<li class="sidebar-item{{#if showUnread }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}} js-sidebar-type-{{t}}" data-id="{{_id}}">
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" aria-label="{{name}}">
-			{{#unless isLivechatQueue}}
+			{{#unless isOmnichannelQueue}}
 
 				<div class=" {{#if isRoom}}sidebar-item__picture{{else}}sidebar-item-option-icon{{/if}}">
 					{{#if darken}}

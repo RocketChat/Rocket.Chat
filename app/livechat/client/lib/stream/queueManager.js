@@ -54,7 +54,7 @@ const removeDepartmentsListeners = (departments) => {
 };
 
 const removeGlobalListener = () => {
-	livechatQueueStreamer.removeListener(OMNICHANNEL_INQUIRY_QUEUE_STREAM_OBSERVER);
+	omnichannelQueueStreamer.removeListener(OMNICHANNEL_INQUIRY_QUEUE_STREAM_OBSERVER);
 };
 
 export const initializeOmnichannelInquiryStream = async (userId) => {
