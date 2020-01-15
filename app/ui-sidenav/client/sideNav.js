@@ -95,7 +95,7 @@ const redirectToDefaultChannelIfNeeded = () => {
 
 const openMainContentIfNeeded = () => {
 	const currentRouteState = FlowRouter.current();
-	const defaults = ['/', '/home', '/account'];
+	const defaults = ['/', '/home'];
 
 	if (!defaults.includes(currentRouteState.path)) {
 		menu.close();
