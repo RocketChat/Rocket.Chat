@@ -14,9 +14,6 @@ Template.oembedImageWidget.helpers({
 		return true;
 	},
 	collapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
-		}
-		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
+		return this.collapsedMedia;
 	},
 });

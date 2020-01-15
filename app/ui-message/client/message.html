@@ -87,14 +87,14 @@
 				{{#each msg.urls}}
 					{{injectMessage . ../msg}}
 					{{injectIndex . @index}}
-					{{> oembedBaseWidget}}
+					{{> oembedBaseWidget (injectCollapsedMedia .)}}
 				{{/each}}
 			{{/if}}
 			{{#each msg.attachments}}
 				{{injectMessage . ../msg}}
 				{{injectSettings . ../settings}}
 				{{injectIndex . @index}}
-				{{> messageAttachment}}
+				{{> messageAttachment (injectCollapsedMedia .)}}
 			{{/each}}
 
 			{{#if msg.drid}}

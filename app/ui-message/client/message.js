@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -93,6 +94,12 @@ const renderBody = (msg, settings) => {
 	}
 	return msg;
 };
+
+Template.message.events({
+	'click .collapse-switch'(e, instance) {
+		instance.collapsedMedia.set(!instance.collapsedMedia.get());
+	},
+});
 
 Template.message.helpers({
 	body() {
@@ -366,6 +373,11 @@ Template.message.helpers({
 	injectSettings(data, settings) {
 		data.settings = settings;
 	},
+	injectCollapsedMedia(data) {
+		const collapsedMedia = Template.instance().collapsedMedia.get();
+		Object.assign(data, { collapsedMedia });
+		return data;
+	},
 	channelName() {
 		const { subscription } = this;
 		// const subscription = Subscriptions.findOne({ rid: this.rid });
@@ -420,6 +432,9 @@ Template.message.helpers({
 			return 'collapsed';
 		}
 	},
+	collapsedMedia() {
+		return Template.instance().collapsedMedia.get();
+	},
 	collapseSwitchClass() {
 		const { msg: { collapsed = true } } = this;
 		return collapsed ? 'icon-right-dir' : 'icon-down-dir';
@@ -467,6 +482,7 @@ const findParentMessage = (() => {
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
 
+	this.collapsedMedia = new ReactiveVar(this.data.settings.collapsedMediaByDefault === true);
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);

@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { DateFormat } from '../../lib';
 import { getURL } from '../../utils/client';
@@ -11,15 +10,6 @@ const colors = {
 	danger: '#D30230',
 };
 
-Template.messageAttachment.events({
-	'click .collapse-switch'(e, t) {
-		t.isCollapsed.set(!t.isCollapsed.get());
-	},
-});
-
-Template.messageAttachment.onCreated(function() {
-	this.isCollapsed = new ReactiveVar(false);
-});
 
 Template.messageAttachment.helpers({
 	parsedText() {
@@ -57,13 +47,7 @@ Template.messageAttachment.helpers({
 		return colors[this.color] || this.color;
 	},
 	collapsed() {
-		return Template.instance().isCollapsed.get();
-	},
-	mediaCollapsed() {
-		if (Template.instance().isCollapsed.get() !== false) {
-			return true;
-		}
-		return this.settings.collapseMediaByDefault === true;
+		return this.collapsedMedia;
 	},
 	time() {
 		const messageDate = new Date(this.ts);
@@ -81,6 +65,11 @@ Template.messageAttachment.helpers({
 	},
 	injectMessage(data, { rid, _id }) {
 		data.msg = { _id, rid };
+	},
+	injectCollapsedMedia(data) {
+		const { collapsedMedia } = data;
+		Object.assign(this, { collapsedMedia });
+		return this;
 	},
 	isFile() {
 		return this.type === 'file';
