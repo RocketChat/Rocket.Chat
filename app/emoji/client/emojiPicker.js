@@ -141,7 +141,7 @@ Template.emojiPicker.events({
 		event.stopPropagation();
 		event.preventDefault();
 	},
-	'click #add-custom'(event) {
+	'click .add-custom'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 		FlowRouter.go('/admin/emoji-custom');
