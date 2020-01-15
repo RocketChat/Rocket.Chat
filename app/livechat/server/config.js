@@ -163,7 +163,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_Room_Count', 1, {
 		type: 'int',
 		group: 'Omnichannel',
-		i18nLabel: 'Livechat_room_count',
+		i18nLabel: 'Omnichannel_room_count',
 	});
 
 	settings.add('Livechat_enabled_when_agent_idle', true, {
@@ -308,7 +308,7 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Omnichannel',
 		public: true,
-		i18nLabel: 'Continuous_sound_notifications_for_new_livechat_room',
+		i18nLabel: 'Continuous_sound_notifications_for_new_omnichannel_room',
 	});
 
 	settings.add('Livechat_videocall_enabled', false, {
@@ -398,6 +398,7 @@ Meteor.startup(function() {
 			{ key: 'Auto_Selection', i18nLabel: 'Auto_Selection' },
 			{ key: 'Manual_Selection', i18nLabel: 'Manual_Selection' },
 		],
+		i18nLabel: 'Omnichannel_Routing_Method',
 	});
 
 	settings.add('Livechat_accept_chats_with_no_agents', false, {
