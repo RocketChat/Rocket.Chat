@@ -11,6 +11,7 @@ import {
 	apiUsername,
 	targetUser,
 	log,
+	wait,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
@@ -1252,7 +1253,7 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.end(wait(done, 200));
 		});
 
 		it('should delete user own account', (done) => {

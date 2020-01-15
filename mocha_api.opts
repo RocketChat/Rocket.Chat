@@ -2,3 +2,7 @@
 --require babel-polyfill
 --reporter spec
 --ui bdd
+--timeout 10000
+--bail
+--file tests/end-to-end/teardown.js
+tests/end-to-end/api/*.js

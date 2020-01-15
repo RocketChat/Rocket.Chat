@@ -10,9 +10,6 @@
 		"tests": [
 			"app/**/*.tests.js"
 		],
-		"api": [
-			"tests/end-to-end/api/*.js"
-		],
 		"files": [
 			"app/**/*.mocks.js",
 			"app/**/*.js",
@@ -39,7 +36,7 @@
 		"test": "node .scripts/start.js",
 		"testui": "cypress run --project tests",
 		"testunit": "mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
-		"testapi": "mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.api.join(' '))\"`\"",
+		"testapi": "mocha --opts ./mocha_api.opts",
 		"testci": "npm run testapi && npm run testui",
 		"translation-diff": "node .scripts/translationDiff.js",
 		"translation-fix-order": "node .scripts/fix-i18n.js",
