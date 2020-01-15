@@ -45,7 +45,7 @@ AccountBox.addRoute({
 	name: 'omnichannel-managers',
 	path: '/managers',
 	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Livechat_managers',
+	i18nPageTitle: 'Managers',
 	pageTemplate: 'omnichannelManagers',
 }, livechatManagerRoutes, load);
 
