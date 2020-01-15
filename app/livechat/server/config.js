@@ -11,7 +11,7 @@ Meteor.startup(function() {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Livechat',
-		public: true
+		public: true,
 	});
 
 	settings.add('Livechat_title_color', '#C1272D', {
@@ -90,7 +90,7 @@ Meteor.startup(function() {
 		group: 'Omnichannel',
 		section: 'Livechat',
 		public: true,
-		i18nLabel: 'Allow_switching_departments'
+		i18nLabel: 'Allow_switching_departments',
 	});
 
 	settings.add('Livechat_show_agent_info', true, {
@@ -98,7 +98,7 @@ Meteor.startup(function() {
 		group: 'Omnichannel',
 		section: 'Livechat',
 		public: true,
-		i18nLabel: 'Show_agent_info'
+		i18nLabel: 'Show_agent_info',
 	});
 
 	settings.add('Livechat_show_agent_email', true, {
