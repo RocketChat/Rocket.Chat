@@ -8,7 +8,6 @@ import { CachedCollectionManager } from '../../ui-cached-collection';
 import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
 
-
 const events = new EventEmitter();
 
 export const on = (...args) => {
@@ -58,12 +57,13 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return events.emit(viewId, {
 			triggerId,
 			viewId,
-			appId: appId || data.blocks[0].appId, // TODO REMOVE GAMBA
+			appId,
 			...data,
 		});
 	}
 
 	if ([UIKitInteractionType.MODAL_OPEN].includes(type)) {
+		console.log(data);
 		const instance = modal.push({
 			template: 'ModalBlock',
 			modifier: 'uikit',
@@ -71,7 +71,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			data: {
 				triggerId,
 				viewId,
-				appId: appId || data.blocks[0].appId, // TODO REMOVE GAMBA
+				appId,
 				...data,
 			},
 		});
@@ -87,7 +87,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }
 
 	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
 
-	const { type: interactionType, ...data } = await APIClient.post(`apps/uikit/${ appId }/`, { type, actionId, payload, mid, rid, triggerId });
+	const { type: interactionType, ...data } = await APIClient.post(`apps/uikit/${ appId }`, { type, actionId, payload, mid, rid, triggerId });
 	return resolve(handlePayloadUserInteraction(interactionType, data));
 });
 
@@ -106,7 +106,7 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 export const triggerCancel = async ({ viewId, ...options }) => {
 	const instance = instances.get(viewId);
 	try {
-		await triggerAction({ type: UIKitIncomingInteractionType.VIEW_CLOSE, viewId, ...options });
+		await triggerAction({ type: UIKitIncomingInteractionType.VIEW_CLOSED, viewId, ...options });
 	} finally {
 		if (instance) {
 			instance.close();

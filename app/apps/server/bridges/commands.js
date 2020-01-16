@@ -91,6 +91,7 @@ export class AppCommandsBridge {
 		this._verifyCommand(command);
 
 		const item = {
+			appId,
 			command: command.command.toLowerCase(),
 			params: Utilities.getI18nKeyForApp(command.i18nParamsExample, appId),
 			description: Utilities.getI18nKeyForApp(command.i18nDescription, appId),
