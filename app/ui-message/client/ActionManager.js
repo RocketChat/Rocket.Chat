@@ -77,6 +77,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		const instance = modal.push({
 			template: 'ModalBlock',
 			modifier: 'uikit',
+			closeOnEscape: false,
 			data: {
 				triggerId,
 				viewId,

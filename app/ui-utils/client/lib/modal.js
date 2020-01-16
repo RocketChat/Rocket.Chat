@@ -14,6 +14,7 @@ const createModal = (config = {}, fn, onCancel) => {
 	config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
 	config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
 	config.confirmOnEnter = config.confirmOnEnter == null ? true : config.confirmOnEnter;
+	config.closeOnEscape = config.closeOnEscape == null ? true : config.closeOnEscape;
 
 	if (config.type === 'input') {
 		config.input = true;
@@ -218,7 +219,7 @@ Template.rc_modal.onRendered(function() {
 		$('.js-modal-input').focus();
 	}
 
-	document.addEventListener('keydown', modal.onKeyDown);
+	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
 });
 
 Template.rc_modal.onDestroyed(function() {
