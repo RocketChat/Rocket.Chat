@@ -25,6 +25,7 @@ Template.ModalBlock.onRendered(async function() {
 		ActionManager.off(viewId, handleUpdate);
 	};
 
+	this.node = this.find('.js-modal-block').parentElement;
 	ActionManager.on(viewId, handleUpdate);
 
 	this.state = new ReactiveDict({});
@@ -68,11 +69,10 @@ Template.ModalBlock.onRendered(async function() {
 			}),
 			{ data: () => state.get() },
 		),
-		this.find('.js-modal-block').parentElement.parentElement,
+		this.node,
 	);
 });
 Template.ModalBlock.onDestroyed(async function() {
 	const ReactDOM = await import('react-dom');
-	const node = this.find('.js-modal-block');
-	node && ReactDOM.unmountComponentAtNode(node);
+	this.node && ReactDOM.unmountComponentAtNode(this.node);
 });
