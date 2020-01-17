@@ -21,7 +21,7 @@ export function SideBar({
 		<Scrollable>
 			<Box className='SetupWizard__SideBar-content'>
 				<Headline level={2}>{t('Setup_Wizard')}</Headline>
-				<Margins blockEnd='16'>
+				<Margins blockEnd='x16'>
 					<Box is='p' textColor='hint' textStyle='p1'>{t('Setup_Wizard_Info')}</Box>
 				</Margins>
 
