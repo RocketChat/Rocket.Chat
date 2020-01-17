@@ -243,6 +243,10 @@
 	flex-direction: column;
 }
 
+.omnichannel-chart-options {
+	// flex: 1;
+}
+
 .border-component-td {
   padding: 0.5rem;
 }
@@ -256,97 +260,98 @@
 
 .omnichannel-analytics-header {
 	float: right;
+  & > .omnichannel-date-picker-btn {
+    font-weight: inherit;
+    font-size: inherit;
+    color: #383838;
+    //line-height: 1;
+    padding-top: 23px;
+  }
 
-	& > .omnichannel-date-picker-btn {
-		font-size: inherit;
-		font-weight: inherit;
-		padding-top: 23px;
-		color: #383838;
+  & > .omnichannel-date-picker-btn {
+    // padding-top: 15px;
+    // padding-right: 25px;
+    // padding-left: 10px;
+    position: relative;
 
-		position: relative;
-
-		.fade {
-			color: #9ea2a8;
-		}
-	}
+    .fade {
+      color: #9ea2a8;
+    }
+  }
 }
 
 .omnichannel-analytics-overview {
-	display: flex;
-	flex-wrap: wrap;
-
-	margin-top: 10px;
-	margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  margin-bottom: 10px;
 	justify-content: center;
 }
 
 .omnichannel-analytics-ov-col {
-	min-height: 20px;
+  min-height: 20px;
+  flex: 25%; //1;
+  max-width: 25%;
 
-	flex: 25%; //1;
-	max-width: 25%;
+  &.-full-width {
+    max-width: 100%;
+  }
 
-	&.-full-width {
-		max-width: 100%;
-	}
-
-	&:not(:last-child) {
-		border-right: 1px solid #E9E9E9;
-	}
+  &:not(:last-child) {
+    border-right: 1px solid #E9E9E9;
+  }
 }
 
 .omnichannel-analytics-ov-case {
-	width: 100%;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20px;
+  user-select: text;
 
-	text-align: center;
-	margin-bottom: 20px;
-
-	user-select: text;
-
-	&:first-child {
-		margin-top: 8px;
+  &:first-child {
+    margin-top: 8px;
 		//border-bottom: 1px solid #E9E9E9;
-	}
+  }
 
-	&.-standalone {
-		& > .title {
+  &.-standalone {
+    & > .title {
 			margin-top: 1px;
 			display: inline-block;
-			font-size: .875rem;
-			font-weight: 300;
-			text-transform: none;
-			// margin-bottom: 6px;
-		}
-		& > .value {
-			// margin-top: 1px;
-			font-size: 1.75rem;
+      font-size: .875rem;
+      font-weight: 300;
+      text-transform: none;
+      // margin-bottom: 6px;
+    }
+    & > .value {
+      // margin-top: 1px;
+      font-size: 1.75rem;
 			margin-bottom: 6px;
-		}
-	}
+    }
+  }
 
-	& > .title {
+  & > .title {
 		margin-top: 8px;
 		display: inline-block;
-		font-weight: 300;
-		font-size: 0.875rem;
-		color: #9ea2a8;
-		text-transform: uppercase;
-		//cursor: help;
-	}
+    font-weight: 300;
+    font-size: 0.875rem;
+    color: #9ea2a8;
+    text-transform: uppercase;
+    //cursor: help;
+  }
 
-	& > .value {
-		display: inline-block;
-		width: 100%;
-	}
+  & > .value {
+    display: inline-block;
+    width: 100%;
+  }
 
-	& > .value {
-		// margin-top: 8px;
-		font-weight: 400;
-		font-size: 1.75rem;
-		color: #383838;
-		line-height: 1;
-		text-transform: capitalize;
-	}
+  & > .value {
+    // margin-top: 8px;
+    font-weight: 400;
+    font-size: 1.75rem;
+    color: #383838;
+    line-height: 1;
+    text-transform: capitalize;
+  }
 }
 
 @media screen and (max-width: 925px) {
@@ -576,4 +581,3 @@
 .omnichannel-current-chats-add-filter-button {
 	margin-top: 17px;
 }
-
