@@ -21,7 +21,7 @@
 				
 				
 				{{#if showMessagePreview}}
-					{{> messageBoxPreview preview=preview}}
+					{{> messageBoxPreview currentMessageRendered=currentMessageRendered}}
 				{{/if}}
 				
 				<label class="rc-message-box__container">
@@ -77,6 +77,11 @@
 								</span>
 							{{/if}}
 						{{/each}}
+						{{#if showMessagePreviewCheckBox}}
+							<span class="rc-message-box__toolbar-formatting-item rc-tooltip" aria-label="{{_ Message_Preview}}">
+								<input type="checkbox" class="js-input-check" name="t" checked="{{checked}}" disabled="{{disabled}}">
+							</span>
+						{{/if}}
 					</div>
 				{{/if}}
 			{{else}}

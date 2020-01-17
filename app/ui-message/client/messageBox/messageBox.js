@@ -67,6 +67,7 @@ Template.messageBox.onCreated(function() {
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.isSendIconVisible = new ReactiveVar(false);
 	this.currentMessageRendered = new ReactiveVar();
+	this.previewMessageCheck = new ReactiveVar(true);
 
 	this.set = (value) => {
 		const { input } = this;
@@ -211,9 +212,16 @@ Template.messageBox.onDestroyed(function() {
 
 Template.messageBox.helpers({
 	showMessagePreview() {
-		return getUserPreference(Meteor.userId(), 'messagePreview') && Template.instance().currentMessageRendered.get();
+		const instance = Template.instance();
+		return getUserPreference(Meteor.userId(), 'messagePreview') && instance.currentMessageRendered.get() && instance.previewMessageCheck.get();
 	},
-	preview() {
+	showMessagePreviewCheckBox() {
+		return getUserPreference(Meteor.userId(), 'messagePreview');
+	},
+	checked() {
+		return Template.instance().previewMessageCheck.get();
+	},
+	currentMessageRendered() {
 		return 	Template.instance().currentMessageRendered.get();
 	},
 	isAnonymousOrMustJoinWithCode() {
@@ -532,5 +540,8 @@ Template.messageBox.events({
 		}
 
 		applyFormatting(pattern, instance.input);
+	},
+	'change .js-input-check'(e, t) {
+		t.previewMessageCheck.set(e.currentTarget.checked);
 	},
 });
