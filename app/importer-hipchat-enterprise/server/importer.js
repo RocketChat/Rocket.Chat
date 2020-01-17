@@ -15,7 +15,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 	Imports,
-} from '../../importer/server';
+} from '../../old-importer/server';
 import { Messages, Users, Subscriptions, Rooms } from '../../models';
 import { insertMessage } from '../../lib';
 

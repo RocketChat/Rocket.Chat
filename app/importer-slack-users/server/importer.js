@@ -7,7 +7,7 @@ import {
 	ProgressStep,
 	Selection,
 	SelectionUser,
-} from '../../importer/server';
+} from '../../old-importer/server';
 import { RocketChatFile } from '../../file';
 import { Users } from '../../models';
 

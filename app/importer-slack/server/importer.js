@@ -8,7 +8,7 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '../../importer/server';
+} from '../../old-importer/server';
 import { RocketChatFile } from '../../file';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Users, Rooms, Messages } from '../../models';

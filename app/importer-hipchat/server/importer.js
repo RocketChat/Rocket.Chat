@@ -10,7 +10,7 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '../../importer/server';
+} from '../../old-importer/server';
 import { RocketChatFile } from '../../file';
 import { Users, Rooms } from '../../models';
 import { sendMessage } from '../../lib';

@@ -1,4 +1,4 @@
-import { Importers } from '../../importer/client';
+import { Importers } from '../../old-importer/client';
 import { SlackImporterInfo } from '../lib/info';
 
 Importers.add(new SlackImporterInfo());

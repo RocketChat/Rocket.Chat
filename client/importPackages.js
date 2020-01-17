@@ -25,7 +25,7 @@ import '../app/gitlab/client';
 import '../app/google-vision/client';
 import '../app/highlight-words';
 import '../app/iframe-login/client';
-import '../app/importer/client';
+import '../app/old-importer/client';
 import '../app/importer-csv/client';
 import '../app/importer-hipchat/client';
 import '../app/importer-hipchat-enterprise/client';
