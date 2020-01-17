@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import { UiKitMessage as uiKitMessage, kitContext, UiKitModal as uiKitModal, messageParser, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import { uiKitText } from '@rocket.chat/ui-kit';
 import { Modal, AnimatedVisibility, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';

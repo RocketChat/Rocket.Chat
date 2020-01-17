@@ -1,5 +1,6 @@
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
+import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 
 import { Users } from '../../../models/server';
 
@@ -55,7 +56,7 @@ export class AppUIKitInteractionApi {
 			} = req.body;
 
 			switch (type) {
-				case 'blockAction': {
+				case UIKitIncomingInteractionType.BLOCK: {
 					const {
 						type,
 						actionId,
@@ -89,14 +90,14 @@ export class AppUIKitInteractionApi {
 					} catch (e) {
 						res.status(500).send(e.message);
 					}
-				}
 					break;
+				}
 
-				case 'viewCancel':
+				case UIKitIncomingInteractionType.VIEW_CLOSED:
 					res.sendStatus(200);
 					break;
 
-				case 'viewSubmit': {
+				case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 					const {
 						type,
 						actionId,
@@ -124,8 +125,8 @@ export class AppUIKitInteractionApi {
 					} catch (e) {
 						res.status(500).send(e.message);
 					}
-				}
 					break;
+				}
 			}
 
 			// TODO: validate payloads per type

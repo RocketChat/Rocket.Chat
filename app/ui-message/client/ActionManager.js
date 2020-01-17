@@ -1,11 +1,12 @@
-import { Random } from 'meteor/random';
+import { UIKitInteractionType, UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import { CachedCollectionManager } from '../../ui-cached-collection';
 import Notifications from '../../notifications/client/lib/Notifications';
-import { APIClient } from '../../utils';
+import { CachedCollectionManager } from '../../ui-cached-collection';
 import { modal } from '../../ui-utils/client/lib/modal';
+import { APIClient } from '../../utils';
 
 const events = new EventEmitter();
 
@@ -18,18 +19,6 @@ export const off = (...args) => {
 };
 
 const TRIGGER_TIMEOUT = 5000;
-
-const ACTION_TYPES = {
-	ACTION: 'blockAction',
-	SUBMIT: 'viewSubmit',
-	CANCEL: 'viewCancel',
-};
-
-const MODAL_ACTIONS = {
-	OPEN: 'modal',
-	CLOSE: 'modal.close',
-	UPDATE: 'modal.update',
-};
 
 const triggersId = new Map();
 
@@ -64,16 +53,17 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return;
 	}
 
-	if ([MODAL_ACTIONS.UPDATE].includes(type)) {
+	if ([UIKitInteractionType.MODAL_UPDATE].includes(type)) {
 		return events.emit(viewId, {
 			triggerId,
 			viewId,
-			appId: appId || data.blocks[0].appId, // TODO REMOVE GAMBA
+			appId,
 			...data,
 		});
 	}
 
-	if ([MODAL_ACTIONS.OPEN].includes(type)) {
+	if ([UIKitInteractionType.MODAL_OPEN].includes(type)) {
+		console.log(data);
 		const instance = modal.push({
 			template: 'ModalBlock',
 			modifier: 'uikit',
@@ -81,7 +71,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			data: {
 				triggerId,
 				viewId,
-				appId: appId || data.blocks[0].appId, // TODO REMOVE GAMBA
+				appId,
 				...data,
 			},
 		});
@@ -97,15 +87,15 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }
 
 	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
 
-	const { type: interactionType, ...data } = await APIClient.post(`apps/uikit/${ appId }/`, { type, actionId, payload, mid, rid, triggerId });
+	const { type: interactionType, ...data } = await APIClient.post(`apps/uikit/${ appId }`, { type, actionId, payload, mid, rid, triggerId });
 	return resolve(handlePayloadUserInteraction(interactionType, data));
 });
 
-export const triggerBlockAction = (options) => triggerAction({ type: ACTION_TYPES.ACTION, ...options });
+export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
 export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const instance = instances.get(viewId);
 	try {
-		await triggerAction({ type: ACTION_TYPES.SUBMIT, viewId, ...options });
+		await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
 	} finally {
 		if (instance) {
 			instance.close();
@@ -116,7 +106,7 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 export const triggerCancel = async ({ viewId, ...options }) => {
 	const instance = instances.get(viewId);
 	try {
-		await triggerAction({ type: ACTION_TYPES.CANCEL, viewId, ...options });
+		await triggerAction({ type: UIKitIncomingInteractionType.VIEW_CLOSED, viewId, ...options });
 	} finally {
 		if (instance) {
 			instance.close();
