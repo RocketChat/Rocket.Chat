@@ -259,6 +259,10 @@ class Administration extends Page {
 
 	get accountsConvertAsciiEmojiReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]'); }
 
+	get accountsMessagePreview() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_messagePreview"]'); }
+
+	get accountsMessagePreviewReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_messagePreview"]'); }
+
 	get accountsAutoImageLoad() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]'); }
 
 	get accountsAutoImageLoadReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]'); }

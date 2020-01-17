@@ -2216,6 +2216,7 @@
   "Message_MaxAll": "Maximum Channel Size for ALL Message",
   "Message_MaxAllowedSize": "Maximum Allowed Characters Per Message",
   "Message_pinning": "Message pinning",
+  "Message_Preview": "Preview message before sending",
   "Message_QuoteChainLimit": "Maximum Number of Chained Quotes",
   "Message_Read_Receipt_Enabled": "Show Read Receipts",
   "Message_Read_Receipt_Store_Users": "Detailed Read Receipts",

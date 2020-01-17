@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
@@ -6,6 +7,7 @@ import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
+import { Markdown } from '../../../markdown/client';
 import { setupAutogrow } from './messageBoxAutogrow';
 import {
 	formattingButtons,
@@ -30,13 +32,33 @@ import {
 	roomTypes,
 	getUserPreference,
 } from '../../../utils';
+import { renderMessageBody, MessageTypes } from '../../../ui-utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
-import './messageBox.html';
+import './messageBoxPreview';
 import './messageBoxReadOnly';
+import './messageBox.html';
+
+const renderBody = (msg) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.message) {
+		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
+	} else {
+		msg = renderMessageBody(msg);
+	}
+
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
+	}
+
+	return msg;
+};
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -44,6 +66,7 @@ Template.messageBox.onCreated(function() {
 	this.replyMessageData = new ReactiveVar();
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.isSendIconVisible = new ReactiveVar(false);
+	this.currentMessageRendered = new ReactiveVar();
 
 	this.set = (value) => {
 		const { input } = this;
@@ -187,6 +210,12 @@ Template.messageBox.onDestroyed(function() {
 });
 
 Template.messageBox.helpers({
+	showMessagePreview() {
+		return getUserPreference(Meteor.userId(), 'messagePreview') && Template.instance().currentMessageRendered.get();
+	},
+	preview() {
+		return 	Template.instance().currentMessageRendered.get();
+	},
 	isAnonymousOrMustJoinWithCode() {
 		const instance = Template.instance();
 		const { rid } = Template.currentData();
@@ -412,6 +441,10 @@ Template.messageBox.events({
 
 		const { rid, tmid, onValueChanged } = this;
 		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
+
+		const msg = $('.js-input-message')[0].value;
+
+		Template.instance().currentMessageRendered.set(renderBody({ msg }));
 	},
 	'propertychange .js-input-message'(event, instance) {
 		if (event.originalEvent.propertyName !== 'value') {

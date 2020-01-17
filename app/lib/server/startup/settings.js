@@ -313,6 +313,11 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Convert_Ascii_Emojis',
 		});
+		this.add('Accounts_Default_User_Preferences_messagePreiew', true, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Message_Preview',
+		});
 		this.add('Accounts_Default_User_Preferences_autoImageLoad', true, {
 			type: 'boolean',
 			public: true,

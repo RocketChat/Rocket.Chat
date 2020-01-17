@@ -1,0 +1,12 @@
+<template name="messageBoxPreview" args="preview">
+    {{#if showMessagePreview}}
+        <div class="reply-preview message-popup">
+            <div class="message">
+                {{{preview}}}
+            </div>
+            <div class="rc-message-box__icon cancel-preview">
+                {{> icon block="rc-input__icon-svg" icon="cross"}}
+            </div>
+        </div>
+    {{/if}}
+</template>

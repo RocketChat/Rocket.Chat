@@ -800,6 +800,14 @@ describe('[Administration]', () => {
 					admin.accountsConvertAsciiEmoji.isSelected().should.be.true;
 				});
 
+				it('it should show the message preview field', () => {
+					admin.accountsMessagePreview.$('..').scroll();
+					admin.accountsMessagePreview.$('..').isVisible().should.be.true;
+				});
+				it('the message preview field value should be true', () => {
+					admin.accountsMessagePreview.isSelected().should.be.true;
+				});
+
 				it('it should show the auto load images field', () => {
 					admin.accountsAutoImageLoad.$('..').scroll();
 					admin.accountsAutoImageLoad.$('..').isVisible().should.be.true;
