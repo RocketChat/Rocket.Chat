@@ -123,7 +123,7 @@
 		"@rocket.chat/apps-engine": "^1.11.0-blockitchat.2430",
 		"@rocket.chat/fuselage": "^0.2.0-dev.79",
 		"@rocket.chat/fuselage-hooks": "^0.2.0-alpha.19",
-		"@rocket.chat/fuselage-ui-kit": "^0.2.0-dev.80",
+		"@rocket.chat/fuselage-ui-kit": "^0.2.0-dev.81",
 		"@rocket.chat/icons": "^0.2.0-alpha.19",
 		"@rocket.chat/ui-kit": "^0.2.0-alpha.19",
 		"@slack/client": "^4.8.0",
