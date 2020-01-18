@@ -30,7 +30,7 @@ import '../app/github-enterprise/server';
 import '../app/gitlab/server';
 import '../app/google-vision/server';
 import '../app/iframe-login/server';
-import '../app/old-importer/server';
+import '../app/importer/server';
 import '../app/importer-csv/server';
 import '../app/importer-hipchat/server';
 import '../app/importer-hipchat-enterprise/server';

@@ -7,15 +7,15 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '../../old-importer/server';
+} from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { Users, Rooms } from '../../models';
 import { sendMessage } from '../../lib';
 import { t } from '../../utils';
 
 export class CsvImporter extends Base {
-	constructor(info) {
-		super(info);
+	constructor(info, importRecord) {
+		super(info, importRecord);
 
 		this.csvParser = require('csv-parse/lib/sync');
 		this.messages = new Map();

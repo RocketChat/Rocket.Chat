@@ -10,7 +10,7 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '../../old-importer/server';
+} from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { Users, Rooms } from '../../models';
 import { sendMessage } from '../../lib';
@@ -18,8 +18,8 @@ import { sendMessage } from '../../lib';
 import 'moment-timezone';
 
 export class HipChatImporter extends Base {
-	constructor(info) {
-		super(info);
+	constructor(info, importRecord) {
+		super(info, importRecord);
 
 		this.userTags = [];
 		this.roomPrefix = 'hipchat_export/rooms/';

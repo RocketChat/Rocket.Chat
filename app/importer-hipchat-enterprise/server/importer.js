@@ -15,7 +15,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 	Imports,
-} from '../../old-importer/server';
+} from '../../importer/server';
 import { Messages, Users, Subscriptions, Rooms } from '../../models';
 import { insertMessage } from '../../lib';
 
@@ -36,8 +36,8 @@ turndownService.addRule('strikethrough', {
 });
 
 export class HipChatEnterpriseImporter extends Base {
-	constructor(info) {
-		super(info);
+	constructor(info, importRecord) {
+		super(info, importRecord);
 
 		this.Readable = Readable;
 		this.zlib = require('zlib');

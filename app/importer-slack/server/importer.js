@@ -8,7 +8,7 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '../../old-importer/server';
+} from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Users, Rooms, Messages } from '../../models';
@@ -16,8 +16,8 @@ import { sendMessage } from '../../lib';
 
 
 export class SlackImporter extends Base {
-	constructor(info) {
-		super(info);
+	constructor(info, importRecord) {
+		super(info, importRecord);
 		this.userTags = [];
 		this.bots = {};
 	}

@@ -1,4 +1,4 @@
-import { ImporterInfo } from '../../old-importer/lib/ImporterInfo';
+import { ImporterInfo } from '../../importer/lib/ImporterInfo';
 
 export class HipChatEnterpriseImporterInfo extends ImporterInfo {
 	constructor() {

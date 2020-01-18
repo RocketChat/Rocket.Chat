@@ -7,13 +7,13 @@ import {
 	ProgressStep,
 	Selection,
 	SelectionUser,
-} from '../../old-importer/server';
+} from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { Users } from '../../models';
 
 export class SlackUsersImporter extends Base {
-	constructor(info) {
-		super(info);
+	constructor(info, importRecord) {
+		super(info, importRecord);
 
 		this.csvParser = require('csv-parse/lib/sync');
 		this.userMap = new Map();
