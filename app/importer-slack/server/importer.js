@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
 import {
+	RawImports,
 	Base,
 	ProgressStep,
 	Selection,
@@ -84,28 +85,28 @@ export class SlackImporter extends Base {
 		this.updateRecord({ 'count.channels': tempChannels.length });
 		this.addCountToTotal(tempChannels.length);
 
+		this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'bots', bots: this.bots });
+
 		// Insert the messages records
 		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 
 		let messagesCount = 0;
 		Object.keys(tempMessages).forEach((channel) => {
 			const messagesObj = tempMessages[channel];
-			this.messages[channel] = this.messages[channel] || {};
 
 			Object.keys(messagesObj).forEach((date) => {
 				const msgs = messagesObj[date];
 				messagesCount += msgs.length;
 				this.updateRecord({ messagesstatus: `${ channel }/${ date }` });
+
 				if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
 					const tmp = Base.getBSONSafeArraysFromAnArray(msgs);
 					Object.keys(tmp).forEach((i) => {
 						const splitMsg = tmp[i];
-						const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ date }.${ i }`, messages: splitMsg });
-						this.messages[channel][`${ date }.${ i }`] = this.collection.findOne(messagesId);
+						this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ date }.${ i }`, messages: splitMsg, channel, date, i });
 					});
 				} else {
-					const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ date }`, messages: msgs });
-					this.messages[channel][date] = this.collection.findOne(messagesId);
+					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ date }`, messages: msgs, channel, date });
 				}
 			});
 		});
@@ -381,6 +382,17 @@ export class SlackImporter extends Base {
 	}
 
 	startImport(importSelection) {
+		const bots = this.collection.findOne({ import: this.importRecord._id, type: 'bots' });
+		if (bots) {
+			this.bots = bots.bots || {};
+		} else {
+			this.bots = {};
+		}
+
+		this.users = RawImports.findOne({ import: this.importRecord._id, type: 'users' });
+		this.channels = RawImports.findOne({ import: this.importRecord._id, type: 'channels' });
+		this.reloadCount();
+
 		super.startImport(importSelection);
 		const start = Date.now();
 
@@ -406,6 +418,8 @@ export class SlackImporter extends Base {
 		});
 		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
 
+		const channelNames = [];
+
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
 			try {
@@ -418,6 +432,8 @@ export class SlackImporter extends Base {
 					if (!channel.do_import) {
 						return;
 					}
+
+					channelNames.push(channel.name);
 
 					Meteor.runAsUser(startedByUserId, () => {
 						const existantRoom = Rooms.findOneByName(channel.name);
@@ -470,25 +486,21 @@ export class SlackImporter extends Base {
 				const missedTypes = {};
 
 				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				Object.keys(this.messages).forEach((channel) => {
-					const messagesObj = this.messages[channel];
+				for (const channel of channelNames) {
+					const slackChannel = this.getSlackChannelFromName(channel);
+
+					const room = Rooms.findOneById(slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
+					const messagePacks = this.collection.find({ import: this.importRecord._id, type: 'messages', channel });
 
 					Meteor.runAsUser(startedByUserId, () => {
-						const slackChannel = this.getSlackChannelFromName(channel);
-						if (!slackChannel || !slackChannel.do_import) {
-							return;
-						}
+						messagePacks.forEach((pack) => {
+							const packId = pack.i ? `${ pack.date }.${ pack.i }` : pack.date;
 
-						const room = Rooms.findOneById(slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
-						Object.keys(messagesObj).forEach((date) => {
-							const msgs = messagesObj[date];
-							msgs.messages.forEach((message) => {
-								this.updateRecord({ messagesstatus: `${ channel }/${ date }.${ msgs.messages.length }` });
-								return this.performMessageImport(message, room, missedTypes, slackChannel);
-							});
+							this.updateRecord({ messagesstatus: `${ channel }/${ packId } (${ pack.messages.length })` });
+							pack.messages.forEach((message) => this.performMessageImport(message, room, missedTypes, slackChannel));
 						});
 					});
-				});
+				}
 
 				if (!_.isEmpty(missedTypes)) {
 					console.log('Missed import types:', missedTypes);
