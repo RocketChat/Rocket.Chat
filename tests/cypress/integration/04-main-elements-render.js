@@ -32,7 +32,7 @@ describe('[Main Elements Render]', function() {
 			});
 
 			it('it should click the spotlight and show the channel list', () => {
-				sideNav.spotlightSearch.click();
+				sideNav.spotlightSearch.click('center');
 				sideNav.spotlightSearchPopUp.should('be.visible');
 			});
 

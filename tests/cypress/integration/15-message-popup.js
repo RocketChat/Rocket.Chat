@@ -75,7 +75,7 @@ describe('[Message Popup]', () => {
 				}
 			});
 
-			loginPage.open();
+			// loginPage.open();
 			loginPage.login({ email: adminEmail, password: adminPassword });
 
 			sideNav.general.click();

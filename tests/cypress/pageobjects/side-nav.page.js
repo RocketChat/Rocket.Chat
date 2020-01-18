@@ -1,8 +1,9 @@
 import Page from './Page';
+import mainContent from './main-content.page';
 
 class SideNav extends Page {
 	// New channel
-	get channelType() { return browser.element('.create-channel__content .rc-switch__button'); }
+	get channelType() { return browser.element('.create-channel__content [name=type]~.rc-switch__button'); }
 
 	get channelReadOnly() { return browser.elements('.create-channel__switches .rc-switch__button').value[1]; }
 
@@ -88,13 +89,13 @@ class SideNav extends Page {
 
 	// Opens a channel via rooms list
 	openChannel(channelName) {
-		cy.get('.sidebar-item__ellipsis').contains(channelName).scrollIntoView().click();
+		cy.contains('.sidebar-item__ellipsis', channelName).scrollIntoView().click();
 		cy.get('.rc-header__name').should('contain', channelName);
 	}
 
 	// Opens a channel via spotlight search
 	searchChannel(channelName) {
-		// browser.waitForVisible('.rc-header', 15000);
+		// cy.get('.rc-header').should('be.visible');
 		// if (browser.isVisible('.rc-header__name')) {
 		// 	if (channelName === browser.element('.rc-header__name').getText()) {
 		// 		return;
@@ -102,30 +103,14 @@ class SideNav extends Page {
 		// }
 		// this.spotlightSearch.waitForVisible(5000);
 		// TODO: handle the case where the channel is already there
-		this.spotlightSearch.click();
+		this.spotlightSearch.should('be.visible');
+		this.spotlightSearch.should('have.focus');
+		// this.spotlightSearch.click('center', { log: true });
 		this.spotlightSearch.type(channelName);
 
-		cy.get(`[aria-label='${ channelName }']`).click({ multiple: true });
+		cy.get(`.rooms-list__toolbar-search [aria-label='${ channelName }']`).click();
 
 		cy.get('.rc-header__name').should('contain', channelName);
-	}
-
-	// Gets a channel from the spotlight search
-	getChannelFromSpotlight(channelName) {
-		let currentRoom;
-		// browser.waitForVisible('.rc-header', 15000);
-		if (browser.isVisible('.rc-header__name')) {
-			currentRoom = browser.element('.rc-header__name').getText();
-		}
-		currentRoom = browser.element('.rc-header__name').getText();
-		console.log(currentRoom, channelName);
-		if (currentRoom !== channelName) {
-			// this.spotlightSearch.waitForVisible(5000);
-			this.spotlightSearch.click();
-			this.spotlightSearch.setValue(channelName);
-			// browser.waitForVisible(`.sidebar-item__name=${ channelName }`, 5000);
-			return browser.element(`.sidebar-item__name=${ channelName }`);
-		}
 	}
 
 	// Gets a channel from the rooms list
@@ -155,6 +140,7 @@ class SideNav extends Page {
 
 		this.saveChannelBtn.click();
 		this.channelType.should('not.be.visible');
+		mainContent.messageInput.should('be.focused');
 	}
 }
 

@@ -18,44 +18,45 @@ describe('[Channel]', () => {
 		sideNav.openChannel('general');
 	});
 	describe('[Search]', () => {
-		describe.skip('[SpotlightSearch]', () => {
+		describe('[SpotlightSearch]', () => {
 			describe('rocket.cat:', () => {
 				it('it should search rocket cat', () => {
 					sideNav.spotlightSearchIcon.click();
-					sideNav.getChannelFromSpotlight('rocket.cat').should('be.visible');
+					sideNav.searchChannel('rocket.cat');
 				});
 
 				it('it should start a direct message with rocket.cat', () => {
-					sideNav.searchChannel('rocket.cat');
+					// sideNav.searchChannel('rocket.cat');
 					// mainContent.channelTitle.waitForVisible(5000);
-					mainContent.channelTitle.getText().should.equal('rocket.cat');
+					mainContent.channelTitle.should('contain', 'rocket.cat');
 				});
 			});
 
 			describe('general:', () => {
 				it('it should search general', () => {
 					sideNav.spotlightSearchIcon.click();
-					sideNav.getChannelFromSpotlight('general').should('be.visible');
+					sideNav.searchChannel('general');
 				});
 
 				it('it should go to general', () => {
-					sideNav.searchChannel('general');
-					mainContent.channelTitle.getText().should.equal('general');
+					// sideNav.searchChannel('general');
+					mainContent.channelTitle.should('contain', 'general');
 				});
 			});
 
 			describe('user created channel:', () => {
-				beforeEach(() => {
-					// sideNav.getChannelFromSpotlight(publicChannelName).waitForVisible(5000);
-				});
+				// beforeEach(() => {
+				// 	sideNav.getChannelFromSpotlight(publicChannelName).waitForVisible(5000);
+				// });
 
 				it('it should search the user created channel', () => {
-					sideNav.getChannelFromSpotlight(publicChannelName).should('be.visible');
+					sideNav.spotlightSearchIcon.click();
+					sideNav.searchChannel(publicChannelName);
 				});
 
 				it('it should go to the user created channel', () => {
-					sideNav.searchChannel(publicChannelName);
-					mainContent.channelTitle.getText().should.equal(publicChannelName);
+					// sideNav.searchChannel(publicChannelName);
+					mainContent.channelTitle.should('contain', publicChannelName);
 				});
 			});
 		});

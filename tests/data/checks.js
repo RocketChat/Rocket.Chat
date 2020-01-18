@@ -19,7 +19,7 @@ export function setDirectMessageCreated(status) {
 export function checkIfUserIsValid(username, email, password) {
 	loginPage.open();
 
-	cy.window().then(({ Meteor }) => {
+	return cy.window().then(({ Meteor }) => {
 		const user = Meteor.user();
 		if (!user || user.username !== username) {
 			return new Promise((resolve) => {
