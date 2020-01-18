@@ -34,6 +34,7 @@ describe('[Resolution]', () => {
 						sideNav.burgerBtn.click();
 					}
 				});
+				cy.wait(100);
 			});
 
 			it('it should open de sidenav', () => {
