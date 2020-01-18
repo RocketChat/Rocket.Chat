@@ -7,6 +7,7 @@ import sideNav from '../pageobjects/side-nav.page';
 import admin from '../pageobjects/administration.page';
 import { checkIfUserIsValid } from '../../data/checks';
 import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../data/user.js';
+import { wait } from '../../data/api-data';
 
 const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
@@ -405,7 +406,7 @@ describe('[Api Settings Change]', () => {
 			sideNav.sidebarUserMenu.click();
 			sideNav.logout.click();
 
-			loginPage.open();
+			// loginPage.open();
 		});
 
 		it('it should change the Manually Approve New Users via api', (done) => {
@@ -479,7 +480,7 @@ describe('[Api Settings Change]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.end(wait(done, 100));
 		});
 	});
 });

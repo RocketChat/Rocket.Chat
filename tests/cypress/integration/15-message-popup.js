@@ -63,28 +63,26 @@ const createTestUser = async ({ email, name, username, password, isMentionable }
 describe('[Message Popup]', () => {
 	before(() => {
 		loginPage.open();
+
+		cy.logout();
+
+		cy.window().then(async () => {
+			for (const user of users) {
+				await createTestUser(user); // eslint-disable-line no-await-in-loop
+			}
+		});
+
+		// loginPage.open();
+		loginPage.login({ email: adminEmail, password: adminPassword });
+
+		sideNav.general.click();
+	});
+
+	after(() => {
+		cy.logout();
 	});
 
 	describe('test user mentions in message popup', () => {
-		before(() => {
-			cy.logout();
-
-			cy.window().then(async () => {
-				for (const user of users) {
-					await createTestUser(user); // eslint-disable-line no-await-in-loop
-				}
-			});
-
-			// loginPage.open();
-			loginPage.login({ email: adminEmail, password: adminPassword });
-
-			sideNav.general.click();
-		});
-
-		after(() => {
-			cy.logout();
-		});
-
 		it('should add "@" to the message input', () => {
 			mainContent.setTextToInput('@');
 		});
