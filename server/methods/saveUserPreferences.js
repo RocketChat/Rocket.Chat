@@ -12,6 +12,7 @@ Meteor.methods({
 			clockMode: Match.Optional(Number),
 			useEmojis: Match.Optional(Boolean),
 			convertAsciiEmoji: Match.Optional(Boolean),
+			messagePreview: Match.Maybe(Boolean),
 			saveMobileBandwidth: Match.Optional(Boolean),
 			collapseMediaByDefault: Match.Optional(Boolean),
 			autoImageLoad: Match.Optional(Boolean),

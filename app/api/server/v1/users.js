@@ -506,6 +506,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				clockMode: Match.Maybe(Number),
 				useEmojis: Match.Maybe(Boolean),
 				convertAsciiEmoji: Match.Maybe(Boolean),
+				messagePreview: Match.Maybe(Boolean),
 				saveMobileBandwidth: Match.Maybe(Boolean),
 				collapseMediaByDefault: Match.Maybe(Boolean),
 				autoImageLoad: Match.Maybe(Boolean),
