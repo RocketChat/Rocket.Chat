@@ -42,7 +42,7 @@ describe('[Rooms]', function() {
 	describe('/rooms.saveNotification:', () => {
 		let testChannel;
 		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` })
+			createRoom({ type: 'c', name: `channel.test.${ Date.now() }-${ Math.random() }` })
 				.end((err, res) => {
 					testChannel = res.body.channel;
 					done();
@@ -74,7 +74,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.upload', () => {
 		let testChannel;
-		const testChannelName = `channel.test.upload.${ Date.now() }`;
+		const testChannelName = `channel.test.upload.${ Date.now() }-${ Math.random() }`;
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
@@ -140,7 +140,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.favorite', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${ Date.now() }`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
@@ -622,7 +622,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.createDiscussion', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${ Date.now() }`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		let messageSent;
 		before((done) => {
 			createRoom({ type: 'c', name: testChannelName })
@@ -808,7 +808,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.getDiscussions', () => {
 		let testChannel;
-		const testChannelName = `channel.test.getDiscussions${ Date.now() }`;
+		const testChannelName = `channel.test.getDiscussions${ Date.now() }-${ Math.random() }`;
 		let discussion;
 		before((done) => {
 			createRoom({ type: 'c', name: testChannelName })
