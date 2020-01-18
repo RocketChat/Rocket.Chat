@@ -83,7 +83,7 @@ class SideNav extends Page {
 
 	get firstSidebarItem() { return browser.element('.sidebar-item'); }
 
-	get firstSidebarItemMenu() { return browser.element('.sidebar-item__menu'); }
+	get firstSidebarItemMenu() { return browser.element('.sidebar-item:first-child .sidebar-item__menu'); }
 
 	get popoverOverlay() { return browser.element('.rc-popover.rc-popover--sidebar-item'); }
 
