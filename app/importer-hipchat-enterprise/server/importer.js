@@ -874,6 +874,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	startImport(importSelection) {
+		this.reloadCount();
 		super.startImport(importSelection);
 		this._userDataCache = {};
 		const started = Date.now();
