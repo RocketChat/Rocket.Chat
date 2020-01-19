@@ -24,7 +24,8 @@ Template.thread.events({
 		return close && close();
 	},
 	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
-		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
+		i.atBottom = e.scrollHeight - e.clientHeight;
+		e.scrollTop >= e.scrollHeight - e.clientHeight;
 	}, 50),
 	'load img'() {
 		const { atBottom } = this;
