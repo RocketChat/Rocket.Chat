@@ -607,8 +607,8 @@ export const Livechat = {
 			try {
 				const customFields = JSON.parse(settings.get('Accounts_CustomFields'));
 				return Object.keys(customFields)
-				.filter((customFieldKey) => customFields[customFieldKey].allowExternalSharing === true)
-				.map((field) => field);
+					.filter((customFieldKey) => customFields[customFieldKey].allowExternalSharing === true)
+					.map((field) => field);
 			} catch (error) {
 				return [];
 			}
@@ -643,7 +643,7 @@ export const Livechat = {
 		if (agent) {
 			const { customFields: agentCustomFields } = agent;
 			const externalCF = externalCustomFields();
-			const customFields = Object.keys(agentCustomFields).reduce((newObj, key) => externalCF.includes(key) ? { ...newObj, [key]: agentCustomFields[key]} : newObj, null);
+			const customFields = Object.keys(agentCustomFields).reduce((newObj, key) => (externalCF.includes(key) ? { ...newObj, [key]: agentCustomFields[key] } : newObj), null);
 
 			postData.agent = {
 				_id: agent._id,
