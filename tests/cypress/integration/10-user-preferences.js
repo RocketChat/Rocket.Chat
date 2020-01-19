@@ -38,11 +38,11 @@ describe('[User Preferences]', () => {
 			});
 
 			it('it should show the email input', () => {
-				preferencesMainContent.emailTextInput.should('be.visible');
+				preferencesMainContent.emailTextInput.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the password input', () => {
-				preferencesMainContent.passwordTextInput.should('be.visible');
+				preferencesMainContent.passwordTextInput.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the submit button', () => {

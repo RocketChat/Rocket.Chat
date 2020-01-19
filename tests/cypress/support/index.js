@@ -24,5 +24,10 @@ Cypress.Cookies.defaults({
 
 Cypress.LocalStorage.clear = function() {};
 
+Cypress.on('fail', () => {
+	Cypress.stop();
+	throw new Error();
+});
+
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
