@@ -603,6 +603,17 @@ export const Livechat = {
 		const visitor = LivechatVisitors.findOneById(room.v._id);
 		const agent = Users.findOneById(room.servedBy && room.servedBy._id);
 
+		const externalCustomFields = () => {
+			try {
+				const customFields = JSON.parse(settings.get('Accounts_CustomFields'));
+				return Object.keys(customFields)
+				.filter((customFieldKey) => customFields[customFieldKey].allowExternalSharing === true)
+				.map((field) => field);
+			} catch (error) {
+				return [];
+			}
+		};
+
 		const ua = new UAParser();
 		ua.setUA(visitor.userAgent);
 
@@ -630,11 +641,16 @@ export const Livechat = {
 		};
 
 		if (agent) {
+			const { customFields: agentCustomFields } = agent;
+			const externalCF = externalCustomFields();
+			const customFields = Object.keys(agentCustomFields).reduce((newObj, key) => externalCF.includes(key) ? { ...newObj, [key]: agentCustomFields[key]} : newObj, null);
+
 			postData.agent = {
 				_id: agent._id,
 				username: agent.username,
 				name: agent.name,
 				email: null,
+				...customFields && { customFields },
 			};
 
 			if (agent.emails && agent.emails.length > 0) {
