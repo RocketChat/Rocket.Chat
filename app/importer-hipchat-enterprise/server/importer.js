@@ -14,9 +14,8 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-	Imports,
 } from '../../importer/server';
-import { Messages, Users, Subscriptions, Rooms } from '../../models';
+import { Messages, Users, Subscriptions, Rooms, Imports } from '../../models';
 import { insertMessage } from '../../lib';
 
 const turndownService = new TurndownService({
