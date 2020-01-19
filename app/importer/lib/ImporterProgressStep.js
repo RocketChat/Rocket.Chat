@@ -2,8 +2,8 @@
 export const ProgressStep = Object.freeze({
 	NEW: 'importer_new',
 	UPLOADING: 'importer_uploading',
-	DOWNLOADING_FILE: 'downloading_file',
-	FILE_LOADED: 'file_loaded',
+	DOWNLOADING_FILE: 'importer_downloading_file',
+	FILE_LOADED: 'importer_file_loaded',
 
 	PREPARING_STARTED: 'importer_preparing_started',
 	PREPARING_USERS: 'importer_preparing_users',

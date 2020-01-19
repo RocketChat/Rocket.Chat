@@ -6,8 +6,10 @@ import toastr from 'toastr';
 
 import { t, APIClient } from '../../../utils';
 import { SideNav } from '../../../ui-utils/client';
+import { ImportWaitingStates, ImportFileReadyStates, ImportPreparingStartedStates, ImportingStartedStates, ProgressStep } from '../../lib/ImporterProgressStep';
 
 import './adminImport.html';
+import './importOperationSummary.js';
 
 Template.adminImport.helpers({
 	isPreparing() {
@@ -17,110 +19,41 @@ Template.adminImport.helpers({
 		return Template.instance().history.get();
 	},
 
-	lastUpdated() {
-		if (!this._updatedAt) {
-			return '';
-		}
-
-		const date = new Date(this._updatedAt);
-		return date.toLocaleString();
+	operation() {
+		return Template.instance().operation.get();
 	},
 
-	hasCounters() {
-		return Boolean(this.count);
-	},
-
-	userCount() {
-		if (this.count && this.count.users) {
-			return this.count.users;
-		}
-
-		return 0;
-	},
-
-	channelCount() {
-		if (this.count && this.count.channels) {
-			return this.count.channels;
-		}
-
-		return 0;
-	},
-
-	messageCount() {
-		if (this.count && this.count.messages) {
-			return this.count.messages;
-		}
-
-		return 0;
-	},
-
-	totalCount() {
-		if (this.count && this.count.total) {
-			return this.count.total;
-		}
-
-		return 0;
-	},
-
-	hasErrors() {
-		if (!this.fileData) {
-			return false;
-		}
-
-		if (this.fileData.users) {
-			for (const user of this.fileData.users) {
-				if (user.is_email_taken) {
-					return true;
-				}
-				if (user.error) {
-					return true;
-				}
-			}
-		}
-
-		if (this.errors && this.errors.length > 0) {
+	isNotCurrentOperation() {
+		const operation = Template.instance().operation.get();
+		if (!operation) {
 			return true;
 		}
 
-		return false;
+		return operation._id !== this._id || !operation.valid;
 	},
 
-	formatedError() {
-		if (!this.error) {
-			return '';
-		}
-
-		if (typeof this.error === 'string') {
-			return this.error;
-		}
-
-		if (typeof this.error === 'object') {
-			if (this.error.message) {
-				return this.error.message;
-			}
-			if (this.error.error && typeof this.error.error === 'string') {
-				return this.error.error;
-			}
-
-			try {
-				const json = JSON.stringify(this.error);
-				console.log(json);
-				return json;
-			} catch (e) {
-				return t('Error');
-			}
-		}
-
-		return this.error.toString();
+	canShowCurrentOperation() {
+		const operation = Template.instance().operation.get();
+		return operation && operation.valid;
 	},
 
-	messageTime() {
-		if (!this.msg || !this.msg.ts) {
-			return '';
+	canContinueOperation() {
+		const operation = Template.instance().operation.get();
+		if (!operation || !operation.valid) {
+			return false;
 		}
 
-		const date = new Date(this.msg.ts);
-		return date.toLocaleString();
+		const possibleStatus = [ProgressStep.USER_SELECTION].concat(ImportWaitingStates).concat(ImportFileReadyStates).concat(ImportPreparingStartedStates);
+		return possibleStatus.includes(operation.status);
+	},
+
+	canCheckOperationProgress() {
+		const operation = Template.instance().operation.get();
+		if (!operation || !operation.valid) {
+			return false;
+		}
+
+		return ImportingStartedStates.includes(operation.status);
 	},
 });
 
@@ -131,19 +64,32 @@ Template.adminImport.events({
 	'click .prepare-btn'() {
 		FlowRouter.go('/admin/import/prepare');
 	},
+	'click .progress-btn'() {
+		FlowRouter.go('/admin/import/progress');
+	},
 });
 
 Template.adminImport.onCreated(function() {
 	const instance = this;
 	this.preparing = new ReactiveVar(true);
 	this.history = new ReactiveVar([]);
+	this.operation = new ReactiveVar(false);
 
-	APIClient.get('v1/getLatestImportOperations').then((data) => {
-		instance.history.set(data);
-		instance.preparing.set(false);
+	APIClient.get('v1/getCurrentImportOperation').then((data) => {
+		instance.operation.set(data.operation);
+
+		APIClient.get('v1/getLatestImportOperations').then((data) => {
+			instance.history.set(data);
+			instance.preparing.set(false);
+		}).catch((error) => {
+			if (error) {
+				toastr.error(t('Failed_To_Load_Import_History'));
+				instance.preparing.set(false);
+			}
+		});
 	}).catch((error) => {
 		if (error) {
-			toastr.error(t('Failed_To_Load_Import_Data'));
+			toastr.error(t('Failed_To_Load_Import_Operation'));
 			instance.preparing.set(false);
 		}
 	});
