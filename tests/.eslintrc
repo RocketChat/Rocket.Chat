@@ -4,10 +4,8 @@
 	},
 	"globals": {
 		"browser": false,
+		"Cypress": false,
 		"cy": false,
-		"expect": false,
-		"FlowRouter": false,
-		"Meteor": false,
-		"RocketChat": false
+		"expect": false
 	}
 }
