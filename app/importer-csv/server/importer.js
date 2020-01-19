@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import {
+	RawImports,
 	Base,
 	ProgressStep,
 	Selection,
@@ -18,7 +19,6 @@ export class CsvImporter extends Base {
 		super(info, importRecord);
 
 		this.csvParser = require('csv-parse/lib/sync');
-		this.messages = new Map();
 	}
 
 	prepare(dataURI, sentContentType, fileName) {
@@ -128,25 +128,18 @@ export class CsvImporter extends Base {
 		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 		let messagesCount = 0;
 		for (const [channel, messagesMap] of tempMessages.entries()) {
-			if (!this.messages.get(channel)) {
-				this.messages.set(channel, new Map());
-			}
-
 			for (const [msgGroupData, msgs] of messagesMap.entries()) {
 				messagesCount += msgs.length;
 				const channelName = `${ channel }/${ msgGroupData }`;
 
 				super.updateRecord({ messagesstatus: channelName });
 
-
 				if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
 					Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
-						const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channelName }.${ i }`, messages: splitMsg });
-						this.messages.get(channel).set(`${ msgGroupData }.${ i }`, this.collection.findOne(messagesId));
+						this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channelName }.${ i }`, messages: splitMsg, channel, i, msgGroupData });
 					});
 				} else {
-					const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: channelName, messages: msgs });
-					this.messages.get(channel).set(msgGroupData, this.collection.findOne(messagesId));
+					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: channelName, messages: msgs, channel, msgGroupData });
 				}
 			}
 		}
@@ -170,6 +163,13 @@ export class CsvImporter extends Base {
 	}
 
 	startImport(importSelection) {
+		this.users = RawImports.findOne({ import: this.importRecord._id, type: 'users' });
+		this.channels = RawImports.findOne({ import: this.importRecord._id, type: 'channels' });
+		this.reloadCount();
+
+		const rawCollection = this.collection.model.rawCollection();
+		const distinct = Meteor.wrapAsync(rawCollection.distinct, rawCollection);
+
 		super.startImport(importSelection);
 		const started = Date.now();
 
@@ -274,7 +274,8 @@ export class CsvImporter extends Base {
 
 				// If no channels file, collect channel map from DB for message-only import
 				if (this.channels.channels.length === 0) {
-					for (const cname of this.messages.keys()) {
+					const channelNames = distinct('channel', { import: this.importRecord._id, type: 'messages', channel: { $ne: 'directMessages' } });
+					for (const cname of channelNames) {
 						Meteor.runAsUser(startedByUserId, () => {
 							const existantRoom = Rooms.findOneByName(cname);
 							if (existantRoom || cname.toUpperCase() === 'GENERAL') {
@@ -291,23 +292,16 @@ export class CsvImporter extends Base {
 
 				// If no users file, collect user map from DB for message-only import
 				if (this.users.users.length === 0) {
-					for (const [ch, messagesMap] of this.messages.entries()) {
-						const csvChannel = this.getChannelFromName(ch);
-						if (!csvChannel || !csvChannel.do_import) {
-							continue;
-						}
+					const usernames = distinct('messages.username', { import: this.importRecord._id, type: 'messages' });
+					for (const username of usernames) {
 						Meteor.runAsUser(startedByUserId, () => {
-							for (const msgs of messagesMap.values()) {
-								for (const msg of msgs.messages) {
-									if (!this.getUserFromUsername(msg.username)) {
-										const user = Users.findOneByUsernameIgnoringCase(msg.username);
-										if (user) {
-											this.users.users.push({
-												rocketId: user._id,
-												username: user.username,
-											});
-										}
-									}
+							if (!this.getUserFromUsername(username)) {
+								const user = Users.findOneByUsernameIgnoringCase(username);
+								if (user) {
+									this.users.users.push({
+										rocketId: user._id,
+										username: user.username,
+									});
 								}
 							}
 						});
@@ -316,61 +310,69 @@ export class CsvImporter extends Base {
 
 				// Import the Messages
 				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				for (const [ch, messagesMap] of this.messages.entries()) {
+
+				const messagePacks = this.collection.find({ import: this.importRecord._id, type: 'messages' });
+				messagePacks.forEach((pack) => {
+					const ch = pack.channel;
+					const { msgGroupData } = pack;
+
 					const csvChannel = this.getChannelFromName(ch);
 					if (!csvChannel || !csvChannel.do_import) {
-						continue;
+						return;
 					}
 
 					if (csvChannel.isDirect) {
+						// Create the Map as it was on the old structure so as not to modify the method - this should be optimized at some point
+						const messagesMap = new Map();
+						messagesMap.set(msgGroupData, pack);
+
 						this._importDirectMessagesFile(messagesMap, startedByUserId);
-						continue;
+						return;
 					}
 
 					if (ch.toLowerCase() === 'directmessages') {
-						continue;
+						return;
 					}
 
 					const room = Rooms.findOneById(csvChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
+					const timestamps = {};
+
 					Meteor.runAsUser(startedByUserId, () => {
-						const timestamps = {};
-						for (const [msgGroupData, msgs] of messagesMap.entries()) {
-							super.updateRecord({ messagesstatus: `${ ch }/${ msgGroupData }.${ msgs.messages.length }` });
-							for (const msg of msgs.messages) {
-								if (isNaN(new Date(parseInt(msg.ts)))) {
-									this.logger.warn(`Timestamp on a message in ${ ch }/${ msgGroupData } is invalid`);
-									super.addCountCompleted(1);
-									continue;
-								}
-
-								const creator = this.getUserFromUsername(msg.username);
-								if (creator) {
-									let suffix = '';
-									if (timestamps[msg.ts] === undefined) {
-										timestamps[msg.ts] = 1;
-									} else {
-										suffix = `-${ timestamps[msg.ts] }`;
-										timestamps[msg.ts] += 1;
-									}
-									const msgObj = {
-										_id: `csv-${ csvChannel.id }-${ msg.ts }${ suffix }`,
-										ts: new Date(parseInt(msg.ts)),
-										msg: msg.text,
-										rid: room._id,
-										u: {
-											_id: creator._id,
-											username: creator.username,
-										},
-									};
-
-									sendMessage(creator, msgObj, room, true);
-								}
-
+						super.updateRecord({ messagesstatus: `${ ch }/${ msgGroupData }.${ pack.messages.length }` });
+						for (const msg of pack.messages) {
+							if (isNaN(new Date(parseInt(msg.ts)))) {
+								this.logger.warn(`Timestamp on a message in ${ ch }/${ msgGroupData } is invalid`);
 								super.addCountCompleted(1);
+								continue;
 							}
+
+							const creator = this.getUserFromUsername(msg.username);
+							if (creator) {
+								let suffix = '';
+								if (timestamps[msg.ts] === undefined) {
+									timestamps[msg.ts] = 1;
+								} else {
+									suffix = `-${ timestamps[msg.ts] }`;
+									timestamps[msg.ts] += 1;
+								}
+								const msgObj = {
+									_id: `csv-${ csvChannel.id }-${ msg.ts }${ suffix }`,
+									ts: new Date(parseInt(msg.ts)),
+									msg: msg.text,
+									rid: room._id,
+									u: {
+										_id: creator._id,
+										username: creator.username,
+									},
+								};
+
+								sendMessage(creator, msgObj, room, true);
+							}
+
+							super.addCountCompleted(1);
 						}
 					});
-				}
+				});
 
 				super.updateProgress(ProgressStep.FINISHING);
 				super.updateProgress(ProgressStep.DONE);
