@@ -336,8 +336,9 @@ const toolbarButtons = (user) => [{
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		if (isMobile()) {
-			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption, shareOption]);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
 		}
+		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 
 		popover.open(config);
 	},

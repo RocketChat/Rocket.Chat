@@ -79,6 +79,5 @@ TabBar.addButton({
 	icon: 'share',
 	template: 'share',
 	order: 500,
-	condition: () => isMobile(),
 	action: () => { shareRoom(); },
 });
