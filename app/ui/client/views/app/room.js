@@ -1041,7 +1041,8 @@ Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
 	const rid = this.data._id;
-
+	this.lastMessage = new ReactiveDict();
+	this.curUserSentMessage = null;
 	this.onFile = (filesToUpload) => {
 		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
 	};
@@ -1168,8 +1169,9 @@ Template.room.onCreated(function() {
 	});
 
 	this.sendToBottomIfNecessary = () => {
-		if (this.atBottom === true) {
+		if (this.atBottom === true || this.curUserSentMessage === true) {
 			this.sendToBottom();
+			this.curUserSentMessage = false;
 		}
 	};
 }); // Update message to re-render DOM
@@ -1327,6 +1329,19 @@ Template.room.onRendered(function() {
 			return readMessage.read();
 		}
 		readMessage.refreshUnreadMark(rid);
+	});
+
+	this.autorun(() => {
+		this.lastMessage = Rooms.findOne({ _id: rid });
+		const val = this.curUserSentMessage;
+		if (!val && val !== false) {
+			this.curUserSentMessage = false;
+		} else if (val === false) {
+			if (this.lastMessage.lastMessage.u._id === Meteor.userId()) {
+				this.curUserSentMessage = true;
+				template.sendToBottomIfNecessary();
+			}
+		}
 	});
 
 	readMessage.on(template.data._id, () => this.unreadCount.set(0));
