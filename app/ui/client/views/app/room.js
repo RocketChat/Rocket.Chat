@@ -382,7 +382,7 @@ Template.room.helpers({
 	},
 
 	messageboxData() {
-		const { sendToBottomIfNecessaryDebounced, subscription } = Template.instance();
+		const { sendToBottom, sendToBottomIfNecessaryDebounced, subscription } = Template.instance();
 		const { _id: rid } = this;
 		const isEmbedded = Layout.isEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
@@ -403,6 +403,7 @@ Template.room.helpers({
 			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
 			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
 			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
+			sendToBottom: () => sendToBottom()
 		};
 	},
 

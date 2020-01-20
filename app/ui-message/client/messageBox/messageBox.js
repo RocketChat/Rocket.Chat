@@ -86,6 +86,7 @@ Template.messageBox.onCreated(function() {
 
 	this.send = (event) => {
 		const { input } = this;
+		const { sendToBottom } = Template.currentData();
 
 		if (!input) {
 			return;
@@ -104,6 +105,7 @@ Template.messageBox.onCreated(function() {
 			autogrow.update();
 			input.focus();
 			isSending = false;
+			sendToBottom();
 		});
 	};
 });
