@@ -33,15 +33,14 @@ Template.accountFlex.helpers({
 		return settings.get('Webdav_Integration_Enabled');
 	},
 	menuItem(name, icon, section, group) {
-		let data = {
+		const data = {
 			name: t(name),
 			icon,
 			pathSection: section,
 			pathGroup: group,
 			darken: true,
 		};
-		var param = FlowRouter.getParam("group");
-		if (param === group) {
+		if (group === FlowRouter.getParam('group')) {
 			data.active = true;
 		}
 		return data;
