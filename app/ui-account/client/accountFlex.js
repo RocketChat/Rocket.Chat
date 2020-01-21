@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../settings';
 import { hasAllPermission } from '../../authorization';
@@ -32,13 +33,18 @@ Template.accountFlex.helpers({
 		return settings.get('Webdav_Integration_Enabled');
 	},
 	menuItem(name, icon, section, group) {
-		return {
+		let data = {
 			name: t(name),
 			icon,
 			pathSection: section,
 			pathGroup: group,
 			darken: true,
 		};
+		var param = FlowRouter.getParam("group");
+		if (param === group) {
+			data.active = true;
+		}
+		return data;
 	},
 	embeddedVersion() {
 		return Layout.isEmbedded();
