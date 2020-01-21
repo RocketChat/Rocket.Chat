@@ -40,7 +40,8 @@ Template.accountFlex.helpers({
 			pathGroup: group,
 			darken: true,
 		};
-		if (group === FlowRouter.getParam('group')) {
+		const param = FlowRouter.getParam('group');
+		if (group === param || (!param && group === 'preferences')) {
 			data.active = true;
 		}
 		return data;
