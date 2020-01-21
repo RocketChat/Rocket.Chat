@@ -851,7 +851,37 @@ Template.room.events({
 		instance.atBottom = true;
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
-	'click .message-actions__menu'(e, i) {
+	'click .message-actions__menu, contextmenu .message'(e, i) {
+		let target = e.currentTarget;
+		if (e.which === 3) {
+			if ($(e.currentTarget).hasClass('system')) {
+				return;
+			}
+			if (e.target && (e.target.nodeName === 'AUDIO' || e.target.nodeName === 'A' || e.target.nodeName === 'IMG')) {
+				return;
+			}
+			let selectedText = '';
+			if (window.getSelection) {
+				selectedText = window.getSelection().toString().trim();
+			} else if (document.selection && document.selection.type !== 'Control') {
+				selectedText = document.selection.createRange().text;
+			}
+			if (selectedText) {
+				return;
+			}
+			e.preventDefault();
+			if ($('.popover-location').length !== 0) {
+				$('.popover-location').remove();
+			}
+			$('<div class = "popover-location">')
+				.css({
+					left: `${ e.clientX }px`,
+					top: `${ e.clientY }px`,
+					position: 'absolute',
+				})
+				.appendTo(document.body);
+			target = $('body').find('.popover-location')[0];
+		}
 		const messageContext = messageArgs(this);
 		const { msg: message, context: ctx } = messageContext;
 		const context = ctx || message.context || message.actionContext || 'message';
@@ -882,13 +912,14 @@ Template.room.events({
 			],
 			instance: i,
 			data: this,
-			currentTarget: e.currentTarget,
+			currentTarget: target,
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item'),
 		};
 
 		popover.open(config);
 	},
+
 	'click .time a'(e) {
 		e.preventDefault();
 		const { msg } = messageArgs(this);
