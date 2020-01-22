@@ -17,8 +17,10 @@ Meteor.startup(function() {
 	const lastOperation = Imports.findLastImport();
 	let idToKeep = false;
 
-	if (lastOperation && lastOperation.status === ProgressStep.USER_SELECTION) {
-		// If there's still data about this operation on the temp collection, we can keep it pending
+	// If the operation is ready to start, or already started but failed
+	// And there's still data for it on the temp collection
+	// Then we can keep the data there to let the user try again
+	if (lastOperation && [ProgressStep.USER_SELECTION, ProgressStep.ERROR].includes(lastOperation.status)) {
 		if (RawImports.find({ import: lastOperation._id }).count() > 0) {
 			idToKeep = lastOperation._id;
 		}

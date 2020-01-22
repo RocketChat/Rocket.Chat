@@ -92,11 +92,16 @@ export const insertMessage = function(user, message, room, upsert = false) {
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
-		validateBodyAttachments(message.attachments);
+		try {
+			validateBodyAttachments(message.attachments);
+		} catch (e) {
+			console.error(e);
+			message.attachments = [];
+		}
 	}
 
 	if (!message.ts) {
-		message.ts = new Date();
+		message.ts = Date.now();
 	}
 	const { _id, username } = user;
 	message.u = {
