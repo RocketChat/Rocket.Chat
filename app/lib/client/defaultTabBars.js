@@ -1,7 +1,7 @@
 import { Session } from 'meteor/session';
 
-import { TabBar } from '../../ui-utils';
-import { isMobile, shareRoom } from '../../utils';
+import { TabBar, popover } from '../../ui-utils';
+import { isMobile, share } from '../../utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';
 
@@ -79,5 +79,19 @@ TabBar.addButton({
 	icon: 'share',
 	template: 'share',
 	order: 500,
-	action: () => { shareRoom(); },
+	// action(event) {
+	// 	console.log(event);
+	// 	share();
+	// 	popover.close();
+	// 	const options = [];
+	// 	const config = {
+	// 		template: 'share',
+	// 		// currentTarget: e.target,
+	// 		data: {
+	// 			options,
+	// 		},
+	// 		// offsetVertical: e.target.clientHeight + 10,
+	// 	};
+	// 	popover.open(config);
+	// },
 });

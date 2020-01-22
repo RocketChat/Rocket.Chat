@@ -1,0 +1,33 @@
+.share-header-container {
+	display: flex;
+    flex-wrap: wrap;
+}
+
+.share-icon {
+    border: none;
+    display: inline-block;
+    width: 25%;
+    min-width: 46px;
+    box-sizing: border-box;
+    font-weight: 400;
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    cursor: pointer;
+    background-color: transparent;
+    padding: 16px 0;
+}
+
+.share-svg-icon {
+    display: block;
+    margin: auto;
+    width: 24px;
+    height: 24px;
+}
+
+.share-icon-title {
+    font-size: 14px;
+    padding-top: 10px;
+    display: block;
+}
