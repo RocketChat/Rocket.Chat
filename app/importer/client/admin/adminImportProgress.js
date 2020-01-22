@@ -20,6 +20,18 @@ Template.adminImportProgress.helpers({
 	total() {
 		return Template.instance().total.get();
 	},
+	progressRate() {
+		try {
+			const instance = Template.instance();
+			const completed = instance.completed.get();
+			const total = instance.total.get();
+
+			const rate = Math.floor(completed * 10000 / total) / 100;
+			return `${ rate }%`;
+		} catch {
+			return '';
+		}
+	},
 });
 
 Template.adminImportProgress.onCreated(function() {

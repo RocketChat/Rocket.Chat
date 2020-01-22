@@ -9,13 +9,24 @@ import { SideNav } from '../../../ui-utils/client';
 import { ProgressStep, ImportWaitingStates, ImportFileReadyStates, ImportPreparingStartedStates, ImportingStartedStates, ImportingErrorStates } from '../../lib/ImporterProgressStep';
 import { showImporterException } from '../functions/showImporterException';
 
-import { Importers } from '..';
+import { ImporterWebsocketReceiver, Importers } from '..';
 
 import './adminImportPrepare.html';
 
 Template.adminImportPrepare.helpers({
 	isPreparing() {
 		return Template.instance().preparing.get();
+	},
+	hasProgressRate() {
+		return Template.instance().progressRate.get() !== false;
+	},
+	progressRate() {
+		const rate = Template.instance().progressRate.get();
+		if (rate) {
+			return `${ rate }%`;
+		}
+
+		return '';
 	},
 	pageTitle() {
 		return t('Importing_Data');
@@ -117,6 +128,7 @@ function getImportFileData(template) {
 		template.message_count.set(data.message_count);
 		template.loaded.set(true);
 		template.preparing.set(false);
+		template.progressRate.set(false);
 	}).catch((error) => {
 		if (error) {
 			showImporterException(error, 'Failed_To_Load_Import_Data');
@@ -146,6 +158,11 @@ function loadOperation(template) {
 		// 3) ready to be prepared
 
 		if (operation.status === ProgressStep.USER_SELECTION || ImportPreparingStartedStates.includes(operation.status) || ImportFileReadyStates.includes(operation.status)) {
+			if (!template.callbackRegistered) {
+				ImporterWebsocketReceiver.registerCallback(template.progressUpdated);
+				template.callbackRegistered = true;
+			}
+
 			getImportFileData(template);
 			return template.preparing.set(true);
 		}
@@ -180,7 +197,16 @@ function loadOperation(template) {
 
 Template.adminImportPrepare.onCreated(function() {
 	this.preparing = new ReactiveVar(true);
+	this.progressRate = new ReactiveVar(false);
 	this.operation = new ReactiveVar(false);
+	this.callbackRegistered = false;
+
+	this.progressUpdated = (progress) => {
+		if ('rate' in progress) {
+			const { rate } = progress;
+			this.progressRate.set(rate);
+		}
+	};
 
 	this.users = new ReactiveVar([]);
 	this.channels = new ReactiveVar([]);
@@ -195,4 +221,9 @@ Template.adminImportPrepare.onRendered(() => {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
 	});
+});
+
+Template.adminImportPrepare.onDestroyed(function() {
+	this.callbackRegistered = false;
+	ImporterWebsocketReceiver.unregisterCallback(this.progressUpdated);
 });

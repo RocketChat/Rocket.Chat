@@ -9,6 +9,7 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
+	ImporterWebsocket,
 } from '../../importer/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Users, Rooms, Messages } from '../../models';
@@ -38,6 +39,7 @@ export class SlackImporter extends Base {
 		this.collection.remove({});
 
 		const zip = new this.AdmZip(fullFilePath);
+		const totalEntries = zip.getEntryCount();
 
 		let tempChannels = [];
 		let tempGroups = [];
@@ -46,6 +48,10 @@ export class SlackImporter extends Base {
 		let tempUsers = [];
 		let messagesCount = 0;
 		let isPreparingMessages = false;
+		let count = 0;
+
+		ImporterWebsocket.progressUpdated({ rate: 0 });
+		let oldRate = 0;
 
 		zip.forEach((entry) => {
 			try {
@@ -161,8 +167,20 @@ export class SlackImporter extends Base {
 			} catch (e) {
 				this.logger.error(e);
 			}
+
+			try {
+				count++;
+				const rate = Math.floor(count * 1000 / totalEntries) / 10;
+				if (rate > oldRate) {
+					ImporterWebsocket.progressUpdated({ rate });
+					oldRate = rate;
+				}
+			} catch (e) {
+				console.error(e);
+			}
 		});
 
+		ImporterWebsocket.progressUpdated({ rate: 100 });
 		this.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
 		this.addCountToTotal(messagesCount);
 
