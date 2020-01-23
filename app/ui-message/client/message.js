@@ -91,6 +91,7 @@ const renderBody = (msg, settings) => {
 	if (isSystemMessage) {
 		msg.html = Markdown.parse(msg.html);
 	}
+	msg = msg.replace(new RegExp(/<a href="hxxps?[^>]+>([^<]+)<\/a>/, 'g'), (str) => str.match(/<a href="hxxps?[^>]+>([^<]+)<\/a>/)[1]);
 	return msg;
 };
 
