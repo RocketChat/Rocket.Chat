@@ -7,13 +7,33 @@ function getShareString() {
 	return `${ data.title } \n${ data.url } \n${ data.text }`;
 }
 
+function fallbackCopyTextToClipboard(text) {
+	const textArea = document.createElement('textarea');
+	textArea.value = text;
+	textArea.style.position = 'fixed'; // avoid scrolling to bottom
+	document.body.appendChild(textArea);
+	textArea.focus();
+	textArea.select();
+
+	try {
+		document.execCommand('copy');
+	} catch (err) {
+		console.error('Unable to copy', err);
+	}
+
+	document.body.removeChild(textArea);
+}
+
 Template.share.helpers({
 
 });
 
 Template.share.events({
 	'click [data-type="copy"]'() {
-		console.log(getShareString());
+		if (!navigator.clipboard) {
+			fallbackCopyTextToClipboard(getShareString());
+			return;
+		}
 		navigator.clipboard.writeText(getShareString());
 	},
 	'click [data-type="print"]'() {
@@ -24,7 +44,7 @@ Template.share.events({
 		window.open(`mailto:?subject=${ title }&body=${ getShareString() }`);
 	},
 	'click [data-type="sms"]'() {
-		location.href = `sms:'Pick a contact'?&body=${ getShareString() }`;
+		location.href = `sms:?&body=${ getShareString() }`;
 	},
 
 
@@ -44,7 +64,7 @@ Template.share.events({
 	},
 	'click [data-type="telegram"]'() {
 		const { url } = getShareData();
-		window.open(isMobile() ? `tg://msg?text=${ getShareString() }` : `https://telegram.me/share/msg?url=${ url }&text=${ getShareString() }`);
+		window.open(`https://telegram.me/share/msg?url=${ url }&text=${ getShareString() }`);
 	},
 
 });

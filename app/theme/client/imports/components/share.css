@@ -17,6 +17,7 @@
     cursor: pointer;
     background-color: transparent;
     padding: 16px 0;
+    box-shadow: inset 0 0 20px rgba(0,0,0, 0);
 
     &:hover {
         box-shadow: inset 0 0 20px rgba(0,0,0, .125);

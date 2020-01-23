@@ -2,7 +2,10 @@ import { Meteor } from 'meteor/meteor';
 
 // TODO: Remove logs
 
-export const isShareAvailable = () => navigator.share;
+export const isShareAvailable = () => {
+	if (navigator.share) { return true; }
+	return false;
+};
 
 export const getShareData = () => {
 	const data = {};
