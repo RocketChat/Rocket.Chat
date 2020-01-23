@@ -472,6 +472,12 @@ export class ChatMessages {
 
 			this.$input.focus();
 			done();
+		}, () => {
+			if (this.editing.id === message._id) {
+				this.clearEditing();
+			}
+			this.$input.focus();
+			done();
 		});
 	}
 
