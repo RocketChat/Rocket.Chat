@@ -180,7 +180,7 @@ Template.toolbar.onCreated(function() {
 
 Template.toolbarSearchBar.helpers({
 	getPlaceholder() {
-		let placeholder = TAPi18n.__('Search');
+		let placeholder = TAPi18n.__('Search_Users');
 
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
