@@ -17,13 +17,22 @@
     cursor: pointer;
     background-color: transparent;
     padding: 16px 0;
+
+    &:hover {
+        box-shadow: inset 0 0 20px rgba(0,0,0, .125);
+    }
 }
 
 .share-svg-icon {
     display: block;
     margin: auto;
-    width: 24px;
-    height: 24px;
+    width: 42px;
+    height: 36px;
+    
+    &__header {
+		width: 24px;
+        height: 24px;
+	}
 }
 
 .share-icon-title {
