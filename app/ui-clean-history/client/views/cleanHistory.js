@@ -100,6 +100,12 @@ Template.cleanHistory.helpers({
 	items() {
 		return Template.instance().ac.filteredList();
 	},
+	isSingular(prunedCount) {
+		if (prunedCount === 1) {
+			return 1;
+		}
+		return 0;
+	},
 });
 
 Template.cleanHistory.onCreated(function() {
