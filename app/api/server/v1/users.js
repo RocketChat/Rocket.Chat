@@ -20,6 +20,7 @@ import { getFullUserData, getFullUserDataById } from '../../../lib/server/functi
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
+import { boolean } from '@storybook/addon-knobs';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -503,6 +504,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			data: Match.ObjectIncluding({
 				newRoomNotification: Match.Maybe(String),
 				newMessageNotification: Match.Maybe(String),
+				unreadAlert: Match.Maybe(Boolean),
 				clockMode: Match.Maybe(Number),
 				useEmojis: Match.Maybe(Boolean),
 				convertAsciiEmoji: Match.Maybe(Boolean),
