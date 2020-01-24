@@ -45,7 +45,7 @@ Template.adminEmoji.helpers({
 			instance.tabBarData.set({
 				emoji: instance.emojis.get().find((emoji) => emoji._id === _id),
 				onSuccess: instance.onSuccessCallback,
-				clearData: instance.clearTabBarData
+				clearData: instance.clearTabBarData,
 			});
 			instance.tabBar.open('admin-emoji-info');
 		};
@@ -90,7 +90,7 @@ Template.adminEmoji.onCreated(async function() {
 		this.tabBarData.set({
 			emoji: null,
 			onSuccess: instance.onSuccessCallback,
-			clearData: instance.clearTabBarData
+			clearData: instance.clearTabBarData,
 		});
 	};
 	this.tabBarData.set({
