@@ -45,6 +45,7 @@ Template.adminEmoji.helpers({
 			instance.tabBarData.set({
 				emoji: instance.emojis.get().find((emoji) => emoji._id === _id),
 				onSuccess: instance.onSuccessCallback,
+				clearData: instance.clearTabBarData
 			});
 			instance.tabBar.open('admin-emoji-info');
 		};
@@ -84,6 +85,13 @@ Template.adminEmoji.onCreated(async function() {
 	this.onSuccessCallback = () => {
 		this.offset.set(0);
 		return this.loadEmojis(this.query.get(), this.offset.get());
+	};
+	this.clearTabBarData = () => {
+		this.tabBarData.set({
+			emoji: null,
+			onSuccess: instance.onSuccessCallback,
+			clearData: instance.clearTabBarData
+		});
 	};
 	this.tabBarData.set({
 		onSuccess: instance.onSuccessCallback,

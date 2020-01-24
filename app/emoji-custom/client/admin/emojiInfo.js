@@ -78,7 +78,7 @@ Template.emojiInfo.events({
 						showConfirmButton: false,
 					});
 					instance.onSuccess();
-
+					instance.clearData();
 					instance.tabBar.close();
 				});
 			});
@@ -88,13 +88,17 @@ Template.emojiInfo.events({
 	'click .edit-emoji'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
-		instance.editingEmoji.set(instance.emoji.get()._id);
+		const emoji = instance.emoji.get();
+		if (emoji != null) {
+			instance.editingEmoji.set(emoji._id);
+		}
 	},
 });
 
 Template.emojiInfo.onCreated(function() {
 	this.emoji = new ReactiveVar();
 	this.onSuccess = Template.currentData().onSuccess;
+	this.clearData = Template.currentData().clearData;
 
 	this.editingEmoji = new ReactiveVar();
 
@@ -123,4 +127,8 @@ Template.emojiInfo.onCreated(function() {
 		const data = Template.currentData().emoji;
 		this.emoji.set(data);
 	});
+});
+
+Template.emojiInfo.onDestroyed(function() {
+	Template.instance().clearData();
 });
