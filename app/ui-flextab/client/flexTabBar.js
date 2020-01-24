@@ -163,6 +163,14 @@ Template.flexTabBar.events({
 
 Template.flexTabBar.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
+	const { defaultHeaderData } = Template.currentData();
+	if (defaultHeaderData) {
+		const { i18nTitle, icon } = defaultHeaderData;
+		Template.instance().tabBar.setData({
+			label: i18nTitle,
+			icon,
+		});
+	}
 });
 
 

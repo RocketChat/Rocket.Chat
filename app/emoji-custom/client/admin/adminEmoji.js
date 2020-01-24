@@ -25,6 +25,10 @@ Template.adminEmoji.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+			defaultHeaderData: {
+				i18nTitle: 'Custom_Emoji_Info',
+				icon: 'customize',
+			},
 		};
 	},
 	onTableScroll() {
