@@ -36,6 +36,10 @@ Template.adminUserStatus.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+			defaultHeaderData: {
+				i18nTitle: 'Custom_User_Status_Info',
+				icon: 'customize',
+			},
 		};
 	},
 	onTableScroll() {

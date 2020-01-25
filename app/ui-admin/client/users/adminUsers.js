@@ -41,6 +41,10 @@ Template.adminUsers.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+			defaultHeaderData: {
+				i18nTitle: 'User_Info',
+				icon: 'user',
+			},
 		};
 	},
 	onTableScroll() {

@@ -26,6 +26,10 @@ Template.adminSounds.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+			defaultHeaderData: {
+				i18nTitle: 'Custom_Sound_Info',
+				icon: 'customize',
+			},
 		};
 	},
 

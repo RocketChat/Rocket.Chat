@@ -52,6 +52,10 @@ Template.adminRooms.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+			defaultHeaderData: {
+				i18nTitle: 'Room_Info',
+				icon: 'info-circled',
+			},
 		};
 	},
 	onTableScroll() {
