@@ -50,7 +50,7 @@ Template.thread.helpers({
 	messages() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
-		return Threads.find({ tmid }, { sort });
+		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
 	messageContext() {
 		const result = messageContext.call(this, { rid: this.mainMessage.rid });

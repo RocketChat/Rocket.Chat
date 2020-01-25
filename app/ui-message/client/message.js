@@ -167,7 +167,7 @@ Template.message.helpers({
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || (MessageTypes.isSystemMessage(msg) && !msg.tmid)) {
+		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || (MessageTypes.isSystemMessage(msg) && !msg.tmid && msg.tmid === msg._id)) {
 			return 'false';
 		}
 	},
@@ -410,12 +410,12 @@ Template.message.helpers({
 		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
-		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable === false || _groupable === false) && !!(tmid && showreply && (!t || t === 'e2e'));
+		const { groupable, msg: { tmid, t, groupable: _groupable, _id: id }, settings: { showreply } } = this;
+		return !(groupable === false || _groupable === false) && !!(tmid && showreply && (!t || t === 'e2e') && (tmid !== id));
 	},
 	collapsed() {
-		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
-		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
+		const { msg: { tmid, collapsed, _id: id }, settings: { showreply }, shouldCollapseReplies } = this;
+		const isCollapsedThreadReply = shouldCollapseReplies && tmid && tmid !== id && showreply && collapsed !== false;
 		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
