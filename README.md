@@ -385,6 +385,10 @@ meteor npm install
 meteor npm start
 ```
 
+For Windows 10 users, move ahead by first installing [Ubuntu 18.04.3 LTS](https://ubuntu.com/download/desktop) then following the steps given above.
+
+> For a more detailed guide, look at [Rocket.Chat docs](https://rocket.chat/docs/developer-guides/quick-start/).
+
 To debug the server part, use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
 
 ```sh
