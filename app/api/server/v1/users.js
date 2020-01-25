@@ -4,7 +4,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
-import { boolean } from '@storybook/addon-knobs';
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
