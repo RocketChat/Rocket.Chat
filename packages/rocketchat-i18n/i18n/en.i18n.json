@@ -2548,6 +2548,7 @@
   "Profile_saved_successfully": "Profile saved successfully",
   "Prometheus": "Prometheus",
   "Protocol": "Protocol",
+  "Provided_password_same_as_current_password": "Could not change password. The provided password is same as the current password.",
   "Prune": "Prune",
   "Prune_finished": "Prune finished",
   "Prune_Messages": "Prune Messages",
