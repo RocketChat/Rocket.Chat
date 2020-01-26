@@ -59,6 +59,8 @@ async function setUserPassword(password) {
 				requirePasswordChange: false,
 			},
 		});
+		toastr.remove();
+		toastr.success(t('Password_changed_successfully'));
 	} catch (e) {
 		console.error(e);
 		toastr.error(t('Error'));
@@ -82,6 +84,13 @@ Template.resetPassword.events({
 		i.state.set('loading', true);
 
 		try {
+			const user = Meteor.user();
+			if (user && user.requirePasswordChange) {
+				const res = await call('comparePassword', password);
+				if (!res) {
+					return toastr.error('Could not change password. The provided password is same as the current.');
+				}
+			}
 			if (Meteor.userId() && !token) {
 				return setUserPassword(password);
 			}
