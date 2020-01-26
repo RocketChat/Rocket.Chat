@@ -1,4 +1,5 @@
 import './modal.html';
+import '../../../ui-message/client/messageBox/messageBox.html';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
@@ -175,7 +176,7 @@ Template.rc_modal.events({
 			modal.confirm(document.getElementsByClassName('js-modal-input')[0].value);
 			return;
 		}
-
+		document.getElementById("textarea").value='';
 		modal.confirm(true);
 	},
 	'click .rc-modal-wrapper'(e, instance) {

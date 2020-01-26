@@ -433,7 +433,9 @@ Template.messageBox.events({
 		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
 	async 'click .js-send'(event, instance) {
+		var res=document.getElementById("textarea").value;
 		instance.send(event);
+		document.getElementById("textarea").value=res;
 	},
 	'click .js-action-menu'(event, instance) {
 		const groups = messageBox.actions.get();
