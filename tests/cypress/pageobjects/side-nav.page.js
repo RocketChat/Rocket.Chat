@@ -95,17 +95,8 @@ class SideNav extends Page {
 
 	// Opens a channel via spotlight search
 	searchChannel(channelName) {
-		// cy.get('.rc-header').should('be.visible');
-		// if (browser.isVisible('.rc-header__name')) {
-		// 	if (channelName === browser.element('.rc-header__name').getText()) {
-		// 		return;
-		// 	}
-		// }
-		// this.spotlightSearch.waitForVisible(5000);
-		// TODO: handle the case where the channel is already there
 		this.spotlightSearch.should('be.visible');
 		this.spotlightSearch.should('have.focus');
-		// this.spotlightSearch.click('center', { log: true });
 		this.spotlightSearch.type(channelName);
 
 		cy.get(`.rooms-list__toolbar-search [aria-label='${ channelName }']`).click();
@@ -114,10 +105,7 @@ class SideNav extends Page {
 	}
 
 	// Gets a channel from the rooms list
-	getChannelFromList(channelName, reverse) {
-		if (reverse == null) {
-			// browser.waitForVisible(`.sidebar-item__name=${ channelName }`, 5000);
-		}
+	getChannelFromList(channelName) {
 		return cy.get('.sidebar-item__name').contains(channelName);
 	}
 

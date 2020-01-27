@@ -48,7 +48,6 @@ class LoginPage extends Page {
 	}
 
 	registerNewUser({ username, email, password }) {
-		// this.nameField.waitForVisible(5000);
 		this.nameField.type(username);
 		this.emailField.type(email);
 		this.passwordField.type(password);
@@ -58,7 +57,6 @@ class LoginPage extends Page {
 	}
 
 	registerNewAdmin({ adminUsername, adminEmail, adminPassword }) {
-		// this.nameField.waitForVisible(5000);
 		this.nameField.type(adminUsername);
 		this.emailField.type(adminEmail);
 		this.passwordField.type(adminPassword);
@@ -68,7 +66,6 @@ class LoginPage extends Page {
 	}
 
 	login({ email, password }) {
-		// this.emailOrUsernameField.waitForVisible(5000);
 		this.emailOrUsernameField.type(email);
 		this.passwordField.type(password);
 
@@ -80,7 +77,6 @@ class LoginPage extends Page {
 	}
 
 	submit() {
-		// this.submitButton.waitForVisible(5000);
 		this.submitButton.click();
 	}
 }

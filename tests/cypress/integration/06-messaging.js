@@ -9,9 +9,8 @@ import { checkIfUserIsValid, publicChannelCreated, privateChannelCreated, direct
 
 // Test data
 const message = `message from ${ username }`;
-let currentTest = 'none';
 
-function messagingTest() {
+function messagingTest(currentTest) {
 	describe('Normal message:', () => {
 		it('it should send a message', () => {
 			mainContent.sendMessage(message);
@@ -21,18 +20,17 @@ function messagingTest() {
 			mainContent.lastMessage.should('be.visible');
 		});
 
-		// TODO: This logic doesn't work
-		// if (!currentTest === 'direct') {
-		// 	it('it should be that the last message is from the loged user', () => {
-		// 		mainContent.lastMessageUser.getText().should.equal(username);
-		// 	});
-		// }
+		if (currentTest !== 'direct') {
+			it('it should be that the last message is from the logged user', () => {
+				mainContent.lastMessageUser.should('contain', username);
+			});
+		}
 
-		// if (currentTest === 'general') {
-		// 	it('it should not show the Admin tag', () => {
-		// 		mainContent.lastMessageUserTag.should('not.be.visible');
-		// 	});
-		// }
+		if (currentTest === 'general') {
+			it('it should not show the Admin tag', () => {
+				mainContent.lastMessageUserTag.should('not.be.visible');
+			});
+		}
 	});
 
 	describe.skip('fileUpload:', () => {
@@ -90,7 +88,7 @@ function messagingTest() {
 	});
 }
 
-function messageActionsTest() {
+function messageActionsTest(currentTest) {
 	describe('[Actions]', () => {
 		before(() => {
 			mainContent.sendMessage('Message for Message Actions Tests');
@@ -131,14 +129,6 @@ function messageActionsTest() {
 			it('it should show the star action', () => {
 				mainContent.messageStar.should('be.visible');
 			});
-
-			// it('it should show the reaction action', () => {
-			// 	mainContent.messageReaction.should('be.visible');
-			// });
-
-			// it('it should show the close action', () => {
-			// 	mainContent.messageClose.should('be.visible');
-			// });
 
 			if (currentTest === 'general') {
 				it('it should not show the pin action', () => {
@@ -260,10 +250,9 @@ describe('[Message]', () => {
 		before(() => {
 			sideNav.spotlightSearchIcon.click();
 			sideNav.searchChannel('general');
-			currentTest = 'general';
 		});
-		messagingTest();
-		messageActionsTest();
+		messagingTest('general');
+		messageActionsTest('general');
 	});
 
 	describe('[Public Channel]', () => {
@@ -273,11 +262,10 @@ describe('[Message]', () => {
 				setPublicChannelCreated(true);
 				console.log('	public channel not found, creating one...');
 			}
-			currentTest = 'public';
 			sideNav.openChannel(publicChannelName);
 		});
-		messagingTest();
-		messageActionsTest();
+		messagingTest('public');
+		messageActionsTest('public');
 	});
 
 	describe('[Private Channel]', () => {
@@ -287,11 +275,10 @@ describe('[Message]', () => {
 				setPrivateChannelCreated(true);
 				console.log('	private channel not found, creating one...');
 			}
-			currentTest = 'private';
 			sideNav.openChannel(privateChannelName);
 		});
-		messagingTest();
-		messageActionsTest();
+		messagingTest('private');
+		messageActionsTest('private');
 	});
 
 	describe('[Direct Message]', () => {
@@ -302,9 +289,8 @@ describe('[Message]', () => {
 				setDirectMessageCreated(true);
 				console.log('	Direct message not found, creating one...');
 			}
-			currentTest = 'direct';
 			sideNav.openChannel(targetUser);
 		});
-		messagingTest();
+		messagingTest('direct');
 	});
 });

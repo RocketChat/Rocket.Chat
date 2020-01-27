@@ -30,13 +30,10 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 			}
 			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
 			openAdminView();
-			// admin.permissionsLink.waitForVisible(5000);
 			admin.permissionsLink.click();
 		});
 
 		it('Set permission for user to manage settings', function(done) {
-			// admin.rolesPermissionGrid.waitForVisible(5000);
-
 			if (!admin.rolesManageSettingsPermissions.isSelected()) {
 				admin.rolesManageSettingsPermissions.click();
 			}
@@ -55,7 +52,6 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		after(() => {
-			// sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 			logoutRocketchat();
 		});
@@ -73,9 +69,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		it('Change titlepage title is allowed', function(done) {
-			// admin.layoutLink.waitForVisible(10000);
 			admin.layoutLink.click();
-			// admin.generalLayoutTitle.waitForVisible(5000);
 			admin.generalLayoutTitle.type(newTitle);
 			browser.pause(2000);
 			admin.buttonSave.click();
@@ -83,7 +77,6 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		after(() => {
-			// sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 			logoutRocketchat();
 		});
@@ -97,11 +90,8 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		it('New settings value visible for admin as well', function(done) {
-			// admin.layoutLink.waitForVisible(10000);
 			admin.layoutLink.click();
-			// admin.layoutButtonExpandContent.waitForVisible(5000);
 			admin.layoutButtonExpandContent.click();
-			// admin.generalLayoutTitle.waitForVisible(5000);
 			assert(admin.generalLayoutTitle.getValue() === newTitle, 'Title setting value not changed properly');
 			browser.pause(2000);
 			admin.buttonSave.click();
@@ -109,9 +99,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		it('Cleanup permissions', function(done) {
-			// admin.permissionsLink.waitForVisible(5000);
 			admin.permissionsLink.click();
-			// admin.rolesPermissionGrid.waitForVisible(5000);
 
 			admin.rolesManageSettingsPermissions.click();
 			admin.rolesManageSettingsPermissions.isSelected().should.equal(false);
@@ -124,7 +112,6 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		after(() => {
-			// sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 			logoutRocketchat();
 		});

@@ -64,7 +64,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it.skip('it should not show the edit messages', () => {
-		// the page needs a refresh to show the changes in the client
+			// the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message Edit Block');
 			mainContent.openMessageActionMenu();
 			mainContent.messageEdit.should('not.be.visible');
@@ -97,7 +97,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it.skip('it should not show the delete messages', () => {
-		// the page needs a refresh to show the changes in the client
+			// the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message delete Block');
 			mainContent.openMessageActionMenu();
 			mainContent.messageDelete.should('not.be.visible');
@@ -130,7 +130,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it.skip('it should not show the audo file button', () => {
-		// the page needs a refresh to show the changes in the client
+			// the page needs a refresh to show the changes in the client
 			mainContent.recordBtn.should('not.be.visible');
 		});
 
@@ -161,7 +161,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it.skip('it should not show the video file button', () => {
-		// the page needs a refresh to show the changes in the client
+			// the page needs a refresh to show the changes in the client
 			mainContent.videoCamBtn.waitForVisible(10000, true);
 			mainContent.videoCamBtn.should('not.be.visible');
 		});
@@ -238,12 +238,12 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it.skip('it should not show the pinned tab button', () => {
-		// the page needs a refresh to show the changes in the client
+			// the page needs a refresh to show the changes in the client
 			flexTab.pinnedTab.should('not.be.visible');
 		});
 
 		it.skip('it should not show the pin message action', () => {
-		// the page needs a refresh to show the changes in the client
+			// the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message pin Block');
 			mainContent.openMessageActionMenu();
 			mainContent.pinMessage.should('not.be.visible');
@@ -276,12 +276,12 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it.skip('it should not show the starred tab button', () => {
-		// the page needs a refresh to show the changes in the client
+			// the page needs a refresh to show the changes in the client
 			flexTab.starredTab.should('not.be.visible');
 		});
 
 		it.skip('it should not show the star message action', () => {
-		// the page needs a refresh to show the changes in the client
+			// the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message pin Block');
 			mainContent.openMessageActionMenu();
 			mainContent.starMessage.should('not.be.visible');

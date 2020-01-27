@@ -5,7 +5,6 @@ import preferencesMainContent from '../pageobjects/preferences-main-content.page
 import admin from '../pageobjects/administration.page';
 import { username, password, email, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
-// import {imgURL} from '../../data/interactions.js';
 
 
 describe('[User Preferences]', () => {
@@ -96,12 +95,10 @@ describe('[User Preferences]', () => {
 
 			it.skip('it should be that the user name on the members flex tab is the edited one', () => {
 				mainContent.lastMessageUser.click();
-				// flexTab.memberUserName.waitForVisible(5000);
 				flexTab.memberUserName.getText().should.equal(`EditedUserName${ username }`);
 			});
 
 			it.skip('it should that the real name on the members flex tab is the edited one', () => {
-				// flexTab.memberRealName.waitForVisible(5000);
 				flexTab.memberRealName.getText().should.equal(`EditedRealName${ username }`);
 			});
 		});
@@ -112,27 +109,21 @@ describe('[User Preferences]', () => {
 			before(() => {
 				checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
 				admin.open('admin/Accounts');
-				// admin.accountsRealNameChangeFalse.waitForVisible(5000);
 				admin.accountsRealNameChangeFalse.click();
 				admin.adminSaveChanges();
-				// admin.accountsUsernameChangeFalse.waitForVisible(5000);
 				admin.accountsUsernameChangeFalse.click();
 				admin.adminSaveChanges();
 				admin.settingsSearch.type('');
-				// sideNav.preferencesClose.waitForVisible(5000);
 				sideNav.preferencesClose.click();
 			});
 
 			after(() => {
 				admin.open('admin/Accounts');
-				// admin.accountsRealNameChangeTrue.waitForVisible(5000);
 				admin.accountsRealNameChangeTrue.click();
 				admin.adminSaveChanges();
-				// admin.accountsUsernameChangeTrue.waitForVisible(5000);
 				admin.accountsUsernameChangeTrue.click();
 				admin.adminSaveChanges();
 				admin.settingsSearch.type('');
-				// sideNav.preferencesClose.waitForVisible(5000);
 				sideNav.preferencesClose.click();
 			});
 

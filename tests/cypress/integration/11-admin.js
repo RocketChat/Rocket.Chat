@@ -462,10 +462,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should change the invalid self signed certs toggle', () => {
-					// TODO: Fix
-					// if (!admin.generalSelfSignedCerts.isSelected()) {
 					admin.generalSelfSignedCerts.parent().click();
-					// }
 				});
 
 				it('it should show the reset button', () => {
@@ -481,10 +478,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should change the favorite rooms toggle', () => {
-					// TODO: Fix
-					// if (admin.generalFavoriteRoom.isSelected()) {
 					admin.generalFavoriteRoom.parent().click();
-					// }
 				});
 
 				it('it should show the reset button', () => {
@@ -532,10 +526,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should change the force ssl toggle', () => {
-					// TODO: Fix
-					// if (!admin.generalForceSSL.isSelected()) {
 					admin.generalForceSSL.parent().click();
-					// }
 				});
 
 				it('it should show the reset button', () => {
@@ -671,10 +662,6 @@ describe('[Administration]', () => {
 
 			describe('default user preferences', () => {
 				before(() => {
-					// TODO: Fix
-					// if (admin.accountsSectionDefaultUserPreferences.$('[aria-expanded="true"]').isVisible()) {
-					// 	admin.accountsSectionDefaultUserPreferences.$('[aria-expanded="true"]').click();
-					// }
 					admin.accountsSectionDefaultUserPreferences.find('[aria-expanded="false"]').click();
 				});
 

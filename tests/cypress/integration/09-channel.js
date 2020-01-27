@@ -26,8 +26,6 @@ describe('[Channel]', () => {
 				});
 
 				it('it should start a direct message with rocket.cat', () => {
-					// sideNav.searchChannel('rocket.cat');
-					// mainContent.channelTitle.waitForVisible(5000);
 					mainContent.channelTitle.should('contain', 'rocket.cat');
 				});
 			});
@@ -39,23 +37,17 @@ describe('[Channel]', () => {
 				});
 
 				it('it should go to general', () => {
-					// sideNav.searchChannel('general');
 					mainContent.channelTitle.should('contain', 'general');
 				});
 			});
 
 			describe('user created channel:', () => {
-				// beforeEach(() => {
-				// 	sideNav.getChannelFromSpotlight(publicChannelName).waitForVisible(5000);
-				// });
-
 				it('it should search the user created channel', () => {
 					sideNav.spotlightSearchIcon.click();
 					sideNav.searchChannel(publicChannelName);
 				});
 
 				it('it should go to the user created channel', () => {
-					// sideNav.searchChannel(publicChannelName);
 					mainContent.channelTitle.should('contain', publicChannelName);
 				});
 			});
@@ -106,7 +98,6 @@ describe('[Channel]', () => {
 			before(() => {
 				if (Global.toastAlert.isVisible()) {
 					Global.dismissToast();
-					// Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.operateFlexTab('members', true);
 			});
@@ -114,7 +105,6 @@ describe('[Channel]', () => {
 			after(() => {
 				if (Global.toastAlert.isVisible()) {
 					Global.dismissToast();
-					// Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.operateFlexTab('members', false);
 			});
@@ -129,7 +119,6 @@ describe('[Channel]', () => {
 				before(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('info', true);
 				});
@@ -137,23 +126,19 @@ describe('[Channel]', () => {
 				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('info', false);
 				});
 
 				it('it should show the old name', () => {
-					// flexTab.firstSetting.waitForVisible();
 					flexTab.firstSetting.getText().should.equal(publicChannelName);
 				});
 
 				it('it should click the edit name', () => {
-					// flexTab.editNameBtn.waitForVisible();
 					flexTab.editNameBtn.click();
 				});
 
 				it('it should edit the name input', () => {
-					// flexTab.editNameTextInput.waitForVisible();
 					flexTab.editNameTextInput.type(`NAME-EDITED-${ publicChannelName }`);
 				});
 
@@ -163,7 +148,6 @@ describe('[Channel]', () => {
 
 				it('it should show the new name', () => {
 					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
-					// channelName.waitForVisible(5000);
 					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
 				});
 			});
@@ -176,18 +160,15 @@ describe('[Channel]', () => {
 				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('info', false);
 				});
 
 				it('it should click the edit topic', () => {
-					// flexTab.editTopicBtn.waitForVisible(5000);
 					flexTab.editTopicBtn.click();
 				});
 
 				it('it should edit the topic input', () => {
-					// flexTab.editTopicTextInput.waitForVisible(5000);
 					flexTab.editTopicTextInput.type('TOPIC EDITED');
 				});
 
@@ -208,18 +189,15 @@ describe('[Channel]', () => {
 				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('info', false);
 				});
 
 				it('it should click the edit announcement', () => {
-					// flexTab.editAnnouncementBtn.waitForVisible(5000);
 					flexTab.editAnnouncementBtn.click();
 				});
 
 				it('it should edit the announcement input', () => {
-					// flexTab.editAnnouncementTextInput.waitForVisible(5000);
 					flexTab.editAnnouncementTextInput.type('ANNOUNCEMENT EDITED');
 				});
 
@@ -240,18 +218,15 @@ describe('[Channel]', () => {
 				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('info', false);
 				});
 
 				it('it should click the edit description', () => {
-					// flexTab.editDescriptionBtn.waitForVisible();
 					flexTab.editDescriptionBtn.click();
 				});
 
 				it('it should edit the description input', () => {
-					// flexTab.editDescriptionTextInput.waitForVisible(5000);
 					flexTab.editDescriptionTextInput.type('DESCRIPTION EDITED');
 				});
 
@@ -284,7 +259,6 @@ describe('[Channel]', () => {
 				before(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('members', true);
 				});
@@ -292,7 +266,6 @@ describe('[Channel]', () => {
 				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('members', false);
 				});
@@ -304,7 +277,6 @@ describe('[Channel]', () => {
 				it('it should dismiss the toast', () => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 				});
 
@@ -321,7 +293,6 @@ describe('[Channel]', () => {
 				before(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('members', true);
 				});
@@ -329,7 +300,6 @@ describe('[Channel]', () => {
 				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('members', false);
 				});
@@ -341,7 +311,6 @@ describe('[Channel]', () => {
 				it('it should dismiss the toast', () => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
-						// Global.toastAlert.waitForVisible(5000, true);
 					}
 				});
 
@@ -360,13 +329,10 @@ describe('[Channel]', () => {
 					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channel.click();
 					channel.moveToObject();
-					// sideNav.channelLeave.waitForVisible(5000);
 					sideNav.channelLeave.click();
-					// Global.modal.waitForVisible(5000);
 				});
 
 				it('it should show the modal alert popup', () => {
-					// Global.modal.waitForVisible(5000);
 					Global.modal.should('be.visible');
 					Global.modalConfirm.should('be.visible');
 				});
@@ -376,18 +342,15 @@ describe('[Channel]', () => {
 				});
 
 				it('it should not show the channel on the list', () => {
-					// sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`, true).waitForVisible(5000, true);
-					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`, true).should('not.be.visible');
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).should('not.be.visible');
 				});
 
 				it('it should search and enter the channel with the spotlight', () => {
 					sideNav.searchChannel(`NAME-EDITED-${ publicChannelName }`);
-					// mainContent.joinChannelBtn.waitForVisible(5000);
 					mainContent.joinChannelBtn.click();
 				});
 
 				it('it should show the channel on the list', () => {
-					// sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).waitForVisible(10000);
 					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).should('be.visible');
 				});
 			});
