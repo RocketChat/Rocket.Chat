@@ -34,7 +34,7 @@ Meteor.startup(function() {
 				return Boolean(subscription);
 			},
 			order: 1,
-			group: 'menu',
+			group: 'message',
 		});
 	});
 });

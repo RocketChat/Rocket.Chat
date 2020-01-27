@@ -5,6 +5,7 @@ import { hasPermission } from '../../app/authorization/server';
 import { Users } from '../../app/models/server';
 
 Meteor.publish('userAutocomplete', function(selector) {
+	console.warn('The publication "userAutocomplete" is deprecated and will be removed after version v3.0.0');
 	const uid = this.userId;
 	if (!uid) {
 		return this.ready();
@@ -32,8 +33,9 @@ Meteor.publish('userAutocomplete', function(selector) {
 
 	const pub = this;
 	const exceptions = selector.exceptions || [];
+	const conditions = selector.conditions || {};
 
-	const cursorHandle = Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options).observeChanges({
+	const cursorHandle = Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).observeChanges({
 		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},

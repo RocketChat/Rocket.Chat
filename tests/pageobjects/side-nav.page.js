@@ -143,7 +143,7 @@ class SideNav extends Page {
 		return browser.element(`.sidebar-item__name=${ channelName }`);
 	}
 
-	createChannel(channelName, isPrivate, /* isReadOnly*/) {
+	createChannel(channelName, isPrivate /* isReadOnly*/) {
 		this.newChannelBtnToolbar.waitForVisible(10000);
 		this.newChannelBtnToolbar.click();
 

@@ -65,6 +65,8 @@ export const MessageAction = new class {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			btns[config.id] = config;
+			mem.clear(this._getButtons);
+			mem.clear(this._getButtonsByGroup);
 			return this.buttons.set(btns);
 		});
 	}
@@ -94,14 +96,14 @@ export const MessageAction = new class {
 
 	_getButtons = mem(function() {
 		return _.sortBy(_.toArray(this.buttons.get()), 'order');
-	}, { maxAge: 100 })
+	})
+
+	_getButtonsByGroup = mem(function(group) {
+		return this._getButtons().filter((button) => button.group === group);
+	})
 
 	getButtons(message, context, group) {
-		let allButtons = this._getButtons();
-
-		if (group) {
-			allButtons = allButtons.filter((button) => button.group === group);
-		}
+		const allButtons = group ? this._getButtonsByGroup(group) : this._getButtons();
 
 		if (message) {
 			return allButtons.filter(function(button) {
@@ -115,6 +117,8 @@ export const MessageAction = new class {
 	}
 
 	resetButtons() {
+		mem.clear(this._getButtons);
+		mem.clear(this._getButtonsByGroup);
 		return this.buttons.set({});
 	}
 

@@ -9,10 +9,10 @@
 					<form class="search-form" role="form">
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								{{#if isReady}}
-									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
-								{{else}}
+								{{#if isLoading}}
 									{{> loading }}
+								{{else}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
 								{{/if}}
 							</div>
 							<input id="emoji-filter" type="text" class="rc-input__element"
@@ -59,11 +59,11 @@
 							<tr class="table-no-click">
 								<td>{{_ "No_results_found_for"}} {{.}}</td>
 							</tr>
-							{{/with}} {{/each}} {{#unless isReady}}
+							{{/with}} {{/each}} {{#if isLoading}}
 							<tr class="table-no-click">
 								<td class="table-loading-td">{{> loading}}</td>
 							</tr>
-							{{/unless}}
+							{{/if}}
 						</tbody>
 					{{/table}}
 				{{/unless}}

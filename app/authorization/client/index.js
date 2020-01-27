@@ -4,10 +4,6 @@ import './usersNameChanged';
 import './requiresPermission.html';
 import './route';
 import './startup';
-import './views/permissions.html';
-import './views/permissions';
-import './views/permissionsRole.html';
-import './views/permissionsRole';
 
 export {
 	hasAllPermission,

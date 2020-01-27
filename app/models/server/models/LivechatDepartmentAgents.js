@@ -36,6 +36,10 @@ export class LivechatDepartmentAgents extends Base {
 		});
 	}
 
+	removeByAgentId(agentId) {
+		this.remove({ agentId });
+	}
+
 	removeByDepartmentIdAndAgentId(departmentId, agentId) {
 		this.remove({ departmentId, agentId });
 	}

@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission, getUsersInRole } from '../../../authorization';
 
 Meteor.publish('livechat:agents', function() {
+	console.warn('The publication "livechat:agents" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:agents' }));
 	}

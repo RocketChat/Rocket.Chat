@@ -2,13 +2,18 @@ import { Random } from 'meteor/random';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
-import Rooms from '../../../models/server/models/Rooms';
+import LivechatRooms from '../../../models/server/models/LivechatRooms';
 import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
+import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
 import Users from '../../../models/server/models/Users';
 
 export class AppLivechatBridge {
 	constructor(orch) {
 		this.orch = orch;
+	}
+
+	isOnline() {
+		return Livechat.online();
 	}
 
 	async createMessage(message, appId) {
@@ -48,14 +53,19 @@ export class AppLivechatBridge {
 	async createRoom(visitor, agent, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating a livechat room.`);
 
-		const agentUser = Users.findOneById(agent.id);
-		agentUser.agentId = agentUser._id;
+		let agentRoom;
+		if (agent && agent.id) {
+			const user = Users.getAgentInfo(agent.id);
+			agentRoom = Object.assign({}, { agentId: user._id });
+		}
 
-		return this.orch.getConverters().get('rooms').convertRoom(getRoom({
+		const result = await getRoom({
 			guest: this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			agent: agentUser,
+			agent: agentRoom,
 			rid: Random.id(),
-		}).room);
+		});
+
+		return this.orch.getConverters().get('rooms').convertRoom(result.room);
 	}
 
 	async closeRoom(room, comment, appId) {
@@ -78,9 +88,9 @@ export class AppLivechatBridge {
 		let result;
 
 		if (departmentId) {
-			result = Rooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId).fetch();
+			result = LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId).fetch();
 		} else {
-			result = Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			result = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 		}
 
 		return result.map((room) => this.orch.getConverters().get('rooms').convertRoom(room));
@@ -123,13 +133,47 @@ export class AppLivechatBridge {
 		return Livechat.transfer(
 			this.orch.getConverters().get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent.id, departmentId }
+			{ userId: targetAgent.id, departmentId },
 		);
 	}
 
 	async findVisitors(query, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
+		if (this.orch.isDebugging()) {
+			console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');
+		}
+
 		return LivechatVisitors.find(query).fetch().map((visitor) => this.orch.getConverters().get('visitors').convertVisitor(visitor));
+	}
+
+	async findVisitorById(id, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return this.orch.getConverters().get('visitors').convertById(id);
+	}
+
+	async findVisitorByEmail(email, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return this.orch.getConverters().get('visitors').convertVisitor(LivechatVisitors.findOneGuestByEmailAddress(email));
+	}
+
+	async findVisitorByToken(token, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return this.orch.getConverters().get('visitors').convertVisitor(LivechatVisitors.getVisitorByToken(token));
+	}
+
+	async findVisitorByPhoneNumber(phoneNumber, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
+
+		return this.orch.getConverters().get('visitors').convertVisitor(LivechatVisitors.findOneVisitorByPhone(phoneNumber));
+	}
+
+	async findDepartmentByIdOrName(value, appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
+
+		return this.orch.getConverters().get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value));
 	}
 }

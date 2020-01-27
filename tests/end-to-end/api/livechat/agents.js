@@ -24,8 +24,8 @@ describe('LIVECHAT - Agents', function() {
 
 	describe('livechat/users/:type', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', [])
-				.then(() => updatePermission('manage-livechat-agents', []))
+			updatePermission('view-l-room', [])
+				.then(() => updatePermission('transfer-livechat-guest', []))
 				.then(() => {
 					request.get(api('livechat/users/agent'))
 						.set(credentials)
@@ -54,8 +54,8 @@ describe('LIVECHAT - Agents', function() {
 				});
 		});
 		it('should return an array of agents', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => updatePermission('manage-livechat-agents', ['admin']))
+			updatePermission('view-l-room', ['admin'])
+				.then(() => updatePermission('transfer-livechat-guest', ['admin']))
 				.then(() => {
 					request.get(api('livechat/users/agent'))
 						.set(credentials)
@@ -89,6 +89,54 @@ describe('LIVECHAT - Agents', function() {
 							expect(res.body).to.have.property('count');
 							const managerRecentlyCreated = res.body.users.find((user) => manager._id === user._id);
 							expect(managerRecentlyCreated._id).to.be.equal(manager._id);
+						})
+						.end(done);
+				});
+		});
+	});
+
+	describe('livechat/agents/:agentId/departments', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+			updatePermission('view-l-room', [])
+				.then(() => {
+					request.get(api(`livechat/agents/${ agent._id }/departments`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.error).to.be.equal('error-not-authorized');
+						})
+						.end(done);
+				});
+		});
+		it('should return an empty array of departments when the agentId is invalid', (done) => {
+			updatePermission('view-l-room', ['admin'])
+				.then(() => {
+					request.get(api('livechat/agents/invalid-id/departments'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('departments').and.to.be.an('array');
+						})
+						.end(done);
+				});
+		});
+		it('should return an array of departments when the agentId is valid', (done) => {
+			updatePermission('view-l-room', ['admin'])
+				.then(() => {
+					request.get(api(`livechat/agents/${ agent._id }/departments`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('departments').and.to.be.an('array');
+							res.body.departments.forEach((department) => {
+								expect(department.agentId).to.be.equal(agent._id);
+							});
 						})
 						.end(done);
 				});

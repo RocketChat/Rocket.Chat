@@ -1,12 +1,18 @@
+import s from 'underscore.string';
+
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 
-export async function findDepartments({ userId, pagination: { offset, count, sort } }) {
+export async function findDepartments({ userId, text, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
 
-	const cursor = LivechatDepartment.find({}, {
+	const query = {
+		...text && { name: new RegExp(s.escapeRegExp(text), 'i') },
+	};
+
+	const cursor = LivechatDepartment.find(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,

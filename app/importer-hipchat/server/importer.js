@@ -170,7 +170,7 @@ export class HipChatImporter extends Base {
 				if (c.room_id === channel.channel_id) {
 					c.do_import = channel.do_import;
 				}
-			})
+			}),
 		);
 		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
 

@@ -183,6 +183,19 @@ settings.addGroup('Accounts', function() {
 			type: 'string',
 			secret: true,
 		});
+		this.add('Accounts_Registration_InviteUrlType', 'proxy', {
+			type: 'select',
+			values: [
+				{
+					key: 'direct',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Direct',
+				}, {
+					key: 'proxy',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Proxy',
+				},
+			],
+		});
+
 		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
 			type: 'string',
 			public: true,
@@ -224,6 +237,30 @@ settings.addGroup('Accounts', function() {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notification_Duration',
+		});
+		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Notification_RequireInteraction',
+			i18nDescription: 'Notification_RequireInteraction_Description',
+		});
+		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'all',
+					i18nLabel: 'All_messages',
+				},
+				{
+					key: 'mentions',
+					i18nLabel: 'Mentions',
+				},
+				{
+					key: 'nothing',
+					i18nLabel: 'Nothing',
+				},
+			],
+			public: true,
 		});
 		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
@@ -402,11 +439,6 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 			i18nLabel: 'Email_Notification_Mode',
-		});
-		this.add('Accounts_Default_User_Preferences_roomCounterSidebar', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Show_room_counter_on_sidebar',
 		});
 		this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
 			type: 'select',
@@ -1142,6 +1174,24 @@ settings.addGroup('Push', function() {
 			value: true,
 		},
 	});
+	this.add('Push_send_interval', 5000, {
+		type: 'int',
+		public: true,
+		alert: 'Push_Setting_Requires_Restart_Alert',
+		enableQuery: {
+			_id: 'Push_enable',
+			value: true,
+		},
+	});
+	this.add('Push_send_batch_size', 10, {
+		type: 'int',
+		public: true,
+		alert: 'Push_Setting_Requires_Restart_Alert',
+		enableQuery: {
+			_id: 'Push_enable',
+			value: true,
+		},
+	});
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
@@ -1332,6 +1382,10 @@ settings.addGroup('Layout', function() {
 			public: true,
 		});
 		this.add('UI_Allow_room_names_with_special_chars', false, {
+			type: 'boolean',
+			public: true,
+		});
+		return this.add('UI_Show_top_navbar_embedded_layout', false, {
 			type: 'boolean',
 			public: true,
 		});
@@ -2602,6 +2656,10 @@ settings.addGroup('Setup_Wizard', function() {
 				value: true,
 			},
 			secret: true,
+		});
+
+		this.add('Cloud_Service_Agree_PrivacyTerms', false, {
+			type: 'boolean',
 		});
 
 		this.add('Cloud_Workspace_Id', '', {

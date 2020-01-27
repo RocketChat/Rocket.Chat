@@ -34,7 +34,7 @@ const createTestUser = async ({ email, name, username, password, isMentionable }
 			joinDefaultChannels: true,
 			verified: true,
 		})
-		.end(done)
+		.end(done),
 	);
 
 	if (isMentionable) {
@@ -46,7 +46,7 @@ const createTestUser = async ({ email, name, username, password, isMentionable }
 				userCredentials['X-Auth-Token'] = res.body.data.authToken;
 				userCredentials['X-User-Id'] = res.body.data.userId;
 			})
-			.end(done)
+			.end(done),
 		);
 
 		await new Promise((done) => request.post(api('chat.postMessage'))
@@ -55,7 +55,7 @@ const createTestUser = async ({ email, name, username, password, isMentionable }
 				channel: 'general',
 				text: 'Test',
 			})
-			.end(done)
+			.end(done),
 		);
 	}
 };

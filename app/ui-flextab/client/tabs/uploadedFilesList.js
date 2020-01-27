@@ -32,6 +32,7 @@ const mountFileObject = (message) => ({
 
 const roomTypes = {
 	c: 'channels',
+	l: 'channels',
 	d: 'im',
 	p: 'groups',
 };

@@ -32,11 +32,11 @@ export class MentionsParser {
 	}
 
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|<p>|<br> ?)@(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
+		return new RegExp(`(^|\\s|> ?)@(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
 	}
 
 	get channelMentionRegex() {
-		return new RegExp(`(^|\\s|<p>)#(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
+		return new RegExp(`(^|\\s|>)#(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
 	}
 
 	replaceUsers = (msg, { mentions, temp }, me) => msg

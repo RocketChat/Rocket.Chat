@@ -2,7 +2,14 @@
 	<div class="main-content-flex">
 		<section class="page-container page-home page-static page-settings">
 			{{#header sectionName="Connectivity_Services" hideHelp=true fixedHeight=true fullpage=true}}
-				<a href="https://cloud.rocket.chat" class="rc-button rc-button--primary action cloud-console-btn" target="_blank">{{_ "Cloud_console"}}</a>
+				<div class="rc-header__section-button">
+					{{#unless info.connectToCloud}}
+						<button class="rc-button rc-button--small rc-button--primary rc-button--outline js-register">
+							{{_ "Cloud_Register_manually"}}
+						</button>
+					{{/unless}}
+					<a href="https://cloud.rocket.chat" class="rc-button rc-button--primary action cloud-console-btn" target="_blank">{{_ "Cloud_console"}}</a>
+				</div>
 			{{/header}}
 			<div class="content">
 				{{#requiresPermission 'manage-cloud'}}
