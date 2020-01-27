@@ -95,7 +95,7 @@ jobs:
         git version
 
     - name: npm install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         meteor npm install
 
@@ -215,7 +215,7 @@ jobs:
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: NPM install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         npm install
 
