@@ -143,9 +143,9 @@ Template.accountProfile.helpers({
 		}
 	},
 	canResendEmailConf(ret) {
-		const instance = Template.instance();
-		const email = instance.email.get();
-		if (!email || !validateEmail(email)) {
+		const email = Template.instance().email.get();
+		const user = Meteor.user();
+		if (getUserEmailAddress(user) && getUserEmailAddress(user) !== email) {
 			return ret;
 		}
 	},
