@@ -7,7 +7,11 @@ export default {
 	title: 'admin/settings/inputs/AssetSettingInput',
 	component: AssetSettingInput,
 	decorators: [
-		(storyFn) => <Field>{storyFn()}</Field>,
+		(storyFn) => <div className='rc-old'>
+			<div className='page-settings'>
+				<Field>{storyFn()}</Field>
+			</div>
+		</div>,
 	],
 };
 

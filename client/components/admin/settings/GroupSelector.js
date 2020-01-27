@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { AssetsGroupPage } from './groups/AssetsGroupPage';
 import { OAuthGroupPage } from './groups/OAuthGroupPage';
@@ -9,15 +9,17 @@ import { useGroup } from './SettingsState';
 export function GroupSelector({ groupId }) {
 	const group = useGroup(groupId);
 
-	const children = useMemo(() => {
-		if (!group) {
-			return <GroupPage.Skeleton />;
-		}
+	if (!group) {
+		return <GroupPage.Skeleton />;
+	}
 
-		return (group._id === 'Assets' && <AssetsGroupPage group={group} />)
-			|| (group._id === 'OAuth' && <OAuthGroupPage group={group} />)
-			|| <GenericGroupPage group={group} />;
-	}, [group]);
+	if (groupId === 'Assets') {
+		return <AssetsGroupPage {...group} />;
+	}
 
-	return children;
+	if (groupId === 'OAuth') {
+		return <OAuthGroupPage {...group} />;
+	}
+
+	return <GenericGroupPage {...group} />;
 }
