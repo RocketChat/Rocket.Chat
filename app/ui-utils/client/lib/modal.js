@@ -176,7 +176,7 @@ Template.rc_modal.events({
 			modal.confirm(document.getElementsByClassName('js-modal-input')[0].value);
 			return;
 		}
-		document.getElementById("textarea").value='';
+		document.getElementById('textarea').value = '';
 		modal.confirm(true);
 	},
 	'click .rc-modal-wrapper'(e, instance) {
