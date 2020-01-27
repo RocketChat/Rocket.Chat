@@ -27,6 +27,11 @@ Template.adminImportProgress.helpers({
 			const total = instance.total.get();
 
 			const rate = Math.floor(completed * 10000 / total) / 100;
+
+			if (isNaN(rate)) {
+				return '';
+			}
+
 			return `${ rate }%`;
 		} catch {
 			return '';
