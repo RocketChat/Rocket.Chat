@@ -45,7 +45,7 @@ export function SetupWizardPage({ currentStep = 1 }) {
 				/>
 				<Box className='SetupWizard__wrapper'>
 					<Scrollable>
-						<Margins all='16'>
+						<Margins all='x16'>
 							<Tile is='section' className='SetupWizard__steps'>
 								<AdminUserInformationStep step={1} title={t('Admin_Info')} active={currentStep === 1} />
 								<SettingsBasedStep step={2} title={t('Organization_Info')} active={currentStep === 2} />
