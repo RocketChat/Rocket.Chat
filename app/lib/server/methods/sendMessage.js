@@ -87,6 +87,7 @@ export function executeSendMessage(uid, message, trustedSender = false) {
 			ts: new Date(),
 			msg: TAPi18n.__(error, {}, user.language),
 		});
+		throw error;
 	}
 }
 
