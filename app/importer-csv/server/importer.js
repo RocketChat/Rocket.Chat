@@ -8,10 +8,10 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
+	ImporterWebsocket,
 } from '../../importer/server';
-import { RocketChatFile } from '../../file';
 import { Users, Rooms } from '../../models';
-import { sendMessage } from '../../lib';
+import { insertMessage } from '../../lib';
 import { t } from '../../utils';
 
 export class CsvImporter extends Base {
@@ -21,30 +21,48 @@ export class CsvImporter extends Base {
 		this.csvParser = require('csv-parse/lib/sync');
 	}
 
-	prepare(dataURI, sentContentType, fileName) {
-		super.prepare(dataURI, sentContentType, fileName);
+	prepareUsingLocalFile(fullFilePath) {
+		this.logger.debug('start preparing import operation');
+		this.collection.remove({});
 
-		const uriResult = RocketChatFile.dataURIParse(dataURI);
-		const zip = new this.AdmZip(new Buffer(uriResult.image, 'base64'));
-		const zipEntries = zip.getEntries();
+		const zip = new this.AdmZip(fullFilePath);
+		const totalEntries = zip.getEntryCount();
+
+		ImporterWebsocket.progressUpdated({ rate: 0 });
 
 		let tempChannels = [];
 		let tempUsers = [];
 		let hasDirectMessages = false;
 		const tempMessages = new Map();
-		for (const entry of zipEntries) {
+		let count = 0;
+		let oldRate = 0;
+
+		const increaseCount = () => {
+			try {
+				count++;
+				const rate = Math.floor(count * 1000 / totalEntries) / 10;
+				if (rate > oldRate) {
+					ImporterWebsocket.progressUpdated({ rate });
+					oldRate = rate;
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		};
+
+		zip.forEach((entry) => {
 			this.logger.debug(`Entry: ${ entry.entryName }`);
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
 				this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
-				continue;
+				return increaseCount();
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
 				this.logger.debug(`Ignoring the directory entry: ${ entry.entryName }`);
-				continue;
+				return increaseCount();
 			}
 
 			// Parse the channels
@@ -58,7 +76,7 @@ export class CsvImporter extends Base {
 					isPrivate: c[2].trim().toLowerCase() === 'private',
 					members: c[3].trim().split(';').map((m) => m.trim()),
 				}));
-				continue;
+				return increaseCount();
 			}
 
 			// Parse the users
@@ -66,7 +84,7 @@ export class CsvImporter extends Base {
 				super.updateProgress(ProgressStep.PREPARING_USERS);
 				const parsedUsers = this.csvParser(entry.getData().toString());
 				tempUsers = parsedUsers.map((u) => ({ id: u[0].trim().replace('.', '_'), username: u[0].trim(), email: u[1].trim(), name: u[2].trim() }));
-				continue;
+				return increaseCount();
 			}
 
 			// Parse the messages
@@ -84,7 +102,7 @@ export class CsvImporter extends Base {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
 					this.logger.warn(`The file ${ entry.entryName } contains invalid syntax`, e);
-					continue;
+					return increaseCount();
 				}
 
 				if (channelName.toLowerCase() === 'directmessages') {
@@ -97,8 +115,14 @@ export class CsvImporter extends Base {
 					const msgGroupData = item[1].split('.')[0]; // messages
 					tempMessages.get(channelName).set(msgGroupData, msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] })));
 				}
+
+				return increaseCount();
 			}
-		}
+
+			increaseCount();
+		});
+
+		ImporterWebsocket.progressUpdated({ rate: 100 });
 
 		// Insert the users record, eventually this might have to be split into several ones as well
 		// if someone tries to import a several thousands users instance
@@ -366,7 +390,7 @@ export class CsvImporter extends Base {
 									},
 								};
 
-								sendMessage(creator, msgObj, room, true);
+								insertMessage(creator, msgObj, room, true);
 							}
 
 							super.addCountCompleted(1);
@@ -448,7 +472,7 @@ export class CsvImporter extends Base {
 							},
 						};
 
-						sendMessage(creator, msgObj, room, true);
+						insertMessage(creator, msgObj, room, true);
 					}
 
 					super.addCountCompleted(1);
