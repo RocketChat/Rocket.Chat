@@ -46,9 +46,9 @@ class ManualSelection {
 
 		// Alert only the online agents of the queued request
 		const onlineAgents = Livechat.getOnlineAgents(department);
-		const { message } = inquiry;
 
 		const room = LivechatRooms.findOneById(rid);
+		const notificationUserName = v && (v.name || v.username);
 
 		onlineAgents.forEach((agent) => {
 			const { _id, active, emails, language, status, statusConnection, username } = agent;
@@ -73,8 +73,8 @@ class ManualSelection {
 				hasMentionToAll: true, // consider all agents to be in the room
 				hasMentionToHere: false,
 				message: Object.assign({}, { u: v }),
-				notificationMessage: message.msg,
-				room: Object.assign(room, { name: TAPi18n.__('New_livechat_in_queue') }),
+				notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }),
+				room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue') }),
 				mentionIds: [],
 			});
 		});
