@@ -1035,11 +1035,6 @@ settings.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_SetNameToAliasEnabled', false, {
-		type: 'boolean',
-		public: false,
-		i18nDescription: 'Message_SetNameToAliasEnabled_Description',
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,

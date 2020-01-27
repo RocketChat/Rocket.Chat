@@ -160,7 +160,7 @@ const validateUserIdentity = (message, _id) => {
 	}
 	const userIsNotABot = !user.roles.includes('bot');
 	const messageContainsAnyForbiddenProp = Object.keys(message).some((key) => forbiddenPropsToChangeWhenUserIsNotABot.includes(key));
-	if ((userIsNotABot && messageContainsAnyForbiddenProp) || (settings.get('Message_SetNameToAliasEnabled') && message.alias !== user.name)) {
+	if (userIsNotABot && messageContainsAnyForbiddenProp) {
 		throw new Error('You are not authorized to change message properties');
 	}
 };
