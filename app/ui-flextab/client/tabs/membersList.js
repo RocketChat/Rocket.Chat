@@ -9,6 +9,7 @@ import { ChatRoom, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
+import { hasPermission } from '../../../authorization';
 
 Template.membersList.helpers({
 	ignored() {
@@ -100,28 +101,8 @@ Template.membersList.helpers({
 		return (() => roomTypes.roomTypes[roomData.t].canAddUser(roomData))();
 	},
 
-	autocompleteSettingsAddUser() {
-		return {
-			limit: 10,
-			// inputDelay: 300
-			rules: [
-				{
-					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
-					field: 'username',
-					template: Template.userSearch,
-					noMatchTemplate: Template.userSearchEmpty,
-					matchAll: true,
-					filter: {
-						exceptions: [Meteor.user().username],
-					},
-					selector(match) {
-						return { term: match };
-					},
-					sort: 'username',
-				},
-			],
-		};
+	canInviteUser() {
+		return hasPermission('create-invite-links');
 	},
 
 	showUserInfo() {
@@ -163,13 +144,25 @@ Template.membersList.helpers({
 
 Template.membersList.events({
 	'click .js-add'() {
-		Template.parentData(0).tabBar.setTemplate('inviteUsers');
-		Template.parentData(0).tabBar.setData({
+		const { tabBar } = Template.currentData();
+
+		tabBar.setTemplate('inviteUsers');
+		tabBar.setData({
 			label: 'Add_users',
 			icon: 'user',
 		});
 
-		Template.parentData(0).tabBar.open();
+		tabBar.open();
+	},
+	'click .js-invite'() {
+		const { tabBar } = Template.currentData();
+		tabBar.setTemplate('createInviteLink');
+		tabBar.setData({
+			label: 'Invite_Users',
+			icon: 'user-plus',
+		});
+
+		tabBar.open();
 	},
 	'submit .js-search-form'(event) {
 		event.preventDefault();

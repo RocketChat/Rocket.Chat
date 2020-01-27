@@ -85,6 +85,7 @@ Meteor.startup(function() {
 		{ _id: 'view-outside-room',             roles: ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'view-broadcast-member-list',    roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'call-management',               roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'create-invite-links',           roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'view-l-room',                   roles: ['livechat-agent', 'livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-manager',         roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-rooms',           roles: ['livechat-manager', 'admin'] },

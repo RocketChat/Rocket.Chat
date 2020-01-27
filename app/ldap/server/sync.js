@@ -46,7 +46,7 @@ export function slug(text) {
 	if (settings.get('UTF8_Names_Slugify') !== true) {
 		return text;
 	}
-	text = limax(text, { replacement: '.', separateNumbers: false });
+	text = limax(text, { replacement: '.' });
 	return text.replace(/[^0-9a-z-_.]/g, '');
 }
 

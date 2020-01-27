@@ -5,6 +5,7 @@ import { hasPermission } from '../../app/authorization/server';
 import { Users } from '../../app/models/server';
 
 Meteor.publish('userAutocomplete', function(selector) {
+	console.warn('The publication "userAutocomplete" is deprecated and will be removed after version v3.0.0');
 	const uid = this.userId;
 	if (!uid) {
 		return this.ready();

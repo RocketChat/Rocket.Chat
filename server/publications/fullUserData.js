@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { getFullUserData } from '../../app/lib';
 
 Meteor.publish('fullUserData', function(filter, limit) {
+	console.warn('The publication "fullUserData" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

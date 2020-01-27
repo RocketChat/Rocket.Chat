@@ -183,6 +183,19 @@ settings.addGroup('Accounts', function() {
 			type: 'string',
 			secret: true,
 		});
+		this.add('Accounts_Registration_InviteUrlType', 'proxy', {
+			type: 'select',
+			values: [
+				{
+					key: 'direct',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Direct',
+				}, {
+					key: 'proxy',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Proxy',
+				},
+			],
+		});
+
 		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
 			type: 'string',
 			public: true,
@@ -426,11 +439,6 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 			i18nLabel: 'Email_Notification_Mode',
-		});
-		this.add('Accounts_Default_User_Preferences_roomCounterSidebar', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Show_room_counter_on_sidebar',
 		});
 		this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
 			type: 'select',
@@ -1374,6 +1382,10 @@ settings.addGroup('Layout', function() {
 			public: true,
 		});
 		this.add('UI_Allow_room_names_with_special_chars', false, {
+			type: 'boolean',
+			public: true,
+		});
+		return this.add('UI_Show_top_navbar_embedded_layout', false, {
 			type: 'boolean',
 			public: true,
 		});

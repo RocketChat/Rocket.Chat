@@ -15,7 +15,7 @@ Template.adminImport.helpers({
 		return hasRole(Meteor.userId(), 'admin');
 	},
 	getDescription(importer) {
-		return TAPi18n.__('Importer_From_Description', { from: importer.name });
+		return TAPi18n.__('Importer_From_Description', { from: t(importer.name) });
 	},
 	importers() {
 		return Importers.getAll();

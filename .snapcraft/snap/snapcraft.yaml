@@ -39,6 +39,8 @@ apps:
 hooks:
     configure:
         plugs: [network]
+    pre-refresh:
+        plugs: [network]
 parts:
     node:
         plugin: dump 
@@ -64,6 +66,7 @@ parts:
             - .node_version.txt
             - etc
             - usr
+            - star.json
     mongodb:
         build-packages:
             - wget
