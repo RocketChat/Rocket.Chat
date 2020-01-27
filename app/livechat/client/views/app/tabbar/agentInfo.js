@@ -12,7 +12,7 @@ import { modal } from '../../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../../utils/client';
 import { hasPermission } from '../../../../../authorization';
 
-const customFieldsTemplate = () => getCustomFormTemplate('livechatAgentInfoForm');
+const customFieldsTemplate = () => getCustomFormTemplate('omnichannelAgentInfoForm');
 
 Template.agentInfo.helpers({
 	canEdit() {

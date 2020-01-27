@@ -42,7 +42,7 @@ Template.agentEdit.helpers({
 	},
 
 	customFieldsTemplate() {
-		return getCustomFormTemplate('livechatAgentEditForm');
+		return getCustomFormTemplate('omnichannelAgentEditForm');
 	},
 
 	agentDataContext() {
