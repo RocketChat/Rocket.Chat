@@ -15,6 +15,81 @@ import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
 
+export function executeSendMessage(uid, message, trustedSender = false) {
+	if (message.tmid && !settings.get('Threads_enabled')) {
+		throw new Meteor.Error('error-not-allowed', 'not-allowed', {
+			method: 'sendMessage',
+		});
+	}
+
+	if (message.ts) {
+		const tsDiff = Math.abs(moment(message.ts).diff());
+		if (tsDiff > 60000) {
+			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
+				method: 'sendMessage',
+				message_ts: message.ts,
+				server_ts: new Date().getTime(),
+			});
+		} else if (tsDiff > 10000) {
+			message.ts = new Date();
+		}
+	} else {
+		message.ts = new Date();
+	}
+
+	if (message.msg) {
+		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
+
+		if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
+			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+				method: 'sendMessage',
+			});
+		}
+	}
+
+	const user = Users.findOneById(uid, {
+		fields: {
+			username: 1,
+			...!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 },
+		},
+	});
+	let { rid } = message;
+
+	// do not allow nested threads
+	if (message.tmid) {
+		const parentMessage = Messages.findOneById(message.tmid);
+		message.tmid = parentMessage.tmid || message.tmid;
+		rid = parentMessage.rid;
+	}
+
+	if (!rid) {
+		throw new Error('The \'rid\' property on the message object is missing.');
+	}
+
+	try {
+		const room = canSendMessage(rid, { uid, username: user.username });
+		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
+			message.alias = user.name;
+		}
+
+		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+		return sendMessage(user, message, room, false, trustedSender);
+	} catch (error) {
+		if (error === 'error-not-allowed') {
+			throw new Meteor.Error('error-not-allowed');
+		}
+
+		SystemLogger.error('Error sending message:', error);
+
+		Notifications.notifyUser(uid, 'message', {
+			_id: Random.id(),
+			rid: message.rid,
+			ts: new Date(),
+			msg: TAPi18n.__(error, {}, user.language),
+		});
+	}
+}
+
 Meteor.methods({
 	sendMessage(message) {
 		check(message, Object);
@@ -26,78 +101,7 @@ Meteor.methods({
 			});
 		}
 
-		if (message.tmid && !settings.get('Threads_enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'not-allowed', {
-				method: 'sendMessage',
-			});
-		}
-
-		if (message.ts) {
-			const tsDiff = Math.abs(moment(message.ts).diff());
-			if (tsDiff > 60000) {
-				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
-					method: 'sendMessage',
-					message_ts: message.ts,
-					server_ts: new Date().getTime(),
-				});
-			} else if (tsDiff > 10000) {
-				message.ts = new Date();
-			}
-		} else {
-			message.ts = new Date();
-		}
-
-		if (message.msg) {
-			const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
-
-			if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
-				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-					method: 'sendMessage',
-				});
-			}
-		}
-
-		const user = Users.findOneById(uid, {
-			fields: {
-				username: 1,
-				...!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 },
-			},
-		});
-		let { rid } = message;
-
-		// do not allow nested threads
-		if (message.tmid) {
-			const parentMessage = Messages.findOneById(message.tmid);
-			message.tmid = parentMessage.tmid || message.tmid;
-			rid = parentMessage.rid;
-		}
-
-		if (!rid) {
-			throw new Error('The \'rid\' property on the message object is missing.');
-		}
-
-		try {
-			const room = canSendMessage(rid, { uid, username: user.username });
-			if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
-				message.alias = user.name;
-			}
-
-			metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-			return sendMessage(user, message, room);
-		} catch (error) {
-			if (error === 'error-not-allowed') {
-				throw new Meteor.Error('error-not-allowed');
-			}
-
-			SystemLogger.error('Error sending message:', error);
-
-			Notifications.notifyUser(uid, 'message', {
-				_id: Random.id(),
-				rid: message.rid,
-				ts: new Date(),
-				msg: TAPi18n.__(error, {}, user.language),
-			});
-		}
+		return executeSendMessage(uid, message);
 	},
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second

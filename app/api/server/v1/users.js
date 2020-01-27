@@ -524,7 +524,6 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				hideAvatars: Match.Maybe(Boolean),
 				hideFlexTab: Match.Maybe(Boolean),
 				sendOnEnter: Match.Maybe(String),
-				roomCounterSidebar: Match.Maybe(Boolean),
 				language: Match.Maybe(String),
 				sidebarShowFavorites: Match.Optional(Boolean),
 				sidebarShowUnread: Match.Optional(Boolean),

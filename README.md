@@ -66,15 +66,7 @@ At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is
 
 If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
-Explore current openings below:
-
-- [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
-
-- [Sales Engineer](https://rocketchat.recruitee.com/o/sales-engineer)
-
-- [Business Developer/Sales/Channel](https://rocketchat.recruitee.com/o/business-developer-sales-channel)
-
-- [Front-End Developer](https://rocketchat.recruitee.com/o/frontend-developer)
+Get to know more about us and explore current openings at https://jobs.rocket.chat/"
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).

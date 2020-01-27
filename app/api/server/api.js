@@ -179,15 +179,15 @@ export class APIClass extends Restivus {
 		return rateLimiterDictionary[route];
 	}
 
-	shouldVerifyRateLimit(route) {
+	shouldVerifyRateLimit(route, userId) {
 		return rateLimiterDictionary.hasOwnProperty(route)
 			&& settings.get('API_Enable_Rate_Limiter') === true
 			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
-			&& !(this.userId && hasPermission(this.userId, 'api-bypass-rate-limit'));
+			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'));
 	}
 
-	enforceRateLimit(objectForRateLimitMatch, request, response) {
-		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route)) {
+	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
+		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId)) {
 			return;
 		}
 
@@ -321,7 +321,7 @@ export class APIClass extends Restivus {
 					};
 
 					try {
-						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response);
+						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
 						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {

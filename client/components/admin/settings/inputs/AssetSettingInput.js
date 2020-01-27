@@ -1,4 +1,4 @@
-import { Button, Icon, Label } from '@rocket.chat/fuselage';
+import { Button, Field, Icon } from '@rocket.chat/fuselage';
 import { Random } from 'meteor/random';
 import React from 'react';
 
@@ -56,25 +56,27 @@ export function AssetSettingInput({
 	};
 
 	return <>
-		<Label htmlFor={_id} text={label} title={_id} />
-		<div className='settings-file-preview'>
-			{value.url
-				? <div className='preview' style={{ backgroundImage: `url(${ value.url }?_dc=${ Random.id() })` }} />
-				: <div className='preview no-file background-transparent-light secondary-font-color'><Icon icon='icon-upload' /></div>}
-			<div className='action'>
+		<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
+		<Field.Row>
+			<div className='settings-file-preview'>
 				{value.url
-					? <Button onClick={handleDeleteButtonClick}>
-						<Icon name='trash' />{t('Delete')}
-					</Button>
-					: <div className='rc-button rc-button--primary'>{t('Select_file')}
-						<input
-							className='AssetSettingInput__input'
-							type='file'
-							accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${ fileConstraints.extensions.join(', .') }`}
-							onChange={handleUpload}
-						/>
-					</div>}
+					? <div className='preview' style={{ backgroundImage: `url(${ value.url }?_dc=${ Random.id() })` }} />
+					: <div className='preview no-file background-transparent-light secondary-font-color'><Icon icon='icon-upload' /></div>}
+				<div className='action'>
+					{value.url
+						? <Button onClick={handleDeleteButtonClick}>
+							<Icon name='trash' />{t('Delete')}
+						</Button>
+						: <div className='rc-button rc-button--primary'>{t('Select_file')}
+							<input
+								className='AssetSettingInput__input'
+								type='file'
+								accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${ fileConstraints.extensions.join(', .') }`}
+								onChange={handleUpload}
+							/>
+						</div>}
+				</div>
 			</div>
-		</div>
+		</Field.Row>
 	</>;
 }
