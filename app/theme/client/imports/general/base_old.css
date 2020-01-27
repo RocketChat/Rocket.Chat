@@ -2847,6 +2847,8 @@ rc-old select,
 	& .body {
 		transition: opacity 0.3s linear;
 
+		word-break: break-word;
+
 		opacity: 1;
 
 		& > h1 {
@@ -3472,7 +3474,7 @@ rc-old select,
 
 		white-space: normal;
 
-		& h3 {
+		& h2 {
 			overflow: hidden;
 
 			width: 100%;
@@ -3496,6 +3498,10 @@ rc-old select,
 
 				border-radius: var(--border-radius);
 			}
+		}
+
+		& h3 {
+			margin: 8px 0;
 		}
 
 		& p {
@@ -4399,14 +4405,23 @@ rc-old select,
 
 		text-align: center;
 
-		color: var(--color-blue);
-
-		border: 4px dashed var(--color-blue);
 		background: rgba(255, 255, 255, 0.8);
 
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
+
+		&--enabled {
+			color: var(--color-blue);
+
+			border: 4px dashed var(--color-blue);
+		}
+
+		&--disabled {
+			color: var(--color-red);
+
+			border: 4px dashed var(--color-red);
+		}
 	}
 
 	&.over .dropzone-overlay {
@@ -4842,6 +4857,14 @@ rc-old select,
 
 	& .user.user-card-message {
 		margin-left: -5px;
+	}
+
+	& .thread-icons--thread {
+		position: relative;
+
+		left: 0;
+
+		margin: 0 3px;
 	}
 }
 

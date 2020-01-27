@@ -91,7 +91,7 @@ export const RoomManager = new function() {
 								}
 
 								msg.name = room.name;
-								RoomManager.updateMentionsMarksOfRoom(typeName);
+								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 								callbacks.run('streamMessage', msg);
 
