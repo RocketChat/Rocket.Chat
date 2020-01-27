@@ -1,4 +1,5 @@
 import http from 'http';
+import https from 'https';
 import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
@@ -10,7 +11,9 @@ import { hasPermission } from '../../../authorization';
 import { Importers } from '..';
 
 function downloadHttpFile(fileUrl, writeStream) {
-	http.get(fileUrl, function(response) {
+	const protocol = fileUrl.startsWith('https') ? https : http;
+
+	protocol.get(fileUrl, function(response) {
 		response.pipe(writeStream);
 	});
 }
