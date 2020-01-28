@@ -1,44 +1,38 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { Random } from 'meteor/random';
+import { canAccessRoomAsync } from './canAccessRoom';
+import { hasPermissionAsync } from './hasPermission';
+import { Subscriptions, Rooms } from '../../../models/server/raw';
 
-import { canAccessRoom } from './canAccessRoom';
-import { hasPermission } from './hasPermission';
-import { Notifications } from '../../../notifications';
-import { Rooms, Subscriptions } from '../../../models';
+const subscriptionOptions = {
+	projection: {
+		blocked: 1,
+		blocker: 1,
+	},
+};
 
+export const canSendMessageAsync = async (rid, { uid, username }, extraData) => {
+	const room = await Rooms.findOneById(rid);
 
-export const canSendMessage = (rid, { uid, username }, extraData) => {
-	const room = Rooms.findOneById(rid);
-
-	if (!canAccessRoom.call(this, room, { _id: uid, username }, extraData)) {
-		throw new Meteor.Error('error-not-allowed');
+	if (!await canAccessRoomAsync(room, { _id: uid, username }, extraData)) {
+		throw new Error('error-not-allowed');
 	}
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, uid);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, subscriptionOptions);
 	if (subscription && (subscription.blocked || subscription.blocker)) {
-		throw new Meteor.Error('room_is_blocked');
+		throw new Error('room_is_blocked');
 	}
 
-	if (room.ro === true) {
-		if (!hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
-			// Unless the user was manually unmuted
-			if (!(room.unmuted || []).includes(username)) {
-				Notifications.notifyUser(Meteor.userId(), 'message', {
-					_id: Random.id(),
-					rid: room._id,
-					ts: new Date(),
-					msg: TAPi18n.__('room_is_read_only'),
-				});
-
-				throw new Meteor.Error('You can\'t send messages because the room is readonly.');
-			}
+	if (room.ro === true && !await hasPermissionAsync(uid, 'post-readonly', rid)) {
+		// Unless the user was manually unmuted
+		if (!(room.unmuted || []).includes(username)) {
+			throw new Error('You can\'t send messages because the room is readonly.');
 		}
 	}
 
 	if ((room.muted || []).includes(username)) {
-		throw new Meteor.Error('You_have_been_muted');
+		throw new Error('You_have_been_muted');
 	}
 
 	return room;
 };
+
+export const canSendMessage = (rid, { uid, username }, extraData) => Promise.await(canSendMessageAsync(rid, { uid, username }, extraData));

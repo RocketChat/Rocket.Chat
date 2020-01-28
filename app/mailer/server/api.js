@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Email } from 'meteor/email';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';

@@ -25,11 +25,13 @@ function start_rocketchat {
 	  export OVERWRITE_SETTING_Site_Url=$siteurl
 	fi
 
-	for filename in $SNAP_COMMON/*.env; do
-          while read env_var; do
-  	    export "$env_var"
-          done < $filename
-	done
+        if ls $SNAP_COMMON/*.env >/dev/null 2>&1; then
+          for filename in $SNAP_COMMON/*.env; do
+            while read env_var; do
+              export "$env_var"
+            done < $filename
+          done
+        fi
 
 	node $SNAP/main.js
 }

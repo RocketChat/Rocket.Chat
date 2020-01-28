@@ -1,37 +1,27 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Permissions } from '../../../models';
+import { Permissions } from '../../../models/server';
 import { hasPermission } from '../functions/hasPermission';
+import { CONSTANTS } from '../../lib';
 
 Meteor.methods({
-	'authorization:removeRoleFromPermission'(permission, role) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')
-			|| (permission.level === 'setting' && !hasPermission(Meteor.userId(), 'access-setting-permissions'))
-		) {
-			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
+	'authorization:removeRoleFromPermission'(permissionId, role) {
+		const uid = Meteor.userId();
+		const permission = Permissions.findOneById(permissionId);
+
+		if (!uid || !hasPermission(uid, 'access-permissions') || (permission.level === CONSTANTS.SETTINGS_LEVEL && !hasPermission(uid, 'access-setting-permissions'))) {
+			throw new Meteor.Error('error-action-not-allowed', 'Removing permission is not allowed', {
 				method: 'authorization:removeRoleFromPermission',
-				action: 'Accessing_permissions',
+				action: 'Removing_permission',
 			});
 		}
 
 		// for setting based permissions, revoke the group permission once all setting permissions
 		// related to this group have been removed
-		const removeStaleParentPermissions = function(permissionId, role) {
-			const permission = Permissions.findOneById(permissionId);
-			if (permission.groupPermissionId) {
-				const groupPermission = Permissions.findOneById(permission.groupPermissionId);
-				if (groupPermission.roles.indexOf(role) !== -1) {
-					// the role has the group permission assigned, so check whether it's still needed
-					if (Permissions.find({
-						groupPermissionId: permission.groupPermissionId,
-						roles: role,
-					}).count() === 0) {
-						Permissions.removeRole(permission.groupPermissionId, role);
-					}
-				}
-			}
-		};
-		Permissions.removeRole(permission, role);
-		removeStaleParentPermissions(permission, role);
+
+		if (permission.groupPermissionId) {
+			Permissions.removeRole(permission.groupPermissionId, role);
+		}
+		Permissions.removeRole(permission._id, role);
 	},
 });

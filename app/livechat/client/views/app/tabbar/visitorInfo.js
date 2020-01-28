@@ -3,20 +3,30 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
 import { modal } from '../../../../../ui-utils';
-import { ChatRoom, Rooms, Subscriptions } from '../../../../../models';
+import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
-import { hasRole } from '../../../../../authorization';
-import { LivechatVisitor } from '../../../collections/LivechatVisitor';
-import { LivechatDepartment } from '../../../collections/LivechatDepartment';
+import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import './visitorInfo.html';
+import { APIClient } from '../../../../../utils/client';
+import { RoomManager } from '../../../../../ui-utils/client';
+
+const isSubscribedToRoom = () => {
+	const data = Template.currentData();
+	if (!data || !data.rid) {
+		return false;
+	}
+
+	const subscription = Subscriptions.findOne({ rid: data.rid });
+	return subscription !== undefined;
+};
 
 Template.visitorInfo.helpers({
 	user() {
@@ -40,15 +50,16 @@ Template.visitorInfo.helpers({
 	},
 
 	room() {
-		return ChatRoom.findOne({ _id: this.rid });
+		return Template.instance().room.get();
 	},
 
 	department() {
-		return LivechatDepartment.findOne({ _id: Template.instance().departmentId.get() });
+		return Template.instance().department.get();
 	},
 
 	joinTags() {
-		return this.tags && this.tags.join(', ');
+		const tags = Template.instance().tags.get();
+		return tags && tags.join(', ');
 	},
 
 	customFields() {
@@ -61,7 +72,7 @@ Template.visitorInfo.helpers({
 
 		const data = Template.currentData();
 		if (data && data.rid) {
-			const room = Rooms.findOne(data.rid);
+			const room = Template.instance().room.get();
 			if (room) {
 				livechatData = _.extend(livechatData, room.livechatData);
 			}
@@ -136,13 +147,14 @@ Template.visitorInfo.helpers({
 	},
 
 	roomOpen() {
-		const room = ChatRoom.findOne({ _id: this.rid });
-
-		return room.open;
+		const room = Template.instance().room.get();
+		const uid = Meteor.userId();
+		return room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
 	},
 
-	guestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	canReturnQueue() {
+		const config = Template.instance().routingConfig.get();
+		return config.returnQueue;
 	},
 
 	showDetail() {
@@ -152,16 +164,31 @@ Template.visitorInfo.helpers({
 	},
 
 	canSeeButtons() {
-		if (hasRole(Meteor.userId(), 'livechat-manager')) {
+		if (hasAtLeastOnePermission(['close-others-livechat-room', 'transfer-livechat-guest'])) {
 			return true;
 		}
 
-		const data = Template.currentData();
-		if (data && data.rid) {
-			const subscription = Subscriptions.findOne({ rid: data.rid });
-			return subscription !== undefined;
+		return isSubscribedToRoom();
+	},
+
+	canEditRoom() {
+		if (hasPermission('save-others-livechat-room-info')) {
+			return true;
 		}
-		return false;
+
+		return isSubscribedToRoom();
+	},
+
+	canCloseRoom() {
+		if (hasPermission('close-others-livechat-room')) {
+			return true;
+		}
+
+		return isSubscribedToRoom();
+	},
+
+	canForwardGuest() {
+		return hasPermission('transfer-livechat-guest');
 	},
 });
 
@@ -227,7 +254,7 @@ Template.visitorInfo.events({
 		}, () => {
 			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/* , result*/) {
 				if (error) {
-					console.log(error);
+					handleError(error);
 				} else {
 					Session.set('openedRoom');
 					FlowRouter.go('/home');
@@ -249,6 +276,14 @@ Template.visitorInfo.onCreated(function() {
 	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
 	this.departmentId = new ReactiveVar(null);
+	this.tags = new ReactiveVar(null);
+	this.routingConfig = new ReactiveVar({});
+	this.department = new ReactiveVar({});
+	this.room = new ReactiveVar({});
+
+	this.updateRoom = (room) => {
+		this.room.set(room);
+	};
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -256,20 +291,43 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	const currentData = Template.currentData();
+	const { rid } = Template.currentData();
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
+		}
+	});
 
-	if (currentData && currentData.rid) {
-		this.autorun(() => {
-			const room = Rooms.findOne({ _id: currentData.rid });
-			this.visitorId.set(room && room.v && room.v._id);
-			this.departmentId.set(room && room.departmentId);
-		});
+	const loadRoomData = async (rid) => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+		this.visitorId.set(room && room.v && room.v._id);
+		this.departmentId.set(room && room.departmentId);
+		this.tags.set(room && room.tags);
+		this.room.set(room);
+	};
 
-		this.subscribe('livechat:visitorInfo', { rid: currentData.rid });
-		this.subscribe('livechat:departments', this.departmentId.get());
+	if (rid) {
+		loadRoomData(rid);
+		RoomManager.roomStream.on(rid, this.updateRoom);
 	}
 
-	this.autorun(() => {
-		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));
+	this.autorun(async () => {
+		if (this.departmentId.get()) {
+			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }?includeAgents=false`);
+			this.department.set(department);
+		}
 	});
+
+	this.autorun(async () => {
+		const visitorId = this.visitorId.get();
+		if (visitorId) {
+			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+			this.user.set(visitor);
+		}
+	});
+});
+
+Template.visitorInfo.onDestroyed(function() {
+	const { rid } = Template.currentData();
+	RoomManager.roomStream.removeListener(rid, this.updateRoom);
 });

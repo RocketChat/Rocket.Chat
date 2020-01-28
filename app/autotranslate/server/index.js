@@ -13,7 +13,7 @@ import './methods/saveSettings';
 import './methods/translateMessage';
 import './googleTranslate.js';
 import './deeplTranslate.js';
-import './models/Settings.js';
+import './msTranslate.js';
 import './methods/getProviderUiMetadata.js';
 
 export {

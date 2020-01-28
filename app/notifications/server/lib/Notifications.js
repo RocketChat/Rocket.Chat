@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
 
 import { WEB_RTC_EVENTS } from '../../../webrtc';
-import { Subscriptions, Rooms } from '../../../models';
-import { settings } from '../../../settings';
+import { Subscriptions, Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({

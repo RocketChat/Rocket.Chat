@@ -41,7 +41,9 @@ Template.visitorHistory.onCreated(function() {
 
 	this.autorun(() => {
 		const room = ChatRoom.findOne({ _id: Template.currentData().rid });
-		this.visitorId.set(room.v._id);
+		if (room) {
+			this.visitorId.set(room.v._id);
+		}
 	});
 
 	if (currentData && currentData.rid) {

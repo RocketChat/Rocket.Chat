@@ -1,9 +1,15 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { settings } from '../../settings';
+let settings;
+if (Meteor.isClient) {
+	settings = require('../../settings/client').settings;
+} else {
+	settings = require('../../settings/server').settings;
+}
 
-export const fileUploadMediaWhiteList = function() {
-	const mediaTypeWhiteList = settings.get('FileUpload_MediaTypeWhiteList');
+const fileUploadMediaWhiteList = function(customWhiteList) {
+	const mediaTypeWhiteList = customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
@@ -13,8 +19,8 @@ export const fileUploadMediaWhiteList = function() {
 	});
 };
 
-export const fileUploadIsValidContentType = function(type) {
-	const list = fileUploadMediaWhiteList();
+export const fileUploadIsValidContentType = function(type, customWhiteList) {
+	const list = fileUploadMediaWhiteList(customWhiteList);
 	if (!list) {
 		return true;
 	}

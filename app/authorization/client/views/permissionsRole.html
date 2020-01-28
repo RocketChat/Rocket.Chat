@@ -1,36 +1,46 @@
 <template name="permissionsRole">
 	<div class="permissions-manager">
 		{{#if hasPermission}}
-			<a href="{{pathFor "admin-permissions"}}">{{_ "Back_to_permissions"}}</a>
-			<br>
-			<br>
 			{{#with role}}
-				<form id="form-role" class="inline form-role">
-					<label>{{_ "Role"}} :</label>
-					{{#if editing}}
-						<span>{{_id}}</span>
-					{{else}}
-						<input type="text" name="name" value="">
-					{{/if}}
-					<br>
-					<label>{{_ "Description"}} :</label>
-					<input type="text" name="description" value="{{description}}">
-					<br>
-					<label>{{_ "Scope"}} :</label>
-					<select name="scope" disabled="{{protected}}">
-						<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
-						<option value="Subscriptions" selected="{{$eq scope 'Subscriptions'}}">{{_ "Rooms"}}</option>
-					</select>
+				<form id="form-role" class="inline form-role form-inline">
+					<div class="form-group">
 
-					<br/>
-					<label for="mandatory2fa">{{_ "Users must use Two Factor Authentication"}} :</label>
-					<input type="checkbox" name="mandatory2fa" checked="{{mandatory2fa}}"> 
+						<div class="rc-input">
+							<div class="rc-input__title">{{_ "Role"}}</div>
+							{{#if editing}}
+								<input type="text" class="rc-input__element" name="name" autocomplete="off" value="{{_id}}" disabled>
+							{{else}}
+								<input type="text" class="rc-input__element" name="name" autocomplete="off">
+							{{/if}}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="rc-input">
+							<div class="rc-input__title">{{_ "Description"}}</div>
+							<input type="text" class="rc-input__element" name="description" autocomplete="off" value="{{description}}">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="rc-input__title">{{_ "Scope"}}</div>
+						<div class="rc-select">
+							<select name="scope" class="required rc-select__element" disabled="{{protected}}">
+								<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
+								<option value="Subscriptions" selected="{{$eq scope 'Subscriptions'}}">{{_ "Rooms"}}</option>
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						</div>
+					</div>
+					<div>
+						<label for="mandatory2fa">{{_ "Users must use Two Factor Authentication"}} :</label>
+						<input id="mandatory2fa" type="checkbox" name="mandatory2fa" checked="{{mandatory2fa}}">
+					</div>
 
-					<div class="form-buttons">
+					<div class="rc-button__group">
 						{{#if editable}}
-							<button name="delete" class="button danger delete-role">{{_ "Delete"}}</button>
+							<button name="delete" class="rc-button rc-button--danger delete-role">{{_ "Delete"}}</button>
 						{{/if}}
-						<button name="save" class="button primary save">{{_ "Save"}}</button>
+						<button name="save" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
+						<a class="rc-button" href="{{pathFor "admin-permissions"}}">{{_ "Back_to_permissions"}}</a>
 					</div>
 				</form>
 			{{/with}}
@@ -38,25 +48,28 @@
 				<h2 class="border-tertiary-background-color">{{_ "Users_in_role"}}</h2>
 				{{#if $eq role.scope 'Subscriptions'}}
 					<form id="form-search-room" class="inline">
-						<label>{{_ "Choose_a_room"}}</label>
-						{{> inputAutocomplete settings=autocompleteChannelSettings name="room" class="search" placeholder=(_ "Enter_a_room_name") autocomplete="off"}}
+						<label class="rc-input">
+							<div class="rc-input__title">{{_ "Choose_a_room"}}</div>
+							{{> inputAutocomplete settings=autocompleteChannelSettings name="room" class="search autocomplete rc-input__element" placeholder=(_ "Enter_a_room_name") autocomplete="off"}}
+						</label>
 					</form>
 				{{/if}}
 				{{#if $or ($eq role.scope 'Users') searchRoom}}
 					<form id="form-users" class="inline">
-						<label>{{_ "Add_user"}}</label>
-						{{> inputAutocomplete settings=autocompleteUsernameSettings name="username" class="search" placeholder=(_ "Enter_a_username") autocomplete="off"}}
-						<button name="add" class="button primary add">{{_ "Add"}}</button>
+						<label class="rc-input">
+							<div class="rc-input__title">{{_ "Add_user"}}</div>
+							{{> inputAutocomplete settings=autocompleteUsernameSettings name="username" class="search autocomplete rc-input__element" placeholder=(_ "Enter_a_username") autocomplete="off"}}
+						</label>
+						<button name="add" class="rc-button rc-button--primary add">{{_ "Add"}}</button>
 					</form>
-					<div class="list">
-						<table>
+					<div class="rc-table-content">
+						{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
 							<thead>
 								<tr>
-									<th>&nbsp;</th>
-									<th width="34%">{{_ "Name"}}</th>
-									<th width="33%">{{_ "Username"}}</th>
-									<th width="33%">{{_ "Email"}}</th>
-									<th>&nbsp;</th>
+									<th width="30%"><div class="table-fake-th">{{_ "Name"}}</div></th>
+									<th width="25%"><div class="table-fake-th">{{_ "Username"}}</div></th>
+									<th width="25%"><div class="table-fake-th">{{_ "Email"}}</div></th>
+									<th width="5%">&nbsp;</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -67,21 +80,23 @@
 								{{/unless}}
 								{{#each userInRole}}
 									<tr class="user-info" data-id="{{_id}}">
-										<td>
-											<div class="user-image status-{{status}}">
-												{{> avatar username=username}}
+										<td width="30%">
+											<div class="rc-table-wrapper">
+												<div class="rc-table-avatar">{{> avatar username=username}}</div>
+												<div class="rc-table-info">
+													<span class="rc-table-title">{{name}}</span>
+												</div>
 											</div>
 										</td>
-										<td>{{name}}</td>
-										<td>{{username}}</td>
-										<td>{{emailAddress}}</td>
+										<td><div class="rc-table-wrapper">{{username}}</div></td>
+										<td><div class="rc-table-wrapper">{{emailAddress}}</div></td>
 										<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
 									</tr>
 								{{/each}}
 							</tbody>
-						</table>
+						{{/table}}
 						{{#if hasMore}}
-							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+							<button class="rc-button rc-button--secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
 						{{/if}}
 					</div>
 				{{/if}}

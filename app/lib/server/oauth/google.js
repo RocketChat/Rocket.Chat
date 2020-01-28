@@ -35,7 +35,7 @@ registerAccessTokenService('google', function(options) {
 		identity: Match.Maybe(Object),
 	}));
 
-	const identity = options.identity || getIdentity(options.accessToken);
+	const identity = getIdentity(options.accessToken);
 
 	const serviceData = {
 		accessToken: options.accessToken,

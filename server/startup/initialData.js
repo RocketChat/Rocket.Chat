@@ -110,8 +110,6 @@ Meteor.startup(function() {
 
 				Accounts.setPassword(id, process.env.ADMIN_PASS);
 
-				console.log(`Password: ${ process.env.ADMIN_PASS }`.green);
-
 				addUserRoles(id, 'admin');
 			} else {
 				console.log('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red);

@@ -3,28 +3,29 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { hasAllPermission } from '../../../authorization/server';
-import { Settings } from '../../../models/server';
+import { Settings } from '../../../models';
+import { getSettingPermissionId } from '../../../authorization/lib';
 
 Meteor.methods({
 	saveSettings(params = []) {
+		const uid = Meteor.userId();
 		const settingsNotAllowed = [];
-		if (Meteor.userId() === null) {
+		if (uid === null) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
 			});
 		}
+		const editPrivilegedSetting = hasPermission(uid, 'edit-privileged-setting');
+		const manageSelectedSettings = hasPermission(uid, 'manage-selected-settings');
 
-		params.forEach(({ _id, value, editor }) => {
+		params.forEach(({ _id, value }) => {
 			// Verify the _id passed in is a string.
 			check(_id, String);
-			if (!hasPermission(Meteor.userId(), 'edit-privileged-setting')
-				&& !hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])) {
-				settingsNotAllowed.push(_id);
-				return;
+			if (!editPrivilegedSetting && !(manageSelectedSettings && hasPermission(uid, getSettingPermissionId(_id)))) {
+				return settingsNotAllowed.push(_id);
 			}
-			const setting = Settings.db.findOneById(_id);
 
+			const setting = Settings.db.findOneById(_id);
 			// Verify the value is what it should be
 			switch (setting.type) {
 				case 'roomPick':
@@ -40,15 +41,15 @@ Meteor.methods({
 					check(value, String);
 					break;
 			}
-			settings.updateById(_id, value, editor);
 		});
-		// Throw messages for settings that are not allowed to save!
 		if (settingsNotAllowed.length) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSettings',
 				settingIds: settingsNotAllowed,
 			});
 		}
+
+		params.forEach(({ _id, value, editor }) => settings.updateById(_id, value, editor));
 
 		return true;
 	},

@@ -173,6 +173,7 @@ const createConfigurationRole = function() {
 			'manage-own-integrations',
 			'manage-selected-settings',
 			'manage-assets',
+			'manage-apps',
 		]));
 
 	revokePermissions(CONFIGURATION_ROLE_NAME, [
@@ -218,6 +219,7 @@ const createManagerRole = function() {
 
 	const permissions = [
 		'add-user-to-any-c-room',
+		'assign-roles',
 		'archive-room',
 		'ban-user',
 		'bulk-register-user',
@@ -244,6 +246,7 @@ const createManagerRole = function() {
 		'view-full-other-user-info',
 		'view-room-administration',
 		'view-user-administration',
+		'view-statistics',
 	];
 
 	assignPermissions(MANAGER_ROLE_NAME, permissions);

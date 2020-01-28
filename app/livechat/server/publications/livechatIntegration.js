@@ -4,6 +4,7 @@ import { hasPermission } from '../../../authorization';
 import { Settings } from '../../../models';
 
 Meteor.publish('livechat:integration', function() {
+	console.warn('The publication "livechat:integration" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:integration' }));
 	}

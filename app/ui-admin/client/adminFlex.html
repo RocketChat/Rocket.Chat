@@ -8,7 +8,7 @@
 		</header>
 		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}" aria-label="{{_ "Administration"}}">
 			<ul class="rooms-list__list">
-				{{> sidebarItem menuItem "Info" "info-circled" "admin-info" "" }}
+				{{> sidebarItem menuItem "Info" "info-circled" "admin" "info" }}
 
 				{{#if hasPermission 'run-import'}}
 					{{> sidebarItem menuItem "Import" "import" "admin-import" "" }}

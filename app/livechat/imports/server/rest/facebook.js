@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { Random } from 'meteor/random';
 
 import { API } from '../../../../api';
-import { Rooms, Users, LivechatVisitors } from '../../../../models';
+import { LivechatRooms, Users, LivechatVisitors } from '../../../../models';
 import { settings } from '../../../../settings';
 import { Livechat } from '../../../server/lib/Livechat';
 
@@ -62,7 +62,7 @@ API.v1.addRoute('livechat/facebook', {
 		};
 		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
-			const rooms = Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
 			} else {

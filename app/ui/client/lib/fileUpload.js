@@ -5,6 +5,7 @@ import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
 
 import { fileUploadHandler } from '../../../file-upload';
+import { settings } from '../../../settings/client';
 import { t, fileUploadIsValidContentType } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 
@@ -139,11 +140,22 @@ const getUploadPreview = async (file, preview) => {
 };
 
 export const fileUpload = async (files, input, { rid, tmid }) => {
+	const threadsEnabled = settings.get('Threads_enabled');
+
 	files = [].concat(files);
 
 	const replies = $(input).data('reply') || [];
 	const mention = $(input).data('mention-user') || false;
-	const msg = await prependReplies('', replies, mention);
+
+	let msg = '';
+
+	if (!mention || !threadsEnabled) {
+		msg = await prependReplies('', replies, mention);
+	}
+
+	if (mention && threadsEnabled && replies.length) {
+		tmid = replies[0]._id;
+	}
 
 	const uploadNextFile = () => {
 		const file = files.pop();

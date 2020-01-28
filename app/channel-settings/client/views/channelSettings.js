@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
@@ -221,6 +221,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return hasAllPermission('edit-room', room._id);
 			},
 			getValue() {
+				if (room.prid) {
+					return room.fname;
+				}
 				if (settings.get('UI_Allow_room_names_with_special_chars')) {
 					return room.fname || room.name;
 				}

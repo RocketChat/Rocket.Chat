@@ -1,29 +1,32 @@
 <template name="visitorEdit">
 	<div class="visitor-edit">
-		<form class="edit-form" autocomplete="off">
+		<form autocomplete="off">
 			{{#with visitor}}
 				<h3>{{username}}</h3>
-				<div class="rc-input">
+				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Name"}}</div>
 						<div class="rc-input__wrapper">
-							<input class="rc-input__element" type="text" name="name" autocomplete="off" value="{{name}}">
+							<input name="name" type="text" class="rc-input__element" autocomplete="off" value="{{name}}"/>
 						</div>
 					</label>
 				</div>
-				<div class="rc-input">
+				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Email"}}</div>
 						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon icon='mail' }}
+							</div>
 							<input class="rc-input__element" type="text" name="email" autocomplete="off" value="{{email}}">
 						</div>
 					</label>
 				</div>
-				<div class="rc-input">
+				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Phone"}}</div>
 						<div class="rc-input__wrapper">
-							<input class="rc-input__element" type="text" name="phone" autocomplete="off" value="{{phone}}">
+							<input class="rc-input__element" type="text" name="phone" autocomplete="off" value="{{phone}}" disabled="{{isSmsIntegration}}">
 						</div>
 					</label>
 				</div>
@@ -31,7 +34,7 @@
 
 			{{#with room}}
 				<h3>{{_ "Conversation" }}</h3>
-				<div class="rc-input">
+				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Topic"}}</div>
 						<div class="rc-input__wrapper">
@@ -39,13 +42,40 @@
 						</div>
 					</label>
 				</div>
-				<div class="rc-input">
-					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ "Tags"}}</div>
-						<div class="rc-input__wrapper">
-							<input class="rc-input__element" type="text" name="tags" autocomplete="off" value="{{tags}}">
-						</div>
-					</label>
+				{{#if hasAvailableTags}}
+					<div class="rc-form-group rc-form-group--small rc-form-group--inline">
+						<select id="tagSelect" class="rc-input rc-input--small rc-form-item-inline">
+							<option value="placeholder" disabled selected>{{_ "Select_tag"}}</option>
+							{{#each availableUserTags}}
+								<option value="{{_id}}">{{this}}</option>
+							{{/each}}
+						</select>
+						<button id="addTag" class="rc-button rc-button--primary rc-form-item-inline"><i class="icon-plus"></i></button>
+					</div>
+				{{else}}
+					<div class="rc-input rc-form-group rc-form-group--small">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Tags"}}</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+									{{> icon icon='edit' }}
+								</div>
+								<input id="tagInput" class="rc-input__element" type="text" name="tags" autocomplete="off" placeholder="{{_"Enter_a_tag"}}">
+							</div>
+						</label>
+					</div>
+				{{/if}}
+				<div class="rc-form-group rc-form-group--small">
+					<ul id="tags" class="chip-container current-room-tags">
+						{{#each tags}}
+						<li class="remove-tag" title="{{this}}">
+							{{#if canRemoveTag availableUserTags this}}
+								<i class="icon icon-cancel-circled"></i>
+							{{/if}}
+							{{this}}
+						</li>
+						{{/each}}
+					</ul>
 				</div>
 			{{/with}}
 			<div class="rc-user-info__flex rc-user-info__row">

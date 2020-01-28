@@ -459,6 +459,7 @@ describe('[Api Settings Change]', () => {
 			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 			sideNav.admin.click();
+			admin.infoRocketChatTable.waitForVisible(5000);
 			admin.usersLink.waitForVisible(5000);
 			admin.usersLink.click();
 			admin.usersFilter.waitForVisible(5000);

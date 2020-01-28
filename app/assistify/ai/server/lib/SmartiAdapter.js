@@ -122,7 +122,14 @@ export class SmartiAdapter {
 				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(message._id));
 				notifyClientsSmartiDirty(message.rid, conversationId);
 				// autosync: If a room was not in sync, but the new message could be synced, try to sync the room again
+
+				/*
+				Remove autosync after a message is sent due to negative side effects:
+				In the course of marking a messages synced, an update on a message is performed.
+				This makes the UI load the updated message.
+				Depending on the message count resynced, this can have a severe impact on client performance
 				Meteor.defer(() => SmartiAdapter._tryResync(message.rid, false));
+				*/
 			} else {
 				// if the message could not be synced this time, re-synch the complete room next time
 				Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
@@ -412,8 +419,8 @@ export class SmartiAdapter {
 		try {
 			SystemLogger.debug('Sync messages for room: ', roomId);
 
-			const limit = parseInt(settings.get('Assistify_AI_Resync_Message_Limit')) || 1000;
-			const messageFindOptions = { sort: { ts: 1 }, limit };
+			const limit = parseInt(settings.get('Assistify_AI_Resync_Message_Limit')) || 10;
+			const messageFindOptions = { sort: { ts: -1 }, limit };
 
 			// only resync rooms containing outdated messages, if a delta sync is requested
 			if (!ignoreSyncFlag || ignoreSyncFlag !== true) {
@@ -424,7 +431,7 @@ export class SmartiAdapter {
 					return true;
 				}
 
-				SystemLogger.debug('Messages out of sync: ', unsync.length);
+				SystemLogger.debug('Messages out of sync: ', unsync);
 			}
 
 			// delete convervation from Smarti, if already exists

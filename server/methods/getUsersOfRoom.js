@@ -60,13 +60,12 @@ Meteor.methods({
 
 		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 		const users = await findUsers({ rid, status: { $ne: 'offline' }, limit, skip });
-
-		if (showAll && users.length < limit) {
+		if (showAll && (!limit || users.length < limit)) {
 			const offlineUsers = await findUsers({
 				rid,
 				status: { $eq: 'offline' },
-				limit: limit - users.length,
-				skip,
+				limit: limit ? limit - users.length : 0,
+				skip: skip || 0,
 			});
 
 			return {

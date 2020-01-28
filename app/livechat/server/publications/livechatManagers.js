@@ -7,7 +7,7 @@ Meteor.publish('livechat:managers', function() {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:managers' }));
 	}
 
-	if (!hasPermission(this.userId, 'view-livechat-rooms')) {
+	if (!hasPermission(this.userId, 'manage-livechat-managers')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:managers' }));
 	}
 

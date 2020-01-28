@@ -1,8 +1,9 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
+import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
-import { hasPermission, canAccessRoom } from '../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission, canAccessRoom } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 
@@ -280,7 +281,12 @@ API.v1.addRoute('groups.files', { authRequired: true }, {
 
 API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'manage-integrations')) {
+		if (!hasAtLeastOnePermission(this.userId, [
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		])) {
 			return API.v1.unauthorized();
 		}
 
@@ -299,7 +305,7 @@ API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const ourQuery = Object.assign({}, query, { channel: { $in: channelsToSearch } });
+		const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, { channel: { $in: channelsToSearch } });
 		const integrations = Integrations.find(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,
@@ -497,7 +503,7 @@ API.v1.addRoute('groups.members', { authRequired: true }, {
 		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
 
 		const users = Users.find({ _id: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
+			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 			sort: { username: sort.username != null ? sort.username : 1 },
 		}).fetch();
 

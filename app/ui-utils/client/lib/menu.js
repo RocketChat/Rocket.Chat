@@ -1,4 +1,5 @@
 import { Session } from 'meteor/session';
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
 
@@ -42,7 +43,7 @@ export const menu = new class extends EventEmitter {
 	}
 
 	get isRtl() {
-		return isRtl(localStorage.getItem('userLanguage'));
+		return isRtl(Meteor._localStorage.getItem('userLanguage'));
 	}
 
 	touchstart(e) {

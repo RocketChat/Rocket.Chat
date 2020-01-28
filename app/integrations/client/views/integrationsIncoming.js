@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
@@ -24,7 +24,14 @@ Template.integrationsIncoming.helpers({
 	exampleUser,
 	exampleSettings,
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission([
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		]);
+	},
+
+	canDelete() {
+		return this.params && this.params() && typeof this.params().id !== 'undefined';
 	},
 
 	data() {
@@ -32,9 +39,9 @@ Template.integrationsIncoming.helpers({
 
 		if (params && params.id) {
 			let data;
-			if (hasAllPermission('manage-integrations')) {
+			if (hasAllPermission('manage-incoming-integrations')) {
 				data = ChatIntegrations.findOne({ _id: params.id });
-			} else if (hasAllPermission('manage-own-integrations')) {
+			} else if (hasAllPermission('manage-own-incoming-integrations')) {
 				data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
 			}
 
@@ -42,6 +49,7 @@ Template.integrationsIncoming.helpers({
 				const completeToken = `${ data._id }/${ data.token }`;
 				data.url = Meteor.absoluteUrl(`hooks/${ completeToken }`);
 				data.completeToken = completeToken;
+				data.hasScriptError = data.scriptEnabled && data.scriptError;
 				Template.instance().record.set(data);
 				return data;
 			}
@@ -141,7 +149,7 @@ Template.integrationsIncoming.events({
 		t.record.set(value);
 	},
 
-	'click .submit > .delete': () => {
+	'click .rc-header__section-button > .delete': () => {
 		const params = Template.instance().data.params();
 
 		modal.open({
@@ -184,7 +192,7 @@ Template.integrationsIncoming.events({
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
 	},
 
-	'click .submit > .save': () => {
+	'click .rc-header__section-button > .save': () => {
 		const enabled = $('[name=enabled]:checked').val().trim();
 		const name = $('[name=name]').val().trim();
 		const alias = $('[name=alias]').val().trim();

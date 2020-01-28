@@ -190,10 +190,10 @@ export const getTimingsOverviewData = (dbCursor) => {
 	});
 
 	return [{
-		title: 'Avg_response_time',
+		title: 'Avg_reaction_time',
 		value: total ? secondsToHHMMSS((totalReactionTime / total).toFixed(2)) : '-',
 	}, {
-		title: 'Avg_reaction_time',
+		title: 'Avg_response_time',
 		value: total ? secondsToHHMMSS((totalResponseTime / total).toFixed(2)) : '-',
 	}];
 };

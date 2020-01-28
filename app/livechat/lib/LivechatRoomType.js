@@ -94,7 +94,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 
 		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
-		if (inquiry && inquiry.status === 'open') {
+		if (inquiry && inquiry.status === 'queued') {
 			return true;
 		}
 

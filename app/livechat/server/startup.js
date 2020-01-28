@@ -1,29 +1,43 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { roomTypes } from '../../utils';
-import { Rooms } from '../../models';
-import { hasPermission, addRoomAccessValidator } from '../../authorization';
+import { LivechatRooms } from '../../models';
+import { hasPermission, hasRole, addRoomAccessValidator } from '../../authorization';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { LivechatInquiry } from '../lib/LivechatInquiry';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../models/server';
+import { RoutingManager } from './lib/RoutingManager';
+import { createLivechatQueueView } from './lib/Helper';
+import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 
 Meteor.startup(() => {
-	roomTypes.setRoomFind('l', (_id) => Rooms.findOneLivechatById(_id));
+	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
 	addRoomAccessValidator(function(room, user) {
 		return room && room.t === 'l' && user && hasPermission(user._id, 'view-livechat-rooms');
 	});
 
+	addRoomAccessValidator(function(room, user) {
+		if (!room || !user || room.t !== 'l') {
+			return;
+		}
+		const { _id: userId } = user;
+		const { servedBy: { _id: agentId } = {} } = room;
+		return userId === agentId;
+	});
+
 	addRoomAccessValidator(function(room, user, extraData) {
 		if (!room && extraData && extraData.rid) {
-			room = Rooms.findOneById(extraData.rid);
+			room = LivechatRooms.findOneById(extraData.rid);
 		}
 		return room && room.t === 'l' && extraData && extraData.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	});
 
 	addRoomAccessValidator(function(room, user) {
-		if (settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
+		const { previewRoom } = RoutingManager.getConfig();
+		if (!previewRoom) {
 			return;
 		}
 
@@ -31,8 +45,19 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const inquiry = LivechatInquiry.findOne({ agents: user._id, rid: room._id }, { fields: { status: 1 } });
-		return inquiry && inquiry.status === 'open';
+		let departmentIds;
+		if (!hasRole(user._id, 'livechat-manager')) {
+			const departmentAgents = LivechatDepartmentAgents.findByAgentId(user._id).fetch().map((d) => d.departmentId);
+			departmentIds = LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true }).fetch().map((d) => d._id);
+		}
+
+		const filter = {
+			rid: room._id,
+			...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } },
+		};
+
+		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });
+		return inquiry && inquiry.status === 'queued';
 	});
 
 	callbacks.add('beforeLeaveRoom', function(user, room) {
@@ -43,4 +68,8 @@ Meteor.startup(() => {
 			lng: user.language || settings.get('Language') || 'en',
 		}));
 	}, callbacks.priority.LOW, 'cant-leave-room');
+
+	createLivechatQueueView();
+
+	new LivechatAgentActivityMonitor().start();
 });

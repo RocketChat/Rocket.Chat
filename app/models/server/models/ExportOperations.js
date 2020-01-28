@@ -46,6 +46,23 @@ export class ExportOperations extends Base {
 		return this.find(query, options);
 	}
 
+	findOnePending(options) {
+		const query = {
+			status: { $nin: ['completed'] },
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findAllPendingBeforeMyRequest(requestDay, options) {
+		const query = {
+			status: { $nin: ['completed'] },
+			createdAt: { $lt: requestDay },
+		};
+
+		return this.find(query, options);
+	}
+
 	// UPDATE
 	updateOperation(data) {
 		const update = {
@@ -54,6 +71,13 @@ export class ExportOperations extends Base {
 				status: data.status,
 				fileList: data.fileList,
 				generatedFile: data.generatedFile,
+				fileId: data.fileId,
+				userNameTable: data.userNameTable,
+				userData: data.userData,
+				generatedUserFile: data.generatedUserFile,
+				generatedAvatar: data.generatedAvatar,
+				exportPath: data.exportPath,
+				assetsPath: data.assetsPath,
 			},
 		};
 
@@ -69,7 +93,9 @@ export class ExportOperations extends Base {
 
 		_.extend(exportOperation, data);
 
-		return this.insert(exportOperation);
+		this.insert(exportOperation);
+
+		return exportOperation._id;
 	}
 
 

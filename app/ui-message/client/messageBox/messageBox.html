@@ -20,10 +20,10 @@
 				{{/if}}
 
 				<label class="rc-message-box__container">
-					<span class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnabled}}emoji-picker-icon--disabled{{/unless}} js-emoji-picker">
+					<span class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnabled}}emoji-picker-icon--disabled{{/unless}} js-emoji-picker" aria-haspopup="true">
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
 					</span>
-					<textarea name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
+					<textarea aria-label="{{_ 'Message'}}" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
 					<div class="js-input-message-shadow"></div>
 					{{#if isSendIconVisible}}
 						<span class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
@@ -32,7 +32,7 @@
 					{{else}}
 						{{#if canSend}}
 							{{> messageBoxAudioMessage rid=rid tmid=tmid}}
-							<span class="rc-message-box__action-menu js-action-menu" data-desktop>
+							<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true">
 								{{#if actions}}
 									<span class="rc-message-box__icon">
 										{{> icon block="rc-input__icon-svg" icon="plus"}}

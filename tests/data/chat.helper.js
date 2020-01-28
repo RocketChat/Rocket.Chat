@@ -17,6 +17,18 @@ export const sendSimpleMessage = ({ roomId, text = 'test message', tmid }) => {
 		.send({ message });
 };
 
+export const pinMessage = ({ msgId }) => {
+	if (!msgId) {
+		throw new Error('"msgId" is required in "pinMessage" test helper');
+	}
+
+	return request.post(api('chat.pinMessage'))
+		.set(credentials)
+		.send({
+			messageId: msgId,
+		});
+};
+
 export const deleteMessage = ({ roomId, msgId }) => {
 	if (!roomId) {
 		throw new Error('"roomId" is required in "deleteMessage" test helper');

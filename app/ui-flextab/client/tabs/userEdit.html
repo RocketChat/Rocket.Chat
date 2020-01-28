@@ -98,25 +98,36 @@
 				</div>
 			</div>
 
-
-			{{#if hasPermission 'edit-other-user-password'}}
-			<div class="rc-form-group rc-form-group--small rc-form-group--inline">
-				<div class="rc-input rc-form-item-inline">
+			<div class="rc-form-group rc-form-group--small">
+				<div class="rc-input">
 					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ "Password"}}</div>
+						<div class="rc-input__title">{{_ "StatusMessage"}}</div>
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								{{> icon icon='key' }}
+								{{> icon icon='edit' }}
 							</div>
-							<input name="password" class="rc-input__element rc-input__element--small" type="password" id="password" autocomplete="off" value=""/>
+							<input name="name" type="text" maxlength="120" class="rc-input__element rc-input__element--small" id="status" autocomplete="off" value="{{user.statusText}}"/>
 						</div>
 					</label>
 				</div>
-				<button id="randomPassword" class="rc-button rc-button--primary rc-form-item-inline">{{_ 'Random'}}</button>
+			</div>
+
+
+			{{#if hasPermission 'edit-other-user-password'}}
+			<div class="rc-form-group rc-form-group--small rc-switch">
+				<label class="rc-switch__label" tabindex="-1">
+					<input class="rc-switch__input" type="checkbox" id="setRandomPassword" value="1" checked="{{setRandomPassword}}" disabled="{{setRandomPasswordDisabled}}"/>
+					<span class="rc-switch__button">
+						<span class="rc-switch__button-inside"></span>
+					</span>
+					<span class="rc-switch__text">
+						{{_ "Set_random_password"}}
+					</span>
+				</label>
 			</div>
 			<div class="rc-form-group rc-form-group--small rc-switch">
 				<label class="rc-switch__label" tabindex="-1">
-					<input class="rc-switch__input" type="checkbox" id="changePassword" value="1" checked="{{requirePasswordChange}}"/>
+					<input class="rc-switch__input" type="checkbox" id="changePassword" value="1" checked="{{requirePasswordChange}}" disabled="{{requirePasswordChangeDisabled}}"/>
 					<span class="rc-switch__button">
 						<span class="rc-switch__button-inside"></span>
 					</span>

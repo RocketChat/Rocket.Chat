@@ -1,17 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import 'codemirror/lib/codemirror.css';
-import CodeMirror from 'codemirror/lib/codemirror.js';
+import './codeMirrorComponent.html';
 
 const CodeMirrors = {};
 
-Template.CodeMirror.rendered = function() {
+Template.CodeMirror.onRendered(async function() {
+	const CodeMirror = await import('codemirror/lib/codemirror.js');
+
+	await import('./codeMirror');
+	await import('codemirror/lib/codemirror.css');
+
+
 	const options = this.data.options || { lineNumbers: true };
 	const textarea = this.find('textarea');
 	const editor = CodeMirror.fromTextArea(textarea, options);
 
 	CodeMirrors[this.data.id || 'code-mirror-textarea'] = editor;
+	if (this.data && this.data.editorOnBlur) {
+		this.data.editorOnBlur(this.data.name);
+	}
 
 	const self = this;
 	editor.on('change', function(doc) {
@@ -34,7 +42,8 @@ Template.CodeMirror.rendered = function() {
 	Meteor.defer(function() {
 		editor.refresh();
 	});
-};
+});
+
 
 Template.CodeMirror.destroyed = function() {
 	delete CodeMirrors[this.data.id || 'code-mirror-textarea'];

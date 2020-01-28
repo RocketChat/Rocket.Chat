@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { HTTP } from 'meteor/http';
 
-import { LivechatExternalMessage } from '../../../../livechat/lib/LivechatExternalMessage';
+import { LivechatExternalMessage } from '../../../../models/server/raw';
 
 export class ApiAiAdapter {
 	constructor(adapterProps) {

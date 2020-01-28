@@ -1,23 +1,25 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import s from 'underscore.string';
 
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 
-Meteor.publish('adminRooms', function(filter, types, limit) {
+Meteor.publish('adminRooms', function(filter, types = [], limit) {
+	const showTypes = Array.isArray(types) ? types.filter((type) => type !== 'dicussions') : [];
+	const discussion = types.includes('dicussions');
+
 	if (!this.userId) {
 		return this.ready();
 	}
+
 	if (hasPermission(this.userId, 'view-room-administration') !== true) {
 		return this.ready();
-	}
-	if (!_.isArray(types)) {
-		types = [];
 	}
 
 	const options = {
 		fields: {
+			prid: 1,
+			fname: 1,
 			name: 1,
 			t: 1,
 			cl: 1,
@@ -40,14 +42,17 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 		},
 	};
 
-	filter = s.trim(filter);
-	if (filter && types.length) {
+	const name = s.trim(filter);
+
+	if (name && showTypes.length) {
 		// CACHE: can we stop using publications here?
-		return Rooms.findByNameContainingAndTypes(filter, types, options);
-	} if (types.length) {
+		return Rooms.findByNameContainingAndTypes(name, showTypes, discussion, options);
+	}
+
+	if (showTypes.length) {
 		// CACHE: can we stop using publications here?
-		return Rooms.findByTypes(types, options);
+		return Rooms.findByTypes(showTypes, discussion, options);
 	}
 	// CACHE: can we stop using publications here?
-	return Rooms.findByNameContaining(filter, options);
+	return Rooms.findByNameContaining(filter, discussion, options);
 });

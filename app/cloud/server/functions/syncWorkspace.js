@@ -5,6 +5,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { statistics } from '../../../statistics';
+import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 
 export function syncWorkspace(reconnectCheck = false) {
@@ -16,21 +17,33 @@ export function syncWorkspace(reconnectCheck = false) {
 	const stats = statistics.get();
 
 	const address = settings.get('Site_Url');
+	const siteName = settings.get('Site_Name');
+	const website = settings.get('Website');
+
+	const setupComplete = settings.get('Show_Setup_Wizard') === 'completed';
+
+	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
 
 	const info = {
 		uniqueId: stats.uniqueId,
 		address,
-		contactName: stats.wizard.contactName,
-		contactEmail: stats.wizard.contactEmail,
-		accountName: stats.wizard.organizationName,
-		siteName: stats.wizard.siteName,
+		siteName,
+		website,
+		organizationType,
+		industry,
+		orgSize,
+		country,
+		language,
+		workspaceType,
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
+		setupComplete,
 	};
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
+	let result;
 	try {
 		const headers = {};
 		const token = getWorkspaceAccessToken(true);
@@ -41,7 +54,7 @@ export function syncWorkspace(reconnectCheck = false) {
 			return false;
 		}
 
-		HTTP.post(`${ workspaceUrl }/client`, {
+		result = HTTP.post(`${ workspaceUrl }/client`, {
 			data: info,
 			headers,
 		});
@@ -55,6 +68,12 @@ export function syncWorkspace(reconnectCheck = false) {
 		}
 
 		return false;
+	}
+
+	const { data } = result;
+
+	if (data.publicKey) {
+		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	}
 
 	return true;

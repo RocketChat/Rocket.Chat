@@ -26,4 +26,3 @@ const fixFiles = (path, source, newlineAtEnd = false) => {
 };
 
 fixFiles('./packages/rocketchat-i18n', '/i18n/en.i18n.json');
-fixFiles('./packages/rocketchat-livechat/.app/i18n', '/en.i18n.json');

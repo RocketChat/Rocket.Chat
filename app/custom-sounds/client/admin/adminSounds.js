@@ -4,8 +4,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import s from 'underscore.string';
 
-import { CustomSounds } from '../../../models';
+import { CustomSounds as CustomSoundsModel } from '../../../models';
 import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
+import { CustomSounds } from '../lib/CustomSounds';
 
 Template.adminSounds.helpers({
 	searchText() {
@@ -57,7 +58,7 @@ Template.adminSounds.helpers({
 	onTableItemClick() {
 		const instance = Template.instance();
 		return function(item) {
-			instance.tabBarData.set(CustomSounds.findOne({ _id: item._id }));
+			instance.tabBarData.set(CustomSoundsModel.findOne({ _id: item._id }));
 			instance.tabBar.showGroup('custom-sounds-selected');
 			instance.tabBar.open('admin-sound-info');
 		};
@@ -114,7 +115,7 @@ Template.adminSounds.onCreated(function() {
 
 		const limit = instance.limit != null ? instance.limit.get() : 0;
 
-		return CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
+		return CustomSoundsModel.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
 });
 
@@ -141,10 +142,7 @@ Template.adminSounds.events({
 	'click .icon-play-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		const $audio = $(`audio#${ this._id }`);
-		if ($audio && $audio[0] && $audio[0].play) {
-			$audio[0].play();
-		}
+		CustomSounds.play(this._id);
 	},
 	'click .icon-pause-circled'(e) {
 		e.preventDefault();

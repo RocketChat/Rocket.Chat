@@ -9,4 +9,5 @@ slashCommands.add('kick', function(command, params) {
 }, {
 	description: 'Remove_someone_from_room',
 	params: '@username',
+	permission: 'remove-user',
 });

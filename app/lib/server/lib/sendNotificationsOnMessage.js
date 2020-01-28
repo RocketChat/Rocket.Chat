@@ -286,7 +286,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	};
 }
 
-async function sendAllNotifications(message, room) {
+export async function sendAllNotifications(message, room) {
 	// threads
 	if (message.tmid) {
 		return message;

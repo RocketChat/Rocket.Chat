@@ -2,8 +2,8 @@
 
 if [[ $(uname -m) == "x86_64" ]]
 then
-    wget --backups=0 "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz"
-    tar -zxf ./mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz --strip-components=1
+    wget --backups=0 "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.4.20.tgz"
+    tar -zxf ./mongodb-linux-x86_64-3.4.20.tgz --strip-components=1
 else
     IFS=" " read -a links <<< $(apt-get -y --print-uris install mongodb | egrep -o "https?://[^']+")
     for link in ${links[@]}

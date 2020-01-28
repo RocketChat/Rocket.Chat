@@ -7,6 +7,8 @@
 	height: auto;
 	max-height: 90%;
 
+	padding: 1.5rem;
+
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
 	border: none;
@@ -42,6 +44,12 @@
 		font-weight: 500;
 	}
 
+	&__description {
+		font-size: 0.874rem;
+		margin-block-end: 1.5rem;
+		margin-block-start: 0.5rem;
+	}
+
 	&__title {
 		flex: 1 1 auto;
 
@@ -58,7 +66,7 @@
 	&__header {
 		display: flex;
 		flex-direction: row;
-		flex: 0 0;
+		flex: 0 0 auto;
 
 		margin-bottom: -16px;
 		padding: 16px;
@@ -133,7 +141,7 @@
 	&__footer {
 		display: flex;
 
-		flex: 0 0;
+		flex: 0 0 auto;
 
 		padding: 16px;
 

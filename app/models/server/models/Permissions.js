@@ -11,7 +11,7 @@ export class Permissions extends Base {
 	}
 
 	findOneById(_id) {
-		return this.findOne(_id);
+		return this.findOne({ _id });
 	}
 
 	createOrUpdate(name, roles) {

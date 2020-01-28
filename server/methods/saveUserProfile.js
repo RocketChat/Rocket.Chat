@@ -31,7 +31,7 @@ Meteor.methods({
 			}
 
 			const passCheck = Accounts._checkPassword(user, {
-				digest: typedPassword,
+				digest: typedPassword.toLowerCase(),
 				algorithm: 'sha-256',
 			});
 
@@ -47,6 +47,10 @@ Meteor.methods({
 
 		if (settings.username) {
 			Meteor.call('setUsername', settings.username);
+		}
+
+		if (settings.statusText || settings.statusText === '') {
+			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
 		if (settings.email) {
