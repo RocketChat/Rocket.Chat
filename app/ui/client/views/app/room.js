@@ -859,21 +859,6 @@ Template.room.events({
 		}
 
 		if (window.event.ctrlKey && e.which === 3) {
-			if ($(e.currentTarget).hasClass('system')) {
-				return;
-			}
-			if (e.target && (e.target.nodeName === 'AUDIO' || e.target.nodeName === 'A' || e.target.nodeName === 'IMG')) {
-				return;
-			}
-			let selectedText = '';
-			if (window.getSelection) {
-				selectedText = window.getSelection().toString().trim();
-			} else if (document.selection && document.selection.type !== 'Control') {
-				selectedText = document.selection.createRange().text;
-			}
-			if (selectedText) {
-				return;
-			}
 			e.preventDefault();
 			if ($('.popover-location').length !== 0) {
 				$('.popover-location').remove();
