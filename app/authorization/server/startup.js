@@ -208,4 +208,12 @@ Meteor.startup(function() {
 	};
 
 	settings.onload('*', createPermissionForAddedSetting);
+
+	Roles.on('change', ({ diff }) => {
+		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
+			// avoid useless changes
+			return;
+		}
+		clearCache();
+	});
 });
