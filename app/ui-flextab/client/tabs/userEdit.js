@@ -172,8 +172,7 @@ Template.userEdit.events({
 });
 
 Template.userEdit.onCreated(function() {
-	const newUser = { emails: [{ address: [], verified: true }], roles: [], services: {} };
-	this.user = this.data != null ? this.data.user || newUser : undefined;
+	this.user = this.data != null ? this.data.user : undefined;
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 	this.avatar = new ReactiveVar();
 	this.url = new ReactiveVar('');
