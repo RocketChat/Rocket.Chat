@@ -28,7 +28,6 @@ Meteor.methods({
 			conversationFinishedText: null,
 			nameFieldRegistrationForm: null,
 			emailFieldRegistrationForm: null,
-			agentsAlias: '',
 			registrationFormMessage: null,
 			showConnecting: false,
 		};
@@ -85,7 +84,6 @@ Meteor.methods({
 		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
-		info.agentsAlias = initSettings.Livechat_agents_alias;
 		info.showConnecting = initSettings.Livechat_Show_Connecting;
 
 		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);

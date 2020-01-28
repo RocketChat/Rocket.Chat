@@ -9,6 +9,7 @@ Meteor.startup(function() {
 		section: 'AutoTranslate',
 		public: true,
 	});
+
 	settings.add('AutoTranslate_ServiceProvider', 'google-translate', {
 		type: 'select',
 		group: 'Message',
