@@ -498,6 +498,16 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findNotOfflineByIds(users, options) {
+		const query = {
+			_id: { $in: users },
+			status: {
+				$in: ['online', 'away', 'busy'],
+			},
+		};
+		return this.find(query, options);
+	}
+
 	findUsersNotOffline(options) {
 		const query = {
 			username: {

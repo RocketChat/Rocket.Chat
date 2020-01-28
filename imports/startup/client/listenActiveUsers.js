@@ -13,7 +13,7 @@ const STATUS_MAP = [
 	'busy',
 ];
 
-const saveUser = (user, force = false) => {
+export const saveUser = (user, force = false) => {
 	// do not update my own user, my user's status will come from a subscription
 	if (user._id === Meteor.userId()) {
 		return;
@@ -80,7 +80,7 @@ Tracker.autorun(() => {
 
 	lastStatusChange = null;
 
-	getUsersPresence(wasConnected);
+	// getUsersPresence(wasConnected);
 
 	wasConnected = true;
 });
