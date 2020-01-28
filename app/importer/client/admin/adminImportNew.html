@@ -32,7 +32,6 @@
 											<option value="upload" selected="{{$eq fileType 'upload'}}">{{_ "Upload"}}</option>
 											<option value="url" selected="{{$eq fileType 'url'}}">{{_ "Public_URL"}}</option>
 											<option value="path" selected="{{$eq fileType 'path'}}">{{_ "Server_File_Path"}}</option>
-											<option value="folder_path" selected="{{$eq fileType 'folder_path'}}">{{_ "Server_Folder_Path"}}</option>
 										</select>
 									</div>
 
@@ -56,10 +55,6 @@
 												{{else}}
 													{{#if isServerFile}}
 														<label>{{_ "File_Path"}}</label>
-													{{else}}
-														{{#if isServerFolder}}
-															<label>{{_ "Folder_Path"}}</label>
-														{{/if}}
 													{{/if}}
 												{{/if}}
 

@@ -57,9 +57,6 @@ Template.adminImportNew.helpers({
 	isServerFile() {
 		return Template.instance().fileType.get() === 'path';
 	},
-	isServerFolder() {
-		return Template.instance().fileType.get() === 'folder_path';
-	},
 	fileSizeLimitMessage() {
 		const maxFileSize = settings.get('FileUpload_MaxFileSize');
 		let message;
