@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { Accounts } from 'meteor/accounts-base';
 
 import {
@@ -33,7 +34,6 @@ export class CsvImporter extends Base {
 		let tempChannels = [];
 		let tempUsers = [];
 		let hasDirectMessages = false;
-		const tempMessages = new Map();
 		let count = 0;
 		let oldRate = 0;
 
@@ -50,6 +50,7 @@ export class CsvImporter extends Base {
 			}
 		};
 
+		let messagesCount = 0;
 		zip.forEach((entry) => {
 			this.logger.debug(`Entry: ${ entry.entryName }`);
 
@@ -70,7 +71,7 @@ export class CsvImporter extends Base {
 				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 				const parsedChannels = this.csvParser(entry.getData().toString());
 				tempChannels = parsedChannels.map((c) => ({
-					id: c[0].trim().replace('.', '_'),
+					id: Random.id(),
 					name: c[0].trim(),
 					creator: c[1].trim(),
 					isPrivate: c[2].trim().toLowerCase() === 'private',
@@ -83,18 +84,23 @@ export class CsvImporter extends Base {
 			if (entry.entryName.toLowerCase() === 'users.csv') {
 				super.updateProgress(ProgressStep.PREPARING_USERS);
 				const parsedUsers = this.csvParser(entry.getData().toString());
-				tempUsers = parsedUsers.map((u) => ({ id: u[0].trim().replace('.', '_'), username: u[0].trim(), email: u[1].trim(), name: u[2].trim() }));
+				tempUsers = parsedUsers.map((u) => ({ id: Random.id(), username: u[0].trim(), email: u[1].trim(), name: u[2].trim() }));
+
+				this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
+				super.updateRecord({ 'count.users': tempUsers.length });
+				super.addCountToTotal(tempUsers.length);
+
 				return increaseCount();
 			}
 
 			// Parse the messages
 			if (entry.entryName.indexOf('/') > -1) {
-				const item = entry.entryName.split('/'); // random/messages.csv
-				const channelName = item[0]; // random
-
-				if (!tempMessages.get(channelName)) {
-					tempMessages.set(channelName, new Map());
+				if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
+					super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 				}
+
+				const item = entry.entryName.split('/'); // random/messages.csv
+				const folderName = item[0]; // random
 
 				let msgs = [];
 
@@ -105,31 +111,38 @@ export class CsvImporter extends Base {
 					return increaseCount();
 				}
 
-				if (channelName.toLowerCase() === 'directmessages') {
-					hasDirectMessages = true;
-					const fileName = item[1];
-					const data = msgs.map((m) => ({ username: m[0], ts: m[2], text: m[3], otherUsername: m[1], isDirect: true }));
+				let data;
+				const msgGroupData = item[1].split('.')[0]; // messages
 
-					tempMessages.get(channelName).set(fileName, data);
+				if (folderName.toLowerCase() === 'directmessages') {
+					hasDirectMessages = true;
+					data = msgs.map((m) => ({ username: m[0], ts: m[2], text: m[3], otherUsername: m[1], isDirect: true }));
 				} else {
-					const msgGroupData = item[1].split('.')[0]; // messages
-					tempMessages.get(channelName).set(msgGroupData, msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] })));
+					data = msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] }));
 				}
 
+				messagesCount += data.length;
+				const channelName = `${ folderName }/${ msgGroupData }`;
+
+				super.updateRecord({ messagesstatus: channelName });
+
+				if (Base.getBSONSize(data) > Base.getMaxBSONSize()) {
+					Base.getBSONSafeArraysFromAnArray(data).forEach((splitMsg, i) => {
+						this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channelName }.${ i }`, messages: splitMsg, channel: folderName, i, msgGroupData });
+					});
+				} else {
+					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: channelName, messages: data, channel: folderName, msgGroupData });
+				}
+
+				super.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
 				return increaseCount();
 			}
 
 			increaseCount();
 		});
 
+		super.addCountToTotal(messagesCount);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
-
-		// Insert the users record, eventually this might have to be split into several ones as well
-		// if someone tries to import a several thousands users instance
-		const usersId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
-		this.users = this.collection.findOne(usersId);
-		super.updateRecord({ 'count.users': tempUsers.length });
-		super.addCountToTotal(tempUsers.length);
 
 		if (hasDirectMessages) {
 			tempChannels.push({
@@ -143,33 +156,9 @@ export class CsvImporter extends Base {
 		}
 
 		// Insert the channels records.
-		const channelsId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'channels', channels: tempChannels });
-		this.channels = this.collection.findOne(channelsId);
+		this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'channels', channels: tempChannels });
 		super.updateRecord({ 'count.channels': tempChannels.length });
 		super.addCountToTotal(tempChannels.length);
-
-		// Save the messages records to the import record for `startImport` usage
-		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
-		let messagesCount = 0;
-		for (const [channel, messagesMap] of tempMessages.entries()) {
-			for (const [msgGroupData, msgs] of messagesMap.entries()) {
-				messagesCount += msgs.length;
-				const channelName = `${ channel }/${ msgGroupData }`;
-
-				super.updateRecord({ messagesstatus: channelName });
-
-				if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
-					Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
-						this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channelName }.${ i }`, messages: splitMsg, channel, i, msgGroupData });
-					});
-				} else {
-					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: channelName, messages: msgs, channel, msgGroupData });
-				}
-			}
-		}
-
-		super.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
-		super.addCountToTotal(messagesCount);
 
 		// Ensure we have at least a single user, channel, or message
 		if (tempUsers.length === 0 && tempChannels.length === 0 && messagesCount === 0) {
@@ -346,11 +335,7 @@ export class CsvImporter extends Base {
 					}
 
 					if (csvChannel.isDirect) {
-						// Create the Map as it was on the old structure so as not to modify the method - this should be optimized at some point
-						const messagesMap = new Map();
-						messagesMap.set(msgGroupData, pack);
-
-						this._importDirectMessagesFile(messagesMap, startedByUserId);
+						this._importDirectMessagesFile(msgGroupData, pack, startedByUserId);
 						return;
 					}
 
@@ -412,7 +397,7 @@ export class CsvImporter extends Base {
 		return super.getProgress();
 	}
 
-	_importDirectMessagesFile(messagesMap, startedByUserId) {
+	_importDirectMessagesFile(msgGroupData, msgs, startedByUserId) {
 		const dmUsers = {};
 
 		const findUser = (username) => {
@@ -426,57 +411,55 @@ export class CsvImporter extends Base {
 
 		Meteor.runAsUser(startedByUserId, () => {
 			const timestamps = {};
-			for (const [msgGroupData, msgs] of messagesMap.entries()) {
-				let room;
-				let rid;
-				super.updateRecord({ messagesstatus: `${ t('Direct_Messagest') }/${ msgGroupData }.${ msgs.messages.length }` });
-				for (const msg of msgs.messages) {
-					if (isNaN(new Date(parseInt(msg.ts)))) {
-						this.logger.warn(`Timestamp on a message in ${ t('Direct_Messagest') }/${ msgGroupData } is invalid`);
+			let room;
+			let rid;
+			super.updateRecord({ messagesstatus: `${ t('Direct_Messagest') }/${ msgGroupData }.${ msgs.messages.length }` });
+			for (const msg of msgs.messages) {
+				if (isNaN(new Date(parseInt(msg.ts)))) {
+					this.logger.warn(`Timestamp on a message in ${ t('Direct_Messagest') }/${ msgGroupData } is invalid`);
+					super.addCountCompleted(1);
+					continue;
+				}
+
+				const creator = findUser(msg.username);
+				const targetUser = findUser(msg.otherUsername);
+
+				if (creator && targetUser) {
+					if (!rid) {
+						const roomInfo = Meteor.runAsUser(creator._id, () => Meteor.call('createDirectMessage', targetUser.username));
+						rid = roomInfo.rid;
+						room = Rooms.findOneById(rid, { fields: { usernames: 1, t: 1, name: 1 } });
+					}
+
+					if (!room) {
+						this.logger.warn(`DM room not found for users ${ msg.username } and ${ msg.otherUsername }`);
 						super.addCountCompleted(1);
 						continue;
 					}
 
-					const creator = findUser(msg.username);
-					const targetUser = findUser(msg.otherUsername);
-
-					if (creator && targetUser) {
-						if (!rid) {
-							const roomInfo = Meteor.runAsUser(creator._id, () => Meteor.call('createDirectMessage', targetUser.username));
-							rid = roomInfo.rid;
-							room = Rooms.findOneById(rid, { fields: { usernames: 1, t: 1, name: 1 } });
-						}
-
-						if (!room) {
-							this.logger.warn(`DM room not found for users ${ msg.username } and ${ msg.otherUsername }`);
-							super.addCountCompleted(1);
-							continue;
-						}
-
-						let suffix = '';
-						if (timestamps[msg.ts] === undefined) {
-							timestamps[msg.ts] = 1;
-						} else {
-							suffix = `-${ timestamps[msg.ts] }`;
-							timestamps[msg.ts] += 1;
-						}
-
-						const msgObj = {
-							_id: `csv-${ rid }-${ msg.ts }${ suffix }`,
-							ts: new Date(parseInt(msg.ts)),
-							msg: msg.text,
-							rid: room._id,
-							u: {
-								_id: creator._id,
-								username: creator.username,
-							},
-						};
-
-						insertMessage(creator, msgObj, room, true);
+					let suffix = '';
+					if (timestamps[msg.ts] === undefined) {
+						timestamps[msg.ts] = 1;
+					} else {
+						suffix = `-${ timestamps[msg.ts] }`;
+						timestamps[msg.ts] += 1;
 					}
 
-					super.addCountCompleted(1);
+					const msgObj = {
+						_id: `csv-${ rid }-${ msg.ts }${ suffix }`,
+						ts: new Date(parseInt(msg.ts)),
+						msg: msg.text,
+						rid: room._id,
+						u: {
+							_id: creator._id,
+							username: creator.username,
+						},
+					};
+
+					insertMessage(creator, msgObj, room, true);
 				}
+
+				super.addCountCompleted(1);
 			}
 		});
 	}
