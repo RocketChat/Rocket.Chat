@@ -12,5 +12,4 @@ import './hooks/closeLivechatKnowledgeAdapter.js';
 import './lib/SmartiAdapter.js';
 import './lib/AiApiAdapter.js';
 import './lib/KnowledgeAdapterProvider.js';
-import './migrations.js';
 import '../../migrations/server/startup/migrations.js';

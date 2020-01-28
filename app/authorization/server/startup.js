@@ -148,6 +148,7 @@ Meteor.startup(function() {
 			});
 		return previousSettingPermissions;
 	};
+
 	const createSettingPermission = function(setting, previousSettingPermissions) {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission = {

@@ -116,6 +116,7 @@ Template.roomList.helpers({
 
 		return !['unread', 'f'].includes(group.identifier) || (rooms.length || (rooms.count && rooms.count()));
 	},
+
 	roomType(room) {
 		if (room.header || room.identifier) {
 			return `type-${ room.header || room.identifier }`;

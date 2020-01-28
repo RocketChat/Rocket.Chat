@@ -1302,27 +1302,6 @@ export class Subscriptions extends Base {
 		return result;
 	}
 
-	hideOldByUserId(userId, thresholdDate) {
-		const query = {
-			'u._id': userId,
-			alert: false, // ignore unred rooms
-			f: { $ne: true }, // ignore favored rooms
-			ls: { $lt: thresholdDate },
-		};
-
-		const result = this.update(
-			query,
-			{
-				$set: {
-					alert: false,
-					open: false,
-				},
-			},
-			{ multi: true });
-
-		return result;
-	}
-
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
