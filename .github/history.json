@@ -38202,6 +38202,37 @@
           ]
         }
       ]
+    },
+    "2.4.3": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16347",
+          "title": "[FIX] Unknown error when sending message if 'Set a User Name to Alias in Message' setting is enabled",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.4.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16176",
+          "title": "[FIX] Invite links usage by channel owners/moderators",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "2.4.3",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
