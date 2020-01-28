@@ -280,9 +280,10 @@ export class SAUMonitorClass {
 		if (!sessionId) {
 			return;
 		}
-		if (Meteor.server.sessions[sessionId]) {
+		const session = Meteor.server.sessions.get(sessionId);
+		if (session) {
 			Object.keys(data).forEach((p) => {
-				Meteor.server.sessions[sessionId].connectionHandle = Object.assign({}, Meteor.server.sessions[sessionId].connectionHandle, { [p]: data[p] });
+				session.connectionHandle = Object.assign({}, session.connectionHandle, { [p]: data[p] });
 			});
 		}
 	}
