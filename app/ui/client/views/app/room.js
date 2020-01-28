@@ -853,7 +853,12 @@ Template.room.events({
 	},
 	'click .message-actions__menu, contextmenu .message'(e, i) {
 		let target = e.currentTarget;
-		if (e.which === 3) {
+
+		if (!window.event.ctrlKey && e.which === 3) {
+			return;
+		}
+
+		if (window.event.ctrlKey && e.which === 3) {
 			if ($(e.currentTarget).hasClass('system')) {
 				return;
 			}
