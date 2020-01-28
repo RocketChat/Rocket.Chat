@@ -1,11 +1,9 @@
 import os from 'os';
 
-
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
-import { getUsages } from './getUsages';
 import {
 	Sessions,
 	Settings,
@@ -137,16 +135,13 @@ statistics.get = function _getStatistics() {
 	statistics.oplogEnabled = oplogEnabled;
 	statistics.mongoVersion = mongoVersion;
 	statistics.mongoStorageEngine = mongoStorageEngine;
+
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
 	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
 	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
 	statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
-
-	if (settings.get('Usage_Statistics_Enabled')) {
-		statistics.usages = getUsages();
-	}
 
 	statistics.apps = {
 		engineVersion: Info.marketplaceApiVersion,
