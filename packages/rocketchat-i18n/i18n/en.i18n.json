@@ -345,6 +345,7 @@
   "Apiai_Key": "Api.ai Key",
   "Apiai_Language": "Api.ai Language",
   "App_author_homepage": "author homepage",
+  "App_Deleting_App_User_Error": "Deleting app user is not allowed, uninstall the corresponding app to remove it.",
   "App_Details": "App details",
   "App_Information": "App Information",
   "App_Installation": "App Installation",
