@@ -1,4 +1,27 @@
 
+# 2.4.4
+`2020-01-29  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- App removal was moving logs to the trash collection ([#16362](https://github.com/RocketChat/Rocket.Chat/pull/16362))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Rate limiter was not working due to Meteor internal changes ([#16361](https://github.com/RocketChat/Rocket.Chat/pull/16361))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+
 # 2.4.3
 `2020-01-28  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
