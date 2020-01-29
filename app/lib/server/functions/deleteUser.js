@@ -12,6 +12,10 @@ export const deleteUser = function(userId) {
 		fields: { username: 1, avatarOrigin: 1, federation: 1 },
 	});
 
+	if (!user) {
+		return;
+	}
+
 	if (user.federation) {
 		const existingSubscriptions = Subscriptions.find({ 'u._id': user._id }).count();
 
