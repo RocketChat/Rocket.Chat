@@ -24,64 +24,68 @@ function notifyNewRoom(sub) {
 	}
 }
 
+function notifyNewMessageAudio({ payload: { rid } }) {
+	const openedRoomId = Session.get('openedRoom');
+
+	// This logic is duplicated in /client/startup/unread.coffee.
+	const hasFocus = readMessage.isEnable();
+	const messageIsInOpenedRoom = openedRoomId === rid;
+	const muteFocusedConversations = getUserPreference(Meteor.userId(), 'muteFocusedConversations');
+
+	if (Layout.isEmbedded()) {
+		if (!hasFocus && messageIsInOpenedRoom) {
+			// Play a notification sound
+			KonchatNotification.newMessage(rid);
+		}
+	} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
+		// Play a notification sound
+		KonchatNotification.newMessage(rid);
+	}
+}
+
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (Meteor.userId()) {
-			Notifications.onUser('notification', function(notification) {
-				let openedRoomId = undefined;
-				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-					openedRoomId = Session.get('openedRoom');
-				}
+		if (!Meteor.userId()) {
+			return;
+		}
 
-				// This logic is duplicated in /client/startup/unread.coffee.
-				const hasFocus = readMessage.isEnable();
-				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
+		Notifications.onUser('notification', function(notification) {
+			let openedRoomId = undefined;
+			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
+				openedRoomId = Session.get('openedRoom');
+			}
 
-				fireGlobalEvent('notification', {
-					notification,
-					fromOpenedRoom: messageIsInOpenedRoom,
-					hasFocus,
-				});
+			// This logic is duplicated in /client/startup/unread.coffee.
+			const hasFocus = readMessage.isEnable();
+			const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
 
-				if (Layout.isEmbedded()) {
-					if (!hasFocus && messageIsInOpenedRoom) {
-						// Show a notification.
-						KonchatNotification.showDesktop(notification);
-					}
-				} else if (!hasFocus || !messageIsInOpenedRoom) {
+			fireGlobalEvent('notification', {
+				notification,
+				fromOpenedRoom: messageIsInOpenedRoom,
+				hasFocus,
+			});
+
+			if (Layout.isEmbedded()) {
+				if (!hasFocus && messageIsInOpenedRoom) {
 					// Show a notification.
 					KonchatNotification.showDesktop(notification);
 				}
-			});
+			} else if (!hasFocus || !messageIsInOpenedRoom) {
+				// Show a notification.
+				KonchatNotification.showDesktop(notification);
+			}
 
-			Notifications.onUser('audioNotification', function(notification) {
-				const openedRoomId = Session.get('openedRoom');
+			notifyNewMessageAudio(notification);
+		});
 
-				// This logic is duplicated in /client/startup/unread.coffee.
-				const hasFocus = readMessage.isEnable();
-				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
-				const muteFocusedConversations = getUserPreference(Meteor.userId(), 'muteFocusedConversations');
-
-				if (Layout.isEmbedded()) {
-					if (!hasFocus && messageIsInOpenedRoom) {
-						// Play a notification sound
-						KonchatNotification.newMessage(notification.payload.rid);
-					}
-				} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
-					// Play a notification sound
-					KonchatNotification.newMessage(notification.payload.rid);
-				}
-			});
-
-			CachedChatSubscription.onSyncData = function(action, sub) {
-				if (action !== 'removed') {
-					notifyNewRoom(sub);
-				}
-			};
-
-			Notifications.onUser('subscriptions-changed', (action, sub) => {
+		CachedChatSubscription.onSyncData = function(action, sub) {
+			if (action !== 'removed') {
 				notifyNewRoom(sub);
-			});
-		}
+			}
+		};
+
+		Notifications.onUser('subscriptions-changed', (action, sub) => {
+			notifyNewRoom(sub);
+		});
 	});
 });

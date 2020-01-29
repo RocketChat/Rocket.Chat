@@ -23,7 +23,8 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ alert: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ ls: 1 });
-		this.tryEnsureIndex({ audioNotifications: 1 }, { sparse: 1 });
+		// this.tryEnsureIndex({ audioNotifications: 1 }, { sparse: 1 });
+		// @TODO migration to remove index
 		this.tryEnsureIndex({ desktopNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ mobilePushNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ emailNotifications: 1 }, { sparse: 1 });
@@ -126,22 +127,6 @@ export class Subscriptions extends Base {
 		};
 
 		return this.find(query, options);
-	}
-
-	updateAudioNotificationsById(_id, audioNotifications) {
-		const query = {
-			_id,
-		};
-
-		const update = {};
-
-		if (audioNotifications === 'default') {
-			update.$unset = { audioNotifications: 1 };
-		} else {
-			update.$set = { audioNotifications };
-		}
-
-		return this.update(query, update);
 	}
 
 	updateAudioNotificationValueById(_id, audioNotificationValue) {
@@ -294,15 +279,6 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
-	findAlwaysNotifyAudioUsersByRoomId(roomId) {
-		const query = {
-			rid: roomId,
-			audioNotifications: 'all',
-		};
-
-		return this.find(query);
-	}
-
 	findAlwaysNotifyDesktopUsersByRoomId(roomId) {
 		const query = {
 			rid: roomId,
@@ -348,59 +324,6 @@ export class Subscriptions extends Base {
 		};
 
 		return this.find(query, { fields: { emailNotifications: 1, u: 1 } });
-	}
-
-	findNotificationPreferencesByRoom(query/* { roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
-		return this._db.find(query, {
-			fields: {
-
-				// fields needed for notifications
-				rid: 1,
-				t: 1,
-				u: 1,
-				name: 1,
-				fname: 1,
-				code: 1,
-
-				// fields to define if should send a notification
-				ignored: 1,
-				audioNotifications: 1,
-				audioNotificationValue: 1,
-				desktopNotificationDuration: 1,
-				desktopNotifications: 1,
-				mobilePushNotifications: 1,
-				emailNotifications: 1,
-				disableNotifications: 1,
-				muteGroupMentions: 1,
-				userHighlights: 1,
-			},
-		});
-	}
-
-	findAllMessagesNotificationPreferencesByRoom(roomId) {
-		const query = {
-			rid: roomId,
-			'u._id': { $exists: true },
-			$or: [
-				{ desktopNotifications: { $in: ['all', 'mentions'] } },
-				{ mobilePushNotifications: { $in: ['all', 'mentions'] } },
-				{ emailNotifications: { $in: ['all', 'mentions'] } },
-			],
-		};
-
-		return this._db.find(query, {
-			fields: {
-				'u._id': 1,
-				audioNotifications: 1,
-				audioNotificationValue: 1,
-				desktopNotificationDuration: 1,
-				desktopNotifications: 1,
-				mobilePushNotifications: 1,
-				emailNotifications: 1,
-				disableNotifications: 1,
-				muteGroupMentions: 1,
-			},
-		});
 	}
 
 	resetUserE2EKey(userId) {

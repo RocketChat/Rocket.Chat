@@ -21,7 +21,6 @@ export const fields = {
 	userMentions: 1,
 	groupMentions: 1,
 	archived: 1,
-	audioNotifications: 1,
 	audioNotificationValue: 1,
 	desktopNotifications: 1,
 	desktopNotificationDuration: 1,

@@ -19,6 +19,7 @@ export function notifyDesktopUser({
 	room,
 	duration,
 	notificationMessage,
+	notifyAudio,
 }) {
 	const { title, text } = roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
 
@@ -37,6 +38,7 @@ export function notifyDesktopUser({
 				msg: message.msg,
 				t: message.t,
 			},
+			audio: notifyAudio,
 		},
 	});
 }
