@@ -715,10 +715,6 @@ export class Messages extends Base {
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
@@ -744,10 +740,6 @@ export class Messages extends Base {
 
 	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
 		const type = 'livechat_navigation_history';
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
@@ -772,10 +764,6 @@ export class Messages extends Base {
 
 	createTransferHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
 		const type = 'livechat_transfer_history';
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
