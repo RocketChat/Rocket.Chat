@@ -1,6 +1,7 @@
-// import { Meteor } from 'meteor/meteor';
+import { Meteor } from 'meteor/meteor';
 // import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import mem from 'mem';
 
@@ -56,16 +57,24 @@ const get = mem(function get(id) {
 	return promise;
 });
 
+
+Tracker.autorun(() => {
+	if (!Meteor.userId() || !Meteor.status().connected) {
+		return;
+	}
+
+	mem.clear(get);
+});
+
 const options = {
 	threshold: 0.1,
 };
 
-const observer = new IntersectionObserver(function(entries, observer) {
+const observer = new IntersectionObserver(function(entries) {
 	entries.filter(({ isIntersecting }) => isIntersecting).forEach(async (entry) => {
 		const { uid } = data.get(entry.target);
 		await get(uid);
 		pending.delete(uid);
-		observer.unobserve(entry.target);
 	});
 	getAll();
 }, options);
