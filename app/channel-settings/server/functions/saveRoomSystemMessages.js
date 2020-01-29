@@ -9,5 +9,10 @@ export const saveRoomSystemMessages = function(rid, systemMessages) {
 			function: 'RocketChat.saveRoomSystemMessages',
 		});
 	}
+	if (systemMessages && !Match.test(systemMessages, [String])) {
+		throw new Meteor.Error('invalid-room', 'Invalid room', {
+			function: 'RocketChat.saveRoomSystemMessages',
+		});
+	}
 	return Rooms.setSystemMessagesById(rid, systemMessages);
 };

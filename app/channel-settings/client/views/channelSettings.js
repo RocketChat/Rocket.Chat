@@ -148,6 +148,12 @@ Template.channelSettingsEditing.events({
 	'change .js-input-check'(e) {
 		this.value.set(e.currentTarget.checked);
 	},
+	'change .js-input-toggle'(e) {
+		this.toogle.set(e.currentTarget.checked);
+		if (!e.currentTarget.checked) {
+			this.value.set(null);
+		}
+	},
 	'click .js-reset'(e, t) {
 		const { settings } = t;
 		Object.keys(settings).forEach((key) => settings[key].value.set(settings[key].default.get()));
@@ -406,7 +412,7 @@ Template.channelSettingsEditing.onCreated(function() {
 		},
 		sysMes: {
 			type: 'boolean',
-			label: 'System_messages',
+			label: 'Hide_System_Messages',
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
@@ -415,13 +421,21 @@ Template.channelSettingsEditing.onCreated(function() {
 					RoomSettingsEnum.SYSTEM_MESSAGES,
 				);
 			},
-			getValue() {
-				return room.sysMes !== false;
+			onChangeValue() {
+				return function(value) { this.value.set(value || []); }.bind(this);
+			},
+			getValue(room) {
+				return room.sysMes;
 			},
 			canEdit() {
 				return hasAllPermission('edit-room', room._id);
 			},
-			save(value) {
+			get() {
+				return this.value.get() || [];
+			},
+			save() {
+				const value = this.toogle.get() ? this.value.get() : null;
+
 				return call('saveRoomSettings', room._id, 'systemMessages', value).then(
 					() => {
 						toastr.success(
@@ -429,6 +443,54 @@ Template.channelSettingsEditing.onCreated(function() {
 						);
 					},
 				);
+			},
+			c() {
+				return this.toogle.get();
+			},
+			toogle: new ReactiveVar(room.sysMes && room.sysMes.length > 0),
+			values() {
+				return [
+					{
+						key: 'uj',
+						i18nLabel: 'Message_HideType_uj',
+					}, {
+						key: 'ul',
+						i18nLabel: 'Message_HideType_ul',
+					}, {
+						key: 'ru',
+						i18nLabel: 'Message_HideType_ru',
+					}, {
+						key: 'au',
+						i18nLabel: 'Message_HideType_au',
+					}, {
+						key: 'mute_unmute',
+						i18nLabel: 'Message_HideType_mute_unmute',
+					}, {
+						key: 'r',
+						i18nLabel: 'Message_HideType_r',
+					}, {
+						key: 'ut',
+						i18nLabel: 'Message_HideType_ut',
+					}, {
+						key: 'wm',
+						i18nLabel: 'Message_HideType_wm',
+					}, {
+						key: 'rm',
+						i18nLabel: 'Message_HideType_rm',
+					}, {
+						key: 'subscription_role_added',
+						i18nLabel: 'Message_HideType_subscription_role_added',
+					}, {
+						key: 'subscription_role_removed',
+						i18nLabel: 'Message_HideType_subscription_role_removed',
+					}, {
+						key: 'room_archived',
+						i18nLabel: 'Message_HideType_room_archived',
+					}, {
+						key: 'room_unarchived',
+						i18nLabel: 'Message_HideType_room_unarchived',
+					},
+				];
 			},
 		},
 		archived: {
@@ -690,6 +752,7 @@ Template.channelSettingsEditing.helpers({
 		return !this.canEdit();
 	},
 	checked() {
+		console.log('checked', this);
 		return this.value.get();// ? '' : 'checked';
 	},
 	modified(text = '') {
