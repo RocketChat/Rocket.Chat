@@ -1,6 +1,18 @@
 
+# 2.4.5
+`2020-01-29  ·  1 🐛 `
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Update Apps Engine to version 1.11.2
+
 # 2.4.4
-`2020-01-29  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+`2020-01-29  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.17.0`
@@ -14,6 +26,7 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Release 2.4.4 ([#16377](https://github.com/RocketChat/Rocket.Chat/pull/16377))
 - Regression: Rate limiter was not working due to Meteor internal changes ([#16361](https://github.com/RocketChat/Rocket.Chat/pull/16361))
 
 </details>
@@ -21,6 +34,7 @@
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 2.4.3
 `2020-01-28  ·  2 🐛  ·  2 👩‍💻👨‍💻`
