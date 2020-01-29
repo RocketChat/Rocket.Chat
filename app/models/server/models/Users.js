@@ -541,7 +541,11 @@ export class Users extends Base {
 	}
 
 	findActive(options = {}) {
-		return this.find({ active: true }, options);
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+			emails: { $exists: true },
+		}, options);
 	}
 
 	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
@@ -797,6 +801,16 @@ export class Users extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	updateInviteToken(_id, inviteToken) {
+		const update = {
+			$set: {
+				inviteToken,
+			},
+		};
+
+		return this.update(_id, update);
 	}
 
 	updateStatusText(_id, statusText) {
