@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "2.4.3",
+	"version": "2.4.4",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -119,7 +119,7 @@
 		"@google-cloud/language": "^2.0.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
-		"@rocket.chat/apps-engine": "^1.11.0",
+		"@rocket.chat/apps-engine": "^1.11.1",
 		"@rocket.chat/fuselage": "^0.2.0-alpha.19",
 		"@rocket.chat/fuselage-hooks": "^0.2.0-dev.50",
 		"@rocket.chat/icons": "^0.2.0-dev.49",
