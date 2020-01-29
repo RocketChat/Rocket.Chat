@@ -422,7 +422,7 @@ export class ChatMessages {
 						ts: new Date(),
 						msg: TAPi18n.__('No_such_command', { command: s.escapeHTML(match[1]) }),
 						u: {
-							username: settings.get('InternalHubot_Username'),
+							username: settings.get('InternalHubot_Username') || 'rocket.cat',
 						},
 						private: true,
 					};
