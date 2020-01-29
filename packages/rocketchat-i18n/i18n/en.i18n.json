@@ -3283,6 +3283,8 @@
   "Uptime": "Uptime",
   "URL": "URL",
   "URL_room_prefix": "URL Room Prefix",
+  "Use_Server_configuration": "Use server configuration",
+  "Use_Room_configuration": "Overwrites the server configuration and use room config",
   "Use_account_preference": "Use account preference",
   "Use_Emojis": "Use Emojis",
   "Use_Global_Settings": "Use Global Settings",
