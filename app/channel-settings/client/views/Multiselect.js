@@ -8,15 +8,16 @@ Template.Multiselect.onRendered(async function() {
 	const { MeteorProvider } = await import('../../../../client/providers/MeteorProvider');
 	const React = await import('react');
 	const ReactDOM = await import('react-dom');
+	this.container = this.firstNode;
 	this.autorun(() => {
 		ReactDOM.render(React.createElement(MeteorProvider, {
 			children: React.createElement(MultiSelectSettingInput, Template.currentData()),
-		}), this.firstNode);
+		}), this.container);
 	});
 });
 
 
 Template.Multiselect.onDestroyed(async function() {
 	const ReactDOM = await import('react-dom');
-	this.firstNode && ReactDOM.unmountComponentAtNode(this.firstNode);
+	this.container && ReactDOM.unmountComponentAtNode(this.container);
 });

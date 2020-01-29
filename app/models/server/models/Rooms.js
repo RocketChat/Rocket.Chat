@@ -218,7 +218,7 @@ export class Rooms extends Base {
 		const query = {
 			_id,
 		};
-		const update = systemMessages && systemMessages.length > 1 ? {
+		const update = systemMessages && systemMessages.length > 0 ? {
 			$set: {
 				sysMes: systemMessages,
 			},
