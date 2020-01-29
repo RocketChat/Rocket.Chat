@@ -21,7 +21,7 @@ Meteor.startup(() => {
 		const regex = /([a-z]{2,3})-([a-z]{2,4})/;
 		const matches = regex.exec(language);
 		if (matches) {
-			return `${ matches[1] }-${ matches[2].toUpperCase() }`;
+			return `${ matches[1] }-${ matches[2].toLowerCase() }`;
 		}
 
 		return language;
@@ -46,7 +46,7 @@ Meteor.startup(() => {
 		});
 	});
 
-	const applyLanguage = (language = 'en') => {
+	const applyLanguage = (language = 'pt-br') => {
 		language = filterLanguage(language);
 
 		if (!availableLanguages[language]) {
@@ -56,8 +56,10 @@ Meteor.startup(() => {
 		if (!language) {
 			return;
 		}
-
+		console.log(language);
 		document.documentElement.classList[isRtl(language) ? 'add' : 'remove']('rtl');
+		document.querySelector('html').lang = language;
+
 		TAPi18n.setLanguage(language);
 		loadMomentLocale(language)
 			.then((locale) => moment.locale(locale))
