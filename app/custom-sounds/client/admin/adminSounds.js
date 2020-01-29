@@ -57,9 +57,6 @@ Template.adminSounds.helpers({
 	},
 });
 
-
-const recordingInterval = new ReactiveVar(null);
-
 Template.adminSounds.onCreated(function() {
 	const instance = this;
 	this.sounds = new ReactiveVar([]);
@@ -69,7 +66,6 @@ Template.adminSounds.onCreated(function() {
 	this.isLoading = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
 	this.isPlayingId = new ReactiveVar('');
-	this.isPausedId = new ReactiveVar('');
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
@@ -147,10 +143,6 @@ Template.adminSounds.events({
 		t.offset.set(0);
 	},
 	'click .icon-play-circled'(e, t) {
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
 		e.preventDefault();
 		e.stopPropagation();
 		CustomSounds.play(this._id);
@@ -158,48 +150,27 @@ Template.adminSounds.events({
 		if (audio) {
 			audio.pause();
 		}
-		let duration = 0;
-		if (this._id === t.isPausedId.get()) {
-			const pausedAudio = document.getElementById(this._id);
-			duration = (pausedAudio.duration * 1000) - (pausedAudio.currentTime * 1000);
-		} else {
-			duration = document.getElementById(this._id).duration * 1000;
-		}
-		t.isPlayingId.set(this._id);
-		t.isPausedId.set('');
-		recordingInterval.set(setInterval(() => {
+		document.getElementById(this._id).onended = () => {
 			t.isPlayingId.set('');
-		}, duration));
+			this.onended = null;
+		};
+		t.isPlayingId.set(this._id);
 	},
 	'click .icon-pause-circled'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
 		const audio = document.getElementById(this._id);
 		if (audio && !audio.paused) {
 			audio.pause();
 		}
 		t.isPlayingId.set('');
-		t.isPausedId.set(this._id);
 	},
-	'click .icon-reset-circled'(e, t) {
+	'click .icon-reset-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		if (recordingInterval.get() && this._id === t.isPlayingId.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
 		const audio = document.getElementById(this._id);
 		if (audio) {
 			audio.currentTime = 0;
-		}
-		if (this._id === t.isPlayingId.get()) {
-			recordingInterval.set(setInterval(() => {
-				t.isPlayingId.set('');
-			}, document.getElementById(this._id).duration * 1000));
 		}
 	},
 });
