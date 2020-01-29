@@ -38233,6 +38233,35 @@
           ]
         }
       ]
+    },
+    "2.4.4": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16361",
+          "title": "Regression: Rate limiter was not working due to Meteor internal changes",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.4",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16362",
+          "title": "[FIX] App removal was moving logs to the trash collection",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.4",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
