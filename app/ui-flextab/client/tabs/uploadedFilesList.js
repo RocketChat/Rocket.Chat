@@ -1,3 +1,5 @@
+import path from 'path';
+
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -137,7 +139,8 @@ Template.uploadedFilesList.helpers({
 	},
 
 	url() {
-		return getURL(`/file-upload/${ this._id }/${ this.name }`);
+		const fileNameConversion = path.normalize(this.name).replace(/^(\.\.(\/|\\|$))+/, ' ');
+		return getURL(`/file-upload/${ this._id }/${ encodeURI(fileNameConversion) }`);
 	},
 
 	fileTypeClass() {
