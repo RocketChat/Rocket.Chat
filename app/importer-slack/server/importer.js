@@ -299,7 +299,7 @@ export class SlackImporter extends Base {
 					msg: this.convertSlackMessageToRocketChat(message.text),
 					rid: room._id,
 					bot: true,
-					attachments: message.attachments,
+					attachments: this.convertMessageAttachments(message.attachments),
 					username: botUsername || undefined,
 				};
 
@@ -428,7 +428,7 @@ export class SlackImporter extends Base {
 						...msgDataDefaults,
 						msg: this.convertSlackMessageToRocketChat(message.text),
 						rid: room._id,
-						attachments: message.attachments,
+						attachments: this.convertMessageAttachments(message.attachments),
 						u: {
 							_id: user._id,
 							username: user.username,
@@ -906,6 +906,7 @@ export class SlackImporter extends Base {
 			message = message.replace(/:memo:/g, ':pencil:');
 			message = message.replace(/:piggy:/g, ':pig:');
 			message = message.replace(/:uk:/g, ':gb:');
+			message = message.replace(/<(http[s]?:[^|]*)\|([^>]*)>/g, '[$2]($1)');
 			message = message.replace(/<(http[s]?:[^>]*)>/g, '$1');
 
 			for (const userReplace of Array.from(this.userTags)) {
@@ -917,5 +918,18 @@ export class SlackImporter extends Base {
 		}
 
 		return message;
+	}
+
+	convertMessageAttachments(attachments) {
+		if (!attachments || !attachments.length) {
+			return attachments;
+		}
+
+		return attachments.map((attachment) => ({
+			...attachment,
+			text: this.convertSlackMessageToRocketChat(attachment.text),
+			title: this.convertSlackMessageToRocketChat(attachment.title),
+			fallback: this.convertSlackMessageToRocketChat(attachment.fallback),
+		}));
 	}
 }
