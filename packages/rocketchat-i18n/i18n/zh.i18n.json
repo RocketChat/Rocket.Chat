@@ -337,7 +337,7 @@
   "Apiai_Key": "Api.ai Key",
   "Apiai_Language": "Api.ai 语言",
   "App_author_homepage": "作者主页",
-  "App_Deleting_App_User_Error": "不允许直接删除App用户”，请卸载相应的App以移除此用户。",
+  "error-cannot-delete-app-user": "不允许直接删除App用户”，请卸载相应的App以移除此用户。",
   "App_Details": "应用细节",
   "App_Information": "应用信息",
   "App_Installation": "应用安装",
