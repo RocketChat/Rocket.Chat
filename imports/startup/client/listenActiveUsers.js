@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+// import { Tracker } from 'meteor/tracker';
 import { debounce } from 'underscore';
 
 import { Notifications } from '../../../app/notifications/client';
@@ -13,7 +13,7 @@ const STATUS_MAP = [
 	'busy',
 ];
 
-const saveUser = (user, force = false) => {
+export const saveUser = (user, force = false) => {
 	// do not update my own user, my user's status will come from a subscription
 	if (user._id === Meteor.userId()) {
 		return;
@@ -72,18 +72,18 @@ const getUsersPresence = debounce(async (isConnected) => {
 	}
 }, 1000);
 
-let wasConnected = false;
-Tracker.autorun(() => {
-	if (!Meteor.userId() || !Meteor.status().connected) {
-		return;
-	}
+// let wasConnected = false;
+// Tracker.autorun(() => {
+// 	if (!Meteor.userId() || !Meteor.status().connected) {
+// 		return;
+// 	}
 
-	lastStatusChange = null;
+// 	lastStatusChange = null;
 
-	getUsersPresence(wasConnected);
+// 	// getUsersPresence(wasConnected);
 
-	wasConnected = true;
-});
+// 	// wasConnected = true;
+// });
 
 Meteor.startup(function() {
 	Notifications.onLogged('user-status', ([_id, username, status, statusText]) => {

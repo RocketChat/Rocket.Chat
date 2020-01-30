@@ -201,6 +201,9 @@ Template.sidebarItem.events({
 });
 
 Template.sidebarItemIcon.helpers({
+	uid() {
+		return this.rid.replace(this.u._id, '');
+	},
 	isRoom() {
 		return this.rid || this._id;
 	},
