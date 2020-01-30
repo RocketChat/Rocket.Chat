@@ -29,7 +29,7 @@ Meteor.methods({
 		}
 
 		if (user.type === 'app') {
-			throw new Meteor.Error('App_Deleting_App_User_Error', 'Deleting app user is not allowed', {
+			throw new Meteor.Error('error-cannot-delete-app-user', 'Deleting app user is not allowed', {
 				method: 'deleteUser',
 			});
 		}
