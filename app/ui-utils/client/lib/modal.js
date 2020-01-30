@@ -91,8 +91,8 @@ export const modal = {
 		} else if (e.key === 'Escape') {
 			e.preventDefault();
 			e.stopPropagation();
+			
 			modal.close();
-			modal.open();
 		}
 	},
 };
