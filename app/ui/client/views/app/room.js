@@ -296,11 +296,9 @@ Template.room.helpers({
 
 	messagesHistory() {
 		const { rid } = Template.instance();
-
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
-
 		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
 
 		const modes = ['', 'cozy', 'compact'];
