@@ -15,18 +15,24 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 
 	async getClientRoomInfo() {
 		const { name: slugifiedName, _id: id } = Rooms.findOne(Session.get('openedRoom'));
-		let { members } = await APIClient.get('apps/groupMembers', { roomId: id });
 
-		members = members.map(({ _id, username }) => ({
-			id: _id,
-			username,
-			avatarUrl: `${ this._baseURL }${ getUserAvatarURL(username) }`,
-		}));
+		let cachedMembers = [];
+		try {
+			const { members } = await APIClient.get('v1/groups.members', { roomId: id });
+
+			cachedMembers = members.map(({ _id, username }) => ({
+				id: _id,
+				username,
+				avatarUrl: `${ this._baseURL }${ getUserAvatarURL(username) }`,
+			}));
+		} catch (error) {
+			console.warn(error);
+		}
 
 		return {
 			id,
 			slugifiedName,
-			members,
+			members: cachedMembers,
 		};
 	}
 
