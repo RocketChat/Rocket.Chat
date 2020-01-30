@@ -37,17 +37,30 @@ const getFromServer = (cb, type) => {
 
 		const resultsFromServer = [];
 
-		resultsFromServer.push(...results.users.map((user) => ({
+		const userMap = (user) => ({
 			_id: user._id,
 			t: 'd',
 			name: user.username,
 			fname: user.name,
-		})));
+		});
+
+		resultsFromServer.push(...results.users.map(userMap));
+
+		// if the first result is exactly the filter, moves it to the top.
+		// if (resultsFromServer[0] && resultsFromServer[0].name === currentFilter) {
+		// 	resultsFromClient.unshift(resultsFromServer.shift());
+		// }
 
 		resultsFromServer.push(...results.rooms.filter((room) => !resultsFromClient.find((item) => [item.rid, item._id].includes(room._id))));
 
+		// if (resultsFromServer[0].name === currentFilter) {
+		// 	resultsFromClient.unshift(resultsFromServer.shift());
+		// }
+
 		if (resultsFromServer.length) {
-			cb(resultsFromClient.concat(resultsFromServer));
+			const combinedResults = resultsFromClient.concat(resultsFromServer);
+			if()
+			cb();
 		}
 	});
 };
