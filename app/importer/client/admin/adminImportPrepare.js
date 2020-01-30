@@ -119,7 +119,7 @@ function getImportFileData(template) {
 
 		if (data.step) {
 			console.warn('Invalid file, contains `data.step`.', data);
-			toastr.error(t('Invalid_Export_File'));
+			toastr.error(t('Failed_To_Load_Import_Data'));
 			return FlowRouter.go('/admin/import');
 		}
 

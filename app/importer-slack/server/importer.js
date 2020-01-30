@@ -184,7 +184,7 @@ export class SlackImporter extends Base {
 		this.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
 		this.addCountToTotal(messagesCount);
 
-		if ([tempUsers.length, tempChannels.length, tempGroups.length, tempDMs.length, tempMpims.length, messagesCount].some((e) => e === 0)) {
+		if ([tempUsers.length, tempChannels.length + tempGroups.length + tempDMs.length + tempMpims.length, messagesCount].some((e) => e === 0)) {
 			this.logger.warn(`Loaded ${ tempUsers.length } users, ${ tempChannels.length } channels, ${ tempGroups.length } groups, ${ tempDMs.length } DMs, ${ tempMpims.length } multi party IMs and ${ messagesCount } messages`);
 			super.updateProgress(ProgressStep.ERROR);
 			return this.getProgress();
@@ -484,6 +484,10 @@ export class SlackImporter extends Base {
 	}
 
 	_importChannels(startedByUserId, channelNames) {
+		if (!this.channels || this.channels.channels) {
+			return;
+		}
+
 		super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 		this.channels.channels.forEach((channel) => {
 			if (!channel.do_import) {
@@ -709,7 +713,9 @@ export class SlackImporter extends Base {
 		Object.keys(importSelection.channels).forEach((key) => {
 			const channel = importSelection.channels[key];
 
-			iterateChannelList(this.channels.channels, channel.channel_id, channel.do_import);
+			if (this.channels && this.channels.channels) {
+				iterateChannelList(this.channels.channels, channel.channel_id, channel.do_import);
+			}
 
 			if (this.groups && this.groups.channels) {
 				iterateChannelList(this.groups.channels, channel.channel_id, channel.do_import);
@@ -720,7 +726,10 @@ export class SlackImporter extends Base {
 			}
 		});
 
-		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
+		if (this.channels && this.channels.channels) {
+			this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
+		}
+
 		if (this.groups && this.groups.channels) {
 			this.collection.update({ _id: this.groups._id }, { $set: { channels: this.groups.channels } });
 		}
@@ -772,7 +781,9 @@ export class SlackImporter extends Base {
 				super.updateProgress(ProgressStep.FINISHING);
 
 				try {
-					this._archiveChannelsAsNeeded(startedByUserId, this.channels);
+					if (this.channels) {
+						this._archiveChannelsAsNeeded(startedByUserId, this.channels);
+					}
 					if (this.groups) {
 						this._archiveChannelsAsNeeded(startedByUserId, this.groups);
 					}
@@ -809,9 +820,11 @@ export class SlackImporter extends Base {
 	}
 
 	getSlackChannelFromName(channelName) {
-		const channel = this.channels.channels.find((channel) => channel.name === channelName);
-		if (channel) {
-			return channel;
+		if (this.channels && this.channels.channels) {
+			const channel = this.channels.channels.find((channel) => channel.name === channelName);
+			if (channel) {
+				return channel;
+			}
 		}
 
 		if (this.groups && this.groups.channels) {
