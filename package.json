@@ -162,7 +162,7 @@
 		"grapheme-splitter": "^1.0.4",
 		"gridfs-stream": "^1.1.1",
 		"he": "^1.2.0",
-		"highlight.js": "^9.13.1",
+		"highlight.js": "^9.18.0",
 		"iconv-lite": "^0.4.24",
 		"image-size": "^0.6.3",
 		"imap": "^0.8.19",
