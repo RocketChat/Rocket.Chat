@@ -428,6 +428,7 @@ export class SlackImporter extends Base {
 						...msgDataDefaults,
 						msg: this.convertSlackMessageToRocketChat(message.text),
 						rid: room._id,
+						attachments: message.attachments,
 						u: {
 							_id: user._id,
 							username: user.username,
