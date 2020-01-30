@@ -102,7 +102,7 @@ Template.membersList.helpers({
 	},
 
 	canInviteUser() {
-		return hasPermission('create-invite-links');
+		return hasPermission('create-invite-links', this._id);
 	},
 
 	showUserInfo() {

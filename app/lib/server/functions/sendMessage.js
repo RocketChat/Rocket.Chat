@@ -148,7 +148,7 @@ const validateUserIdentity = (message, _id) => {
 	if (!message.alias && !message.avatar) {
 		return;
 	}
-	const forbiddenPropsToChangeWhenUserIsNotABot = ['alias', 'avatar'];
+	const forbiddenPropsToChangeWhenUserIsNotABot = ['avatar'];
 	const user = Users.findOneById(_id, { fields: { roles: 1, name: 1 } });
 	/**
 	 * If the query returns no user, the message has likely
@@ -160,7 +160,7 @@ const validateUserIdentity = (message, _id) => {
 	}
 	const userIsNotABot = !user.roles.includes('bot');
 	const messageContainsAnyForbiddenProp = Object.keys(message).some((key) => forbiddenPropsToChangeWhenUserIsNotABot.includes(key));
-	if ((userIsNotABot && messageContainsAnyForbiddenProp) || (settings.get('Message_SetNameToAliasEnabled') && message.alias !== user.name)) {
+	if (userIsNotABot && (messageContainsAnyForbiddenProp || (typeof message.alias !== 'undefined' && message.alias !== user.name))) {
 		throw new Error('You are not authorized to change message properties');
 	}
 };
