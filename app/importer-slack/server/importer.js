@@ -812,7 +812,7 @@ export class SlackImporter extends Base {
 
 	_archiveChannelsAsNeeded(startedByUserId, list) {
 		list.channels.forEach((channel) => {
-			if (channel.do_import && channel.is_archived) {
+			if (channel.do_import && channel.is_archived && channel.rocketId) {
 				Meteor.runAsUser(startedByUserId, function() {
 					Meteor.call('archiveRoom', channel.rocketId);
 				});
