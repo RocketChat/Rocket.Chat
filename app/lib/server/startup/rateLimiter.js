@@ -23,8 +23,8 @@ DDPRateLimiter.addRule = (matcher, calls, time, callback) => {
 
 const { _increment } = DDPRateLimiter;
 DDPRateLimiter._increment = function(input) {
-	const session = Meteor.server.sessions[input.connectionId];
-	input.broadcastAuth = session && session.connectionHandle && session.connectionHandle.broadcastAuth === true;
+	const session = Meteor.server.sessions.get(input.connectionId);
+	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 
 	return _increment.call(DDPRateLimiter, input);
 };
@@ -33,8 +33,8 @@ DDPRateLimiter._increment = function(input) {
 // being shared among all matchs
 RateLimiter.prototype.check = function(input) {
 	// ==== BEGIN OVERRIDE ====
-	const session = Meteor.server.sessions[input.connectionId];
-	input.broadcastAuth = session && session.connectionHandle && session.connectionHandle.broadcastAuth === true;
+	const session = Meteor.server.sessions.get(input.connectionId);
+	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 	// ==== END OVERRIDE ====
 
 	const self = this;
