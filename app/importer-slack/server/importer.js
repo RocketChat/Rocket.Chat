@@ -385,12 +385,14 @@ export class SlackImporter extends Base {
 				reaction.name = `:${ reaction.name }:`;
 				msgDataDefaults.reactions[reaction.name] = { usernames: [] };
 
-				reaction.users.forEach((u) => {
-					const rcUser = this.getRocketUserFromUserId(u);
-					if (!rcUser) { return; }
+				if (reaction.users) {
+					reaction.users.forEach((u) => {
+						const rcUser = this.getRocketUserFromUserId(u);
+						if (!rcUser) { return; }
 
-					msgDataDefaults.reactions[reaction.name].usernames.push(rcUser.username);
-				});
+						msgDataDefaults.reactions[reaction.name].usernames.push(rcUser.username);
+					});
+				}
 
 				if (msgDataDefaults.reactions[reaction.name].usernames.length === 0) {
 					delete msgDataDefaults.reactions[reaction.name];
