@@ -46,7 +46,7 @@ Meteor.startup(() => {
 		});
 	});
 
-	const applyLanguage = (language = 'pt-br') => {
+	const applyLanguage = (language = 'en') => {
 		language = filterLanguage(language);
 
 		if (!availableLanguages[language]) {
@@ -56,7 +56,6 @@ Meteor.startup(() => {
 		if (!language) {
 			return;
 		}
-		console.log(language);
 		document.documentElement.classList[isRtl(language) ? 'add' : 'remove']('rtl');
 		document.querySelector('html').lang = language;
 
