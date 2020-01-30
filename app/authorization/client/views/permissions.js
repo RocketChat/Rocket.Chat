@@ -2,6 +2,8 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { Reload } from 'meteor/reload';
+import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
@@ -179,19 +181,56 @@ Template.permissionsTable.helpers({
 	permissionDescription(permission) {
 		return t(`${ permission._id }_description`);
 	},
+
+	isChanged() {
+		const record = Session.get('optionRecord');
+		const changedIndex = record.findIndex((data) => data.changed === true);
+		return record && record.length && changedIndex !== -1;
+	},
+
+	canSave(ret) {
+		const record = Session.get('optionRecord');
+		const changedIndex = record.findIndex((data) => data.changed === true);
+		return record && record.length && changedIndex !== -1 ? '' : ret;
+	},
+
 });
 
 Template.permissionsTable.events({
 	'click .role-permission'(e) {
 		const permissionId = e.currentTarget.getAttribute('data-permission');
 		const role = e.currentTarget.getAttribute('data-role');
-
-		const permission = permissionId && ChatPermissions.findOne(permissionId);
-
-		const action = ~permission.roles.indexOf(role) ? 'authorization:removeRoleFromPermission' : 'authorization:addPermissionToRole';
-
-		return Meteor.call(action, permissionId, role);
+		const record = Session.get('optionRecord');
+		const pos = record.findIndex((data) => data.permissionId === permissionId && data.role === role);
+		pos === -1 ? record.push({ permissionId, role, changed: true }) : record[pos].changed = !record[pos].changed;
+		Session.set('optionRecord', record);
 	},
+
+	'click .save'() {
+		const record = Session.get('optionRecord');
+		record.forEach((data) => {
+			const { permissionId, role, changed } = data;
+			if (changed) {
+				const permission = permissionId && ChatPermissions.findOne(permissionId);
+				const action = ~permission.roles.indexOf(role) ? 'authorization:removeRoleFromPermission' : 'authorization:addPermissionToRole';
+				Meteor.call(action, permissionId, role);
+			}
+		});
+	},
+
+	'click .reset'() {
+		setTimeout(function() {
+			if (Meteor._reload && Meteor._reload.reload) {
+				Meteor._reload.reload();
+			} else {
+				Reload._reload();
+			}
+		}, 500);
+	},
+});
+
+Template.permissionsTable.onCreated(function() {
+	Session.set('optionRecord', []);
 });
 
 Template.permissions.onRendered(() => {

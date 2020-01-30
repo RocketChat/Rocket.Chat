@@ -1,5 +1,12 @@
 <template name="permissionsTable">
 		<div class="content">
+			<div class="rc-header__section-button">
+				{{#if isChanged}}
+				<button class="rc-button rc-button--cancel reset" ><span>{{_ "Reset"}}</span></button>
+				{{/if}}
+				<button class="rc-button rc-button--primary save" {{canSave 'disabled'}} ><span>{{_ "Save_changes"}}</span></button>
+			</div>
+
 			<table class="permission-grid secondary-background-color">
 
 				<thead class="content-background-color">
