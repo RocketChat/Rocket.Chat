@@ -1,9 +1,9 @@
 import { Match } from 'meteor/check';
+import _ from 'underscore';
+
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
-import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
-import _ from 'underscore';
 
 export class Messages extends Base {
 	constructor() {
@@ -30,7 +30,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
-
+		// livechat
+		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {
@@ -142,7 +143,7 @@ export class Messages extends Base {
 
 	// FIND
 	findByMention(username, options) {
-		const query =	{ 'mentions.username': username };
+		const query = { 'mentions.username': username };
 
 		return this.find(query, options);
 	}
@@ -205,13 +206,25 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomId(roomId, options) {
+	findVisibleByRoomId(rid, options) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 
-			rid: roomId,
+			rid,
+		};
+
+		return this.find(query, options);
+	}
+
+	findVisibleThreadByThreadId(tmid, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			tmid,
 		};
 
 		return this.find(query, options);
@@ -227,8 +240,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
@@ -340,8 +352,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
@@ -360,8 +371,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
@@ -495,7 +505,7 @@ export class Messages extends Base {
 		const record = this.findOneById(_id);
 		record._hidden = true;
 		record.parent = record._id;
-		record.editedAt = new Date;
+		record.editedAt = new Date();
 		record.editedBy = {
 			_id: user._id,
 			username: user.username,
@@ -507,7 +517,7 @@ export class Messages extends Base {
 	// UPDATE
 	setHiddenById(_id, hidden) {
 		if (hidden == null) { hidden = true; }
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -519,7 +529,7 @@ export class Messages extends Base {
 	}
 
 	setAsDeletedByIdAndUser(_id, user) {
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -543,12 +553,12 @@ export class Messages extends Base {
 	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
 		if (pinned == null) { pinned = true; }
 		if (pinnedAt == null) { pinnedAt = 0; }
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
 				pinned,
-				pinnedAt: pinnedAt || new Date,
+				pinnedAt: pinnedAt || new Date(),
 				pinnedBy,
 			},
 		};
@@ -559,7 +569,7 @@ export class Messages extends Base {
 	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
 		if (snippeted == null) { snippeted = true; }
 		if (snippetedAt == null) { snippetedAt = 0; }
-		const query =	{ _id: message._id };
+		const query = { _id: message._id };
 
 		const msg = `\`\`\`${ message.msg }\`\`\``;
 
@@ -567,7 +577,7 @@ export class Messages extends Base {
 			$set: {
 				msg,
 				snippeted,
-				snippetedAt: snippetedAt || new Date,
+				snippetedAt: snippetedAt || new Date(),
 				snippetedBy,
 				snippetName,
 			},
@@ -577,7 +587,7 @@ export class Messages extends Base {
 	}
 
 	setUrlsById(_id, urls) {
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -589,7 +599,7 @@ export class Messages extends Base {
 	}
 
 	updateAllUsernamesByUserId(userId, username) {
-		const query =	{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		const update = {
 			$set: {
@@ -601,7 +611,7 @@ export class Messages extends Base {
 	}
 
 	updateUsernameOfEditByUserId(userId, username) {
-		const query =	{ 'editedBy._id': userId };
+		const query = { 'editedBy._id': userId };
 
 		const update = {
 			$set: {
@@ -630,7 +640,7 @@ export class Messages extends Base {
 
 	updateUserStarById(_id, userId, starred) {
 		let update;
-		const query =	{ _id };
+		const query = { _id };
 
 		if (starred) {
 			update = {
@@ -650,7 +660,7 @@ export class Messages extends Base {
 	}
 
 	upgradeEtsToEditAt() {
-		const query =	{ ets: { $exists: 1 } };
+		const query = { ets: { $exists: 1 } };
 
 		const update = {
 			$rename: {
@@ -662,7 +672,7 @@ export class Messages extends Base {
 	}
 
 	setMessageAttachments(_id, attachments) {
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -674,7 +684,7 @@ export class Messages extends Base {
 	}
 
 	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
-		const query =	{ _id };
+		const query = { _id };
 
 		const update = {
 			$set: {
@@ -695,8 +705,8 @@ export class Messages extends Base {
 			$set: {
 				alias: newNameAlias,
 				'u._id': newUserId,
-				'u.username' : newUsername,
-				'u.name' : undefined,
+				'u.username': newUsername,
+				'u.name': undefined,
 			},
 		};
 
@@ -712,7 +722,7 @@ export class Messages extends Base {
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date,
+			ts: new Date(),
 			msg: message,
 			u: {
 				_id: user._id,
@@ -728,7 +738,7 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-		Rooms.incMsgCountById(room._id, 1);
+		Rooms.incMsgCountById(roomId, 1);
 		return record;
 	}
 
@@ -741,7 +751,7 @@ export class Messages extends Base {
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date,
+			ts: new Date(),
 			msg: message,
 			u: {
 				_id: user._id,
@@ -755,6 +765,33 @@ export class Messages extends Base {
 		}
 
 		_.extend(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
+		return record;
+	}
+
+	createTransferHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+		const type = 'livechat_transfer_history';
+		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
+		if ((room != null ? room.sysMes : undefined) === false) {
+			return;
+		}
+		const record = {
+			t: type,
+			rid: roomId,
+			ts: new Date(),
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username,
+			},
+			groupable: false,
+		};
+
+		if (settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+		Object.assign(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
 		return record;
@@ -839,25 +876,15 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
 	}
 
-	createRejectedMessageByPeer(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('rejected-message-by-peer', roomId, message, user, extraData);
-	}
-
-	createPeerDoesNotExist(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('peer-does-not-exist', roomId, message, user, extraData);
-	}
-
 	// REMOVE
 	removeById(_id) {
-		const query =	{ _id };
+		const query = { _id };
 
 		return this.remove(query);
 	}
 
 	removeByRoomId(roomId) {
-		const query =	{ rid: roomId };
+		const query = { rid: roomId };
 
 		return this.remove(query);
 	}
@@ -899,26 +926,31 @@ export class Messages extends Base {
 	}
 
 	removeByUserId(userId) {
-		const query =	{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		return this.remove(query);
 	}
 
-	async removeFilesByRoomId(roomId) {
-		this.find({
-			rid: roomId,
-			'file._id': {
-				$exists: true,
-			},
-		}, {
-			fields: {
-				'file._id': 1,
-			},
-		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
-	}
-
 	getMessageByFileId(fileID) {
 		return this.findOne({ 'file._id': fileID });
+	}
+
+	getMessageByFileIdAndUsername(fileID, userId) {
+		const query = {
+			'file._id': fileID,
+			'u._id': userId,
+		};
+
+		const options = {
+			fields: {
+				unread: 0,
+				mentions: 0,
+				channels: 0,
+				groupable: 0,
+			},
+		};
+
+		return this.findOne(query, options);
 	}
 
 	setAsRead(rid, until) {
@@ -1103,6 +1135,16 @@ export class Messages extends Base {
 
 	findThreadsByRoomId(rid, skip, limit) {
 		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
+	}
+
+	findAgentLastMessageByVisitorLastMessageTs(roomId, visitorLastMessageTs) {
+		const query = {
+			rid: roomId,
+			ts: { $gt: visitorLastMessageTs },
+			token: { $exists: false },
+		};
+
+		return this.findOne(query, { sort: { ts: 1 } });
 	}
 }
 

@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { EmojiCustom } from '../../../models';
 import s from 'underscore.string';
 
+import { EmojiCustom } from '../../../models';
+
 Meteor.publish('fullEmojiData', function(filter, limit) {
+	console.warn('The publication "fullEmojiData" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

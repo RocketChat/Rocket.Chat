@@ -2,6 +2,7 @@ import './modal.html';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+
 import { t, getUserPreference, handleError } from '../../../utils';
 
 export const modal = {
@@ -106,7 +107,6 @@ Template.rc_modal.helpers({
 	},
 	type() {
 		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
-
 	},
 	modalIcon() {
 		switch (this.type) {

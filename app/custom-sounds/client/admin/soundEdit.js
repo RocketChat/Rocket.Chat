@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from '../../../utils';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import s from 'underscore.string';
+
+import { t, handleError } from '../../../utils';
 
 Template.soundEdit.helpers({
 	sound() {
@@ -30,7 +31,7 @@ Template.soundEdit.events({
 	},
 
 	'change input[type=file]'(ev) {
-		const e = (ev.originalEvent != null) ? ev.originalEvent : ev;
+		const e = ev.originalEvent != null ? ev.originalEvent : ev;
 		let { files } = e.target;
 		if (e.target.files == null || files.length === 0) {
 			if (e.dataTransfer.files != null) {
@@ -56,7 +57,7 @@ Template.soundEdit.onCreated(function() {
 		this.sound = undefined;
 		this.data.tabBar.showGroup('custom-sounds');
 	}
-
+	this.onSuccess = Template.currentData().onSuccess;
 	this.cancel = (form, name) => {
 		form.reset();
 		this.data.tabBar.close();
@@ -131,9 +132,8 @@ Template.soundEdit.onCreated(function() {
 								if (uploadError != null) {
 									handleError(uploadError);
 									console.log(uploadError);
-									return;
 								}
-							}
+							},
 							);
 							delete this.soundFile;
 							toastr.success(TAPi18n.__('File_uploaded'));
@@ -141,6 +141,7 @@ Template.soundEdit.onCreated(function() {
 					}
 
 					toastr.success(t('Custom_Sound_Saved_Successfully'));
+					this.onSuccess();
 
 					this.cancel(form, soundData.name);
 				}

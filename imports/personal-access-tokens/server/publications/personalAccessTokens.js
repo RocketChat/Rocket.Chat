@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../../app/authorization';
 import { Users } from '../../../../app/models';
 
 Meteor.publish('personalAccessTokens', function() {
+	console.warn('The publication "personalAccessTokens" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

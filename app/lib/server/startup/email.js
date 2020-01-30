@@ -2,7 +2,6 @@ import { settings } from '../../../settings';
 
 settings.addGroup('Email', function() {
 	this.section('Style', function() {
-
 		this.add('email_style', `html, body, .body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
 
 	body, .body {
@@ -279,6 +278,7 @@ settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Username',
 			placeholder: 'email@domain',
+			secret: true,
 		});
 		this.add('Direct_Reply_ReplyTo', '', {
 			type: 'string',
@@ -290,6 +290,7 @@ settings.addGroup('Email', function() {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password',
+			secret: true,
 		});
 	});
 	this.section('SMTP', function() {
@@ -336,12 +337,14 @@ settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Username',
 			autocomplete: false,
+			secret: true,
 		});
 		this.add('SMTP_Password', '', {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password',
 			autocomplete: false,
+			secret: true,
 		});
 		this.add('From_Email', '', {
 			type: 'string',
@@ -422,6 +425,43 @@ settings.addGroup('Email', function() {
 			multiline: true,
 			i18nLabel: 'Body',
 			i18nDescription: 'Forgot_Password_Description',
+		});
+	});
+
+	this.section('Email_changed_section', function() {
+		this.add('Email_Changed_Email_Subject', '{Email_Changed_Email_Subject}', {
+			type: 'string',
+			i18nLabel: 'Subject',
+		});
+
+		this.add('Email_Changed_Email', '<h2>{Hi},</h2><p>{Your_email_address_has_changed}</p><p>{Your_new_email_is_email}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			i18nLabel: 'Body',
+			i18nDescription: 'Email_Changed_Description',
+		});
+	});
+
+	this.section('Password_changed_section', function() {
+		this.add('Password_Changed_Email_Subject', '{Password_Changed_Email_Subject}', {
+			type: 'string',
+			i18nLabel: 'Subject',
+		});
+
+		this.add('Password_Changed_Email', '<h2>{Hi},</h2><p>{Your_password_was_changed_by_an_admin}</p><p>{Your_temporary_password_is_password}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			i18nLabel: 'Body',
+			i18nDescription: 'Password_Changed_Description',
+		});
+	});
+
+	this.section('Privacy', function() {
+		this.add('Email_notification_show_message', true, {
+			type: 'boolean',
+			public: true,
 		});
 	});
 });

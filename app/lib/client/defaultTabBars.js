@@ -1,4 +1,5 @@
 import { Session } from 'meteor/session';
+
 import { TabBar } from '../../ui-utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';
@@ -48,6 +49,15 @@ TabBar.addButton({
 	i18nTitle: 'Add_users',
 	icon: 'user-plus',
 	template: 'inviteUsers',
+	order: 2,
+});
+
+TabBar.addButton({
+	groups: ['channel', 'group'],
+	id: 'createInviteLink',
+	i18nTitle: 'Invite_Users',
+	icon: 'user-plus',
+	template: 'createInviteLink',
 	order: 2,
 });
 

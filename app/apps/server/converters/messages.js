@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+
 import { Messages, Rooms, Users } from '../../../models';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 
@@ -20,6 +21,7 @@ export class AppMessagesConverter {
 
 		const map = {
 			id: '_id',
+			threadId: 'tmid',
 			reactions: 'reactions',
 			parseUrls: 'parseUrls',
 			text: 'msg',
@@ -29,8 +31,10 @@ export class AppMessagesConverter {
 			emoji: 'emoji',
 			avatarUrl: 'avatar',
 			alias: 'alias',
+			file: 'file',
 			customFields: 'customFields',
 			groupable: 'groupable',
+			token: 'token',
 			room: (message) => {
 				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
 				delete message.rid;
@@ -52,17 +56,20 @@ export class AppMessagesConverter {
 				return result;
 			},
 			sender: (message) => {
-				let result;
+				if (!message.u || !message.u._id) {
+					return undefined;
+				}
 
-				if (message.u && message.u._id) {
-					result = this.orch.getConverters().get('users').convertById(message.u._id);
-				} else {
-					result = this.orch.getConverters().get('users').convertToApp(message.u);
+				let user = this.orch.getConverters().get('users').convertById(message.u._id);
+
+				// When the sender of the message is a Guest (livechat) and not a user
+				if (!user) {
+					user = this.orch.getConverters().get('users').convertToApp(message.u);
 				}
 
 				delete message.u;
 
-				return result;
+				return user;
 			},
 		};
 
@@ -112,6 +119,7 @@ export class AppMessagesConverter {
 
 		const newMessage = {
 			_id: message.id || Random.id(),
+			tmid: message.threadId,
 			rid: room._id,
 			u,
 			msg: message.text,
@@ -127,6 +135,7 @@ export class AppMessagesConverter {
 			attachments,
 			reactions: message.reactions,
 			parseUrls: message.parseUrls,
+			token: message.token,
 		};
 
 		return Object.assign(newMessage, message._unmappedProperties_);

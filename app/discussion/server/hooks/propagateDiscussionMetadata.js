@@ -26,7 +26,7 @@ callbacks.add('afterDeleteMessage', function(message, { _id, prid } = {}) {
 callbacks.add('afterDeleteRoom', (rid) => Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => deleteRoom(_id)), 'DeleteDiscussionChain');
 
 // TODO discussions define new fields
-callbacks.add('afterRoomNameChange', ({ rid, name }) => Rooms.update({ prid: rid }, { $set: { topic: name } }, { multi: true }));
+callbacks.add('afterRoomNameChange', ({ rid, name, oldName }) => Rooms.update({ prid: rid, ...oldName && { topic: oldName } }, { $set: { topic: name } }, { multi: true }), 'updateTopicDiscussion');
 
 callbacks.add('afterDeleteRoom', (drid) => Messages.update({ drid }, {
 	$unset: {

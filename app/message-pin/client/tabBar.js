@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { settings } from '../../settings';
 import { TabBar } from '../../ui-utils';
 

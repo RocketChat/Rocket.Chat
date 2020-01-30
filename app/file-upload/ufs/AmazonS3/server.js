@@ -1,9 +1,10 @@
+import stream from 'stream';
+
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
-import stream from 'stream';
 
 /**
  * AmazonS3 store
@@ -11,7 +12,6 @@ import stream from 'stream';
  * @constructor
  */
 export class AmazonS3Store extends UploadFS.Store {
-
 	constructor(options) {
 		// Default options
 		// options.secretAccessKey,
@@ -47,10 +47,11 @@ export class AmazonS3Store extends UploadFS.Store {
 			}
 		};
 
-		this.getRedirectURL = function(file) {
+		this.getRedirectURL = function(file, forceDownload = false) {
 			const params = {
 				Key: this.getPath(file),
 				Expires: classOptions.URLExpiryTimeSpan,
+				ResponseContentDisposition: `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(file.name) }"`,
 			};
 
 			return s3.getSignedUrl('getObject', params);
@@ -140,7 +141,6 @@ export class AmazonS3Store extends UploadFS.Store {
 				Key: this.getPath(file),
 				Body: writeStream,
 				ContentType: file.type,
-				ContentDisposition: `inline; filename="${ encodeURI(file.name) }"`,
 
 			}, (error) => {
 				if (error) {

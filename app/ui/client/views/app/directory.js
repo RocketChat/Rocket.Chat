@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { hasAllPermission } from '../../../../authorization/client';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
+
 import { timeAgo } from './helpers';
+import { hasAllPermission } from '../../../../authorization/client';
 import { t, roomTypes } from '../../../../utils';
 import { settings } from '../../../../settings';
 import { hasAtLeastOnePermission } from '../../../../authorization';
@@ -29,10 +30,11 @@ function directorySearch(config, cb) {
 				return {
 					name: result.name,
 					username: result.username,
-					// If there is no email address (probably only rocket.cat) show the username)
+					// If there is no email address (rocket.cat and app users) show the username)
 					email: (result.emails && result.emails[0] && result.emails[0].address) || result.username,
 					createdAt: timeAgo(result.createdAt, t),
-					domain: result.federation && result.federation.peer,
+					origin: result.federation && result.federation.origin,
+					isRemote: result.isRemote,
 				};
 			}
 			return null;
@@ -146,8 +148,8 @@ Template.directory.helpers({
 		}
 		return function(currentTarget) {
 			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
 			) {
 				return instance.page.set(instance.page.get() + 1);
 			}

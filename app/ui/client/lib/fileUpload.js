@@ -2,8 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
-import { fileUploadHandler } from '../../../file-upload';
 import { Handlebars } from 'meteor/ui';
+
+import { fileUploadHandler } from '../../../file-upload';
+import { settings } from '../../../settings/client';
 import { t, fileUploadIsValidContentType } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 
@@ -37,7 +39,7 @@ const showUploadPreview = (file, callback) => {
 const getAudioUploadPreview = (file, preview) => `\
 <div class='upload-preview'>
 	<audio style="width: 100%;" controls="controls">
-		<source src="${ preview }" type="audio/wav">
+		<source src="${ preview }" type="${ file.file.type }">
 		Your browser does not support the audio element.
 	</audio>
 </div>
@@ -138,11 +140,22 @@ const getUploadPreview = async (file, preview) => {
 };
 
 export const fileUpload = async (files, input, { rid, tmid }) => {
+	const threadsEnabled = settings.get('Threads_enabled');
+
 	files = [].concat(files);
 
 	const replies = $(input).data('reply') || [];
 	const mention = $(input).data('mention-user') || false;
-	const msg = await prependReplies('', replies, mention);
+
+	let msg = '';
+
+	if (!mention || !threadsEnabled) {
+		msg = await prependReplies('', replies, mention);
+	}
+
+	if (mention && threadsEnabled && replies.length) {
+		tmid = replies[0]._id;
+	}
 
 	const uploadNextFile = () => {
 		const file = files.pop();

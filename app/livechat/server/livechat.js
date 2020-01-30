@@ -1,16 +1,13 @@
-import _ from 'underscore';
 import url from 'url';
 
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../settings/server';
-import { addServerUrlToIndex, addServerUrlToHead } from '../lib/Assets';
+import { addServerUrlToIndex } from '../lib/Assets';
 
-const latestVersion = '1.0.0';
 const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('livechat/index.html'));
-const headHtmlWithServerURL = addServerUrlToHead(Assets.getText('livechat/head.html'));
-const isLatestVersion = (version) => version && version === latestVersion;
 
 WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {
 	const reqUrl = url.parse(req.url);
@@ -18,8 +15,6 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 		return next();
 	}
 
-	const { version } = req.query;
-	const html = isLatestVersion(version) ? indexHtmlWithServerURL : headHtmlWithServerURL;
 
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
@@ -38,6 +33,6 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 		res.setHeader('X-FRAME-OPTIONS', `ALLOW-FROM ${ referer.protocol }//${ referer.host }`);
 	}
 
-	res.write(html);
+	res.write(indexHtmlWithServerURL);
 	res.end();
 }));

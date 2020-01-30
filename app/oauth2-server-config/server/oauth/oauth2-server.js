@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { OAuthApps, Users } from '../../../models';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
+
+import { OAuthApps, Users } from '../../../models';
 import { API } from '../../../api';
 
 const oauth2server = new OAuth2Server({
@@ -46,6 +47,7 @@ oauth2server.routes.get('/oauth/userinfo', function(req, res) {
 });
 
 Meteor.publish('oauthClient', function(clientId) {
+	console.warn('The publication "oauthClient" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

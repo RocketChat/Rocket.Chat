@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
+
 import { settings } from '../../settings';
 import { Rooms } from '../../models';
 

@@ -1,7 +1,8 @@
 import s from 'underscore.string';
+
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 
 const logger = new Logger('getFullUserData');
@@ -14,6 +15,7 @@ const defaultFields = {
 	type: 1,
 	active: 1,
 	reason: 1,
+	statusText: 1,
 };
 
 const fullFields = {
@@ -53,20 +55,42 @@ settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
+const getCustomFields = (canViewAllInfo) => (canViewAllInfo ? customFields : publicCustomFields);
+
+const getFields = (canViewAllInfo) => ({
+	...defaultFields,
+	...canViewAllInfo && fullFields,
+	...getCustomFields(canViewAllInfo),
+});
+
+export function getFullUserDataById({ userId, filterId }) {
+	const canViewAllInfo = userId === filterId || hasPermission(userId, 'view-full-other-user-info');
+
+	const fields = getFields(canViewAllInfo);
+
+	const options = {
+		fields,
+	};
+
+	return Users.findById(filterId, options);
+}
+
 export const getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
-	const userToRetrieveFullUserData = Users.findOneByUsername(username);
+	const userToRetrieveFullUserData = username && Users.findOneByUsername(username, { fields: { username: 1 } });
+
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
 	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
+
+	const canViewAllInfo = isMyOwnInfo || viewFullOtherUserInfo;
+
 	const limit = !viewFullOtherUserInfo ? 1 : l;
 
 	if (!username && limit <= 1) {
 		return undefined;
 	}
 
-	const _customFields = isMyOwnInfo || viewFullOtherUserInfo ? customFields : publicCustomFields;
-
-	const fields = viewFullOtherUserInfo ? { ...defaultFields, ...fullFields, ..._customFields } : { ...defaultFields, ..._customFields };
+	const fields = getFields(canViewAllInfo);
 
 	const options = {
 		fields,
@@ -77,9 +101,11 @@ export const getFullUserData = function({ userId, filter, limit: l }) {
 	if (!username) {
 		return Users.find({}, options);
 	}
+
 	if (limit === 1) {
-		return Users.findByUsername(username, options);
+		return Users.findByUsername(userToRetrieveFullUserData.username, options);
 	}
+
 	const usernameReg = new RegExp(s.escapeRegExp(username), 'i');
 	return Users.findByUsernameNameOrEmailAddress(usernameReg, options);
 };

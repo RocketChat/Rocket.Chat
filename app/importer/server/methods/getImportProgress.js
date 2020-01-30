@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from '..';
+
 import { hasPermission } from '../../../authorization';
+
+import { Importers } from '..';
+
 
 Meteor.methods({
 	getImportProgress(key) {

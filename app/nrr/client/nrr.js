@@ -18,7 +18,6 @@ const makeCursorReactive = function(obj) {
 };
 
 Blaze.toHTMLWithDataNonReactive = function(content, data) {
-
 	makeCursorReactive(data);
 
 	if (data instanceof Spacebars.kw && Object.keys(data.hash).length > 0) {
@@ -40,6 +39,7 @@ Blaze.renderNonReactive = function(templateName, data) {
 	[templateName, data] = _arguments;
 
 	return Tracker.nonreactive(() => {
+		console.warn('Nrr template is deprecated');
 		const view = new Blaze.View('nrr', () => HTML.Raw(Blaze.toHTMLWithDataNonReactive(Template[templateName], data)));
 
 		view.onViewReady(() => {

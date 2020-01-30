@@ -37,7 +37,7 @@ Migrations.add({
 					value: servers,
 				},
 				$setOnInsert: {
-					createdAt: new Date,
+					createdAt: new Date(),
 				},
 			});
 		}

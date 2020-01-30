@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { LivechatOfficeHour } from '../../../models';
 
 Meteor.methods({

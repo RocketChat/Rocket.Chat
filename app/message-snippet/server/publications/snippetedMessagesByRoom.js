@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Users, Messages } from '../../../models';
 
 Meteor.publish('snippetedMessages', function(rid, limit = 50) {
+	console.warn('The publication "snippetedMessages" is deprecated and will be removed after version v3.0.0');
 	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
 	}
@@ -23,7 +25,7 @@ Meteor.publish('snippetedMessages', function(rid, limit = 50) {
 		{
 			sort: { ts: -1 },
 			limit,
-		}
+		},
 	).observeChanges({
 		added(_id, record) {
 			publication.added('rocketchat_snippeted_message', _id, record);

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { TabBar } from '../../../ui-utils';
 
 Meteor.startup(() => {

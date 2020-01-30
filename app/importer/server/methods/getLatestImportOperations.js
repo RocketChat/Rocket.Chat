@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Imports } from '../models/Imports';
 import { hasRole } from '../../../authorization';
 

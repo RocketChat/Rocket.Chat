@@ -1,28 +1,28 @@
-import _ from 'underscore';
-import { settings } from '../../../settings';
-import { FileUploadClass } from '../lib/FileUpload';
-import { FileUpload } from '../lib/FileUpload';
-import '../../ufs/AmazonS3/server.js';
 import http from 'http';
 import https from 'https';
 
-const get = function(file, req, res) {
-	const fileUrl = this.store.getRedirectURL(file);
+import _ from 'underscore';
 
-	if (fileUrl) {
-		const storeType = file.store.split(':').pop();
-		if (settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
-			const request = /^https:/.test(fileUrl) ? https : http;
-			request.get(fileUrl, (fileRes) => fileRes.pipe(res));
-		} else {
-			res.removeHeader('Content-Length');
-			res.setHeader('Location', fileUrl);
-			res.writeHead(302);
-			res.end();
-		}
-	} else {
-		res.end();
+import { settings } from '../../../settings';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+import '../../ufs/AmazonS3/server.js';
+
+const get = function(file, req, res) {
+	const forceDownload = typeof req.query.download !== 'undefined';
+	const fileUrl = this.store.getRedirectURL(file, forceDownload);
+
+	if (!fileUrl) {
+		return res.end();
 	}
+
+	const storeType = file.store.split(':').pop();
+	if (settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
+		const request = /^https:/.test(fileUrl) ? https : http;
+
+		return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
+	}
+
+	return FileUpload.redirectToFile(fileUrl, req, res);
 };
 
 const copy = function(file, out) {

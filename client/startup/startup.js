@@ -3,13 +3,13 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { UserPresence } from 'meteor/konecty:user-presence';
-import { fireGlobalEvent } from '../../app/ui-utils';
-import { settings } from '../../app/settings';
-import { Users } from '../../app/models';
-import { getUserPreference } from '../../app/utils';
 import toastr from 'toastr';
 import hljs from 'highlight.js';
+
+import { fireGlobalEvent } from '../../app/ui-utils';
+import { getUserPreference } from '../../app/utils';
 import 'highlight.js/styles/github.css';
+import { syncUserdata } from '../lib/userData';
 
 hljs.initHighlightingOnLoad();
 
@@ -28,28 +28,14 @@ Meteor.startup(function() {
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 
-	Tracker.autorun(function(computation) {
-		if (!Meteor.userId() && !settings.get('Accounts_AllowAnonymousRead')) {
-			return;
-		}
-		Meteor.subscribe('userData');
-		Meteor.subscribe('activeUsers');
-		computation.stop();
-	});
-
 	let status = undefined;
-	Tracker.autorun(function() {
-		if (!Meteor.userId()) {
+	Tracker.autorun(async function() {
+		const uid = Meteor.userId();
+		if (!uid) {
 			return;
 		}
-		const user = Users.findOne(Meteor.userId(), {
-			fields: {
-				status: 1,
-				'settings.preferences.idleTimeLimit': 1,
-				'settings.preferences.enableAutoAway': 1,
-			},
-		});
 
+		const user = await syncUserdata(uid);
 		if (!user) {
 			return;
 		}

@@ -67,7 +67,7 @@
 		}
 	}
 
-	@media (width <= 700px) {
+	@media (width <= 980px) {
 		.rc-table-content {
 			& th:not(:first-child),
 			& td:not(:first-child) {

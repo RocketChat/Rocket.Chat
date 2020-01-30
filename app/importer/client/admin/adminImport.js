@@ -1,17 +1,21 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from '..';
+import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { hasRole } from '../../../authorization';
 import { t, handleError } from '../../../utils';
+import { SideNav } from '../../../ui-utils/client';
+
+import { Importers } from '..';
 
 Template.adminImport.helpers({
 	isAdmin() {
 		return hasRole(Meteor.userId(), 'admin');
 	},
 	getDescription(importer) {
-		return TAPi18n.__('Importer_From_Description', { from: importer.name });
+		return TAPi18n.__('Importer_From_Description', { from: t(importer.name) });
 	},
 	importers() {
 		return Importers.getAll();
@@ -36,4 +40,11 @@ Template.adminImport.events({
 			FlowRouter.go(`/admin/import/prepare/${ importer.key }`);
 		});
 	},
+});
+
+Template.adminImport.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

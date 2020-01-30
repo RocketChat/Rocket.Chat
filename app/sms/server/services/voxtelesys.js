@@ -1,7 +1,6 @@
 import { HTTP } from 'meteor/http';
 
 import { settings } from '../../../settings';
-
 import { SMS } from '../SMS';
 
 class Voxtelesys {
@@ -9,6 +8,7 @@ class Voxtelesys {
 		this.authToken = settings.get('SMS_Voxtelesys_authToken');
 		this.URL = settings.get('SMS_Voxtelesys_URL');
 	}
+
 	parse(data) {
 		const returnData = {
 			from: data.from,
@@ -24,6 +24,7 @@ class Voxtelesys {
 
 		return returnData;
 	}
+
 	send(fromNumber, toNumber, message) {
 		const options = {
 			timeout: 30000,
@@ -50,6 +51,7 @@ class Voxtelesys {
 			console.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
 		}
 	}
+
 	response(/* message */) {
 		return {
 			headers: {
@@ -60,6 +62,7 @@ class Voxtelesys {
 			},
 		};
 	}
+
 	error(error) {
 		let message = '';
 		if (error.reason) {

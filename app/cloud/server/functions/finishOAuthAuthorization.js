@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
-import { Settings, Users } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
+import { settings } from '../../../settings';
+import { Users } from '../../../models';
 import { userScopes } from '../oauthScopes';
 
 export function finishOAuthAuthorization(code, state) {
@@ -33,6 +33,8 @@ export function finishOAuthAuthorization(code, state) {
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
 			console.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
 		}
 
 		return false;
@@ -41,7 +43,6 @@ export function finishOAuthAuthorization(code, state) {
 	const expiresAt = new Date();
 	expiresAt.setSeconds(expiresAt.getSeconds() + result.data.expires_in);
 
-	Settings.updateValueById('Cloud_Workspace_Account_Associated', true);
 	Users.update({ _id: Meteor.userId() }, {
 		$set: {
 			'services.cloud': {

@@ -1,4 +1,5 @@
 import { Match, check } from 'meteor/check';
+
 import { Markdown } from '../../../markdown/server';
 import { Messages } from '../../../models';
 

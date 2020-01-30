@@ -1,10 +1,16 @@
 import { Template } from 'meteor/templating';
-import { hasAllPermission } from '../../../../authorization';
-import { ChatOAuthApps } from '../collection';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveVar } from 'meteor/reactive-var';
 import moment from 'moment';
 
-Template.oauthApps.onCreated(function() {
-	this.subscribe('oauthApps');
+import { hasAllPermission } from '../../../../authorization';
+import { SideNav } from '../../../../ui-utils/client';
+import { APIClient } from '../../../../utils/client';
+
+Template.oauthApps.onCreated(async function() {
+	this.oauthApps = new ReactiveVar([]);
+	const { oauthApps } = await APIClient.v1.get('oauth-apps.list');
+	this.oauthApps.set(oauthApps);
 });
 
 Template.oauthApps.helpers({
@@ -12,9 +18,16 @@ Template.oauthApps.helpers({
 		return hasAllPermission('manage-oauth-apps');
 	},
 	applications() {
-		return ChatOAuthApps.find();
+		return Template.instance().oauthApps.get();
 	},
 	dateFormated(date) {
 		return moment(date).format('L LT');
 	},
+});
+
+Template.oauthApps.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

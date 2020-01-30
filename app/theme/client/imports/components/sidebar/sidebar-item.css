@@ -89,7 +89,7 @@
 		background-color: var(--sidebar-item-hover-background);
 
 		& .sidebar-item__menu {
-			display: block;
+			display: flex;
 		}
 	}
 
@@ -282,12 +282,19 @@
 
 	&__menu {
 		position: absolute;
+
+		top: 0;
+
 		right: 0;
 
 		display: none;
 		flex: 0;
 
+		height: 100%;
+
 		padding: 6px;
+		align-items: center;
+		justify-content: center;
 
 		&-icon {
 			fill: var(--color-white);

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Users } from '../../../models';
 import { TOTP } from '../lib/totp';
 

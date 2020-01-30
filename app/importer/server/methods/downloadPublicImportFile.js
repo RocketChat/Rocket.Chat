@@ -1,10 +1,14 @@
+import http from 'http';
+import fs from 'fs';
+
 import { Meteor } from 'meteor/meteor';
-import { Importers } from '..';
+
+
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { hasRole } from '../../../authorization';
-import http from 'http';
-import fs from 'fs';
+
+import { Importers } from '..';
 
 function downloadHttpFile(fileUrl, writeStream) {
 	http.get(fileUrl, function(response) {

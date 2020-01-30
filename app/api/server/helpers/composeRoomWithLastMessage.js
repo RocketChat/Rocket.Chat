@@ -1,9 +1,10 @@
-import { composeMessageObjectWithUser } from '../../../utils';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 
 API.helperMethods.set('composeRoomWithLastMessage', function _composeRoomWithLastMessage(room, userId) {
 	if (room.lastMessage) {
-		room.lastMessage = composeMessageObjectWithUser(room.lastMessage, userId);
+		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		room.lastMessage = lastMessage;
 	}
 	return room;
 });

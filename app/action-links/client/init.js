@@ -1,10 +1,10 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+
 import { handleError } from '../../utils';
 import { fireGlobalEvent, Layout } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { actionLinks } from '../both/lib/actionLinks';
-
 
 
 Template.room.events({

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { callbacks } from '../../app/callbacks';
 import { Subscriptions } from '../../app/models';
 
@@ -19,6 +20,13 @@ Meteor.methods({
 
 		// TODO: move this calls to an exported function
 		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { ls: 1 } });
+
+		if (!userSubscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+				method: 'readMessages',
+			});
+		}
+
 		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
 
 		Meteor.defer(() => {

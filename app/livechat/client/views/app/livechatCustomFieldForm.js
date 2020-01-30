@@ -2,9 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from '../../../../utils';
-import { LivechatCustomField } from '../../collections/LivechatCustomField';
 import toastr from 'toastr';
+
+import { t, handleError } from '../../../../utils';
+import './livechatCustomFieldForm.html';
+import { APIClient } from '../../../../utils/client';
 
 Template.livechatCustomFieldForm.helpers({
 	customField() {
@@ -22,6 +24,7 @@ Template.livechatCustomFieldForm.events({
 		const label = instance.$('input[name=label]').val();
 		const scope = instance.$('select[name=scope]').val();
 		const visibility = instance.$('select[name=visibility]').val();
+		const regexp = instance.$('input[name=regexp]').val();
 
 		if (!/^[0-9a-zA-Z-_]+$/.test(field)) {
 			return toastr.error(t('error-invalid-custom-field-name'));
@@ -39,6 +42,7 @@ Template.livechatCustomFieldForm.events({
 			label,
 			scope: scope.trim(),
 			visibility: visibility.trim(),
+			regexp: regexp.trim(),
 		};
 
 		Meteor.call('livechat:saveCustomField', _id, customFieldData, function(error) {
@@ -58,15 +62,10 @@ Template.livechatCustomFieldForm.events({
 	},
 });
 
-Template.livechatCustomFieldForm.onCreated(function() {
+Template.livechatCustomFieldForm.onCreated(async function() {
 	this.customField = new ReactiveVar({});
-	this.autorun(() => {
-		const sub = this.subscribe('livechat:customFields', FlowRouter.getParam('_id'));
-		if (sub.ready()) {
-			const customField = LivechatCustomField.findOne({ _id: FlowRouter.getParam('_id') });
-			if (customField) {
-				this.customField.set(customField);
-			}
-		}
-	});
+	const { customField } = await APIClient.v1.get(`livechat/custom-fields/${ FlowRouter.getParam('_id') }`);
+	if (customField) {
+		this.customField.set(customField);
+	}
 });

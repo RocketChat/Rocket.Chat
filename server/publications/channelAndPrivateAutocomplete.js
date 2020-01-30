@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../app/authorization';
 import { Rooms } from '../../app/models';
 
 Meteor.publish('channelAndPrivateAutocomplete', function(selector) {
+	console.warn('The publication "channelAndPrivateAutocomplete" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

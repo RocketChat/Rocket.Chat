@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+
 import {
 	Base,
 	ProgressStep,
@@ -94,14 +95,14 @@ export class SlackUsersImporter extends Base {
 					}
 
 					Meteor.runAsUser(startedByUserId, () => {
-						const existantUser = Users.findOneByEmailAddress(u.email) || Users.findOneByUsername(u.username);
+						const existantUser = Users.findOneByEmailAddress(u.email) || Users.findOneByUsernameIgnoringCase(u.username);
 
 						let userId;
 						if (existantUser) {
 							// since we have an existing user, let's try a few things
 							userId = existantUser._id;
 							u.rocketId = existantUser._id;
-							Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
+							Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.user_id } });
 
 							Users.setEmail(existantUser._id, u.email);
 							Users.setEmailVerified(existantUser._id, u.email);
@@ -116,7 +117,7 @@ export class SlackUsersImporter extends Base {
 							Meteor.runAsUser(userId, () => {
 								Meteor.call('setUsername', u.username, { joinDefaultChannelsSilenced: true });
 								Users.setName(userId, u.name);
-								Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
+								Users.update({ _id: userId }, { $addToSet: { importIds: u.user_id } });
 								Users.setEmail(userId, u.email);
 								Users.setEmailVerified(userId, u.email);
 								u.rocketId = userId;

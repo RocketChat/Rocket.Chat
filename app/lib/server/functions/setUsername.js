@@ -1,11 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
+
 import { FileUpload } from '../../../file-upload';
 import { settings } from '../../../settings';
-import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from '../../../models';
+import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents, Invites } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
+import { Notifications } from '../../../notifications/server';
+import { addUserToRoom } from './addUserToRoom';
+
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
 export const _setUsername = function(userId, u) {
@@ -83,11 +87,26 @@ export const _setUsername = function(userId, u) {
 			fileStore.model.updateFileNameById(file._id, username);
 		}
 	}
+
+	// If it's the first username and the user has an invite Token, then join the invite room
+	if (!previousUsername && user.inviteToken) {
+		const inviteData = Invites.findOneById(user.inviteToken);
+		if (inviteData && inviteData.rid) {
+			addUserToRoom(inviteData.rid, user);
+		}
+	}
+
+	Notifications.notifyLogged('Users:NameChanged', {
+		_id: user._id,
+		name: user.name,
+		username: user.username,
+	});
+
 	return user;
 };
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
-	[0]() {
+	0() {
 		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
 	},
 });

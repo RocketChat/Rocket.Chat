@@ -1,6 +1,6 @@
 import { settings } from '../../../settings';
 import { Messages } from '../../../models';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
 const hideMessagesOfType = [];
 
@@ -41,7 +41,7 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 	} else {
 		records = Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
 	}
-	const messages = records.map((record) => composeMessageObjectWithUser(record, userId));
+	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
 

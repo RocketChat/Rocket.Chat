@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Importers } from '..';
+
 import { hasPermission } from '../../../authorization';
+
+import { Importers } from '..';
+
 
 Meteor.methods({
 	prepareImport(key, dataURI, contentType, fileName) {
@@ -27,8 +30,7 @@ Meteor.methods({
 
 		if (results instanceof Promise) {
 			return results.catch((e) => { throw new Meteor.Error(e); });
-		} else {
-			return results;
 		}
+		return results;
 	},
 });

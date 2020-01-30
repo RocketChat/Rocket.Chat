@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings';
 import { Users, Rooms } from '../../../models';
 import { sendMessage } from '../../../lib';
@@ -71,4 +72,4 @@ class ErrorHandler {
 	}
 }
 
-export default new ErrorHandler;
+export default new ErrorHandler();

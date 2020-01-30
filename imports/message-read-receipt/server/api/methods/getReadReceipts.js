@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Messages } from '../../../../../app/models';
 import { ReadReceipt } from '../../lib/ReadReceipt';
 

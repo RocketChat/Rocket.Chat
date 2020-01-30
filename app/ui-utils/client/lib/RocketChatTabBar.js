@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+
 import { TabBar } from './TabBar';
 
 export class RocketChatTabBar {

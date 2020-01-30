@@ -1,9 +1,8 @@
+import { ReadReceipt } from './lib/ReadReceipt';
 import { callbacks } from '../../../app/callbacks';
 import { Subscriptions } from '../../../app/models';
-import { ReadReceipt } from './lib/ReadReceipt';
 
 callbacks.add('afterSaveMessage', (message, room) => {
-
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -16,8 +15,8 @@ callbacks.add('afterSaveMessage', (message, room) => {
 
 	// mark message as read as well
 	ReadReceipt.markMessageAsReadBySender(message, room._id, message.u._id);
-});
+}, callbacks.priority.MEDIUM, 'message-read-receipt-afterSaveMessage');
 
 callbacks.add('afterReadMessages', (rid, { userId, lastSeen }) => {
 	ReadReceipt.markMessagesAsRead(rid, userId, lastSeen);
-});
+}, callbacks.priority.MEDIUM, 'message-read-receipt-afterReadMessages');

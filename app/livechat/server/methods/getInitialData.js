@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import _ from 'underscore';
+
+import { LivechatRooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -24,9 +25,11 @@ Meteor.methods({
 			videoCall: null,
 			fileUpload: null,
 			conversationFinishedMessage: null,
+			conversationFinishedText: null,
 			nameFieldRegistrationForm: null,
 			emailFieldRegistrationForm: null,
 			registrationFormMessage: null,
+			showConnecting: false,
 		};
 
 		const options = {
@@ -41,7 +44,7 @@ Meteor.methods({
 				departmentId: 1,
 			},
 		};
-		const room = (departmentId) ? Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
+		const room = departmentId ? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : LivechatRooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}
@@ -77,9 +80,11 @@ Meteor.methods({
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
 		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
+		info.conversationFinishedText = initSettings.Livechat_conversation_finished_text;
 		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
+		info.showConnecting = initSettings.Livechat_Show_Connecting;
 
 		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
 

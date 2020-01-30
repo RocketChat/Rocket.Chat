@@ -5,12 +5,15 @@ import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
+import { AutoTranslate } from '../../../autotranslate/client';
 
-export function messageContext() {
-	const { rid } = Template.instance();
+const fields = { name: 1, username: 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
+
+export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
+	const user = Users.findOne({ _id: uid }, { fields });
 	return {
-		u: Users.findOne({ _id: uid }, { fields: { name: 1, username: 1 } }),
+		u: user,
 		room: Rooms.findOne({ _id: rid }, {
 			reactive: false,
 			fields: {
@@ -22,13 +25,19 @@ export function messageContext() {
 			fields: {
 				name: 1,
 				autoTranslate: 1,
+				rid: 1,
 			},
 		}),
 		settings: {
+			translateLanguage: AutoTranslate.getLanguage(rid),
+			autoImageLoad: getUserPreference(user, 'autoImageLoad'),
+			saveMobileBandwidth: Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
+			collapseMediaByDefault: getUserPreference(user, 'collapseMediaByDefault'),
 			showreply: true,
 			showReplyButton: true,
 			hasPermissionDeleteMessage: hasPermission('delete-message', rid),
-			hideRoles: !settings.get('UI_DisplayRoles') || getUserPreference(uid, 'hideRoles'),
+			hasPermissionDeleteOwnMessage: hasPermission('delete-own-message'),
+			hideRoles: !settings.get('UI_DisplayRoles') || getUserPreference(user, 'hideRoles'),
 			UI_Use_Real_Name: settings.get('UI_Use_Real_Name'),
 			Chatops_Username: settings.get('Chatops_Username'),
 			AutoTranslate_Enabled: settings.get('AutoTranslate_Enabled'),
