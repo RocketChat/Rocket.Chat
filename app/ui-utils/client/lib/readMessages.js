@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
