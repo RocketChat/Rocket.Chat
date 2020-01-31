@@ -4,8 +4,8 @@ import { Session } from 'meteor/session';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { UserPresence } from 'meteor/konecty:user-presence';
 import toastr from 'toastr';
-import hljs from 'highlight.js';
 
+import hljs from '../../app/markdown/lib/hljs';
 import { fireGlobalEvent } from '../../app/ui-utils';
 import { getUserPreference } from '../../app/utils';
 import 'highlight.js/styles/github.css';
