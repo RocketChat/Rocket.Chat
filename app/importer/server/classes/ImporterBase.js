@@ -386,7 +386,7 @@ export class Base {
 					if (err) {
 						throw new Error(err);
 					} else {
-						const url = file.url.replace(Meteor.absoluteUrl(), '/');
+						const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
 						const attachment = {
 							title: file.name,
