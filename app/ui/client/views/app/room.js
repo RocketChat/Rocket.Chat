@@ -760,8 +760,8 @@ Template.room.events({
 		Session.set(`uploading-cancel-${ this.id }`, true);
 	},
 
-	'click .unread-bar > button.mark-read'() {
-		readMessage.readNow(true);
+	'click .unread-bar > button.mark-read'(e, t) {
+		readMessage.readNow(t.data._id);
 	},
 
 	'click .unread-bar > button.jump-to'(e, t) {
@@ -1274,9 +1274,13 @@ Template.room.onRendered(function() {
 		});
 	}, 300);
 
+	const read = _.debounce(function() {
+		readMessage.read(rid);
+	}, 500);
+
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
-		readMessage.read();
+		read();
 		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
 	});
 
@@ -1305,7 +1309,7 @@ Template.room.onRendered(function() {
 		Rooms.findOne(rid);
 		const count = this.state.get('count');
 		if (count === 0) {
-			return readMessage.read();
+			return read();
 		}
 		readMessage.refreshUnreadMark(rid);
 	});

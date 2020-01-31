@@ -461,14 +461,12 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				manager.remove(prl.getID())
-					.then(() => {
-						const info = prl.getInfo();
-						info.status = prl.getStatus();
+				Promise.await(manager.remove(prl.getID()));
 
-						API.v1.success({ app: info });
-					})
-					.catch((err) => API.v1.failure(err));
+				const info = prl.getInfo();
+				info.status = prl.getStatus();
+
+				return API.v1.success({ app: info });
 			},
 		});
 
