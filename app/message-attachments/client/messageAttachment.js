@@ -78,9 +78,9 @@ Template.messageAttachment.helpers({
 		if (
 			this.type === 'file'
 			&& this.title_link.endsWith('.pdf')
-			&& Template.parentData().msg.file
+			&& Template.parentData(2).msg.file
 		) {
-			this.fileId = Template.parentData().msg.file._id;
+			this.fileId = Template.parentData(2).msg.file._id;
 			return true;
 		}
 		return false;
