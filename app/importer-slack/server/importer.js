@@ -407,13 +407,11 @@ export class SlackImporter extends Base {
 
 				message.files.forEach((file) => {
 					fileIndex++;
-					if (file.url_private_download === undefined) {
-						return;
-					}
 					const msgObj = {
 						_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }-file${ fileIndex }`,
 						ts: msgDataDefaults.ts,
-						msg: file.url_private_download,
+						msg: file.url_private_download || '',
+						slackFile: file,
 					};
 					insertMessage(fileUser, msgObj, room, this._anyExistingSlackMessage);
 				});

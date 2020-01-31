@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { API } from '../api';
 import { hasPermission } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
+import { imageDownloader } from '../../../importer-slack/server/imageDownloader';
 
 API.v1.addRoute('uploadImportFile', { authRequired: true }, {
 	post() {
@@ -83,6 +84,21 @@ API.v1.addRoute('getLatestImportOperations', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => { result = Meteor.call('getLatestImportOperations'); });
 
 		return API.v1.success(result);
+	},
+});
+
+API.v1.addRoute('downloadSlackImages', { authRequired: true }, {
+	post() {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'downloadSlackImages' });
+		}
+
+		if (!hasPermission(this.userId, 'run-import')) {
+			throw new Meteor.Error('not_authorized');
+		}
+
+		imageDownloader();
+		return API.v1.success();
 	},
 });
 

@@ -45,6 +45,9 @@ Template.adminImportNew.helpers({
 	isImporterSelected() {
 		return Template.instance().importType.get();
 	},
+	isSlackSelected() {
+		return Template.instance().importType.get() === 'slack';
+	},
 	isFileTypeSelected() {
 		return Template.instance().fileType.get();
 	},

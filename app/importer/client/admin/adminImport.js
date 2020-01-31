@@ -55,11 +55,36 @@ Template.adminImport.helpers({
 
 		return ImportingStartedStates.includes(operation.status);
 	},
+
+	anySuccessfulSlackImports() {
+		const history = Template.instance().history.get();
+		if (!history) {
+			return false;
+		}
+
+		for (const op of history) {
+			if (op.importerKey === 'slack' && op.status === ProgressStep.DONE) {
+				return true;
+			}
+		}
+
+		return false;
+	},
 });
 
 Template.adminImport.events({
 	'click .new-import-btn'() {
 		FlowRouter.go('/admin/import/new');
+	},
+	'click .download-slack-images-btn'() {
+		APIClient.post('v1/downloadSlackImages').then(() => {
+			toastr.success(t('Image_Downloads_Started'));
+		}).catch((error) => {
+			if (error) {
+				console.error(error);
+				toastr.error(t('Failed_To_Download_Images'));
+			}
+		});
 	},
 	'click .prepare-btn'() {
 		FlowRouter.go('/admin/import/prepare');

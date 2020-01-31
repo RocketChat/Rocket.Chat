@@ -1146,6 +1146,16 @@ export class Messages extends Base {
 
 		return this.findOne(query, { sort: { ts: 1 } });
 	}
+
+	findAllSlackImportedMessagesWithFilesToDownload() {
+		const query = {
+			'slackFile.url_private_download': {
+				$exists: true,
+			},
+		};
+
+		return this.find(query);
+	}
 }
 
 export default new Messages();
