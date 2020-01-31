@@ -6,7 +6,7 @@ Meteor.methods({
 	getPasswordPolicy() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'comparePassword',
+				method: 'getPasswordPolicy',
 			});
 		}
 		return passwordPolicy.getPasswordPolicy();
