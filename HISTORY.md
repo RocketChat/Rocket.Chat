@@ -1,4 +1,25 @@
 
+# 2.4.6
+`2020-01-31  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Revert message properties validation ([#16395](https://github.com/RocketChat/Rocket.Chat/pull/16395))
+- Fix index creation for apps_logs collection ([#16401](https://github.com/RocketChat/Rocket.Chat/pull/16401))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@rodrigok](https://github.com/rodrigok)
+
 # 2.4.5
 `2020-01-29  ·  1 🐛 `
 
