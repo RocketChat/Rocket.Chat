@@ -37,6 +37,7 @@ const getFromServer = (cb, type) => {
 
 		const resultsFromServer = [];
 
+		const roomFilter = (room) => !resultsFromClient.find((item) => [item.rid, item._id].includes(room._id));
 		const userMap = (user) => ({
 			_id: user._id,
 			t: 'd',
@@ -45,22 +46,13 @@ const getFromServer = (cb, type) => {
 		});
 
 		resultsFromServer.push(...results.users.map(userMap));
+		resultsFromServer.push(...results.rooms.filter(roomFilter));
 
-		// if the first result is exactly the filter, moves it to the top.
-		// if (resultsFromServer[0] && resultsFromServer[0].name === currentFilter) {
-		// 	resultsFromClient.unshift(resultsFromServer.shift());
-		// }
-
-		resultsFromServer.push(...results.rooms.filter((room) => !resultsFromClient.find((item) => [item.rid, item._id].includes(room._id))));
-
-		// if (resultsFromServer[0].name === currentFilter) {
-		// 	resultsFromClient.unshift(resultsFromServer.shift());
-		// }
-
-		if (resultsFromServer.length) {
-			const combinedResults = resultsFromClient.concat(resultsFromServer);
-			if()
-			cb();
+		if (resultsFromServer.length || results.exactUser || results.exactRoom) {
+			const exactRoom = results.exactRoom ? [roomFilter(results.exactRoom)] : [];
+			const exactUser = results.exactUser ? [userMap(results.exactUser)] : [];
+			const combinedResults = exactUser.concat(exactRoom, resultsFromClient, resultsFromServer);
+			cb(combinedResults);
 		}
 	});
 };
