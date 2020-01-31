@@ -22,7 +22,6 @@ export const readMessage = new class extends EventEmitter {
 	constructor() {
 		super();
 		this.debug = false;
-		// this.read = this.readNow;
 		this.enable();
 	}
 
