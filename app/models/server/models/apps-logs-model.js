@@ -2,10 +2,9 @@ import { Base } from './_Base';
 
 export class AppsLogsModel extends Base {
 	constructor() {
-		super('apps_logs');
+		super('apps_logs', { _updatedAtIndexOptions: { expireAfterSeconds: 60 * 60 * 24 * 30 } });
 
 		this.tryEnsureIndex({ appId: 1 });
-		this.tryEnsureIndex({ _updatedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
 	}
 
 	// Bypass trash collection
