@@ -163,7 +163,8 @@
 }
 
 .rc-old .alert {
-	margin-bottom: 20px;
+	margin: 1rem 0;
+	padding: 0.5rem;
 
 	border-width: 1px;
 	border-radius: var(--border-radius);

@@ -1232,6 +1232,7 @@
   "error-archived-duplicate-name": "有一个名为 '__room_name__' 的已归档频道",
   "error-avatar-invalid-url": "无效的头像地址：__url__",
   "error-avatar-url-handling": "为用户 __username__ 从网址 (__url__) 处理头像时出错",
+  "error-cannot-delete-app-user": "不允许直接删除App用户”，请卸载相应的App以移除此用户。",
   "error-cant-invite-for-direct-room": "不能邀请用户进入私聊房间",
   "error-channels-setdefault-is-same": "频道的默认设置与更改的频道相同。",
   "error-channels-setdefault-missing-default-param": "bodyParam 'default' 是必需的",
