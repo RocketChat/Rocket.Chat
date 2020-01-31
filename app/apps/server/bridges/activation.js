@@ -20,7 +20,7 @@ export class AppActivationBridge {
 	}
 
 	async appStatusChanged(app, status) {
-		const { _id, username } = Users.findOneByAppId(app.getID());
+		const { _id, username } = Users.findOneByAppId(app.getID(), { fields: { username: 1 } });
 		const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? 'online' : 'offline';
 
 		Users.updateStatusById(_id, userStatus);
