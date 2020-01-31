@@ -2,26 +2,24 @@ import { Template } from 'meteor/templating';
 
 Template.oembedBaseWidget.helpers({
 	template() {
-		const { url } = this;
-
 		let contentType;
-		if (url.headers) {
-			contentType = url.headers.contentType;
+		if (this.headers) {
+			contentType = this.headers.contentType;
 		}
 
-		if (url._overrideTemplate) {
-			return url._overrideTemplate;
+		if (this._overrideTemplate) {
+			return this._overrideTemplate;
 		}
-		if (url.headers && contentType && contentType.match(/image\/.*/)) {
+		if (this.headers && contentType && contentType.match(/image\/.*/)) {
 			return 'oembedImageWidget';
 		}
-		if (url.headers && contentType && contentType.match(/audio\/.*/)) {
+		if (this.headers && contentType && contentType.match(/audio\/.*/)) {
 			return 'oembedAudioWidget';
 		}
-		if ((url.headers && contentType && contentType.match(/video\/.*/)) || (url.meta && url.meta.twitterPlayerStreamContentType && url.meta.twitterPlayerStreamContentType.match(/video\/.*/))) {
+		if ((this.headers && contentType && contentType.match(/video\/.*/)) || (this.meta && this.meta.twitterPlayerStreamContentType && this.meta.twitterPlayerStreamContentType.match(/video\/.*/))) {
 			return 'oembedVideoWidget';
 		}
-		if (url.meta && url.meta.oembedHtml) {
+		if (this.meta && this.meta.oembedHtml) {
 			return 'oembedFrameWidget';
 		}
 		return 'oembedUrlWidget';
