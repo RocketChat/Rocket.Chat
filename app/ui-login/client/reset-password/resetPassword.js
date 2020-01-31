@@ -84,13 +84,6 @@ Template.resetPassword.events({
 		i.state.set('loading', true);
 
 		try {
-			const user = Meteor.user();
-			if (user && user.requirePasswordChange) {
-				const res = await call('comparePassword', password);
-				if (!res) {
-					return toastr.error(t('Provided_password_same_as_current_password'));
-				}
-			}
 			if (Meteor.userId() && !token) {
 				return setUserPassword(password);
 			}
