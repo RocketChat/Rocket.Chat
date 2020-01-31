@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 class PasswordPolicy {
 	constructor({
@@ -88,41 +87,6 @@ class PasswordPolicy {
 		}
 
 		return true;
-	}
-
-	getPasswordPolicy() {
-		const data = {
-			enabled: false,
-			policy: [],
-		};
-		if (this.enabled) {
-			data.enabled = true;
-			if (this.minLength >= 1) {
-				data.policy.push(TAPi18n.__('get-password-policy-minLength', { minLength: this.minLength }));
-			}
-			if (this.maxLength >= 1) {
-				data.policy.push(TAPi18n.__('get-password-policy-maxLength', { maxLength: this.maxLength }));
-			}
-			if (this.forbidRepeatingCharacters) {
-				data.policy.push(TAPi18n.__('get-password-policy-forbidRepeatingCharacters'));
-			}
-			if (this.forbidRepeatingCharactersCount) {
-				data.policy.push(TAPi18n.__('get-password-policy-forbidRepeatingCharactersCount', { forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount }));
-			}
-			if (this.mustContainAtLeastOneLowercase) {
-				data.policy.push(TAPi18n.__('get-password-policy-mustContainAtLeastOneLowercase'));
-			}
-			if (this.mustContainAtLeastOneUppercase) {
-				data.policy.push(TAPi18n.__('get-password-policy-mustContainAtLeastOneUppercase'));
-			}
-			if (this.mustContainAtLeastOneNumber) {
-				data.policy.push(TAPi18n.__('get-password-policy-mustContainAtLeastOneNumber'));
-			}
-			if (this.mustContainAtLeastOneSpecialCharacter) {
-				data.policy.push(TAPi18n.__('get-password-policy-mustContainAtLeastOneSpecialCharacter'));
-			}
-		}
-		return data;
 	}
 }
 
