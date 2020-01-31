@@ -55,7 +55,7 @@ export class SlackImporter extends Base {
 
 		zip.forEach((entry) => {
 			try {
-				if (entry.entryName.indexOf('__MACOSX') > -1) {
+				if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
 					return this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
 				}
 
