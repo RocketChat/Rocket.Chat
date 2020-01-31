@@ -1,5 +1,5 @@
 import { STATUS_MAP } from '../../../../imports/users-presence/server/activeUsers';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
 
 export class AppActivationBridge {
