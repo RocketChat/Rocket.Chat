@@ -464,14 +464,6 @@ export class CsvImporter extends Base {
 		});
 	}
 
-	getSelection() {
-		const selectionUsers = this.users.users.map((u) => new SelectionUser(u.id, u.username, u.email, false, false, true));
-		const selectionChannels = this.channels.channels.map((c) => new SelectionChannel(c.id, c.name, false, true, c.isPrivate));
-		const selectionMessages = this.importRecord.count.messages;
-
-		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
-	}
-
 	getChannelFromName(channelName) {
 		if (channelName.toLowerCase() === 'directmessages') {
 			return this.getDirectMessagesChannel();

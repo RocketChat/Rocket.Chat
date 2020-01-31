@@ -13,7 +13,6 @@ import './methods/uploadImportFile';
 import './methods/downloadPublicImportFile';
 import './methods/getLatestImportOperations';
 import './methods/getImportFileData';
-import './methods/getSelectionData';
 import './methods/startImport';
 import './methods/getImportProgress';
 

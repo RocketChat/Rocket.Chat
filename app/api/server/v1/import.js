@@ -67,17 +67,6 @@ API.v1.addRoute('getImportProgress', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('getSelectionData', { authRequired: true }, {
-	get() {
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getSelectionData');
-		});
-
-		return API.v1.success(result);
-	},
-});
-
 API.v1.addRoute('getLatestImportOperations', { authRequired: true }, {
 	get() {
 		let result;

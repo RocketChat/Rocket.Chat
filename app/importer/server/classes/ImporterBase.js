@@ -87,7 +87,6 @@ export class Base {
 
 		this.prepare = this.prepare.bind(this);
 		this.startImport = this.startImport.bind(this);
-		this.getSelection = this.getSelection.bind(this);
 		this.getProgress = this.getProgress.bind(this);
 		this.updateProgress = this.updateProgress.bind(this);
 		this.addCountToTotal = this.addCountToTotal.bind(this);
@@ -198,15 +197,6 @@ export class Base {
 		}
 
 		return this.updateProgress(ProgressStep.IMPORTING_STARTED);
-	}
-
-	/**
-	 * Gets the Selection object for the import.
-	 *
-	 * @returns {Selection} The users and channels selection
-	 */
-	getSelection() {
-		throw new Error(`Invalid 'getSelection' called on ${ this.info.name }, it must be overridden and super can not be called.`);
 	}
 
 	/**

@@ -1281,26 +1281,6 @@ export class HipChatEnterpriseImporter extends Base {
 		});
 	}
 
-	getSelection() {
-		const tempUsers = this.collection.findOne({
-			import: this.importRecord._id,
-			importer: this.name,
-			type: 'users',
-		});
-
-		const tempChannels = this.collection.findOne({
-			import: this.importRecord._id,
-			importer: this.name,
-			type: 'channels',
-		});
-
-		const selectionUsers = tempUsers.users.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
-		const selectionChannels = tempChannels.channels.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
-		const selectionMessages = this.importRecord.count.messages;
-
-		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
-	}
-
 	_getBasicUserData(userId) {
 		if (this._userDataCache[userId]) {
 			return this._userDataCache[userId];

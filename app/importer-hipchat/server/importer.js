@@ -372,14 +372,4 @@ export class HipChatImporter extends Base {
 		}
 		return message;
 	}
-
-	getSelection() {
-		const selectionUsers = this.users.users.map(function(user) {
-			return new SelectionUser(user.user_id, user.name, user.email, user.is_deleted, false, !user.is_bot);
-		});
-		const selectionChannels = this.channels.channels.map(function(room) {
-			return new SelectionChannel(room.room_id, room.name, room.is_archived, true, false);
-		});
-		return new Selection(this.name, selectionUsers, selectionChannels, this.importRecord.count.messages);
-	}
 }
