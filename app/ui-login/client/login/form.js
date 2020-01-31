@@ -140,14 +140,18 @@ Template.loginForm.events({
 			return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
 				instance.loading.set(false);
 				if (error != null) {
-					if (error.error === 'error-invalid-email') {
-						instance.typedEmail = formData.emailOrUsername;
-						return instance.state.set('email-verification');
-					}
 					if (error.error === 'error-user-is-not-activated') {
 						return toastr.error(t('Wait_activation_warning'));
+					} if (error.error === 'error-invalid-email') {
+						instance.typedEmail = formData.emailOrUsername;
+						return instance.state.set('email-verification');
+					} if (error.error === 'error-user-is-not-activated') {
+						toastr.error(t('Wait_activation_warning'));
+					} else if (error.error === 'error-app-user-is-not-allowed-to-login') {
+						toastr.error(t('App_user_not_allowed_to_login'));
+					} else {
+						return toastr.error(t('User_not_found_or_incorrect_password'));
 					}
-					return toastr.error(t('User_not_found_or_incorrect_password'));
 				}
 				Session.set('forceLogin', false);
 			});

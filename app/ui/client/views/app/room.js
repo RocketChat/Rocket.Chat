@@ -296,27 +296,8 @@ Template.room.helpers({
 
 	messagesHistory() {
 		const { rid } = Template.instance();
-		const hideMessagesOfType = [];
-		settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
-			let types;
-			const type = record._id.replace('Message_HideType_', '');
-			switch (type) {
-				case 'mute_unmute':
-					types = ['user-muted', 'user-unmuted'];
-					break;
-				default:
-					types = [type];
-			}
-			return types.forEach(function(type) {
-				const index = hideMessagesOfType.indexOf(type);
-
-				if ((record.value === true) && (index === -1)) {
-					hideMessagesOfType.push(type);
-				} else if (index > -1) {
-					hideMessagesOfType.splice(index, 1);
-				}
-			});
-		});
+		const { value: settingValues = [] } = settings.collection.findOne('Hide_System_Messages') || {};
+		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
 
 		const modes = ['', 'cozy', 'compact'];
 		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
@@ -326,8 +307,8 @@ Template.room.helpers({
 			...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
 		};
 
-		if (hideMessagesOfType.length > 0) {
-			query.t =				{ $nin: hideMessagesOfType };
+		if (hideMessagesOfType.size) {
+			query.t = { $nin: Array.from(hideMessagesOfType.values()) };
 		}
 
 		const options = {
