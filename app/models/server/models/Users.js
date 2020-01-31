@@ -7,12 +7,30 @@ import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
+const queryStatusAgentOnline = (extraFilters = {}) => {
+	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
+		extraFilters = Object.assign(extraFilters, { statusConnection: { $ne: 'away' } });
+	}
+
+	const query = {
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		statusLivechat: 'available',
+		roles: 'livechat-agent',
+		...extraFilters,
+	};
+
+	return query;
+};
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
 		this.tryEnsureIndex({ statusText: 1 });
@@ -74,42 +92,44 @@ export class Users extends Base {
 	}
 
 	findOnlineAgents() {
+		const query = queryStatusAgentOnline();
+
+		return this.find(query);
+	}
+
+	findBotAgents(usernameList) {
 		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
+			roles: {
+				$all: ['bot', 'livechat-agent'],
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
+			...usernameList && {
+				username: {
+					$in: [].concat(usernameList),
+				},
+			},
 		};
 
 		return this.find(query);
 	}
 
-	findOneOnlineAgentByUsername(username) {
+	findOneBotAgent() {
 		const query = {
-			username,
-			status: {
-				$exists: true,
-				$ne: 'offline',
+			roles: {
+				$all: ['bot', 'livechat-agent'],
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
 		};
 
 		return this.findOne(query);
 	}
 
+	findOneOnlineAgentByUsername(username) {
+		const query = queryStatusAgentOnline({ username });
+
+		return this.findOne(query);
+	}
+
 	findOneOnlineAgentById(_id) {
-		const query = {
-			_id,
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-		};
+		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
 	}
@@ -123,29 +143,47 @@ export class Users extends Base {
 	}
 
 	findOnlineUserFromList(userList) {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
-			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
-			username: {
-				$in: [].concat(userList),
-			},
+		const username = {
+			$in: [].concat(userList),
 		};
+
+		const query = queryStatusAgentOnline({ username });
 
 		return this.find(query);
 	}
 
 	getNextAgent() {
-		const query = {
-			status: {
-				$exists: true,
-				$ne: 'offline',
+		const query = queryStatusAgentOnline();
+
+		const collectionObj = this.model.rawCollection();
+		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+
+		const sort = {
+			livechatCount: 1,
+			username: 1,
+		};
+
+		const update = {
+			$inc: {
+				livechatCount: 1,
 			},
-			statusLivechat: 'available',
-			roles: 'livechat-agent',
+		};
+
+		const user = findAndModify(query, sort, update);
+		if (user && user.value) {
+			return {
+				agentId: user.value._id,
+				username: user.value.username,
+			};
+		}
+		return null;
+	}
+
+	getNextBotAgent() {
+		const query = {
+			roles: {
+				$all: ['bot', 'livechat-agent'],
+			},
 		};
 
 		const collectionObj = this.model.rawCollection();
@@ -200,6 +238,20 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
+	setLivechatData(userId, data = {}) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				livechat: data,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	closeOffice() {
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'not-available'));
 	}
@@ -220,6 +272,7 @@ export class Users extends Base {
 				phone: 1,
 				customFields: 1,
 				status: 1,
+				livechat: 1,
 			},
 		};
 
@@ -258,7 +311,7 @@ export class Users extends Base {
 		return { _id: userId };
 	}
 
-	setE2EPublicAndPivateKeysByUserId(userId, { public_key, private_key }) {
+	setE2EPublicAndPrivateKeysByUserId(userId, { public_key, private_key }) {
 		this.update({ _id: userId }, {
 			$set: {
 				'e2e.public_key': public_key,
@@ -488,11 +541,16 @@ export class Users extends Base {
 	}
 
 	findActive(options = {}) {
-		return this.find({ active: true }, options);
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+			emails: { $exists: true },
+		}, options);
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
 		if (exceptions == null) { exceptions = []; }
+		if (conditions == null) { conditions = {}; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
 			exceptions = [exceptions];
@@ -518,6 +576,7 @@ export class Users extends Base {
 					$nin: exceptions,
 				},
 			}],
+			...conditions,
 		};
 
 		return this.find(query, options);
@@ -528,6 +587,21 @@ export class Users extends Base {
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
 			exceptions = [exceptions];
+		}
+
+		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+		if (searchTerm === '') {
+			const query = {
+				$and: [
+					{
+						active: true,
+						username: { $exists: true, $nin: exceptions },
+					},
+					...extraQuery,
+				],
+			};
+
+			return this._db.find(query, options);
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
@@ -703,6 +777,15 @@ export class Users extends Base {
 		return this.find({ active: true, isRemote: true }, options);
 	}
 
+	getSAMLByIdAndSAMLProvider(_id, provider) {
+		return this.findOne({
+			_id,
+			'services.saml.provider': provider,
+		}, {
+			'services.saml': 1,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -718,6 +801,16 @@ export class Users extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	updateInviteToken(_id, inviteToken) {
+		const update = {
+			$set: {
+				inviteToken,
+			},
+		};
+
+		return this.update(_id, update);
 	}
 
 	updateStatusText(_id, statusText) {
@@ -929,7 +1022,7 @@ export class Users extends Base {
 	setPreferences(_id, preferences) {
 		const settingsObject = Object.assign(
 			{},
-			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] }))
+			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] })),
 		);
 
 		const update = {
@@ -1110,6 +1203,20 @@ export class Users extends Base {
 	// REMOVE
 	removeById(_id) {
 		return this.remove(_id);
+	}
+
+	removeLivechatData(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$unset: {
+				livechat: true,
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	/*

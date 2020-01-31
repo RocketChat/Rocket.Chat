@@ -4,14 +4,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../../models';
-import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import { call } from '../../../../ui-utils/client';
 import './livechatReadOnly.html';
+import { APIClient } from '../../../../utils/client';
+import { inquiryDataStream } from '../../lib/stream/inquiry';
 
 Template.livechatReadOnly.helpers({
 	inquiryOpen() {
 		const inquiry = Template.instance().inquiry.get();
-		return inquiry || FlowRouter.go('/home');
+		return (inquiry && inquiry.status === 'queued') || FlowRouter.go('/home');
 	},
 
 	roomOpen() {
@@ -24,6 +25,9 @@ Template.livechatReadOnly.helpers({
 		return config.previewRoom;
 	},
 
+	isPreparing() {
+		return Template.instance().preparing.get();
+	},
 });
 
 Template.livechatReadOnly.events({
@@ -34,6 +38,7 @@ Template.livechatReadOnly.events({
 		const inquiry = instance.inquiry.get();
 		const { _id } = inquiry;
 		await call('livechat:takeInquiry', _id);
+		instance.loadInquiry(inquiry.rid);
 	},
 });
 
@@ -42,6 +47,13 @@ Template.livechatReadOnly.onCreated(function() {
 	this.room = new ReactiveVar();
 	this.inquiry = new ReactiveVar();
 	this.routingConfig = new ReactiveVar({});
+	this.preparing = new ReactiveVar(true);
+
+	this.updateInquiry = (inquiry) => {
+		if (inquiry && inquiry.rid === this.rid) {
+			this.inquiry.set(inquiry);
+		}
+	};
 
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {
 		if (config) {
@@ -49,16 +61,25 @@ Template.livechatReadOnly.onCreated(function() {
 		}
 	});
 
-	this.autorun(() => {
-		const inquiry = LivechatInquiry.findOne({ status: 'queued', rid: this.rid });
+	this.loadInquiry = async (roomId) => {
+		this.preparing.set(true);
+		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${ roomId }`);
 		this.inquiry.set(inquiry);
-
-		if (inquiry) {
-			this.subscribe('livechat:inquiry', inquiry._id);
+		if (inquiry && inquiry._id) {
+			inquiryDataStream.on(inquiry._id, this.updateInquiry);
 		}
-	});
+		this.preparing.set(false);
+	};
 
+	this.autorun(() => this.loadInquiry(this.rid));
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().rid }, { fields: { open: 1 } }));
 	});
+});
+
+Template.livechatReadOnly.onDestroyed(function() {
+	const inquiry = this.inquiry.get();
+	if (inquiry && inquiry._id) {
+		inquiryDataStream.removeListener(inquiry._id, this.updateInquiry);
+	}
 });

@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Messages } from '../../../models/server';
 
 Meteor.publish('discussionsOfRoom', function(rid, limit = 50) {
+	console.warn('The publication "discussionsOfRoom" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

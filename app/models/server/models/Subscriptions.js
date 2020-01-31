@@ -644,6 +644,9 @@ export class Subscriptions extends Base {
 	getMinimumLastSeenByRoomId(rid) {
 		return this.db.findOne({
 			rid,
+			ls: {
+				$exists: true,
+			},
 		}, {
 			sort: {
 				ls: 1,

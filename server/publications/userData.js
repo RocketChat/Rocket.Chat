@@ -4,6 +4,7 @@ import { Users } from '../../app/models';
 import { getDefaultUserFields } from '../../app/utils/server/functions/getDefaultUserFields';
 
 Meteor.publish('userData', function() {
+	console.warn('The publication "userData" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

@@ -14,7 +14,7 @@ export class WebdavStore extends UploadFS.Store {
 	constructor(options) {
 		super(options);
 		const { server, username, password } = options.connection.credentials;
-		const client = new WebdavClientAdapter(server, username, password);
+		const client = new WebdavClientAdapter(server, { username, password });
 
 		options.getPath = function(file) {
 			if (options.uploadFolderPath[options.uploadFolderPath.length - 1] !== '/') {

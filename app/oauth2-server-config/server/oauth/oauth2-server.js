@@ -47,6 +47,7 @@ oauth2server.routes.get('/oauth/userinfo', function(req, res) {
 });
 
 Meteor.publish('oauthClient', function(clientId) {
+	console.warn('The publication "oauthClient" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

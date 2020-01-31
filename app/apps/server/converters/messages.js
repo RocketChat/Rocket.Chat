@@ -21,6 +21,7 @@ export class AppMessagesConverter {
 
 		const map = {
 			id: '_id',
+			threadId: 'tmid',
 			reactions: 'reactions',
 			parseUrls: 'parseUrls',
 			text: 'msg',
@@ -118,6 +119,7 @@ export class AppMessagesConverter {
 
 		const newMessage = {
 			_id: message.id || Random.id(),
+			tmid: message.threadId,
 			rid: room._id,
 			u,
 			msg: message.text,
@@ -133,6 +135,7 @@ export class AppMessagesConverter {
 			attachments,
 			reactions: message.reactions,
 			parseUrls: message.parseUrls,
+			token: message.token,
 		};
 
 		return Object.assign(newMessage, message._unmappedProperties_);

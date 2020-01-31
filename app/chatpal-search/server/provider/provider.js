@@ -315,7 +315,7 @@ class ChatpalProvider extends SearchProvider {
 			payload.start || 0,
 			payload.rows || this._settings.get('PageSize'),
 			callback,
-			params
+			params,
 		);
 	}
 
@@ -332,7 +332,7 @@ class ChatpalProvider extends SearchProvider {
 			this._settings.get('Main_Language'),
 			this._getAcl(context),
 			type,
-			callback
+			callback,
 		);
 	}
 }

@@ -9,8 +9,7 @@ import { createLivechatSubscription,
 	removeAgentFromSubscription,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Users } from '../../../models/server';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
 
 export const RoutingManager = {
 	methodName: null,
@@ -35,19 +34,28 @@ export const RoutingManager = {
 		return this.getMethod().config || {};
 	},
 
+	async getNextAgent(department) {
+		let agent = callbacks.run('livechat.beforeGetNextAgent', department);
+
+		if (!agent) {
+			agent = await this.getMethod().getNextAgent(department);
+		}
+
+		return agent;
+	},
+
 	async delegateInquiry(inquiry, agent) {
 		// return Room Object
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
-			agent = await this.getMethod().getNextAgent(department);
+			agent = await this.getNextAgent(department);
 		}
 
 		if (!agent) {
 			return LivechatRooms.findOneById(rid);
 		}
 
-		const room = this.takeInquiry(inquiry, agent);
-		return room;
+		return this.takeInquiry(inquiry, agent);
 	},
 
 	assignAgent(inquiry, agent) {
@@ -121,7 +129,7 @@ export const RoutingManager = {
 
 		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
 		if (!agent) {
-			return room;
+			return null;
 		}
 
 		LivechatInquiry.takeInquiry(_id);
@@ -133,13 +141,12 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		const { userId, departmentId } = transferData;
-		if (userId) {
-			return forwardRoomToAgent(room, userId);
+		if (transferData.userId) {
+			return forwardRoomToAgent(room, transferData);
 		}
 
-		if (departmentId) {
-			return forwardRoomToDepartment(room, guest, departmentId);
+		if (transferData.departmentId) {
+			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
 		return false;

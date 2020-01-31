@@ -4,11 +4,10 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 
 import { RocketChatImportFileInstance } from '../startup/store';
-
-import { Importers } from '..';
-
 import { hasRole } from '../../../authorization';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
+
+import { Importers } from '..';
 
 Meteor.methods({
 	getImportFileData(importerKey) {

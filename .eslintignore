@@ -7,7 +7,6 @@ app/favico/favico.js
 app/katex/client/katex/katex.min.js
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js
-app/theme/client/minicolors/jquery.minicolors.js
 app/theme/client/vendor/
 app/ui/client/lib/customEventPolyfill.js
 app/ui/client/lib/Modernizr.js
@@ -20,3 +19,4 @@ public/livechat/
 !.scripts
 public/pdf.worker.min.js
 imports/client/
+!/.storybook/

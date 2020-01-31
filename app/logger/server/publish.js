@@ -6,7 +6,7 @@ import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
 
 import { settings } from '../../settings';
-import { hasPermission } from '../../authorization';
+import { hasPermission } from '../../authorization/server';
 
 export const processString = function(string, date) {
 	let obj;
@@ -42,35 +42,48 @@ export const StdOut = new class extends EventEmitter {
 			};
 			this.queue.push(item);
 
-			if (typeof settings !== 'undefined') {
-				const limit = settings.get('Log_View_Limit');
-				if (limit && this.queue.length > limit) {
-					this.queue.shift();
-				}
+			const limit = settings.get('Log_View_Limit') || 1000;
+			if (limit && this.queue.length > limit) {
+				this.queue.shift();
 			}
+
 			this.emit('write', string, item);
 		};
 	}
 }();
 
+const stdoutStreamer = new Meteor.Streamer('stdout');
+stdoutStreamer.allowWrite('none');
+stdoutStreamer.allowRead(function() {
+	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
+});
+
+Meteor.startup(() => {
+	const handler = (string, item) => {
+		stdoutStreamer.emit('stdout', {
+			...item,
+		});
+	};
+	StdOut.on('write', handler);
+});
 
 Meteor.publish('stdout', function() {
+	console.warn('The publication "stdout" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId || hasPermission(this.userId, 'view-logs') !== true) {
 		return this.ready();
 	}
-
-	StdOut.queue.forEach((item) => {
+	const handler = (string, item) => {
 		this.added('stdout', item.id, {
 			string: item.string,
 			ts: item.ts,
 		});
-	});
+	};
+
+	StdOut.queue.forEach((item) => handler('', item));
 
 	this.ready();
-	StdOut.on('write', (string, item) => {
-		this.added('stdout', item.id, {
-			string: item.string,
-			ts: item.ts,
-		});
-	});
+
+	this.onStop(() => StdOut.removeListener('write', handler));
+
+	StdOut.on('write', handler);
 });

@@ -68,6 +68,36 @@ export class LivechatDepartment extends Base {
 		return _.extend(record, { _id });
 	}
 
+	saveDepartmentsByAgent(agent, departments = []) {
+		const { _id: agentId, username } = agent;
+		const savedDepartments = LivechatDepartmentAgents.findByAgentId(agentId).fetch().map((d) => d.departmentId);
+
+		const incNumAgents = (_id, numAgents) => this.update(_id, { $inc: { numAgents } });
+		// remove other departments
+		_.difference(savedDepartments, departments).forEach((departmentId) => {
+			LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
+			incNumAgents(departmentId, -1);
+		});
+
+		departments.forEach((departmentId) => {
+			const saveResult = LivechatDepartmentAgents.saveAgent({
+				agentId,
+				departmentId,
+				username,
+				count: 0,
+				order: 0,
+			});
+
+			if (saveResult.insertedId) {
+				incNumAgents(departmentId, 1);
+			}
+		});
+	}
+
+	updateById(_id, update) {
+		return this.update({ _id }, update);
+	}
+
 	// REMOVE
 	removeById(_id) {
 		const query = { _id };

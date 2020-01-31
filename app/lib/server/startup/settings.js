@@ -183,6 +183,19 @@ settings.addGroup('Accounts', function() {
 			type: 'string',
 			secret: true,
 		});
+		this.add('Accounts_Registration_InviteUrlType', 'proxy', {
+			type: 'select',
+			values: [
+				{
+					key: 'direct',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Direct',
+				}, {
+					key: 'proxy',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Proxy',
+				},
+			],
+		});
+
 		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
 			type: 'string',
 			public: true,
@@ -224,6 +237,12 @@ settings.addGroup('Accounts', function() {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notification_Duration',
+		});
+		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Notification_RequireInteraction',
+			i18nDescription: 'Notification_RequireInteraction_Description',
 		});
 		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
 			type: 'select',
@@ -356,7 +375,7 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars',
+			i18nLabel: 'Hide_Avatars_Sidebar',
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
@@ -420,11 +439,6 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 			i18nLabel: 'Email_Notification_Mode',
-		});
-		this.add('Accounts_Default_User_Preferences_roomCounterSidebar', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Show_room_counter_on_sidebar',
 		});
 		this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
 			type: 'select',
@@ -718,6 +732,7 @@ settings.addGroup('General', function() {
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
+		readonly: true,
 		values: [
 			{
 				key: 'pending',
@@ -759,6 +774,18 @@ settings.addGroup('General', function() {
 	this.add('Allow_Invalid_SelfSigned_Certs', false, {
 		type: 'boolean',
 		secret: true,
+	});
+	this.add('Iframe_Restrict_Access', true, {
+		type: 'boolean',
+		secret: true,
+	});
+	this.add('Iframe_X_Frame_Options', 'sameorigin', {
+		type: 'string',
+		secret: true,
+		enableQuery: {
+			_id: 'Iframe_Restrict_Access',
+			value: true,
+		},
 	});
 	this.add('Favorite_Rooms', true, {
 		type: 'boolean',
@@ -1066,27 +1093,55 @@ settings.addGroup('Message', function() {
 		type: 'int',
 		public: true,
 	});
-	this.add('Message_HideType_uj', false, {
-		type: 'boolean',
+
+
+	this.add('Hide_System_Messages', [], {
+		type: 'multiSelect',
 		public: true,
-	});
-	this.add('Message_HideType_ul', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_ru', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_au', false, {
-		type: 'boolean',
-		public: true,
+		values: [
+			{
+				key: 'uj',
+				i18nLabel: 'Message_HideType_uj',
+			}, {
+				key: 'ul',
+				i18nLabel: 'Message_HideType_ul',
+			}, {
+				key: 'ru',
+				i18nLabel: 'Message_HideType_ru',
+			}, {
+				key: 'au',
+				i18nLabel: 'Message_HideType_au',
+			}, {
+				key: 'mute_unmute',
+				i18nLabel: 'Message_HideType_mute_unmute',
+			}, {
+				key: 'r',
+				i18nLabel: 'Message_HideType_r',
+			}, {
+				key: 'ut',
+				i18nLabel: 'Message_HideType_ut',
+			}, {
+				key: 'wm',
+				i18nLabel: 'Message_HideType_wm',
+			}, {
+				key: 'rm',
+				i18nLabel: 'Message_HideType_rm',
+			}, {
+				key: 'subscription_role_added',
+				i18nLabel: 'Message_HideType_subscription_role_added',
+			}, {
+				key: 'subscription_role_removed',
+				i18nLabel: 'Message_HideType_subscription_role_removed',
+			}, {
+				key: 'room_archived',
+				i18nLabel: 'Message_HideType_room_archived',
+			}, {
+				key: 'room_unarchived',
+				i18nLabel: 'Message_HideType_room_unarchived',
+			},
+		],
 	});
 
-	this.add('Message_HideType_mute_unmute', false, {
-		type: 'boolean',
-		public: true,
-	});
 
 	this.add('Message_ErasureType', 'Delete', {
 		type: 'select',
@@ -1140,6 +1195,24 @@ settings.addGroup('Push', function() {
 	});
 	this.add('Push_debug', false, {
 		type: 'boolean',
+		public: true,
+		alert: 'Push_Setting_Requires_Restart_Alert',
+		enableQuery: {
+			_id: 'Push_enable',
+			value: true,
+		},
+	});
+	this.add('Push_send_interval', 5000, {
+		type: 'int',
+		public: true,
+		alert: 'Push_Setting_Requires_Restart_Alert',
+		enableQuery: {
+			_id: 'Push_enable',
+			value: true,
+		},
+	});
+	this.add('Push_send_batch_size', 10, {
+		type: 'int',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
 		enableQuery: {
@@ -1337,6 +1410,10 @@ settings.addGroup('Layout', function() {
 			public: true,
 		});
 		this.add('UI_Allow_room_names_with_special_chars', false, {
+			type: 'boolean',
+			public: true,
+		});
+		return this.add('UI_Show_top_navbar_embedded_layout', false, {
 			type: 'boolean',
 			public: true,
 		});
@@ -2607,6 +2684,10 @@ settings.addGroup('Setup_Wizard', function() {
 				value: true,
 			},
 			secret: true,
+		});
+
+		this.add('Cloud_Service_Agree_PrivacyTerms', false, {
+			type: 'boolean',
 		});
 
 		this.add('Cloud_Workspace_Id', '', {

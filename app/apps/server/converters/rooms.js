@@ -169,7 +169,7 @@ export class AppRoomsConverter {
 
 				delete room.departmentId;
 
-				return this.orch.getConverters().get('departments').convertById(room.departmentId);
+				return this.orch.getConverters().get('departments').convertById(departmentId);
 			},
 			servedBy: (room) => {
 				const { servedBy } = room;
