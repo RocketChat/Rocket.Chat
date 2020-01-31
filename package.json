@@ -192,7 +192,6 @@
 		"moment-timezone": "^0.5.27",
 		"node-dogstatsd": "^0.0.7",
 		"node-rsa": "^1.0.5",
-		"npm": "^6.13.4",
 		"object-path": "^0.11.4",
 		"pdfjs-dist": "^2.0.943",
 		"photoswipe": "^4.1.3",
