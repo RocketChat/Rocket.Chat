@@ -485,7 +485,7 @@ export class SlackImporter extends Base {
 	}
 
 	_importChannels(startedByUserId, channelNames) {
-		if (!this.channels || this.channels.channels) {
+		if (!this.channels || !this.channels.channels) {
 			return;
 		}
 
