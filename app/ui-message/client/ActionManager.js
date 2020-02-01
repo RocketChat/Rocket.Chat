@@ -53,8 +53,19 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return;
 	}
 
+	if (['errors'].includes(type)) {
+		return events.emit(viewId, {
+			type,
+			triggerId,
+			viewId,
+			appId,
+			...data,
+		});
+	}
+
 	if ([UIKitInteractionType.MODAL_UPDATE].includes(type)) {
 		return events.emit(viewId, {
+			type,
 			triggerId,
 			viewId,
 			appId,
@@ -63,7 +74,6 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	}
 
 	if ([UIKitInteractionType.MODAL_OPEN].includes(type)) {
-		console.log(data);
 		const instance = modal.push({
 			template: 'ModalBlock',
 			modifier: 'uikit',
