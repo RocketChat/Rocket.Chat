@@ -50,96 +50,105 @@ export class SlackImageImporter extends Base {
 		const imageCount = slackFileMessageList && slackFileMessageList.count();
 
 		if (!imageCount) {
-			super.updateProgress(ProgressStep.ERROR);
-			throw new Meteor.Error('error-no-images-found', 'Slack Image Importer: No pending images found.', { step: 'startImport' });
+			super.updateProgress(ProgressStep.DONE);
+			return this.getProgress();
 		}
 
 		const downloadedFileIds = [];
+		try {
+			slackFileMessageList.forEach((message) => {
+				try {
+					const { slackFile } = message;
+					if (!slackFile || slackFile.rocketChatUrl || downloadedFileIds.includes(slackFile.id)) {
+						this.addCountCompleted(1);
+						return;
+					}
 
-		slackFileMessageList.forEach((message) => {
-			try {
-				const { slackFile } = message;
-				if (!slackFile || slackFile.rocketChatUrl || downloadedFileIds.includes(slackFile.id)) {
-					this.addCountCompleted(1);
-					return;
-				}
+					const url = slackFile.url_private_download;
+					if (!url || !url.startsWith('http')) {
+						this.addCountCompleted(1);
+						return;
+					}
 
-				const url = slackFile.url_private_download;
-				if (!url || !url.startsWith('http')) {
-					this.addCountCompleted(1);
-					return;
-				}
+					const details = {
+						message_id: `${ message._id }-file-${ slackFile.id }`,
+						name: slackFile.name || Random.id(),
+						size: slackFile.size || 0,
+						userId: message.u._id,
+						rid: message.rid,
+					};
 
-				const details = {
-					message_id: `${ message._id }-file-${ slackFile.id }`,
-					name: slackFile.name || Random.id(),
-					size: slackFile.size || 0,
-					userId: message.u._id,
-					rid: message.rid,
-				};
+					const requestModule = /https/i.test(url) ? https : http;
+					const fileStore = FileUpload.getStore('Uploads');
+					const addCountCompleted = this.addCountCompleted.bind(this);
 
-				const requestModule = /https/i.test(url) ? https : http;
-				const fileStore = FileUpload.getStore('Uploads');
-				const addCountCompleted = this.addCountCompleted.bind(this);
+					Meteor.wrapAsync((callback) => {
+						requestModule.get(url, Meteor.bindEnvironment(function(res) {
+							const contentType = res.headers['content-type'];
+							if (!details.type && contentType) {
+								details.type = contentType;
+							}
 
-				Meteor.wrapAsync((callback) => {
-					requestModule.get(url, Meteor.bindEnvironment(function(res) {
-						const contentType = res.headers['content-type'];
-						if (!details.type && contentType) {
-							details.type = contentType;
-						}
-
-						const rawData = [];
-						res.on('data', (chunk) => rawData.push(chunk));
-						res.on('error', (error) => {
-							addCountCompleted(1);
-							return callback(error);
-						});
-
-						res.on('end', Meteor.bindEnvironment(() => {
-							fileStore.insert(details, Buffer.concat(rawData), function(error, file) {
-								if (error) {
-									addCountCompleted(1);
-									return callback(error);
-								}
-
-								const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
-								const attachment = {
-									title: file.name,
-									title_link: url,
-								};
-
-								if (/^image\/.+/.test(file.type)) {
-									attachment.image_url = url;
-									attachment.image_type = file.type;
-									attachment.image_size = file.size;
-									attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-								}
-
-								if (/^audio\/.+/.test(file.type)) {
-									attachment.audio_url = url;
-									attachment.audio_type = file.type;
-									attachment.audio_size = file.size;
-								}
-
-								if (/^video\/.+/.test(file.type)) {
-									attachment.video_url = url;
-									attachment.video_type = file.type;
-									attachment.video_size = file.size;
-								}
-
-								Messages.setSlackFileRocketChatAttachment(slackFile.id, url, attachment);
-								downloadedFileIds.push(slackFile.id);
+							const rawData = [];
+							res.on('data', (chunk) => rawData.push(chunk));
+							res.on('error', (error) => {
 								addCountCompleted(1);
-								return callback();
+								return callback(error);
 							});
+
+							res.on('end', Meteor.bindEnvironment(() => {
+								fileStore.insert(details, Buffer.concat(rawData), function(error, file) {
+									if (error) {
+										addCountCompleted(1);
+										return callback(error);
+									}
+
+									const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+									const attachment = {
+										title: file.name,
+										title_link: url,
+									};
+
+									if (/^image\/.+/.test(file.type)) {
+										attachment.image_url = url;
+										attachment.image_type = file.type;
+										attachment.image_size = file.size;
+										attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+									}
+
+									if (/^audio\/.+/.test(file.type)) {
+										attachment.audio_url = url;
+										attachment.audio_type = file.type;
+										attachment.audio_size = file.size;
+									}
+
+									if (/^video\/.+/.test(file.type)) {
+										attachment.video_url = url;
+										attachment.video_type = file.type;
+										attachment.video_size = file.size;
+									}
+
+									Messages.setSlackFileRocketChatAttachment(slackFile.id, url, attachment);
+									downloadedFileIds.push(slackFile.id);
+									addCountCompleted(1);
+									return callback();
+								});
+							}));
 						}));
-					}));
-				})();
-			} catch (error) {
-				this.logger.error(error);
+					})();
+				} catch (error) {
+					this.logger.error(error);
+				}
+			});
+		} catch (error) {
+			// If the cursor expired, restart the method
+			if (error && error.codeName === 'CursorNotFound') {
+				return this.startImport();
 			}
-		});
+
+			super.updateProgress(ProgressStep.ERROR);
+			throw error;
+		}
 
 		super.updateProgress(ProgressStep.DONE);
 		return this.getProgress();
