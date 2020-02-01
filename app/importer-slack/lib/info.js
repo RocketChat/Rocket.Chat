@@ -5,3 +5,9 @@ export class SlackImporterInfo extends ImporterInfo {
 		super('slack', 'Slack', 'application/zip');
 	}
 }
+
+export class SlackImageImporterInfo extends ImporterInfo {
+	constructor() {
+		super('slack-images', 'Slack Images', '');
+	}
+}

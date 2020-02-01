@@ -24,6 +24,9 @@ Template.importOperationSummary.helpers({
 
 	fileName() {
 		const fileName = this.file;
+		if (!fileName) {
+			return '';
+		}
 
 		// If the userid is inside the filename, remove it and anything before it
 		const idx = fileName.indexOf(`_${ this.user }_`);

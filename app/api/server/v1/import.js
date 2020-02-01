@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { API } from '../api';
 import { hasPermission } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
-import { imageDownloader } from '../../../importer-slack/server/imageDownloader';
+import { Importers } from '../../../importer/server';
 
 API.v1.addRoute('uploadImportFile', { authRequired: true }, {
 	post() {
@@ -86,8 +86,18 @@ API.v1.addRoute('downloadSlackImages', { authRequired: true }, {
 			throw new Meteor.Error('not_authorized');
 		}
 
-		imageDownloader();
-		return API.v1.success();
+		const importer = Importers.get('slack-images');
+		if (!importer) {
+			throw new Meteor.Error('error-importer-not-defined', 'The Slack Image Importer was not found.', { method: 'downloadSlackImages' });
+		}
+
+		importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
+		const count = importer.instance.prepareImageCount();
+
+		return API.v1.success({
+			success: true,
+			count,
+		});
 	},
 });
 

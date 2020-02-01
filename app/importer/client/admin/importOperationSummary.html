@@ -16,9 +16,11 @@
 		<span>{{ status}}</span>
 		<br/>
 
-		<span style="font-weight: 600;">{{_ "File"}}:</span>
-		<span>{{ fileName}}</span>
-		<br/>
+		{{#if file}}
+			<span style="font-weight: 600;">{{_ "File"}}:</span>
+			<span>{{ fileName}}</span>
+			<br/>
+		{{/if}}
 
 		{{#if hasCounters}}
 			<span style="font-weight: 600;">{{_ "Counters"}}:</span>

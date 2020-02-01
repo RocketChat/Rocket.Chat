@@ -16,6 +16,7 @@ export const ProgressStep = Object.freeze({
 	IMPORTING_USERS: 'importer_importing_users',
 	IMPORTING_CHANNELS: 'importer_importing_channels',
 	IMPORTING_MESSAGES: 'importer_importing_messages',
+	IMPORTING_IMAGES: 'importer_importing_images',
 	FINISHING: 'importer_finishing',
 
 	DONE: 'importer_done',
@@ -45,6 +46,7 @@ export const ImportingStartedStates = [
 	ProgressStep.IMPORTING_USERS,
 	ProgressStep.IMPORTING_CHANNELS,
 	ProgressStep.IMPORTING_MESSAGES,
+	ProgressStep.IMPORTING_IMAGES,
 	ProgressStep.FINISHING,
 ];
 

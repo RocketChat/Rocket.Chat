@@ -59,8 +59,12 @@ Template.adminImportProgress.onCreated(function() {
 				return FlowRouter.go('/admin/import/prepare');
 			default:
 				template.step.set(t(progress.step[0].toUpperCase() + progress.step.slice(1)));
-				template.completed.set(progress.count.completed);
-				template.total.set(progress.count.total);
+				if (progress.count.completed) {
+					template.completed.set(progress.count.completed);
+				}
+				if (progress.count.total) {
+					template.total.set(progress.count.total);
+				}
 				break;
 		}
 	}
@@ -77,7 +81,20 @@ Template.adminImportProgress.onCreated(function() {
 		const { operation } = data;
 
 		template.operation.set(operation);
+		if (operation.count) {
+			if (operation.count.total) {
+				template.total.set(operation.count.total);
+			}
+			if (operation.count.completed) {
+				template.completed.set(operation.count.completed);
+			}
+		}
+
 		importerKey = operation.importerKey;
+
+		if (!operation.valid) {
+			return FlowRouter.go('/admin/import');
+		}
 
 		// If the import has not started, move to the prepare screen
 		if (!ImportingStartedStates.includes(operation.status)) {

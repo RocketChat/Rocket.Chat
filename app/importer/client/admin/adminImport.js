@@ -77,8 +77,13 @@ Template.adminImport.events({
 		FlowRouter.go('/admin/import/new');
 	},
 	'click .download-slack-images-btn'() {
-		APIClient.post('v1/downloadSlackImages').then(() => {
-			toastr.success(t('Image_Downloads_Started'));
+		APIClient.post('v1/downloadSlackImages').then((data) => {
+			if (data.count) {
+				toastr.success(t('Image_Downloads_Started'));
+				FlowRouter.go('/admin/import/progress');
+			} else {
+				toastr.success(t('No_images_left_to_download'));
+			}
 		}).catch((error) => {
 			if (error) {
 				console.error(error);

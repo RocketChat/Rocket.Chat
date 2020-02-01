@@ -1152,6 +1152,9 @@ export class Messages extends Base {
 			'slackFile.url_private_download': {
 				$exists: true,
 			},
+			'slackFile.downloaded': {
+				$ne: true,
+			},
 		};
 
 		return this.find(query);
