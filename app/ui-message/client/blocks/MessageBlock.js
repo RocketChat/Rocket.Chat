@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useCallback, useMemo } from 'react';
-import { UiKitMessage as uiKitMessage, kitContext, UiKitModal as uiKitModal, messageParser, modalParser } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitMessage as uiKitMessage, kitContext, UiKitModal as uiKitModal, messageParser, modalParser, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
 import { uiKitText } from '@rocket.chat/ui-kit';
 import { Modal, AnimatedVisibility, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
@@ -130,7 +130,7 @@ export const modalBlockWithContext = ({
 							action='#'
 							onSubmit={onSubmit}
 						>
-							{uiKitModal(view.blocks)}
+							<UiKitComponent render={uiKitModal} blocks={view.blocks} />
 						</Box>
 					</Modal.Content>
 					<Modal.Footer>
