@@ -210,7 +210,7 @@ Template.visitorInfo.helpers({
 		let { closer } = this;
 
 		if (closer === 'user') {
-			if  (servedBy._id !== closedBy._id) {
+			if (servedBy._id !== closedBy._id) {
 				return closedBy.username;
 			}
 
