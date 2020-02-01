@@ -1716,6 +1716,7 @@
   "importer_status_importing_users": "Importing users",
   "importer_status_importing_channels": "Importing channels",
   "importer_status_importing_messages": "Importing messages",
+  "importer_status_importing_images": "Importing images",
   "importer_status_finishing": "Almost done",
   "importer_status_done": "Completed successfully",
   "importer_status_import_failed": "Error",
