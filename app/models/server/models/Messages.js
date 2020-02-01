@@ -132,7 +132,7 @@ export class Messages extends Base {
 		};
 
 		return this.update(query, {
-			$set: { rocketChatUrl },
+			$set: { 'slackFile.rocketChatUrl': rocketChatUrl },
 			$addToSet: {
 				attachments: attachment,
 			},
