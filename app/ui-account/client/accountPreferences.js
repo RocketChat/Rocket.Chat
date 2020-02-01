@@ -75,7 +75,7 @@ Template.accountPreferences.helpers({
 	},
 	highlights() {
 		const userHighlights = getUserPreference(Meteor.userId(), 'highlights');
-		return userHighlights ? userHighlights.join(',\n') : undefined;
+		return userHighlights ? userHighlights.join('\n') : undefined;
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -184,7 +184,7 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
 		data.sidebarShowDiscussion = JSON.parse($('#sidebarShowDiscussion').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
-		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
+		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/\n/), function(e) {
 			return s.trim(e);
 		}));
 		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map((option) => ({ action: option.value, label: option.text }));
