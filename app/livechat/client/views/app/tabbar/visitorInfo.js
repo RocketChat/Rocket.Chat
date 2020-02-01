@@ -17,6 +17,7 @@ import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
+import { DateFormat } from '../../../../../lib/client';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -197,6 +198,21 @@ Template.visitorInfo.helpers({
 
 	canForwardGuest() {
 		return hasPermission('transfer-livechat-guest');
+	},
+
+	roomClosedDateTime() {
+		const { closedAt } = this;
+		return DateFormat.formatDateAndTime(closedAt);
+	},
+
+	roomClosedBy() {
+		const { closer, closedBy = {}, servedBy = {} } = this;
+		if (closer === 'user' && servedBy._id !== closedBy._id) {
+			return closedBy.username;
+		}
+
+		const closerLabel = closer.charAt(0).toUpperCase() + closer.slice(1);
+		return t(`${ closerLabel }`);
 	},
 });
 
