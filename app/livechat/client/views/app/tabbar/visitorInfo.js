@@ -206,9 +206,15 @@ Template.visitorInfo.helpers({
 	},
 
 	roomClosedBy() {
-		const { closer, closedBy = {}, servedBy = {} } = this;
-		if (closer === 'user' && servedBy._id !== closedBy._id) {
-			return closedBy.username;
+		const { closedBy = {}, servedBy = {} } = this;
+		let { closer } = this;
+
+		if (closer === 'user') {
+			if  (servedBy._id !== closedBy._id) {
+				return closedBy.username;
+			}
+
+			closer = 'agent';
 		}
 
 		const closerLabel = closer.charAt(0).toUpperCase() + closer.slice(1);
