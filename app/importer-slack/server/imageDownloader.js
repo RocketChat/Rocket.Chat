@@ -9,9 +9,8 @@ import {
 	ProgressStep,
 	Selection,
 } from '../../importer/server';
-import { Users, Rooms, Messages } from '../../models';
+import { Messages } from '../../models';
 import { FileUpload } from '../../file-upload';
-import { insertMessage } from '../../lib';
 
 export class SlackImageImporter extends Base {
 	constructor(info, importRecord) {
@@ -47,32 +46,34 @@ export class SlackImageImporter extends Base {
 	}
 
 	startImport() {
-		const messages = Messages.findAllSlackImportedMessagesWithFilesToDownload();
-		const imageCount = messages && messages.count();
+		const slackFileMessageList = Messages.findAllSlackImportedMessagesWithFilesToDownload();
+		const imageCount = slackFileMessageList && slackFileMessageList.count();
 
 		if (!imageCount) {
 			super.updateProgress(ProgressStep.ERROR);
 			throw new Meteor.Error('error-no-images-found', 'Slack Image Importer: No pending images found.', { step: 'startImport' });
 		}
 
-		messages.forEach((message) => {
+		const downloadedFileIds = [];
+
+		slackFileMessageList.forEach((message) => {
 			try {
-				const file = message.slackFile;
-				if (!file || file.downloaded) {
+				const { slackFile } = message;
+				if (!slackFile || slackFile.rocketChatUrl || downloadedFileIds.includes(slackFile.id)) {
 					this.addCountCompleted(1);
 					return;
 				}
 
-				const url = file.url_private_download;
+				const url = slackFile.url_private_download;
 				if (!url || !url.startsWith('http')) {
 					this.addCountCompleted(1);
 					return;
 				}
 
 				const details = {
-					message_id: `${ message._id }-file-${ file.id || Random.id() }`,
-					name: file.name || Random.id(),
-					size: file.size || 0,
+					message_id: `${ message._id }-file-${ slackFile.id }`,
+					name: slackFile.name || Random.id(),
+					size: slackFile.size || 0,
 					userId: message.u._id,
 					rid: message.rid,
 				};
@@ -103,7 +104,6 @@ export class SlackImageImporter extends Base {
 								}
 
 								const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
-
 								const attachment = {
 									title: file.name,
 									title_link: url,
@@ -128,18 +128,8 @@ export class SlackImageImporter extends Base {
 									attachment.video_size = file.size;
 								}
 
-								if (!message.attachments) {
-									message.attachments = [attachment];
-								} else {
-									message.attachments.push(attachment);
-								}
-
-								message.slackFile.downloaded = true;
-
-								const user = Users.findOneById(message.u._id);
-								const room = Rooms.findOneById(message.rid);
-
-								insertMessage(user, message, room, true);
+								Messages.setSlackFileRocketChatAttachment(slackFile.id, url, attachment);
+								downloadedFileIds.push(slackFile.id);
 								addCountCompleted(1);
 								return callback();
 							});

@@ -126,6 +126,19 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
+	setSlackFileRocketChatAttachment(slackFileId, rocketChatUrl, attachment) {
+		const query = {
+			'slackFile.id': slackFileId,
+		};
+
+		return this.update(query, {
+			$set: { rocketChatUrl },
+			$addToSet: {
+				attachments: attachment,
+			},
+		});
+	}
+
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
 		const query = {
 			_hidden: {
@@ -1149,10 +1162,11 @@ export class Messages extends Base {
 
 	findAllSlackImportedMessagesWithFilesToDownload() {
 		const query = {
-			'slackFile.url_private_download': {
-				$exists: true,
+			'slackFile.url_private_download': { $exists: true },
+			'slackFile.rocketChatUrl': {
+				$exists: false,
 			},
-			'slackFile.downloaded': {
+			'slackFile.is_external': {
 				$ne: true,
 			},
 		};
