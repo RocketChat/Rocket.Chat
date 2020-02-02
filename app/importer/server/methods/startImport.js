@@ -12,7 +12,7 @@ import {
 
 
 Meteor.methods({
-	startImport(key, input) {
+	startImport(input) {
 		// Takes name and object with users / channels selected to import
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'startImport' });
@@ -22,22 +22,15 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'startImport' });
 		}
 
-		if (!key) {
-			throw new Meteor.Error('error-invalid-importer', `No defined importer by: "${ key }"`, { method: 'startImport' });
-		}
-
 		const operation = Imports.findLastImport();
 		if (!operation) {
 			throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', { method: 'startImport' });
 		}
 
-		if (key !== operation.importerKey) {
-			throw new Meteor.Error('error-operation-expired', 'Import Operation is Expired', { method: 'startImport' });
-		}
-
-		const importer = Importers.get(key);
+		const { importerKey } = operation;
+		const importer = Importers.get(importerKey);
 		if (!importer) {
-			throw new Meteor.Error('error-importer-not-defined', `The importer (${ key }) has no import class defined.`, { method: 'startImport' });
+			throw new Meteor.Error('error-importer-not-defined', `The importer (${ importerKey }) has no import class defined.`, { method: 'startImport' });
 		}
 
 		importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap

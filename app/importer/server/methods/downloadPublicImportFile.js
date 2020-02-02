@@ -12,7 +12,6 @@ import { Importers } from '..';
 
 function downloadHttpFile(fileUrl, writeStream) {
 	const protocol = fileUrl.startsWith('https') ? https : http;
-
 	protocol.get(fileUrl, function(response) {
 		response.pipe(writeStream);
 	});
@@ -42,6 +41,7 @@ Meteor.methods({
 
 		const isUrl = fileUrl.startsWith('http');
 
+		// Check if it's a valid url or path before creating a new import record
 		if (!isUrl) {
 			if (!fs.existsSync(fileUrl)) {
 				throw new Meteor.Error('error-import-file-missing', fileUrl, { method: 'downloadPublicImportFile' });

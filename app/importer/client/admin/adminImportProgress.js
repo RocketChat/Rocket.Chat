@@ -101,7 +101,7 @@ Template.adminImportProgress.onCreated(function() {
 			return FlowRouter.go('/admin/import/prepare');
 		}
 
-		APIClient.get('v1/getImportProgress', { importerKey }).then((progress) => {
+		APIClient.get('v1/getImportProgress').then((progress) => {
 			if (!progress) {
 				toastr.warning(t('Importer_not_in_progress'));
 				return FlowRouter.go('/admin/import/prepare');

@@ -92,12 +92,7 @@ export const insertMessage = function(user, message, room, upsert = false) {
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
-		try {
-			validateBodyAttachments(message.attachments);
-		} catch (e) {
-			console.error(e);
-			message.attachments = [];
-		}
+		validateBodyAttachments(message.attachments);
 	}
 
 	if (!message.ts) {

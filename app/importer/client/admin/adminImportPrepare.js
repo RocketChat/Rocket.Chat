@@ -70,10 +70,7 @@ Template.adminImportPrepare.events({
 			channel.do_import = $(`[name='${ channel.channel_id }']`).is(':checked');
 		}
 
-		const operation = template.operation.get();
-		const { importerKey } = operation;
-
-		APIClient.post('v1/startImport', { importerKey, input: { users: template.users.get(), channels: template.channels.get() } }).then(() => {
+		APIClient.post('v1/startImport', { input: { users: template.users.get(), channels: template.channels.get() } }).then(() => {
 			template.users.set([]);
 			template.channels.set([]);
 			template.loaded.set(false);

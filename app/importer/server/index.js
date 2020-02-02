@@ -8,13 +8,12 @@ import { SelectionUser } from './classes/ImporterSelectionUser';
 import { ProgressStep } from '../lib/ImporterProgressStep';
 import { ImporterInfo } from '../lib/ImporterInfo';
 import { Importers } from '../lib/Importers';
-
+import './methods/getImportProgress';
+import './methods/startImport';
 import './methods/uploadImportFile';
+import './methods/getImportFileData';
 import './methods/downloadPublicImportFile';
 import './methods/getLatestImportOperations';
-import './methods/getImportFileData';
-import './methods/startImport';
-import './methods/getImportProgress';
 
 import './startup/setImportsToInvalid';
 import './startup/store';

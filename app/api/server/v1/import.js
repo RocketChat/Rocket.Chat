@@ -33,10 +33,10 @@ API.v1.addRoute('downloadPublicImportFile', { authRequired: true }, {
 
 API.v1.addRoute('startImport', { authRequired: true }, {
 	post() {
-		const { importerKey, input } = this.bodyParams;
+		const { input } = this.bodyParams;
 
 		Meteor.runAsUser(this.userId, () => {
-			API.v1.success(Meteor.call('startImport', importerKey, input));
+			API.v1.success(Meteor.call('startImport', input));
 		});
 
 		return API.v1.success();
@@ -56,11 +56,9 @@ API.v1.addRoute('getImportFileData', { authRequired: true }, {
 
 API.v1.addRoute('getImportProgress', { authRequired: true }, {
 	get() {
-		const { importerKey } = this.queryParams;
-
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getImportProgress', importerKey);
+			result = Meteor.call('getImportProgress');
 		});
 
 		return API.v1.success(result);
