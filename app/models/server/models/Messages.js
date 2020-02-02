@@ -139,7 +139,7 @@ export class Messages extends Base {
 			$addToSet: {
 				attachments: attachment,
 			},
-		});
+		}, { multi: true });
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
