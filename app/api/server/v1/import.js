@@ -111,17 +111,10 @@ API.v1.addRoute('getCurrentImportOperation', { authRequired: true }, {
 			throw new Meteor.Error('not_authorized');
 		}
 
-		const latest = Imports.findLastImport();
-		if (!latest) {
-			return API.v1.success({
-				success: true,
-				operation: null,
-			});
-		}
-
+		const operation = Imports.findLastImport();
 		return API.v1.success({
 			success: true,
-			operation: latest,
+			operation,
 		});
 	},
 });
