@@ -277,6 +277,15 @@
 
 		width: 100%;
 	}
+
+	&__title {
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+
+	&__alert {
+		margin-bottom: 20px;
+	}
 }
 
 @media (width > 500px) {

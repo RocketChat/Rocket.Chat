@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-import { lazyloadtick } from '../../lazy-load';
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference, isMobile } from '../../utils';
@@ -61,7 +60,6 @@ Template.sideNav.events({
 	},
 
 	'scroll .rooms-list'() {
-		lazyloadtick();
 		return menu.updateUnreadBars();
 	},
 
@@ -96,7 +94,6 @@ const redirectToDefaultChannelIfNeeded = () => {
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-	lazyloadtick();
 	redirectToDefaultChannelIfNeeded();
 
 	return Meteor.defer(() => menu.updateUnreadBars());

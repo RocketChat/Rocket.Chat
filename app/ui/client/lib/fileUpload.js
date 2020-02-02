@@ -8,6 +8,7 @@ import { Handlebars } from 'meteor/ui';
 import { fileUploadHandler } from '../../../file-upload';
 import { ChatMessage } from '../../../models/client';
 import { t, fileUploadIsValidContentType, SWCache } from '../../../utils';
+import { settings } from '../../../settings/client';
 import { modal, prependReplies } from '../../../ui-utils';
 import { sendOfflineFileMessage } from './sendOfflineFileMessage';
 
@@ -155,12 +156,23 @@ const getUploadPreview = async (file, preview) => {
 };
 
 export const fileUpload = async (files, input, { rid, tmid }) => {
+	const threadsEnabled = settings.get('Threads_enabled');
+
 	files = [].concat(files);
 
 	const replies = $(input).data('reply') || [];
 	const mention = $(input).data('mention-user') || false;
-	const msg = await prependReplies('', replies, mention);
-	const msgData = setMsgId({ msg, tmid });
+
+	let msg = '';
+
+	if (!mention || !threadsEnabled) {
+		msg = await prependReplies('', replies, mention);
+	}
+
+	if (mention && threadsEnabled && replies.length) {
+		tmid = replies[0]._id;
+	}
+
 	let offlineFile = null;
 
 	const uploadNextFile = () => {

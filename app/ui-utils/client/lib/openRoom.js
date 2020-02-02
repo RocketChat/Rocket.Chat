@@ -6,15 +6,14 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import mem from 'mem';
-
-import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
-
 import _ from 'underscore';
 
 import { ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes, handleError } from '../../../utils';
+
+import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 
 window.currentTracker = undefined;
 

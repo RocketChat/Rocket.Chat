@@ -130,10 +130,6 @@ Template.roomList.helpers({
 		}
 		return roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
-
-	showRoomCounter() {
-		return getUserPreference(Meteor.userId(), 'roomCounterSidebar');
-	},
 });
 
 const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {

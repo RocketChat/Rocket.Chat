@@ -30,6 +30,7 @@ export class Users extends Base {
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
 		this.tryEnsureIndex({ statusText: 1 });
@@ -237,6 +238,20 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
+	setLivechatData(userId, data = {}) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				livechat: data,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	closeOffice() {
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'not-available'));
 	}
@@ -257,6 +272,7 @@ export class Users extends Base {
 				phone: 1,
 				customFields: 1,
 				status: 1,
+				livechat: 1,
 			},
 		};
 
@@ -525,7 +541,11 @@ export class Users extends Base {
 	}
 
 	findActive(options = {}) {
-		return this.find({ active: true }, options);
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+			emails: { $exists: true },
+		}, options);
 	}
 
 	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
@@ -567,6 +587,21 @@ export class Users extends Base {
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
 			exceptions = [exceptions];
+		}
+
+		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+		if (searchTerm === '') {
+			const query = {
+				$and: [
+					{
+						active: true,
+						username: { $exists: true, $nin: exceptions },
+					},
+					...extraQuery,
+				],
+			};
+
+			return this._db.find(query, options);
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
@@ -742,6 +777,15 @@ export class Users extends Base {
 		return this.find({ active: true, isRemote: true }, options);
 	}
 
+	getSAMLByIdAndSAMLProvider(_id, provider) {
+		return this.findOne({
+			_id,
+			'services.saml.provider': provider,
+		}, {
+			'services.saml': 1,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -757,6 +801,16 @@ export class Users extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	updateInviteToken(_id, inviteToken) {
+		const update = {
+			$set: {
+				inviteToken,
+			},
+		};
+
+		return this.update(_id, update);
 	}
 
 	updateStatusText(_id, statusText) {
@@ -968,7 +1022,7 @@ export class Users extends Base {
 	setPreferences(_id, preferences) {
 		const settingsObject = Object.assign(
 			{},
-			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] }))
+			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] })),
 		);
 
 		const update = {
@@ -1149,6 +1203,20 @@ export class Users extends Base {
 	// REMOVE
 	removeById(_id) {
 		return this.remove(_id);
+	}
+
+	removeLivechatData(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$unset: {
+				livechat: true,
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	/*

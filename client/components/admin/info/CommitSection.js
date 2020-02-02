@@ -1,22 +1,22 @@
+import { Subtitle } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { InformationList } from './InformationList';
-import { InformationEntry } from './InformationEntry';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { DescriptionList } from './DescriptionList';
 
 export function CommitSection({ info }) {
 	const t = useTranslation();
 	const { commit = {} } = info;
 
 	return <>
-		<h3>{t('Commit')}</h3>
-		<InformationList>
-			<InformationEntry label={t('Hash')}>{commit.hash}</InformationEntry>
-			<InformationEntry label={t('Date')}>{commit.date}</InformationEntry>
-			<InformationEntry label={t('Branch')}>{commit.branch}</InformationEntry>
-			<InformationEntry label={t('Tag')}>{commit.tag}</InformationEntry>
-			<InformationEntry label={t('Author')}>{commit.author}</InformationEntry>
-			<InformationEntry label={t('Subject')}>{commit.subject}</InformationEntry>
-		</InformationList>
+		<Subtitle data-qa='commit-title'>{t('Commit')}</Subtitle>
+		<DescriptionList data-qa='commit-list'>
+			<DescriptionList.Entry label={t('Hash')}>{commit.hash}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Date')}>{commit.date}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Branch')}>{commit.branch}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Tag')}>{commit.tag}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Author')}>{commit.author}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Subject')}>{commit.subject}</DescriptionList.Entry>
+		</DescriptionList>
 	</>;
 }

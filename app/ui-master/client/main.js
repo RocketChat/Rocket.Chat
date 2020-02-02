@@ -16,7 +16,8 @@ import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../mo
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../callbacks/client';
+import { isSyncReady } from '../../../client/lib/userData';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -176,8 +177,7 @@ Template.main.helpers({
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 
 		const settingsReady = settings.cachedCollection.ready.get();
-
-		const ready = (userReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = !Meteor.userId() || (userReady && isSyncReady.get() && subscriptionsReady && settingsReady);
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
