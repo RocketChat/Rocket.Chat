@@ -2,8 +2,6 @@
 	<section class="page-container page-home page-static page-settings">
 		{{> header sectionName=pageTitle}}
 		<div class="content">
-			<a href="{{pathFor "admin-import"}}"><i class="icon-angle-left"></i> {{_ "Back_to_imports"}}</a><br><br>
-
 			{{#unless hasPermission 'run-import'}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
@@ -14,6 +12,7 @@
 
 					{{> loading}}
 				{{else}}
+					<a href="{{pathFor "admin-import"}}"><i class="icon-angle-left"></i> {{_ "Back_to_imports"}}</a><br><br>
 
 					<div class="section">
 						<h1>{{_ "Actions"}}</h1>
@@ -22,6 +21,10 @@
 							<button class="button uncheck-archived-channels"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Archived_Channels"}}</span></button>
 							<button class="button primary start"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Start_Import"}}</span></button>
 						</div>
+					</div>
+
+					<div class="section">
+						<h1>{{_ "Messages"}}: {{message_count}}</h1>
 					</div>
 
 					{{#if users.length}}
@@ -61,11 +64,6 @@
 							</div>
 						</div>
 					{{/if}}
-
-					<div class="section">
-						<h1>{{_ "Messages"}}: {{message_count}}</h1>
-					</div>
-
 				{{/if}}
 			{{/unless}}
 		</div>

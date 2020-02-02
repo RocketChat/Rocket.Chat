@@ -9,7 +9,7 @@ import { SideNav } from '../../../ui-utils/client';
 import { ProgressStep, ImportWaitingStates, ImportFileReadyStates, ImportPreparingStartedStates, ImportingStartedStates, ImportingErrorStates } from '../../lib/ImporterProgressStep';
 import { showImporterException } from '../functions/showImporterException';
 
-import { ImporterWebsocketReceiver, Importers } from '..';
+import { ImporterWebsocketReceiver } from '..';
 
 import './adminImportPrepare.html';
 
@@ -31,20 +31,6 @@ Template.adminImportPrepare.helpers({
 	pageTitle() {
 		return t('Importing_Data');
 	},
-
-	importer() {
-		const operation = Template.instance().operation.get();
-		if (!operation) {
-			return undefined;
-		}
-
-		return Importers.get(operation.importerKey);
-	},
-
-	isLoaded() {
-		return Template.instance().loaded.get();
-	},
-
 	users() {
 		return Template.instance().users.get();
 	},
@@ -54,8 +40,6 @@ Template.adminImportPrepare.helpers({
 	message_count() {
 		return Template.instance().message_count.get();
 	},
-
-
 });
 
 Template.adminImportPrepare.events({
@@ -73,7 +57,6 @@ Template.adminImportPrepare.events({
 		APIClient.post('v1/startImport', { input: { users: template.users.get(), channels: template.channels.get() } }).then(() => {
 			template.users.set([]);
 			template.channels.set([]);
-			template.loaded.set(false);
 			return FlowRouter.go('/admin/import/progress');
 		}).catch((error) => {
 			if (error) {
@@ -123,7 +106,6 @@ function getImportFileData(template) {
 		template.users.set(data.users);
 		template.channels.set(data.channels);
 		template.message_count.set(data.message_count);
-		template.loaded.set(true);
 		template.preparing.set(false);
 		template.progressRate.set(false);
 	}).catch((error) => {
@@ -137,8 +119,6 @@ function getImportFileData(template) {
 function loadOperation(template) {
 	APIClient.get('v1/getCurrentImportOperation').then((data) => {
 		const { operation } = data;
-
-		template.operation.set(operation);
 
 		if (!operation.valid) {
 			return FlowRouter.go('/admin/import/new');
@@ -195,8 +175,10 @@ function loadOperation(template) {
 Template.adminImportPrepare.onCreated(function() {
 	this.preparing = new ReactiveVar(true);
 	this.progressRate = new ReactiveVar(false);
-	this.operation = new ReactiveVar(false);
 	this.callbackRegistered = false;
+	this.users = new ReactiveVar([]);
+	this.channels = new ReactiveVar([]);
+	this.message_count = new ReactiveVar(0);
 
 	this.progressUpdated = (progress) => {
 		if ('rate' in progress) {
@@ -204,11 +186,6 @@ Template.adminImportPrepare.onCreated(function() {
 			this.progressRate.set(rate);
 		}
 	};
-
-	this.users = new ReactiveVar([]);
-	this.channels = new ReactiveVar([]);
-	this.message_count = new ReactiveVar(0);
-	this.loaded = new ReactiveVar(false);
 
 	loadOperation(this);
 });

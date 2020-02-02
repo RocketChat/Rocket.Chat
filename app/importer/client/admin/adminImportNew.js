@@ -34,8 +34,6 @@ Template.adminImportNew.helpers({
 
 		return TAPi18n.__('Importer_From_Description', { from: t(importer.name) });
 	},
-	getImporterDescription() {
-	},
 	importType() {
 		return Template.instance().importType.get();
 	},
@@ -44,9 +42,6 @@ Template.adminImportNew.helpers({
 	},
 	isImporterSelected() {
 		return Template.instance().importType.get();
-	},
-	isSlackSelected() {
-		return Template.instance().importType.get() === 'slack';
 	},
 	isFileTypeSelected() {
 		return Template.instance().fileType.get();
