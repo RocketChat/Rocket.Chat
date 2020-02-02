@@ -592,6 +592,17 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 	}
 };
 
+export const handleSequential = (message) => {
+
+	let currentNode = $(`#${message._id}`);
+	let nextNode = currentNode.next();
+	if(!currentNode.hasClass('sequential')){
+		if(nextNode !== undefined && nextNode !== null && nextNode.hasClass('sequential')){
+			nextNode.removeClass('sequential');
+		}
+	}
+};
+
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
 	const currentNode = this.firstNode;
 	processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
