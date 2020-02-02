@@ -56,7 +56,7 @@ Template.adminImportProgress.onCreated(function() {
 			case ProgressStep.ERROR:
 			case ProgressStep.CANCELLED:
 				toastr.error(t(progress.step[0].toUpperCase() + progress.step.slice(1)));
-				return FlowRouter.go('/admin/import/prepare');
+				return FlowRouter.go('/admin/import');
 			default:
 				template.step.set(t(progress.step[0].toUpperCase() + progress.step.slice(1)));
 				if (progress.count.completed) {
@@ -80,6 +80,16 @@ Template.adminImportProgress.onCreated(function() {
 	APIClient.get('v1/getCurrentImportOperation').then((data) => {
 		const { operation } = data;
 
+		if (!operation.valid) {
+			return FlowRouter.go('/admin/import');
+		}
+
+		// If the import has not started, move to the prepare screen
+		if (!ImportingStartedStates.includes(operation.status)) {
+			return FlowRouter.go('/admin/import/prepare');
+		}
+
+		importerKey = operation.importerKey;
 		template.operation.set(operation);
 		if (operation.count) {
 			if (operation.count.total) {
@@ -88,17 +98,6 @@ Template.adminImportProgress.onCreated(function() {
 			if (operation.count.completed) {
 				template.completed.set(operation.count.completed);
 			}
-		}
-
-		importerKey = operation.importerKey;
-
-		if (!operation.valid) {
-			return FlowRouter.go('/admin/import');
-		}
-
-		// If the import has not started, move to the prepare screen
-		if (!ImportingStartedStates.includes(operation.status)) {
-			return FlowRouter.go('/admin/import/prepare');
 		}
 
 		APIClient.get('v1/getImportProgress').then((progress) => {

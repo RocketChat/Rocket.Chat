@@ -47,11 +47,27 @@ export class SlackImporter extends Base {
 		let tempDMs = [];
 		let tempUsers = [];
 		let messagesCount = 0;
-		let isPreparingMessages = false;
 		let count = 0;
 
 		ImporterWebsocket.progressUpdated({ rate: 0 });
 		let oldRate = 0;
+
+		const prepareChannelsFile = (entry, typeName, filterInvalidCreators = true) => {
+			super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+			let data = JSON.parse(entry.getData().toString());
+
+			if (filterInvalidCreators) {
+				data = data.filter((channel) => channel.creator != null);
+			}
+
+			this.logger.debug(`loaded ${ data.length } ${ typeName }.`);
+
+			// Insert the channels records.
+			this.collection.insert({ import: this.importRecord._id, importer: this.name, type: typeName, channels: data });
+			this.updateRecord({ 'count.channels': tempGroups.length + tempChannels.length + tempDMs.length + tempMpims.length + data.length });
+			this.addCountToTotal(data.length);
+			return data;
+		};
 
 		zip.forEach((entry) => {
 			try {
@@ -60,61 +76,27 @@ export class SlackImporter extends Base {
 				}
 
 				if (entry.entryName === 'channels.json') {
-					super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-					isPreparingMessages = false;
-					tempChannels = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
-					this.logger.debug(`loaded ${ tempChannels.length } channels.`);
-
-					// Insert the channels records.
-					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'channels', channels: tempChannels });
-					this.updateRecord({ 'count.channels': tempGroups.length + tempChannels.length + tempDMs.length + tempMpims.length });
-					this.addCountToTotal(tempChannels.length);
+					tempChannels = prepareChannelsFile(entry, 'channels');
 					return;
 				}
 
 				if (entry.entryName === 'groups.json') {
-					super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-					isPreparingMessages = false;
-					tempGroups = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
-					this.logger.debug(`loaded ${ tempGroups.length } groups.`);
-
-					// Insert the groups records.
-					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'groups', channels: tempGroups });
-					this.updateRecord({ 'count.channels': tempGroups.length + tempChannels.length + tempDMs.length + tempMpims.length });
-					this.addCountToTotal(tempGroups.length);
+					tempGroups = prepareChannelsFile(entry, 'groups');
 					return;
 				}
 
 				if (entry.entryName === 'mpims.json') {
-					super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-					isPreparingMessages = false;
-					tempMpims = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
-					this.logger.debug(`loaded ${ tempMpims.length } mpims.`);
-
-					// Insert the groups records.
-					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'mpims', channels: tempMpims });
-					this.updateRecord({ 'count.channels': tempGroups.length + tempChannels.length + tempDMs.length + tempMpims.length });
-					this.addCountToTotal(tempMpims.length);
+					tempMpims = prepareChannelsFile(entry, 'mpims');
 					return;
 				}
 
 				if (entry.entryName === 'dms.json') {
-					super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-					isPreparingMessages = false;
-					tempDMs = JSON.parse(entry.getData().toString());
-					this.logger.debug(`loaded ${ tempDMs.length } DMs.`);
-
-					// Insert the DMs records.
-					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'DMs', channels: tempDMs });
-					this.updateRecord({ 'count.channels': tempGroups.length + tempChannels.length + tempDMs.length + tempMpims.length });
-					this.addCountToTotal(tempDMs.length);
-
+					tempDMs = prepareChannelsFile(entry, 'DMs', false);
 					return;
 				}
 
 				if (entry.entryName === 'users.json') {
 					super.updateProgress(ProgressStep.PREPARING_USERS);
-					isPreparingMessages = false;
 					tempUsers = JSON.parse(entry.getData().toString());
 
 					tempUsers.forEach((user) => {
@@ -142,9 +124,8 @@ export class SlackImporter extends Base {
 
 					try {
 						// Insert the messages records
-						if (!isPreparingMessages) {
+						if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
 							super.updateProgress(ProgressStep.PREPARING_MESSAGES);
-							isPreparingMessages = true;
 						}
 
 						const tempMessages = JSON.parse(entry.getData().toString());
