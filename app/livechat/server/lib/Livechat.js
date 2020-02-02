@@ -355,10 +355,10 @@ export const Livechat = {
 		// Retreive the closed room
 		room = LivechatRooms.findOneByIdOrName(rid);
 
-		sendMessage(user, message, room);
+		sendMessage(user || visitor, message, room);
 
 		if (servedBy) {
-			Subscriptions.hideByRoomIdAndUserId(rid, servedBy._id);
+			Subscriptions.removeByRoomIdAndUserId(rid, servedBy._id);
 		}
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
