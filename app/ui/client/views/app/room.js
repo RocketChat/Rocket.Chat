@@ -240,8 +240,6 @@ function addToInput(text) {
 	$(input).change().trigger('input');
 }
 
-callbacks.add('enter-room', wipeFailedUploads);
-
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
 export const dropzoneHelpers = {

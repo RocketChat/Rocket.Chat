@@ -78,7 +78,6 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
-<<<<<<< HEAD
 function getConfig(e) {
 	const canLeave = () => {
 		const roomData = Session.get(`roomData${ this.rid }`);
@@ -164,8 +163,6 @@ function getConfig(e) {
 	};
 }
 
-=======
->>>>>>> parent of c084e86e4... fix roomMenu and search scroll
 Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
@@ -175,13 +172,7 @@ Template.sidebarItem.onCreated(function() {
 		const currentData = Template.currentData();
 
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
-<<<<<<< HEAD
 			return clearInterval(this.timeAgoInterval);
-=======
-			if (!isMobile()) {
-				return clearInterval(this.timeAgoInterval);
-			}
->>>>>>> 766fe6a04... Added isMobile util function on the client.
 		}
 
 		if (currentData.lastMessage && !currentData.lastMessage._id) {
@@ -212,29 +203,17 @@ Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
 	},
-<<<<<<< HEAD
 	'touchstart .sidebar-item__link'(e, t) {
 		if (e.originalEvent.touches.length !== 1) {
 			return;
 		}
-=======
-	'click .sidebar-item__menu'(e) {
-		e.stopPropagation(); // to not close the menu
-		e.preventDefault();
 
-		const canLeave = () => {
-			const roomData = Session.get(`roomData${ this.rid }`);
+		const config = getConfig(e);
 
-			if (!roomData) { return false; }
->>>>>>> parent of c084e86e4... fix roomMenu and search scroll
-
-			if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
-			if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
-
-			return !(((roomData.cl != null) && !roomData.cl) || ['d', 'l'].includes(roomData.t));
+		const doLongTouch = () => {
+			popover.open(config);
 		};
 
-<<<<<<< HEAD
 		clearTimeout(t.touchtime);
 		t.touchtime = setTimeout(doLongTouch, 500);
 	},
@@ -244,80 +223,8 @@ Template.sidebarItem.events({
 	'click .sidebar-item__menu'(e) {
 		e.stopPropagation(); // to not close the menu
 		e.preventDefault();
-=======
-		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
-		const isFavorite = () => {
-			const sub = ChatSubscription.findOne({ rid: this.rid }, { fields: { f: 1 } });
-			if (((sub != null ? sub.f : undefined) != null) && sub.f) {
-				return true;
-			}
-			return false;
-		};
 
-		const items = [{
-			icon: 'eye-off',
-			name: t('Hide_room'),
-			type: 'sidebar-item',
-			id: 'hide',
-		}];
-
-		if (this.alert) {
-			items.push({
-				icon: 'flag',
-				name: t('Mark_read'),
-				type: 'sidebar-item',
-				id: 'read',
-			});
-		} else {
-			items.push({
-				icon: 'flag',
-				name: t('Mark_unread'),
-				type: 'sidebar-item',
-				id: 'unread',
-			});
-		}
->>>>>>> parent of c084e86e4... fix roomMenu and search scroll
-
-		if (canFavorite) {
-			items.push({
-				icon: 'star',
-				name: t(isFavorite() ? 'Unfavorite' : 'Favorite'),
-				modifier: isFavorite() ? 'star-filled' : 'star',
-				type: 'sidebar-item',
-				id: 'favorite',
-			});
-		}
-
-		if (canLeave()) {
-			items.push({
-				icon: 'sign-out',
-				name: t('Leave_room'),
-				type: 'sidebar-item',
-				id: 'leave',
-				modifier: 'error',
-			});
-		}
-
-		const config = {
-			popoverClass: 'sidebar-item',
-			columns: [
-				{
-					groups: [
-						{
-							items,
-						},
-					],
-				},
-			],
-			data: {
-				template: this.t,
-				rid: this.rid,
-				name: this.name,
-			},
-			currentTarget: e.currentTarget,
-			offsetHorizontal: -e.currentTarget.clientWidth,
-		};
-
+		const config = getConfig(e);
 		popover.open(config);
 	},
 });

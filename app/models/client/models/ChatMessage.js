@@ -85,7 +85,7 @@ function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 	});
 }
 
-const messagePreFetch = (user) => {
+const messagePreFetch = () => {
 	let messagesFetched = false;
 	Tracker.autorun(() => {
 		if (!messagesFetched && CachedChatSubscription.ready.get()) {
@@ -103,7 +103,7 @@ const messagePreFetch = (user) => {
 						rid: 1,
 						ls: 1,
 					},
-				}
+				},
 			);
 			const limit = parseInt(getConfig('roomListLimit')) || 50;
 			subscriptions.forEach((subscription) => {
@@ -122,6 +122,6 @@ const messagePreFetch = (user) => {
 			});
 		}
 	});
-}
+};
 
 callbacks.add('afterMainReady', messagePreFetch, callbacks.priority.LOW, 'messagePreFetch');
