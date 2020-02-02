@@ -90,11 +90,16 @@ export class SlackImageImporter extends Base {
 							}
 
 							const rawData = [];
-							res.on('data', (chunk) => rawData.push(chunk));
-							res.on('error', (error) => {
+							res.on('data', Meteor.bindEnvironment((chunk) => {
+								rawData.push(chunk);
+
+								// Update progress more often on large files
+								addCountCompleted(0);
+							}));
+							res.on('error', Meteor.bindEnvironment((error) => {
 								addCountCompleted(1);
 								return callback(error);
-							});
+							}));
 
 							res.on('end', Meteor.bindEnvironment(() => {
 								fileStore.insert(details, Buffer.concat(rawData), function(error, file) {
