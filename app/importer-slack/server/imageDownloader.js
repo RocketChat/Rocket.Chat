@@ -96,42 +96,47 @@ export class SlackImageImporter extends Base {
 							}));
 
 							res.on('end', Meteor.bindEnvironment(() => {
-								fileStore.insert(details, Buffer.concat(rawData), function(error, file) {
-									if (error) {
+								try {
+									fileStore.insert(details, Buffer.concat(rawData), function(error, file) {
+										if (error) {
+											addCountCompleted(1);
+											return callback(error);
+										}
+
+										const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+										const attachment = {
+											title: file.name,
+											title_link: url,
+										};
+
+										if (/^image\/.+/.test(file.type)) {
+											attachment.image_url = url;
+											attachment.image_type = file.type;
+											attachment.image_size = file.size;
+											attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+										}
+
+										if (/^audio\/.+/.test(file.type)) {
+											attachment.audio_url = url;
+											attachment.audio_type = file.type;
+											attachment.audio_size = file.size;
+										}
+
+										if (/^video\/.+/.test(file.type)) {
+											attachment.video_url = url;
+											attachment.video_type = file.type;
+											attachment.video_size = file.size;
+										}
+
+										Messages.setSlackFileRocketChatAttachment(slackFile.id, url, attachment);
+										downloadedFileIds.push(slackFile.id);
 										addCountCompleted(1);
-										return callback(error);
-									}
-
-									const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
-									const attachment = {
-										title: file.name,
-										title_link: url,
-									};
-
-									if (/^image\/.+/.test(file.type)) {
-										attachment.image_url = url;
-										attachment.image_type = file.type;
-										attachment.image_size = file.size;
-										attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-									}
-
-									if (/^audio\/.+/.test(file.type)) {
-										attachment.audio_url = url;
-										attachment.audio_type = file.type;
-										attachment.audio_size = file.size;
-									}
-
-									if (/^video\/.+/.test(file.type)) {
-										attachment.video_url = url;
-										attachment.video_type = file.type;
-										attachment.video_size = file.size;
-									}
-
-									Messages.setSlackFileRocketChatAttachment(slackFile.id, url, attachment);
-									downloadedFileIds.push(slackFile.id);
+										return callback();
+									});
+								} catch (error) {
 									addCountCompleted(1);
-									return callback();
-								});
+									return callback(error);
+								}
 							}));
 						}));
 					})();
