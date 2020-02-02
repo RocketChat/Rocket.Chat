@@ -132,7 +132,10 @@ export class Messages extends Base {
 		};
 
 		return this.update(query, {
-			$set: { 'slackFile.rocketChatUrl': rocketChatUrl },
+			$set: {
+				'slackFile.rocketChatUrl': rocketChatUrl,
+				'slackFile.downloaded': true,
+			},
 			$addToSet: {
 				attachments: attachment,
 			},
@@ -1162,9 +1165,14 @@ export class Messages extends Base {
 
 	findAllSlackImportedMessagesWithFilesToDownload() {
 		const query = {
-			'slackFile.url_private_download': { $exists: true },
+			'slackFile.url_private_download': {
+				$exists: true,
+			},
 			'slackFile.rocketChatUrl': {
 				$exists: false,
+			},
+			'slackFile.downloaded': {
+				$ne: true,
 			},
 			'slackFile.is_external': {
 				$ne: true,

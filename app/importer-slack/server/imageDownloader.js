@@ -59,7 +59,7 @@ export class SlackImageImporter extends Base {
 			slackFileMessageList.forEach((message) => {
 				try {
 					const { slackFile } = message;
-					if (!slackFile || slackFile.rocketChatUrl || downloadedFileIds.includes(slackFile.id)) {
+					if (!slackFile || slackFile.downloaded || downloadedFileIds.includes(slackFile.id)) {
 						this.addCountCompleted(1);
 						return;
 					}
