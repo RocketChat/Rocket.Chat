@@ -131,6 +131,7 @@ export class SlackImporter extends Base {
 						const tempMessages = JSON.parse(entry.getData().toString());
 						messagesCount += tempMessages.length;
 						this.updateRecord({ messagesstatus: `${ channel }/${ date }` });
+						this.addCountToTotal(tempMessages.length);
 
 						if (Base.getBSONSize(tempMessages) > Base.getMaxBSONSize()) {
 							const tmp = Base.getBSONSafeArraysFromAnArray(tempMessages);
@@ -163,7 +164,6 @@ export class SlackImporter extends Base {
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 		this.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
-		this.addCountToTotal(messagesCount);
 
 		if ([tempUsers.length, tempChannels.length + tempGroups.length + tempDMs.length + tempMpims.length, messagesCount].some((e) => e === 0)) {
 			this.logger.warn(`Loaded ${ tempUsers.length } users, ${ tempChannels.length } channels, ${ tempGroups.length } groups, ${ tempDMs.length } DMs, ${ tempMpims.length } multi party IMs and ${ messagesCount } messages`);
