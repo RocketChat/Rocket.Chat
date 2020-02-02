@@ -97,7 +97,8 @@ export class SlackImageImporter extends Base {
 
 							res.on('end', Meteor.bindEnvironment(() => {
 								try {
-									fileStore.insert(details, Buffer.concat(rawData), function(error, file) {
+									// Bypass the fileStore filters
+									fileStore._doInsert(details, Buffer.concat(rawData), function(error, file) {
 										if (error) {
 											addCountCompleted(1);
 											return callback(error);
