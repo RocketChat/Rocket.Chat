@@ -14,7 +14,6 @@ import './methods/uploadImportFile';
 import './methods/getImportFileData';
 import './methods/downloadPublicImportFile';
 import './methods/getLatestImportOperations';
-
 import './startup/setImportsToInvalid';
 import './startup/store';
 

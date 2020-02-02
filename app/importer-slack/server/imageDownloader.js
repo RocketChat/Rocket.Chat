@@ -24,37 +24,31 @@ export class SlackImageImporter extends Base {
 		super.updateProgress(ProgressStep.PREPARING_STARTED);
 
 		const messages = Messages.findAllSlackImportedMessagesWithFilesToDownload();
-		const imageCount = messages && messages.count();
+		const imageCount = messages.count();
 
-		if (imageCount > 0) {
-			this.updateRecord({ 'count.messages': imageCount, messagesstatus: null });
-			this.addCountToTotal(imageCount);
-
-			const selectionMessages = this.importRecord.count.messages;
-			super.updateProgress(ProgressStep.USER_SELECTION);
-
-			const fileData = new Selection(this.name, [], [], selectionMessages);
-			this.updateRecord({ fileData });
-
-			super.updateProgress(ProgressStep.IMPORTING_IMAGES);
-			Meteor.defer(() => {
-				this.startImport(fileData);
-			});
+		if (imageCount === 0) {
+			super.updateProgress(ProgressStep.DONE);
+			return 0;
 		}
+
+		this.updateRecord({ 'count.messages': imageCount, messagesstatus: null });
+		this.addCountToTotal(imageCount);
+
+		const fileData = new Selection(this.name, [], [], imageCount);
+		this.updateRecord({ fileData });
+
+		super.updateProgress(ProgressStep.IMPORTING_IMAGES);
+		Meteor.defer(() => {
+			this.startImport(fileData);
+		});
 
 		return imageCount;
 	}
 
 	startImport() {
 		const slackFileMessageList = Messages.findAllSlackImportedMessagesWithFilesToDownload();
-		const imageCount = slackFileMessageList && slackFileMessageList.count();
-
-		if (!imageCount) {
-			super.updateProgress(ProgressStep.DONE);
-			return this.getProgress();
-		}
-
 		const downloadedFileIds = [];
+
 		try {
 			slackFileMessageList.forEach((message) => {
 				try {
