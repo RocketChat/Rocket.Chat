@@ -1275,6 +1275,9 @@ Template.room.onRendered(function() {
 	}, 300);
 
 	const read = _.debounce(function() {
+		if (rid !== Session.get('openedRoom')) {
+			return;
+		}
 		readMessage.read(rid);
 	}, 500);
 
