@@ -10,7 +10,7 @@ export const saveRoomSystemMessages = function(rid, systemMessages) {
 			function: 'RocketChat.saveRoomSystemMessages',
 		});
 	}
-	if (systemMessages && !Match.test(systemMessages, [String]) && systemMessages.some((value) => !MessageTypes.includes(value))) {
+	if (systemMessages && (!Match.test(systemMessages, [String]) || systemMessages.some((value) => !MessageTypes.includes(value)))) {
 		throw new Meteor.Error('invalid-room', 'Invalid option', {
 			function: 'RocketChat.saveRoomSystemMessages',
 		});
