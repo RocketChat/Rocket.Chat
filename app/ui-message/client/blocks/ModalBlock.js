@@ -31,7 +31,17 @@ Template.ModalBlock.onRendered(async function() {
 	this.node = this.find('.js-modal-block').parentElement;
 	ActionManager.on(viewId, handleUpdate);
 
-	this.state = new ReactiveDict({});
+	const filterInputFields = ({ type, element }) => type === 'input' && element.initialValue;
+	const mapElementToState = ({ element, blockId }) => [element.actionId, { value: element.initialValue, blockId }];
+	const groupStateByBlockIdMap = (obj, [key, { blockId, value }]) => {
+		obj[blockId] = obj[blockId] || {};
+		obj[blockId][key] = value;
+		return obj;
+	};
+	const groupStateByBlockId = (obj) => Object.entries(obj).reduce(groupStateByBlockIdMap, {});
+
+	this.state = new ReactiveDict(Object.fromEntries(this.data.view.blocks.filter(filterInputFields).map(mapElementToState)));
+
 	ReactDOM.render(
 		React.createElement(
 			modalBlockWithContext({
@@ -42,14 +52,7 @@ Template.ModalBlock.onRendered(async function() {
 					payload: {
 						view: {
 							id: viewId,
-							state: Object.entries(this.state.all()).reduce(
-								(obj, [key, { blockId, value }]) => {
-									obj[blockId] = obj[blockId] || {};
-									obj[blockId][key] = value;
-									return obj;
-								},
-								{},
-							),
+							state: groupStateByBlockId(this.state.all()),
 						},
 					},
 				}),
