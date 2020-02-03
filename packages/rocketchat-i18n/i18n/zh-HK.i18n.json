@@ -968,7 +968,7 @@
   "Duplicate_channel_name": "存在名称为'％s'的频道",
   "Duplicate_private_group_name": "私有组 '%s' 已存在",
   "Duration": "持续时间",
-  "E2E_Reset_Key_Explanation": "此选项将删除您当前的E2E密钥并注销您的账户。 <BR0/>再次登录时，Rocket.Chat将为您生成一个新密钥，并恢复您对一个以上成员的加密房间的访问。<BR1/>因E2E加密的性质，Rocket.Chat不能够恢复对没有在线成员加密房间的访问权。",
+  "E2E_Reset_Key_Explanation": "此选项将删除您当前的E2E密钥并注销您的账户。 <br/>再次登录时，Rocket.Chat将为您生成一个新密钥，并恢复您对一个以上成员的加密房间的访问。<br/>因E2E加密的性质，Rocket.Chat不能够恢复对没有在线成员加密房间的访问权。",
   "Edit": "编辑",
   "edit-message": "编辑信息",
   "edit-message_description": "允许编辑房间内的消息",
