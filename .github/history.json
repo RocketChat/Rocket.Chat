@@ -38310,6 +38310,26 @@
           ]
         }
       ]
+    },
+    "2.4.7": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16433",
+          "title": "[FIX] Option to make a channel default",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.7",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        }
+      ]
     }
   }
 }

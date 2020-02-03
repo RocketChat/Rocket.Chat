@@ -108,8 +108,8 @@ Template.adminRooms.onCreated(function() {
 		template: 'channelSettingsDefault',
 		data() {
 			return {
-				session: Session.get('adminRoomsSelected'),
-				data: instance.tabBarData.get(),
+				room: instance.tabBarData.get().room,
+				onSuccess: instance.tabBarData.get().onSuccess,
 			};
 		},
 		validation() {
