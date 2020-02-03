@@ -2,7 +2,7 @@ import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings';
 import './email';
-import { MessageTypes } from '../lib/messageTypes';
+import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
 settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
@@ -1099,7 +1099,7 @@ settings.addGroup('Message', function() {
 	this.add('Hide_System_Messages', [], {
 		type: 'multiSelect',
 		public: true,
-		values: MessageTypes,
+		values: MessageTypesValues,
 	});
 
 

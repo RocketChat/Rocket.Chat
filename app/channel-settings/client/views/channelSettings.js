@@ -13,7 +13,8 @@ import { callbacks } from '../../../callbacks';
 import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from '../../../authorization';
 import { t, roomTypes, RoomSettingsEnum } from '../../../utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
-import { MessageTypes } from '../../../lib/server/lib/messageTypes';
+import { MessageTypesValues } from '../../../lib/lib/MessageTypes';
+
 
 const common = {
 	canLeaveRoom() {
@@ -450,7 +451,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			},
 			toogle: new ReactiveVar(room.sysMes && room.sysMes.length > 0),
 			values() {
-				return MessageTypes;
+				return MessageTypesValues;
 			},
 		},
 		archived: {
