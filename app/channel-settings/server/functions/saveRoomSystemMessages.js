@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 
 import { Rooms } from '../../../models';
+import { MessageTypes } from '../../../lib/server/lib/messageTypes';
 
 export const saveRoomSystemMessages = function(rid, systemMessages) {
 	if (!Match.test(rid, String)) {
@@ -9,8 +10,8 @@ export const saveRoomSystemMessages = function(rid, systemMessages) {
 			function: 'RocketChat.saveRoomSystemMessages',
 		});
 	}
-	if (systemMessages && !Match.test(systemMessages, [String])) {
-		throw new Meteor.Error('invalid-room', 'Invalid room', {
+	if (systemMessages && !Match.test(systemMessages, [String]) && systemMessages.some((value) => !MessageTypes.includes(value))) {
+		throw new Meteor.Error('invalid-room', 'Invalid option', {
 			function: 'RocketChat.saveRoomSystemMessages',
 		});
 	}
