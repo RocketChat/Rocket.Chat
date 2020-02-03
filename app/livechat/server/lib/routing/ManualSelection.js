@@ -21,7 +21,7 @@ class ManualSelection {
 			previewRoom: true,
 			showConnecting: true,
 			showQueue: true,
-			showQueueLink: false,
+			showQueueLink: true,
 			returnQueue: true,
 			enableTriggerAction: false,
 			autoAssignAgent: false,
