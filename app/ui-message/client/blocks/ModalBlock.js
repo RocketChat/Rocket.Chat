@@ -17,8 +17,11 @@ Template.ModalBlock.onRendered(async function() {
 		state.set(Template.currentData());
 	});
 
-	const handleUpdate = (data) => {
-		state.set(data);
+	const handleUpdate = ({ type, ...data }) => {
+		if (type === 'errors') {
+			return state.set({ ...state.get(), errors: data.errors });
+		}
+		return state.set(data);
 	};
 
 	this.cancel = () => {
