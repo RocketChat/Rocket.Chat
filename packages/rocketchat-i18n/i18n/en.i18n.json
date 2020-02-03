@@ -655,6 +655,7 @@
   "Cloud_workspace_connected_without_account": "Your workspace is now connected to the Rocket.Chat Cloud. If you would like, you can login to the Rocket.Chat Cloud and associate your workspace with your Cloud account.",
   "close-others-livechat-room_description": "Permission to close other LiveChat channels",
   "Closed": "Closed",
+  "Closed_At": "Closed at",
   "Closed_by_visitor": "Closed by visitor",
   "Closing_chat": "Closing chat",
   "Cloud": "Cloud",
