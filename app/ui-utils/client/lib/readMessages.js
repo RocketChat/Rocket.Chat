@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
@@ -23,7 +22,6 @@ export const readMessage = new class extends EventEmitter {
 	constructor() {
 		super();
 		this.debug = false;
-		// this.read = this.readNow;
 		this.enable();
 	}
 
