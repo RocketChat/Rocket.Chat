@@ -71,19 +71,6 @@ const getUsersPresence = debounce(async (isConnected) => {
 	}
 }, 1000);
 
-// let wasConnected = false;
-// Tracker.autorun(() => {
-// 	if (!Meteor.userId() || !Meteor.status().connected) {
-// 		return;
-// 	}
-
-// 	lastStatusChange = null;
-
-// 	// getUsersPresence(wasConnected);
-
-// 	// wasConnected = true;
-// });
-
 Meteor.startup(function() {
 	Notifications.onLogged('user-status', ([_id, username, status, statusText]) => {
 		// only set after first request completed
