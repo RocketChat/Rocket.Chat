@@ -570,7 +570,7 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
+const processSequentials = ({ currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
