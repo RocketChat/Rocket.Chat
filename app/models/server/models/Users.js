@@ -429,6 +429,12 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findOneByAppId(appId, options) {
+		const query = { appId };
+
+		return this.findOne(query, options);
+	}
+
 	findOneByImportId(_id, options) {
 		return this.findOne({ importIds: _id }, options);
 	}
@@ -827,6 +833,16 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				lastLogin: new Date(),
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	updateStatusById(_id, status) {
+		const update = {
+			$set: {
+				status,
 			},
 		};
 
