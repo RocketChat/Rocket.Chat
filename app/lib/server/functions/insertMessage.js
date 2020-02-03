@@ -96,7 +96,7 @@ export const insertMessage = function(user, message, room, upsert = false) {
 	}
 
 	if (!message.ts) {
-		message.ts = Date.now();
+		message.ts = new Date();
 	}
 	const { _id, username } = user;
 	message.u = {
