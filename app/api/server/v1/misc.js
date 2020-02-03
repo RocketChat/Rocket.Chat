@@ -10,7 +10,7 @@ import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
-import { StdOut } from '../../../logger/server/publish';
+import { StdOut } from '../../../logger/server/streamer';
 
 
 // DEPRECATED

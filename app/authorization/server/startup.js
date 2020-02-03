@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Roles, Permissions, Settings } from '../../models';
 import { settings } from '../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../lib';
+import { clearCache } from './functions/hasPermission';
 
 Meteor.startup(function() {
 	// Note:
@@ -208,4 +209,12 @@ Meteor.startup(function() {
 	};
 
 	settings.onload('*', createPermissionForAddedSetting);
+
+	Roles.on('change', ({ diff }) => {
+		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
+			// avoid useless changes
+			return;
+		}
+		clearCache();
+	});
 });
