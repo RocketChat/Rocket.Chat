@@ -17,6 +17,45 @@ if (process.env.SETTINGS_HIDDEN) {
 
 settings._sorter = {};
 
+const overrideSetting = (_id, value, options) => {
+	if (typeof process !== 'undefined' && process.env && process.env[_id]) {
+		value = process.env[_id];
+		if (value.toLowerCase() === 'true') {
+			value = true;
+		} else if (value.toLowerCase() === 'false') {
+			value = false;
+		} else if (options.type === 'int') {
+			value = parseInt(value);
+		}
+		options.processEnvValue = value;
+		options.valueSource = 'processEnvValue';
+	} else if (Meteor.settings && typeof Meteor.settings[_id] !== 'undefined') {
+		if (Meteor.settings[_id] == null) {
+			return false;
+		}
+
+		value = Meteor.settings[_id];
+		options.meteorSettingsValue = value;
+		options.valueSource = 'meteorSettingsValue';
+	}
+
+	if (typeof process !== 'undefined' && process.env && process.env[`OVERWRITE_SETTING_${ _id }`]) {
+		let value = process.env[`OVERWRITE_SETTING_${ _id }`];
+		if (value.toLowerCase() === 'true') {
+			value = true;
+		} else if (value.toLowerCase() === 'false') {
+			value = false;
+		} else if (options.type === 'int') {
+			value = parseInt(value);
+		}
+		options.value = value;
+		options.processEnvValue = value;
+		options.valueSource = 'processEnvValue';
+	}
+
+	return value;
+};
+
 
 /*
 * Add a setting
@@ -49,26 +88,6 @@ settings.add = function(_id, value, options = {}) {
 	if (options.i18nDefaultQuery != null) {
 		options.i18nDefaultQuery = JSON.stringify(options.i18nDefaultQuery);
 	}
-	if (typeof process !== 'undefined' && process.env && process.env[_id]) {
-		value = process.env[_id];
-		if (value.toLowerCase() === 'true') {
-			value = true;
-		} else if (value.toLowerCase() === 'false') {
-			value = false;
-		} else if (options.type === 'int') {
-			value = parseInt(value);
-		}
-		options.processEnvValue = value;
-		options.valueSource = 'processEnvValue';
-	} else if (Meteor.settings && typeof Meteor.settings[_id] !== 'undefined') {
-		if (Meteor.settings[_id] == null) {
-			return false;
-		}
-
-		value = Meteor.settings[_id];
-		options.meteorSettingsValue = value;
-		options.valueSource = 'meteorSettingsValue';
-	}
 	if (options.i18nLabel == null) {
 		options.i18nLabel = _id;
 	}
@@ -84,19 +103,9 @@ settings.add = function(_id, value, options = {}) {
 	if (options.autocomplete == null) {
 		options.autocomplete = true;
 	}
-	if (typeof process !== 'undefined' && process.env && process.env[`OVERWRITE_SETTING_${ _id }`]) {
-		let value = process.env[`OVERWRITE_SETTING_${ _id }`];
-		if (value.toLowerCase() === 'true') {
-			value = true;
-		} else if (value.toLowerCase() === 'false') {
-			value = false;
-		} else if (options.type === 'int') {
-			value = parseInt(value);
-		}
-		options.value = value;
-		options.processEnvValue = value;
-		options.valueSource = 'processEnvValue';
-	}
+
+	value = overrideSetting(_id, value, options);
+
 	const updateOperations = {
 		$set: options,
 		$setOnInsert: {
@@ -125,9 +134,9 @@ settings.add = function(_id, value, options = {}) {
 			$exists: false,
 		};
 	}
-	const existantSetting = Settings.db.findOne(query);
-	if (existantSetting != null) {
-		if (existantSetting.editor == null && updateOperations.$setOnInsert.editor != null) {
+	const existentSetting = Settings.db.findOne(query);
+	if (existentSetting != null) {
+		if (existentSetting.editor == null && updateOperations.$setOnInsert.editor != null) {
 			updateOperations.$set.editor = updateOperations.$setOnInsert.editor;
 			delete updateOperations.$setOnInsert.editor;
 		}
