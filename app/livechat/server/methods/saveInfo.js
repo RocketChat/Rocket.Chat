@@ -17,12 +17,14 @@ Meteor.methods({
 			name: Match.Optional(String),
 			email: Match.Optional(String),
 			phone: Match.Optional(String),
+			livechatData: Match.Optional(Object),
 		}));
 
 		check(roomData, Match.ObjectIncluding({
 			_id: String,
 			topic: Match.Optional(String),
 			tags: Match.Optional([String]),
+			livechatData: Match.Optional(Object),
 		}));
 
 		const room = LivechatRooms.findOneById(roomData._id, { t: 1, servedBy: 1 });

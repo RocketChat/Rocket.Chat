@@ -1,9 +1,9 @@
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
-import hljs from 'highlight.js';
 import _marked from 'marked';
 
+import hljs from '../../hljs';
 import { settings } from '../../../../settings';
 
 // Ignore regular URLs. Leave it to AutoLinker.
