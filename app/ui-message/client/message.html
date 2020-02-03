@@ -56,6 +56,11 @@
 							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
 						</span>
 					{{/if}}
+					{{#if msg.pinned}}
+						<span class="pinned">
+							<i class="icon-pin"></i>
+						</span>
+					{{/if}}
 					{{#if msg.alert}}
 						<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div>
 					{{/if}}
