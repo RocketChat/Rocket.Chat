@@ -482,7 +482,7 @@ const findParentMessage = (() => {
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
 
-	this.collapsedMedia = new ReactiveVar(this.data.settings.collapsedMediaByDefault === true);
+	this.collapsedMedia = new ReactiveVar(this.data.settings.collapseMediaByDefault === true);
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
