@@ -50,19 +50,19 @@ export const Livechat = {
 		},
 	}),
 
-	online() {
+	online(department) {
 		if (settings.get('Livechat_accept_chats_with_no_agents')) {
 			return true;
 		}
 
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
-			const botAgents = Livechat.getBotAgents();
+			const botAgents = Livechat.getBotAgents(department);
 			if (botAgents && botAgents.count() > 0) {
 				return true;
 			}
 		}
 
-		const onlineAgents = Livechat.getOnlineAgents();
+		const onlineAgents = Livechat.getOnlineAgents(department);
 		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
 	},
 
