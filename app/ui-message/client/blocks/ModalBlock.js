@@ -45,12 +45,29 @@ Template.ModalBlock.onRendered(async function() {
 	ReactDOM.render(
 		React.createElement(
 			modalBlockWithContext({
-				onClose: () => ActionManager.triggerCancel({ appId, viewId }),
+				onCancel: () => ActionManager.triggerCancel({
+					appId,
+					view: {
+						...this.data.view,
+						id: viewId,
+						state: groupStateByBlockId(this.state.all()),
+					},
+				}),
+				onClose: () => ActionManager.triggerCancel({
+					appId,
+					view: {
+						...this.data.view,
+						id: viewId,
+						state: groupStateByBlockId(this.state.all()),
+					},
+					isCleared: true,
+				}),
 				onSubmit: () => ActionManager.triggerSubmitView({
 					viewId,
 					appId,
 					payload: {
 						view: {
+							...this.data.view,
 							id: viewId,
 							state: groupStateByBlockId(this.state.all()),
 						},

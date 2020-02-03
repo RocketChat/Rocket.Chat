@@ -66,8 +66,6 @@ export class AppUIKitInteractionApi {
 						payload,
 					} = req.body;
 
-					console.log('req.body ->', JSON.stringify(req.body, null, 2));
-
 					const room = this.orch.getConverters().get('rooms').convertById(rid);
 					const user = this.orch.getConverters().get('users').convertToApp(req.user);
 					const message = mid && this.orch.getConverters().get('messages').convertById(mid);
@@ -104,8 +102,6 @@ export class AppUIKitInteractionApi {
 						triggerId,
 						payload,
 					} = req.body;
-
-					console.log('req.body ->', JSON.stringify(req.body, null, 2));
 
 					const user = this.orch.getConverters().get('users').convertToApp(req.user);
 
