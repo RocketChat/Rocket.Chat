@@ -467,7 +467,7 @@ export class ChatMessages {
 			if (this.editing.id === message._id) {
 				this.clearEditing();
 			}
-			
+
 			handleSequential(message);
 
 			this.deleteMsg(message);

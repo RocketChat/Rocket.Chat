@@ -593,11 +593,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 };
 
 export const handleSequential = (message) => {
-
-	let currentNode = $(`#${message._id}`);
-	let nextNode = currentNode.next();
-	if(!currentNode.hasClass('sequential')){
-		if(nextNode !== undefined && nextNode !== null && nextNode.hasClass('sequential')){
+	const currentNode = $(`#${ message._id }`);
+	const nextNode = currentNode.next();
+	if (!currentNode.hasClass('sequential')) {
+		if (nextNode !== undefined && nextNode !== null && nextNode.hasClass('sequential')) {
 			nextNode.removeClass('sequential');
 		}
 	}
