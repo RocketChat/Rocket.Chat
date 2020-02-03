@@ -31,7 +31,7 @@ Template.ModalBlock.onRendered(async function() {
 	this.node = this.find('.js-modal-block').parentElement;
 	ActionManager.on(viewId, handleUpdate);
 
-	const filterInputFileds = ({ type, element }) => type === 'input' && element.initialValue;
+	const filterInputFields = ({ type, element }) => type === 'input' && element.initialValue;
 	const mapElementToState = ({ element, blockId }) => [element.actionId, { value: element.initialValue, blockId }];
 	const groupStateByBlockIdMap = (obj, [key, { blockId, value }]) => {
 		obj[blockId] = obj[blockId] || {};
@@ -40,7 +40,7 @@ Template.ModalBlock.onRendered(async function() {
 	};
 	const groupStateByBlockId = (obj) => Object.entries(obj).reduce(groupStateByBlockIdMap, {});
 
-	this.state = new ReactiveDict(Object.fromEntries(this.data.view.blocks.filter(filterInputFileds).map(mapElementToState)));
+	this.state = new ReactiveDict(Object.fromEntries(this.data.view.blocks.filter(filterInputFields).map(mapElementToState)));
 
 	ReactDOM.render(
 		React.createElement(
