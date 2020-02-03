@@ -8,11 +8,11 @@ import { ChatMessage, Subscriptions } from '../../models';
 Meteor.methods({
 	pinMessage(message) {
 		if (!Meteor.userId()) {
-			toastr.error(TAPi18n.__('error-pinning-message'));
+			toastr.error(TAPi18n.__('error-not-authorized'));
 			return false;
 		}
 		if (!settings.get('Message_AllowPinning')) {
-			toastr.error(TAPi18n.__('error-pinning-message'));
+			toastr.error(TAPi18n.__('pinning-not-allowed'));
 			return false;
 		}
 		if (Subscriptions.findOne({ rid: message.rid }) == null) {
@@ -30,11 +30,11 @@ Meteor.methods({
 	},
 	unpinMessage(message) {
 		if (!Meteor.userId()) {
-			toastr.error(TAPi18n.__('error-unpinning-message'));
+			toastr.error(TAPi18n.__('error-not-authorized'));
 			return false;
 		}
 		if (!settings.get('Message_AllowPinning')) {
-			toastr.error(TAPi18n.__('error-unpinning-message'));
+			toastr.error(TAPi18n.__('unpinning-not-allowed'));
 			return false;
 		}
 		if (Subscriptions.findOne({ rid: message.rid }) == null) {
