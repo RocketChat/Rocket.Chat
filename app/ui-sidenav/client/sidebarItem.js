@@ -33,6 +33,7 @@ Template.sidebarItem.helpers({
 		return this.pathSection === 'livechat-queue';
 	},
 	showUnread() {
+		console.log(this);
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
 	badgeClass() {
