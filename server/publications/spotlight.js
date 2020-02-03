@@ -34,8 +34,6 @@ Meteor.methods({
 		const result = {
 			users: [],
 			rooms: [],
-			exactUser: null,
-			exactRoom: null,
 		};
 		const roomOptions = {
 			limit: 5,
@@ -76,11 +74,10 @@ Meteor.methods({
 			if (type.users === true && hasPermission(userId, 'view-d-room')) {
 				const exactUser = Users.findOneByUsernameIgnoringCase(text, userOptions);
 				if (exactUser && !usernames.includes(exactUser.username)) {
-					result.exactUser = exactUser;
+					result.users.push(exactUser);
 					usernames.push(exactUser.username);
 				}
-
-				result.users = Users.findByActiveUsersExcept(text, usernames, userOptions).fetch();
+				result.users = result.users.concat(Users.findByActiveUsersExcept(text, usernames, userOptions).fetch());
 			}
 
 			if (type.rooms === true && hasPermission(userId, 'view-c-room')) {
@@ -91,11 +88,11 @@ Meteor.methods({
 				const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypes, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypes, roomOptions);
 				if (exactRoom) {
-					result.exactRoom = exactRoom;
+					result.exactRoom.push(exactRoom);
 					roomIds.push(exactRoom.rid);
 				}
 
-				result.rooms = fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypes, roomIds, roomOptions).fetch());
+				result.rooms = result.rooms.concat(fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypes, roomIds, roomOptions).fetch()));
 			}
 		} else if (type.users === true && rid) {
 			const subscriptions = Subscriptions.find({
