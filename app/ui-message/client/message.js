@@ -574,9 +574,6 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
-	if (msg.file && msg.file.type === 'application/pdf') {
-		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
-	}
 	// const currentDataset = currentNode.dataset;
 	const previousNode = getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
@@ -611,4 +608,11 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
 	const currentNode = this.firstNode;
 	processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
+
+	this.autorun(() => {
+		const { msg } = Template.currentData();
+		if (msg.file && msg.file.type === 'application/pdf' && !this.collapsedMedia.get()) {
+			Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
+		}
+	});
 });
