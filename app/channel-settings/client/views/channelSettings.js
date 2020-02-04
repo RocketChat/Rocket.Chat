@@ -6,7 +6,7 @@ import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
 
-import { modal, popover, call, erase, hide, leave } from '../../../ui-utils';
+import { modal, popover, call, erase, hide, leave, offlineAction } from '../../../ui-utils';
 import { ChatRoom } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -193,6 +193,9 @@ Template.channelSettingsEditing.events({
 		popover.open(config);
 	},
 	async 'click .js-save'(e, t) {
+		if (offlineAction('Editing room')) {
+			return;
+		}
 		const { settings } = t;
 		Object.keys(settings).forEach(async (name) => {
 			const setting = settings[name];

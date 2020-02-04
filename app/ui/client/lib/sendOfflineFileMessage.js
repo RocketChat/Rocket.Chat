@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { TimeSync } from 'meteor/mizzao:timesync';
 import toastr from 'toastr';
 
 import { ChatMessage, CachedChatMessage } from '../../../models';
@@ -76,7 +75,7 @@ export const sendOfflineFileMessage = (roomId, msgData, file, meta, callback) =>
 	}
 
 	const user = Meteor.user();
-	message.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
+	message.ts = new Date();
 	message.u = {
 		_id: Meteor.userId(),
 		username: user.username,

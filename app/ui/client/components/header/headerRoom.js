@@ -26,6 +26,7 @@ const getUserStatusText = (id) => {
 
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
+	isNotMobile: () => !isMobile(),
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),

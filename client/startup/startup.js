@@ -9,7 +9,7 @@ import hljs from 'highlight.js';
 import { fireGlobalEvent } from '../../app/ui-utils';
 import { settings } from '../../app/settings';
 import { Users } from '../../app/models';
-import { getUserPreference } from '../../app/utils';
+import { getUserPreference, isMobile } from '../../app/utils';
 import 'highlight.js/styles/github.css';
 
 hljs.initHighlightingOnLoad();
@@ -21,7 +21,15 @@ if (window.DISABLE_ANIMATION) {
 	toastr.options.extendedTimeOut = 0;
 }
 
-Meteor.startup(function() {
+Meteor.startup(async function() {
+	if (!isMobile()) {
+		await import('../../app/livechat/client');
+		await import('../../app/katex/client');
+		await import('../../app/integrations/client');
+		await import('../../app/apps/client');
+	}
+
+
 	TimeSync.loggingEnabled = false;
 
 	Session.setDefault('AvatarRandom', 0);

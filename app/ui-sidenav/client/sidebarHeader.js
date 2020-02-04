@@ -270,10 +270,12 @@ const toolbarButtons = (user) => [{
 				type: 'open',
 				id: 'administration',
 				action: () => {
-					SideNav.setFlex('adminFlex');
-					SideNav.openFlex();
-					FlowRouter.go('admin', { group: 'info' });
-					popover.close();
+					import('../../ui-admin/client').then(() => {
+						SideNav.setFlex('adminFlex');
+						SideNav.openFlex();
+						FlowRouter.go('admin', { group: 'info' });
+						popover.close();
+					});
 				},
 			};
 		}
@@ -282,6 +284,12 @@ const toolbarButtons = (user) => [{
 			name: t('Sort'),
 			icon: 'sort',
 			type: 'sort-action',
+		};
+
+		const shareOption = {
+			name: t('Share'),
+			icon: 'share',
+			type: 'share-action',
 		};
 
 		const config = {
@@ -326,9 +334,9 @@ const toolbarButtons = (user) => [{
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		if (isMobile()) {
-			console.log(config.columns);
 			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
 		}
+		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 
 		popover.open(config);
 	},
@@ -345,7 +353,8 @@ Template.sidebarHeader.helpers({
 		}
 		return id && Meteor.users.findOne(id, { fields: {
 			username: 1, status: 1, statusText: 1,
-		} });
+		},
+		});
 	},
 	toolbarButtons() {
 		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());

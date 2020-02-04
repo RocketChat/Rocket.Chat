@@ -181,7 +181,7 @@ video {
 	mark,
 	audio,
 	video {
-		font-size: 100% !important;
+		font-size: 1rem !important;
 	}
 }
 

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TimeSync } from 'meteor/mizzao:timesync';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
@@ -19,7 +18,7 @@ Meteor.methods({
 			return toastr.error(t('Message_Already_Sent'));
 		}
 		const user = Meteor.user();
-		message.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
+		message.ts = new Date();
 		message.u = {
 			_id: Meteor.userId(),
 			username: user.username,

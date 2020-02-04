@@ -673,7 +673,7 @@ Template.room.events({
 			window.open(e.target.href);
 		}
 
-		if (isMobile()) {
+		if (isMobile() && !touchMoved) {
 			mountPopover(e, t, this);
 		}
 	},

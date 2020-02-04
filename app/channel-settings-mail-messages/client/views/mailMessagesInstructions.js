@@ -9,6 +9,7 @@ import toastr from 'toastr';
 
 import { ChatRoom } from '../../../models';
 import { t, isEmail, handleError, roomTypes } from '../../../utils';
+import { offlineAction } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import resetSelection from '../resetSelection';
 
@@ -100,6 +101,10 @@ Template.mailMessagesInstructions.events({
 		const { selectedUsers, selectedEmails, selectedMessages } = instance;
 		const $emailsInput = instance.$('[name="emails"]');
 		const subject = instance.$('[name="subject"]').val();
+
+		if (offlineAction('Sending mail')) {
+			return false;
+		}
 
 		if (!selectedUsers.get().length && !selectedEmails.get().length && $emailsInput.val().trim() === '') {
 			instance.errorMessage.set(t('Mail_Message_Missing_to'));
