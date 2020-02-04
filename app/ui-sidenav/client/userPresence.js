@@ -8,7 +8,6 @@ import mem from 'mem';
 import { APIClient } from '../../utils/client';
 import { saveUser } from '../../../imports/startup/client/listenActiveUsers';
 
-
 import './userPresence.html';
 
 const data = new Map();
@@ -31,9 +30,7 @@ const getAll = _.debounce(async function getAll() {
 			users,
 		} = await APIClient.v1.get('users.presence', params);
 
-		users.forEach((user) => {
-			saveUser(user);
-		});
+		users.forEach((user) => saveUser(user, true));
 
 		ids.forEach((id) => {
 			const { resolve } = promises.get(id);
@@ -49,7 +46,6 @@ const getAll = _.debounce(async function getAll() {
 
 
 const get = mem(function get(id) {
-	console.log(id);
 	const promise = pending.get(id) || new Promise((resolve, reject) => {
 		promises.set(id, { resolve, reject });
 	});
@@ -57,27 +53,30 @@ const get = mem(function get(id) {
 	return promise;
 });
 
-
-Tracker.autorun(() => {
-	if (!Meteor.userId() || !Meteor.status().connected) {
-		return;
-	}
-
-	mem.clear(get);
-});
-
 const options = {
 	threshold: 0.1,
 };
 
-const observer = new IntersectionObserver(function(entries) {
-	entries.filter(({ isIntersecting }) => isIntersecting).forEach(async (entry) => {
+let lastEntries = [];
+const handleEntries = function(entries) {
+	lastEntries = entries.filter(({ isIntersecting }) => isIntersecting);
+	lastEntries.forEach(async (entry) => {
 		const { uid } = data.get(entry.target);
 		await get(uid);
 		pending.delete(uid);
 	});
 	getAll();
-}, options);
+};
+
+const observer = new IntersectionObserver(handleEntries, options);
+
+Tracker.autorun(() => {
+	if (!Meteor.userId() || !Meteor.status().connected) {
+		return Meteor.users.update({}, { $unset: { status: '' } }, { multi: true });
+	}
+	mem.clear(get);
+	handleEntries(lastEntries);
+});
 
 Template.userPresence.onRendered(function() {
 	data.set(this.firstNode, this.data);
