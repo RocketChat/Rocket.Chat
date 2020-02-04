@@ -218,6 +218,12 @@ function roomMaxAge(room) {
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
 Template.room.helpers({
+	openSearchPage() {
+		if (!isMobile()) {
+			return false;
+		}
+		return Session.get('openSearchPage');
+	},
 	useNrr() {
 		const useNrr = getConfig('useNrr');
 		return useNrr === 'true' || useNrr !== 'false';
@@ -946,6 +952,7 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+	Session.set('openSearchPage', false);
 	lazyloadtick();
 	const rid = this.data._id;
 
@@ -1088,6 +1095,8 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	Session.set('openSearchPage', false);
+
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {
