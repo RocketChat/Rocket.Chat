@@ -56,6 +56,7 @@ export const modalBlockWithContext = ({
 	},
 	onSubmit,
 	onClose,
+	onCancel,
 	...context
 }) => (props) => {
 	const id = `modal_id_${ useUniqueId() }`;
@@ -135,7 +136,7 @@ export const modalBlockWithContext = ({
 					</Modal.Content>
 					<Modal.Footer>
 						<ButtonGroup align='end'>
-							<Button onClick={onClose}>{textParser([close.text])}</Button>
+							<Button onClick={onCancel}>{textParser([close.text])}</Button>
 							<Button primary onClick={onSubmit}>{textParser([submit.text])}</Button>
 						</ButtonGroup>
 					</Modal.Footer>

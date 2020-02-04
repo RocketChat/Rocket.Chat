@@ -47,6 +47,7 @@ Template.ModalBlock.onRendered(async function() {
 			modalBlockWithContext({
 				onCancel: () => ActionManager.triggerCancel({
 					appId,
+					viewId,
 					view: {
 						...this.data.view,
 						id: viewId,
@@ -55,6 +56,7 @@ Template.ModalBlock.onRendered(async function() {
 				}),
 				onClose: () => ActionManager.triggerCancel({
 					appId,
+					viewId,
 					view: {
 						...this.data.view,
 						id: viewId,
