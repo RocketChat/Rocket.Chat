@@ -2619,6 +2619,10 @@ rc-old select,
 	}
 }
 
+.message-indications {
+	display: none;
+}
+
 .message {
 	position: relative;
 	z-index: 1;
@@ -2988,7 +2992,8 @@ rc-old select,
 		& .reactions,
 		& .edited,
 		& .role-tag,
-		&:hover .message-actions {
+		&:hover .message-actions,
+		&:hover .message-indications {
 			display: none;
 		}
 	}
@@ -3044,6 +3049,10 @@ rc-old select,
 		}
 
 		&:hover .message-actions {
+			display: none;
+		}
+
+		&:hover .message-indications {
 			display: none;
 		}
 	}

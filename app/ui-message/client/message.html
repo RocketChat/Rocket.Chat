@@ -70,6 +70,11 @@
 					{{#if isIgnored}}
 						<span class="toggle-hidden icon-right-dir" data-message="{{msg._id}}"> {{_ "Message_Ignored"}} </span>
 					{{/if}}
+					<span class="message-indications">
+						{{#if msg.starred}}
+							<span class="icon-star"></span>
+						{{/if}}
+					</span>
 				</div>
 				<div class="body {{bodyClass}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 					{{#if isSnippet}}
