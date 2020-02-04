@@ -44,7 +44,6 @@ const getAll = _.debounce(async function getAll() {
 	}
 }, 1000);
 
-
 const get = mem(function get(id) {
 	const promise = pending.get(id) || new Promise((resolve, reject) => {
 		promises.set(id, { resolve, reject });
@@ -75,7 +74,11 @@ Tracker.autorun(() => {
 		return Meteor.users.update({}, { $unset: { status: '' } }, { multi: true });
 	}
 	mem.clear(get);
-	handleEntries(lastEntries);
+
+	for (const node of data.keys()) {
+		observer.unobserve(node);
+		observer.observe(node);
+	}
 });
 
 Template.userPresence.onRendered(function() {
