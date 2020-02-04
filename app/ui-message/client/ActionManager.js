@@ -54,23 +54,25 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	}
 
 	if (['errors'].includes(type)) {
-		return events.emit(viewId, {
+		events.emit(viewId, {
 			type,
 			triggerId,
 			viewId,
 			appId,
 			...data,
 		});
+		return type;
 	}
 
 	if ([UIKitInteractionType.MODAL_UPDATE].includes(type)) {
-		return events.emit(viewId, {
+		events.emit(viewId, {
 			type,
 			triggerId,
 			viewId,
 			appId,
 			...data,
 		});
+		return UIKitInteractionType.MODAL_UPDATE;
 	}
 
 	if ([UIKitInteractionType.MODAL_OPEN].includes(type)) {
@@ -86,8 +88,10 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			},
 		});
 		instances.set(viewId, instance);
-		return instance;
+		return UIKitInteractionType.MODAL_OPEN;
 	}
+
+	return UIKitInteractionType.MODAL_ClOSE;
 };
 
 export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }) => new Promise(async (resolve, reject) => {
@@ -103,14 +107,22 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, ...rest }
 
 export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
 export const triggerSubmitView = async ({ viewId, ...options }) => {
-	const instance = instances.get(viewId);
-	try {
-		await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
-	} finally {
+	const close = () => {
+		const instance = instances.get(viewId);
+
 		if (instance) {
 			instance.close();
 			instances.delete(viewId);
 		}
+	};
+
+	try {
+		const result = await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
+		if (UIKitInteractionType.MODAL_CLOSE === result) {
+			close();
+		}
+	} finally {
+		close();
 	}
 };
 export const triggerCancel = async ({ viewId, ...options }) => {
