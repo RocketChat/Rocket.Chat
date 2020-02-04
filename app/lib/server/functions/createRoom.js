@@ -57,7 +57,6 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 	}, extraData, {
 		ts: now,
 		ro: readOnly === true,
-		sysMes: readOnly !== true,
 	});
 
 	if (type === 'd') {
