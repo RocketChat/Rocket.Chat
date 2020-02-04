@@ -12,7 +12,7 @@ export class AppLivechatBridge {
 		this.orch = orch;
 	}
 
-	isOnline(department) {
+	async isOnline(department) {
 		return Livechat.online(department);
 	}
 
