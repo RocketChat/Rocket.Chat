@@ -133,14 +133,14 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 		close();
 	}
 };
-export const triggerCancel = async ({ viewId, ...options }) => {
-	const instance = instances.get(viewId);
+export const triggerCancel = async ({ view, ...options }) => {
+	const instance = instances.get(view.id);
 	try {
-		await triggerAction({ type: UIKitIncomingInteractionType.VIEW_CLOSED, viewId, ...options });
+		await triggerAction({ type: UIKitIncomingInteractionType.VIEW_CLOSED, view, ...options });
 	} finally {
 		if (instance) {
 			instance.close();
-			instances.delete(viewId);
+			instances.delete(view.id);
 		}
 	}
 };
