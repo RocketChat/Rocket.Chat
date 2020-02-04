@@ -24,8 +24,8 @@ export function SelectSettingInput({
 }) {
 	const t = useTranslation();
 
-	const handleChange = (event) => {
-		onChangeValue && onChangeValue(event.currentTarget.value);
+	const handleChange = ([value]) => {
+		onChangeValue && onChangeValue(value);
 	};
 
 	return <>
@@ -51,5 +51,16 @@ export function SelectSettingInput({
 				)}
 			</SelectInput>
 		</Field.Row>
+		{/* <Select
+			data-qa-setting-id={_id}
+			id={_id}
+			value={value}
+			placeholder={placeholder}
+			disabled={disabled}
+			readOnly={readonly}
+			onChange={handleChange}
+			option={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)],
+			)}
+		/> */}
 	</>;
 }
