@@ -5,9 +5,3 @@ export class SlackImporterInfo extends ImporterInfo {
 		super('slack', 'Slack', 'application/zip');
 	}
 }
-
-export class SlackFileImporterInfo extends ImporterInfo {
-	constructor() {
-		super('slack-files', 'Slack Files', '');
-	}
-}

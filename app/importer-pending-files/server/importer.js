@@ -13,7 +13,7 @@ import {
 import { Messages } from '../../models';
 import { FileUpload } from '../../file-upload';
 
-export class SlackFileImporter extends Base {
+export class PendingFileImporter extends Base {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 		this.userTags = [];
@@ -24,7 +24,7 @@ export class SlackFileImporter extends Base {
 		this.logger.debug('start preparing import operation');
 		super.updateProgress(ProgressStep.PREPARING_STARTED);
 
-		const messages = Messages.findAllSlackImportedMessagesWithFilesToDownload();
+		const messages = Messages.findAllImportedMessagesWithFilesToDownload();
 		const fileCount = messages.count();
 
 		if (fileCount === 0) {
@@ -47,7 +47,7 @@ export class SlackFileImporter extends Base {
 	}
 
 	startImport() {
-		const slackFileMessageList = Messages.findAllSlackImportedMessagesWithFilesToDownload();
+		const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
 		const downloadedFileIds = [];
 		const maxFileCount = 10;
 		const maxFileSize = 1024 * 1024 * 500;
@@ -88,24 +88,25 @@ export class SlackFileImporter extends Base {
 		};
 
 		try {
-			slackFileMessageList.forEach((message) => {
+			pendingFileMessageList.forEach((message) => {
 				try {
-					const { slackFile } = message;
-					if (!slackFile || slackFile.downloaded || downloadedFileIds.includes(slackFile.id)) {
+					const { _importFile } = message;
+
+					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
 						this.addCountCompleted(1);
 						return;
 					}
 
-					const url = slackFile.url_private_download;
+					const url = _importFile.downloadUrl;
 					if (!url || !url.startsWith('http')) {
 						this.addCountCompleted(1);
 						return;
 					}
 
 					const details = {
-						message_id: `${ message._id }-file-${ slackFile.id }`,
-						name: slackFile.name || Random.id(),
-						size: slackFile.size || 0,
+						message_id: `${ message._id }-file-${ _importFile.id }`,
+						name: _importFile.name || Random.id(),
+						size: _importFile.size || 0,
 						userId: message.u._id,
 						rid: message.rid,
 					};
@@ -118,7 +119,7 @@ export class SlackFileImporter extends Base {
 					waitForFiles();
 					count++;
 					currentSize += nextSize;
-					downloadedFileIds.push(slackFile.id);
+					downloadedFileIds.push(_importFile.id);
 
 					requestModule.get(url, Meteor.bindEnvironment(function(res) {
 						const contentType = res.headers['content-type'];
@@ -180,7 +181,7 @@ export class SlackFileImporter extends Base {
 										attachment.video_size = file.size;
 									}
 
-									Messages.setSlackFileRocketChatAttachment(slackFile.id, url, attachment);
+									Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
 									completeFile(details);
 								});
 							} catch (error) {

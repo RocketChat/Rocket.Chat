@@ -74,19 +74,19 @@ API.v1.addRoute('getLatestImportOperations', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('downloadSlackFiles', { authRequired: true }, {
+API.v1.addRoute('downloadPendingFiles', { authRequired: true }, {
 	post() {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'downloadSlackFiles' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'downloadPendingFiles' });
 		}
 
 		if (!hasPermission(this.userId, 'run-import')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
-		const importer = Importers.get('slack-files');
+		const importer = Importers.get('pending-files');
 		if (!importer) {
-			throw new Meteor.Error('error-importer-not-defined', 'The Slack Image Importer was not found.', { method: 'downloadSlackFiles' });
+			throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', { method: 'downloadPendingFiles' });
 		}
 
 		importer.instance = new importer.importer(importer); // eslint-disable-line new-cap

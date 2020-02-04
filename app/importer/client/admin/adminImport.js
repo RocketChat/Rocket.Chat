@@ -78,7 +78,7 @@ Template.adminImport.events({
 	},
 	'click .download-slack-files-btn'(event, template) {
 		template.preparing.set(true);
-		APIClient.post('v1/downloadSlackFiles').then((data) => {
+		APIClient.post('v1/downloadPendingFiles').then((data) => {
 			template.preparing.set(false);
 			if (data.count) {
 				toastr.success(t('File_Downloads_Started'));

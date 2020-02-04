@@ -392,7 +392,7 @@ export class SlackImporter extends Base {
 						_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }-file${ fileIndex }`,
 						ts: msgDataDefaults.ts,
 						msg: file.url_private_download || '',
-						slackFile: file,
+						_importFile: this.convertSlackFileToPendingFile(file),
 					};
 					insertMessage(fileUser, msgObj, room, this._anyExistingSlackMessage);
 				});
@@ -897,6 +897,20 @@ export class SlackImporter extends Base {
 		}
 
 		return message;
+	}
+
+	convertSlackFileToPendingFile(file) {
+		return {
+			downloadUrl: file.url_private_download,
+			id: file.id,
+			size: file.size,
+			name: file.name,
+			external: file.is_external,
+			source: 'slack',
+			original: {
+				...file,
+			},
+		};
 	}
 
 	convertMessageAttachments(attachments) {
