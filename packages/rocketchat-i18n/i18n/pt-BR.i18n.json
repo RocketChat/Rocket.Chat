@@ -1154,6 +1154,7 @@
   "email_style_label": "Estilo do Email",
   "email_style_description": "Evite seletores aninhados",
   "Email_verified": "Email verificado",
+  "email_plain_text_only": "Enviar emails apenas em texto puro",
   "Emoji": "Emoji",
   "EmojiCustomFilesystem": "Sistema de arquivos do emoji customizado",
   "Empty_title": "Título vazio",

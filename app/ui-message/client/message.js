@@ -14,7 +14,6 @@ import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
 import './messageThread.html';
 
@@ -570,12 +569,15 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies, collapsedMedia }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
+	if (msg.file && msg.file.type === 'application/pdf' && !collapsedMedia) {
+		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
+	}
 	// const currentDataset = currentNode.dataset;
-	const previousNode = getPreviousSentMessage(currentNode);
+	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
 	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
@@ -605,14 +607,7 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 	}
 };
 
-Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
+Template.message.onRendered(function() {
 	const currentNode = this.firstNode;
-	processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-
-	this.autorun(() => {
-		const { msg } = Template.currentData();
-		if (msg.file && msg.file.type === 'application/pdf' && !this.collapsedMedia.get()) {
-			Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
-		}
-	});
+	this.autorun(() => processSequentials({ currentNode, ...Template.currentData(), collapsedMedia: this.collapsedMedia.get() }));
 });
