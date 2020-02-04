@@ -6,14 +6,6 @@ import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { loadMessageHistory } from '../../app/lib';
 
-const hideMessagesOfType = new Set();
-
-settings.get('Hide_System_Messages', function(key, values) {
-	const hiddenTypes = values.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []);
-	hideMessagesOfType.clear();
-	hiddenTypes.forEach((item) => hideMessagesOfType.add(item));
-});
-
 Meteor.methods({
 	loadHistory(rid, end, limit = 20, ls) {
 		check(rid, String);
