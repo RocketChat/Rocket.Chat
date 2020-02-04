@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { t, roomTypes, handleError } from '../../../../utils';
+import { t, roomTypes, handleError, isMobile } from '../../../../utils';
 import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
 import { settings } from '../../../../settings';
@@ -26,6 +26,7 @@ const getUserStatusText = (id) => {
 
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
+	isNotMobile: () => !isMobile(),
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
