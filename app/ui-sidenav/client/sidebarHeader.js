@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
-import { t, getUserPreference, handleError, isMobile } from '../../utils';
+import { t, getUserPreference, handleError, isMobile, shareApp } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
@@ -286,6 +286,16 @@ const toolbarButtons = (user) => [{
 			type: 'sort-action',
 		};
 
+		const shareOption = {
+			name: t('Share'),
+			icon: 'share',
+			type: 'open',
+			action: () => {
+				shareApp();
+				popover.close();
+			},
+		};
+
 		const config = {
 			popoverClass: 'sidebar-header',
 			columns: [
@@ -328,8 +338,7 @@ const toolbarButtons = (user) => [{
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		if (isMobile()) {
-			console.log(config.columns);
-			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption, shareOption]);
 		}
 
 		popover.open(config);
@@ -347,7 +356,8 @@ Template.sidebarHeader.helpers({
 		}
 		return id && Meteor.users.findOne(id, { fields: {
 			username: 1, status: 1, statusText: 1,
-		} });
+		},
+		});
 	},
 	toolbarButtons() {
 		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());
