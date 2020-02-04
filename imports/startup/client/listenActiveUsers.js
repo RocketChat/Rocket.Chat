@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-// import { Tracker } from 'meteor/tracker';
 import { debounce } from 'underscore';
 
 import { Notifications } from '../../../app/notifications/client';
@@ -71,19 +70,6 @@ const getUsersPresence = debounce(async (isConnected) => {
 		setTimeout(() => getUsersPresence(isConnected), retry++ * 2000);
 	}
 }, 1000);
-
-// let wasConnected = false;
-// Tracker.autorun(() => {
-// 	if (!Meteor.userId() || !Meteor.status().connected) {
-// 		return;
-// 	}
-
-// 	lastStatusChange = null;
-
-// 	// getUsersPresence(wasConnected);
-
-// 	// wasConnected = true;
-// });
 
 Meteor.startup(function() {
 	Notifications.onLogged('user-status', ([_id, username, status, statusText]) => {

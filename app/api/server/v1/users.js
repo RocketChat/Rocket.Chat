@@ -662,6 +662,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 		if (ids) {
 			return API.v1.success({
 				users: Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
+				full: false,
 			});
 		}
 
