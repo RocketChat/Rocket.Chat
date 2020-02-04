@@ -6,8 +6,8 @@ export class SlackImporterInfo extends ImporterInfo {
 	}
 }
 
-export class SlackImageImporterInfo extends ImporterInfo {
+export class SlackFileImporterInfo extends ImporterInfo {
 	constructor() {
-		super('slack-images', 'Slack Images', '');
+		super('slack-files', 'Slack Files', '');
 	}
 }

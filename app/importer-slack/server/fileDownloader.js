@@ -12,37 +12,37 @@ import {
 import { Messages } from '../../models';
 import { FileUpload } from '../../file-upload';
 
-export class SlackImageImporter extends Base {
+export class SlackFileImporter extends Base {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 		this.userTags = [];
 		this.bots = {};
 	}
 
-	prepareImageCount() {
+	prepareFileCount() {
 		this.logger.debug('start preparing import operation');
 		super.updateProgress(ProgressStep.PREPARING_STARTED);
 
 		const messages = Messages.findAllSlackImportedMessagesWithFilesToDownload();
-		const imageCount = messages.count();
+		const fileCount = messages.count();
 
-		if (imageCount === 0) {
+		if (fileCount === 0) {
 			super.updateProgress(ProgressStep.DONE);
 			return 0;
 		}
 
-		this.updateRecord({ 'count.messages': imageCount, messagesstatus: null });
-		this.addCountToTotal(imageCount);
+		this.updateRecord({ 'count.messages': fileCount, messagesstatus: null });
+		this.addCountToTotal(fileCount);
 
-		const fileData = new Selection(this.name, [], [], imageCount);
+		const fileData = new Selection(this.name, [], [], fileCount);
 		this.updateRecord({ fileData });
 
-		super.updateProgress(ProgressStep.IMPORTING_IMAGES);
+		super.updateProgress(ProgressStep.IMPORTING_FILES);
 		Meteor.defer(() => {
 			this.startImport(fileData);
 		});
 
-		return imageCount;
+		return fileCount;
 	}
 
 	startImport() {
