@@ -60,30 +60,9 @@ stdoutStreamer.allowRead(function() {
 
 Meteor.startup(() => {
 	const handler = (string, item) => {
-		stdoutStreamer.emit('stdout', {
+		stdoutStreamer.emitWithoutBroadcast('stdout', {
 			...item,
 		});
 	};
-	StdOut.on('write', handler);
-});
-
-Meteor.publish('stdout', function() {
-	console.warn('The publication "stdout" is deprecated and will be removed after version v3.0.0');
-	if (!this.userId || hasPermission(this.userId, 'view-logs') !== true) {
-		return this.ready();
-	}
-	const handler = (string, item) => {
-		this.added('stdout', item.id, {
-			string: item.string,
-			ts: item.ts,
-		});
-	};
-
-	StdOut.queue.forEach((item) => handler('', item));
-
-	this.ready();
-
-	this.onStop(() => StdOut.removeListener('write', handler));
-
 	StdOut.on('write', handler);
 });
