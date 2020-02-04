@@ -90,14 +90,14 @@ export class PendingFileImporter extends Base {
 		try {
 			pendingFileMessageList.forEach((message) => {
 				try {
-					const { _importFile } = message;
+					const _importFile = message.slackFile;
 
 					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
 						this.addCountCompleted(1);
 						return;
 					}
 
-					const url = _importFile.downloadUrl;
+					const url = _importFile.url_private_download;
 					if (!url || !url.startsWith('http')) {
 						this.addCountCompleted(1);
 						return;

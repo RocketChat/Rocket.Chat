@@ -393,6 +393,7 @@ export class SlackImporter extends Base {
 						ts: msgDataDefaults.ts,
 						msg: file.url_private_download || '',
 						_importFile: this.convertSlackFileToPendingFile(file),
+						slackFile: file,
 					};
 					insertMessage(fileUser, msgObj, room, this._anyExistingSlackMessage);
 				});
@@ -901,7 +902,7 @@ export class SlackImporter extends Base {
 
 	convertSlackFileToPendingFile(file) {
 		return {
-			downloadUrl: file.url_private_download,
+			url_private_download: file.url_private_download,
 			id: file.id,
 			size: file.size,
 			name: file.name,
