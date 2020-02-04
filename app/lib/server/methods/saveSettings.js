@@ -37,6 +37,9 @@ Meteor.methods({
 				case 'int':
 					check(value, Number);
 					break;
+				case 'multiSelect':
+					check(value, Array);
+					break;
 				default:
 					check(value, String);
 					break;
