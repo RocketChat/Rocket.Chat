@@ -75,7 +75,6 @@ Template.popover.onRendered(function() {
 
 		if (position) {
 			popoverContent.style.top = `${ position.top }px`;
-			popoverContent.style.left = `${ position.left }px`;
 		} else {
 			const clientHeight = this.data.targetRect.height;
 			const popoverWidth = popoverContent.offsetWidth;
@@ -112,8 +111,9 @@ Template.popover.onRendered(function() {
 			}
 
 			popoverContent.style.top = `${ top }px`;
-			popoverContent.style.left = `${ left }px`;
 		}
+
+		popoverContent.style.right = '45px';
 
 		if (customCSSProperties) {
 			Object.keys(customCSSProperties).forEach(function(property) {
