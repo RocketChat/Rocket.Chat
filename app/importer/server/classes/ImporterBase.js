@@ -250,7 +250,7 @@ export class Base {
 		this.logger.debug(`${ this.info.name } is now at ${ step }.`);
 		this.updateRecord({ status: this.progress.step });
 
-		ImporterWebsocket.progressUpdated(this.progress);
+		this.reportProgress();
 
 		return this.progress;
 	}
@@ -293,10 +293,17 @@ export class Base {
 			this.updateRecord({ 'count.completed': this.progress.count.completed });
 		}
 
-		ImporterWebsocket.progressUpdated(this.progress);
+		this.reportProgress();
 		this.logger.log(`${ this.progress.count.completed } messages imported`);
 
 		return this.progress;
+	}
+
+	/**
+	 * Sends an updated progress to the websocket
+	 */
+	reportProgress() {
+		ImporterWebsocket.progressUpdated(this.progress);
 	}
 
 	/**

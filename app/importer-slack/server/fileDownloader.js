@@ -112,7 +112,7 @@ export class SlackFileImporter extends Base {
 
 					const requestModule = /https/i.test(url) ? https : http;
 					const fileStore = FileUpload.getStore('Uploads');
-					const addCountCompleted = this.addCountCompleted.bind(this);
+					const reportProgress = this.reportProgress.bind(this);
 
 					nextSize = details.size;
 					waitForFiles();
@@ -131,7 +131,7 @@ export class SlackFileImporter extends Base {
 							rawData.push(chunk);
 
 							// Update progress more often on large files
-							addCountCompleted(0);
+							reportProgress();
 						}));
 						res.on('error', Meteor.bindEnvironment((error) => {
 							completeFile(details);
