@@ -46,14 +46,18 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return;
 	}
 
-	// TODO not sure this will always have 'view.id'
-	const { view: { id: viewId } } = data;
+	const { view } = data;
+	let { viewId } = data;
+
+	if (view && view.id) {
+		viewId = view.id;
+	}
 
 	if (!viewId) {
 		return;
 	}
 
-	if (['errors'].includes(type)) {
+	if ([UIKitInteractionType.ERRORS].includes(type)) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -61,7 +65,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			appId,
 			...data,
 		});
-		return type;
+		return UIKitInteractionType.ERRORS;
 	}
 
 	if ([UIKitInteractionType.MODAL_UPDATE].includes(type)) {
@@ -122,10 +126,10 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 
 	try {
 		const result = await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
-		if (UIKitInteractionType.MODAL_CLOSE === result) {
+		if (!result || UIKitInteractionType.MODAL_CLOSE === result) {
 			close();
 		}
-	} finally {
+	} catch {
 		close();
 	}
 };
