@@ -1,5 +1,6 @@
 import https from 'https';
 import http from 'http';
+import { Duplex } from 'stream';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -117,6 +118,7 @@ export class SlackFileImporter extends Base {
 					waitForFiles();
 					count++;
 					currentSize += nextSize;
+					downloadedFileIds.push(slackFile.id);
 
 					requestModule.get(url, Meteor.bindEnvironment(function(res) {
 						const contentType = res.headers['content-type'];
@@ -138,8 +140,15 @@ export class SlackFileImporter extends Base {
 
 						res.on('end', Meteor.bindEnvironment(() => {
 							try {
+								const duplex = new Duplex();
+
+								for (const chunk of rawData) {
+									duplex.push(Buffer.from(chunk));
+								}
+								duplex.push(null);
+
 								// Bypass the fileStore filters
-								fileStore._doInsert(details, Buffer.concat(rawData), function(error, file) {
+								fileStore._doInsert(details, duplex, function(error, file) {
 									if (error) {
 										completeFile(details);
 										logError(error);
@@ -172,7 +181,6 @@ export class SlackFileImporter extends Base {
 									}
 
 									Messages.setSlackFileRocketChatAttachment(slackFile.id, url, attachment);
-									downloadedFileIds.push(slackFile.id);
 									completeFile(details);
 								});
 							} catch (error) {
