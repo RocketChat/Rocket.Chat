@@ -106,7 +106,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, .
 	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
 
 	const { type: interactionType, ...data } = await APIClient.post(
-		`apps/uikit/${ appId }`,
+		`apps/ui.interaction/${ appId }`,
 		{ type, actionId, payload, mid, rid, triggerId, viewId },
 	);
 

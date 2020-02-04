@@ -40,7 +40,7 @@ router.use((req, res, next) => {
 	next();
 });
 
-apiServer.use('/api/apps/uikit/', router);
+apiServer.use('/api/apps/ui.interaction/', router);
 
 export class AppUIKitInteractionApi {
 	constructor(orch) {

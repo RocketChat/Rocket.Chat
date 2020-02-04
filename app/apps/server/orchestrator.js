@@ -47,7 +47,7 @@ class AppServerOrchestrator {
 		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
-		this._communicators.set('uikit', new AppUIKitInteractionApi(this, this._manager));
+		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
 
 		this._isInitialized = true;
 	}
