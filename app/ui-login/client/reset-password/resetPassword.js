@@ -30,7 +30,7 @@ Template.resetPassword.helpers({
 async function resetPassword(token, password) {
 	try {
 		await call('checkUserPassword', password);
-		await Accounts.resetPassword(token, password);
+		Accounts.resetPassword(token, password);
 		FlowRouter.go('home');
 		toastr.success(t('Password_changed_successfully'));
 		callbacks.run('userPasswordReset');
