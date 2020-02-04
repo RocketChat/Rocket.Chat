@@ -60,7 +60,7 @@ export const modalBlockWithContext = ({
 }) => (props) => {
 	const id = `modal_id_${ useUniqueId() }`;
 
-	const { view } = useReactiveValue(props.data);
+	const { view, ...data } = useReactiveValue(props.data);
 	const ref = useRef();
 
 	// Auto focus
@@ -114,7 +114,7 @@ export const modalBlockWithContext = ({
 	}, handleKeyUp);
 
 	return (
-		<kitContext.Provider value={context}>
+		<kitContext.Provider value={{ ...context, ...data }}>
 			<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
