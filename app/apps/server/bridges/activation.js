@@ -20,15 +20,19 @@ export class AppActivationBridge {
 	}
 
 	async appStatusChanged(app, status) {
-		const { _id, username } = Users.findOneByAppId(app.getID(), { fields: { username: 1 } });
-		const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? 'online' : 'offline';
+		const user = Users.findOneByAppId(app.getID(), { fields: { username: 1 } });
 
-		Users.updateStatusById(_id, userStatus);
-		Notifications.notifyLogged('user-status', [
-			_id,
-			username,
-			STATUS_MAP[userStatus],
-		]);
+		if (user) {
+			const { _id, username } = user;
+			const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? 'online' : 'offline';
+
+			Users.updateStatusById(_id, userStatus);
+			Notifications.notifyLogged('user-status', [
+				_id,
+				username,
+				STATUS_MAP[userStatus],
+			]);
+		}
 
 		await this.orch.getNotifier().appStatusUpdated(app.getID(), status);
 	}
