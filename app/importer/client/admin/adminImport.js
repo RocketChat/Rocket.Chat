@@ -76,8 +76,10 @@ Template.adminImport.events({
 	'click .new-import-btn'() {
 		FlowRouter.go('/admin/import/new');
 	},
-	'click .download-slack-files-btn'() {
+	'click .download-slack-files-btn'(event, template) {
+		template.preparing.set(true);
 		APIClient.post('v1/downloadSlackFiles').then((data) => {
+			template.preparing.set(false);
 			if (data.count) {
 				toastr.success(t('File_Downloads_Started'));
 				FlowRouter.go('/admin/import/progress');
@@ -85,6 +87,7 @@ Template.adminImport.events({
 				toastr.success(t('No_files_left_to_download'));
 			}
 		}).catch((error) => {
+			template.preparing.set(false);
 			if (error) {
 				console.error(error);
 				toastr.error(t('Failed_To_Download_Files'));
