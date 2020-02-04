@@ -186,10 +186,19 @@ export class APIClass extends Restivus {
 			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'));
 	}
 
-	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
-		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId)) {
+	enforceRateLimit(request, response, userId, token) {
+		const route = `${ request.route }${ request.method.toLowerCase() }`;
+
+		if (!this.shouldVerifyRateLimit(route, userId)) {
 			return;
 		}
+
+		const objectForRateLimitMatch = {
+			IPAddr: getRequestIP(request),
+			route,
+			userId,
+			token,
+		};
 
 		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 		const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
@@ -233,11 +242,40 @@ export class APIClass extends Restivus {
 					rateLimiter: new RateLimiter(),
 					options: rateLimiterOptions,
 				};
-				const rateLimitRule = {
+
+				const numRequestsAllowedByIp = rateLimiterOptions.numRequestsAllowedByIp || rateLimiterOptions.numRequestsAllowed * 12000;
+				const numRequestsAllowedByUserId = rateLimiterOptions.numRequestsAllowedByUserId || rateLimiterOptions.numRequestsAllowed * 120;
+				const numRequestsAllowedByToken = rateLimiterOptions.numRequestsAllowedByToken || rateLimiterOptions.numRequestsAllowed * 60;
+				const numRequestsAllowedByRouteAndUserId = rateLimiterOptions.numRequestsAllowedByRouteAndUserId || rateLimiterOptions.numRequestsAllowed * 2;
+				const numRequestsAllowedByRouteAndToken = rateLimiterOptions.numRequestsAllowedByRouteAndToken || rateLimiterOptions.numRequestsAllowed;
+
+				const intervalTimeInMSByIp = rateLimiterOptions.intervalTimeInMSIp || rateLimiterOptions.intervalTimeInMS * 6;
+				const intervalTimeInMSByUserId = rateLimiterOptions.intervalTimeInMSUserId || rateLimiterOptions.intervalTimeInMS * 6;
+				const intervalTimeInMSByToken = rateLimiterOptions.intervalTimeInMSToken || rateLimiterOptions.intervalTimeInMS * 6;
+				const intervalTimeInMSByRouteAndUserId = rateLimiterOptions.intervalTimeInMSRouteAndUserId || rateLimiterOptions.intervalTimeInMS;
+				const intervalTimeInMSByRouteAndToken = rateLimiterOptions.intervalTimeInMSRouteAndToken || rateLimiterOptions.intervalTimeInMS;
+
+				rateLimiterDictionary[route].rateLimiter.addRule({
 					IPAddr: (input) => input,
+				}, numRequestsAllowedByIp, intervalTimeInMSByIp);
+
+				rateLimiterDictionary[route].rateLimiter.addRule({
+					userId: (userId) => userId,
+				}, numRequestsAllowedByUserId, intervalTimeInMSByUserId);
+
+				rateLimiterDictionary[route].rateLimiter.addRule({
+					token: (token) => token,
+				}, numRequestsAllowedByToken, intervalTimeInMSByToken);
+
+				rateLimiterDictionary[route].rateLimiter.addRule({
 					route,
-				};
-				rateLimiterDictionary[route].rateLimiter.addRule(rateLimitRule, rateLimiterOptions.numRequestsAllowed, rateLimiterOptions.intervalTimeInMS);
+					userId: (userId) => userId,
+				}, numRequestsAllowedByRouteAndUserId, intervalTimeInMSByRouteAndUserId);
+
+				rateLimiterDictionary[route].rateLimiter.addRule({
+					route,
+					token: (token) => token,
+				}, numRequestsAllowedByRouteAndToken, intervalTimeInMSByRouteAndToken);
 			});
 		};
 		routes
@@ -307,11 +345,6 @@ export class APIClass extends Restivus {
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-					const requestIp = getRequestIP(this.request);
-					const objectForRateLimitMatch = {
-						IPAddr: requestIp,
-						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
-					};
 					let result;
 
 					const connection = {
@@ -321,7 +354,7 @@ export class APIClass extends Restivus {
 					};
 
 					try {
-						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
+						api.enforceRateLimit(this.request, this.response, this.userId, this.token);
 
 						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
