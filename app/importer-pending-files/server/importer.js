@@ -1,6 +1,5 @@
 import https from 'https';
 import http from 'http';
-import { Duplex } from 'stream';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -141,15 +140,8 @@ export class PendingFileImporter extends Base {
 
 						res.on('end', Meteor.bindEnvironment(() => {
 							try {
-								const duplex = new Duplex();
-
-								for (const chunk of rawData) {
-									duplex.push(Buffer.from(chunk));
-								}
-								duplex.push(null);
-
 								// Bypass the fileStore filters
-								fileStore._doInsert(details, duplex, function(error, file) {
+								fileStore._doInsert(details, Buffer.concat(rawData), function(error, file) {
 									if (error) {
 										completeFile(details);
 										logError(error);
