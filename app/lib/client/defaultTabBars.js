@@ -1,7 +1,7 @@
 import { Session } from 'meteor/session';
 
-import { TabBar } from '../../ui-utils';
-import { isMobile, shareRoom } from '../../utils';
+import { TabBar, popover } from '../../ui-utils';
+import { share, isShareAvailable } from '../../utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';
 
@@ -72,13 +72,21 @@ TabBar.addButton({
 	order: 4,
 });
 
-TabBar.addButton({
+// Add Share button in Room
+const shareButton = {
 	groups: ['channel', 'group', 'direct'],
 	id: 'share',
 	i18nTitle: 'Share',
 	icon: 'share',
 	template: 'share',
 	order: 500,
-	condition: () => isMobile(),
-	action: () => { shareRoom(); },
-});
+};
+
+if (isShareAvailable()) {
+	shareButton.action = () => {
+		share();
+		popover.close();
+	};
+}
+
+TabBar.addButton(shareButton);

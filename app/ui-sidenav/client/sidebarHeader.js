@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
-import { t, getUserPreference, handleError, isMobile, shareApp } from '../../utils';
+import { t, getUserPreference, handleError, isMobile } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
@@ -289,11 +289,7 @@ const toolbarButtons = (user) => [{
 		const shareOption = {
 			name: t('Share'),
 			icon: 'share',
-			type: 'open',
-			action: () => {
-				shareApp();
-				popover.close();
-			},
+			type: 'share-action',
 		};
 
 		const config = {
@@ -338,8 +334,9 @@ const toolbarButtons = (user) => [{
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		if (isMobile()) {
-			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption, shareOption]);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
 		}
+		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 
 		popover.open(config);
 	},
