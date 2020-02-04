@@ -91,9 +91,37 @@ export class AppUIKitInteractionApi {
 					break;
 				}
 
-				case UIKitIncomingInteractionType.VIEW_CLOSED:
-					res.sendStatus(200);
+				case UIKitIncomingInteractionType.VIEW_CLOSED: {
+					const {
+						type,
+						actionId,
+						view,
+						isCleared,
+					} = req.body;
+
+					const user = this.orch.getConverters().get('users').convertToApp(req.user);
+
+					const action = {
+						type,
+						appId,
+						actionId,
+						user,
+						payload: {
+							view,
+							isCleared,
+						},
+					};
+
+					try {
+						Promise.await(this.orch.getBridges().getListenerBridge().uiKitInteractionEvent('IUIKitInteractionHandler', action));
+
+						res.send(200);
+					} catch (e) {
+						console.log(e);
+						res.status(500).send(e.message);
+					}
 					break;
+				}
 
 				case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 					const {
