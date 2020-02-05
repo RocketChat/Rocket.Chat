@@ -59,8 +59,8 @@ export const statistics = {
 		}
 
 		// User statistics
-		statistics.totalUsers = Meteor.users.find().count();
-		statistics.activeUsers = Meteor.users.find({ active: true }).count();
+		statistics.totalUsers = Users.find().count();
+		statistics.activeUsers = Users.getActiveLocalUserCount();
 		statistics.nonActiveUsers = statistics.totalUsers - statistics.activeUsers;
 		statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
 		statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
