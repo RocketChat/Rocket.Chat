@@ -7,8 +7,8 @@ import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
 
-export function online() {
-	return Livechat.online();
+export function online(department) {
+	return Livechat.online(department);
 }
 
 export function findTriggers() {
