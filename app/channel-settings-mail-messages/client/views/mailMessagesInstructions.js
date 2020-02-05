@@ -93,8 +93,12 @@ Template.mailMessagesInstructions.helpers({
 });
 
 Template.mailMessagesInstructions.events({
-	'click .js-cancel, click .mail-messages__instructions--selected'(e, t) {
+	'click .mail-messages__instructions--selected'(e, t) {
 		t.reset(true);
+	},
+	'click .js-cancel'(e, t) {
+		t.reset(true);
+		t.data.tabBar.close();
 	},
 	'click .js-send'(e, instance) {
 		const { selectedUsers, selectedEmails, selectedMessages } = instance;
