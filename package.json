@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "2.5.0-develop",
+	"version": "3.0.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -122,12 +122,14 @@
 		"@google-cloud/language": "^3.7.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^1.8.0",
-		"@rocket.chat/apps-engine": "1.12.0-beta.2496",
-		"@rocket.chat/fuselage": "^0.2.0-alpha.19",
-		"@rocket.chat/fuselage-hooks": "^0.2.0-dev.50",
-		"@rocket.chat/icons": "^0.2.0-dev.49",
+		"@rocket.chat/apps-engine": "^1.12.0-beta.2575",
+		"@rocket.chat/fuselage": "^0.2.0-alpha.20",
+		"@rocket.chat/fuselage-hooks": "^0.2.0-alpha.20",
+		"@rocket.chat/fuselage-ui-kit": "^0.2.0-alpha.20",
+		"@rocket.chat/icons": "^0.2.0-alpha.20",
+		"@rocket.chat/ui-kit": "^0.2.0-alpha.20",
 		"@slack/client": "^4.8.0",
-		"adm-zip": "^0.4.13",
+		"adm-zip": "RocketChat/adm-zip",
 		"archiver": "^3.0.0",
 		"arraybuffer-to-string": "^1.0.2",
 		"atlassian-crowd": "^0.5.0",

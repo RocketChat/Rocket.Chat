@@ -126,6 +126,22 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
+	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
+		const query = {
+			'_importFile.id': importFileId,
+		};
+
+		return this.update(query, {
+			$set: {
+				'_importFile.rocketChatUrl': rocketChatUrl,
+				'_importFile.downloaded': true,
+			},
+			$addToSet: {
+				attachments: attachment,
+			},
+		}, { multi: true });
+	}
+
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
 		const query = {
 			_hidden: {
@@ -715,10 +731,6 @@ export class Messages extends Base {
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
@@ -744,10 +756,6 @@ export class Messages extends Base {
 
 	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
 		const type = 'livechat_navigation_history';
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
@@ -772,10 +780,6 @@ export class Messages extends Base {
 
 	createTransferHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
 		const type = 'livechat_transfer_history';
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
@@ -1145,6 +1149,25 @@ export class Messages extends Base {
 		};
 
 		return this.findOne(query, { sort: { ts: 1 } });
+	}
+
+	findAllImportedMessagesWithFilesToDownload() {
+		const query = {
+			'_importFile.downloadUrl': {
+				$exists: true,
+			},
+			'_importFile.rocketChatUrl': {
+				$exists: false,
+			},
+			'_importFile.downloaded': {
+				$ne: true,
+			},
+			'_importFile.external': {
+				$ne: true,
+			},
+		};
+
+		return this.find(query);
 	}
 }
 

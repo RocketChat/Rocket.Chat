@@ -647,7 +647,7 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 
 API.v1.addRoute('users.presence', { authRequired: true }, {
 	get() {
-		const { from } = this.queryParams;
+		const { from, ids } = this.queryParams;
 
 		const options = {
 			fields: {
@@ -658,6 +658,13 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 				statusText: 1,
 			},
 		};
+
+		if (ids) {
+			return API.v1.success({
+				users: Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
+				full: false,
+			});
+		}
 
 		if (from) {
 			const ts = new Date(from);
