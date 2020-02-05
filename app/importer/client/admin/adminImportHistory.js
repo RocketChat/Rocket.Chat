@@ -174,10 +174,6 @@ Template.adminImportHistory.helpers({
 		const date = new Date(this.msg.ts);
 		return date.toLocaleString();
 	},
-	translate(type) {
-		return t(type);
-	},
-
 });
 
 Template.adminImportHistory.events({
