@@ -4,7 +4,6 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import s from 'underscore.string';
 
 import { settings } from '../../../../settings';
 
