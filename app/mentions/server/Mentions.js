@@ -56,7 +56,7 @@ export default class MentionsServer extends MentionsParser {
 		mentions.forEach((m) => {
 			const mention = m.trim().substr(1);
 			if (mention !== 'all' && mention !== 'here') {
-				return userMentions.push(mention);
+				return userMentions.push(new RegExp(`^${ mention }$`, 'i'));
 			}
 			if (this.messageMaxAll > 0 && this.getTotalChannelMembers(rid) > this.messageMaxAll) {
 				return this.onMaxRoomMembersExceeded({ sender, rid });

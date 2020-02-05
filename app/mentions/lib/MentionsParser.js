@@ -65,7 +65,13 @@ export class MentionsParser {
 			const label = temp
 				? mention && s.escapeHTML(mention)
 				: (mentions || [])
-					.filter(({ username }) => username === mention)
+					.filter(({ username }) => {
+						if (username.toLowerCase() === mention.toLowerCase()) {
+							mention = username;
+							return true;
+						}
+						return false;
+					})
 					.map(({ name, username }) => (this.useRealName ? name : username))
 					.map((label) => label && s.escapeHTML(label))[0];
 
