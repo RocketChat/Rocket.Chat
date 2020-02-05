@@ -1,6 +1,20 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.1
+`2020-02-04  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix tests ([#16469](https://github.com/RocketChat/Rocket.Chat/pull/16469))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.0.0-rc.0
 `2020-02-04  ·  5 ️️️⚠️  ·  10 🎉  ·  11 🚀  ·  23 🐛  ·  18 🔍  ·  19 👩‍💻👨‍💻`
 
