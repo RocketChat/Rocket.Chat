@@ -1,6 +1,32 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.2
+`2020-02-05  ·  3 🐛  ·  5 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Missing edited icon in newly created messages ([#16484](https://github.com/RocketChat/Rocket.Chat/pull/16484))
+- Read Message after receive a message and the room is opened ([#16473](https://github.com/RocketChat/Rocket.Chat/pull/16473))
+- Send message with pending messages ([#16474](https://github.com/RocketChat/Rocket.Chat/pull/16474))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: prevent submit modal ([#16488](https://github.com/RocketChat/Rocket.Chat/pull/16488))
+- Update presence package to 2.6.1 ([#16486](https://github.com/RocketChat/Rocket.Chat/pull/16486))
+- Regression: allow private channels to hide system messages ([#16483](https://github.com/RocketChat/Rocket.Chat/pull/16483))
+- Regression: Fix uikit modal closing on click ([#16475](https://github.com/RocketChat/Rocket.Chat/pull/16475))
+- Regression: Fix undefined presence after reconnect ([#16477](https://github.com/RocketChat/Rocket.Chat/pull/16477))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.0.0-rc.1
 `2020-02-04  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 

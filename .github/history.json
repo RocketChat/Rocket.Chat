@@ -39213,6 +39213,88 @@
           ]
         }
       ]
+    },
+    "3.0.0-rc.2": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16488",
+          "title": "Regression: prevent submit modal",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16486",
+          "title": "Update presence package to 2.6.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16484",
+          "title": "[FIX] Missing edited icon in newly created messages",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "16483",
+          "title": "Regression: allow private channels to hide system messages",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16475",
+          "title": "Regression: Fix uikit modal closing on click",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16477",
+          "title": "Regression: Fix undefined presence after reconnect",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16473",
+          "title": "[FIX] Read Message after receive a message and the room is opened",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16474",
+          "title": "[FIX] Send message with pending messages",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
