@@ -64,17 +64,23 @@ Template.ModalBlock.onRendered(async function() {
 					},
 					isCleared: true,
 				}),
-				onSubmit: () => ActionManager.triggerSubmitView({
-					viewId,
-					appId,
-					payload: {
-						view: {
-							...this.data.view,
-							id: viewId,
-							state: groupStateByBlockId(this.state.all()),
+				onSubmit: (e) => {
+					if (e) {
+						e.stopPropagation();
+						e.preventDefault();
+					}
+					return ActionManager.triggerSubmitView({
+						viewId,
+						appId,
+						payload: {
+							view: {
+								...this.data.view,
+								id: viewId,
+								state: groupStateByBlockId(this.state.all()),
+							},
 						},
-					},
-				}),
+					});
+				},
 				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
 					ActionManager.triggerBlockAction({
 						actionId,
