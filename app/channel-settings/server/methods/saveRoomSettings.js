@@ -183,7 +183,7 @@ Meteor.methods({
 					}
 					break;
 				case 'systemMessages':
-					if (value !== room.sysMes) {
+					if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 						saveRoomSystemMessages(rid, value, user);
 					}
 					break;
