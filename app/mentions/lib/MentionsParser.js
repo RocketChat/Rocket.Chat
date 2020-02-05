@@ -49,7 +49,7 @@ export class MentionsParser {
 			} else if (mention === 'here') {
 				classNames.push('mention-link--here');
 				classNames.push('mention-link--group');
-			} else if (mention === me) {
+			} else if (mention.toLowerCase() === me.toLowerCase()) {
 				classNames.push('mention-link--me');
 				classNames.push('mention-link--user');
 			} else {
