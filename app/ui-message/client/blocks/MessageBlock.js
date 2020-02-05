@@ -110,13 +110,16 @@ export const modalBlockWithContext = ({
 	}, [onSubmit]);
 	// Clean the events
 	useEffect(() => {
+		const element = document.querySelector('.rc-modal-wrapper');
 		const close = (e) => {
+			if (e.target !== element) {
+				return;
+			}
 			e.preventDefault();
 			e.stopPropagation();
 			onClose();
 			return false;
 		};
-		const element = document.querySelector('.rc-modal-wrapper');
 		document.addEventListener('keydown', handleKeyUp);
 		element.addEventListener('click', close);
 		return () => {
