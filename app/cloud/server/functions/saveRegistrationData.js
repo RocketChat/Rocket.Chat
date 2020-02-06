@@ -1,4 +1,5 @@
 import { Settings } from '../../../models/server/raw';
+import { callbacks } from '../../../callbacks';
 
 export function saveRegistrationData({
 	workspaceId,
