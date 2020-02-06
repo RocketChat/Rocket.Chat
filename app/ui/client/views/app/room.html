@@ -81,7 +81,7 @@
 						{{/unless}}
 						{{#with roomLeader}}
 							<div class="room-leader message color-primary-font-color content-background-color border-component-color {{hideLeaderHeader}}">
-								<button class="thumb user-card-message">
+								<button class="thumb user-card-message" arialabel="{{_ 'View_profile_of' username=msg.u.username}}">
 									{{> avatar username=username }}
 								</button>
 								<div class="leader-name">{{name}}</div>
@@ -93,10 +93,10 @@
 							</div>
 						{{/with}}
 						<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
-							<ul aria-live="polite">
+							<ul aria-live="polite" tabindex="0">
 								{{#if canPreview}}
 									{{#if hasMore}}
-										<li class="load-more">
+										<li class="load-more" tabindex="-1">
 											{{#if isLoading}}
 												{{> loading}}
 											{{/if}}
