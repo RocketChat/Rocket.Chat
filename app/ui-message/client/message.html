@@ -5,11 +5,11 @@
 		{{else}}
 			{{#if msg.avatar}}
 				{{#if avatarFromUsername}}
-					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
+					<button aria-label="{{_ 'View_profile_of' username=msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 						{{> avatar username=avatarFromUsername}}
 					</button>
 				{{else}}
-					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
+					<button aria-label="{{_ 'View_profile_of' username=msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 						<div class="avatar">
 							<div class="avatar-image" style="background-image:url({{encodeURI msg.avatar}})"></div>
 						</div>
@@ -17,22 +17,22 @@
 				{{/if}}
 			{{else}}
 				{{#if msg.emoji}}
-					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
+					<button aria-label="{{_ 'View_profile_of' username=msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 						<div class="avatar">
 							{{> renderEmoji msg.emoji}}
 						</div>
 					</button>
 				{{else}}
-					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
+					<button aria-label="{{_ 'View_profile_of' username=msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 						{{> avatar username=msg.u.username}}
 					</button>
 				{{/if}}
 			{{/if}}
-			<div class="message-body-wrapper">
+			<div class="message-body-wrapper" aria-live="polite">
 				<div class="title border-component-color color-info-font-color">
-					<button type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="1">
+					<a type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="0" aria-label="{{_ 'View_profile_of' username=msg.u.username}}">
 						{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}
-					</button>
+					</a>
 					<span class="info border-component-color color-info-font-color"></span>
 					{{#each role in roleTags}}
 						<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
@@ -143,7 +143,7 @@
 							</button>
 						{{/each}}
 					</div>
-					<div class="message-actions__menu" aria-haspopup="true">
+					<div class="message-actions__menu" aria-haspopup="true" role="button" tabindex="0">
 						{{> icon block="message-actions__menu-icon" icon="menu"}}
 					</div>
 				</div>

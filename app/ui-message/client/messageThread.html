@@ -14,7 +14,7 @@
 	</q>
 
 	<div class="thread-replied js-open-thread">
-		<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
+		<button aria-label="{{_ 'View_profile_of' username=msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 			{{> avatar username=avatar}}
 		</button>
 		<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
