@@ -246,8 +246,8 @@
 
 	&__toggle-favorite {
 
-		padding: 0 0.25rem;
 		margin: 0 0.75rem;
+		padding: 0 0.25rem;
 
 		color: var(--header-toggle-favorite-star-color);
 

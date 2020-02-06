@@ -155,7 +155,7 @@ Template.headerRoom.events({
 			Session.set('openSearchPage', false);
 		}
 	},
-	
+
 	'click .iframe-toolbar .js-iframe-action'(e) {
 		fireGlobalEvent('click-toolbar-button', { id: this.id });
 		e.currentTarget.querySelector('button').blur();

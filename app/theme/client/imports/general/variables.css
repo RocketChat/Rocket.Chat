@@ -329,7 +329,8 @@
 	--header-title-status-name-weight: 400;
 	--header-title-status-bullet-radius: var(--status-bullet-radius);
 	--header-title-status-bullet-size: var(--status-bullet-size);
-	--header-background-color: var(--color-white);
+/*	--header-background-color: var(--color-white);*/
+	--header-background-color: #008085;
 
 	/*
 	* Flex nav
