@@ -23,5 +23,5 @@ export function saveRegistrationData({
 	]).then((...results) => {
                 callbacks.run('workspaceLicenseChanged', licenseData.license);
                 return results;
-        });
+	});
 }
