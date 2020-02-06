@@ -83,6 +83,10 @@ Template.ModalBlock.onRendered(async function() {
 				},
 				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
 					ActionManager.triggerBlockAction({
+						container: {
+							type: 'view',
+							id: viewId,
+						},
 						actionId,
 						appId,
 						value,

@@ -69,98 +69,103 @@ export class SlackImporter extends Base {
 			return data;
 		};
 
-		zip.forEach((entry) => {
-			try {
-				if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
-					return this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
-				}
-
-				if (entry.entryName === 'channels.json') {
-					tempChannels = prepareChannelsFile(entry, 'channels');
-					return;
-				}
-
-				if (entry.entryName === 'groups.json') {
-					tempGroups = prepareChannelsFile(entry, 'groups');
-					return;
-				}
-
-				if (entry.entryName === 'mpims.json') {
-					tempMpims = prepareChannelsFile(entry, 'mpims');
-					return;
-				}
-
-				if (entry.entryName === 'dms.json') {
-					tempDMs = prepareChannelsFile(entry, 'DMs', false);
-					return;
-				}
-
-				if (entry.entryName === 'users.json') {
-					super.updateProgress(ProgressStep.PREPARING_USERS);
-					tempUsers = JSON.parse(entry.getData().toString());
-
-					tempUsers.forEach((user) => {
-						if (user.is_bot) {
-							this.bots[user.profile.bot_id] = user;
-						}
-					});
-
-					this.logger.debug(`loaded ${ tempUsers.length } users.`);
-
-					// Insert the users record
-					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
-					this.updateRecord({ 'count.users': tempUsers.length });
-					this.addCountToTotal(tempUsers.length);
-
-					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'bots', bots: this.bots });
-					return;
-				}
-
-				if (!entry.isDirectory && entry.entryName.indexOf('/') > -1) {
-					const item = entry.entryName.split('/');
-
-					const channel = item[0];
-					const date = item[1].split('.')[0];
-
-					try {
-						// Insert the messages records
-						if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
-							super.updateProgress(ProgressStep.PREPARING_MESSAGES);
-						}
-
-						const tempMessages = JSON.parse(entry.getData().toString());
-						messagesCount += tempMessages.length;
-						this.updateRecord({ messagesstatus: `${ channel }/${ date }` });
-						this.addCountToTotal(tempMessages.length);
-
-						if (Base.getBSONSize(tempMessages) > Base.getMaxBSONSize()) {
-							const tmp = Base.getBSONSafeArraysFromAnArray(tempMessages);
-							Object.keys(tmp).forEach((i) => {
-								const splitMsg = tmp[i];
-								this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ date }.${ i }`, messages: splitMsg, channel, date, i });
-							});
-						} else {
-							this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ date }`, messages: tempMessages, channel, date });
-						}
-					} catch (error) {
-						this.logger.warn(`${ entry.entryName } is not a valid JSON file! Unable to import it.`);
+		try {
+			zip.forEach((entry) => {
+				try {
+					if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
+						return this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
 					}
-				}
-			} catch (e) {
-				this.logger.error(e);
-			}
 
-			try {
-				count++;
-				const rate = Math.floor(count * 1000 / totalEntries) / 10;
-				if (rate > oldRate) {
-					ImporterWebsocket.progressUpdated({ rate });
-					oldRate = rate;
+					if (entry.entryName === 'channels.json') {
+						tempChannels = prepareChannelsFile(entry, 'channels');
+						return;
+					}
+
+					if (entry.entryName === 'groups.json') {
+						tempGroups = prepareChannelsFile(entry, 'groups');
+						return;
+					}
+
+					if (entry.entryName === 'mpims.json') {
+						tempMpims = prepareChannelsFile(entry, 'mpims');
+						return;
+					}
+
+					if (entry.entryName === 'dms.json') {
+						tempDMs = prepareChannelsFile(entry, 'DMs', false);
+						return;
+					}
+
+					if (entry.entryName === 'users.json') {
+						super.updateProgress(ProgressStep.PREPARING_USERS);
+						tempUsers = JSON.parse(entry.getData().toString());
+
+						tempUsers.forEach((user) => {
+							if (user.is_bot) {
+								this.bots[user.profile.bot_id] = user;
+							}
+						});
+
+						this.logger.debug(`loaded ${ tempUsers.length } users.`);
+
+						// Insert the users record
+						this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
+						this.updateRecord({ 'count.users': tempUsers.length });
+						this.addCountToTotal(tempUsers.length);
+
+						this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'bots', bots: this.bots });
+						return;
+					}
+
+					if (!entry.isDirectory && entry.entryName.indexOf('/') > -1) {
+						const item = entry.entryName.split('/');
+
+						const channel = item[0];
+						const date = item[1].split('.')[0];
+
+						try {
+							// Insert the messages records
+							if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
+								super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+							}
+
+							const tempMessages = JSON.parse(entry.getData().toString());
+							messagesCount += tempMessages.length;
+							this.updateRecord({ messagesstatus: `${ channel }/${ date }` });
+							this.addCountToTotal(tempMessages.length);
+
+							if (Base.getBSONSize(tempMessages) > Base.getMaxBSONSize()) {
+								const tmp = Base.getBSONSafeArraysFromAnArray(tempMessages);
+								Object.keys(tmp).forEach((i) => {
+									const splitMsg = tmp[i];
+									this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ date }.${ i }`, messages: splitMsg, channel, date, i });
+								});
+							} else {
+								this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ date }`, messages: tempMessages, channel, date });
+							}
+						} catch (error) {
+							this.logger.warn(`${ entry.entryName } is not a valid JSON file! Unable to import it.`);
+						}
+					}
+				} catch (e) {
+					this.logger.error(e);
 				}
-			} catch (e) {
-				console.error(e);
-			}
-		});
+
+				try {
+					count++;
+					const rate = Math.floor(count * 1000 / totalEntries) / 10;
+					if (rate > oldRate) {
+						ImporterWebsocket.progressUpdated({ rate });
+						oldRate = rate;
+					}
+				} catch (e) {
+					console.error(e);
+				}
+			});
+		} catch (e) {
+			this.logger.error(e);
+			throw e;
+		}
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 		this.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
