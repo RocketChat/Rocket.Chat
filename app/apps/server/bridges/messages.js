@@ -14,8 +14,11 @@ export class AppMessageBridge {
 		this.orch.debugLog(`The App ${ appId } is creating a new message.`);
 
 		const convertedMessage = this.orch.getConverters().get('messages').convertAppMessage(message);
-
 		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
+
+		if (!sentMessage) {
+			return '';
+		}
 
 		return sentMessage._id;
 	}
