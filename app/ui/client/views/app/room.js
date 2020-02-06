@@ -1364,6 +1364,8 @@ Template.room.onRendered(function() {
 		if (!room) {
 			FlowRouter.go('home');
 		}
+
+		return callbacks.run('onRenderRoom', template, room);
 	});
 });
 
