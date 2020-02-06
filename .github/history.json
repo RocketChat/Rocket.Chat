@@ -39295,6 +39295,44 @@
           ]
         }
       ]
+    },
+    "3.0.0-rc.3": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16504",
+          "title": "Remove users.info being called without need",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16503",
+          "title": "Add Ui Kit container",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16494",
+          "title": "Catch zip errors on import file load",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
