@@ -1,6 +1,23 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.3
+`2020-02-06  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Remove users.info being called without need ([#16504](https://github.com/RocketChat/Rocket.Chat/pull/16504))
+- Add Ui Kit container ([#16503](https://github.com/RocketChat/Rocket.Chat/pull/16503))
+- Catch zip errors on import file load ([#16494](https://github.com/RocketChat/Rocket.Chat/pull/16494))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.0.0-rc.2
 `2020-02-05  ·  3 🐛  ·  5 🔍  ·  3 👩‍💻👨‍💻`
 
