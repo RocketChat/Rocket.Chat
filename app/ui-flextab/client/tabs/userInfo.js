@@ -284,6 +284,8 @@ Template.userInfo.onCreated(function() {
 			params.userId = _id;
 		} else if (username != null) {
 			params.username = username;
+		} else {
+			return;
 		}
 
 		const { user } = await APIClient.v1.get('users.info', params);
