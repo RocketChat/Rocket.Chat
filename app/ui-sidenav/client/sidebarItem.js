@@ -93,8 +93,11 @@ Template.sidebarItem.onCreated(function() {
 			return;
 		}
 
+		if (currentData.lastMessage.t === 'otr') {
+			this.renderedMessage = t('Encrypted_message');
+		}
 		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
-		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
+		const renderedMessage = currentData.lastMessage.t === 'otr' ? this.renderedMessage : renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
 		const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
 		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
