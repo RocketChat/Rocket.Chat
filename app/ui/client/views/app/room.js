@@ -284,16 +284,13 @@ Template.room.helpers({
 	embeddedVersion() {
 		return Layout.isEmbedded();
 	},
-
 	showTopNavbar() {
 		return !Layout.isEmbedded() || settings.get('UI_Show_top_navbar_embedded_layout');
 	},
-
 	subscribed() {
 		const { state } = Template.instance();
 		return state.get('subscribed');
 	},
-
 	messagesHistory() {
 		const { rid } = Template.instance();
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
@@ -930,7 +927,11 @@ Template.room.events({
 		}
 	},
 	'load .gallery-item'(e, template) {
-		return template.sendToBottomIfNecessaryDebounced();
+		template.sendToBottomIfNecessaryDebounced();
+	},
+
+	'rendered .js-block-wrapper'(e, i) {
+		i.sendToBottomIfNecessaryDebounced();
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -1374,5 +1375,6 @@ callbacks.add('enter-room', (sub) => {
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
 	}
+	readMessage.read(sub.rid);
 	readMessage.refreshUnreadMark(sub.rid);
 });

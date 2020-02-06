@@ -68,7 +68,10 @@ Template.userInfo.helpers({
 		}
 		return customFields;
 	},
-
+	uid() {
+		const user = Template.instance().user.get();
+		return user._id;
+	},
 	name() {
 		const user = Template.instance().user.get();
 		return user && user.name ? user.name : TAPi18n.__('Unnamed');
