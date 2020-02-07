@@ -44,7 +44,6 @@ const textParser = uiKitText(new class {
 		return text;
 	}
 }());
-const thumb =	'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
 
 // https://www.w3.org/TR/wai-aria-practices/examples/dialog-modal/dialog.html
 
@@ -134,7 +133,7 @@ export const modalBlockWithContext = ({
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
 						{/* <Modal.Thumb url={`api/apps/${ context.appId }/icon`} /> */}
-						<Modal.Thumb url={thumb} />
+						<Modal.Thumb url={`/api/apps/icon/${ data.appId }`} />
 						<Modal.Title>{textParser([title])}</Modal.Title>
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>

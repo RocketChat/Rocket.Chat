@@ -14,12 +14,6 @@ export class UiInteractionBridge {
 			throw new Error('Invalid app provided');
 		}
 
-		const { name, iconFileContent } = app.getInfo();
-
-		Object.assign(interaction, {
-			appInfo: { name, base64Icon: iconFileContent },
-		});
-
 		Notifications.notifyUser(user.id, 'uiInteraction', interaction);
 	}
 }
