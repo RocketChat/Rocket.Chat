@@ -2,8 +2,7 @@ import {
 	Box,
 	Field,
 	Flex,
-	SelectInput,
-	Select
+	Select,
 } from '@rocket.chat/fuselage';
 import React from 'react';
 
