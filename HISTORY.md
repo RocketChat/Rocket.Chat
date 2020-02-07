@@ -1,3 +1,21 @@
+# 2.4.8
+`2020-02-06  ·  5 ️️️⚠️  ·  10 🎉  ·  11 🚀  ·  26 🐛  ·  31 🔍  ·  20 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Update presence package to 2.6.1 ([#16486](https://github.com/RocketChat/Rocket.Chat/pull/16486))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 2.4.7
 `2020-02-03  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -35,18 +53,6 @@
 
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@rodrigok](https://github.com/rodrigok)
-
-# 2.4.5
-`2020-01-29  ·  1 🐛 `
-
-### Engine versions
-- Node: `8.17.0`
-- NPM: `6.13.4`
-- MongoDB: `3.4, 3.6, 4.0`
-
-### 🐛 Bug fixes
-
-- Update Apps Engine to version 1.11.2
 
 # 2.4.4
 `2020-01-29  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
