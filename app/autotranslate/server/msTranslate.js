@@ -118,7 +118,7 @@ class MsAutoTranslate extends AutoTranslate {
 				translations = Object.assign({}, ...targetLanguages.map((language) =>
 					({
 						[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
-					})
+					}),
 				));
 			}
 		} catch (e) {
@@ -160,7 +160,7 @@ class MsAutoTranslate extends AutoTranslate {
 				translations = Object.assign({}, ...targetLanguages.map((language) =>
 					({
 						[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
-					})
+					}),
 				));
 			}
 		} catch (e) {
