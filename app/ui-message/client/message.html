@@ -75,15 +75,16 @@
 					{{#if isSnippet}}
 						<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 					{{/if}}
-					{{#if isDecrypting}}
-						<span>******</span>
-					{{else}}
-						{{{body}}}
-					{{/if}}
 					{{#if msg.blocks}}
 						<div class='rc-ui-kit'>
 							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
 						</div>
+					{{else}}
+						{{#if isDecrypting}}
+							<span>******</span>
+						{{else}}
+							{{{body}}}
+						{{/if}}
 					{{/if}}
 				</div>
 			</div>
