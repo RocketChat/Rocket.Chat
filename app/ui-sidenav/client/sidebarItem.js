@@ -194,6 +194,7 @@ Template.sidebarItem.events({
 			},
 			currentTarget: e.currentTarget,
 			offsetHorizontal: -e.currentTarget.clientWidth,
+			currentWindowWidth: window.innerWidth,
 		};
 
 		popover.open(config);

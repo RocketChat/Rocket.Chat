@@ -73,6 +73,7 @@ Template.editStatus.events({
 			],
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight,
+			currentWindowWidth: window.innerWidth,
 		};
 		popover.open(config);
 	},

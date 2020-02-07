@@ -135,6 +135,7 @@ Template.livechatCurrentChats.events({
 			],
 			currentTarget: event.currentTarget,
 			offsetVertical: event.currentTarget.clientHeight,
+			currentWindowWidth: window.innerWidth,
 		};
 
 		popover.open(config);
@@ -195,6 +196,7 @@ Template.livechatCurrentChats.events({
 			}],
 			currentTarget,
 			offsetVertical: currentTarget.clientHeight,
+			currentWindowWidth: window.innerWidth,
 		};
 
 		popover.open(config);

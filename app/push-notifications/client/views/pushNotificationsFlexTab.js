@@ -337,6 +337,7 @@ Template.pushNotificationsFlexTab.events({
 			},
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 10,
+			currentWindowWidth: window.innerWidth,
 		};
 		popover.open(config);
 	},

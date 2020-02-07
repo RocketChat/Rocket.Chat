@@ -467,6 +467,7 @@ Template.messageBox.events({
 				messageBox: instance.firstNode,
 			},
 			activeElement: event.currentTarget,
+			currentWindowWidth: window.innerWidth,
 		};
 
 		popover.open(config);

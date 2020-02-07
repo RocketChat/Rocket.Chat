@@ -305,6 +305,7 @@ Template.uploadedFilesList.events({
 				},
 			],
 			currentTarget: e.currentTarget,
+			currentWindowWidth: window.innerWidth,
 			onDestroyed: () => {
 				e.currentTarget.parentElement.classList.remove('active');
 			},

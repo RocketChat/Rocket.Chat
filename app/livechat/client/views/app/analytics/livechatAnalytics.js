@@ -188,6 +188,7 @@ Template.livechatAnalytics.events({
 				daterange: templateInstance.daterange,
 			},
 			offsetVertical: e.currentTarget.clientHeight + 10,
+			currentWindowWidth: window.innerWidth,
 		};
 		popover.open(config);
 	},
