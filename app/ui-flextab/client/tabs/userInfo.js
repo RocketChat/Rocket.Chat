@@ -11,10 +11,9 @@ import { popover } from '../../../ui-utils';
 import { templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
-import FullUser from '../../../models/client/models/FullUser';
 import { getActions } from './userActions';
-
 import './userInfo.html';
+import { APIClient } from '../../../utils/client';
 
 const shownActionsCount = 2;
 
@@ -168,8 +167,13 @@ Template.userInfo.helpers({
 		const data = Template.currentData();
 		return {
 			user: instance.user.get(),
-			back(username) {
+			back({ _id, username }) {
 				instance.editingUser.set();
+
+				if (_id) {
+					data.onChange && data.onChange();
+					return instance.loadUser({ _id });
+				}
 
 				if (username != null) {
 					const user = instance.user.get();
@@ -265,21 +269,32 @@ Template.userInfo.onCreated(function() {
 	});
 	this.editingUser = new ReactiveVar();
 	this.loadingUserInfo = new ReactiveVar(true);
-	this.loadedUsername = new ReactiveVar();
 	this.tabBar = Template.currentData().tabBar;
 	this.nowInterval = setInterval(() => this.now.set(moment()), 30000);
 
-	this.autorun(() => {
-		const username = this.loadedUsername.get();
+	this.loadUser = async ({ _id, username }) => {
+		this.loadingUserInfo.set(true);
 
-		if (username == null) {
-			this.loadingUserInfo.set(false);
+		const params = {};
+
+		if (_id != null) {
+			params.userId = _id;
+		} else if (username != null) {
+			params.username = username;
+		}
+
+		const { user } = await APIClient.v1.get('users.info', params);
+		this.user.set(user);
+		this.loadingUserInfo.set(false);
+	};
+
+	this.autorun(async () => {
+		const data = Template.currentData();
+		if (!data) {
 			return;
 		}
 
-		this.loadingUserInfo.set(true);
-
-		return this.subscribe('fullUserData', username, 1, () => this.loadingUserInfo.set(false));
+		this.loadUser(data);
 	});
 
 	this.autorun(() => {
@@ -287,25 +302,6 @@ Template.userInfo.onCreated(function() {
 		if (data.clear != null) {
 			this.clear = data.clear;
 		}
-	});
-
-	this.autorun(() => {
-		const data = Template.currentData();
-		const user = this.user.get();
-		return this.loadedUsername.set((user != null ? user.username : undefined) || (data != null ? data.username : undefined));
-	});
-
-	return this.autorun(() => {
-		let filter;
-		const data = Template.currentData();
-		if (data && data.username != null) {
-			filter = { username: data.username };
-		} else if (data && data._id != null) {
-			filter = { _id: data._id };
-		}
-		const user = FullUser.findOne(filter);
-
-		return this.user.set(user);
 	});
 });
 

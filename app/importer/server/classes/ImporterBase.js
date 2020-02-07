@@ -274,7 +274,7 @@ export class Base {
 	 * @returns {Progress} The progress record of the import.
 	 */
 	addCountToTotal(count) {
-		this.progress.count.total = this.progress.count.total + count;
+		this.progress.count.total += count;
 		this.updateRecord({ 'count.total': this.progress.count.total });
 
 		return this.progress;
@@ -287,7 +287,7 @@ export class Base {
 	 * @returns {Progress} The progress record of the import.
 	 */
 	addCountCompleted(count) {
-		this.progress.count.completed = this.progress.count.completed + count;
+		this.progress.count.completed += count;
 
 		// Only update the database every 500 records
 		// Or the completed is greater than or equal to the total amount

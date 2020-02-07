@@ -1,44 +1,17 @@
 .PageNotFound {
 	width: 100%;
 	min-height: 100vh;
-	padding: 10%;
 
 	text-align: center;
 
-	color: white;
 	background-color: var(--rc-color-primary);
 	background-image: url('/images/404.svg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
-}
 
-.PageNotFound__404 {
-	display: block;
-
-	padding: 10px;
-
-	font-size: 4em;
-	font-weight: bold;
-}
-
-.PageNotFound__message {
-	display: block;
-
-	padding: 10px;
-
-	font-size: 2em;
-	font-weight: bold;
-}
-
-.PageNotFound__description {
-	display: block;
-
-	padding: 10px;
-
-	font-size: 1em;
-}
-
-.PageNotFound__actions {
-	margin: 2rem;
+	&__404 {
+		font-size: 4em;
+		font-weight: bold;
+	}
 }

@@ -4,6 +4,7 @@ import { Roles } from '../../../models';
 import { clearCache } from '../functions/hasPermission';
 
 Meteor.publish('roles', function() {
+	console.warn('The publication "roles" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

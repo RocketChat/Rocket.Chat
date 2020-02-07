@@ -5,6 +5,7 @@ import { IntegrationHistory } from '../../../models/server';
 import { mountIntegrationHistoryQueryBasedOnPermissions } from '../lib/mountQueriesBasedOnPermission';
 
 Meteor.publish('integrationHistory', function _integrationHistoryPublication(integrationId, limit = 25) {
+	console.warn('The publication "integrationHistory" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

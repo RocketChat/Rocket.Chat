@@ -72,7 +72,7 @@ export function syncWorkspace(reconnectCheck = false) {
 
 	const { data } = result;
 
-	if (data.publicKey) {
+	if (data && data.publicKey) {
 		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	}
 

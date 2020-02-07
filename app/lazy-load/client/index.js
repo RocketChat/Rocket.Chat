@@ -34,7 +34,7 @@ window.addEventListener('resize', window.lazyloadtick);
 export const lazyloadtick = _.debounce(() => {
 	const lazyImg = document.querySelectorAll('.lazy-img[data-src]');
 	Array.from(lazyImg).forEach((el) =>
-		isVisible(el, Blaze.getView(el)._templateInstance)
+		isVisible(el, Blaze.getView(el)._templateInstance),
 	);
 }, 300);
 

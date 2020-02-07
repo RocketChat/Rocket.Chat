@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-import { useMethod } from '../../../hooks/useMethod';
-import { useViewStatisticsPermission } from '../../../hooks/usePermissions';
-import { useRocketChatInformation } from '../../../hooks/useRocketChatInformation';
-import { useAdminSideNav } from '../hooks';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import { useMethod, useServerInformation } from '../../../contexts/ServerContext';
+import { useAdminSideNav } from '../../../hooks/useAdminSideNav';
 import { InformationPage } from './InformationPage';
 
 export function InformationRoute() {
 	useAdminSideNav();
 
-	const canViewStatistics = useViewStatisticsPermission();
+	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);
 	const [statistics, setStatistics] = useState({});
@@ -56,7 +55,7 @@ export function InformationRoute() {
 		};
 	}, [canViewStatistics]);
 
-	const info = useRocketChatInformation();
+	const info = useServerInformation();
 
 	const handleClickRefreshButton = () => {
 		if (isLoading) {

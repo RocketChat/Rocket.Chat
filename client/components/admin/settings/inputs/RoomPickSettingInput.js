@@ -1,4 +1,4 @@
-import { Field, Icon, Label } from '@rocket.chat/fuselage';
+import { Box, Field, Flex, Icon } from '@rocket.chat/fuselage';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import React, { useRef, useEffect, useLayoutEffect } from 'react';
@@ -46,7 +46,7 @@ export function RoomPickSettingInput({
 					{
 						// @TODO maybe change this 'collection' and/or template
 						collection: 'CachedChannelList',
-						subscription: 'channelAndPrivateAutocomplete',
+						endpoint: 'rooms.autocomplete.channelAndPrivate',
 						field: 'name',
 						template: Template.roomSearch,
 						noMatchTemplate: Template.roomSearchEmpty,
@@ -72,16 +72,18 @@ export function RoomPickSettingInput({
 	}, [valueRef]);
 
 	return <>
-		<Field.Row>
-			<Label htmlFor={_id} text={label} title={_id} />
-			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-		</Field.Row>
+		<Flex.Container>
+			<Box>
+				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</Box>
+		</Flex.Container>
 		<div style={{ position: 'relative' }} ref={wrapperRef} />
 		<ul className='selected-rooms'>
 			{value.map(({ _id, name }) =>
 				<li key={_id} className='remove-room' onClick={handleRemoveRoomButtonClick(_id)}>
 					{name} <Icon name='cross' />
-				</li>
+				</li>,
 			)}
 		</ul>
 	</>;

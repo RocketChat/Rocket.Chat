@@ -35,7 +35,7 @@ Meteor.publish('snippetedMessage', function(_id) {
 	}
 
 	const cursor = Messages.find(
-		{ _id }
+		{ _id },
 	).observeChanges({
 		added(_id, record) {
 			publication.added('rocketchat_snippeted_message', _id, record);
