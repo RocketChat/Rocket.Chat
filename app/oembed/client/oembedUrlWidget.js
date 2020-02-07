@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
+import s from 'underscore.string';
 
 import { getUserPreference } from '../../utils';
 
@@ -20,14 +21,14 @@ const getDescription = function(self) {
 	if (description == null) {
 		return;
 	}
-	return _.unescape(description.replace(/(^[“\s]*)|([”\s]*$)/g, ''));
+	return s.unescapeHTML(description.replace(/(^[“\s]*)|([”\s]*$)/g, ''));
 };
 
 Template.oembedUrlWidget.helpers({
 	description() {
 		const description = getDescription(this);
 		if (_.isString(description)) {
-			return Blaze._escape(description);
+			return description;
 		}
 	},
 	title() {
