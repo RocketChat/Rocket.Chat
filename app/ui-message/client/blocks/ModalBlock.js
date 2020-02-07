@@ -1,10 +1,12 @@
-import { Template } from 'meteor/templating';
+import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 
+import * as ActionManager from '../ActionManager';
 import { modalBlockWithContext } from './MessageBlock';
 import './ModalBlock.html';
-import * as ActionManager from '../ActionManager';
+
 
 Template.ModalBlock.onRendered(async function() {
 	const React = await import('react');
@@ -84,7 +86,7 @@ Template.ModalBlock.onRendered(async function() {
 				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
 					ActionManager.triggerBlockAction({
 						container: {
-							type: 'view',
+							type: UIKitIncomingInteractionContainerType.VIEW,
 							id: viewId,
 						},
 						actionId,
