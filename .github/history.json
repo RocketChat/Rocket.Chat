@@ -38233,6 +38233,103 @@
           ]
         }
       ]
+    },
+    "2.4.4": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16377",
+          "title": "Release 2.4.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16361",
+          "title": "Regression: Rate limiter was not working due to Meteor internal changes",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.4",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16362",
+          "title": "[FIX] App removal was moving logs to the trash collection",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.4",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "2.4.5": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "2.4.6": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16395",
+          "title": "Revert message properties validation",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16401",
+          "title": "Fix index creation for apps_logs collection",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "2.4.7": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16433",
+          "title": "[FIX] Option to make a channel default",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.7",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        }
+      ]
     }
   }
 }

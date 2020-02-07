@@ -15,7 +15,7 @@ import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
 
-export function executeSendMessage(uid, message, trustedSender = false) {
+export function executeSendMessage(uid, message) {
 	if (message.tmid && !settings.get('Threads_enabled')) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', {
 			method: 'sendMessage',
@@ -73,7 +73,7 @@ export function executeSendMessage(uid, message, trustedSender = false) {
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return sendMessage(user, message, room, false, trustedSender);
+		return sendMessage(user, message, room, false);
 	} catch (error) {
 		if (error === 'error-not-allowed') {
 			throw new Meteor.Error('error-not-allowed');

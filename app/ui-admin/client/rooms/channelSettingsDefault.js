@@ -45,7 +45,7 @@ Template.channelSettingsDefault.events({
 	'click .save'(e, t) {
 		e.preventDefault();
 
-		Meteor.call('saveRoomSettings', this.rid, 'default', $('input[name=default]:checked').val(), (err/* , result*/) => {
+		Meteor.call('saveRoomSettings', Template.instance().room.get()._id, 'default', $('input[name=default]:checked').val(), (err/* , result*/) => {
 			if (err) {
 				return handleError(err);
 			}
