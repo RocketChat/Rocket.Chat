@@ -331,7 +331,7 @@ jobs:
 
         export OWNER="${GITHUB_REPOSITORY%/*}"
 
-        docker login docker.pkg.github.com -u "${OWNER}" -p "${GITHUB_TOKEN}"
+        docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
 
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
