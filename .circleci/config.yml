@@ -268,7 +268,7 @@ jobs:
 
             export CIRCLE_TAG=${CIRCLE_TAG:=}
 
-            cp ~/repo/.docker/Dockerfile.local ./Dockerfile
+            cp ~/repo/.docker/Dockerfile .
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
             if [[ $CIRCLE_TAG ]]; then
