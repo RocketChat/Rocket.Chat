@@ -1,6 +1,22 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.4
+`2020-02-06  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix: License missing from manual register handler ([#16505](https://github.com/RocketChat/Rocket.Chat/pull/16505))
+- Exclude federated and app users from active user count ([#16489](https://github.com/RocketChat/Rocket.Chat/pull/16489))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+
 ## 3.0.0-rc.3
 `2020-02-06  ·  3 🔍  ·  2 👩‍💻👨‍💻`
 

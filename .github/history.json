@@ -39333,6 +39333,36 @@
           ]
         }
       ]
+    },
+    "3.0.0-rc.4": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16505",
+          "title": "Fix: License missing from manual register handler",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.0.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16489",
+          "title": "Exclude federated and app users from active user count",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }
