@@ -3,6 +3,7 @@ import {
 	Field,
 	Flex,
 	SelectInput,
+	Select
 } from '@rocket.chat/fuselage';
 import React from 'react';
 
@@ -36,7 +37,7 @@ export function SelectSettingInput({
 			</Box>
 		</Flex.Container>
 		<Field.Row>
-			<SelectInput
+			<Select
 				data-qa-setting-id={_id}
 				id={_id}
 				value={value}
@@ -45,11 +46,11 @@ export function SelectSettingInput({
 				readOnly={readonly}
 				autoComplete={autocomplete === false ? 'off' : undefined}
 				onChange={handleChange}
-			>
-				{values.map(({ key, i18nLabel }) =>
-					<SelectInput.Option key={key} value={key}>{t(i18nLabel)}</SelectInput.Option>,
-				)}
-			</SelectInput>
+				options={values.map(({ key, i18nLabel }) => [
+					key,
+					t(i18nLabel),
+				])}
+			/>
 		</Field.Row>
 		{/* <Select
 			data-qa-setting-id={_id}

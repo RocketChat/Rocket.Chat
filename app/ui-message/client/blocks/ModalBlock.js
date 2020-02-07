@@ -102,7 +102,7 @@ Template.ModalBlock.onRendered(async function() {
 				},
 				...this.data,
 			}),
-			{ data: () => state.get() },
+			{ data: () => state.get(), values: () => this.state.all() },
 		),
 		this.node,
 	);
