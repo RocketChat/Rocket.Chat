@@ -47,7 +47,12 @@ Template.ModalBlock.onRendered(async function() {
 		return [element.actionId, { value: element.initialValue, blockId }];
 	};
 
-	this.state = new ReactiveDict(Object.fromEntries(this.data.view.blocks.filter(filterInputFields).map(mapElementToState)));
+	this.state = new ReactiveDict(this.data.view.blocks.filter(filterInputFields).map(mapElementToState).reduce((obj, el) => {
+		if (Array.isArray(el[0])) {
+			return { ...obj, ...Object.fromEntries(el) };
+		}
+		return { ...obj, [el[0]]: el[1] };
+	}, {}));
 
 	const groupStateByBlockIdMap = (obj, [key, { blockId, value }]) => {
 		obj[blockId] = obj[blockId] || {};
