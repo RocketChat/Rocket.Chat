@@ -10,10 +10,10 @@
 
 <template name="sidebarItem">
 	<li class="sidebar-item{{#if showUnread }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}} js-sidebar-type-{{t}}" data-id="{{_id}}" tabindex="0">
-		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" aria-label="{{name}}">
+		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}">
 			{{#unless isLivechatQueue}}
 
-				<div class=" {{#if isRoom}}sidebar-item__picture{{else}}sidebar-item-option-icon{{/if}}" alt="{{_ 'Avatar_of' name=name}}">
+				<div class=" {{#if isRoom}}sidebar-item__picture{{else}}sidebar-item-option-icon{{/if}}" >
 					{{#if darken}}
 						{{#if icon}}
 							<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}}">
@@ -21,7 +21,7 @@
 							</div>
 						{{/if}}
 					{{else}}
-						<div class="sidebar-item__user-thumb">
+						<div class="sidebar-item__user-thumb" aria-label="{{_ 'Avatar_of'}}">
 							{{> avatar url=avatar roomIcon=icon lazy=true}}
 						</div>
 					{{/if}}
