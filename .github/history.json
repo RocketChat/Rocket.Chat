@@ -39363,6 +39363,86 @@
           ]
         }
       ]
+    },
+    "2.4.8": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16506",
+          "title": "Release 2.4.8",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16486",
+          "title": "Update presence package to 2.6.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.5": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16515",
+          "title": "Regression: Update Uikit",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16514",
+          "title": "Regression: UIKit - Send container info on block actions triggered on a message",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16516",
+          "title": "Use base64 for import files upload to prevent file corruption",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16511",
+          "title": "Regression: Send app info along with interaction payload to the UI",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16513",
+          "title": "Regression: Ui Kit messaging issues (#16513)",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

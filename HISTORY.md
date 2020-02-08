@@ -1,6 +1,26 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.5
+`2020-02-08  ·  5 🔍·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Send app info along with interaction payload to the UI ([#16511](https://github.com/RocketChat/Rocket.Chat/pull/16511))
+- Regression: UIKit - Send container info on block actions triggered on a message ([#16514](https://github.com/RocketChat/Rocket.Chat/pull/16514))
+- Regression: Update Uikit ([#16515](https://github.com/RocketChat/Rocket.Chat/pull/16515))
+- Use base64 for import files upload to prevent file corruption ([#16516](https://github.com/RocketChat/Rocket.Chat/pull/16516))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.0.0-rc.4
 `2020-02-06  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -35,7 +55,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 ## 3.0.0-rc.2
-`2020-02-05  ·  3 🐛  ·  5 🔍  ·  3 👩‍💻👨‍💻`
+`2020-02-05  ·  3 🐛  ·  4 🔍  ·  2 👩‍💻👨‍💻`
 
 ### 🐛 Bug fixes
 
@@ -47,7 +67,6 @@
 <summary>🔍 Minor changes</summary>
 
 - Regression: prevent submit modal ([#16488](https://github.com/RocketChat/Rocket.Chat/pull/16488))
-- Update presence package to 2.6.1 ([#16486](https://github.com/RocketChat/Rocket.Chat/pull/16486))
 - Regression: allow private channels to hide system messages ([#16483](https://github.com/RocketChat/Rocket.Chat/pull/16483))
 - Regression: Fix uikit modal closing on click ([#16475](https://github.com/RocketChat/Rocket.Chat/pull/16475))
 - Regression: Fix undefined presence after reconnect ([#16477](https://github.com/RocketChat/Rocket.Chat/pull/16477))
@@ -58,7 +77,6 @@
 
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
 
 ## 3.0.0-rc.1
 `2020-02-04  ·  1 🔍  ·  1 👩‍💻👨‍💻`
@@ -186,6 +204,26 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 2.4.8
+`2020-02-07  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 2.4.8 ([#16506](https://github.com/RocketChat/Rocket.Chat/pull/16506))
+- Update presence package to 2.6.1 ([#16486](https://github.com/RocketChat/Rocket.Chat/pull/16486))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 2.4.7
 `2020-02-03  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
