@@ -39462,6 +39462,26 @@
           ]
         }
       ]
+    },
+    "3.0.0-rc.7": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16522",
+          "title": "[BREAK] Change apps/icon endpoint to return app's icon and use it to show on Ui Kit modal",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
