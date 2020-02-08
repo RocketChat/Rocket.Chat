@@ -5,8 +5,8 @@ import { Modal, AnimatedVisibility, ButtonGroup, Button, Box } from '@rocket.cha
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import { renderMessageBody } from '../../../ui-utils/client';
+import { getURL } from '../../../utils/lib/getURL';
 import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
-
 
 const focusableElementsString =	'a[href]:not([tabindex="-1"]), area[href]:not([tabindex="-1"]), input:not([disabled]):not([tabindex="-1"]), select:not([disabled]):not([tabindex="-1"]), textarea:not([disabled]):not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
 
@@ -44,7 +44,6 @@ const textParser = uiKitText(new class {
 		return text;
 	}
 }());
-const thumb =	'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
 
 // https://www.w3.org/TR/wai-aria-practices/examples/dialog-modal/dialog.html
 
@@ -128,14 +127,12 @@ export const modalBlockWithContext = ({
 			element.removeEventListener('click', close);
 		};
 	}, handleKeyDown);
-	const { appInfo = { base64Icon: thumb } } = data;
 	return (
 		<kitContext.Provider value={{ ...context, ...data, values }}>
 			<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
-						{/* <Modal.Thumb url={`api/apps/${ context.appId }/icon`} /> */}
-						<Modal.Thumb title={appInfo.name} url={appInfo.base64Icon} />
+						<Modal.Thumb url={getURL(`/api/apps/${ data.appId }/icon`)} />
 						<Modal.Title>{textParser([title])}</Modal.Title>
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>
