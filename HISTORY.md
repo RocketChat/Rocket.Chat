@@ -1,6 +1,17 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.7
+`2020-02-08  ·  1 ️️️⚠️  ·  1 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+- Change apps/icon endpoint to return app's icon and use it to show on Ui Kit modal ([#16522](https://github.com/RocketChat/Rocket.Chat/pull/16522))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.0.0-rc.6
 `2020-02-08  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
