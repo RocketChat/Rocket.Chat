@@ -1,16 +1,31 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
-## 3.0.0-rc.5
-`2020-02-08  ·  5 🔍·  4 👩‍💻👨‍💻`
+## 3.0.0-rc.6
+`2020-02-08  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
 <details>
 <summary>🔍 Minor changes</summary>
 
-- Regression: Send app info along with interaction payload to the UI ([#16511](https://github.com/RocketChat/Rocket.Chat/pull/16511))
-- Regression: UIKit - Send container info on block actions triggered on a message ([#16514](https://github.com/RocketChat/Rocket.Chat/pull/16514))
+- Regression: update package-lock ([#16528](https://github.com/RocketChat/Rocket.Chat/pull/16528))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
+## 3.0.0-rc.5
+`2020-02-08  ·  5 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
 - Regression: Update Uikit ([#16515](https://github.com/RocketChat/Rocket.Chat/pull/16515))
+- Regression: UIKit - Send container info on block actions triggered on a message ([#16514](https://github.com/RocketChat/Rocket.Chat/pull/16514))
 - Use base64 for import files upload to prevent file corruption ([#16516](https://github.com/RocketChat/Rocket.Chat/pull/16516))
+- Regression: Send app info along with interaction payload to the UI ([#16511](https://github.com/RocketChat/Rocket.Chat/pull/16511))
+- Regression: Ui Kit messaging issues (#16513) ([#16513](https://github.com/RocketChat/Rocket.Chat/pull/16513))
 
 </details>
 
