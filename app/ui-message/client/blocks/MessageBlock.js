@@ -7,7 +7,6 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { renderMessageBody } from '../../../ui-utils/client';
 import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
 
-
 const focusableElementsString =	'a[href]:not([tabindex="-1"]), area[href]:not([tabindex="-1"]), input:not([disabled]):not([tabindex="-1"]), select:not([disabled]):not([tabindex="-1"]), textarea:not([disabled]):not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
 
 messageParser.text = ({ text, type } = {}) => {
@@ -132,8 +131,7 @@ export const modalBlockWithContext = ({
 			<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
-						{/* <Modal.Thumb url={`api/apps/${ context.appId }/icon`} /> */}
-						<Modal.Thumb url={`/api/apps/icon/${ data.appId }`} />
+						<Modal.Thumb url={`/api/apps/${ data.appId }/icon`} />
 						<Modal.Title>{textParser([title])}</Modal.Title>
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>
