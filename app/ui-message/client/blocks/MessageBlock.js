@@ -62,6 +62,7 @@ export const modalBlockWithContext = ({
 	const id = `modal_id_${ useUniqueId() }`;
 
 	const { view, ...data } = useReactiveValue(props.data);
+	const values = useReactiveValue(props.values);
 	const ref = useRef();
 
 	// Auto focus
@@ -71,7 +72,7 @@ export const modalBlockWithContext = ({
 	// restore the focus after the component unmount
 	useEffect(() => () => previousFocus && previousFocus.focus(), []);
 	// Handle Tab, Shift + Tab, Enter and Escape
-	const handleKeyUp = useCallback((event) => {
+	const handleKeyDown = useCallback((event) => {
 		if (event.keyCode === 13) { // ENTER
 			return onSubmit();
 		}
@@ -120,21 +121,21 @@ export const modalBlockWithContext = ({
 			onClose();
 			return false;
 		};
-		document.addEventListener('keydown', handleKeyUp);
+		document.addEventListener('keydown', handleKeyDown);
 		element.addEventListener('click', close);
 		return () => {
-			document.removeEventListener('keydown', handleKeyUp);
+			document.removeEventListener('keydown', handleKeyDown);
 			element.removeEventListener('click', close);
 		};
-	}, handleKeyUp);
-
+	}, handleKeyDown);
+	const { appInfo = { base64Icon: thumb } } = data;
 	return (
-		<kitContext.Provider value={{ ...context, ...data }}>
+		<kitContext.Provider value={{ ...context, ...data, values }}>
 			<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
 						{/* <Modal.Thumb url={`api/apps/${ context.appId }/icon`} /> */}
-						<Modal.Thumb url={thumb} />
+						<Modal.Thumb title={appInfo.name} url={appInfo.base64Icon} />
 						<Modal.Title>{textParser([title])}</Modal.Title>
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>
