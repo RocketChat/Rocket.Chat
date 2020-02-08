@@ -182,12 +182,12 @@ export class APIClass extends Restivus {
 			&& (settings.get('API_Rate_Limit_IP_Enabled') || settings.get('API_Rate_Limit_User_Enabled') || settings.get('API_Rate_Limit_Connection_Enabled')
 				|| settings.get('API_Rate_Limit_User_By_Endpoint_Enabled') || settings.get('API_Rate_Limit_Connection_By_Endpoint_Enabled'))
 			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
-			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'));
+			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'))
+			&& !process.env.TEST_MODE;
 	}
 
 	enforceRateLimit(request, response, userId, token) {
 		const route = `${ request.route }${ request.method.toLowerCase() }`;
-
 		if (!this.shouldVerifyRateLimit(route, userId)) {
 			return;
 		}
