@@ -37,21 +37,20 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('roles.delete',{ authRequired: true },{
+API.v1.addRoute('roles.delete', { authRequired: true }, {
 	post() {
-
-		check(this.bodyParams.name,String);
+		check(this.bodyParams.name, String);
 
 		const roleData = Roles.findOneByIdOrName(this.bodyParams.name, { fields: API.v1.defaultFieldsToExclude });
 
-		Meteor.runAsUser(this.userId,() => {
+		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('authorization:deleteRole', this.bodyParams.name);
 		});
 
 		return API.v1.success({
-			role: roleData
+			role: roleData,
 		});
-	}
+	},
 });
 
 API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
