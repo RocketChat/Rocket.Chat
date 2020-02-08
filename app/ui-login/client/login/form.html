@@ -35,9 +35,16 @@
 						<div class="rc-input">
 							<label class="rc-input__label" for="pass">
 								<div class="rc-input__wrapper">
-									<input name="pass" id="pass" type="password" class="rc-input__element"
-										autocapitalize="off" autocorrect="off"
-										placeholder="{{passwordPlaceholder}}" autofocus>
+									<div class="rc-input__password">
+										<input name="pass" id="pass" class="rc-input__element"
+											autocapitalize="off" autocorrect="off"
+											placeholder="{{passwordPlaceholder}}" 
+											type="{{#if showPassword }}password{{else}}text{{/if}}"
+											autofocus>
+										<span class="pass-icon">
+											<i class="icon-eye{{#unless showPassword }}-off{{/unless}}"></i>
+										</span>
+									</div>
 									<div class="input-error"></div>
 								</div>
 							</label>
@@ -71,9 +78,16 @@
 					<div class="rc-input">
 						<label class="rc-input__label" for="pass">
 							<div class="rc-input__wrapper">
-								<input name="pass" id="pass" type="password" class="rc-input__element"
-									autocapitalize="off" autocorrect="off"
-									placeholder="{{passwordPlaceholder}}" autofocus>
+								<div class="rc-input__password">
+									<input name="pass" id="pass" class="rc-input__element"
+										autocapitalize="off" autocorrect="off"
+										placeholder="{{passwordPlaceholder}}" 
+										type="{{#if showPassword }}password{{else}}text{{/if}}"
+										autofocus>
+									<span class="pass-icon">
+										<i class="icon-eye{{#unless showPassword }}-off{{/unless}}"></i>
+									</span>
+								</div>
 								<div class="input-error"></div>
 							</div>
 						</label>
