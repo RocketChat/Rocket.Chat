@@ -375,7 +375,6 @@ Template.accountProfile.events({
 		}, [e, instance, ...args]);
 	},
 	'click .js-status-type'(e, instance) {
-		console.log(instance,this);
 		const options = [
 			{
 				icon: 'circle',

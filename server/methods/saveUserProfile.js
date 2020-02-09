@@ -53,7 +53,7 @@ Meteor.methods({
 			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
-		if(settings.statusType) {
+		if (settings.statusType) {
 			Meteor.call('setUserStatus', settings.statusType, null);
 		}
 
