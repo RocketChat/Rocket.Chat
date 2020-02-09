@@ -53,6 +53,10 @@ Meteor.methods({
 			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
+		if(settings.statusType) {
+			Meteor.call('setUserStatus', settings.statusType, null);
+		}
+
 		if (settings.email) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {

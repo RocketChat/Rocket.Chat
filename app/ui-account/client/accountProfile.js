@@ -8,7 +8,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { modal, SideNav } from '../../ui-utils';
+import { modal, SideNav, popover } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
@@ -118,6 +118,7 @@ Template.accountProfile.helpers({
 		instance.dep.depend();
 		const realname = instance.realname.get();
 		const statusText = instance.statusText.get();
+		const statusType = instance.statusType.get();
 		const username = instance.username.get();
 		const password = instance.password.get();
 		const confirmationPassword = instance.confirmationPassword.get();
@@ -135,7 +136,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password) {
+		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password && statusType === user.status) {
 			return ret;
 		}
 		if (!validateEmail(email) || !validatePassword(password, confirmationPassword) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
@@ -187,6 +188,9 @@ Template.accountProfile.helpers({
 	customFields() {
 		return Meteor.user().customFields;
 	},
+	statusType() {
+		return Meteor.user().status;
+	},
 });
 
 Template.accountProfile.onCreated(function() {
@@ -203,6 +207,7 @@ Template.accountProfile.onCreated(function() {
 	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
 	self.statusText = new ReactiveVar(user.statusText);
+	self.statusType = new ReactiveVar(user.status);
 
 	Notifications.onLogged('updateAvatar', () => self.avatar.set());
 	self.getSuggestions = function() {
@@ -276,6 +281,9 @@ Template.accountProfile.onCreated(function() {
 			}
 
 			data.statusText = s.trim(self.statusText.get());
+		}
+		if (self.statusType.get() !== user.statusType) {
+			data.statusType = self.statusType.get();
 		}
 		if (s.trim(self.username.get()) !== user.username) {
 			if (!settings.get('Accounts_AllowUsernameChange')) {
@@ -365,6 +373,67 @@ Template.accountProfile.events({
 				contentType: '',
 			},
 		}, [e, instance, ...args]);
+	},
+	'click .js-status-type'(e, instance) {
+		console.log(instance,this);
+		const options = [
+			{
+				icon: 'circle',
+				name: t('Online'),
+				modifier: 'online',
+				action: () => {
+					instance.statusType.set('online');
+					$('input[name=statusType]').val('online');
+					$('.js-status-type').prop('class', 'rc-input__icon js-status-type edit-status-type-icon--online');
+				},
+			},
+			{
+				icon: 'circle',
+				name: t('Away'),
+				modifier: 'away',
+				action: () => {
+					instance.statusType.set('away');
+					$('input[name=statusType]').val('away');
+					$('.js-status-type').prop('class', 'rc-input__icon js-status-type edit-status-type-icon--away');
+				},
+			},
+			{
+				icon: 'circle',
+				name: t('Busy'),
+				modifier: 'busy',
+				action: () => {
+					instance.statusType.set('busy');
+					$('input[name=statusType]').val('busy');
+					$('.js-status-type').prop('class', 'rc-input__icon js-status-type edit-status-type-icon--busy');
+				},
+			},
+			{
+				icon: 'circle',
+				name: t('Invisible'),
+				modifier: 'offline',
+				action: () => {
+					instance.statusType.set('offline');
+					$('input[name=statusType]').val('offline');
+					$('.js-status-type').prop('class', 'rc-input__icon js-status-type edit-status-type-icon--offline');
+				},
+			},
+		];
+
+		const config = {
+			popoverClass: 'edit-status-type',
+			columns: [
+				{
+					groups: [
+						{
+							items: options,
+						},
+					],
+				},
+			],
+			currentTarget: e.currentTarget,
+			offsetVertical: e.currentTarget.clientHeight,
+		};
+		popover.open(config);
 	},
 	'input .js-avatar-url-input'(e, instance) {
 		const text = e.target.value;
