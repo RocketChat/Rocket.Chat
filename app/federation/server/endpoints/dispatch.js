@@ -202,7 +202,7 @@ const eventHandlers = {
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
 
-					// Update the message's attachments
+					// Update the message's attachments dependent on type
 					for (const attachment of denormalizedMessage.attachments) {
 						attachment.title_link = attachment.title_link.replace(oldUploadId, upload._id);
 						if (/^image\/.+/.test(denormalizedMessage.file.type)) {
