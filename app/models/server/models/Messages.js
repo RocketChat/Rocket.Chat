@@ -111,9 +111,15 @@ export class Messages extends Base {
 		args[0] = v2Query;
 
 		if (args[0]) {
-			// Add a `t: msg`
+			// Add a `t: msg` and not deleted
 			args[0].t = EventTypeDescriptor.MESSAGE;
-			args[0]['d.deleted'] = null;
+			if (args[0]._findInTrash) {
+				delete args[0]._findInTrash;
+
+				args[0]['d.deleted'] = true;
+			} else {
+				args[0]['d.deleted'] = null;
+			}
 		}
 
 		const cursor = RoomEvents.find.apply(RoomEvents, args);
@@ -135,6 +141,14 @@ export class Messages extends Base {
 		const { v2Query } = this.getV2Query(args[0]);
 
 		args[0] = v2Query;
+
+		if (args[0]._findInTrash) {
+			delete args[0]._findInTrash;
+
+			args[0]['d.deleted'] = true;
+		} else {
+			args[0]['d.deleted'] = null;
+		}
 
 		let result = RoomEvents.findOne.apply(RoomEvents, args);
 
@@ -216,6 +230,30 @@ export class Messages extends Base {
 		Promise.await(this.dispatchEvent(deleteEvent));
 
 		return RoomEvents.toV1(deleteEvent);
+	}
+
+	trashFind(query, options) {
+		query._findInTrash = true;
+
+		return this.find(query, options);
+	}
+
+	trashFindOneById(_id, options) {
+		const query = {
+			_id,
+			_findInTrash: true,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	trashFindDeletedAfter(deletedAt, query = {}, options) {
+		query._findInTrash = true;
+		query._deletedAt = {
+			$gt: deletedAt,
+		};
+
+		return this.find(query, options);
 	}
 	//
 	// ^^^

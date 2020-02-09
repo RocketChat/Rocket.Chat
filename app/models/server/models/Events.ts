@@ -110,10 +110,14 @@ export class EventsModel extends Base {
 		};
 	}
 
-	public async updateEventData<T extends EDataDefinition>(contextQuery: IContextQuery, eventCID: string, eventT: string, updateData: IEDataUpdate<T>): Promise<void> {
-		const existingEvent = await this.model
+	private async getExistingEvent(contextQuery: IContextQuery, eventCID: string, eventT: string): Promise<IEvent<any>> {
+		return this.model
 			.rawCollection()
 			.findOne({ ...contextQuery, _cid: eventCID, t: eventT.substr(1) });
+	}
+
+	public async updateEventData<T extends EDataDefinition>(contextQuery: IContextQuery, eventCID: string, eventT: string, updateData: IEDataUpdate<T>): Promise<void> {
+		const existingEvent = await this.getExistingEvent(contextQuery, eventCID, eventT);
 
 		const updateQuery: any = EJSON.fromJSONValue(deepMapKeys(updateData, (k: any) => k.replace('_csg', '$').replace('_dot', '.')));
 
@@ -124,6 +128,14 @@ export class EventsModel extends Base {
 		}
 
 		await this.model.rawCollection().update({ _id: existingEvent._id }, updateQuery);
+	}
+
+	public async flagEventAsDeleted(contextQuery: IContextQuery, eventCID: string, eventT: string, deletedAt: Date): Promise<void> {
+		const existingEvent = await this.getExistingEvent(contextQuery, eventCID, eventT);
+
+		await this.model.rawCollection().update({ _id: existingEvent._id }, {
+			_deletedAt: deletedAt,
+		});
 	}
 
 	// async getEventById(contextQuery: ContextQuery, eventId:string) {

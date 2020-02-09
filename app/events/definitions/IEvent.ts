@@ -36,4 +36,5 @@ export interface IEvent<T extends EDataDefinition> {
 	t: EventTypeDescriptor;
 	d: T;
 	hasChildren: boolean;
+	deleted: boolean;
 }

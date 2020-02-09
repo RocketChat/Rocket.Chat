@@ -42,6 +42,10 @@ class RoomEventsModel extends EventsModel {
 		return super.updateEventData(getContextQuery(event), event._cid, event.t, dataToUpdate);
 	}
 
+	public async flagRoomEventAsDeleted<T extends EDataDefinition>(event: IEvent<T>): Promise<void> {
+		return super.flagEventAsDeleted(getContextQuery(event), event._cid, event.t, new Date());
+	}
+
 	public async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IEDataGenesis>> {
 		src = this.ensureSrc(src);
 
@@ -80,9 +84,6 @@ class RoomEventsModel extends EventsModel {
 		const stub: IEventStub<T> = {
 			_cid,
 			t: EventTypeDescriptor.DELETE_MESSAGE,
-			d: {
-				deleted: true,
-			},
 		};
 
 		return super.createEvent(src, getContextQuery(roomId), stub);
