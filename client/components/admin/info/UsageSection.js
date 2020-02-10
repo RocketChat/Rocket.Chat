@@ -14,6 +14,7 @@ export function UsageSection({ statistics, isLoading }) {
 		<DescriptionList data-qa='usage-list'>
 			<DescriptionList.Entry label={t('Stats_Total_Users')}>{s(() => statistics.totalUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Active_Users')}>{s(() => statistics.activeUsers)}</DescriptionList.Entry>
+			<DescriptionList.Entry label={t('Stats_App_Users')}>{s(() => statistics.appUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Non_Active_Users')}>{s(() => statistics.nonActiveUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Total_Connected_Users')}>{s(() => statistics.totalConnectedUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Online_Users')}>{s(() => statistics.onlineUsers)}</DescriptionList.Entry>
