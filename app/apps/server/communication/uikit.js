@@ -64,6 +64,7 @@ export class AppUIKitInteractionApi {
 						mid,
 						rid,
 						payload,
+						container,
 					} = req.body;
 
 					const room = this.orch.getConverters().get('rooms').convertById(rid);
@@ -72,6 +73,7 @@ export class AppUIKitInteractionApi {
 
 					const action = {
 						type,
+						container,
 						appId,
 						actionId,
 						message,
