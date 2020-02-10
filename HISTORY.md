@@ -1,5 +1,21 @@
+# 2.4.9
+`2020-02-10  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- `stdout` streamer infinite loop ([#16452](https://github.com/RocketChat/Rocket.Chat/pull/16452))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 2.4.8
-`2020-02-06  ·  5 ️️️⚠️  ·  10 🎉  ·  11 🚀  ·  26 🐛  ·  31 🔍  ·  20 👩‍💻👨‍💻`
+`2020-02-07  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.17.0`
