@@ -4,6 +4,8 @@
 
 	font-size: var(--text-heading-size);
 
+	color: var(--color-white);
+
 	.rc-badge {
 		position: absolute;
 		z-index: 1;
@@ -131,7 +133,6 @@
 
 	&__section-title {
 		color: var(--header-title-username-color-darker);
-
 		font-weight: var(--header-title-username-weight);
 	}
 
@@ -378,7 +379,6 @@
 
 	&__button {
 		color: inherit;
-
 		font-size: inherit;
 	}
 
@@ -463,8 +463,9 @@
 		}
 
 		&__image {
-			width: 20px;
-			height: 20px;
+			display: none;
+			/*width: 20px;
+			height: 20px;*/
 		}
 
 		&--burger {
@@ -472,6 +473,20 @@
 
 			margin: 0;
 			padding: 0;
+		}
+	}
+	.rc-direct {
+		&--room {
+			background: var(--veranda-color-primary);
+		}
+
+		&__wrap {
+			background: var(--veranda-color-primary);
+			color: var(--color-white);
+		}
+
+		&__name {
+			color: var(--color-white);
 		}
 	}
 }
