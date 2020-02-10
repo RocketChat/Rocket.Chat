@@ -4,8 +4,6 @@
 
 	font-size: var(--text-heading-size);
 
-/*	color: var(--color-white);
-*/
 	.rc-badge {
 		position: absolute;
 		z-index: 1;
@@ -133,6 +131,7 @@
 
 	&__section-title {
 		color: var(--header-title-username-color-darker);
+
 		font-weight: var(--header-title-username-weight);
 	}
 
@@ -379,6 +378,7 @@
 
 	&__button {
 		color: inherit;
+
 		font-size: inherit;
 	}
 
@@ -420,19 +420,6 @@
 		&__visual-status {
 			display: none;
 		}
-
-		/*&--room {
-			background: var(--veranda-color-primary);
-		}
-
-		&__wrap {
-			background: var(--veranda-color-primary);
-			color: var(--color-white);
-		}
-
-		&__name {
-			color: var(--color-white);
-		}*/
 
 		&__block-action {
 			& + & {
@@ -477,8 +464,9 @@
 
 		&__image {
 			display: none;
-			/*width: 20px;
-			height: 20px;*/
+
+			/* width: 20px;
+			height: 20px; */
 		}
 
 		&--burger {
@@ -495,8 +483,8 @@
 		}
 
 		&__wrap {
-			background: var(--veranda-color-primary);
 			color: var(--color-white);
+			background: var(--veranda-color-primary);
 		}
 
 		&__name {
