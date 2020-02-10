@@ -2,8 +2,8 @@
 	{{#if openSearchPage}}
 	    <section></section>
 	{{else}}
-		<header class="rc-header rc-header--room rc-direct rc-direct--room" >
-			<div class="rc-header__wrap rc-direct__wrap">
+		<header class="rc-header rc-header--room rc-channel rc-channel--room" >
+			<div class="rc-header__wrap rc-channel__wrap">
 
 				<div class="rc-header__block rc-header--burger">
 					{{> burger}}
@@ -39,9 +39,9 @@
 
 					<div class="rc-header__data">
 						{{#unless secondaryName}}
-						<div class="rc-header__name rc-direct__name">{{> icon block="rc-header__icon" icon=roomIcon}}{{roomName}}</div>
+						<div class="rc-header__name rc-channel__name">{{> icon block="rc-header__icon" icon=roomIcon}}{{roomName}}</div>
 						{{else}}
-						<div class="rc-header__name rc-direct__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
+						<div class="rc-header__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
 						{{/unless}}
 
 						{{#if isDirect}}

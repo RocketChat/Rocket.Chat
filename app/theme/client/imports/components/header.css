@@ -4,8 +4,8 @@
 
 	font-size: var(--text-heading-size);
 
-	color: var(--color-white);
-
+/*	color: var(--color-white);
+*/
 	.rc-badge {
 		position: absolute;
 		z-index: 1;
@@ -421,6 +421,19 @@
 			display: none;
 		}
 
+		/*&--room {
+			background: var(--veranda-color-primary);
+		}
+
+		&__wrap {
+			background: var(--veranda-color-primary);
+			color: var(--color-white);
+		}
+
+		&__name {
+			color: var(--color-white);
+		}*/
+
 		&__block-action {
 			& + & {
 				border-left: 1px var(--color-gray) solid;
@@ -475,7 +488,8 @@
 			padding: 0;
 		}
 	}
-	.rc-direct {
+
+	.rc-channel {
 		&--room {
 			background: var(--veranda-color-primary);
 		}
