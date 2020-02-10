@@ -60,7 +60,7 @@ API.v1.addRoute('custom-user-status.update', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
 			_id: String,
-			name: Match.Maybe(String),
+			name: String,
 			statusType: Match.Maybe(String),
 		});
 
