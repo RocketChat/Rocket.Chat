@@ -12,6 +12,11 @@ class CustomUserStatus extends Base {
 		return this.findOne(_id, options);
 	}
 
+	// find one by name
+	findOneByName(name, options) {
+		return this.findOne({ name }, options);
+	}
+
 	// find
 	findByName(name, options) {
 		const query = {
