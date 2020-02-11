@@ -1,4 +1,4 @@
-FROM node:8.12-alpine
+FROM node:8.17-alpine
 
 RUN apk add python make g++ libc6-compat ttf-dejavu
 
