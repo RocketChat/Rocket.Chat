@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
+import moment from 'moment';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
@@ -129,6 +130,36 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
+	},
+});
+
+API.v1.addRoute('users.deactivateIdle', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			daysIdle: Match.Integer,
+			role: Match.Optional(String),
+		});
+
+		if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
+			return API.v1.unauthorized();
+		}
+
+		const lastLoggedIn = moment(new Date()).subtract(this.bodyParams.daysIdle, 'days');
+
+		const resultCursor = Users.findActiveNotLoggedInAfterWithRole(lastLoggedIn.toDate(), 'user', {
+			fields: {
+				_id: 1,
+			},
+		});
+		Meteor.runAsUser(this.userId, () => {
+			resultCursor.forEach((user) => {
+				Meteor.call('setUserActiveStatus', user._id, false);
+			});
+		});
+
+		return API.v1.success({
+			count: resultCursor.count(),
+		});
 	},
 });
 
