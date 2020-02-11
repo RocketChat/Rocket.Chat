@@ -1,12 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentEdit.html';
-import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
 import { hasPermission } from '../../../../../authorization';
 import { t, handleError, APIClient } from '../../../../../utils/client';
 
@@ -144,13 +142,9 @@ Template.agentEdit.onCreated(async function() {
 		}
 
 		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
-
+		const { departments } = await APIClient.v1.get(`livechat/agents/${ agentId }/departments`);
 		this.agent.set(user);
-
-		Tracker.nonreactive(() => this.subscribe('livechat:departmentAgents', null, agentId, () => {
-			this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
-		}));
-
+		this.agentDepartments.set((departments || []).map((department) => department.departmentId));
 		this.ready.set(true);
 	});
 });

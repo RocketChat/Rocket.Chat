@@ -1,32 +1,42 @@
 import { Button } from '@rocket.chat/fuselage';
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
-import toastr from 'toastr';
 import s from 'underscore.string';
 
-import { call } from '../../../../../app/ui-utils/client/lib/callMethod';
-import { modal } from '../../../../../app/ui-utils/client/lib/modal';
 import { RawText } from '../../../basic/RawText';
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useAbsoluteUrl, useMethod } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useModal } from '../../../../hooks/useModal';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 
-export function OAuthGroupPage({ group }) {
-	const solo = group.sections.length === 1;
+export function OAuthGroupPage({ _id, sections, ...group }) {
+	const solo = sections.length === 1;
 	const t = useTranslation();
 
 	const sectionIsCustomOAuth = (sectionName) => sectionName && /^Custom OAuth:\s.+/.test(sectionName);
 
+	const getAbsoluteUrl = useAbsoluteUrl();
+
 	const callbackURL = (sectionName) => {
 		const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
-		return Meteor.absoluteUrl(`_oauth/${ id }`);
+		return getAbsoluteUrl(`_oauth/${ id }`);
 	};
 
-	const handleRefreshOAuthServicesButtonClick = () => {
-		toastr.info(t('Refreshing'));
-		call('refreshOAuthService').then(() => {
-			toastr.success(t('Done'));
-		});
+	const dispatchToastMessage = useToastMessageDispatch();
+	const refreshOAuthService = useMethod('refreshOAuthService');
+	const addOAuthService = useMethod('addOAuthService');
+	const removeOAuthService = useMethod('removeOAuthService');
+	const modal = useModal();
+
+	const handleRefreshOAuthServicesButtonClick = async () => {
+		dispatchToastMessage({ type: 'info', message: t('Refreshing') });
+		try {
+			await refreshOAuthService();
+			dispatchToastMessage({ type: 'success', message: t('Done') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
 	};
 
 	const handleAddCustomOAuthButtonClick = () => {
@@ -37,7 +47,7 @@ export function OAuthGroupPage({ group }) {
 			showCancelButton: true,
 			closeOnConfirm: true,
 			inputPlaceholder: t('Custom_oauth_unique_name'),
-		}, (inputValue) => {
+		}, async (inputValue) => {
 			if (inputValue === false) {
 				return false;
 			}
@@ -45,15 +55,19 @@ export function OAuthGroupPage({ group }) {
 				modal.showInputError(t('Name_cant_be_empty'));
 				return false;
 			}
-			call('addOAuthService', inputValue);
+			try {
+				await addOAuthService(inputValue);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 		});
 	};
 
-	return <GroupPage group={group} headerButtons={<>
+	return <GroupPage _id={_id} {...group} headerButtons={<>
 		<Button onClick={handleRefreshOAuthServicesButtonClick}>{t('Refresh_oauth_services')}</Button>
 		<Button onClick={handleAddCustomOAuthButtonClick}>{t('Add_custom_oauth')}</Button>
 	</>}>
-		{group.sections.map((sectionName) => {
+		{sections.map((sectionName) => {
 			if (sectionIsCustomOAuth(sectionName)) {
 				const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 
@@ -66,14 +80,18 @@ export function OAuthGroupPage({ group }) {
 						confirmButtonText: t('Yes_delete_it'),
 						cancelButtonText: t('Cancel'),
 						closeOnConfirm: true,
-					}, () => {
-						call('removeOAuthService', id);
+					}, async () => {
+						try {
+							await removeOAuthService(id);
+						} catch (error) {
+							dispatchToastMessage({ type: 'error', message: error });
+						}
 					});
 				};
 
 				return <Section
 					key={sectionName}
-					groupId={group._id}
+					groupId={_id}
 					help={<RawText>{t('Custom_oauth_helper', callbackURL(sectionName))}</RawText>}
 					sectionName={sectionName}
 					solo={solo}
@@ -84,7 +102,7 @@ export function OAuthGroupPage({ group }) {
 				</Section>;
 			}
 
-			return <Section key={sectionName} groupId={group._id} sectionName={sectionName} solo={solo} />;
+			return <Section key={sectionName} groupId={_id} sectionName={sectionName} solo={solo} />;
 		})}
 	</GroupPage>;
 }

@@ -12,7 +12,6 @@ roomDataStream.allowWrite('none');
 roomDataStream.allowRead(function(rid) {
 	try {
 		const room = Meteor.call('canAccessRoom', rid, this.userId);
-
 		if (!room) {
 			return false;
 		}
@@ -28,7 +27,7 @@ roomDataStream.allowRead(function(rid) {
 });
 
 export function emitRoomDataEvent(id, data) {
-	if (!data) {
+	if (!data || !data.t) {
 		return;
 	}
 

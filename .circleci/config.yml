@@ -44,7 +44,7 @@ test-save-npm-cache: &test-save-npm-cache
     - ./node_modules
 
 test-docker-image: &test-docker-image
-  circleci/node:8.15-stretch-browsers
+  circleci/node:8.16-stretch-browsers
 
 test-with-oplog: &test-with-oplog
   <<: *defaults
@@ -69,7 +69,7 @@ jobs:
   build: &build
     <<: *defaults
     docker:
-      - image: circleci/node:8.15-stretch
+      - image: circleci/node:8.16-stretch
       - image: mongo:3.4
 
     steps:
@@ -147,7 +147,7 @@ jobs:
       - run:
           name: Build Rocket.Chat
           environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=3072
+            TOOL_NODE_FLAGS: --max_old_space_size=4096
           command: |
             if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == 'develop' ]]; then
               meteor reset;
@@ -220,7 +220,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.15-stretch
+      - image: circleci/node:8.16-stretch
 
     steps:
       - attach_workspace:
@@ -267,59 +267,42 @@ jobs:
             rm Rocket.Chat.tar.gz
 
             export CIRCLE_TAG=${CIRCLE_TAG:=}
-            if [[ $CIRCLE_TAG ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              echo "Build official Docker image"
+            cp ~/repo/.docker/Dockerfile .
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+            if [[ $CIRCLE_TAG ]]; then
+              echo "Build tagged Docker image"
               docker build -t assistify/chat:$CIRCLE_TAG .
               docker push assistify/chat:$CIRCLE_TAG
-
-              # echo "Build preview Docker image"
-              # cp ~/repo/.docker-mongo/Dockerfile .
-              # cp ~/repo/.docker-mongo/entrypoint.sh .
-              # docker build -t assistify/chat.preview:$CIRCLE_TAG .
-              # docker push assistify/chat.preview:$CIRCLE_TAG
-
-              if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-                docker tag assistify/chat:$CIRCLE_TAG assistify/chat:latest
-                docker push assistify/chat:latest
-
-                # docker tag assistify/chat.preview:$CIRCLE_TAG assistify/chat.preview:latest
-                # docker push assistify/chat.preview:latest
-              elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-                docker tag assistify/chat:$CIRCLE_TAG assistify/chat:release-candidate
-                docker push assistify/chat:release-candidate
-
-                docker tag assistify/chat.preview:$CIRCLE_TAG assistify/chat.preview:release-candidate
-                docker push assistify/chat.preview:release-candidate
-              fi
 
               exit 0
             fi;
 
             if [[ $CIRCLE_BRANCH == 'develop' ]]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              echo "Build official Docker image"
-              cp ~/repo/.docker/Dockerfile .
+              echo "Build nightly Docker image"
               docker build -t assistify/chat:develop .
               docker push assistify/chat:develop
 
-              # echo "Build preview Docker image"
-              # cp ~/repo/.docker-mongo/Dockerfile .
-              # cp ~/repo/.docker-mongo/entrypoint.sh .
-              # docker build -t assistify/chat.preview:develop .
-              # docker push assistify/chat.preview:develop
+              exit 0
+            fi;
+
+            if [[ $CIRCLE_BRANCH == 'master' ]]; then
+
+              echo "Build latest Docker image"
+              docker build -t assistify/chat:latest .
+              docker push assistify/chat:latest
 
               exit 0
             fi;
 
             export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
             if [[ $CIRCLE_PR_NUMBER ]]; then
-              cp ~/repo/.docker/Dockerfile .
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker build -t assistify/chat:pr-${CIRCLE_PR_NUMBER} .
               docker push assistify/chat:pr-${CIRCLE_PR_NUMBER}
+
+              exit 0
             fi;
   pr-build:
     <<: *build
@@ -331,7 +314,16 @@ workflows:
   version: 2
   build-and-test:
     jobs:
+      - hold-all:
+        type: approval
+        filters:
+          branches:
+            only: develop
+          tags:
+            only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - build:
+          requires:
+            - hold-all
           filters:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
@@ -375,13 +367,9 @@ workflows:
           filters:
             branches:
               only: master
-            tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - pr-image-build:
           requires:
             - build
           filters:
             branches:
               ignore: develop
-            tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/

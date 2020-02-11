@@ -170,7 +170,7 @@ export class AppCommandsBridge {
 			Object.freeze(user),
 			Object.freeze(room),
 			Object.freeze(params),
-			threadId
+			threadId,
 		);
 		return Promise.await(this.orch.getManager().getCommandManager().getPreviews(command, context));
 	}
@@ -185,7 +185,7 @@ export class AppCommandsBridge {
 			Object.freeze(user),
 			Object.freeze(room),
 			Object.freeze(params),
-			threadId
+			threadId,
 		);
 		Promise.await(this.orch.getManager().getCommandManager().executePreview(command, preview, context));
 	}

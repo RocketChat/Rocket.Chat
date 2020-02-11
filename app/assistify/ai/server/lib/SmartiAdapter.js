@@ -614,7 +614,7 @@ export class SmartiAdapter {
 				conversationId,
 			}, {
 				upsert: true,
-			}
+			},
 		);
 	}
 

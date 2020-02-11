@@ -1,15 +1,10 @@
-FROM rocketchat/base:8
+FROM rocketchat/base:8.17.0
 
-ENV RC_VERSION 2.1.2
-MAINTAINER buildmaster@rocket.chat
+ADD . /app
+
+LABEL maintainer="buildmaster@rocket.chat"
 
 RUN set -x \
- && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/download/" -o rocket.chat.tgz \
- && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
- && gpg --verify rocket.chat.tgz.asc \
- && mkdir -p /app \
- && tar -zxf rocket.chat.tgz -C /app \
- && rm rocket.chat.tgz rocket.chat.tgz.asc \
  && cd /app/bundle/programs/server \
  && npm install \
  && npm cache clear --force \

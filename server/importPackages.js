@@ -1,3 +1,5 @@
+import '../app/assistify/ai/server';
+import '../app/assistify/configuration/server';
 import '../app/cors/server';
 import '../app/sms';
 import '../app/2fa/server';
@@ -113,6 +115,4 @@ import '../app/ui-utils';
 import '../app/action-links';
 import '../app/reactions/server';
 import '../app/livechat/server';
-
-import '../app/assistify/ai/server';
-import '../app/assistify/configuration/server';
+import '../app/meteor-autocomplete/server';

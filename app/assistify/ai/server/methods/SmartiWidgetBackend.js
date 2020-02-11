@@ -29,7 +29,7 @@ Meteor.methods({
 				userId(userId) {
 					return !hasPermission(userId, 'send-many-messages');
 				},
-			}
+			},
 		)(channelId);
 	},
 
@@ -46,7 +46,7 @@ Meteor.methods({
 				userId(userId) {
 					return !hasPermission(userId, 'send-many-messages');
 				},
-			}
+			},
 		)(verbs.get, `conversation/${ conversationId }/analysis`, null, null, (error) => {
 			// 404 is expected if no mapping exists
 			if (error.response && error.response.statusCode === 404) {
@@ -66,7 +66,7 @@ Meteor.methods({
 				userId(userId) {
 					return !hasPermission(userId, 'send-many-messages');
 				},
-			}
+			},
 		)(roomId);
 	},
 
@@ -87,7 +87,7 @@ Meteor.methods({
 				userId(userId) {
 					return !hasPermission(userId, 'send-many-messages');
 				},
-			}
+			},
 		)(verbs.get, `conversation/${ conversationId }/analysis/template/${ templateIndex }/result/${ creator }`, { start, rows });
 	},
 
@@ -113,7 +113,7 @@ Meteor.methods({
 				userId(userId) {
 					return !hasPermission(userId, 'send-many-messages');
 				},
-			}
+			},
 		)(verbs.get, 'conversation/search', params);
 		SystemLogger.debug('SearchResult: ', JSON.stringify(searchResult, null, 2));
 		return searchResult;
@@ -139,7 +139,7 @@ function loadSmarti() {
 				userId(userId) {
 					return !hasPermission(userId, 'send-many-messages');
 				},
-			}
+			},
 		)(verbs.get, 'plugin/v1/rocket.chat.js');
 		if (!script.error && script) {
 			// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable

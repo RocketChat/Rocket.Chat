@@ -5,6 +5,7 @@ import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMe
 import { Messages } from '../../app/models';
 
 Meteor.publish('messages', function(rid/* , start*/) {
+	console.warn('The publication "messages" is deprecated and will be removed after version v3.0.0');
 	if (!this.userId) {
 		return this.ready();
 	}

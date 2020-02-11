@@ -40,7 +40,7 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 			{
 				_id: match[1],
 				snippeted: true,
-			}
+			},
 		);
 		const room = Rooms.findOne({ _id: snippet.rid, usernames: { $in: [user.username] } });
 		if (room === undefined) {

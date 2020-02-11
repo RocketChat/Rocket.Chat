@@ -30,6 +30,7 @@ export class Users extends Base {
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
 		this.tryEnsureIndex({ statusText: 1 });
@@ -584,6 +585,21 @@ export class Users extends Base {
 			exceptions = [exceptions];
 		}
 
+		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+		if (searchTerm === '') {
+			const query = {
+				$and: [
+					{
+						active: true,
+						username: { $exists: true, $nin: exceptions },
+					},
+					...extraQuery,
+				],
+			};
+
+			return this._db.find(query, options);
+		}
+
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
@@ -757,6 +773,15 @@ export class Users extends Base {
 		return this.find({ active: true, isRemote: true }, options);
 	}
 
+	getSAMLByIdAndSAMLProvider(_id, provider) {
+		return this.findOne({
+			_id,
+			'services.saml.provider': provider,
+		}, {
+			'services.saml': 1,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -772,6 +797,16 @@ export class Users extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	updateInviteToken(_id, inviteToken) {
+		const update = {
+			$set: {
+				inviteToken,
+			},
+		};
+
+		return this.update(_id, update);
 	}
 
 	updateStatusText(_id, statusText) {
@@ -983,7 +1018,7 @@ export class Users extends Base {
 	setPreferences(_id, preferences) {
 		const settingsObject = Object.assign(
 			{},
-			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] }))
+			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] })),
 		);
 
 		const update = {
