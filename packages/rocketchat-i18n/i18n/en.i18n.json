@@ -3007,6 +3007,8 @@
   "Smarsh_MissingEmail_Email_Description": "The email to show for a user account when their email address is missing, generally happens with bot accounts.",
   "Smarsh_Timezone": "Smarsh Timezone",
   "Smileys_and_People": "Smileys & People",
+  "SMS_Default_Omnichannel_Department": "Omnichannel Department(Default)",
+  "SMS_Default_Omnichannel_Department_Description": "If set, all new incoming chats initiated by this integration will be routed to this department.",
   "SMS_Enabled": "SMS Enabled",
   "SMTP": "SMTP",
   "SMTP_Host": "SMTP Host",

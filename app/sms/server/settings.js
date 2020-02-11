@@ -28,6 +28,12 @@ Meteor.startup(function() {
 			i18nLabel: 'Service',
 		});
 
+		this.add('SMS_Default_Omnichannel_Department', '', {
+			type: 'string',
+			i18nLabel: 'SMS_Default_Omnichannel_Department',
+			i18nDescription: 'SMS_Default_Omnichannel_Department_Description',
+		});
+
 		this.section('Twilio', function() {
 			this.add('SMS_Twilio_Account_SID', '', {
 				type: 'string',
