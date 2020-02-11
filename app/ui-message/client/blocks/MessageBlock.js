@@ -48,11 +48,6 @@ const textParser = uiKitText(new class {
 // https://www.w3.org/TR/wai-aria-practices/examples/dialog-modal/dialog.html
 
 export const modalBlockWithContext = ({
-	view: {
-		title,
-		close,
-		submit,
-	},
 	onSubmit,
 	onClose,
 	onCancel,
@@ -133,7 +128,7 @@ export const modalBlockWithContext = ({
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
 						<Modal.Thumb url={getURL(`/api/apps/${ data.appId }/icon`)} />
-						<Modal.Title>{textParser([title])}</Modal.Title>
+						<Modal.Title>{textParser([view.title])}</Modal.Title>
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
@@ -148,8 +143,8 @@ export const modalBlockWithContext = ({
 					</Modal.Content>
 					<Modal.Footer>
 						<ButtonGroup align='end'>
-							<Button onClick={onCancel}>{textParser([close.text])}</Button>
-							<Button primary onClick={onSubmit}>{textParser([submit.text])}</Button>
+							{ view.close && <Button onClick={onCancel}>{textParser([view.close.text])}</Button>}
+							{ view.submit && <Button primary onClick={onSubmit}>{textParser([view.submit.text])}</Button>}
 						</ButtonGroup>
 					</Modal.Footer>
 				</Modal>
