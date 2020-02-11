@@ -1,6 +1,29 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.8
+`2020-02-11  ·  2 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Do not stop on DM imports if one of users was not found ([#16547](https://github.com/RocketChat/Rocket.Chat/pull/16547))
+- Introduce AppLivechatBridge.isOnlineAsync method ([#16467](https://github.com/RocketChat/Rocket.Chat/pull/16467))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: UIkit input states ([#16552](https://github.com/RocketChat/Rocket.Chat/pull/16552))
+- Regression: UIKit missing select states: error/disabled ([#16540](https://github.com/RocketChat/Rocket.Chat/pull/16540))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 3.0.0-rc.7
 `2020-02-08  ·  1 ️️️⚠️  ·  1 👩‍💻👨‍💻`
 
@@ -119,7 +142,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 ## 3.0.0-rc.0
-`2020-02-04  ·  5 ️️️⚠️  ·  10 🎉  ·  11 🚀  ·  23 🐛  ·  18 🔍  ·  19 👩‍💻👨‍💻`
+`2020-02-04  ·  5 ️️️⚠️  ·  10 🎉  ·  11 🚀  ·  22 🐛  ·  18 🔍  ·  19 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -159,7 +182,6 @@
 ### 🐛 Bug fixes
 
 - Result of get avatar from url can be null ([#16123](https://github.com/RocketChat/Rocket.Chat/pull/16123))
-- `stdout` streamer infinite loop ([#16452](https://github.com/RocketChat/Rocket.Chat/pull/16452))
 - Rooms not being marked as read sometimes ([#16397](https://github.com/RocketChat/Rocket.Chat/pull/16397))
 - Container heights ([#16388](https://github.com/RocketChat/Rocket.Chat/pull/16388))
 - Mail Msg Cancel button not closing the flexbar ([#16263](https://github.com/RocketChat/Rocket.Chat/pull/16263) by [@ashwaniYDV](https://github.com/ashwaniYDV))
@@ -230,6 +252,29 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 2.4.9
+`2020-02-10  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- `stdout` streamer infinite loop ([#16452](https://github.com/RocketChat/Rocket.Chat/pull/16452))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 2.4.9 ([#16544](https://github.com/RocketChat/Rocket.Chat/pull/16544))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 2.4.8
 `2020-02-07  ·  2 🔍  ·  1 👩‍💻👨‍💻`

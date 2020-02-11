@@ -39482,6 +39482,78 @@
           ]
         }
       ]
+    },
+    "2.4.9": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16544",
+          "title": "Release 2.4.9",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16452",
+          "title": "[FIX] `stdout` streamer infinite loop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.8": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16552",
+          "title": "Regression: UIkit input states",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16547",
+          "title": "[FIX] Do not stop on DM imports if one of users was not found",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16467",
+          "title": "[FIX] Introduce AppLivechatBridge.isOnlineAsync method",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.0",
+          "contributors": [
+            "renatobecker",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16540",
+          "title": "Regression: UIKit missing select states: error/disabled",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
