@@ -117,8 +117,6 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 
 		const [message] = normalizeMessagesForUser([pinnedMessage], this.userId);
 
-		console.log(message);
-
 		return API.v1.success({
 			message,
 		});

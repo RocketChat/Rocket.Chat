@@ -134,7 +134,9 @@ export class EventsModel extends Base {
 		const existingEvent = await this.getExistingEvent(contextQuery, eventCID, eventT);
 
 		await this.model.rawCollection().update({ _id: existingEvent._id }, {
-			_deletedAt: deletedAt,
+			$set: {
+				_deletedAt: deletedAt,
+			},
 		});
 	}
 

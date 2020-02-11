@@ -207,8 +207,6 @@ Meteor.methods({
 			}
 		}
 
-		console.log('messageSearch 1 --- ', query);
-
 		if (Object.keys(query).length > 0) {
 			query.t = {
 				$in: ['msg'], // only the ones we believe should be searched for
@@ -233,11 +231,7 @@ Meteor.methods({
 				};
 			}
 
-			console.log('messageSearch 2 --- ', query);
-
 			result.message.docs = Messages.find(query, options).fetch();
-
-			console.log('messageSearch 3 --- ', query);
 		}
 
 		return result;
