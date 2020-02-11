@@ -490,6 +490,10 @@
 		&__name {
 			color: var(--color-white);
 		}
+
+		.burger i {
+			background-color: var(--color-white);
+		}
 	}
 }
 
@@ -501,6 +505,7 @@
 	position: relative;
 
 	cursor: pointer;
+
 	transition: transform 0.2s ease-out 0.1s;
 	will-change: transform;
 
