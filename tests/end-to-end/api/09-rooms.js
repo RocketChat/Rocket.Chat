@@ -867,7 +867,6 @@ describe('[Rooms]', function() {
 		});
 	});
 
-
 	describe('[/rooms.autocomplete.channelAndPrivate]', () => {
 		it('should return an empty list when the user does not have the necessary permission', (done) => {
 			updatePermission('view-other-user-channels', []).then(() => {
