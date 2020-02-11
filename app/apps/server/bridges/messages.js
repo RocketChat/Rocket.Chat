@@ -15,12 +15,14 @@ export class AppMessageBridge {
 
 		const convertedMessage = this.orch.getConverters().get('messages').convertAppMessage(message);
 		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
+		const messageId = sentMessage ? sentMessage._id : '';
 
 		if (!sentMessage) {
-			return '';
+			const { room } = message;
+			console.warn(`The App ${ appId } failed to send a message in the room ${ room.displayName }`);
 		}
 
-		return sentMessage._id;
+		return messageId;
 	}
 
 	async getById(messageId, appId) {
