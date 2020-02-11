@@ -1376,5 +1376,4 @@ callbacks.add('enter-room', (sub) => {
 		chatMessages[sub.rid].restoreReplies();
 	}
 	readMessage.read(sub.rid);
-	readMessage.refreshUnreadMark(sub.rid);
 });
