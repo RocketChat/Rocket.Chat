@@ -24,7 +24,7 @@ export function SelectSettingInput({
 }) {
 	const t = useTranslation();
 
-	const handleChange = ([value]) => {
+	const handleChange = (value) => {
 		onChangeValue && onChangeValue(value);
 	};
 

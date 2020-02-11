@@ -626,6 +626,16 @@ export class SlackImporter extends Base {
 					channel.rocketId = existingRoom._id;
 					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
 				} else {
+					if (!userId1) {
+						this.logger.error(`DM creation: User not found for id ${ channel.members[0] } and channel id ${ channel.id }`);
+						return;
+					}
+
+					if (!userId2) {
+						this.logger.error(`DM creation: User not found for id ${ channel.members[1] } and channel id ${ channel.id }`);
+						return;
+					}
+
 					const user = this._getBasicUserData(userId2);
 
 					if (!user) {
