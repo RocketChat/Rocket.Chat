@@ -73,7 +73,7 @@ export const modalBlockWithContext = ({
 	// Handle Tab, Shift + Tab, Enter and Escape
 	const handleKeyDown = useCallback((event) => {
 		if (event.keyCode === 13) { // ENTER
-			return onSubmit();
+			return onSubmit(event);
 		}
 
 		if (event.keyCode === 27) { // ESC
