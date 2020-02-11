@@ -16,6 +16,13 @@
 	flex: 1;
 }
 
+.back-button {
+	position: relative;
+	top: 36px;
+
+	padding-left: 24px;
+}
+
 .rocket-default-search-results {
 	overflow: auto;
 	overflow-x: hidden;

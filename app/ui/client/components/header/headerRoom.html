@@ -1,14 +1,6 @@
 <template name="headerRoom">
 	{{#if openSearchPage}}
-		<header class="contextual-bar__header contextual-bar__header--empty">
-				<button class ="js-close-search" aria-label="{{_ "Close"}}" style="font-size: 1.2em;">
-					{{> icon icon="back"}}
-				</button>
-				<div class="contextual-bar__header-data">
-					{{> icon block="contextual-bar__header-icon" icon=icon}}
-					<h1 class="contextual-bar__header-title">Search Messages</h1>
-				</div>
-		</header>
+	    <section></section>
 	{{else}}
 		<header class="rc-header rc-header--room" >
 			<div class="rc-header__wrap">
@@ -94,5 +86,5 @@
 				{{/if}}
 			</div>
 		</header>
-	{{/if}}
+    {{/if}}
 </template>

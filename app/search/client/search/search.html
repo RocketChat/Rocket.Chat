@@ -6,6 +6,13 @@
 			</div>
 		{{/if}}
 	{{else}}
+	{{#if isMobile}}
+		<div class="back-button">
+			<button class ="js-close-search" aria-label="{{_ "Close"}}" style="font-size: 1.5em;">
+			    {{> icon icon="back"}}
+			</button>  
+		</div>
+	{{/if}}
 	<div class="rocket-search-tab list-view {{provider.key}}">
 		{{#unless isMobile}}
 			{{#if provider.description}}

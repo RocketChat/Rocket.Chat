@@ -147,6 +147,6 @@ const clearOldMessageAtStartup = () => {
 			clearOldMessages(value);
 		}
 	});
-}
+};
 
 callbacks.add('afterMainReady', clearOldMessageAtStartup, callbacks.priority.LOW, 'clearOldMessageAtStartup');

@@ -79,6 +79,9 @@ Template.RocketSearch.onCreated(function() {
 });
 
 Template.RocketSearch.events = {
+	'click .js-close-search'() {
+		Session.set('openSearchPage', !Session.get('openSearchPage'));
+	},
 	'keydown #message-search'(evt, t) {
 		if (evt.keyCode === 13) {
 			if (t.suggestionActive.get() !== undefined) {
