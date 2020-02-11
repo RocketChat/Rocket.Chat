@@ -1093,7 +1093,6 @@ describe('[Chat]', function() {
 			});
 		});
 
-		// TODO: do not skip this, make it work on event system
 		describe('when execute successfully', () => {
 			it('should return a list of deleted messages', (done) => {
 				request.get(api('chat.getDeletedMessages'))
@@ -1148,7 +1147,6 @@ describe('[Chat]', function() {
 			});
 		});
 
-		// TODO: do not skip this, make it work on event system
 		describe('when an error occurs', () => {
 			it('should return statusCode 400 and an error when "roomId" is not provided', (done) => {
 				request.get(api('chat.getDeletedMessages'))
