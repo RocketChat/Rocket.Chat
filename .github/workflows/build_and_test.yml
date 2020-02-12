@@ -342,37 +342,19 @@ jobs:
         name: build
         path: /tmp/build
 
-    - name: Publish assets
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-        REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
-        REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
-        UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
-      run: |
-        if [[ '${{ github.event_name }}' = 'release' ]]; then
-          export CIRCLE_TAG="${GITHUB_REF#*tags/}"
-        else
-          export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
-        fi;
-
-        export CIRCLE_TAG=${CIRCLE_TAG:=}
-        export CIRCLE_SHA1=$GITHUB_SHA
-        export CIRCLE_BUILD_NUM=$GITHUB_SHA
-
-        aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
-
-        source .circleci/setartname.sh
-        source .circleci/setdeploydir.sh
-        bash .circleci/setupsig.sh
-        bash .circleci/namefiles.sh
-
-        aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
-
-        bash .circleci/update-releases.sh
-        # bash .circleci/snap.sh
-        bash .circleci/redhat-registry.sh
+    - name: Publish docker image
+      uses: manusa/actions-publish-docker@master
+      with:
+        name: assistify/chat
+        username: ${{ secrets.DOCKER_HUB_USER }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        tag script: |
+          return context.ref
+            .replace('refs/heads/
+            .replace('refs/tags/'
+            .replace('refs/pull/'
+            .replace(/\//g, '_')
+            .replace(/#/g, '');
 
   image-build:
     runs-on: ubuntu-latest
