@@ -16,6 +16,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ rid: 1, 'u._id': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ rid: 1, 'u._id': 1, open: 1 });
 		this.tryEnsureIndex({ rid: 1, 'u.username': 1 });
+		this.tryEnsureIndex({ rid: 1, 'u.active': 1 });
 		this.tryEnsureIndex({ rid: 1, alert: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ rid: 1, roles: 1 });
 		this.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
@@ -626,6 +627,12 @@ export class Subscriptions extends Base {
 
 	findByRoomIdWhenUsernameExists(rid, options) {
 		const query = { rid, 'u.username': { $exists: 1 } };
+
+		return this.find(query, options);
+	}
+
+	findByRoomIdWhenUsernameExistsAndUserIsActive(rid, options) {
+		const query = { rid, 'u.username': { $exists: 1 }, 'u.active': true };
 
 		return this.find(query, options);
 	}

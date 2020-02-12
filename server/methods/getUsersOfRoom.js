@@ -22,9 +22,10 @@ function findUsers({ rid, status, skip, limit }) {
 				'u.name': 1,
 				'u.username': 1,
 				'u.status': 1,
+				'u.active': 1,
 			},
 		},
-		...status ? [{ $match: { 'u.status': status } }] : [],
+		...status ? [{ $match: { 'u.status': status, 'u.active': true } }] : [],
 		{
 			$sort: {
 				[settings.get('UI_Use_Real_Name') ? 'u.name' : 'u.username']: 1,
@@ -37,6 +38,7 @@ function findUsers({ rid, status, skip, limit }) {
 				_id: { $arrayElemAt: ['$u._id', 0] },
 				name: { $arrayElemAt: ['$u.name', 0] },
 				username: { $arrayElemAt: ['$u.username', 0] },
+				active: { $arrayElemAt: ['$u.active', 0] },
 			},
 		},
 	]).toArray();
@@ -58,7 +60,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
+		const total = Subscriptions.findByRoomIdWhenUsernameExistsAndUserIsActive(rid).count();
 		const users = await findUsers({ rid, status: { $ne: 'offline' }, limit, skip });
 		if (showAll && (!limit || users.length < limit)) {
 			const offlineUsers = await findUsers({
