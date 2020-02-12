@@ -7,19 +7,19 @@ class Administration extends Page {
 
 	get settingsSearch() { return browser.element('[name=settings-search]'); }
 
-	get layoutLink() { return browser.element('.flex-nav .sidebar-item__link[href="/admin/Layout"]'); }
+	get layoutLink() { return browser.element('.flex-nav [href="/admin/Layout"]'); }
 
-	get infoLink() { return browser.element('.flex-nav .sidebar-item__link[href="/admin/info"]'); }
+	get infoLink() { return browser.element('.flex-nav [href="/admin/info"]'); }
 
-	get roomsLink() { return browser.element('.flex-nav .sidebar-item__link[href="/admin/rooms"]'); }
+	get roomsLink() { return browser.element('.flex-nav [href="/admin/rooms"]'); }
 
-	get usersLink() { return browser.element('.flex-nav .sidebar-item__link[href="/admin/users"]'); }
+	get usersLink() { return browser.element('.flex-nav [href="/admin/users"]'); }
 
-	get accountsLink() { return browser.element('.flex-nav .sidebar-item__link[href="/admin/Accounts"]'); }
+	get accountsLink() { return browser.element('.flex-nav [href="/admin/Accounts"]'); }
 
-	get generalLink() { return browser.element('.flex-nav .sidebar-item__link[href="/admin/General"]'); }
+	get generalLink() { return browser.element('.flex-nav [href="/admin/General"]'); }
 
-	get permissionsLink() { return browser.element('.flex-nav .sidebar-item__link[href="/admin/permissions"]'); }
+	get permissionsLink() { return browser.element('.flex-nav [href="/admin/permissions"]'); }
 
 	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .collapse'); }
 
@@ -63,7 +63,7 @@ class Administration extends Page {
 
 	get usersInternalAdmin() { return browser.element('td .rc-table-wrapper').contains('rocketchat.internal.admin.test'); }
 
-	get usersFilter() { return browser.element('.main-content-flex #users-filter'); }
+	get usersFilter() { return browser.element('#users-filter'); }
 
 	get rolesNewRolesButton() { return browser.element('.rc-button.new-role'); }
 
@@ -325,7 +325,7 @@ class Administration extends Page {
 
 	get accountsUsernameChange() { return browser.element('[data-qa-setting-id="Accounts_AllowUsernameChange"]'); }
 
-	get layoutButtonExpandContent() { return browser.element('[data-qa-section="Content"]'); }
+	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .rc-button.rc-button--nude'); }
 
 	checkUserList(user) {
 		const element = browser.element(`td=adminCreated${ user }`);

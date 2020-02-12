@@ -7,8 +7,7 @@ import { checkIfUserIsValid } from '../../data/checks';
 import sideNav from '../pageobjects/side-nav.page';
 
 function openAdminView() {
-	admin.open('admin/info');
-	admin.infoRocketChatTable.waitForVisible(5000);
+	admin.open('admin/Layout');
 }
 
 function logoutRocketchat() {
@@ -18,7 +17,7 @@ function logoutRocketchat() {
 	sideNav.logout.click();
 }
 
-describe('[Rocket.Chat Settings based permissions]', function() {
+describe.skip('[Rocket.Chat Settings based permissions]', function() {
 	const newTitle = 'Testtitle';
 
 	describe('Give User Permissions', function() {

@@ -16,6 +16,7 @@ Meteor.methods({
 				providersMetadata[provider] = { name, displayName };
 			}
 		}
+
 		return providersMetadata;
 	},
 });

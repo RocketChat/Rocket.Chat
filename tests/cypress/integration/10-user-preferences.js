@@ -84,7 +84,6 @@ describe('[User Preferences]', () => {
 			});
 
 			it('it should send a message to be tested', () => {
-				sideNav.openChannel('general');
 				mainContent.sendMessage('HI');
 				mainContent.waitForLastMessageEqualsText('HI');
 			});
