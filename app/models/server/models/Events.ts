@@ -11,8 +11,22 @@ import { Base } from './_Base';
 export declare interface IContextQuery { rid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
 export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d: T }
+export declare type IEventHashOptions = {
+	[key in EventTypeDescriptor]?: {
+		skip: [string];
+	};
+};
 
 export class EventsModel extends Base<IEvent<EDataDefinition>> {
+	readonly hashOptions: IEventHashOptions = {
+		msg: {
+			skip: ['msg'],
+		},
+		emsg: {
+			skip: ['msg'],
+		},
+	};
+
 	constructor(nameOrModel: string) {
 		super(nameOrModel);
 
@@ -21,7 +35,15 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 	}
 
 	public getEventHash<T extends EDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
-		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ JSON.stringify(event.d) }`);
+		let data: any = event.d;
+
+		const options: any = this.hashOptions[event.t];
+
+		if (options) {
+			data = _.omit(data, options.skip);
+		}
+
+		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ JSON.stringify(data) }`);
 	}
 
 	public async createEvent<T extends EDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>): Promise<IEvent<T>> {

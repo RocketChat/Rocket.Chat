@@ -2,6 +2,7 @@ import { Match } from 'meteor/check';
 import _ from 'underscore';
 import deepMapKeys from 'deep-map-keys';
 import { EJSON } from 'meteor/ejson';
+import { SHA256 } from 'meteor/sha';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -178,7 +179,12 @@ export class Messages extends Base {
 	insert(...args) {
 		const [message] = args;
 
-		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, RoomEvents.fromV1Data(message)));
+		const v2Data = RoomEvents.fromV1Data(message);
+
+		// Generate message hash
+		v2Data._msgSha = SHA256(v2Data.msg);
+
+		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, v2Data));
 
 		Promise.await(this.dispatchEvent(event));
 
@@ -188,22 +194,17 @@ export class Messages extends Base {
 	update(...args) {
 		const [query, update] = args;
 
-		const { _cid, v2Query } = this.getV2Query(query);
+		return this.processEvents(query, (event) => {
+			const d = deepMapKeys(EJSON.toJSONValue(update), (k) => k.replace('$', '[csg]').replace('.', '[dot]'));
+			d['[csg]set'] = d['[csg]set'] || {};
+			d['[csg]set']._oid = event._id; // Original id
 
-		const event = RoomEvents.findOne(v2Query);
+			const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, event._cid, d));
 
-		if (!event) {
-			return null;
-		}
-		const d = deepMapKeys(EJSON.toJSONValue(update), (k) => k.replace('$', '[csg]').replace('.', '[dot]'));
-		d['[csg]set'] = d['[csg]set'] || {};
-		d['[csg]set']._oid = event._id; // Original id
+			Promise.await(this.dispatchEvent(editEvent));
 
-		const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, _cid, d));
-
-		Promise.await(this.dispatchEvent(editEvent));
-
-		return RoomEvents.toV1(editEvent);
+			return RoomEvents.toV1(editEvent);
+		});
 	}
 
 	upsert(...args) {
