@@ -328,44 +328,16 @@ jobs:
         docker build -t $IMAGE_NAME .
         docker push $IMAGE_NAME
 
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: test
-
-    steps:
-    - uses: actions/checkout@v1
-
-    - name: Restore build
-      uses: actions/download-artifact@v1
-      with:
-        name: build
-        path: /tmp/build
-
-    - name: Publish docker image
-      uses: manusa/actions-publish-docker@master
-      with:
-        name: assistify/chat
-        username: ${{ secrets.DOCKER_HUB_USER }}
-        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-        tag script: |
-          return context.ref
-            .replace('refs/heads/
-            .replace('refs/tags/'
-            .replace('refs/pull/'
-            .replace(/\//g, '_')
-            .replace(/#/g, '');
-
   image-build:
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: test
 
     strategy:
       matrix:
         release: ["official", "preview"]
 
     env:
-      IMAGE: "rocketchat/rocket.chat"
+      IMAGE: "assistify/chat"
 
     steps:
     - uses: actions/checkout@v1
