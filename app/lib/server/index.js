@@ -1,5 +1,4 @@
 import './startup/email';
-import './startup/env';
 import './startup/oAuthServicesUpdate';
 import './startup/rateLimiter';
 import './startup/robots';
