@@ -140,17 +140,23 @@ API.v1.addRoute('users.deactivateIdle', { authRequired: true }, {
 			role: Match.Optional(String),
 		});
 
+		const { daysIdle, role } = this.bodyParams;
+
 		if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
 			return API.v1.unauthorized();
 		}
 
-		const lastLoggedIn = moment(new Date()).subtract(this.bodyParams.daysIdle, 'days');
+		const lastLoggedIn = moment(new Date()).subtract(daysIdle, 'days');
 
-		const resultCursor = Users.findActiveNotLoggedInAfterWithRole(lastLoggedIn.toDate(), 'user', {
+		const resultCursor = Users.findActiveNotLoggedInAfterWithRole(lastLoggedIn.toDate(), role || 'user', {
 			fields: {
 				_id: 1,
 			},
 		});
+
+		// cache the count since it will be 0 after deactivation
+		const count = resultCursor.count();
+
 		Meteor.runAsUser(this.userId, () => {
 			resultCursor.forEach((user) => {
 				Meteor.call('setUserActiveStatus', user._id, false);
@@ -158,7 +164,7 @@ API.v1.addRoute('users.deactivateIdle', { authRequired: true }, {
 		});
 
 		return API.v1.success({
-			count: resultCursor.count(),
+			count,
 		});
 	},
 });
