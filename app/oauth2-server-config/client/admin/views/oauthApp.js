@@ -12,18 +12,15 @@ import { t, handleError } from '../../../../utils';
 import { APIClient } from '../../../../utils/client';
 
 function isValidURL(string) {
-	var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-	return (res !== null)
-  };
+	const res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+	return res !== null;
+}
 
 
-function checkValidURLList(URLsList){
-	var URLs = URLsList.split("\n");
-	for (let i = 0; i < URLs.length; i++)
-	{
-		console.log("url = ",  URLs[i], "ISvalid = ", isValidURL(URLs[i]));
-		if(!isValidURL(URLs[i]))
-		{
+function checkValidURLList(URLsList) {
+	const URLs = URLsList.split('\n');
+	for (let i = 0; i < URLs.length; i++) {
+		if (!isValidURL(URLs[i])) {
 			return false;
 		}
 	}
