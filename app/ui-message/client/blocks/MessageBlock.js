@@ -131,17 +131,17 @@ export const modalBlockWithContext = ({
 			return false;
 		};
 
-		const igoreIfnotContains = (e) => {
+		const ignoreIfnotContains = (e) => {
 			if (!container.contains(e.target)) {
 				return;
 			}
 			return handleKeyDown(e);
 		};
 
-		document.addEventListener('keydown', igoreIfnotContains);
+		document.addEventListener('keydown', ignoreIfnotContains);
 		element.addEventListener('click', close);
 		return () => {
-			document.removeEventListener('keydown', igoreIfnotContains);
+			document.removeEventListener('keydown', ignoreIfnotContains);
 			element.removeEventListener('click', close);
 		};
 	}, handleKeyDown);
