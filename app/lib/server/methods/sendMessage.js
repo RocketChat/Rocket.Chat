@@ -50,6 +50,7 @@ export function executeSendMessage(uid, message) {
 	const user = Users.findOneById(uid, {
 		fields: {
 			username: 1,
+			type: 1,
 			...!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 },
 		},
 	});
@@ -67,7 +68,7 @@ export function executeSendMessage(uid, message) {
 	}
 
 	try {
-		const room = canSendMessage(rid, { uid, username: user.username });
+		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
 		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
 			message.alias = user.name;
 		}

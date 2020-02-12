@@ -42,10 +42,10 @@
 					{{/unless}}
 
 					{{#if isDirect}}
-					<span class="rc-header__status">
+					{{# userPresence uid=uid}}<span class="rc-header__status">
 						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
 						<div class="rc-header__visual-status">{{userStatusText}}</div>
-					</span>
+					</span>{{/userPresence}}
 					{{else}}
 					{{#if roomTopic}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}
 					{{/if}}

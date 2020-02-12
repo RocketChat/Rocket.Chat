@@ -429,6 +429,12 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findOneByAppId(appId, options) {
+		const query = { appId };
+
+		return this.findOne(query, options);
+	}
+
 	findOneByImportId(_id, options) {
 		return this.findOne({ importIds: _id }, options);
 	}
@@ -498,6 +504,16 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findNotOfflineByIds(users, options) {
+		const query = {
+			_id: { $in: users },
+			status: {
+				$in: ['online', 'away', 'busy'],
+			},
+		};
+		return this.find(query, options);
+	}
+
 	findUsersNotOffline(options) {
 		const query = {
 			username: {
@@ -541,7 +557,10 @@ export class Users extends Base {
 	}
 
 	findActive(options = {}) {
-		return this.find({ active: true }, options);
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+		}, options);
 	}
 
 	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
@@ -823,6 +842,16 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				lastLogin: new Date(),
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	updateStatusById(_id, status) {
+		const update = {
+			$set: {
+				status,
 			},
 		};
 
