@@ -73,38 +73,47 @@ Template.ModalBlock.onRendered(async function() {
 	ReactDOM.render(
 		React.createElement(
 			modalBlockWithContext({
-				onCancel: (e) => prevent(e) & ActionManager.triggerCancel({
-					appId,
-					viewId,
-					view: {
-						...this.data.view,
-						id: viewId,
-						state: groupStateByBlockId(this.state.all()),
-					},
-				}),
-				onClose: (e) => prevent(e) & ActionManager.triggerCancel({
-					appId,
-					viewId,
-					view: {
-						...this.data.view,
-						id: viewId,
-						state: groupStateByBlockId(this.state.all()),
-					},
-					isCleared: true,
-				}),
-				onSubmit: (e) => prevent(e) & ActionManager.triggerSubmitView({
-					viewId,
-					appId,
-					payload: {
+				onCancel: (e) => {
+					prevent(e);
+					return ActionManager.triggerCancel({
+						appId,
+						viewId,
 						view: {
 							...this.data.view,
 							id: viewId,
 							state: groupStateByBlockId(this.state.all()),
 						},
-					},
-				}),
+					});
+				},
+				onClose: (e) => {
+					prevent(e);
+					return ActionManager.triggerCancel({
+						appId,
+						viewId,
+						view: {
+							...this.data.view,
+							id: viewId,
+							state: groupStateByBlockId(this.state.all()),
+						},
+						isCleared: true,
+					});
+				},
+				onSubmit: (e) => {
+					prevent(e);
+					ActionManager.triggerSubmitView({
+						viewId,
+						appId,
+						payload: {
+							view: {
+								...this.data.view,
+								id: viewId,
+								state: groupStateByBlockId(this.state.all()),
+							},
+						},
+					});
+				},
 				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
-					ActionManager.triggerBlockAction({
+					return ActionManager.triggerBlockAction({
 						container: {
 							type: UIKitIncomingInteractionContainerType.VIEW,
 							id: viewId,
