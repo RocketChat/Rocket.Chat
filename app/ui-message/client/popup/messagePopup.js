@@ -69,12 +69,12 @@ Template.messagePopup.onCreated(function() {
 	template.prefix = val(template.data.prefix, template.trigger);
 	template.suffix = val(template.data.suffix, '');
 	if (template.triggerAnywhere === true) {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| |\n)${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`${ template.trigger }+[^\\s@#:]*$`));
 	} else {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^)${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`^${ template.trigger }[^\\s@#:]*$`));
 	}
-	template.selectorRegex = val(template.data.selectorRegex, new RegExp(`${ template.trigger }([^\\s]*)$`));
-	template.replaceRegex = val(template.data.replaceRegex, new RegExp(`${ template.trigger }[^\\s]*$`));
+	template.selectorRegex = val(template.data.selectorRegex, new RegExp(`${ template.trigger }+([^\\s@#:]*)$`));
+	template.replaceRegex = val(template.data.replaceRegex, new RegExp(`${ template.trigger }+[^\\s@#^]*$`));
 	template.getValue = val(template.data.getValue, function(_id) {
 		return _id;
 	});
