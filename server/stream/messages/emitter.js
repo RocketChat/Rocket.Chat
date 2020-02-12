@@ -28,23 +28,13 @@ Meteor.startup(function() {
 		}
 	}
 
-	// return Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
-	// 	switch (clientAction) {
-	// 		case 'inserted':
-	// 		case 'updated':
-	// 			const message = data || Messages.findOne({ _id: id });
-	// 			publishMessage(clientAction, message);
-	// 			break;
-	// 	}
-	// });
-
 	return RoomEvents.on('change', function({ clientAction, id, data/* , oplog*/ }) {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				let message = data || RoomEvents.findOne({ _id: id });
+				let message = data || RoomEvents.findOne({ _id: id, t: EventTypeDescriptor.MESSAGE });
 
-				if (message.t !== EventTypeDescriptor.MESSAGE) {
+				if (!message) {
 					break;
 				}
 

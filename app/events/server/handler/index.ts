@@ -1,17 +1,26 @@
 import { EDataDefinition, IEvent, EventTypeDescriptor } from '../../definitions/IEvent';
-import { IAddEventResult } from '../../../models/server/models/Events';
+import { room } from './types/room';
+import { roomDelete } from './types/room_delete';
+import { roomMessage } from './types/room_message';
+import { roomEditMessage } from './types/room_edit_message';
+import { roomDeleteMessage } from './types/room_delete_message';
+import { HandlerMethod } from '../../definitions/HandlerMethod';
+import { IEDataMessage } from '../../definitions/data/IEDataMessage';
+import { IEDataRoom } from '../../definitions/data/IEDataRoom';
+import { IEDataUpdate } from '../../definitions/data/IEDataUpdate';
+import { IEDataEmpty } from '../../definitions/data/IDataEmpty';
 
 export type TypesHandler = {
-	[P in EventTypeDescriptor]?: <T extends EDataDefinition>(event: IEvent<T>) => Promise<IAddEventResult>;
+	[P in EventTypeDescriptor]: HandlerMethod<EDataDefinition>;
 }
 
 const typesHandler: TypesHandler = {
-	genesis: require('./types/genesis'), // GENESIS
-
 	// Room
-	msg: require('./types/room_message'), // ROOM_MESSAGE
-	emsg: require('./types/room_edit_message'), // ROOM_EDIT_MESSAGE
-	dmsg: require('./types/room_delete_message'), // ROOM_EDIT_MESSAGE
+	room: (event) => room(event as IEvent<IEDataRoom>),
+	droom: (event) => roomDelete(event as IEvent<IEDataUpdate<IEDataEmpty>>),
+	msg: (event) => roomMessage(event as IEvent<IEDataMessage>),
+	emsg: (event) => roomEditMessage(event as IEvent<IEDataUpdate<IEDataEmpty>>),
+	dmsg: (event) => roomDeleteMessage(event as IEvent<IEDataUpdate<IEDataEmpty>>),
 };
 
 export async function handleEvents<T extends EDataDefinition>(events: [IEvent<T>]) {

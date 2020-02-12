@@ -2,7 +2,7 @@ import { getLocalSrc } from './getLocalSrc';
 import { logger } from './logger';
 import { dispatchEvents as federationDispatchEvents } from '../../../federation/server/handler';
 import { handleEvents } from '../handler';
-import { Messages } from '../../../models/server';
+import { Messages, Rooms } from '../../../models/server';
 import { isFederationEnabled } from '../../../federation/server/lib/isFederationEnabled';
 
 export async function dispatchEvents(events, domains) {
@@ -24,3 +24,4 @@ export async function dispatchEvent(event, domains) {
 }
 
 Messages.registerEventDispatcher(dispatchEvent);
+Rooms.registerEventDispatcher(dispatchEvent);

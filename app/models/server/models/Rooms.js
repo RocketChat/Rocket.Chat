@@ -5,6 +5,7 @@ import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { RoomEvents } from './RoomEvents';
+import { getFederationDomain } from '../../../federation/server/lib/getFederationDomain';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -22,22 +23,24 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 	}
 
+	registerEventDispatcher(callback) {
+		this.dispatchEvent = callback;
+	}
+
 	//
 	// Overriding insert method to create the genesis event
 	//
-	insert(...args) {
-		let [room] = args;
-
-		const roomId = super.insert(...args);
+	insert(room) {
+		const roomId = super.insert(room);
 
 		room = {
 			_id: roomId,
 			...room,
 		};
 
-		const event = Promise.await(RoomEvents.createGenesisEvent({ room }));
+		const event = Promise.await(RoomEvents.createRoomGenesisEvent(getFederationDomain(), room));
 
-		this.emit('dispatchEvent', event);
+		Promise.await(this.dispatchEvent(event));
 
 		return roomId;
 	}
@@ -998,6 +1001,10 @@ export class Rooms extends Base {
 	// REMOVE
 	removeById(_id) {
 		const query = { _id };
+
+		const event = Promise.await(RoomEvents.createDeleteRoomEvent(getFederationDomain(), _id));
+
+		Promise.await(this.dispatchEvent(event));
 
 		return this.remove(query);
 	}

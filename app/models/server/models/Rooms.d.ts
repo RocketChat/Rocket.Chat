@@ -1,5 +1,8 @@
 import { Base } from './_Base';
+import { IRoom } from '../../../events/definitions/IRoom';
 
-export declare class Rooms extends Base {
-	constructor(...args: any[]);
-}
+declare class RoomsClass extends Base<IRoom> {}
+
+declare const Rooms: RoomsClass;
+
+export default Rooms;

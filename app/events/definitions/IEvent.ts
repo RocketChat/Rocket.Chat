@@ -1,33 +1,35 @@
-import { IEDataGenesis } from './data/IEDataGenesis';
+import { IEDataRoom } from './data/IEDataRoom';
 import { IEDataMessage } from './data/IEDataMessage';
 import { IEDataUpdate } from './data/IEDataUpdate';
+import { IEDataEmpty } from './data/IDataEmpty';
 
-export type IEData = IEDataGenesis | IEDataMessage;
+export type IEData = IEDataRoom | IEDataMessage | IEDataEmpty;
 
 export type EDataDefinition = IEDataUpdate<IEData> | IEData;
 
 export enum EventTypeDescriptor {
-	// Global
-	PING = 'ping',
+	// // Global
+	// PING = 'ping',
 
 	// Rooms
-	GENESIS = 'genesis',
+	ROOM = 'room',
+	DELETE_ROOM = 'droom',
 	MESSAGE = 'msg',
 	EDIT_MESSAGE = 'emsg',
 	DELETE_MESSAGE = 'dmsg',
 
-	// Not implemented
-	ADD_USER = 'add_user',
-	REMOVE_USER = 'remove_user',
-	SET_MESSAGE_REACTION = 'set_message_reaction',
-	UNSET_MESSAGE_REACTION = 'unset_message_reaction',
-	MUTE_USER = 'mute_user',
-	UNMUTE_USER = 'unmute_user',
+	// // Not implemented
+	// ADD_USER = 'add_user',
+	// REMOVE_USER = 'remove_user',
+	// SET_MESSAGE_REACTION = 'set_message_reaction',
+	// UNSET_MESSAGE_REACTION = 'unset_message_reaction',
+	// MUTE_USER = 'mute_user',
+	// UNMUTE_USER = 'unmute_user',
 }
 
 export interface IEvent<T extends EDataDefinition> {
 	_id: string;
-	_cid: string;
+	_cid?: string;
 	_pids: Array<string>;
 	v: number;
 	ts: Date;
@@ -36,5 +38,5 @@ export interface IEvent<T extends EDataDefinition> {
 	t: EventTypeDescriptor;
 	d: T;
 	hasChildren: boolean;
-	deleted: boolean;
+	_deletedAt?: Date;
 }

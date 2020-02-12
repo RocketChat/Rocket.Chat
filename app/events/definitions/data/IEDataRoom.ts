@@ -1,5 +1,5 @@
 import { IRoom } from '../IRoom';
 
-export interface IEDataGenesis {
+export interface IEDataRoom {
 	room: IRoom;
 }

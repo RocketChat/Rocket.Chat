@@ -1,9 +1,9 @@
 import { RoomEvents } from '../../../../models/server';
-import { IAddEventResult } from '../../../../models/server/models/Events';
-import { IEDataMessage } from '../../../definitions/data/IEDataMessage';
-import { IEvent } from '../../../definitions/IEvent';
+import { HandlerMethod } from '../../../definitions/HandlerMethod';
+import { IEDataUpdate } from '../../../definitions/data/IEDataUpdate';
+import { IEDataEmpty } from '../../../definitions/data/IDataEmpty';
 
-module.exports = async <T extends IEDataMessage>(event: IEvent<T>): Promise<IAddEventResult> => {
+export const roomDeleteMessage: HandlerMethod<IEDataUpdate<IEDataEmpty>> = async (event) => {
 	const eventResult = await RoomEvents.addRoomEvent(event);
 
 	if (eventResult.success) {

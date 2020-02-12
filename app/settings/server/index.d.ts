@@ -1,1 +1,3 @@
-export declare const settings: any;
+export declare const settings: {
+    get(setting: string): string;
+};

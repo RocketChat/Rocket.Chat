@@ -100,6 +100,9 @@ export class Messages extends Base {
 			}
 		}
 
+		v2Query.t = query.t || 'msg';
+		v2Query._deletedAt = query._deletedAt || null;
+
 		return { _cid, v2Query };
 	}
 
@@ -154,6 +157,24 @@ export class Messages extends Base {
 		return this._findOne([{ _cid: { $in: ids } }, options, ...args]);
 	}
 
+	processEvents(query, processor) {
+		const { v2Query } = this.getV2Query(query);
+
+		const events = RoomEvents.find(v2Query).fetch();
+
+		if (!events.length) {
+			return null;
+		}
+
+		const result = [];
+
+		for (const event of events) {
+			result.push(processor(event));
+		}
+
+		return result.length === 1 ? result[0] : result;
+	}
+
 	insert(...args) {
 		const [message] = args;
 
@@ -174,9 +195,9 @@ export class Messages extends Base {
 		if (!event) {
 			return null;
 		}
-		const d = deepMapKeys(EJSON.toJSONValue(update), (k) => k.replace('$', '_csg').replace('.', '_dot'));
-		d._csgset = d._csgset || {};
-		d._csgset._oid = event._id; // Original id
+		const d = deepMapKeys(EJSON.toJSONValue(update), (k) => k.replace('$', '[csg]').replace('.', '[dot]'));
+		d['[csg]set'] = d['[csg]set'] || {};
+		d['[csg]set']._oid = event._id; // Original id
 
 		const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, _cid, d));
 
@@ -200,19 +221,13 @@ export class Messages extends Base {
 	remove(...args) {
 		const [query] = args;
 
-		const { _cid, v2Query } = this.getV2Query(query);
+		return this.processEvents(query, (event) => {
+			const deleteEvent = Promise.await(RoomEvents.createDeleteMessageEvent(event.src, event.rid, event._cid));
 
-		const event = RoomEvents.findOne(v2Query);
+			Promise.await(this.dispatchEvent(deleteEvent));
 
-		if (!event) {
-			return null;
-		}
-
-		const deleteEvent = Promise.await(RoomEvents.createDeleteMessageEvent(event.src, event.rid, _cid));
-
-		Promise.await(this.dispatchEvent(deleteEvent));
-
-		return RoomEvents.toV1(deleteEvent);
+			return RoomEvents.toV1(deleteEvent);
+		});
 	}
 
 	trashFind(query, options) {

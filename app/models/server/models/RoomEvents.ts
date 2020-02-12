@@ -1,12 +1,13 @@
 import _ from 'lodash';
 
-import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
+import { IEDataRoom } from '../../../events/definitions/data/IEDataRoom';
 import { IEDataMessage } from '../../../events/definitions/data/IEDataMessage';
-import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
-import { EDataDefinition, EventTypeDescriptor, IEvent } from '../../../events/definitions/IEvent';
+import { EDataDefinition, EventTypeDescriptor, IEData, IEvent } from '../../../events/definitions/IEvent';
 import { IRoom } from '../../../events/definitions/IRoom';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 import { IAddEventResult, IContextQuery, EventsModel, IEventStub } from './Events';
+import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
+import { IEDataEmpty } from '../../../events/definitions/data/IDataEmpty';
 
 const getContextQuery = (param: string | IEvent<any>): IContextQuery => {
 	let rid: string;
@@ -38,18 +39,18 @@ class RoomEventsModel extends EventsModel {
 		return super.addEvent(getContextQuery(event), event);
 	}
 
-	public async updateRoomEventData<T extends EDataDefinition>(event: IEvent<T>, dataToUpdate: IEDataUpdate<T>): Promise<void> {
-		return super.updateEventData(getContextQuery(event), event._cid, event.t, dataToUpdate);
+	public async updateRoomEventData<T extends EDataDefinition>(event: IEvent<T>, dataToUpdate: IEDataUpdate<IEData>): Promise<void> {
+		return super.updateEventData(getContextQuery(event), event.t, dataToUpdate, event._cid);
 	}
 
 	public async flagRoomEventAsDeleted<T extends EDataDefinition>(event: IEvent<T>): Promise<void> {
-		return super.flagEventAsDeleted(getContextQuery(event), event._cid, event.t, new Date());
+		return super.flagEventAsDeleted(getContextQuery(event), event.t, new Date(), event._cid);
 	}
 
-	public async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IEDataGenesis>> {
+	public async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IEDataRoom>> {
 		src = this.ensureSrc(src);
 
-		const event: IEDataGenesis = { room };
+		const event: IEDataRoom = { room };
 
 		return super.createGenesisEvent(src, getContextQuery(room._id), event);
 	}
@@ -66,7 +67,7 @@ class RoomEventsModel extends EventsModel {
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
-	public async createEditMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string, d: T): Promise<IEvent<T>> {
+	public async createEditMessageEvent<T extends IEDataUpdate<IEDataMessage>>(src: string, roomId: string, _cid: string, d: T): Promise<IEvent<T>> {
 		src = this.ensureSrc(src);
 
 		const stub: IEventStub<T> = {
@@ -78,20 +79,28 @@ class RoomEventsModel extends EventsModel {
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
-	public async createDeleteMessageEvent<T extends IEDataMessage>(src: string, roomId: string, _cid: string): Promise<IEvent<T>> {
+	public async createDeleteMessageEvent(src: string, roomId: string, _cid?: string): Promise<IEvent<IEDataUpdate<IEDataEmpty>>> {
 		src = this.ensureSrc(src);
 
-		const stub: IEventStub<T> = {
+		const stub: IEventStub<IEDataUpdate<IEDataEmpty>> = {
 			_cid,
 			t: EventTypeDescriptor.DELETE_MESSAGE,
+			d: {},
 		};
 
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
-	// async createDeleteRoomEvent(src, roomId) {
-	// 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_DELETE, { roomId });
-	// }
+	public async createDeleteRoomEvent(src: string, roomId: string): Promise<IEvent<IEDataUpdate<IEDataEmpty>>> {
+		src = this.ensureSrc(src);
+
+		const stub: IEventStub<IEDataUpdate<IEDataEmpty>> = {
+			t: EventTypeDescriptor.DELETE_ROOM,
+			d: {},
+		};
+
+		return super.createEvent(src, getContextQuery(roomId), stub);
+	}
 
 	// async createAddUserEvent(src, roomId, user, subscription, domainsAfterAdd) {
 	// 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_ADD_USER, { roomId, user, subscription, domainsAfterAdd });
@@ -132,8 +141,8 @@ class RoomEventsModel extends EventsModel {
 		return this.v1ToV2RootMap.indexOf(property) !== -1;
 	}
 
-	public fromV1Data(message: any): IEDataMessage {
-		return { ..._.omit(message, this.v1ToV2RootMap), t: message.t };
+	public fromV1Data(message: IEDataMessage): IEDataMessage {
+		return { ..._.omit(message, this.v1ToV2RootMap), u: message.u, msg: message.msg };
 	}
 
 	public toV1(event: any) {

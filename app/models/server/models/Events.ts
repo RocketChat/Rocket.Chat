@@ -1,18 +1,18 @@
-import { SHA256 } from 'meteor/sha';
 import _ from 'lodash';
+import { SHA256 } from 'meteor/sha';
 import deepMapKeys from 'deep-map-keys';
 import { EJSON } from 'meteor/ejson';
 
-import { IEDataGenesis } from '../../../events/definitions/data/IEDataGenesis';
+import { IEDataRoom } from '../../../events/definitions/data/IEDataRoom';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
-import { EDataDefinition, IEvent, EventTypeDescriptor } from '../../../events/definitions/IEvent';
+import { EDataDefinition, IEvent, EventTypeDescriptor, IEData } from '../../../events/definitions/IEvent';
 import { Base } from './_Base';
 
 export declare interface IContextQuery { rid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
-export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d?: T }
+export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d: T }
 
-export class EventsModel extends Base {
+export class EventsModel extends Base<IEvent<EDataDefinition>> {
 	constructor(nameOrModel: string) {
 		super(nameOrModel);
 
@@ -28,7 +28,7 @@ export class EventsModel extends Base {
 		let _pids = []; // Previous ids
 
 		// If it is not a GENESIS event, we need to get the previous events
-		if (stub.t !== EventTypeDescriptor.GENESIS) {
+		if (stub.t !== EventTypeDescriptor.ROOM) {
 			const previousEvents = await this.model
 				.rawCollection()
 				.find({ ...contextQuery, hasChildren: false })
@@ -55,18 +55,18 @@ export class EventsModel extends Base {
 		return event;
 	}
 
-	public async createGenesisEvent(src: string, contextQuery: IContextQuery, d: IEDataGenesis): Promise<IEvent<IEDataGenesis>> {
+	public async createGenesisEvent(src: string, contextQuery: IContextQuery, d: IEDataRoom): Promise<IEvent<IEDataRoom>> {
 		// Check if genesis event already exists, if so, do not create
 		const genesisEvent = await this.model
 			.rawCollection()
-			.findOne({ ...contextQuery, t: EventTypeDescriptor.GENESIS });
+			.findOne({ ...contextQuery, t: EventTypeDescriptor.ROOM });
 
 		if (genesisEvent) {
 			throw new Error(`A GENESIS event for this context query already exists: ${ JSON.stringify(contextQuery, null, 2) }`);
 		}
 
-		const stub: IEventStub<IEDataGenesis> = {
-			t: EventTypeDescriptor.GENESIS,
+		const stub: IEventStub<IEDataRoom> = {
+			t: EventTypeDescriptor.ROOM,
 			d,
 		};
 
@@ -110,28 +110,32 @@ export class EventsModel extends Base {
 		};
 	}
 
-	private async getExistingEvent(contextQuery: IContextQuery, eventCID: string, eventT: string): Promise<IEvent<any>> {
-		return this.model
-			.rawCollection()
-			.findOne({ ...contextQuery, _cid: eventCID, t: eventT.substr(1) });
+	private async getExistingEvent(contextQuery: IContextQuery, eventT: string, eventCID?: string): Promise<IEvent<any>> {
+		const query: any = { ...contextQuery, t: eventT.substr(1) };
+
+		if (eventCID) {
+			query._cid = eventCID;
+		}
+
+		return this.model.rawCollection().findOne(query);
 	}
 
-	public async updateEventData<T extends EDataDefinition>(contextQuery: IContextQuery, eventCID: string, eventT: string, updateData: IEDataUpdate<T>): Promise<void> {
-		const existingEvent = await this.getExistingEvent(contextQuery, eventCID, eventT);
+	public async updateEventData<T extends IEData>(contextQuery: IContextQuery, eventT: string, updateData: IEDataUpdate<T>, eventCID?: string): Promise<void> {
+		const existingEvent = await this.getExistingEvent(contextQuery, eventT, eventCID);
 
-		const updateQuery: any = EJSON.fromJSONValue(deepMapKeys(updateData, (k: any) => k.replace('_csg', '$').replace('_dot', '.')));
+		const updateQuery: any = EJSON.fromJSONValue(deepMapKeys(updateData, (k: any) => k.replace('[csg]', '$').replace('[dot]', '.')));
 
 		for (const prop in updateQuery) {
 			if (prop.startsWith('$')) {
-				updateQuery[prop] = _.mapKeys(updateQuery[prop], (value: any, key: any) => (key.startsWith('$') ? key : `d.${ key }`));
+				updateQuery[prop] = _.mapKeys(updateQuery[prop], (_value: any, key: any) => (key.startsWith('$') ? key : `d.${ key }`));
 			}
 		}
 
 		await this.model.rawCollection().update({ _id: existingEvent._id }, updateQuery);
 	}
 
-	public async flagEventAsDeleted(contextQuery: IContextQuery, eventCID: string, eventT: string, deletedAt: Date): Promise<void> {
-		const existingEvent = await this.getExistingEvent(contextQuery, eventCID, eventT);
+	public async flagEventAsDeleted(contextQuery: IContextQuery, eventT: string, deletedAt: Date, eventCID?: string): Promise<void> {
+		const existingEvent = await this.getExistingEvent(contextQuery, eventT, eventCID);
 
 		await this.model.rawCollection().update({ _id: existingEvent._id }, {
 			$set: {
@@ -139,23 +143,4 @@ export class EventsModel extends Base {
 			},
 		});
 	}
-
-	// async getEventById(contextQuery: ContextQuery, eventId:string) {
-	// 	const event = await this.model
-	// 		.rawCollection()
-	// 		.findOne({ ...contextQuery, _id: eventId });
-
-	// 	return {
-	// 		success: !!event,
-	// 		event,
-	// 	};
-	// }
-
-	// async getLatestEvents(contextQuery: ContextQuery, fromTimestamp: Date) {
-	// 	return this.model.rawCollection().find({ ...contextQuery, ts: { $gt: fromTimestamp } }).toArray();
-	// }
-
-	// async removeContextEvents(contextQuery: ContextQuery) {
-	// 	return this.model.rawCollection().remove({ ...contextQuery });
-	// }
 }

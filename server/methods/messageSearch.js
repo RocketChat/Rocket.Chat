@@ -208,9 +208,7 @@ Meteor.methods({
 		}
 
 		if (Object.keys(query).length > 0) {
-			query.t = {
-				$in: ['msg'], // only the ones we believe should be searched for
-			};
+			query.t = 'msg';
 			// query._hidden = {
 			// 	$ne: true, // don't return _hidden messages
 			// };

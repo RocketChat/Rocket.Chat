@@ -1,2 +1,6 @@
-export { Rooms } from './models/Rooms';
+import Rooms from './models/Rooms';
 export { RoomEvents } from './models/RoomEvents';
+
+export {
+    Rooms
+}

@@ -1,19 +1,15 @@
-export declare class Base {
+export declare class Base<T> {
 	model: any;
 
 	constructor(nameOrModel: string);
 
 	tryEnsureIndex(...args: any[]): any;
 
-	findOne(...args: any[]): any;
+	findOne(...args: any[]): T;
 
-	static findOne(...args: any[]): any;
-
-	insert(...args: any[]): any;
-
-	static insert(...args: any[]): any;
+	insert(item: T): string;
 
 	update(...args: any[]): any;
 
-	static update(...args: any[]): any;
+	upsert(...args: any[]): any;
 }
