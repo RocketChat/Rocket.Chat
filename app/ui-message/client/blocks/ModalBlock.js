@@ -112,19 +112,17 @@ Template.ModalBlock.onRendered(async function() {
 						},
 					});
 				},
-				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
-					return ActionManager.triggerBlockAction({
-						container: {
-							type: UIKitIncomingInteractionContainerType.VIEW,
-							id: viewId,
-						},
-						actionId,
-						appId,
-						value,
-						blockId,
-						mid,
-					});
-				},
+				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => ActionManager.triggerBlockAction({
+					container: {
+						type: UIKitIncomingInteractionContainerType.VIEW,
+						id: viewId,
+					},
+					actionId,
+					appId,
+					value,
+					blockId,
+					mid,
+				}),
 				state: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
 					this.state.set(actionId, {
 						blockId,
