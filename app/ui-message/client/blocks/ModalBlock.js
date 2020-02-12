@@ -8,6 +8,14 @@ import { modalBlockWithContext } from './MessageBlock';
 import './ModalBlock.html';
 
 
+const prevent = (e) => {
+	if (e) {
+		(e.nativeEvent || e).stopImmediatePropagation();
+		e.stopPropagation();
+		e.preventDefault();
+	}
+};
+
 Template.ModalBlock.onRendered(async function() {
 	const React = await import('react');
 	const ReactDOM = await import('react-dom');
@@ -65,7 +73,7 @@ Template.ModalBlock.onRendered(async function() {
 	ReactDOM.render(
 		React.createElement(
 			modalBlockWithContext({
-				onCancel: () => ActionManager.triggerCancel({
+				onCancel: (e) => prevent(e) & ActionManager.triggerCancel({
 					appId,
 					viewId,
 					view: {
@@ -74,7 +82,7 @@ Template.ModalBlock.onRendered(async function() {
 						state: groupStateByBlockId(this.state.all()),
 					},
 				}),
-				onClose: () => ActionManager.triggerCancel({
+				onClose: (e) => prevent(e) & ActionManager.triggerCancel({
 					appId,
 					viewId,
 					view: {
@@ -84,24 +92,17 @@ Template.ModalBlock.onRendered(async function() {
 					},
 					isCleared: true,
 				}),
-				onSubmit: (e) => {
-					if (e) {
-						(e.nativeEvent || e).stopImmediatePropagation();
-						e.stopPropagation();
-						e.preventDefault();
-					}
-					return ActionManager.triggerSubmitView({
-						viewId,
-						appId,
-						payload: {
-							view: {
-								...this.data.view,
-								id: viewId,
-								state: groupStateByBlockId(this.state.all()),
-							},
+				onSubmit: (e) => prevent(e) & ActionManager.triggerSubmitView({
+					viewId,
+					appId,
+					payload: {
+						view: {
+							...this.data.view,
+							id: viewId,
+							state: groupStateByBlockId(this.state.all()),
 						},
-					});
-				},
+					},
+				}),
 				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
 					ActionManager.triggerBlockAction({
 						container: {

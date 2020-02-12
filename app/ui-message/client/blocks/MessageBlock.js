@@ -10,6 +10,8 @@ import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
 
 const focusableElementsString =	'a[href]:not([tabindex="-1"]), area[href]:not([tabindex="-1"]), input:not([disabled]):not([tabindex="-1"]), select:not([disabled]):not([tabindex="-1"]), textarea:not([disabled]):not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
 
+const focusableElementsStringInvalid =	'a[href]:not([tabindex="-1"]):invalid, area[href]:not([tabindex="-1"]):invalid, input:not([disabled]):not([tabindex="-1"]):invalid, select:not([disabled]):not([tabindex="-1"]):invalid, textarea:not([disabled]):not([tabindex="-1"]):invalid, button:not([disabled]):not([tabindex="-1"]):invalid, iframe:invalid, object:invalid, embed:invalid, [tabindex]:not([tabindex="-1"]):invalid, [contenteditable]:invalid';
+
 messageParser.text = ({ text, type } = {}) => {
 	if (type !== 'mrkdwn') {
 		return text;
@@ -60,8 +62,20 @@ export const modalBlockWithContext = ({
 	const ref = useRef();
 
 	// Auto focus
-	useEffect(() => ref.current && ref.current.querySelector(focusableElementsString).focus(), [ref.current]);
-	// save fovus to restore after close
+	useEffect(() => {
+		if (!ref.current) {
+			return;
+		}
+
+		if (data.errors && Object.keys(data.errors).length) {
+			const element = ref.current.querySelector(focusableElementsStringInvalid);
+			element && element.focus();
+		} else {
+			const element = ref.current.querySelector(focusableElementsString);
+			element && element.focus();
+		}
+	}, [ref.current, data.errors]);
+	// save focus to restore after close
 	const previousFocus = useMemo(() => document.activeElement, []);
 	// restore the focus after the component unmount
 	useEffect(() => () => previousFocus && previousFocus.focus(), []);
@@ -106,6 +120,7 @@ export const modalBlockWithContext = ({
 	// Clean the events
 	useEffect(() => {
 		const element = document.querySelector('.rc-modal-wrapper');
+		const container = element.querySelector('.rcx-modal__content');
 		const close = (e) => {
 			if (e.target !== element) {
 				return;
@@ -115,13 +130,22 @@ export const modalBlockWithContext = ({
 			onClose();
 			return false;
 		};
-		document.addEventListener('keydown', handleKeyDown);
+
+		const igoreIfnotContains = (e) => {
+			if (!container.contains(e.target)) {
+				return;
+			}
+			return handleKeyDown(e);
+		};
+
+		document.addEventListener('keydown', igoreIfnotContains);
 		element.addEventListener('click', close);
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keydown', igoreIfnotContains);
 			element.removeEventListener('click', close);
 		};
 	}, handleKeyDown);
+
 	return (
 		<kitContext.Provider value={{ ...context, ...data, values }}>
 			<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
