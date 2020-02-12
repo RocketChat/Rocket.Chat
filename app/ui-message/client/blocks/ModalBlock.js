@@ -86,7 +86,7 @@ Template.ModalBlock.onRendered(async function() {
 				}),
 				onSubmit: (e) => {
 					if (e) {
-						e.nativeEvent.stopImmediatePropagation();
+						e.stopImmediatePropagation();
 						e.stopPropagation();
 						e.preventDefault();
 					}
