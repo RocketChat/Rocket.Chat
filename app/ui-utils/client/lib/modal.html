@@ -1,8 +1,12 @@
 <template name="rc_modal">
 	<div class="rc-modal-wrapper">
+		{{#if $eq template 'ModalBlock'}}
+			{{> ModalBlock data}}
+		{{else}}
 		<dialog class="rc-modal rc-modal--{{modifier}}" data-modal="modal">
-			{{#if template}}
-				{{> Template.dynamic template=template data=data}}
+
+			{{# if template}}
+				{{> Template.dynamic template=template data=data}} -->
 			{{else}}
 				<header class="rc-modal__header">
 					<h1 class="rc-modal__title">
@@ -59,5 +63,6 @@
 					{{/if}}
 			{{/if}}
 			</dialog>
+		{{/if}}
 	</div>
 </template>
