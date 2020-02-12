@@ -85,6 +85,11 @@
 
 	align-items: stretch;
 
+	&:focus {
+		border: 1px solid var(--sidebar-item-text-color);
+		background-color: var(--sidebar-item-hover-background);
+	}
+
 	&:hover {
 		background-color: var(--sidebar-item-hover-background);
 

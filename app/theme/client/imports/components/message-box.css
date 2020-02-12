@@ -49,6 +49,11 @@
 		&-icon {
 			font-size: 1rem;
 			fill: currentColor;
+
+			&:focus {
+				border: 1px solid var(--sidebar-item-text-color);
+				background-color: var(--sidebar-item-hover-background);
+			}
 		}
 	}
 
@@ -67,6 +72,11 @@
 			color: var(--message-box-user-typing-user-color);
 
 			font-weight: bold;
+		}
+
+		&:focus {
+			border: 1px solid var(--sidebar-item-text-color);
+			background-color: var(--sidebar-item-hover-background);
 		}
 
 		&::after {
@@ -136,6 +146,11 @@
 		cursor: pointer;
 		align-items: center;
 		justify-content: center;
+
+		&:focus {
+			border: 1px solid var(--sidebar-item-text-color);
+			background-color: var(--sidebar-item-hover-background);
+		}
 
 		& .rc-input__icon-svg {
 			font-size: 1.4rem;
