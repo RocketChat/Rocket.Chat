@@ -1,3 +1,4 @@
+import { adminEmail, adminPassword } from '../../data/user.js';
 import {
 	api,
 	request,
