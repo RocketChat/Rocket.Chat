@@ -50,7 +50,7 @@ Template.livechatManagers.helpers({
 					? text
 					: text.replace(
 						new RegExp(filter.get()),
-						(part) => `<strong>${ part }</strong>`
+						(part) => `<strong>${ part }</strong>`,
 					)
 			}`;
 		};
@@ -95,7 +95,7 @@ Template.livechatManagers.events({
 			},
 			() => {
 				Meteor.call('livechat:removeManager', this.username, function(
-					error /* , result*/
+					error, /* , result*/
 				) {
 					if (error) {
 						return handleError(error);
@@ -109,7 +109,7 @@ Template.livechatManagers.events({
 						showConfirmButton: false,
 					});
 				});
-			}
+			},
 		);
 	},
 	async 'submit #form-manager'(e, instance) {
@@ -125,7 +125,7 @@ Template.livechatManagers.events({
 		state.set('loading', true);
 		try {
 			await Promise.all(
-				users.map(({ username }) => call('livechat:addManager', username))
+				users.map(({ username }) => call('livechat:addManager', username)),
 			);
 			selectedManagers.set([]);
 		} finally {
@@ -164,7 +164,7 @@ Template.livechatManagers.onCreated(function() {
 
 	this.onClickTagManagers = ({ username }) => {
 		this.selectedManagers.set(
-			this.selectedManagers.curValue.filter((user) => user.username !== username)
+			this.selectedManagers.curValue.filter((user) => user.username !== username),
 		);
 	};
 

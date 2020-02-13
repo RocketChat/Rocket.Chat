@@ -56,7 +56,7 @@ export const KonchatNotification = {
 								_id: Random.id(),
 								rid: notification.payload.rid,
 								msg: response,
-							})
+							}),
 						);
 					}
 

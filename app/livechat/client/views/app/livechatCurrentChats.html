@@ -19,7 +19,7 @@
 									list=selectedAgents
 									onSelect=onSelectAgents
 									collection='UserAndRoom'
-									subscription='userAutocomplete'
+									endpoint='users.autocomplete'
 									field='username'
 									sort='username'
 									label="Served_By"
@@ -158,7 +158,7 @@
 									</div>
 								</div>
 							</td>
-							<td>{{lookupDepartment.name}}</td>
+							<td>{{department.name}}</td>
 							<td>{{servedBy}}</td>
 							<td>{{startedAt}}</td>
 							<td>{{lastMessage}}</td>
@@ -174,11 +174,11 @@
 							{{/requiresPermission}}
 						</tr>
 					{{/each}}
-					{{#unless isReady}}
+					{{#if isLoading}}
 						<tr class="table-no-click">
 							<td colspan="5" class="table-loading-td">{{> loading}}</td>
 						</tr>
-					{{/unless}}
+					{{/if}}
 				</tbody>
 			{{/table}}
 		</div>

@@ -91,6 +91,7 @@ export class AppCommandsBridge {
 		this._verifyCommand(command);
 
 		const item = {
+			appId,
 			command: command.command.toLowerCase(),
 			params: Utilities.getI18nKeyForApp(command.i18nParamsExample, appId),
 			description: Utilities.getI18nKeyForApp(command.i18nDescription, appId),
@@ -145,7 +146,7 @@ export class AppCommandsBridge {
 		}
 	}
 
-	_appCommandExecutor(command, parameters, message) {
+	_appCommandExecutor(command, parameters, message, triggerId) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
@@ -156,7 +157,9 @@ export class AppCommandsBridge {
 			Object.freeze(room),
 			Object.freeze(params),
 			threadId,
+			triggerId,
 		);
+
 		Promise.await(this.orch.getManager().getCommandManager().executeCommand(command, context));
 	}
 
@@ -170,12 +173,12 @@ export class AppCommandsBridge {
 			Object.freeze(user),
 			Object.freeze(room),
 			Object.freeze(params),
-			threadId
+			threadId,
 		);
 		return Promise.await(this.orch.getManager().getCommandManager().getPreviews(command, context));
 	}
 
-	_appCommandPreviewExecutor(command, parameters, message, preview) {
+	_appCommandPreviewExecutor(command, parameters, message, preview, triggerId) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
@@ -185,8 +188,10 @@ export class AppCommandsBridge {
 			Object.freeze(user),
 			Object.freeze(room),
 			Object.freeze(params),
-			threadId
+			threadId,
+			triggerId,
 		);
+
 		Promise.await(this.orch.getManager().getCommandManager().executePreview(command, preview, context));
 	}
 }

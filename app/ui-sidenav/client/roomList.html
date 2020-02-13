@@ -6,13 +6,6 @@
 			{{#if shouldAppear .. .}}
 					<h3 class="rooms-list__type">
 						<span class="rooms-list__type-text">{{_ ../label}}</span>
-						{{#if showRoomCounter}}
-							{{#with count}}
-								{{#if .}}
-									<span class="badge">{{.}}</span>
-								{{/if}}
-							{{/with}}
-						{{/if}}
 					</h3>
 					<ul class="rooms-list__list {{ roomType ..}}">
 						{{#each room in this}}
