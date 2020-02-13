@@ -193,7 +193,6 @@ Template.permissionsTable.helpers({
 		const changedIndex = record.findIndex((data) => data.changed === true);
 		return record && record.length && changedIndex !== -1 ? '' : ret;
 	},
-
 });
 
 Template.permissionsTable.events({
@@ -232,7 +231,6 @@ Template.permissionsTable.events({
 Template.permissionsTable.onCreated(function() {
 	Session.set('optionRecord', []);
 });
-
 Template.permissions.onRendered(() => {
 	Tracker.afterFlush(() => {
 		SideNav.setFlex('adminFlex');
