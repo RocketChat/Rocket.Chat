@@ -422,9 +422,10 @@
 		}
 
 		&__first-icon {
-			margin: 0 0.2em;
-
 			width: 2.25em;
+
+			margin: 0 0.2em;
+			
 			padding: 0;
 		}
 
