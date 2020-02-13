@@ -488,8 +488,9 @@
 		}
 
 		&__name {
-			font-size: 1.25rem;
 			color: var(--color-white);
+
+			font-size: 1.25rem;
 
 			& > .rc-header__icon {
 				display: none;
