@@ -24,6 +24,7 @@ Template.userStatusInfo.helpers({
 		return {
 			tabBar: this.tabBar,
 			userStatus: instance.userStatus.get(),
+			onSuccess: instance.onSuccess,
 			back(name) {
 				instance.editingUserStatus.set();
 
@@ -72,7 +73,7 @@ Template.userStatusInfo.events({
 						timer: 2000,
 						showConfirmButton: false,
 					});
-
+					instance.onSuccess();
 					instance.tabBar.close();
 				});
 			});
@@ -92,6 +93,7 @@ Template.userStatusInfo.onCreated(function() {
 	this.editingUserStatus = new ReactiveVar();
 	this.loadedName = new ReactiveVar();
 	this.tabBar = Template.currentData().tabBar;
+	this.onSuccess = Template.currentData().onSuccess;
 
 	this.autorun(() => {
 		const data = Template.currentData();
@@ -101,7 +103,7 @@ Template.userStatusInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const data = Template.currentData();
+		const data = Template.currentData().status;
 		const userStatus = this.userStatus.get();
 		if (userStatus != null && userStatus.name != null) {
 			this.loadedName.set(userStatus.name);
@@ -111,7 +113,7 @@ Template.userStatusInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const data = Template.currentData();
+		const data = Template.currentData().status;
 		this.userStatus.set(data);
 	});
 });

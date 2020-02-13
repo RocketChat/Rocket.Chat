@@ -37270,6 +37270,832 @@
           ]
         }
       ]
+    },
+    "2.3.2": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "15957",
+          "title": "[FIX] Invalid Redirect URI on Custom OAuth",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "2.3.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15966",
+          "title": "[FIX] Livechat Widget version 1.3.0",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
+    },
+    "2.4.0-rc.0": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16043",
+          "title": "Update NodeJS to 8.17.0",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15933",
+          "title": "[NEW] Invite links: share a link to invite users",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "2.4.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15998",
+          "title": "Fix typo in Italian translation",
+          "userLogin": "iannuzzelli",
+          "milestone": "2.4.0",
+          "contributors": [
+            "iannuzzelli"
+          ]
+        },
+        {
+          "pr": "16037",
+          "title": "Update Meteor to 1.8.3",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.4.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16010",
+          "title": "[FIX] Importer: Variable name appearing instead of it's value",
+          "userLogin": "ashwaniYDV",
+          "milestone": "2.4.0",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "15977",
+          "title": "[IMPROVE] Replace livechat:inquiry publication by REST and Streamer",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16021",
+          "title": "[IMPROVE] Sorting on livechat analytics queries were wrong",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15650",
+          "title": "[IMPROVE] Replace fullUserData publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15885",
+          "title": "[IMPROVE] Replace integrations and integrationHistory publications by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15886",
+          "title": "Some performance improvements",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15930",
+          "title": "[FIX]Add time format for latest message on the sidebar",
+          "userLogin": "ritwizsinha",
+          "contributors": [
+            "ritwizsinha",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15994",
+          "title": "[FIX] Admin Setting descriptions and Storybook",
+          "userLogin": "tassoevan",
+          "milestone": "2.4.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "16033",
+          "title": "[IMPROVE] Notify logged agents when their departments change",
+          "userLogin": "renatobecker",
+          "milestone": "2.4.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15901",
+          "title": "[IMPROVE] Replace fullEmojiData publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15948",
+          "title": "[IMPROVE] Replace adminRooms publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15926",
+          "title": "[IMPROVE] Replace webdavAccounts publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15878",
+          "title": "[IMPROVE] Replace oauth publications by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15956",
+          "title": "[IMPROVE] Replace userAutocomplete publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15908",
+          "title": "[IMPROVE] Replace discussionsOfARoom publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16023",
+          "title": "[FIX] width of upload-progress-text",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.4.0",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "15685",
+          "title": "[IMPROVE] Move 'Reply in Thread' button from menu to message actions",
+          "userLogin": "antkaz",
+          "milestone": "2.4.0",
+          "contributors": [
+            "antkaz",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15570",
+          "title": "Fixed Grammatical Mistakes.",
+          "userLogin": "breaking-let",
+          "milestone": "2.4.0",
+          "contributors": [
+            "breaking-let"
+          ]
+        },
+        {
+          "pr": "16020",
+          "title": "Upgrade limax to 2.0.0",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15907",
+          "title": "[IMPROVE] Replace customSounds publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16018",
+          "title": "[FIX] Message list scrolling to bottom on reactions",
+          "userLogin": "ggazzo",
+          "milestone": "2.4.0",
+          "contributors": [
+            "ggazzo",
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16004",
+          "title": "[IMPROVE] Replace stdout publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15978",
+          "title": "[FIX] SAML logout error",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.4.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16016",
+          "title": "[FIX]Added Join button to Read Only rooms.",
+          "userLogin": "gabriellsh",
+          "milestone": "2.4.0",
+          "contributors": [
+            "gabriellsh",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15942",
+          "title": "[IMPROVE] Replace fullUserStatusData publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15916",
+          "title": "[IMPROVE] Replace userData subscriptions by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16013",
+          "title": "[FIX] z-index of new message button",
+          "userLogin": "mariaeduardacunha",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16017",
+          "title": "[FIX] new message popup",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.4.0",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16012",
+          "title": "[FIX] Changed renderMessage priority, fixed Katex on/off setting",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16009",
+          "title": "[FIX] Empty security section when 2fa is disabled",
+          "userLogin": "MartinSchoeler",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "16006",
+          "title": "[FIX] Dropzone being stuck when dragging to thread",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15910",
+          "title": "[IMPROVE] Replace roles publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15792",
+          "title": "[IMPROVE] Livechat realtime dashboard",
+          "userLogin": "MarcosSpessatto",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16001",
+          "title": "[FIX] Fix sort livechat rooms",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15927",
+          "title": "[NEW] Logout other clients when changing password",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15991",
+          "title": "[FIX] Guest's name field missing when forwarding livechat rooms",
+          "userLogin": "renatobecker",
+          "milestone": "2.4.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15968",
+          "title": "[IMPROVE] Replace livechat:rooms publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15989",
+          "title": "Remove unnecessary cron starts",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15979",
+          "title": "Enable typescript lint",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15988",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15928",
+          "title": "[NEW] Do not print emails in console on production mode",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15985",
+          "title": "[FIX] Error of bind environment on user data export",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15503",
+          "title": "[IMPROVE] Replace livechat:officeHour publication to REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15975",
+          "title": "[FIX] Incorrect translation key on Livechat Appearance template",
+          "userLogin": "ritwizsinha",
+          "milestone": "2.4.0",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "15970",
+          "title": "[IMPROVE] Replace forgotten livechat:departmentAgents subscriptions",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15966",
+          "title": "[FIX] Livechat Widget version 1.3.0",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15962",
+          "title": "Fix 'How it all started' link on README",
+          "userLogin": "zdumitru",
+          "contributors": [
+            "zdumitru",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15957",
+          "title": "[FIX] Invalid Redirect URI on Custom OAuth",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "2.3.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "15961",
+          "title": "Check package-lock consistency with package.json on CI",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15873",
+          "title": "Meteor update to 1.8.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15918",
+          "title": "GitHub CI",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15944",
+          "title": "[IMPROVE] Replace livechat:managers publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15943",
+          "title": "[IMPROVE] Replace livechat:visitorHistory publication by REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15903",
+          "title": "[FIX] Livechat build without NodeJS installed",
+          "userLogin": "localguru",
+          "contributors": [
+            "localguru"
+          ]
+        },
+        {
+          "pr": "15940",
+          "title": "Change migration number 169 <-> 170",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15939",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15612",
+          "title": "[IMPROVE] Replace livechat:queue subscription",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15935",
+          "title": "[IMPROVE] Add deprecate warning in some unused publications",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "15937",
+          "title": "[FIX] Admin menu not showing after renamed integration permissions",
+          "userLogin": "n-se",
+          "milestone": "2.3.1",
+          "contributors": [
+            "n-se"
+          ]
+        },
+        {
+          "pr": "15934",
+          "title": "[FIX] Administration UI issues",
+          "userLogin": "tassoevan",
+          "milestone": "2.3.1",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "15496",
+          "title": "[IMPROVE] Replace livechat:customFields to REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15919",
+          "title": "[FIX] Server crash on sync with no response",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15915",
+          "title": "[FIX] Livechat permissions being overwrite on server restart",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15897",
+          "title": "[FIX] Livechat triggers not firing",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15895",
+          "title": "[FIX] Auto load image user preference",
+          "userLogin": "ggazzo",
+          "milestone": "2.3.1",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15887",
+          "title": "[IMPROVE] Validate user identity on send message process",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15850",
+          "title": "[FIX] Don't throw an error when a message is prevented from apps engine",
+          "userLogin": "wreiske",
+          "contributors": [
+            "wreiske",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15898",
+          "title": "[FIX] Default value of the Livechat WebhookUrl setting",
+          "userLogin": "renatobecker",
+          "milestone": "2.3.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15888",
+          "title": "[IMPROVE] Update ui for Roles field",
+          "userLogin": "antkaz",
+          "milestone": "2.4.0",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "15837",
+          "title": "[NEW] Apps-Engine event for when a livechat room is closed",
+          "userLogin": "lolimay",
+          "milestone": "2.4.0",
+          "contributors": [
+            "lolimay",
+            "renatobecker",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "15894",
+          "title": "[CHORE] Replace findOne with findOneById methods (Omnichannel)",
+          "userLogin": "renatobecker",
+          "milestone": "2.4.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15841",
+          "title": "[FIX] Thread Replies in Search",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15872",
+          "title": "Merge master into develop & Set version to 3.0.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "2.4.0-rc.1": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16053",
+          "title": "Regression: Update components",
+          "userLogin": "tassoevan",
+          "milestone": "2.4.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "2.4.0-rc.2": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16084",
+          "title": "Regression: Missing button to copy Invite links",
+          "userLogin": "ggazzo",
+          "milestone": "2.4.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16062",
+          "title": "[FIX] Registration form was hidden when login form was disabled",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "2.4.0-rc.3": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "2.4.0": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }

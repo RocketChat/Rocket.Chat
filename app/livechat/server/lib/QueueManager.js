@@ -1,19 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { LivechatRooms } from '../../../models/server';
+import { LivechatRooms, LivechatInquiry } from '../../../models/server';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 import { Livechat } from './Livechat';
 
 export const QueueManager = {
 	async requestRoom({ guest, message, roomInfo, agent }) {
-		if (!Livechat.online()) {
-			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
-		}
-
 		check(message, Match.ObjectIncluding({
 			rid: String,
 		}));
@@ -23,6 +18,10 @@ export const QueueManager = {
 			status: Match.Maybe(String),
 			department: Match.Maybe(String),
 		}));
+
+		if (!Livechat.online(guest.department)) {
+			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+		}
 
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;

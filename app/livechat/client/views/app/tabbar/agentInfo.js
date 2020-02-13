@@ -20,7 +20,9 @@ Template.agentInfo.helpers({
 		const hasCustomFields = customFieldsTemplate() !== null;
 		return (availableDepartments.length > 0 && hasPermission('add-livechat-department-agents')) || hasCustomFields;
 	},
-
+	uid() {
+		return Template.instance().agent.get()._id;
+	},
 	name() {
 		const agent = Template.instance().agent.get();
 		return agent && agent.name ? agent.name : TAPi18n.__('Unnamed');
@@ -130,7 +132,7 @@ Template.agentInfo.events({
 						showConfirmButton: false,
 					});
 				});
-			}
+			},
 		);
 	},
 	'click .edit-agent'(e, instance) {
