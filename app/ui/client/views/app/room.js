@@ -11,7 +11,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
+import { t, roomTypes, getUserPreference, handleError, isMobile } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
@@ -114,7 +114,7 @@ const mountPopover = (e, i, outerContext) => {
 			modifier: item.color,
 		}));
 
-		menuItems = menuItems.concat(messageItems);
+		menuItems = messageItems.concat(menuItems);
 	}
 
 	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
@@ -138,14 +138,6 @@ const mountPopover = (e, i, outerContext) => {
 	};
 
 	popover.open(config);
-};
-
-const wipeFailedUploads = () => {
-	const uploads = Session.get('uploading');
-
-	if (uploads) {
-		Session.set('uploading', uploads.filter((upload) => !upload.error));
-	}
 };
 
 function roomHasGlobalPurge(room) {
@@ -223,11 +215,15 @@ function roomMaxAge(room) {
 	}
 }
 
-callbacks.add('enter-room', wipeFailedUploads);
-
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
 Template.room.helpers({
+	openSearchPage() {
+		if (!isMobile()) {
+			return false;
+		}
+		return Session.get('openSearchPage');
+	},
 	useNrr() {
 		const useNrr = getConfig('useNrr');
 		return useNrr === 'true' || useNrr !== 'false';
@@ -307,10 +303,6 @@ Template.room.helpers({
 
 	windowId() {
 		return `chat-window-${ this._id }`;
-	},
-
-	uploading() {
-		return Session.get('uploading');
 	},
 
 	roomLeader() {
@@ -680,6 +672,10 @@ Template.room.events({
 
 			window.open(e.target.href);
 		}
+
+		if (isMobile() && !touchMoved) {
+			mountPopover(e, t, this);
+		}
 	},
 
 	'touchmove .message'(e, t) {
@@ -696,11 +692,6 @@ Template.room.events({
 
 	'touchcancel .message'(e, t) {
 		clearTimeout(t.touchtime);
-	},
-
-	'click .upload-progress-close'(e) {
-		e.preventDefault();
-		Session.set(`uploading-cancel-${ this.id }`, true);
 	},
 
 	'click .unread-bar > button.mark-read'() {
@@ -961,6 +952,7 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+	Session.set('openSearchPage', false);
 	lazyloadtick();
 	const rid = this.data._id;
 
@@ -1103,6 +1095,8 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	Session.set('openSearchPage', false);
+
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {

@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
+import { CachedCollection } from '../../../ui-cached-collection';
+
 export const Users = {
 	isUserInRole(userId, roleName) {
 		const query = {
@@ -27,7 +29,8 @@ Meteor.users = new Mongo.Collection(null);
 Meteor.user = () => Meteor.users.findOne({ _id: Meteor.userId() });
 
 // logged user data will come to this collection
-const OwnUser = new Mongo.Collection('own_user');
+const CachedOwnUser = new CachedCollection({ name: 'ownUser' });
+const OwnUser = CachedOwnUser.collection;
 
 // register an observer to logged user's collection and populate "original" Meteor.users with it
 OwnUser.find().observe({

@@ -16,7 +16,7 @@ import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../mo
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
-import { callbacks } from '../../callbacks/client';
+import { callbacks } from '../../callbacks';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -171,11 +171,13 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const routerReady = FlowRouter.subsReady('userData');
+		const userReady = Meteor.user();
+
 		const subscriptionsReady = CachedChatSubscription.ready.get();
+
 		const settingsReady = settings.cachedCollection.ready.get();
 
-		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = (userReady && subscriptionsReady && settingsReady) || !Meteor.userId();
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
@@ -235,6 +237,10 @@ Template.main.events({
 
 Template.main.onRendered(function() {
 	$('#initial-page-loading').remove();
+
+	Meteor.defer(() => {
+		callbacks.run('afterMainReady', Meteor.user());
+	});
 
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();

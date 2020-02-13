@@ -127,7 +127,7 @@
 
 		width: 20px;
 
-		font-size: 1rem;
+		font-size: 1.1rem;
 
 		align-items: center;
 
@@ -316,6 +316,47 @@
 @media (width <= 400px) {
 	.sidebar-item {
 		padding: 0 0 0 var(--sidebar-small-default-padding);
+
+		&__message {
+			display: flex;
+			overflow: visible !important;
+			flex: 1;
+
+			margin: 0 -3px;
+			align-items: center;
+			justify-content: space-between;
+
+			&-top {
+				overflow: visible !important;
+
+				width: 100%;
+			}
+
+			&-bottom {
+				overflow: visible !important;
+
+				font-size: 13px !important;
+			}
+		}
+
+		&__body {
+			display: flex;
+			overflow: visible !important;
+			flex: 1;
+
+			margin: 0 4px;
+			align-items: center;
+		}
+
+		&__time {
+			margin: 0 15px;
+
+			font-size: 13px !important;
+		}
+
+		&__user-thumb {
+			margin-right: 5px;
+		}
 	}
 
 	.rtl .sidebar-item {

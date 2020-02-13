@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 
 import { lazyloadtick } from '../../lazy-load';
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
-import { roomTypes, getUserPreference } from '../../utils';
+import { roomTypes, getUserPreference, isMobile } from '../../utils';
 import { Users } from '../../models';
 
 Template.sideNav.helpers({
@@ -39,6 +40,9 @@ Template.sideNav.helpers({
 	},
 
 	sidebarViewMode() {
+		if (isMobile()) {
+			return 'extended';
+		}
 		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
 		return viewMode || 'condensed';
 	},
@@ -90,11 +94,26 @@ const redirectToDefaultChannelIfNeeded = () => {
 	}
 };
 
+const openMainContentIfNeeded = () => {
+	const currentRouteState = FlowRouter.current();
+	const defaults = ['/', '/home', '/account'];
+
+	if (defaults.includes(currentRouteState.path)) {
+		menu.open();
+	} else {
+		menu.close();
+	}
+};
+
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
 	lazyloadtick();
 	redirectToDefaultChannelIfNeeded();
+	Tracker.autorun(function() {
+		FlowRouter.watchPathChange();
+		openMainContentIfNeeded();
+	});
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });

@@ -1,0 +1,56 @@
+.share-header-container {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.share-icon {
+	display: inline-block;
+
+	box-sizing: border-box;
+
+	width: 25%;
+	min-width: 46px;
+
+	padding: 16px 0;
+
+	cursor: pointer;
+
+	text-align: center;
+
+	border: none;
+
+	background-color: transparent;
+
+	box-shadow: inset 0 0 20px rgba(0, 0, 0, 0);
+
+	font-size: 12px;
+	font-weight: 400;
+
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	&:hover {
+		box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.125);
+	}
+}
+
+.share-svg-icon {
+	display: block;
+
+	width: 42px;
+	height: 36px;
+	margin: auto;
+
+	&__header {
+		width: 24px;
+		height: 24px;
+	}
+}
+
+.share-icon-title {
+	display: block;
+
+	padding-top: 10px;
+
+	font-size: 14px;
+}

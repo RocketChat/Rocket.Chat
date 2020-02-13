@@ -9,7 +9,7 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom, CachedChatMessage } from '../../../models';
 
 export const normalizeThreadMessage = (message) => {
 	if (message.msg) {
@@ -227,8 +227,7 @@ export const RoomHistoryManager = new class {
 		if (!message || !message.rid) {
 			return;
 		}
-
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const instance = Blaze.getView($('.messages-box .wrapper')[0]).parentView.templateInstance();
 
 		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
 			const wrapper = $('.messages-box .wrapper');
@@ -327,7 +326,19 @@ export const RoomHistoryManager = new class {
 	}
 
 	clear(rid) {
+		const query = { rid };
+		const options = {
+			sort: {
+				ls: -1,
+			},
+			limit: 50,
+		};
+		const retain = ChatMessage.find(query, options).fetch();
 		ChatMessage.remove({ rid });
+		retain.forEach((message) => {
+			ChatMessage.insert(message);
+		});
+		CachedChatMessage.save();
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);

@@ -2,14 +2,15 @@
 
 	position: relative;
 
-	z-index: 2;
+	z-index: 0;
 
 	display: flex;
 	flex-direction: column;
 	flex: 0 0 var(--sidebar-width);
 
-	width: var(--sidebar-width);
-	max-width: var(--sidebar-width);
+	width: 100%;
+
+	/* max-width: var(--sidebar-width); */
 
 	height: 100%;
 
@@ -75,7 +76,7 @@
 
 	.sidebar:not(.sidebar-light) {
 		user-select: none;
-		transform: translate3d(-100%, 0, 0);
+		transform: translate3d(0, 0, 0);
 		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 		touch-action: pan-y;
 		-webkit-user-drag: none;
@@ -91,15 +92,16 @@
 	.sidebar {
 		flex: 0 0 var(--sidebar-small-width);
 
-		width: var(--sidebar-small-width);
-		max-width: var(--sidebar-small-width);
+		width: 100%;
+
+		/* max-width: var(--sidebar-width); */
 
 		&__footer {
 			display: none;
 		}
 
 		&:not(&--light) {
-			transform: translate3d(-100%, 0, 0);
+			transform: translate3d(0, 0, 0);
 		}
 	}
 

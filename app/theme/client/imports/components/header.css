@@ -71,7 +71,7 @@
 	&__block {
 		display: flex;
 
-		margin: 0 -0.5rem;
+		margin: 0 0.5rem;
 
 		padding: 0 0.5rem;
 
@@ -246,6 +246,7 @@
 
 	&__toggle-favorite {
 
+		margin: 0 0.75rem;
 		padding: 0 0.25rem;
 
 		color: var(--header-toggle-favorite-star-color);
@@ -420,13 +421,7 @@
 			display: none;
 		}
 
-		&__block {
-			margin: 0 0.25rem;
-		}
-
 		&__block-action {
-			order: 2;
-
 			& + & {
 				border-left: 1px var(--color-gray) solid;
 
@@ -435,10 +430,26 @@
 					border-left: 0;
 				}
 			}
+
+			.rc-room-actions {
+				&__action {
+					.rc-room-actions__button {
+						.tab-button-icon {
+							height: 1.2em;
+						}
+					}
+				}
+			}
 		}
 
-		&__favorite {
-			order: 1;
+		&__search-button {
+			margin: 0 0.25em;
+
+			&__action {
+				&__icon {
+					height: 1.2em;
+				}
+			}
 		}
 
 		&__data {
@@ -452,8 +463,10 @@
 		}
 
 		&__image {
-			width: 20px;
-			height: 20px;
+			display: none;
+
+			/* width: 20px;
+			height: 20px; */
 		}
 
 		&--burger {
@@ -461,6 +474,25 @@
 
 			margin: 0;
 			padding: 0;
+		}
+	}
+
+	.rc-channel {
+		&--room {
+			background: var(--veranda-color-primary);
+		}
+
+		&__wrap {
+			color: var(--color-white);
+			background: var(--veranda-color-primary);
+		}
+
+		&__name {
+			color: var(--color-white);
+		}
+
+		.burger i {
+			background-color: var(--color-white);
 		}
 	}
 }
@@ -473,6 +505,7 @@
 	position: relative;
 
 	cursor: pointer;
+
 	transition: transform 0.2s ease-out 0.1s;
 	will-change: transform;
 

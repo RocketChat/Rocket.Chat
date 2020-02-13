@@ -6,7 +6,7 @@ import moment from 'moment';
 import toastr from 'toastr';
 
 import { t } from '../../app/utils';
-import { ChatMessage } from '../../app/models';
+import { ChatMessage, CachedChatMessage } from '../../app/models';
 import { hasAtLeastOnePermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { callbacks } from '../../app/callbacks';
@@ -63,7 +63,14 @@ Meteor.methods({
 			};
 
 			message = callbacks.run('beforeSaveMessage', message);
-			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg };
+
+			const tempActions = originalMessage.tempActions || {};
+
+			if (!tempActions.send) {
+				tempActions.update = true;
+			}
+
+			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg, temp: true, tempActions };
 
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {
@@ -74,6 +81,7 @@ Meteor.methods({
 				_id: message._id,
 				'u._id': Meteor.userId(),
 			}, { $set: messageObject });
+			CachedChatMessage.save();
 		});
 	},
 });

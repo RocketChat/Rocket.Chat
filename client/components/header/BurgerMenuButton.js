@@ -64,7 +64,7 @@ export function BurgerMenuButton() {
 		className={[
 			'rc-old',
 			'burger',
-			!!isMenuOpen && 'menu-opened',
+			'menu-opened',
 		].filter(Boolean).join(' ')}
 		type='button'
 		onClick={handleClick}

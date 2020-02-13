@@ -48,6 +48,7 @@ fetch@0.1.1
 geojson-utils@1.0.10
 github-oauth@1.2.2
 google-oauth@1.2.6
+ground:db@2.0.0
 hot-code-push@1.0.4
 html-tools@1.0.11
 htmljs@1.0.11
