@@ -61,7 +61,7 @@ module.exports = function parseMessage(line) {
 		message.args = middle.split(/ +/);
 	}
 
-	if (typeof (trailing) !== 'undefined' && trailing.length) {
+	if (typeof trailing !== 'undefined' && trailing.length) {
 		message.args.push(trailing);
 	}
 

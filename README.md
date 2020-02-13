@@ -7,7 +7,8 @@
 [![Rocket.Chat](https://open.rocket.chat/images/join-chat.svg)](https://open.rocket.chat/)
 [![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
 [![Project Dependencies](https://david-dm.org/RocketChat/Rocket.Chat.svg)](https://david-dm.org/RocketChat/Rocket.Chat)
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/8580571ba024426d9649e9ab389bd5dd)](https://www.codacy.com/app/RocketChat/Rocket-Chat)
+[![devDependencies Status](https://david-dm.org/RocketChat/Rocket.Chat/dev-status.svg)](https://david-dm.org/RocketChat/Rocket.Chat?type=dev)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/8580571ba024426d9649e9ab389bd5dd)](https://www.codacy.com/app/RocketChat/Rocket-chat)
 [![Coverage Status](https://coveralls.io/repos/RocketChat/Rocket.Chat/badge.svg)](https://coveralls.io/r/RocketChat/Rocket.Chat)
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
@@ -19,6 +20,7 @@
 * [Desktop Apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
+   * [DigitalOcean](#digitalocean-droplet)
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
    * [Yunohost.org](#yunohostorg)
@@ -64,15 +66,7 @@ At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is
 
 If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
-Explore current openings below:
-
-- [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
-
-- [Sales Engineer](https://rocketchat.recruitee.com/o/sales-engineer)
-
-- [Business Developer/Sales/Channel](https://rocketchat.recruitee.com/o/business-developer-sales-channel)
-
-- [Front-End Developer](https://rocketchat.recruitee.com/o/frontend-developer)
+Get to know more about us and explore current openings at https://jobs.rocket.chat/"
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
@@ -81,7 +75,7 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
 
-You can also join the conversation at [Twitter](https://twitter.com/RocketChat), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp).
+You can also join the conversation on [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -109,11 +103,12 @@ Our snap features a built-in reverse proxy that can request and maintain free Le
 
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/).
 
-## RocketChatLauncher
+## DigitalOcean droplet
 
-Focus on your team/community and not on servers or code - the Launcher provides RocketChat-as-a-Service on a monthly subscription model.
+Deploy to a DigitalOcean droplet with our one-click install listing from the DigitalOcean Marketplace.
 
-[![RocketChatLauncher](https://rocketchatlauncher.com/wp-content/uploads/2017/03/cropped-rcl-small-type.png)](https://rocketchatlauncher.com)
+[![do-btn-blue](https://user-images.githubusercontent.com/51996/58146107-50512580-7c1a-11e9-8ec9-e032ba387c2a.png)](https://marketplace.digitalocean.com/apps/rocket-chat?action=deploy&refcode=1940fe28bd31)
+
 
 ## Layershift
 
@@ -135,7 +130,7 @@ The easiest way to install a ready-to-run Rocket.Chat server on a Linux machine,
 [![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
 ## IndieHosters
-Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...).
+Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
 
 [![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
 
@@ -233,7 +228,7 @@ Run Rocket.Chat on your easy to use personal device.
 
 # About Rocket.Chat
 
-Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
+Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) full stack framework.
 
 It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
 
@@ -318,29 +313,12 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## Roadmap
 
-#### In Progress
-- XMPP Support via [Webhook bridge](https://github.com/saqura/xmppwb) [Issue #404](https://github.com/RocketChat/Rocket.Chat/issues/404)
-- Federation via [matrix.org](https://www.matrix.org/), see [hubot-freddie](https://www.npmjs.com/package/hubot-freddie) and [Federation project](https://github.com/RocketChat/Rocket.Chat.Federation) : [Issue #520](https://github.com/RocketChat/Rocket.Chat/issues/520), [Issue #601](https://github.com/RocketChat/Rocket.Chat/issues/601)
-- Support for PostgreSQL: [Issue #533](https://github.com/RocketChat/Rocket.Chat/issues/533), [Issue #822](https://github.com/RocketChat/Rocket.Chat/pull/822)
-- WordPress Plug-in [Issue # 1920](https://github.com/RocketChat/Rocket.Chat/issues/1920)
-- Integration with PSTN (Public Switched Telephone Networks)
-- API-enabled methods: [Issue #202](https://github.com/RocketChat/Rocket.Chat/issues/202), [Issue #454](https://github.com/RocketChat/Rocket.Chat/issues/454), [Issue #455](https://github.com/RocketChat/Rocket.Chat/issues/455), [Issue #759](https://github.com/RocketChat/Rocket.Chat/issues/759)
-- Scalable WebRTC broadcaster / media-server integration, [Issue #1118](https://github.com/RocketChat/Rocket.Chat/issues/1118)
-- White label hosting
-- Reseller support for white label hosting
-- CRM integrations: Microsoft Dynamics CRM, Salesforce.com, Zoho.com, SugarCRM, SuiteCRM and more
-- Support multiple teams on the same instance / same VPS infrastructure: [Issue #658](https://github.com/RocketChat/Rocket.Chat/issues/658), [Issue #630](https://github.com/RocketChat/Rocket.Chat/issues/630)
+To see an up to date view of what we have planned, view our [milestones](https://github.com/RocketChat/Rocket.Chat/milestones).
 
-#### Planned
-- Kerberos Authentication: [Issue #839](https://github.com/RocketChat/Rocket.Chat/issues/839)
-- More webhooks: GitLab, Confluence, Jira, Piwik, WordPress: [Issue #233](https://github.com/RocketChat/Rocket.Chat/issues/233), [Issue #525](https://github.com/RocketChat/Rocket.Chat/issues/525), [Issue #637](https://github.com/RocketChat/Rocket.Chat/issues/637), [Issue #638](https://github.com/RocketChat/Rocket.Chat/issues/638), [Issue #747](https://github.com/RocketChat/Rocket.Chat/issues/747)
-- Anonymous use of Rocket.Chat: [Issue #604](https://github.com/RocketChat/Rocket.Chat/issues/604)
-- File Sharing via P2P: [Issue #369](https://github.com/RocketChat/Rocket.Chat/issues/369), [Issue #370](https://github.com/RocketChat/Rocket.Chat/issues/370)
-- Anti-virus checking on file uploads: [Issue #757](https://github.com/RocketChat/Rocket.Chat/issues/757)
 
 ## How it all started
 
-Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-enabling-privately-hosted-chat-services).
+Read about [how it all started](https://www.synopsys.com/blogs/software-security/rocket-chat-privately-hosted-chat-services/).
 
 ## Awards
 [![InfoWorld Bossie Awards 2016 - Best Open Source Applications](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/bossie.png)](http://www.infoworld.com/article/3122000/open-source-tools/bossie-awards-2016-the-best-open-source-applications.html#slide4)
@@ -366,7 +344,7 @@ Please use the [Stack Overflow TAG](http://stackoverflow.com/questions/tagged/ro
 #### Hubot
 
 The docker image is ready.
-Everyone can start hacking the adapter code, or launch his/her own bot within a few minutes now.
+Everyone can start hacking the adapter code or launch his/her own bot within a few minutes now.
 Please head over to the [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat) for more information.
 
 
@@ -407,7 +385,7 @@ meteor npm install
 meteor npm start
 ```
 
-In order to debug the server part use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
+To debug the server part, use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
 
 ```sh
 meteor debug
@@ -430,7 +408,7 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 
 ## How to Contribute
 
-Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://rocket.chat/docs/contributing/).
+Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors' community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://rocket.chat/docs/contributing/).
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
@@ -448,25 +426,25 @@ Thanks to our core team
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rodrigo Nascimento](https://github.com/rodrigok),
 [Sing Li](https://github.com/Sing-Li),
-and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
+and hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
-![Emoji One](https://cloud.githubusercontent.com/assets/1986378/24772858/47290a70-1ae9-11e7-9a5a-2913d0002c94.png)
+![JoyPixels](https://i.imgur.com/OrhYvLe.png)
 
-Emoji provided free by [Emoji One](http://emojione.com)
+Emoji provided graciously by [JoyPixels](https://www.joypixels.com/)
 
 ![BrowserStack](https://cloud.githubusercontent.com/assets/1986378/24772879/57d57b88-1ae9-11e7-98b4-4af824b47933.png)
 
 Testing with [BrowserStack](https://www.browserstack.com)
 
+![LingoHub](https://user-images.githubusercontent.com/20868078/69438584-0dd0e880-0d24-11ea-9127-de61dcfa6cd6.png)
 
+Translations done with [LingoHub](https://www.lingohub.com)
 
 # Donate
 
 Rocket.Chat will be free forever, but you can help us speed up the development!
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZL94ZE6LGVUSN)
-
-[![Bitcoins](https://github.com/RocketChat/Rocket.Chat.Docs/blob/master/1.%20Contributing/Donating/coinbase.png?raw=true)](https://www.coinbase.com/checkouts/ac2fa967efca7f6fc1201d46bdccb875)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9MT88JJ9X4A6U&source=url)
 
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)

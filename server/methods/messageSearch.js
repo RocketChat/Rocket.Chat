@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import s from 'underscore.string';
+
 import { Subscriptions, Messages } from '../../app/models';
 import { settings } from '../../app/settings';
-import s from 'underscore.string';
 
 Meteor.methods({
 	messageSearch(text, rid, limit) {
@@ -13,7 +14,7 @@ Meteor.methods({
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
 			message: {
-				docs:[],
+				docs: [],
 			},
 		};
 

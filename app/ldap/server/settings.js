@@ -14,6 +14,15 @@ settings.addGroup('LDAP', function() {
 		enableQuery,
 		{ _id: 'LDAP_Sync_User_Data', value: true },
 	];
+	const syncGroupsQuery = [
+		enableQuery,
+		{ _id: 'LDAP_Sync_User_Data_Groups', value: true },
+	];
+	const syncGroupsChannelsQuery = [
+		enableQuery,
+		{ _id: 'LDAP_Sync_User_Data_Groups', value: true },
+		{ _id: 'LDAP_Sync_User_Data_Groups_AutoChannels', value: true },
+	];
 	const groupFilterQuery = [
 		enableQuery,
 		{ _id: 'LDAP_Group_Filter_Enable', value: true },
@@ -30,7 +39,7 @@ settings.addGroup('LDAP', function() {
 	this.add('LDAP_Port', '389', { type: 'string', enableQuery });
 	this.add('LDAP_Reconnect', false, { type: 'boolean', enableQuery });
 	this.add('LDAP_Encryption', 'plain', { type: 'select', values: [{ key: 'plain', i18nLabel: 'No_Encryption' }, { key: 'tls', i18nLabel: 'StartTLS' }, { key: 'ssl', i18nLabel: 'SSL/LDAPS' }], enableQuery });
-	this.add('LDAP_CA_Cert', '', { type: 'string', multiline: true, enableQuery: enableTLSQuery });
+	this.add('LDAP_CA_Cert', '', { type: 'string', multiline: true, enableQuery: enableTLSQuery, secret: true });
 	this.add('LDAP_Reject_Unauthorized', true, { type: 'boolean', enableQuery: enableTLSQuery });
 	this.add('LDAP_BaseDN', '', { type: 'string', enableQuery });
 	this.add('LDAP_Internal_Log_Level', 'disabled', {
@@ -49,8 +58,8 @@ settings.addGroup('LDAP', function() {
 
 	this.section('Authentication', function() {
 		this.add('LDAP_Authentication', false, { type: 'boolean', enableQuery });
-		this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication });
-		this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication });
+		this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication, secret: true });
+		this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication, secret: true });
 	});
 
 	this.section('Timeouts', function() {
@@ -84,6 +93,29 @@ settings.addGroup('LDAP', function() {
 
 		this.add('LDAP_Sync_User_Data', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: syncDataQuery });
+
+		this.add('LDAP_Sync_User_Data_Groups', false, { type: 'boolean', enableQuery });
+		this.add('LDAP_Sync_User_Data_Groups_AutoRemove', false, { type: 'boolean', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', { type: 'string', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_BaseDN', '', { type: 'string', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_GroupsMap', '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}', {
+			type: 'code',
+			multiline: true,
+			public: false,
+			code: 'application/json',
+			enableQuery: syncGroupsQuery,
+		});
+		this.add('LDAP_Sync_User_Data_Groups_AutoChannels', false, { type: 'boolean', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_AutoChannels_Admin', 'rocket.cat', { type: 'string', enableQuery: syncGroupsChannelsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_AutoChannelsMap', '{\n\t"employee": "general",\n\t"techsupport": [\n\t\t"helpdesk",\n\t\t"support"\n\t]\n}', {
+			type: 'code',
+			multiline: true,
+			public: false,
+			code: 'application/json',
+			enableQuery: syncGroupsChannelsQuery,
+		});
+		this.add('LDAP_Sync_User_Data_Groups_Enforce_AutoChannels', false, { type: 'boolean', enableQuery: syncGroupsChannelsQuery });
+
 		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery });
 
 		this.add('LDAP_Background_Sync', false, { type: 'boolean', enableQuery });

@@ -1,20 +1,60 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../lib/settings';
-import { Settings } from '../../../models';
 import _ from 'underscore';
+
+import { settings } from '../../lib/settings';
+import Settings from '../../../models/server/models/Settings';
 
 const blockedSettings = {};
 
 if (process.env.SETTINGS_BLOCKED) {
-	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings[settingId] = 1);
+	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => { blockedSettings[settingId] = 1; });
 }
 
 const hiddenSettings = {};
 if (process.env.SETTINGS_HIDDEN) {
-	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings[settingId] = 1);
+	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => { hiddenSettings[settingId] = 1; });
 }
 
 settings._sorter = {};
+
+const overrideSetting = (_id, value, options) => {
+	if (typeof process !== 'undefined' && process.env && process.env[_id]) {
+		value = process.env[_id];
+		if (value.toLowerCase() === 'true') {
+			value = true;
+		} else if (value.toLowerCase() === 'false') {
+			value = false;
+		} else if (options.type === 'int') {
+			value = parseInt(value);
+		}
+		options.processEnvValue = value;
+		options.valueSource = 'processEnvValue';
+	} else if (Meteor.settings && typeof Meteor.settings[_id] !== 'undefined') {
+		if (Meteor.settings[_id] == null) {
+			return false;
+		}
+
+		value = Meteor.settings[_id];
+		options.meteorSettingsValue = value;
+		options.valueSource = 'meteorSettingsValue';
+	}
+
+	if (typeof process !== 'undefined' && process.env && process.env[`OVERWRITE_SETTING_${ _id }`]) {
+		let value = process.env[`OVERWRITE_SETTING_${ _id }`];
+		if (value.toLowerCase() === 'true') {
+			value = true;
+		} else if (value.toLowerCase() === 'false') {
+			value = false;
+		} else if (options.type === 'int') {
+			value = parseInt(value);
+		}
+		options.value = value;
+		options.processEnvValue = value;
+		options.valueSource = 'processEnvValue';
+	}
+
+	return value;
+};
 
 
 /*
@@ -38,6 +78,7 @@ settings.add = function(_id, value, options = {}) {
 	options.valueSource = 'packageValue';
 	options.hidden = options.hidden || false;
 	options.blocked = options.blocked || false;
+	options.secret = options.secret || false;
 	if (options.sorter == null) {
 		options.sorter = settings._sorter[options.group]++;
 	}
@@ -46,26 +87,6 @@ settings.add = function(_id, value, options = {}) {
 	}
 	if (options.i18nDefaultQuery != null) {
 		options.i18nDefaultQuery = JSON.stringify(options.i18nDefaultQuery);
-	}
-	if (typeof process !== 'undefined' && process.env && process.env[_id]) {
-		value = process.env[_id];
-		if (value.toLowerCase() === 'true') {
-			value = true;
-		} else if (value.toLowerCase() === 'false') {
-			value = false;
-		} else if (options.type === 'int') {
-			value = parseInt(value);
-		}
-		options.processEnvValue = value;
-		options.valueSource = 'processEnvValue';
-	} else if (Meteor.settings && typeof Meteor.settings[_id] !== 'undefined') {
-		if (Meteor.settings[_id] == null) {
-			return false;
-		}
-
-		value = Meteor.settings[_id];
-		options.meteorSettingsValue = value;
-		options.valueSource = 'meteorSettingsValue';
 	}
 	if (options.i18nLabel == null) {
 		options.i18nLabel = _id;
@@ -82,23 +103,13 @@ settings.add = function(_id, value, options = {}) {
 	if (options.autocomplete == null) {
 		options.autocomplete = true;
 	}
-	if (typeof process !== 'undefined' && process.env && process.env[`OVERWRITE_SETTING_${ _id }`]) {
-		let value = process.env[`OVERWRITE_SETTING_${ _id }`];
-		if (value.toLowerCase() === 'true') {
-			value = true;
-		} else if (value.toLowerCase() === 'false') {
-			value = false;
-		} else if (options.type === 'int') {
-			value = parseInt(value);
-		}
-		options.value = value;
-		options.processEnvValue = value;
-		options.valueSource = 'processEnvValue';
-	}
+
+	value = overrideSetting(_id, value, options);
+
 	const updateOperations = {
 		$set: options,
 		$setOnInsert: {
-			createdAt: new Date,
+			createdAt: new Date(),
 		},
 	};
 	if (options.editor != null) {
@@ -123,14 +134,14 @@ settings.add = function(_id, value, options = {}) {
 			$exists: false,
 		};
 	}
-	const existantSetting = Settings.db.findOne(query);
-	if (existantSetting != null) {
-		if (existantSetting.editor == null && updateOperations.$setOnInsert.editor != null) {
+	const existentSetting = Settings.db.findOne(query);
+	if (existentSetting != null) {
+		if (existentSetting.editor == null && updateOperations.$setOnInsert.editor != null) {
 			updateOperations.$set.editor = updateOperations.$setOnInsert.editor;
 			delete updateOperations.$setOnInsert.editor;
 		}
 	} else {
-		updateOperations.$set.ts = new Date;
+		updateOperations.$set.ts = new Date();
 	}
 	return Settings.upsert({
 		_id,
@@ -157,7 +168,7 @@ settings.addGroup = function(_id, options = {}, cb) {
 	if (options.i18nDescription == null) {
 		options.i18nDescription = `${ _id }_Description`;
 	}
-	options.ts = new Date;
+	options.ts = new Date();
 	options.blocked = false;
 	options.hidden = false;
 	if (blockedSettings[_id] != null) {
@@ -172,7 +183,7 @@ settings.addGroup = function(_id, options = {}, cb) {
 		$set: options,
 		$setOnInsert: {
 			type: 'group',
-			createdAt: new Date,
+			createdAt: new Date(),
 		},
 	});
 	if (cb != null) {

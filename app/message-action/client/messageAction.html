@@ -9,7 +9,7 @@
 				{{/if}}
 
 				{{#if msg_in_chat_window}}
-					<button class="js-actionButton-sendMessage" value="{{msg}}">
+					<button class="{{jsActionButtonClassname msg_processing_type}}" value="{{msg}}">
 						<img class="image-button" src="{{image_url}}" />
 					</button>
 				{{/if}}
@@ -21,7 +21,7 @@
 					</a>
 				{{/if}}
 				{{#if msg_in_chat_window}}
-					<button class="text-button js-actionButton-sendMessage" value="{{msg}}">
+					<button class="text-button {{jsActionButtonClassname msg_processing_type}}" value="{{msg}}">
 						<span class="overflow-ellipsis">{{text}}</span>
 					</button>
 				{{/if}}

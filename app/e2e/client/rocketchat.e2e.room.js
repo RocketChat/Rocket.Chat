@@ -1,13 +1,10 @@
 import _ from 'underscore';
-
 import { Base64 } from 'meteor/base64';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { Notifications } from '../../notifications';
-import { Rooms, Subscriptions } from '../../models';
-import { call } from '../../ui-utils';
+
 import { e2e } from './rocketchat.e2e';
 import {
 	Deferred,
@@ -25,6 +22,9 @@ import {
 	importRSAKey,
 	readFileAsArrayBuffer,
 } from './helper';
+import { Notifications } from '../../notifications';
+import { Rooms, Subscriptions } from '../../models';
+import { call } from '../../ui-utils';
 
 export class E2ERoom {
 	constructor(userId, roomId, t) {
@@ -39,7 +39,7 @@ export class E2ERoom {
 			this._ready.set(true);
 			this.establishing.set(false);
 
-			Notifications.onRoom(this.roomId, 'e2ekeyRequest', async(keyId) => {
+			Notifications.onRoom(this.roomId, 'e2ekeyRequest', async (keyId) => {
 				this.provideKeyToUser(keyId);
 			});
 		});
@@ -56,7 +56,7 @@ export class E2ERoom {
 		}
 
 		if (this.establishing.get()) {
-			return await this.readyPromise;
+			return this.readyPromise;
 		}
 
 		console.log('E2E -> Initiating handshake');

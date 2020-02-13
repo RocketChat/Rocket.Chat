@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { CustomOAuth } from '../../custom-oauth';
 import { settings } from '../../settings';
 

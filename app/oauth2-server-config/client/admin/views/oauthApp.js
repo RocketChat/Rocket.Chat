@@ -2,18 +2,25 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { hasAllPermission } from '../../../../authorization';
-import { modal } from '../../../../ui-utils';
-import { t, handleError } from '../../../../utils';
-import { ChatOAuthApps } from '../collection';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
-Template.oauthApp.onCreated(function() {
-	this.subscribe('oauthApps');
+import { hasAllPermission } from '../../../../authorization';
+import { modal, SideNav } from '../../../../ui-utils/client';
+import { t, handleError } from '../../../../utils';
+import { APIClient } from '../../../../utils/client';
+
+Template.oauthApp.onCreated(async function() {
+	const params = this.data.params();
+	this.oauthApp = new ReactiveVar({});
 	this.record = new ReactiveVar({
 		active: true,
 	});
+	if (params && params.id) {
+		const { oauthApp } = await APIClient.v1.get(`oauth-apps.get?appId=${ params.id }`);
+		this.oauthApp.set(oauthApp);
+	}
 });
 
 Template.oauthApp.helpers({
@@ -25,10 +32,14 @@ Template.oauthApp.helpers({
 		if (typeof instance.data.params === 'function') {
 			const params = instance.data.params();
 			if (params && params.id) {
-				const data = ChatOAuthApps.findOne({ _id: params.id });
+				const data = Template.instance().oauthApp.get();
 				if (data) {
 					data.authorization_url = Meteor.absoluteUrl('oauth/authorize');
 					data.access_token_url = Meteor.absoluteUrl('oauth/token');
+					if (Array.isArray(data.redirectUri)) {
+						data.redirectUri = data.redirectUri.join('\n');
+					}
+
 					Template.instance().record.set(data);
 					return data;
 				}
@@ -99,4 +110,11 @@ Template.oauthApp.events({
 			FlowRouter.go('admin-oauth-app', { id: data._id });
 		});
 	},
+});
+
+Template.oauthApp.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

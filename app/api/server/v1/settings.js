@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import _ from 'underscore';
+
 import { Settings } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
-import _ from 'underscore';
 
 // settings endpoints
 API.v1.addRoute('settings.public', { authRequired: false }, {
@@ -20,7 +21,7 @@ API.v1.addRoute('settings.public', { authRequired: false }, {
 		ourQuery = Object.assign({}, query, ourQuery);
 
 		const settings = Settings.find(ourQuery, {
-			sort: sort ? sort : { _id: 1 },
+			sort: sort || { _id: 1 },
 			skip: offset,
 			limit: count,
 			fields: Object.assign({ _id: 1, value: 1 }, fields),
@@ -79,7 +80,7 @@ API.v1.addRoute('settings', { authRequired: true }, {
 		ourQuery = Object.assign({}, query, ourQuery);
 
 		const settings = Settings.find(ourQuery, {
-			sort: sort ? sort : { _id: 1 },
+			sort: sort || { _id: 1 },
 			skip: offset,
 			limit: count,
 			fields: Object.assign({ _id: 1, value: 1 }, fields),

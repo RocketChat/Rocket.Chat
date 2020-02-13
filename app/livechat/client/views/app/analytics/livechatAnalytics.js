@@ -2,11 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+import moment from 'moment';
+
 import { handleError } from '../../../../../utils';
 import { popover } from '../../../../../ui-utils';
-import moment from 'moment';
 import { drawLineChart } from '../../../lib/chartHandler';
 import { setDateRange, updateDateRange } from '../../../lib/dateHandler';
+import './livechatAnalytics.html';
 
 let templateInstance;		// current template instance/context
 let chartContext;			// stores context of current chart, used to clean when redrawing
@@ -69,7 +71,7 @@ const updateAnalyticsChart = () => {
 		chartOptions: templateInstance.chartOptions.get(),
 	};
 
-	Meteor.call('livechat:getAnalyticsChartData', options, function(error, result) {
+	Meteor.call('livechat:getAnalyticsChartData', options, async function(error, result) {
 		if (error) {
 			return handleError(error);
 		}
@@ -78,7 +80,7 @@ const updateAnalyticsChart = () => {
 			console.log('livechat:getAnalyticsChartData => Missing Data');
 		}
 
-		chartContext = drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, [result.chartLabel], result.dataLabels, [result.dataPoints]);
+		chartContext = await drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, [result.chartLabel], result.dataLabels, [result.dataPoints]);
 	});
 
 	Meteor.call('livechat:getAgentOverviewData', options, function(error, result) {
@@ -171,9 +173,7 @@ Template.livechatAnalytics.onRendered(() => {
 			updateAnalyticsOverview();
 			updateAnalyticsChart();
 		}
-
 	});
-
 });
 
 Template.livechatAnalytics.events({

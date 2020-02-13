@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
-
-import { mountReply } from './chatMessages';
-import { fileUploadHandler } from '../../../file-upload';
 import { Handlebars } from 'meteor/ui';
+
+import { fileUploadHandler } from '../../../file-upload';
+import { settings } from '../../../settings/client';
 import { t, fileUploadIsValidContentType } from '../../../utils';
-import { modal } from '../../../ui-utils';
+import { modal, prependReplies } from '../../../ui-utils';
 
 
 const readAsDataURL = (file, callback) => {
@@ -39,7 +39,7 @@ const showUploadPreview = (file, callback) => {
 const getAudioUploadPreview = (file, preview) => `\
 <div class='upload-preview'>
 	<audio style="width: 100%;" controls="controls">
-		<source src="${ preview }" type="audio/wav">
+		<source src="${ preview }" type="${ file.file.type }">
 		Your browser does not support the audio element.
 	</audio>
 </div>
@@ -116,7 +116,7 @@ const getGenericUploadPreview = (file) => `\
 </div>
 </div>`;
 
-const getUploadPreview = async(file, preview) => {
+const getUploadPreview = async (file, preview) => {
 	if (file.type === 'audio') {
 		return getAudioUploadPreview(file, preview);
 	}
@@ -139,14 +139,23 @@ const getUploadPreview = async(file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-export const fileUpload = async(files, input) => {
+export const fileUpload = async (files, input, { rid, tmid }) => {
+	const threadsEnabled = settings.get('Threads_enabled');
+
 	files = [].concat(files);
 
-	const roomId = Session.get('openedRoom');
+	const replies = $(input).data('reply') || [];
+	const mention = $(input).data('mention-user') || false;
 
 	let msg = '';
 
-	msg += await mountReply(msg, input);
+	if (!mention || !threadsEnabled) {
+		msg = await prependReplies('', replies, mention);
+	}
+
+	if (mention && threadsEnabled && replies.length) {
+		tmid = replies[0]._id;
+	}
 
 	const uploadNextFile = () => {
 		const file = files.pop();
@@ -174,7 +183,7 @@ export const fileUpload = async(files, input) => {
 			return;
 		}
 
-		showUploadPreview(file, async(file, preview) => modal.open({
+		showUploadPreview(file, async (file, preview) => modal.open({
 			title: t('Upload_file_question'),
 			text: await getUploadPreview(file, preview),
 			showCancelButton: true,
@@ -193,7 +202,7 @@ export const fileUpload = async(files, input) => {
 				name: document.getElementById('file-name').value || file.name || file.file.name,
 				size: file.file.size,
 				type: file.file.type,
-				rid: roomId,
+				rid,
 				description: document.getElementById('file-description').value,
 			};
 
@@ -233,12 +242,12 @@ export const fileUpload = async(files, input) => {
 					return;
 				}
 
-				Meteor.call('sendFileMessage', roomId, storage, file, { msg }, () => {
+				Meteor.call('sendFileMessage', rid, storage, file, { msg, tmid }, () => {
 					$(input)
 						.removeData('reply')
 						.trigger('dataChange');
 
-					Meteor.setTimeout(() => {
+					setTimeout(() => {
 						const uploads = Session.get('uploading') || [];
 						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 					}, 2000);

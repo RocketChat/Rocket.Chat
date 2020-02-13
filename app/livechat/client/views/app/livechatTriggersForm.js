@@ -1,29 +1,32 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from '../../../../utils';
-import { LivechatTrigger } from '../../collections/LivechatTrigger';
 import toastr from 'toastr';
+
+import { t, handleError } from '../../../../utils';
+import './livechatTriggersForm.html';
+import { APIClient } from '../../../../utils/client';
 
 Template.livechatTriggersForm.helpers({
 	name() {
-		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		const trigger = Template.instance().trigger.get();
 		return trigger && trigger.name;
 	},
 	description() {
-		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		const trigger = Template.instance().trigger.get();
 		return trigger && trigger.description;
 	},
 	enabled() {
-		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		const trigger = Template.instance().trigger.get();
 		return trigger && trigger.enabled;
 	},
 	runOnce() {
-		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		const trigger = Template.instance().trigger.get();
 		return (trigger && trigger.runOnce) || false;
 	},
 	conditions() {
-		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		const trigger = Template.instance().trigger.get();
 		if (!trigger) {
 			return [];
 		}
@@ -31,7 +34,7 @@ Template.livechatTriggersForm.helpers({
 		return trigger.conditions;
 	},
 	actions() {
-		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		const trigger = Template.instance().trigger.get();
 		if (!trigger) {
 			return [];
 		}
@@ -104,6 +107,12 @@ Template.livechatTriggersForm.events({
 	},
 });
 
-Template.livechatTriggersForm.onCreated(function() {
-	this.subscribe('livechat:triggers', FlowRouter.getParam('_id'));
+Template.livechatTriggersForm.onCreated(async function() {
+	this.trigger = new ReactiveVar({});
+	const id = FlowRouter.getParam('_id');
+
+	if (id) {
+		const { trigger } = await APIClient.v1.get(`livechat/triggers/${ id }`);
+		this.trigger.set(trigger);
+	}
 });

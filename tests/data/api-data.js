@@ -1,9 +1,15 @@
-import { publicChannelName, privateChannelName } from '../data/channel.js';
-import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from '../data/role.js';
-import { username, email, adminUsername, adminPassword } from '../data/user.js';
 import supertest from 'supertest';
+
+import { publicChannelName, privateChannelName } from './channel.js';
+import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role.js';
+import { username, email, adminUsername, adminPassword } from './user.js';
+
 export const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
+
+export function wait(cb, time) {
+	return () => setTimeout(cb, time);
+}
 
 export const apiUsername = `api${ username }`;
 export const apiEmail = `api${ email }`;
@@ -23,8 +29,8 @@ export const message = {};
 export const directMessage = {};
 export const integration = {};
 export const credentials = {
-	['X-Auth-Token']: undefined,
-	['X-User-Id']: undefined,
+	'X-Auth-Token': undefined,
+	'X-User-Id': undefined,
 };
 export const login = {
 	user: adminUsername,
@@ -54,4 +60,3 @@ export function getCredentials(done = function() {}) {
 		})
 		.end(done);
 }
-

@@ -7,4 +7,7 @@ Template.messageAction.helpers({
 	areButtonsHorizontal() {
 		return Template.parentData(1).button_alignment === 'horizontal';
 	},
+	jsActionButtonClassname(processingType) {
+		return `js-actionButton-${ processingType || 'sendMessage' }`;
+	},
 });

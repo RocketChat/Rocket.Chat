@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { FileUpload } from '../../../file-upload';
-import { Rooms } from '../../../models';
 import Busboy from 'busboy';
+
+import { FileUpload } from '../../../file-upload';
+import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
+import { findAdminRooms, findChannelAndPrivateAutocomplete } from '../lib/rooms';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -41,7 +43,7 @@ API.v1.addRoute('rooms.get', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('rooms/get', updatedSinceDate));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('rooms/get', updatedSinceDate); });
 
 		if (Array.isArray(result)) {
 			result = {
@@ -72,7 +74,7 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		Meteor.wrapAsync((callback) => {
 			busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
 				if (fieldname !== 'file') {
-					return files.push(new Meteor.Error('invalid-field'));
+					return callback(new Meteor.Error('invalid-field'));
 				}
 
 				const fileDate = [];
@@ -83,7 +85,7 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 				});
 			});
 
-			busboy.on('field', (fieldname, value) => fields[fieldname] = value);
+			busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
 
 			busboy.on('finish', Meteor.bindEnvironment(() => callback()));
 
@@ -110,6 +112,8 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			userId: this.userId,
 		};
 
+		let fileData = {};
+
 		Meteor.runAsUser(this.userId, () => {
 			const uploadedFile = Meteor.wrapAsync(fileStore.insert.bind(fileStore))(details, file.fileBuffer);
 
@@ -118,9 +122,11 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			delete fields.description;
 
 			API.v1.success(Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields));
+
+			fileData = uploadedFile;
 		});
 
-		return API.v1.success();
+		return API.v1.success({ message: Messages.getMessageByFileIdAndUsername(fileData._id, this.userId) });
 	},
 });
 
@@ -129,8 +135,8 @@ API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 		const saveNotifications = (notifications, roomId) => {
 			Object.keys(notifications).forEach((notificationKey) =>
 				Meteor.runAsUser(this.userId, () =>
-					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey])
-				)
+					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]),
+				),
 			);
 		};
 		const { roomId, notifications } = this.bodyParams;
@@ -216,5 +222,89 @@ API.v1.addRoute('rooms.leave', { authRequired: true }, {
 		});
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
+	post() {
+		const { prid, pmid, reply, t_name, users } = this.bodyParams;
+		if (!prid) {
+			return API.v1.failure('Body parameter "prid" is required.');
+		}
+		if (!t_name) {
+			return API.v1.failure('Body parameter "t_name" is required.');
+		}
+		if (users && !Array.isArray(users)) {
+			return API.v1.failure('Body parameter "users" must be an array.');
+		}
+
+		const discussion = Meteor.runAsUser(this.userId, () => Meteor.call('createDiscussion', {
+			prid,
+			pmid,
+			t_name,
+			reply,
+			users: users || [],
+		}));
+
+		return API.v1.success({ discussion });
+	},
+});
+
+API.v1.addRoute('rooms.getDiscussions', { authRequired: true }, {
+	get() {
+		const room = findRoomByIdOrName({ params: this.requestParams() });
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+		const ourQuery = Object.assign(query, { prid: room._id });
+
+		const discussions = Rooms.find(ourQuery, {
+			sort: sort || { fname: 1 },
+			skip: offset,
+			limit: count,
+			fields,
+		}).fetch();
+
+		return API.v1.success({
+			discussions,
+			count: discussions.length,
+			offset,
+			total: Rooms.find(ourQuery).count(),
+		});
+	},
+});
+
+API.v1.addRoute('rooms.adminRooms', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+		const { types, filter } = this.requestParams();
+
+		return API.v1.success(Promise.await(findAdminRooms({
+			uid: this.userId,
+			filter,
+			types,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		})));
+	},
+});
+
+API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findChannelAndPrivateAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
 	},
 });

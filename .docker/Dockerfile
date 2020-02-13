@@ -1,8 +1,8 @@
-FROM rocketchat/base:8
+FROM rocketchat/base:12.14.0
 
 ADD . /app
 
-MAINTAINER buildmaster@rocket.chat
+LABEL maintainer="buildmaster@rocket.chat"
 
 RUN set -x \
  && cd /app/bundle/programs/server \

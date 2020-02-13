@@ -1,33 +1,32 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from '../../../utils';
-import { AdminChatRoom } from './adminRooms';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
+
+import { t, handleError } from '../../../utils';
 
 Template.channelSettingsDefault.helpers({
 	canMakeDefault() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.t === 'c';
 	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
 	},
 	roomDefault() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
+		const room = Template.instance().room.get();
 
 		if (room) {
 			return room.default;
 		}
 	},
 	defaultDescription() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
+		const room = Template.instance().room.get();
 		if (room && room.default) {
 			return t('True');
-		} else {
-			return t('False');
 		}
+		return t('False');
 	},
 });
 
@@ -46,17 +45,24 @@ Template.channelSettingsDefault.events({
 	'click .save'(e, t) {
 		e.preventDefault();
 
-		Meteor.call('saveRoomSettings', this.rid, 'default', $('input[name=default]:checked').val(), (err/* , result*/) => {
+		Meteor.call('saveRoomSettings', Template.instance().room.get()._id, 'default', $('input[name=default]:checked').val(), (err/* , result*/) => {
 			if (err) {
 				return handleError(err);
 			}
 			toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 		});
-
+		t.onSuccess();
 		t.editing.set();
 	},
 });
 
 Template.channelSettingsDefault.onCreated(function() {
 	this.editing = new ReactiveVar();
+	this.room = new ReactiveVar();
+	this.onSuccess = Template.currentData().onSuccess;
+
+	this.autorun(() => {
+		const { room } = Template.currentData();
+		this.room.set(room);
+	});
 });

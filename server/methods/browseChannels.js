@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { hasPermission } from '../../app/authorization';
-import { Rooms, Users } from '../../app/models';
 import s from 'underscore.string';
 
-import { Federation } from '../../app/federation';
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Users } from '../../app/models';
+import { settings } from '../../app/settings/server';
+import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
+import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
+import { federationSearchUsers } from '../../app/federation/server/handler';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -57,11 +60,13 @@ Meteor.methods({
 			limit,
 		};
 
+		const canViewAnonymous = settings.get('Accounts_AllowAnonymousRead') === true;
+
 		const user = Meteor.user();
 
 		if (type === 'channels') {
 			const sort = sortChannels(sortBy, sortDirection);
-			if (!hasPermission(user._id, 'view-c-room')) {
+			if ((!user && !canViewAnonymous) || (user && !hasPermission(user._id, 'view-c-room'))) {
 				return;
 			}
 
@@ -83,6 +88,11 @@ Meteor.methods({
 				total: result.count(), // count ignores the `skip` and `limit` options
 				results: result.fetch(),
 			};
+		}
+
+		// non-logged id user
+		if (!user) {
+			return;
 		}
 
 		// type === users
@@ -110,14 +120,35 @@ Meteor.methods({
 		if (workspace === 'all') {
 			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
 		} else if (workspace === 'external') {
-			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
 		} else {
-			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
+			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
+		}
+
+		const total = result.count(); // count ignores the `skip` and `limit` options
+		const results = result.fetch();
+
+		// Try to find federated users, when appliable
+		if (isFederationEnabled() && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
+			const users = federationSearchUsers(text);
+
+			for (const user of users) {
+				if (results.find((e) => e._id === user._id)) { continue; }
+
+				// Add the federated user to the results
+				results.unshift({
+					username: user.username,
+					name: user.name,
+					emails: user.emails,
+					federation: user.federation,
+					isRemote: true,
+				});
+			}
 		}
 
 		return {
-			total: result.count(), // count ignores the `skip` and `limit` options
-			results: result.fetch(),
+			total,
+			results,
 		};
 	},
 });

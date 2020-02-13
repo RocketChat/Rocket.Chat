@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
+
 import { settings } from '../../settings';
 
 OAuth.launchLogin = _.wrap(OAuth.launchLogin, function(func, options) {

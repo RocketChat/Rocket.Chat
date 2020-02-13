@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
-import { searchProviderService, SearchProvider } from '../../../search';
-import Index from './index';
+
+import { searchProviderService, SearchProvider } from '../../../search/server';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions } from '../../../models';
 import { Rooms } from '../../../models';
+
+import Index from './index';
 
 /**
  * The chatpal search provider enables chatpal search. An appropriate backedn has to be specified by settings.
  */
 class ChatpalProvider extends SearchProvider {
-
 	/**
 	 * Create chatpal provider with some settings for backend and ui
 	 */
@@ -19,7 +20,7 @@ class ChatpalProvider extends SearchProvider {
 		this.chatpalBaseUrl = 'https://beta.chatpal.io/v1';
 
 		this._settings.add('Backend', 'select', 'cloud', {
-			values:[
+			values: [
 				{ key: 'cloud', i18nLabel: 'Cloud Service' },
 				{ key: 'onsite', i18nLabel: 'On-Site' },
 			],
@@ -27,7 +28,7 @@ class ChatpalProvider extends SearchProvider {
 			i18nDescription: 'Chatpal_Backend_Description',
 		});
 		this._settings.add('API_Key', 'string', '', {
-			enableQuery:[{
+			enableQuery: [{
 				_id: 'Search.chatpalProvider.Backend',
 				value: 'cloud',
 			}],
@@ -35,7 +36,7 @@ class ChatpalProvider extends SearchProvider {
 			i18nDescription: 'Chatpal_API_Key_Description',
 		});
 		this._settings.add('Base_URL', 'string', '', {
-			enableQuery:[{
+			enableQuery: [{
 				_id: 'Search.chatpalProvider.Backend',
 				value: 'onsite',
 			}],
@@ -43,7 +44,7 @@ class ChatpalProvider extends SearchProvider {
 			i18nDescription: 'Chatpal_Base_URL_Description',
 		});
 		this._settings.add('HTTP_Headers', 'string', '', {
-			enableQuery:[{
+			enableQuery: [{
 				_id: 'Search.chatpalProvider.Backend',
 				value: 'onsite',
 			}],
@@ -134,7 +135,6 @@ class ChatpalProvider extends SearchProvider {
 	 * @inheritDoc
 	 */
 	on(name, value, payload) {
-
 		if (!this.index) {
 			this.indexFail = true;
 			return false;
@@ -159,15 +159,14 @@ class ChatpalProvider extends SearchProvider {
 	 * @private
 	 */
 	_checkForClear(reason) {
-
 		if (reason === 'startup') { return false; }
 
 		if (reason === 'switch') { return true; }
 
-		return this._indexConfig.backendtype !== this._settings.get('Backend') ||
-			(this._indexConfig.backendtype === 'onsite' && this._indexConfig.baseurl !== (this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL'))) ||
-			(this._indexConfig.backendtype === 'cloud' && this._indexConfig.httpOptions.headers['X-Api-Key'] !== this._settings.get('API_Key')) ||
-			this._indexConfig.language !== this._settings.get('Main_Language');
+		return this._indexConfig.backendtype !== this._settings.get('Backend')
+			|| (this._indexConfig.backendtype === 'onsite' && this._indexConfig.baseurl !== (this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL')))
+			|| (this._indexConfig.backendtype === 'cloud' && this._indexConfig.httpOptions.headers['X-Api-Key'] !== this._settings.get('API_Key'))
+			|| this._indexConfig.language !== this._settings.get('Main_Language');
 	}
 
 	/**
@@ -196,7 +195,6 @@ class ChatpalProvider extends SearchProvider {
 	 * @private
 	 */
 	_ping(config, resolve, reject, timeout = 5000) {
-
 		const maxTimeout = 200000;
 
 		const stats = Index.ping(config);
@@ -205,14 +203,12 @@ class ChatpalProvider extends SearchProvider {
 			ChatpalLogger.debug('ping was successfull');
 			resolve({ config, stats });
 		} else {
-
 			ChatpalLogger.warn(`ping failed, retry in ${ timeout } ms`);
 
 			this._pingTimeout = Meteor.setTimeout(() => {
 				this._ping(config, resolve, reject, Math.min(maxTimeout, 2 * timeout));
 			}, timeout);
 		}
-
 	}
 
 	/**
@@ -221,7 +217,6 @@ class ChatpalProvider extends SearchProvider {
 	 * @private
 	 */
 	_getIndexConfig() {
-
 		return new Promise((resolve, reject) => {
 			const config = {
 				backendtype: this._settings.get('Backend'),
@@ -259,7 +254,6 @@ class ChatpalProvider extends SearchProvider {
 
 			this._ping(config, resolve, reject);
 		});
-
 	}
 
 	/**
@@ -281,7 +275,6 @@ class ChatpalProvider extends SearchProvider {
 	 * @param reject
 	 */
 	start(reason, resolve, reject) {
-
 		const clear = this._checkForClear(reason);
 
 		ChatpalLogger.debug(`clear = ${ clear } with reason '${ reason }'`);
@@ -325,10 +318,10 @@ class ChatpalProvider extends SearchProvider {
 	 * @returns {*}
 	 */
 	search(text, context, payload, callback) {
-
-		if (!this.index) { return callback({ msg:'Chatpal_currently_not_active' }); }
+		if (!this.index) { return callback({ msg: 'Chatpal_currently_not_active' }); }
 
 		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
+		const params = Object.assign({}, payload.custom);
 
 		this.index.query(
 			text,
@@ -337,17 +330,16 @@ class ChatpalProvider extends SearchProvider {
 			type,
 			payload.start || 0,
 			payload.rows || this._settings.get('PageSize'),
-			callback
+			callback,
+			params,
 		);
-
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	suggest(text, context, payload, callback) {
-
-		if (!this.index) { return callback({ msg:'Chatpal_currently_not_active' }); }
+		if (!this.index) { return callback({ msg: 'Chatpal_currently_not_active' }); }
 
 		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
 
@@ -356,7 +348,7 @@ class ChatpalProvider extends SearchProvider {
 			this._settings.get('Main_Language'),
 			this._getAcl(context),
 			type,
-			callback
+			callback,
 		);
 	}
 }

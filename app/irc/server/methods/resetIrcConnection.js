@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings';
 import { t } from '../../../utils';
 import Bridge from '../irc-bridge';
 
 Meteor.methods({
 	resetIrcConnection() {
-		const ircEnabled = (!!settings.get('IRC_Enabled')) === true;
+		const ircEnabled = !!settings.get('IRC_Enabled') === true;
 
 		if (Meteor.ircBridge) {
 			Meteor.ircBridge.stop();

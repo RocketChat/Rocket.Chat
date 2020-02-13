@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasPermission } from '../../../authorization';
 import { EmojiCustom } from '../../../models';
 import { Notifications } from '../../../notifications';
@@ -9,7 +10,7 @@ Meteor.methods({
 		let emoji = null;
 
 		if (hasPermission(this.userId, 'manage-emoji')) {
-			emoji = EmojiCustom.findOneByID(emojiID);
+			emoji = EmojiCustom.findOneById(emojiID);
 		} else {
 			throw new Meteor.Error('not_authorized');
 		}
@@ -19,7 +20,7 @@ Meteor.methods({
 		}
 
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emoji.name }.${ emoji.extension }`));
-		EmojiCustom.removeByID(emojiID);
+		EmojiCustom.removeById(emojiID);
 		Notifications.notifyLogged('deleteEmojiCustom', { emojiData: emoji });
 
 		return true;

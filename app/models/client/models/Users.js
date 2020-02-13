@@ -1,12 +1,13 @@
-const Users = {};
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 
-Object.assign(Users, {
+export const Users = {
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,
 		};
 
-		const user = this.findOne(query);
+		const user = this.findOne(query, { fields: { roles: 1 } });
 		return user && Array.isArray(user.roles) && user.roles.includes(roleName);
 	},
 
@@ -19,6 +20,8 @@ Object.assign(Users, {
 
 		return this.find(query, options);
 	},
-});
+};
 
-export { Users };
+// overwrite Meteor.users collection so records on it don't get erased whenever the client reconnects to websocket
+Meteor.users = new Mongo.Collection(null);
+Meteor.user = () => Meteor.users.findOne({ _id: Meteor.userId() });

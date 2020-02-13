@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { hasRole } from '../../../authorization';
 
 Meteor.methods({

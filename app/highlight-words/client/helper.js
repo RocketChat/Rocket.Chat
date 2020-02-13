@@ -1,42 +1,27 @@
 import s from 'underscore.string';
 
-export const checkHighlightedWordsInUrls = (msg, highlight) => {
-	const urlRegex = new RegExp(`https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)(${ s.escapeRegExp(highlight) })\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)`, 'gmi');
-	const urlMatches = msg.match(urlRegex);
-
-	return urlMatches;
-};
+export const checkHighlightedWordsInUrls = (msg, urlRegex) => msg.match(urlRegex);
 
 export const removeHighlightedUrls = (msg, highlight, urlMatches) => {
+	const highlightRegex = new RegExp(highlight, 'gmi');
 
-	urlMatches.forEach((match) => {
-		const highlightRegex = new RegExp(highlight, 'gmi');
+	return urlMatches.reduce((msg, match) => {
 		const withTemplate = match.replace(highlightRegex, `<span class="highlight-text">${ highlight }</span>`);
 		const regexWithTemplate = new RegExp(withTemplate, 'i');
-
-		msg = msg.replace(regexWithTemplate, match);
-	});
-
-	return msg;
+		return msg.replace(regexWithTemplate, match);
+	}, msg);
 };
 
-export const highlightWords = (msg, to_highlight) => {
-	const highlightTemplate = '$1<span class="highlight-text">$2</span>$3';
+const highlightTemplate = '$1<span class="highlight-text">$2</span>$3';
 
-	if (Array.isArray(to_highlight)) {
-		to_highlight.forEach((highlight) => {
-			if (!s.isBlank(highlight)) {
-				const regex = new RegExp(`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${ s.escapeRegExp(highlight) })($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`, 'gmi');
-				const urlMatches = checkHighlightedWordsInUrls(msg, highlight);
+export const getRegexHighlight = (highlight) => new RegExp(`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${ s.escapeRegExp(highlight) })($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`, 'gmi');
 
-				msg = msg.replace(regex, highlightTemplate);
+export const getRegexHighlightUrl = (highlight) => new RegExp(`https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)(${ s.escapeRegExp(highlight) })\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)`, 'gmi');
 
-				if (urlMatches) {
-					msg = removeHighlightedUrls(msg, highlight, urlMatches);
-				}
-			}
-		});
+export const highlightWords = (msg, highlights) => highlights.reduce((msg, { highlight, regex, urlRegex }) => {
+	const urlMatches = checkHighlightedWordsInUrls(msg, urlRegex);
+	if (!urlMatches) {
+		return msg.replace(regex, highlightTemplate);
 	}
-
-	return msg;
-};
+	return removeHighlightedUrls(msg.replace(regex, highlightTemplate), highlight, urlMatches);
+}, msg);

@@ -1,17 +1,31 @@
 import { api, credentials, request } from './api-data';
 
-export const sendSimpleMessage = ({ roomId, text = 'test message' }) => {
+export const sendSimpleMessage = ({ roomId, text = 'test message', tmid }) => {
 	if (!roomId) {
 		throw new Error('"roomId" is required in "sendSimpleMessage" test helper');
+	}
+	const message = {
+		rid: roomId,
+		text,
+	};
+	if (tmid) {
+		message.tmid = tmid;
 	}
 
 	return request.post(api('chat.sendMessage'))
 		.set(credentials)
+		.send({ message });
+};
+
+export const pinMessage = ({ msgId }) => {
+	if (!msgId) {
+		throw new Error('"msgId" is required in "pinMessage" test helper');
+	}
+
+	return request.post(api('chat.pinMessage'))
+		.set(credentials)
 		.send({
-			message: {
-				rid: roomId,
-				text,
-			},
+			messageId: msgId,
 		});
 };
 

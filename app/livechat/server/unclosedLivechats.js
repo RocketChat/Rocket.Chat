@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
+
+import { Livechat } from './lib/Livechat';
 import { settings } from '../../settings';
 import { Users } from '../../models';
-import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
-import { Livechat } from './lib/Livechat';
 
 let agentsHandler;
 let monitorAgents = false;
@@ -41,7 +42,7 @@ function runAgentLeaveAction(userId) {
 	const action = settings.get('Livechat_agent_leave_action');
 	if (action === 'close') {
 		return Livechat.closeOpenChats(userId, settings.get('Livechat_agent_leave_comment'));
-	} else if (action === 'forward') {
+	} if (action === 'forward') {
 		return Livechat.forwardOpenChats(userId);
 	}
 }

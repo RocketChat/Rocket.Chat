@@ -1,8 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { DateFormat } from '../../lib';
 import { Template } from 'meteor/templating';
-import { getUserPreference } from '../../utils';
-import { Users } from '../../models';
+
+import { DateFormat } from '../../lib';
+import { getURL } from '../../utils/client';
 import { renderMessageBody } from '../../ui-utils';
 
 const colors = {
@@ -26,15 +25,18 @@ Template.messageAttachment.helpers({
 		});
 	},
 	loadImage() {
-		if (this.downloadImages !== true) {
-			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad' : 1 } });
-			if (getUserPreference(user, 'autoImageLoad') === false) {
-				return false;
-			}
-			if (Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth') !== true) {
-				return false;
-			}
+		if (this.downloadImages) {
+			return true;
 		}
+
+		if (this.settings.autoImageLoad === false) {
+			return false;
+		}
+
+		if (this.settings.saveMobileBandwidth === true) {
+			return false;
+		}
+
 		return true;
 	},
 	getImageHeight(height = 200) {
@@ -52,9 +54,8 @@ Template.messageAttachment.helpers({
 	mediaCollapsed() {
 		if (this.collapsed != null) {
 			return this.collapsed;
-		} else {
-			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
+		return this.settings.collapseMediaByDefault === true;
 	},
 	time() {
 		const messageDate = new Date(this.ts);
@@ -67,15 +68,25 @@ Template.messageAttachment.helpers({
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;
 	},
-
+	injectSettings(data, settings) {
+		data.settings = settings;
+	},
+	injectMessage(data, { rid, _id }) {
+		data.msg = { _id, rid };
+	},
 	isFile() {
 		return this.type === 'file';
 	},
 	isPDF() {
-		if (this.type === 'file' && this.title_link.endsWith('.pdf') && Template.parentData().file) {
-			this.fileId = Template.parentData().file._id;
+		if (
+			this.type === 'file'
+			&& this.title_link.endsWith('.pdf')
+			&& Template.parentData().msg.file
+		) {
+			this.fileId = Template.parentData().msg.file._id;
 			return true;
 		}
 		return false;
 	},
+	getURL,
 });

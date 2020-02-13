@@ -50,16 +50,15 @@ describe('Mention Server', () => {
 			beforeEach(() => {
 				mention.getChannel = () =>
 					({
-						usernames:[{
+						usernames: [{
 							_id: 1,
 							username: 'rocket.cat',
 						}, {
 							_id: 2,
 							username: 'jon',
 						}],
-					})
-					// Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
-				;
+					});
+				// Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 			});
 			it('should return "all"', () => {
 				const message = {
@@ -154,7 +153,6 @@ describe('Mention Server', () => {
 				assert.deepEqual(expected, result);
 			});
 		});
-
 	});
 	describe('getChannelbyMentions', () => {
 		it('should return the channel "general"', () => {

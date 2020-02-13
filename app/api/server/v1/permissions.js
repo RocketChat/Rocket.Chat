@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { hasPermission } from '../../../authorization';
 import { Permissions, Roles } from '../../../models';
 import { API } from '../api';
@@ -30,7 +31,7 @@ API.v1.addRoute('permissions.list', { authRequired: true }, {
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'permissions.list',
-			versionWillBeRemove: '0.85',
+			versionWillBeRemoved: '0.85',
 			response: {
 				permissions: result,
 			},
@@ -52,7 +53,7 @@ API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('permissions/get', updatedSinceDate));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('permissions/get', updatedSinceDate); });
 
 		if (Array.isArray(result)) {
 			result = {
@@ -100,7 +101,7 @@ API.v1.addRoute('permissions.update', { authRequired: true }, {
 
 		if (permissionNotFound) {
 			return API.v1.failure('Invalid permission', 'error-invalid-permission');
-		} else if (roleNotFound) {
+		} if (roleNotFound) {
 			return API.v1.failure('Invalid role', 'error-invalid-role');
 		}
 
