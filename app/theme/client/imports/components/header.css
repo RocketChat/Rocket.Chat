@@ -488,7 +488,12 @@
 		}
 
 		&__name {
+			font-size: 1.25rem;
 			color: var(--color-white);
+
+			& > .rc-header__icon {
+				display: none;
+			}
 		}
 
 		.burger i {

@@ -230,6 +230,8 @@
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-item-user-status-radius: 50%;
 	--sidebar-item-text-size: 0.875rem;
+	--sidebar-item-text-size-mobile: 1.125rem;
+
 
 	/*
 	* Modal
@@ -257,8 +259,10 @@
 	*/
 	--rooms-list-title-color: var(--color-gray);
 	--rooms-list-title-text-size: 0.75rem;
+	--rooms-list-title-text-size-mobile: 1.125rem;
 	--rooms-list-empty-text-color: var(--color-gray);
 	--rooms-list-empty-text-size: 0.75rem;
+	--rooms-list-empty-text-size-mobile: 1.125rem;
 	--rooms-list-padding: var(--sidebar-default-padding);
 	--rooms-list-small-padding: var(--sidebar-small-default-padding);
 
