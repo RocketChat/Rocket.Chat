@@ -19,8 +19,7 @@ export const useInviteToken = (userId, token) => {
 	Users.updateInviteToken(user._id, token);
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
-	const userInRoom = subscription != null;
-	if (!userInRoom) {
+	if (!subscription) {
 		Invites.increaseUsageById(inviteData._id);
 	}
 
