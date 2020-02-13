@@ -4,7 +4,7 @@ import { ResponsiveLine } from '@nivo/line';
 import { Box, Divider, Flex, Grid, InputBox, Margins, Tabs } from '@rocket.chat/fuselage';
 import React, { useEffect, useState } from 'react';
 
-import { Header } from '../header/Header';
+import { Page } from '../basic/Page';
 import { IncreasingArrowIndicator } from './IncreasingArrowIndicator';
 import { DecreasingArrowIndicator } from './DecreasingArrowIndicator';
 
@@ -22,8 +22,8 @@ export function EngagementDashboardPage() {
 		return () => clearInterval(timer);
 	}, []);
 
-	return <Box>
-		<Header rawSectionName='Engagement Dashboard' />
+	return <Page>
+		<Page.Header rawSectionName='Engagement Dashboard' />
 		<Margins all='24'>
 			<Box>
 				<Tabs>
@@ -498,5 +498,5 @@ export function EngagementDashboardPage() {
 				</Grid>
 			</Box>
 		</Margins>
-	</Box>;
+	</Page>;
 }
