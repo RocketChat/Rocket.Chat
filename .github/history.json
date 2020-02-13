@@ -39554,6 +39554,138 @@
           ]
         }
       ]
+    },
+    "3.0.0-rc.9": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16544",
+          "title": "Release 2.4.9",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16377",
+          "title": "Release 2.4.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16189",
+          "title": "[FIX] Enable apps change properties of the sender on the message as before",
+          "userLogin": "d-gubert",
+          "milestone": "2.4.1",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16139",
+          "title": "[FIX] JS errors on Administration page",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.4.1",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16562",
+          "title": "Regression: fix read unread messages",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16570",
+          "title": "Regression: UIKit update modal actions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16578",
+          "title": "[FIX] When copying invite links, multiple toastr messages",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16580",
+          "title": "[FIX] Livechat Widget version 1.3.1",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16584",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16571",
+          "title": "[FIX] Error when successfully joining room by invite link",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16575",
+          "title": "Add breaking notice regarding TLS",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16581",
+          "title": "[FIX] Invite links proxy URLs not working when using CDN",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16556",
+          "title": "Regression: Modal onSubmit",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
