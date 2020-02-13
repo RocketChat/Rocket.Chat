@@ -42,13 +42,14 @@ Template.invite.onCreated(function() {
 		return this.inviteIsValid.set(false);
 	});
 
-	this.autorun(() => {
+	this.autorun((c) => {
 		if (!this.inviteIsValid.get()) {
 			return;
 		}
 
 		const user = Meteor.user();
 		if (user) {
+			c.stop();
 			APIClient.v1.post('useInviteToken', { token }).then((result) => {
 				if (!result || !result.room || !result.room.name) {
 					toastr.error(t('Failed_to_activate_invite_token'));
