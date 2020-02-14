@@ -4,16 +4,16 @@
 			{{> icon block="rc-icon--default-size sidebar-item__icon sidebar-item__icon" icon=icon}}
 		</div>
 	{{else}}
-		{{# userPresence uid=uid}}<div class="sidebar-item__user-status {{#if status}}sidebar-item__user-status--{{status}}{{/if}}" aria-label="{{status}}"></div>{{/userPresence}}
+		{{# userPresence uid=uid}}<div class="sidebar-item__user-status {{#if status}}sidebar-item__user-status--{{status}}{{/if}}" aria-label="{{_ 'Status_of' name=name status=status }}"  tabindex="0"></div>{{/userPresence}}
 	{{/if}}
 </template>
 
 <template name="sidebarItem">
 	<li class="sidebar-item{{#if showUnread }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}} js-sidebar-type-{{t}}" data-id="{{_id}}" tabindex="0">
-		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}">
+		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" tabindex="-1">
 			{{#unless isLivechatQueue}}
 
-				<div class=" {{#if isRoom}}sidebar-item__picture{{else}}sidebar-item-option-icon{{/if}}" >
+				<div class=" {{#if isRoom}}sidebar-item__picture{{else}}sidebar-item-option-icon{{/if}}" tabindex="-1">
 					{{#if darken}}
 						{{#if icon}}
 							<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}}">
@@ -21,22 +21,22 @@
 							</div>
 						{{/if}}
 					{{else}}
-						<div class="sidebar-item__user-thumb" aria-label="{{_ 'Avatar_of'}}">
-							{{> avatar url=avatar roomIcon=icon lazy=true}}
+						<div class="sidebar-item__user-thumb" tabindex="-1" aria-hidden="true">
+							{{> avatar alt=teste url=avatar roomIcon=icon lazy=true}}
 						</div>
 					{{/if}}
 				</div>
 			{{/unless}}
 			<div class="sidebar-item__body">
 				{{# let extended=isExtendedViewMode}}
-				<div class="sidebar-item__message">
+				<div class="sidebar-item__message" tabindex="-1">
 					<div class="sidebar-item__message-top">
-						<div class="sidebar-item__name">
+						<div class="sidebar-item__name" aria-hidden="true" tabindex="-1">
 							{{#unless darken}}
 								{{> sidebarItemIcon}}
 							{{/unless}}
 
-							<div class="sidebar-item__ellipsis">
+							<div class="sidebar-item__ellipsis" tabindex="-1">
 								{{name}}
 								{{#if mySelf}}
 									<span class="sidebar-item__me">({{_ "You"}})</span>
@@ -50,7 +50,7 @@
 							{{/if}}
 						{{/if}}
 					</div>
-					<div class="sidebar-item__message-bottom">
+					<div class="sidebar-item__message-bottom" tabindex="-1">
 						{{#if extended}}
 							{{#if lastMessage}}
 								<div class="sidebar-item__last-message">
@@ -66,7 +66,7 @@
 				{{/let}}
 
 				{{#if isRoom}}
-					<div class="sidebar-item__menu" tabindex="0" aria-label="{{_ 'More_actions' room=name}}" aria-haspopup="true">
+					<div class="sidebar-item__menu" aria-hidden="true" tabindex="-1">
 						{{> icon block="sidebar-item__menu-icon rc-icon--default-size" icon="menu"}}
 					</div>
 				{{/if}}
