@@ -462,9 +462,9 @@
 
 		&__data {
 			display: flex;
-			justify-content: center;
-
 			flex-direction: row;
+
+			justify-content: center;
 		}
 
 		&__status {
