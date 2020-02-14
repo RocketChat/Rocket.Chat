@@ -215,6 +215,8 @@
 	font-size: 0.75rem;
 	font-weight: 500;
 	line-height: 1rem;
+	background-color: white;
+	padding-right: 10px;
 
 	& .rc-icon {
 		fill: var(--rc-color-primary-light);
