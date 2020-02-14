@@ -208,17 +208,18 @@
 
 	padding: 0.5rem 0;
 
+	padding-right: 10px;
+
 	text-align: left;
 
 	color: var(--rc-color-primary-light);
-	
-	padding-right: 10px;
 
 	background-color: white;
 
 	font-size: 0.75rem;
 	font-weight: 500;
 	line-height: 1rem;
+
 	& .rc-icon {
 		fill: var(--rc-color-primary-light);
 	}
