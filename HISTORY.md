@@ -1,6 +1,17 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.10
+`2020-02-14  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Bug on starting Jitsi video calls , multiple messages ([#16601](https://github.com/RocketChat/Rocket.Chat/pull/16601))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 3.0.0-rc.9
 `2020-02-13  ·  4 🐛  ·  5 🔍  ·  6 👩‍💻👨‍💻`
 
