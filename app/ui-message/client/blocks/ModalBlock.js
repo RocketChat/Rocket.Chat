@@ -8,6 +8,14 @@ import { modalBlockWithContext } from './MessageBlock';
 import './ModalBlock.html';
 
 
+const prevent = (e) => {
+	if (e) {
+		(e.nativeEvent || e).stopImmediatePropagation();
+		e.stopPropagation();
+		e.preventDefault();
+	}
+};
+
 Template.ModalBlock.onRendered(async function() {
 	const React = await import('react');
 	const ReactDOM = await import('react-dom');
@@ -65,32 +73,34 @@ Template.ModalBlock.onRendered(async function() {
 	ReactDOM.render(
 		React.createElement(
 			modalBlockWithContext({
-				onCancel: () => ActionManager.triggerCancel({
-					appId,
-					viewId,
-					view: {
-						...this.data.view,
-						id: viewId,
-						state: groupStateByBlockId(this.state.all()),
-					},
-				}),
-				onClose: () => ActionManager.triggerCancel({
-					appId,
-					viewId,
-					view: {
-						...this.data.view,
-						id: viewId,
-						state: groupStateByBlockId(this.state.all()),
-					},
-					isCleared: true,
-				}),
+				onCancel: (e) => {
+					prevent(e);
+					return ActionManager.triggerCancel({
+						appId,
+						viewId,
+						view: {
+							...this.data.view,
+							id: viewId,
+							state: groupStateByBlockId(this.state.all()),
+						},
+					});
+				},
+				onClose: (e) => {
+					prevent(e);
+					return ActionManager.triggerCancel({
+						appId,
+						viewId,
+						view: {
+							...this.data.view,
+							id: viewId,
+							state: groupStateByBlockId(this.state.all()),
+						},
+						isCleared: true,
+					});
+				},
 				onSubmit: (e) => {
-					if (e) {
-						e.nativeEvent.stopImmediatePropagation();
-						e.stopPropagation();
-						e.preventDefault();
-					}
-					return ActionManager.triggerSubmitView({
+					prevent(e);
+					ActionManager.triggerSubmitView({
 						viewId,
 						appId,
 						payload: {
@@ -102,19 +112,17 @@ Template.ModalBlock.onRendered(async function() {
 						},
 					});
 				},
-				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => {
-					ActionManager.triggerBlockAction({
-						container: {
-							type: UIKitIncomingInteractionContainerType.VIEW,
-							id: viewId,
-						},
-						actionId,
-						appId,
-						value,
-						blockId,
-						mid,
-					});
-				},
+				action: ({ actionId, appId, value, blockId, mid = this.data.mid }) => ActionManager.triggerBlockAction({
+					container: {
+						type: UIKitIncomingInteractionContainerType.VIEW,
+						id: viewId,
+					},
+					actionId,
+					appId,
+					value,
+					blockId,
+					mid,
+				}),
 				state: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
 					this.state.set(actionId, {
 						blockId,
