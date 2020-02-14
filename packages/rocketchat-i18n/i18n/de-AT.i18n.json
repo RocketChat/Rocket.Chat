@@ -2700,7 +2700,7 @@
   "Username_cant_be_empty": "Sie müssen einen Benutzernamen angeben.",
   "Username_Change_Disabled": "Der Administrator hat das Ändern von Benutzernamen deaktiviert.",
   "Username_denied_the_OTR_session": "__username__ hat die OTR-Session abgelehnt.",
-  "Username_description": "Der Benutzername wird dazu benutzt, Sie in Nachrichten zu erwähnen.",
+  "Username_description": "So werden Sie in Nachrichten erwähnt und in der Suche gefunden.",
   "Username_doesnt_exist": "Der Benutzer \"%s\" existiert nicht.",
   "Username_ended_the_OTR_session": "__username__ hat die OTR-Session beendet.",
   "Username_invalid": "<strong>%s</strong> ist kein zulässiger Benutzername.<br/> Verwenden Sie nur Buchstaben, Zahlen, Punkte oder Binde- und Unterstriche.",

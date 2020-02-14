@@ -2838,7 +2838,6 @@
   "set-moderator_description": "Právo nastavit uživatele jako moderátora místnosti",
   "set-owner": "Nastavit vlastníka",
   "set-owner_description": "Právo nastavit uživatele jako vlastníka místnosti",
-  "Set_random_password": "Nastavit náhodné heslo",
   "set-react-when-readonly": "Reagovat na zprávy v místnostech ke čtení",
   "set-react-when-readonly_description": "Právo reagovat na zprávy v místnostech pouze ke čtení",
   "set-readonly": "Nastavit pouze ke čtení",
