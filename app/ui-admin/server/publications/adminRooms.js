@@ -5,6 +5,7 @@ import { hasPermission } from '../../../authorization';
 import { Rooms } from '../../../models/server';
 
 Meteor.publish('adminRooms', function(filter, types = [], limit) {
+	console.warn('The publication "adminRooms" is deprecated and will be removed after version v3.0.0');
 	const showTypes = Array.isArray(types) ? types.filter((type) => type !== 'dicussions') : [];
 	const discussion = types.includes('dicussions');
 

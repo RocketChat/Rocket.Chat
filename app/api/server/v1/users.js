@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
+import moment from 'moment';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
@@ -16,9 +17,10 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
-import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
+import { findUsersToAutocomplete } from '../lib/users';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -131,6 +133,42 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('users.deactivateIdle', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			daysIdle: Match.Integer,
+			role: Match.Optional(String),
+		});
+
+		const { daysIdle, role } = this.bodyParams;
+
+		if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
+			return API.v1.unauthorized();
+		}
+
+		const lastLoggedIn = moment(new Date()).subtract(daysIdle, 'days');
+
+		const resultCursor = Users.findActiveNotLoggedInAfterWithRole(lastLoggedIn.toDate(), role || 'user', {
+			fields: {
+				_id: 1,
+			},
+		});
+
+		// cache the count since it will be 0 after deactivation
+		const count = resultCursor.count();
+
+		Meteor.runAsUser(this.userId, () => {
+			resultCursor.forEach((user) => {
+				Meteor.call('setUserActiveStatus', user._id, false);
+			});
+		});
+
+		return API.v1.success({
+			count,
+		});
+	},
+});
+
 API.v1.addRoute('users.getPresence', { authRequired: true }, {
 	get() {
 		if (this.isUserFromParams()) {
@@ -152,14 +190,18 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const { username } = this.getUserFromParams();
+		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
-
-		const result = getFullUserData({
+		const params = {
 			userId: this.userId,
 			filter: username,
 			limit: 1,
-		});
+		};
+
+		const result = userId
+			? getFullUserDataById({ userId: this.userId, filterId: userId })
+			: getFullUserData(params);
+
 		if (!result || result.count() !== 1) {
 			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
@@ -683,5 +725,29 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 			requested: result.requested,
 			exportOperation: result.exportOperation,
 		});
+	},
+});
+
+API.v1.addRoute('users.logoutOtherClients', { authRequired: true }, {
+	post() {
+		try {
+			Meteor.runAsUser(this.userId, () => API.v1.success(Meteor.call('logoutOtherClients')));
+		} catch (error) {
+			return API.v1.failure(error);
+		}
+	},
+});
+
+API.v1.addRoute('users.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findUsersToAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
 	},
 });

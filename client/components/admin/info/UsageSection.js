@@ -1,17 +1,17 @@
-import { Text } from '@rocket.chat/fuselage';
+import { Subtitle, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../providers/TranslationProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { DescriptionList } from './DescriptionList';
 import { formatMemorySize } from './formatters';
 
 export function UsageSection({ statistics, isLoading }) {
-	const s = (fn) => (isLoading ? <Text.Skeleton animated width={'1/2'} /> : fn());
+	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 	const t = useTranslation();
 
 	return <>
-		<h3>{t('Usage')}</h3>
-		<DescriptionList>
+		<Subtitle data-qa='usage-title'>{t('Usage')}</Subtitle>
+		<DescriptionList data-qa='usage-list'>
 			<DescriptionList.Entry label={t('Stats_Total_Users')}>{s(() => statistics.totalUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Active_Users')}>{s(() => statistics.activeUsers)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Non_Active_Users')}>{s(() => statistics.nonActiveUsers)}</DescriptionList.Entry>
@@ -34,9 +34,9 @@ export function UsageSection({ statistics, isLoading }) {
 			<DescriptionList.Entry label={t('Stats_Total_Uploads')}>{s(() => statistics.uploadsTotal)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Total_Uploads_Size')}>{s(() => formatMemorySize(statistics.uploadsTotalSize))}</DescriptionList.Entry>
 			{statistics && statistics.apps && <>
-					<DescriptionList.Entry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</DescriptionList.Entry>
-					<DescriptionList.Entry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</DescriptionList.Entry>
-				</>}
+				<DescriptionList.Entry label={t('Stats_Total_Installed_Apps')}>{statistics.apps.totalInstalled}</DescriptionList.Entry>
+				<DescriptionList.Entry label={t('Stats_Total_Active_Apps')}>{statistics.apps.totalActive}</DescriptionList.Entry>
+			</>}
 			<DescriptionList.Entry label={t('Stats_Total_Integrations')}>{s(() => statistics.integrations.totalIntegrations)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Total_Incoming_Integrations')}>{s(() => statistics.integrations.totalIncoming)}</DescriptionList.Entry>
 			<DescriptionList.Entry label={t('Stats_Total_Active_Incoming_Integrations')}>{s(() => statistics.integrations.totalIncomingActive)}</DescriptionList.Entry>

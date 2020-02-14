@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermission } from '../../../authorization';
+
 import { Importers } from '..';
 
-import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	setupImporter(key) {

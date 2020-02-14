@@ -1,5 +1,6 @@
 import dns from 'dns';
 
+import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
@@ -27,16 +28,17 @@ import {
 	LivechatCustomField,
 	LivechatVisitors,
 	LivechatOfficeHour,
+	LivechatInquiry,
 } from '../../../models';
 import { Logger } from '../../../logger';
 import { addUserRoles, hasRole, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData } from './Helper';
+import { Apps } from '../../../apps/server';
 
 export const Livechat = {
 	Analytics,
@@ -344,6 +346,7 @@ export const Livechat = {
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
+			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomClosedHandler, room);
 			callbacks.run('livechat.closeRoom', room);
 		});
 
@@ -393,7 +396,6 @@ export const Livechat = {
 			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
-			'Livechat_agents_alias',
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
@@ -476,7 +478,7 @@ export const Livechat = {
 		check(transferredBy, Match.ObjectIncluding({
 			_id: String,
 			username: String,
-			name: String,
+			name: Match.Maybe(String),
 			type: String,
 		}));
 

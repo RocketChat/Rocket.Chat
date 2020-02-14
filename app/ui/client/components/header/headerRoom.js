@@ -154,7 +154,7 @@ Template.headerRoom.events({
 			'toggleFavorite',
 			this._id,
 			!instance.state.get('favorite'),
-			(err) => err && handleError(err)
+			(err) => err && handleError(err),
 		);
 	},
 
@@ -170,7 +170,7 @@ Template.headerRoom.events({
 		if (hasAllPermission('edit-room', this._id)) {
 			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
 				toastr.success(
-					t('Encrypted_setting_changed_successfully')
+					t('Encrypted_setting_changed_successfully'),
 				);
 			});
 		}

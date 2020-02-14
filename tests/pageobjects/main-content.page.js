@@ -60,7 +60,7 @@ class MainContent extends Page {
 
 	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
 
-	get messageReply() { return browser.element('[data-id="reply-in-thread"][data-type="message-action"]'); }
+	get messageReply() { return browser.element('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]'); }
 
 	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
 

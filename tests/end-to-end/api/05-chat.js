@@ -40,8 +40,8 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					channel: 'general',
-					text: 'Sample message',
 					alias: 'Gruggy',
+					text: 'Sample message',
 					emoji: ':smirk:',
 					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
@@ -78,10 +78,10 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						channel: 'general',
-						text: 'Sample message',
 						alias: 'Gruggy',
-						emoji: ':smirk:',
+						text: 'Sample message',
 						avatar: 'http://res.guggy.com/logo_128.png',
+						emoji: ':smirk:',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -96,7 +96,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.author_link', (done) =>
@@ -122,7 +122,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.title_link', (done) =>
@@ -148,7 +148,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.action.url', (done) =>
@@ -181,7 +181,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('message.avatar', (done) =>
@@ -190,9 +190,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
 						avatar: 'javascript:alert("xss")',
+						alias: 'Gruggy',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -214,7 +214,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.action.image_url', (done) =>
@@ -248,7 +248,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.thumb_url', (done) =>
@@ -257,8 +257,8 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
+						alias: 'Gruggy',
 						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
@@ -275,7 +275,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.author_icon', (done) =>
@@ -284,8 +284,8 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
+						alias: 'Gruggy',
 						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
@@ -302,7 +302,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.image_url', (done) =>
@@ -329,7 +329,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 			it('attachment.audio_url', (done) =>
 				request.post(api('chat.postMessage'))
@@ -355,15 +355,15 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 			it('attachment.video_url', (done) =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
-						text: 'Sample message',
 						alias: 'Gruggy',
+						text: 'Sample message',
 						emoji: ':smirk:',
 						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
@@ -381,7 +381,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 		});
 
@@ -391,8 +391,8 @@ describe('[Chat]', function() {
 				.send({
 					channel: 'general',
 					text: 'Sample message',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
+					alias: 'Gruggy',
 					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
@@ -517,8 +517,8 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						channel: 'general',
-						text: 'Sample message',
 						alias: 'Gruggy',
+						text: 'Sample message',
 						emoji: ':smirk:',
 						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
@@ -535,7 +535,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.author_link', (done) =>
@@ -561,7 +561,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.title_link', (done) =>
@@ -587,7 +587,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 
 			it('attachment.action.url', (done) =>
@@ -620,7 +620,7 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
-					.end(done)
+					.end(done),
 			);
 		});
 
@@ -1408,6 +1408,240 @@ describe('[Chat]', function() {
 			});
 		});
 	});
+
+
+	describe('[/chat.getMentionedMessages]', () => {
+		it('should return an error when the required "roomId" parameter is not sent', (done) => {
+			request.get(api('chat.getMentionedMessages'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the roomId is invalid', (done) => {
+			request.get(api('chat.getMentionedMessages?roomId=invalid-room'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('error-not-allowed');
+				})
+				.end(done);
+		});
+
+		it('should return the mentioned messages', (done) => {
+			request.get(api('chat.getMentionedMessages?roomId=GENERAL'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/chat.getStarredMessages]', () => {
+		it('should return an error when the required "roomId" parameter is not sent', (done) => {
+			request.get(api('chat.getStarredMessages'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the roomId is invalid', (done) => {
+			request.get(api('chat.getStarredMessages?roomId=invalid-room'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('error-not-allowed');
+				})
+				.end(done);
+		});
+
+		it('should return the starred messages', (done) => {
+			request.get(api('chat.getStarredMessages?roomId=GENERAL'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/chat.getSnippetedMessageById]', () => {
+		it('should return an error when the snippeted messages is disabled', (done) => {
+			updateSetting('Message_AllowSnippeting', false).then(() => {
+				request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-allowed');
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required "messageId" parameter is not sent', (done) => {
+			updateSetting('Message_AllowSnippeting', true).then(() => {
+				request.get(api('chat.getSnippetedMessageById'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('error-invalid-params');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.getSnippetedMessages]', () => {
+		it('should return an error when the required "roomId" parameter is not sent', (done) => {
+			request.get(api('chat.getSnippetedMessages'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the roomId is invalid', (done) => {
+			request.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('error-not-allowed');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the snippeted messages is disabled', (done) => {
+			updateSetting('Message_AllowSnippeting', false).then(() => {
+				request.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-allowed');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return the snippeted messages', (done) => {
+			updateSetting('Message_AllowSnippeting', true).then(() => {
+				request.get(api('chat.getSnippetedMessages?roomId=GENERAL'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.messages).to.be.an('array');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the messageId is invalid', (done) => {
+			request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('invalid-message');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/chat.getDiscussions]', () => {
+		it('should return an error when the required "roomId" parameter is not sent', (done) => {
+			request.get(api('chat.getDiscussions'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the roomId is invalid', (done) => {
+			request.get(api('chat.getDiscussions?roomId=invalid-room'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('error-not-allowed');
+				})
+				.end(done);
+		});
+
+		it('should return the discussions of a room', (done) => {
+			request.get(api('chat.getDiscussions?roomId=GENERAL'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the messageId is invalid', (done) => {
+			request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('invalid-message');
+				})
+				.end(done);
+		});
+	});
 });
 
 describe('Threads', () => {
@@ -2074,186 +2308,6 @@ describe('Threads', () => {
 					})
 					.end(done);
 			});
-		});
-	});
-
-	describe('[/chat.getMentionedMessages]', () => {
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request.get(api('chat.getMentionedMessages'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the roomId is invalid', (done) => {
-			request.get(api('chat.getMentionedMessages?roomId=invalid-room'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
-		});
-
-		it('should return the mentioned messages', (done) => {
-			request.get(api('chat.getMentionedMessages?roomId=GENERAL'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.be.an('array');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
-		});
-	});
-
-	describe('[/chat.getStarredMessages]', () => {
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request.get(api('chat.getStarredMessages'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the roomId is invalid', (done) => {
-			request.get(api('chat.getStarredMessages?roomId=invalid-room'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
-		});
-
-		it('should return the starred messages', (done) => {
-			request.get(api('chat.getStarredMessages?roomId=GENERAL'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.be.an('array');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
-		});
-	});
-
-	describe('[/chat.getSnippetedMessageById]', () => {
-		it('should return an error when the snippeted messages is disabled', (done) => {
-			updateSetting('Message_AllowSnippeting', false).then(() => {
-				request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-allowed');
-					})
-					.end(done);
-			});
-		});
-		it('should return an error when the required "messageId" parameter is not sent', (done) => {
-			updateSetting('Message_AllowSnippeting', true).then(() => {
-				request.get(api('chat.getSnippetedMessageById'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-invalid-params');
-					})
-					.end(done);
-			});
-		});
-	});
-
-	describe('[/chat.getSnippetedMessages]', () => {
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request.get(api('chat.getSnippetedMessages'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the roomId is invalid', (done) => {
-			request.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the snippeted messages is disabled', (done) => {
-			updateSetting('Message_AllowSnippeting', false).then(() => {
-				request.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-allowed');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return the snippeted messages', (done) => {
-			updateSetting('Message_AllowSnippeting', true).then(() => {
-				request.get(api('chat.getSnippetedMessages?roomId=GENERAL'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.messages).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when the messageId is invalid', (done) => {
-			request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-message');
-				})
-				.end(done);
 		});
 	});
 });

@@ -27,25 +27,25 @@ class Administration extends Page {
 
 	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }
 
-	get infoRocketChatTableTitle() { return browser.element('.content h3'); }
+	get infoRocketChatTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="rocket-chat-title"]'); }
 
-	get infoRocketChatTable() { return browser.element('.content .statistics-table'); }
+	get infoRocketChatTable() { return browser.element('[data-qa="admin-info"] [data-qa="rocket-chat-list"]'); }
 
-	get infoCommitTableTitle() { return browser.element('.content h3:nth-of-type(2)'); }
+	get infoCommitTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="commit-title"]'); }
 
-	get infoCommitTable() { return browser.element('.content .statistics-table:nth-of-type(2)'); }
+	get infoCommitTable() { return browser.element('[data-qa="admin-info"] [data-qa="commit-list"]'); }
 
-	get infoRuntimeTableTitle() { return browser.element('.content h3:nth-of-type(3)'); }
+	get infoRuntimeTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="runtime-env-title"]'); }
 
-	get infoRuntimeTable() { return browser.element('.content .statistics-table:nth-of-type(3)'); }
+	get infoRuntimeTable() { return browser.element('[data-qa="admin-info"] [data-qa="runtime-env-list"]'); }
 
-	get infoBuildTableTitle() { return browser.element('.content h3:nth-of-type(4)'); }
+	get infoBuildTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="build-env-title"]'); }
 
-	get infoBuildTable() { return browser.element('.content .statistics-table:nth-of-type(4)'); }
+	get infoBuildTable() { return browser.element('[data-qa="admin-info"] [data-qa="build-env-list"]'); }
 
-	get infoUsageTableTitle() { return browser.element('.content h3:nth-of-type(5)'); }
+	get infoUsageTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="usage-list"]'); }
 
-	get infoUsageTable() { return browser.element('.content .statistics-table:nth-of-type(5)'); }
+	get infoUsageTable() { return browser.element('[data-qa="admin-info"] [data-qa="usage-list"]'); }
 
 	get roomsSearchForm() { return browser.element('.content .search'); }
 

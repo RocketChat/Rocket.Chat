@@ -22,10 +22,6 @@ Template.sideNav.helpers({
 		return String(settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
-	threadingFromSidebar() {
-		return getUserPreference(Meteor.userId(), 'sidebarShowThreads') && !Meteor.isCordova;
-	},
-
 	roomType() {
 		return roomTypes.getTypes().map((roomType) => ({
 			template: roomType.customTemplate || 'roomList',

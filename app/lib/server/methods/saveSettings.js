@@ -42,6 +42,7 @@ Meteor.methods({
 					break;
 			}
 		});
+
 		if (settingsNotAllowed.length) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSettings',

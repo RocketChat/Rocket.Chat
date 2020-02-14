@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission, hasRole } from '../../../authorization';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { settings } from '../../../settings';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '../../../models/server';
 
 Meteor.publish('livechat:inquiry', function(_id) {
+	console.warn('The publication "livechat:inquiry" is deprecated and will be removed after version v4.0.0');
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:inquiry' }));
 	}

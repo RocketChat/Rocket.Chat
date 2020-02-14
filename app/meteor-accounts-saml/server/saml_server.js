@@ -13,6 +13,7 @@ import { SAML } from './saml_utils';
 import { Rooms, Subscriptions, CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
 import { _setUsername } from '../../lib/server/functions';
+import { Users } from '../../models/server';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -55,12 +56,11 @@ Meteor.methods({
 			console.log(`Logout request from ${ JSON.stringify(providerConfig) }`);
 		}
 		// This query should respect upcoming array of SAML logins
-		const user = Meteor.users.findOne({
-			_id: Meteor.userId(),
-			'services.saml.provider': provider,
-		}, {
-			'services.saml': 1,
-		});
+		const user = Users.getSAMLByIdAndSAMLProvider(Meteor.userId(), provider);
+		if (!user || !user.services || ! user.services.saml) {
+			return;
+		}
+
 		let { nameID } = user.services.saml;
 		const sessionIndex = user.services.saml.idpSession;
 		nameID = sessionIndex;
@@ -91,7 +91,6 @@ Meteor.methods({
 		if (Accounts.saml.settings.debug) {
 			console.log(`SAML Logout Request ${ result }`);
 		}
-
 
 		return result;
 	},
@@ -231,14 +230,6 @@ const guessNameFromUsername = (username) =>
 		.replace(/^\w/, (u) => u.toUpperCase());
 
 Accounts.registerLoginHandler(function(loginRequest) {
-	const _guessNameFromUsername = function(username) {
-		return username
-			.replace(/\W/g, ' ')
-			.replace(/\s(.)/g, function($1) { return $1.toUpperCase(); })
-			.replace(/^(.)/, function($1) { return $1.toLowerCase(); })
-			.replace(/^\w/, function($1) { return $1.toUpperCase(); });
-	};
-
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
@@ -331,8 +322,6 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				newUser.username = username;
 				newUser.name = newUser.name || guessNameFromUsername(username);
 			}
-
-			newUser.name = newUser.name || _guessNameFromUsername(newUser.username); // Make sure every user has a name as well
 
 			const languages = TAPi18n.getLanguages();
 			if (languages[loginResult.profile.language]) {

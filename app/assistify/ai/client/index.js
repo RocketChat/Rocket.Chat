@@ -4,7 +4,6 @@ import './tabbar.js';
 import './models/MessagesExtension.js';
 import '../public/stylesheets/smarti.css';
 import './hooks/openAiTab.js';
-import './chatpalAdoption.js';
 import './views/app/tabbar/smarti.html';
 import './views/app/tabbar/smarti.js';
 import './smartiLoader.js';

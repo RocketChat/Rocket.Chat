@@ -16,6 +16,47 @@ import { customFieldText, clearCustomFields, setCustomFields } from '../../data/
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login } from '../../data/users.helper.js';
 
+function createTestUser() {
+	return new Promise((resolve) => {
+		const username = `user.test.${ Date.now() }`;
+		const email = `${ username }@rocket.chat`;
+		request.post(api('users.create'))
+			.set(credentials)
+			.send({ email, name: username, username, password })
+			.end((err, res) => resolve(res.body.user));
+	});
+}
+
+function loginTestUser(user) {
+	return new Promise((resolve, reject) => {
+		request.post(api('login'))
+			.send({
+				user: user.username,
+				password,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				const userCredentials = {};
+				userCredentials['X-Auth-Token'] = res.body.data.authToken;
+				userCredentials['X-User-Id'] = res.body.data.userId;
+				resolve(userCredentials);
+			})
+			.end((err) => (err ? reject(err) : resolve()));
+	});
+}
+
+function deleteTestUser(user) {
+	return new Promise((resolve) => {
+		request.post(api('users.delete'))
+			.set(credentials)
+			.send({
+				userId: user._id,
+			})
+			.end(resolve);
+	});
+}
+
 describe('[Users]', function() {
 	this.retries(0);
 
@@ -401,41 +442,19 @@ describe('[Users]', function() {
 
 	describe('[/users.setAvatar]', () => {
 		let user;
-		before((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
+		before(async () => {
+			user = await createTestUser();
 		});
 
 		let userCredentials;
-		before((done) => {
-			request.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+		before(async () => {
+			userCredentials = await loginTestUser(user);
 		});
 		before((done) => {
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
 		});
-		after((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(() => updatePermission('edit-other-user-info', ['admin']).then(done));
+		after(async () => {
+			await deleteTestUser(user);
 			user = undefined;
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
@@ -1696,6 +1715,92 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('requested');
 					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
 					expect(res.body.exportOperation).to.have.property('fullExport', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.logoutOtherClients]', () => {
+		let user;
+		let userCredentials;
+		let newCredentials;
+
+		before(async () => {
+			user = await createTestUser();
+			userCredentials = await loginTestUser(user);
+			newCredentials = await loginTestUser(user);
+		});
+		after(async () => {
+			await deleteTestUser(user);
+			user = undefined;
+		});
+
+		it('should invalidate all active sesions', (done) => {
+			/* We want to validate that the login with the "old" credentials fails
+			However, the removal of the tokens is done asynchronously.
+			Thus, we check that within the next seconds, at least one try to
+			access an authentication requiring route fails */
+			let counter = 0;
+
+			async function checkAuthenticationFails() {
+				const result = await request.get(api('me'))
+					.set(userCredentials);
+				return result.statusCode === 401;
+			}
+
+			async function tryAuthentication() {
+				if (await checkAuthenticationFails()) {
+					done();
+				} else if (++counter < 20) {
+					setTimeout(tryAuthentication, 1000);
+				} else {
+					done('Session did not invalidate in time');
+				}
+			}
+
+			request.post(api('users.logoutOtherClients'))
+				.set(newCredentials)
+				.expect(200)
+				.then(tryAuthentication);
+		});
+	});
+
+	describe('[/users.autocomplete]', () => {
+		it('should return an empty list when the user does not have the necessary permission', (done) => {
+			updatePermission('view-outside-room', []).then(() => {
+				request.get(api('users.autocomplete?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
+				request.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					})
+					.end(done);
+			});
+		});
+		it('should return the users to fill auto complete', (done) => {
+			request.get(api('users.autocomplete?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
 		});
