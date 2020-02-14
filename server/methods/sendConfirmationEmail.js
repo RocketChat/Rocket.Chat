@@ -1,13 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import * as Mailer from 'meteor/rocketchat:mailer';
+
+import * as Mailer from '../../app/mailer';
+import { Users } from '../../app/models';
+import { settings } from '../../app/settings';
 
 let subject = '';
 let html = '';
 
 Meteor.startup(() => {
-	RocketChat.settings.get('Verification_Email_Subject', function(key, value) {
+	settings.get('Verification_Email_Subject', function(key, value) {
 		subject = Mailer.replace(value || '');
 	});
 
@@ -21,7 +24,7 @@ Meteor.methods({
 		check(to, String);
 		const email = to.trim();
 
-		const user = RocketChat.models.Users.findOneByEmailAddress(email);
+		const user = Users.findOneByEmailAddress(email);
 
 		if (!user) {
 			return false;
@@ -32,7 +35,7 @@ Meteor.methods({
 		};
 
 		Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
-			return Mailer.replace(html, { Verification_Url:url, name: user.name });
+			return Mailer.replace(html, { Verification_Url: url, name: user.name });
 		};
 
 		try {
@@ -43,6 +46,5 @@ Meteor.methods({
 				message: error.message,
 			});
 		}
-
 	},
 });

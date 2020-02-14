@@ -2,6 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
+
 const semver = require('semver');
 const inquirer = require('inquirer');
 // const execSync = require('child_process').execSync;
@@ -10,9 +11,9 @@ const git = require('simple-git/promise')(process.cwd());
 let pkgJson = {};
 
 try {
-	pkgJson = require(path.resolve(
+	pkgJson = require(path.resolve( // eslint-disable-line import/no-dynamic-require
 		process.cwd(),
-		'./package.json'
+		'./package.json',
 	));
 } catch (err) {
 	console.error('no root package.json found');
@@ -20,13 +21,11 @@ try {
 
 const files = [
 	'./package.json',
-	'./.sandstorm/sandstorm-pkgdef.capnp',
-	'./.travis/snap.sh',
 	'./.circleci/snap.sh',
 	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
 	'./.docker/Dockerfile.rhel',
-	'./packages/rocketchat-lib/rocketchat.info',
+	'./packages/rocketchat-utils/rocketchat.info',
 ];
 const readFile = (file) => new Promise((resolve, reject) => {
 	fs.readFile(file, 'utf8', (error, result) => {
@@ -84,13 +83,11 @@ git.status()
 			.then((data) => writeFile(file, data.replace(pkgJson.version, version)))));
 	})
 	.then(() =>
-		// execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
-
 		inquirer.prompt([{
 			type: 'confirm',
 			message: 'Commit files?',
 			name: 'commit',
-		}])
+		}]),
 	)
 	.then((answers) => {
 		if (!answers.commit) {

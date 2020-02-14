@@ -1,4 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+
+import { ChatSubscription } from '../../app/models';
+
 Meteor.methods({
 	toggleFavorite(rid, f) {
 		if (!Meteor.userId()) {

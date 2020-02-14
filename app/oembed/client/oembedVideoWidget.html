@@ -1,0 +1,17 @@
+<template name="oembedVideoWidget">
+{{#if parsedUrl}}
+	<blockquote class="message-oembed background-transparent-darker-before">
+		<div><a href="{{url}}" rel="noopener noreferrer" target="_blank">{{parsedUrl.host}}</a></div>
+		<span>{{title}}</span>
+		{{#if collapsed}}
+			<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
+		{{else}}
+			<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span><br/>
+			<video controls class="inline-video">
+				<source src="{{url}}" rel="noopener noreferrer" type="{{contentType}}">
+				Your browser does not support the video element.
+			</video>
+		{{/if}}
+	</blockquote>
+{{/if}}
+</template>

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
+import { Messages } from '../../../../../app/models';
 import { ReadReceipt } from '../../lib/ReadReceipt';
 
 Meteor.methods({
@@ -12,7 +13,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-message', 'The required \'messageId\' param is missing.', { method: 'getReadReceipts' });
 		}
 
-		const message = RocketChat.models.Messages.findOneById(messageId);
+		const message = Messages.findOneById(messageId);
 
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'getReadReceipts' });

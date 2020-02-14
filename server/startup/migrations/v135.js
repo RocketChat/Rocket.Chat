@@ -1,12 +1,15 @@
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
+
 const fixURLs = (text) => text.replace(/: \/\//g, '://');
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 135,
 	up() {
-		const header = RocketChat.models.Settings.findOne({ _id: 'Email_Header' });
-		const footer = RocketChat.models.Settings.findOne({ _id: 'Email_Footer' });
+		const header = Settings.findOne({ _id: 'Email_Header' });
+		const footer = Settings.findOne({ _id: 'Email_Footer' });
 
-		RocketChat.models.Settings.update({ _id: 'Email_Header' }, {
+		Settings.update({ _id: 'Email_Header' }, {
 			$set: {
 				value: fixURLs(header.value)
 					.replace('src="[Site_Url]/assets/logo"', 'src="[Site_Url_Slash]assets/logo.png"')
@@ -14,7 +17,7 @@ RocketChat.Migrations.add({
 			},
 		});
 
-		RocketChat.models.Settings.update({ _id: 'Email_Footer' }, {
+		Settings.update({ _id: 'Email_Footer' }, {
 			$set: {
 				value: fixURLs(footer.value),
 			},

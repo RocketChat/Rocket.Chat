@@ -1,6 +1,4 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
+import { expect } from 'chai';
 
 import {
 	getCredentials,

@@ -18,11 +18,6 @@ WebApp.rawConnectHandlers.use(syncUrl,
     // Avoid MIME type warnings in browsers
     res.setHeader("Content-Type", "text/plain");
 
-    // Cordova lives in meteor.local, so it does CORS
-    if (req.headers && req.headers.origin === 'http://meteor.local') {
-      res.setHeader('Access-Control-Allow-Origin', 'http://meteor.local');
-    }
-
     res.end(Date.now().toString());
   }
 );
