@@ -180,7 +180,6 @@ export class LivechatInquiry extends Base {
 
 		this.remove(query);
 	}
-
 }
 
 export default new LivechatInquiry();
