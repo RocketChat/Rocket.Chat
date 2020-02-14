@@ -60,7 +60,7 @@ Template.videoFlexTab.onRendered(function() {
 		const update = () => {
 			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 }, reactive: false });
 
-			if (jitsiTimeout && (TimeSync.TimeSync.serverTime(), - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
+			if (jitsiTimeout && (TimeSync.serverTime(), - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
 				return;
 			}
 			if (Meteor.status().connected) {
