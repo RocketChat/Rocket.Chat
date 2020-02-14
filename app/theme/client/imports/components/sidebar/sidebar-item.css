@@ -313,6 +313,14 @@
 	}
 }
 
+@media (width <= 500px) {
+	.sidebar-item {
+		&__name {
+			font-size: var(--sidebar-item-text-size-mobile);
+		}
+	}
+}
+
 @media (width <= 400px) {
 	.sidebar-item {
 		padding: 0 0 0 var(--sidebar-small-default-padding);

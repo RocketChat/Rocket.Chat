@@ -421,6 +421,14 @@
 			display: none;
 		}
 
+		&__first-icon {
+			width: 2.25em;
+
+			margin: 0 0.2em;
+
+			padding: 0;
+		}
+
 		&__block-action {
 			& + & {
 				border-left: 1px var(--color-gray) solid;
@@ -443,7 +451,7 @@
 		}
 
 		&__search-button {
-			margin: 0 0.25em;
+			margin-right: -0.75em;
 
 			&__action {
 				&__icon {
@@ -455,18 +463,12 @@
 		&__data {
 			display: flex;
 			flex-direction: row;
-			align-items: center;
+
+			justify-content: center;
 		}
 
 		&__status {
 			margin: 0 0.5rem;
-		}
-
-		&__image {
-			display: none;
-
-			/* width: 20px;
-			height: 20px; */
 		}
 
 		&--burger {
@@ -489,6 +491,12 @@
 
 		&__name {
 			color: var(--color-white);
+
+			font-size: 1.3rem;
+
+			& > .rc-header__icon {
+				display: none;
+			}
 		}
 
 		.burger i {
