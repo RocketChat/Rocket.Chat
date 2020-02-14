@@ -49,10 +49,11 @@ Template.share.events({
 
 
 	'click [data-type="facebook"]'() {
-		window.open(`https://www.facebook.com/sharer/sharer.php?u=${ getShareString() }`);
+		const { url } = getShareData();
+		window.open(`https://www.facebook.com/sharer/sharer.php?u=${ encodeURIComponent(url) }`);
 	},
 	'click [data-type="whatsapp"]'() {
-		window.open((isMobile() ? 'whatsapp://send?text=' : 'https://api.whatsapp.com/send?text=') + getShareString());
+		window.open(`https://api.whatsapp.com/send?text=${ encodeURIComponent(getShareString()) }`);
 	},
 	'click [data-type="twitter"]'() {
 		const { url } = getShareData();
