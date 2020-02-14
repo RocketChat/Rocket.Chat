@@ -462,8 +462,9 @@
 
 		&__data {
 			display: flex;
+			justify-content: center;
+
 			flex-direction: row;
-			align-items: center;
 		}
 
 		&__status {

@@ -150,6 +150,17 @@
 	}
 }
 
+@media (width <= 500px) {
+	.sidebar__header {
+		&-thumb {
+			flex: 0 0 var(--sidebar-account-thumb-size-mobile);
+
+			width: var(--sidebar-account-thumb-size-mobile);
+			height: var(--sidebar-account-thumb-size-mobile);
+		}
+	}
+}
+
 @media (width <= 600px) {
 	.sidebar__toolbar {
 		& .rc-input > .rc-input__label > .rc-input__wrapper > #searchBar {
