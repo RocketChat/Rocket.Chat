@@ -7,7 +7,7 @@ import { getUsersInRole, hasPermission } from '../../../authorization/server';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
-		const roles = Roles.find({}, { fields: { } }).fetch();
+		const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
 
 		return API.v1.success({ roles });
 	},
