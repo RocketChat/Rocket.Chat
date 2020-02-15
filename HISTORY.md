@@ -1,213 +1,11 @@
 
-# 3.0.0 (Under Release Candidate Process)
-
-## 3.0.0-rc.11
-`2020-02-14  ·  2 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: send file modal not working via keyboard ([#16607](https://github.com/RocketChat/Rocket.Chat/pull/16607))
-- Fix github actions accessing the github registry ([#16521](https://github.com/RocketChat/Rocket.Chat/pull/16521) by [@mrsimpson](https://github.com/mrsimpson))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@mrsimpson](https://github.com/mrsimpson)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.0.0-rc.10
-`2020-02-14  ·  1 🐛  ·  1 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Bug on starting Jitsi video calls , multiple messages ([#16601](https://github.com/RocketChat/Rocket.Chat/pull/16601))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.0.0-rc.9
-`2020-02-13  ·  1 ️️️⚠️  ·  4 🐛  ·  5 🔍  ·  6 👩‍💻👨‍💻`
-
-### ⚠️ BREAKING CHANGES
-
-- TLS v1.0 and TLS v1.1 were disabled by due to NodeJS update to v12. You can still enable them by using flags like `--tls-min-v1.0` and `--tls-min-v1.1`
-
-### 🐛 Bug fixes
-
-- When copying invite links, multiple toastr messages ([#16578](https://github.com/RocketChat/Rocket.Chat/pull/16578))
-- Livechat Widget version 1.3.1 ([#16580](https://github.com/RocketChat/Rocket.Chat/pull/16580))
-- Error when successfully joining room by invite link ([#16571](https://github.com/RocketChat/Rocket.Chat/pull/16571))
-- Invite links proxy URLs not working when using CDN ([#16581](https://github.com/RocketChat/Rocket.Chat/pull/16581))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: fix read unread messages ([#16562](https://github.com/RocketChat/Rocket.Chat/pull/16562))
-- Regression: UIKit update modal actions ([#16570](https://github.com/RocketChat/Rocket.Chat/pull/16570))
-- Update Apps-Engine version ([#16584](https://github.com/RocketChat/Rocket.Chat/pull/16584))
-- Add breaking notice regarding TLS ([#16575](https://github.com/RocketChat/Rocket.Chat/pull/16575))
-- Regression: Modal onSubmit ([#16556](https://github.com/RocketChat/Rocket.Chat/pull/16556))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ggazzo](https://github.com/ggazzo)
-- [@renatobecker](https://github.com/renatobecker)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.0.0-rc.8
-`2020-02-11  ·  2 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Do not stop on DM imports if one of users was not found ([#16547](https://github.com/RocketChat/Rocket.Chat/pull/16547))
-- Introduce AppLivechatBridge.isOnlineAsync method ([#16467](https://github.com/RocketChat/Rocket.Chat/pull/16467))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: UIkit input states ([#16552](https://github.com/RocketChat/Rocket.Chat/pull/16552))
-- Regression: UIKit missing select states: error/disabled ([#16540](https://github.com/RocketChat/Rocket.Chat/pull/16540))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-- [@renatobecker](https://github.com/renatobecker)
-- [@rodrigok](https://github.com/rodrigok)
-
-## 3.0.0-rc.7
-`2020-02-08  ·  1 ️️️⚠️  ·  1 👩‍💻👨‍💻`
-
-### ⚠️ BREAKING CHANGES
-
-- Change apps/icon endpoint to return app's icon and use it to show on Ui Kit modal ([#16522](https://github.com/RocketChat/Rocket.Chat/pull/16522))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.0.0-rc.6
-`2020-02-08  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: update package-lock ([#16528](https://github.com/RocketChat/Rocket.Chat/pull/16528))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.0.0-rc.5
-`2020-02-08  ·  5 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Update Uikit ([#16515](https://github.com/RocketChat/Rocket.Chat/pull/16515))
-- Regression: UIKit - Send container info on block actions triggered on a message ([#16514](https://github.com/RocketChat/Rocket.Chat/pull/16514))
-- Use base64 for import files upload to prevent file corruption ([#16516](https://github.com/RocketChat/Rocket.Chat/pull/16516))
-- Regression: Send app info along with interaction payload to the UI ([#16511](https://github.com/RocketChat/Rocket.Chat/pull/16511))
-- Regression: Ui Kit messaging issues (#16513) ([#16513](https://github.com/RocketChat/Rocket.Chat/pull/16513))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.0.0-rc.4
-`2020-02-06  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Fix: License missing from manual register handler ([#16505](https://github.com/RocketChat/Rocket.Chat/pull/16505))
-- Exclude federated and app users from active user count ([#16489](https://github.com/RocketChat/Rocket.Chat/pull/16489))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
-
-## 3.0.0-rc.3
-`2020-02-06  ·  3 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Remove users.info being called without need ([#16504](https://github.com/RocketChat/Rocket.Chat/pull/16504))
-- Add Ui Kit container ([#16503](https://github.com/RocketChat/Rocket.Chat/pull/16503))
-- Catch zip errors on import file load ([#16494](https://github.com/RocketChat/Rocket.Chat/pull/16494))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.0.0-rc.2
-`2020-02-05  ·  3 🐛  ·  4 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Missing edited icon in newly created messages ([#16484](https://github.com/RocketChat/Rocket.Chat/pull/16484))
-- Read Message after receive a message and the room is opened ([#16473](https://github.com/RocketChat/Rocket.Chat/pull/16473))
-- Send message with pending messages ([#16474](https://github.com/RocketChat/Rocket.Chat/pull/16474))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: prevent submit modal ([#16488](https://github.com/RocketChat/Rocket.Chat/pull/16488))
-- Regression: allow private channels to hide system messages ([#16483](https://github.com/RocketChat/Rocket.Chat/pull/16483))
-- Regression: Fix uikit modal closing on click ([#16475](https://github.com/RocketChat/Rocket.Chat/pull/16475))
-- Regression: Fix undefined presence after reconnect ([#16477](https://github.com/RocketChat/Rocket.Chat/pull/16477))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.0.0-rc.1
-`2020-02-04  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Fix tests ([#16469](https://github.com/RocketChat/Rocket.Chat/pull/16469))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.0.0-rc.0
-`2020-02-04  ·  5 ️️️⚠️  ·  10 🎉  ·  11 🚀  ·  22 🐛  ·  18 🔍  ·  19 👩‍💻👨‍💻`
+# 3.0.0
+`2020-02-14  ·  7 ️️️⚠️  ·  10 🎉  ·  11 🚀  ·  32 🐛  ·  43 🔍  ·  21 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -216,6 +14,8 @@
 - Hide system messages ([#16243](https://github.com/RocketChat/Rocket.Chat/pull/16243))
 - Upgrade to Meteor 1.9 and NodeJS 12 ([#16252](https://github.com/RocketChat/Rocket.Chat/pull/16252))
 - Removed room counter from sidebar ([#16036](https://github.com/RocketChat/Rocket.Chat/pull/16036))
+- Change apps/icon endpoint to return app's icon and use it to show on Ui Kit modal ([#16522](https://github.com/RocketChat/Rocket.Chat/pull/16522))
+- TLS v1.0 and TLS v1.1 were disabled by due to NodeJS update to v12. You can still enable them by using flags like `--tls-min-v1.0` and `--tls-min-v1.1`
 
 ### 🎉 New features
 
@@ -268,6 +68,16 @@
 - Thread message icon overlapping text ([#16083](https://github.com/RocketChat/Rocket.Chat/pull/16083))
 - Login change language button ([#16085](https://github.com/RocketChat/Rocket.Chat/pull/16085))
 - api-bypass-rate-limiter permission was not working ([#16080](https://github.com/RocketChat/Rocket.Chat/pull/16080))
+- Missing edited icon in newly created messages ([#16484](https://github.com/RocketChat/Rocket.Chat/pull/16484))
+- Read Message after receive a message and the room is opened ([#16473](https://github.com/RocketChat/Rocket.Chat/pull/16473))
+- Send message with pending messages ([#16474](https://github.com/RocketChat/Rocket.Chat/pull/16474))
+- Do not stop on DM imports if one of users was not found ([#16547](https://github.com/RocketChat/Rocket.Chat/pull/16547))
+- Introduce AppLivechatBridge.isOnlineAsync method ([#16467](https://github.com/RocketChat/Rocket.Chat/pull/16467))
+- When copying invite links, multiple toastr messages ([#16578](https://github.com/RocketChat/Rocket.Chat/pull/16578))
+- Livechat Widget version 1.3.1 ([#16580](https://github.com/RocketChat/Rocket.Chat/pull/16580))
+- Error when successfully joining room by invite link ([#16571](https://github.com/RocketChat/Rocket.Chat/pull/16571))
+- Invite links proxy URLs not working when using CDN ([#16581](https://github.com/RocketChat/Rocket.Chat/pull/16581))
+- Bug on starting Jitsi video calls , multiple messages ([#16601](https://github.com/RocketChat/Rocket.Chat/pull/16601))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -290,6 +100,31 @@
 - Disable PR Docker image build ([#16141](https://github.com/RocketChat/Rocket.Chat/pull/16141))
 - Add Cloud Info to translation dictionary ([#16122](https://github.com/RocketChat/Rocket.Chat/pull/16122) by [@aviral243](https://github.com/aviral243))
 - Merge master into develop & Set version to 2.5.0-develop ([#16107](https://github.com/RocketChat/Rocket.Chat/pull/16107))
+- Fix tests ([#16469](https://github.com/RocketChat/Rocket.Chat/pull/16469))
+- Regression: prevent submit modal ([#16488](https://github.com/RocketChat/Rocket.Chat/pull/16488))
+- Regression: allow private channels to hide system messages ([#16483](https://github.com/RocketChat/Rocket.Chat/pull/16483))
+- Regression: Fix uikit modal closing on click ([#16475](https://github.com/RocketChat/Rocket.Chat/pull/16475))
+- Regression: Fix undefined presence after reconnect ([#16477](https://github.com/RocketChat/Rocket.Chat/pull/16477))
+- Remove users.info being called without need ([#16504](https://github.com/RocketChat/Rocket.Chat/pull/16504))
+- Add Ui Kit container ([#16503](https://github.com/RocketChat/Rocket.Chat/pull/16503))
+- Catch zip errors on import file load ([#16494](https://github.com/RocketChat/Rocket.Chat/pull/16494))
+- Fix: License missing from manual register handler ([#16505](https://github.com/RocketChat/Rocket.Chat/pull/16505))
+- Exclude federated and app users from active user count ([#16489](https://github.com/RocketChat/Rocket.Chat/pull/16489))
+- Regression: Update Uikit ([#16515](https://github.com/RocketChat/Rocket.Chat/pull/16515))
+- Regression: UIKit - Send container info on block actions triggered on a message ([#16514](https://github.com/RocketChat/Rocket.Chat/pull/16514))
+- Use base64 for import files upload to prevent file corruption ([#16516](https://github.com/RocketChat/Rocket.Chat/pull/16516))
+- Regression: Send app info along with interaction payload to the UI ([#16511](https://github.com/RocketChat/Rocket.Chat/pull/16511))
+- Regression: Ui Kit messaging issues (#16513) ([#16513](https://github.com/RocketChat/Rocket.Chat/pull/16513))
+- Regression: update package-lock ([#16528](https://github.com/RocketChat/Rocket.Chat/pull/16528))
+- Regression: UIkit input states ([#16552](https://github.com/RocketChat/Rocket.Chat/pull/16552))
+- Regression: UIKit missing select states: error/disabled ([#16540](https://github.com/RocketChat/Rocket.Chat/pull/16540))
+- Regression: fix read unread messages ([#16562](https://github.com/RocketChat/Rocket.Chat/pull/16562))
+- Regression: UIKit update modal actions ([#16570](https://github.com/RocketChat/Rocket.Chat/pull/16570))
+- Update Apps-Engine version ([#16584](https://github.com/RocketChat/Rocket.Chat/pull/16584))
+- Add breaking notice regarding TLS ([#16575](https://github.com/RocketChat/Rocket.Chat/pull/16575))
+- Regression: Modal onSubmit ([#16556](https://github.com/RocketChat/Rocket.Chat/pull/16556))
+- Regression: send file modal not working via keyboard ([#16607](https://github.com/RocketChat/Rocket.Chat/pull/16607))
+- Fix github actions accessing the github registry ([#16521](https://github.com/RocketChat/Rocket.Chat/pull/16521) by [@mrsimpson](https://github.com/mrsimpson))
 
 </details>
 
@@ -299,6 +134,7 @@
 - [@antkaz](https://github.com/antkaz)
 - [@ashwaniYDV](https://github.com/ashwaniYDV)
 - [@aviral243](https://github.com/aviral243)
+- [@mrsimpson](https://github.com/mrsimpson)
 - [@ritwizsinha](https://github.com/ritwizsinha)
 - [@vickyokrm](https://github.com/vickyokrm)
 
@@ -309,6 +145,7 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@gabriellsh](https://github.com/gabriellsh)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@lolimay](https://github.com/lolimay)
 - [@mariaeduardacunha](https://github.com/mariaeduardacunha)
