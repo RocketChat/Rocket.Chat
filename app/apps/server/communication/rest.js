@@ -239,6 +239,14 @@ export class AppsRestApi {
 					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
 				}
 
+				if (aff.hasAppUserError()) {
+					return API.v1.failure({
+						status: 'app_user_error',
+						messages: [aff.getAppUserError().message],
+						payload: { username: aff.getAppUserError().username },
+					});
+				}
+
 				info.status = aff.getApp().getStatus();
 
 				return API.v1.success({
@@ -449,15 +457,16 @@ export class AppsRestApi {
 			delete() {
 				const prl = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					Promise.await(manager.remove(prl.getID()));
-
-					const info = prl.getInfo();
-					info.status = prl.getStatus();
-
-					return API.v1.success({ app: info });
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+
+				Promise.await(manager.remove(prl.getID()));
+
+				const info = prl.getInfo();
+				info.status = prl.getStatus();
+
+				return API.v1.success({ app: info });
 			},
 		});
 
@@ -494,16 +503,30 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/icon', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+		this.api.addRoute(':id/icon', { authRequired: false }, {
 			get() {
 				const prl = manager.getOneById(this.urlParams.id);
-
-				if (prl) {
-					const info = prl.getInfo();
-
-					return API.v1.success({ iconFileContent: info.iconFileContent });
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+
+				const info = prl.getInfo();
+				if (!info || !info.iconFileContent) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				}
+
+				const imageData = info.iconFileContent.split(';base64,');
+
+				const buf = Buffer.from(imageData[1], 'base64');
+
+				return {
+					statusCode: 200,
+					headers: {
+						'Content-Length': buf.length,
+						'Content-Type': imageData[0].replace('data:', ''),
+					},
+					body: buf,
+				};
 			},
 		});
 

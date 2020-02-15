@@ -157,13 +157,15 @@
 	top: 0;
 
 	width: 100%;
+	margin-top: 0 !important;
 	padding: 2px;
 
 	border-width: 0 0 1px;
 }
 
 .rc-old .alert {
-	margin-bottom: 20px;
+	margin: 1rem 0;
+	padding: 0.5rem;
 
 	border-width: 1px;
 	border-radius: var(--border-radius);
@@ -2847,6 +2849,8 @@ rc-old select,
 	& .body {
 		transition: opacity 0.3s linear;
 
+		word-break: break-word;
+
 		opacity: 1;
 
 		& > h1 {
@@ -3472,7 +3476,7 @@ rc-old select,
 
 		white-space: normal;
 
-		& h3 {
+		& h2 {
 			overflow: hidden;
 
 			width: 100%;
@@ -3496,6 +3500,10 @@ rc-old select,
 
 				border-radius: var(--border-radius);
 			}
+		}
+
+		& h3 {
+			margin: 8px 0;
 		}
 
 		& p {
@@ -4399,14 +4407,23 @@ rc-old select,
 
 		text-align: center;
 
-		color: var(--color-blue);
-
-		border: 4px dashed var(--color-blue);
 		background: rgba(255, 255, 255, 0.8);
 
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
+
+		&--enabled {
+			color: var(--color-blue);
+
+			border: 4px dashed var(--color-blue);
+		}
+
+		&--disabled {
+			color: var(--color-red);
+
+			border: 4px dashed var(--color-red);
+		}
 	}
 
 	&.over .dropzone-overlay {
@@ -4842,6 +4859,14 @@ rc-old select,
 
 	& .user.user-card-message {
 		margin-left: -5px;
+	}
+
+	& .thread-icons--thread {
+		position: relative;
+
+		left: 0;
+
+		margin: 0 3px;
 	}
 }
 
