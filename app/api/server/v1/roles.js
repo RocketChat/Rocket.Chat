@@ -7,7 +7,20 @@ import { getUsersInRole, hasPermission } from '../../../authorization/server';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
-		const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
+		const roles = Roles.find({}, { fields: { } }).fetch();
+
+		return API.v1.success({ roles });
+	},
+});
+
+// api to to get updated roles after a date(in ISODate format)
+API.v1.addRoute('roles.listByUpdatedDate', { authRequired: true }, {
+	get() {
+		check(this.bodyParams, {
+			_updatedAt: String,
+		});
+
+		const roles = Roles.find({ _updatedAt: { $gte: new Date(this.bodyParams._updatedAt) } }).fetch();
 
 		return API.v1.success({ roles });
 	},
