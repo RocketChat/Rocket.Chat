@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { TimeSync } from 'meteor/mizzao:timesync';
 
 import { settings } from '../../../settings';
 import { modal, TabBar } from '../../../ui-utils';
@@ -59,7 +60,7 @@ Template.videoFlexTab.onRendered(function() {
 		const update = () => {
 			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 }, reactive: false });
 
-			if (jitsiTimeout && (new Date() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
+			if (jitsiTimeout && (TimeSync.serverTime(), - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
 				return;
 			}
 			if (Meteor.status().connected) {
