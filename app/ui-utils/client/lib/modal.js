@@ -168,12 +168,7 @@ export const modal = {
 			instance.close();
 		}
 
-		if (!document.querySelector('.rc-modal__content').contains(event.target)) {
-			return;
-		}
-
-
-		if (instance && instance && instance.confirmOnEnter && event.key === 'Enter') {
+		if (instance && instance.confirmOnEnter && event.key === 'Enter') {
 			event.preventDefault();
 			event.stopPropagation();
 
@@ -220,6 +215,8 @@ Template.rc_modal.onRendered(function() {
 
 	if (this.data.input) {
 		$('.js-modal-input', this.firstNode).focus();
+	} else if (this.data.showConfirmButton && this.data.confirmOnEnter) {
+		$('.js-confirm', this.firstNode).focus();
 	}
 
 	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
