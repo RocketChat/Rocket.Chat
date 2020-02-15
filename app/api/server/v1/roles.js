@@ -17,10 +17,10 @@ API.v1.addRoute('roles.list', { authRequired: true }, {
 API.v1.addRoute('roles.listByUpdatedDate', { authRequired: true }, {
 	get() {
 		check(this.bodyParams, {
-			_updatedAt: String,
+			updatedAfter: String,
 		});
 
-		const roles = Roles.find({ _updatedAt: { $gte: new Date(this.bodyParams._updatedAt) } }).fetch();
+		const roles = Roles.find({ _updatedAt: { $gte: new Date(this.bodyParams.updatedAfter) } }).fetch();
 
 		return API.v1.success({ roles });
 	},
