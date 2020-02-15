@@ -39706,6 +39706,35 @@
           ]
         }
       ]
+    },
+    "3.0.0-rc.11": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16607",
+          "title": "Regression: send file modal not working via keyboard",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16521",
+          "title": "Fix github actions accessing the github registry",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

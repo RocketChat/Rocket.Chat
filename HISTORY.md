@@ -1,6 +1,26 @@
 
 # 3.0.0 (Under Release Candidate Process)
 
+## 3.0.0-rc.11
+`2020-02-14  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: send file modal not working via keyboard ([#16607](https://github.com/RocketChat/Rocket.Chat/pull/16607))
+- Fix github actions accessing the github registry ([#16521](https://github.com/RocketChat/Rocket.Chat/pull/16521) by [@mrsimpson](https://github.com/mrsimpson))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@mrsimpson](https://github.com/mrsimpson)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.0.0-rc.10
 `2020-02-14  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
@@ -13,7 +33,11 @@
 - [@ggazzo](https://github.com/ggazzo)
 
 ## 3.0.0-rc.9
-`2020-02-13  ·  4 🐛  ·  5 🔍  ·  6 👩‍💻👨‍💻`
+`2020-02-13  ·  1 ️️️⚠️  ·  4 🐛  ·  5 🔍  ·  6 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+- TLS v1.0 and TLS v1.1 were disabled by due to NodeJS update to v12. You can still enable them by using flags like `--tls-min-v1.0` and `--tls-min-v1.1`
 
 ### 🐛 Bug fixes
 
@@ -3020,10 +3044,11 @@
 - [@tassoevan](https://github.com/tassoevan)
 
 # 0.72.0
-`2018-11-28  ·  1 ️️️⚠️  ·  6 🎉  ·  16 🚀  ·  22 🐛  ·  79 🔍  ·  25 👩‍💻👨‍💻`
+`2018-11-28  ·  2 ️️️⚠️  ·  6 🎉  ·  16 🚀  ·  22 🐛  ·  79 🔍  ·  25 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
+- Support for Cordova (Rocket.Chat Legacy app) has reached End-of-life, support has been discontinued
 - Update to Meteor to 1.8 ([#12468](https://github.com/RocketChat/Rocket.Chat/pull/12468))
 
 ### 🎉 New features
