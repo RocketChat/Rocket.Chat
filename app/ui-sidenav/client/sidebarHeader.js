@@ -27,11 +27,8 @@ const extendedViewOption = (user) => {
 		return {
 			icon: viewModeIcon.extended,
 			name: t('Extended'),
-			modifier: isMobile() || getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
+			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
 			action: () => {
-				if (isMobile()) {
-					return;
-				}
 				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
 					if (error) {
 						return handleError(error);
@@ -100,7 +97,7 @@ const toolbarButtons = (user) => [{
 },
 {
 	name: t('View_mode'),
-	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'condensed'],
+	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'extended'],
 	condition: () => !isMobile(),
 	hasPopup: true,
 	action: (e) => {
@@ -115,11 +112,8 @@ const toolbarButtons = (user) => [{
 								{
 									icon: viewModeIcon.medium,
 									name: t('Medium'),
-									modifier: !isMobile() && getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
+									modifier: getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
 									action: () => {
-										if (isMobile()) {
-											return;
-										}
 										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
 											if (error) {
 												return handleError(error);
@@ -130,11 +124,8 @@ const toolbarButtons = (user) => [{
 								{
 									icon: viewModeIcon.condensed,
 									name: t('Condensed'),
-									modifier: !isMobile() && getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
+									modifier: getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
 									action: () => {
-										if (isMobile()) {
-											return;
-										}
 										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
 											if (error) {
 												return handleError(error);
@@ -286,6 +277,12 @@ const toolbarButtons = (user) => [{
 			type: 'sort-action',
 		};
 
+		const viewModeOption = {
+			name: t('View_mode'),
+			icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'extended'],
+			type: 'view-mode-action',
+		};
+
 		const shareOption = {
 			name: t('Share'),
 			icon: 'share',
@@ -334,7 +331,7 @@ const toolbarButtons = (user) => [{
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		if (isMobile()) {
-			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([viewModeOption, sortOption]);
 		}
 		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 
