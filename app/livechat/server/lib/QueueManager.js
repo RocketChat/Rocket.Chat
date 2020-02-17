@@ -5,7 +5,6 @@ import { LivechatRooms, LivechatInquiry } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
-import { Livechat } from './Livechat';
 
 export const QueueManager = {
 	async requestRoom({ guest, message, roomInfo, agent }) {
@@ -19,7 +18,7 @@ export const QueueManager = {
 			department: Match.Maybe(String),
 		}));
 
-		if(!checkServiceStatus({ guest, agent })) {
+		if (!checkServiceStatus({ guest, agent })) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
