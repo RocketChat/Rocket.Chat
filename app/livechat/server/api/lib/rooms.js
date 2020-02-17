@@ -1,4 +1,4 @@
-import { LivechatRooms } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatDepartment } from '../../../../models/server/raw';
 
 export async function findRooms({
 	agents,
@@ -43,7 +43,19 @@ export async function findRooms({
 			fields,
 		},
 	});
-
+	const departmentsIds = [...new Set(rooms.map((room) => room.departmentId).filter(Boolean))];
+	const departments = await LivechatDepartment.findInIds(departmentsIds, { fields: { name: 1 } });
+	if (departments.length && departmentsIds.length) {
+		rooms.forEach((room) => {
+			if (!room.departmentId) {
+				return;
+			}
+			const department = departments.find((dept) => dept._id === room.departmentId);
+			if (department) {
+				room.department = department;
+			}
+		});
+	}
 	return {
 		rooms,
 		count: rooms.length,
