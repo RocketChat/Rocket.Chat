@@ -158,7 +158,7 @@ Template.videoFlexTab.onRendered(function() {
 					* For some reason those aren't working right.
 					*/
 					Meteor.setTimeout(() => this.api.executeCommand('displayName', [name]), 5000);
-					return start();
+					return Tracker.nonreactive(() => start());
 				}
 
 				// Execute any commands that might be reactive.  Like name changing.
