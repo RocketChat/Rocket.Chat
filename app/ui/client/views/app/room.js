@@ -1192,7 +1192,7 @@ Template.room.onRendered(function() {
 
 	template.isAtBottom = function(scrollThreshold = 0) {
 		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
-			newMessage.className = 'new-message background-primary-action-color color-content-background-color'; //classList.add('hidden')
+			newMessage.className = 'new-message background-primary-action-color color-content-background-color';
 			newMessage.classList.add('new-message--hidden');
 			return true;
 		}
@@ -1202,7 +1202,7 @@ Template.room.onRendered(function() {
 	template.sendToBottom = function() {
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
 		newMessage.className = 'new-message background-primary-action-color color-content-background-color';
-		newMessage.classList.add('new-message--hidden')
+		newMessage.classList.add('new-message--hidden');
 	};
 
 	template.checkIfScrollIsAtBottom = function() {
