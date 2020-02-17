@@ -275,3 +275,12 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 		type,
 	};
 };
+
+export const checkAgentOnline = (agent) => {
+	check(agent, Match.ObjectIncluding({
+		agentId: String,
+	}));
+
+	const users = Users.findOnlineAgents(agent.agentId);
+	return users && users.count() > 0;
+};
