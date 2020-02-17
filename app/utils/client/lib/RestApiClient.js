@@ -68,7 +68,7 @@ export const APIClient = {
 		});
 	},
 
-	_jqueryFormDataCall(endpoint, params, formData, { progress = () => {}, error = () => {} } = {}, abort = () => {}) {
+	_jqueryFormDataCall(endpoint, params, formData, { progress = () => {}, error = () => {} } = {}) {
 		const ret = { };
 
 		const query = APIClient._generateQueryFromParams(params);
