@@ -38096,6 +38096,278 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "2.4.1": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16189",
+          "title": "[FIX] Enable apps change properties of the sender on the message as before",
+          "userLogin": "d-gubert",
+          "milestone": "2.4.1",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16139",
+          "title": "[FIX] JS errors on Administration page",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.4.1",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        }
+      ]
+    },
+    "2.3.3": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [],
+      "pull_requests": [
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "2.4.2": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16147",
+          "title": "[FIX] Setup Wizard inputs and Admin Settings",
+          "userLogin": "tassoevan",
+          "milestone": "2.4.2",
+          "contributors": [
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16253",
+          "title": "[FIX] Slack CSV User Importer",
+          "userLogin": "ggazzo",
+          "milestone": "2.4.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16233",
+          "title": "[FIX] Integrations list without pagination and outgoing integration creation",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.2",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16184",
+          "title": "[FIX] User stuck after reset password",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.4.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "2.4.3": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16347",
+          "title": "[FIX] Unknown error when sending message if 'Set a User Name to Alias in Message' setting is enabled",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.4.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16176",
+          "title": "[FIX] Invite links usage by channel owners/moderators",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "2.4.3",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "2.4.4": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16377",
+          "title": "Release 2.4.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16361",
+          "title": "Regression: Rate limiter was not working due to Meteor internal changes",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.4",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16362",
+          "title": "[FIX] App removal was moving logs to the trash collection",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.4",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "2.4.5": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "2.4.6": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16395",
+          "title": "Revert message properties validation",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16401",
+          "title": "Fix index creation for apps_logs collection",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "2.4.7": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16433",
+          "title": "[FIX] Option to make a channel default",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.7",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        }
+      ]
+    },
+    "2.4.8": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16486",
+          "title": "Update presence package to 2.6.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "2.4.9": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16452",
+          "title": "[FIX] `stdout` streamer infinite loop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

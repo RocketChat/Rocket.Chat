@@ -1,3 +1,158 @@
+# 2.4.9
+`2020-02-10  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- `stdout` streamer infinite loop ([#16452](https://github.com/RocketChat/Rocket.Chat/pull/16452))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 2.4.8
+`2020-02-07  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Update presence package to 2.6.1 ([#16486](https://github.com/RocketChat/Rocket.Chat/pull/16486))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 2.4.7
+`2020-02-03  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Option to make a channel default ([#16433](https://github.com/RocketChat/Rocket.Chat/pull/16433))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+
+# 2.4.6
+`2020-01-31  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Revert message properties validation ([#16395](https://github.com/RocketChat/Rocket.Chat/pull/16395))
+- Fix index creation for apps_logs collection ([#16401](https://github.com/RocketChat/Rocket.Chat/pull/16401))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@rodrigok](https://github.com/rodrigok)
+
+# 2.4.4
+`2020-01-29  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- App removal was moving logs to the trash collection ([#16362](https://github.com/RocketChat/Rocket.Chat/pull/16362))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 2.4.4 ([#16377](https://github.com/RocketChat/Rocket.Chat/pull/16377))
+- Regression: Rate limiter was not working due to Meteor internal changes ([#16361](https://github.com/RocketChat/Rocket.Chat/pull/16361))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 2.4.3
+`2020-01-28  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Unknown error when sending message if 'Set a User Name to Alias in Message' setting is enabled ([#16347](https://github.com/RocketChat/Rocket.Chat/pull/16347))
+- Invite links usage by channel owners/moderators ([#16176](https://github.com/RocketChat/Rocket.Chat/pull/16176))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 2.4.2
+`2020-01-17  ·  4 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Setup Wizard inputs and Admin Settings ([#16147](https://github.com/RocketChat/Rocket.Chat/pull/16147))
+- Slack CSV User Importer ([#16253](https://github.com/RocketChat/Rocket.Chat/pull/16253))
+- Integrations list without pagination and outgoing integration creation ([#16233](https://github.com/RocketChat/Rocket.Chat/pull/16233))
+- User stuck after reset password ([#16184](https://github.com/RocketChat/Rocket.Chat/pull/16184))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
+# 2.4.1
+`2020-01-10  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Enable apps change properties of the sender on the message as before ([#16189](https://github.com/RocketChat/Rocket.Chat/pull/16189))
+- JS errors on Administration page ([#16139](https://github.com/RocketChat/Rocket.Chat/pull/16139))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 2.4.0
 `2019-12-27  ·  4 🎉  ·  28 🚀  ·  21 🐛  ·  19 🔍  ·  21 👩‍💻👨‍💻`
@@ -120,6 +275,23 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 2.3.3
+`2020-01-10  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.15.1`
+- NPM: `6.9.0`
+- MongoDB: ``
+
+### 🐛 Bug fixes
+
+- Add missing password field back to administration area ([#16171](https://github.com/RocketChat/Rocket.Chat/pull/16171))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 2.3.2
 `2019-12-12  ·  2 🐛  ·  2 👩‍💻👨‍💻`

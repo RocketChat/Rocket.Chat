@@ -284,19 +284,18 @@ Template.room.helpers({
 	embeddedVersion() {
 		return Layout.isEmbedded();
 	},
-
 	showTopNavbar() {
 		return !Layout.isEmbedded() || settings.get('UI_Show_top_navbar_embedded_layout');
 	},
-
 	subscribed() {
 		const { state } = Template.instance();
 		return state.get('subscribed');
 	},
-
 	messagesHistory() {
 		const { rid } = Template.instance();
-		const { value: settingValues = [] } = settings.collection.findOne('Hide_System_Messages') || {};
+		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
+		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
+		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
 		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
 
 		const modes = ['', 'cozy', 'compact'];
@@ -928,7 +927,11 @@ Template.room.events({
 		}
 	},
 	'load .gallery-item'(e, template) {
-		return template.sendToBottomIfNecessaryDebounced();
+		template.sendToBottomIfNecessaryDebounced();
+	},
+
+	'rendered .js-block-wrapper'(e, i) {
+		i.sendToBottomIfNecessaryDebounced();
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -1275,6 +1278,9 @@ Template.room.onRendered(function() {
 	}, 300);
 
 	const read = _.debounce(function() {
+		if (rid !== Session.get('openedRoom')) {
+			return;
+		}
 		readMessage.read(rid);
 	}, 500);
 
@@ -1369,5 +1375,5 @@ callbacks.add('enter-room', (sub) => {
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
 	}
-	readMessage.refreshUnreadMark(sub.rid);
+	setTimeout(() => readMessage.read(sub.rid), 1000);
 });

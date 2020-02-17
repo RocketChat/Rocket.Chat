@@ -157,6 +157,7 @@
 	top: 0;
 
 	width: 100%;
+	margin-top: 0 !important;
 	padding: 2px;
 
 	border-width: 0 0 1px;
