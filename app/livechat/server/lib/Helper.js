@@ -276,11 +276,12 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 	};
 };
 
-export const checkAgentOnline = (agent) => {
-	check(agent, Match.ObjectIncluding({
-		agentId: String,
-	}));
+export const checkServiceStatus = ({ guest, agent }) => {
+	if (agent) {
+		const { agentId } = agent;
+		const users = Users.findOnlineAgents(agentId);
+		return users && users.count() > 0;
+	}
 
-	const users = Users.findOnlineAgents(agent.agentId);
-	return users && users.count() > 0;
+	return Livechat.online(guest.department);
 };

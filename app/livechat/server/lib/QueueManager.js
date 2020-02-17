@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { LivechatRooms, LivechatInquiry } from '../../../models/server';
-import { checkAgentOnline, createLivechatRoom, createLivechatInquiry } from './Helper';
+import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 import { Livechat } from './Livechat';
@@ -19,7 +19,7 @@ export const QueueManager = {
 			department: Match.Maybe(String),
 		}));
 
-		if ((agent && !checkAgentOnline(agent)) || !Livechat.online(guest.department)) {
+		if(!checkServiceStatus({ guest, agent })) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
