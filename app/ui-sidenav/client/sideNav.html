@@ -1,5 +1,6 @@
 <template name="sideNav">
-	<aside class="sidebar sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation">
+	<nav class="sidebar sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" aria-labelledby="sidebar-title">
+		<h1 id="sidebar-title" class="visually-hidden">{{_ "Channels_sidebar"}}</h1>
 		{{> sidebarHeader }}
 		{{#if loggedInUser}}
 			<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
@@ -25,6 +26,6 @@
 		{{/if}}
 
 		<footer class="sidebar__footer">{{{footer}}}</footer>
-	</aside>
+		</nav>
 	<div class="sidebar-wrap"></div>
 </template>
