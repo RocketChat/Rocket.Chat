@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TimeSync } from 'meteor/mizzao:timesync';
@@ -58,9 +59,9 @@ Template.videoFlexTab.onRendered(function() {
 
 	const start = () => {
 		const update = () => {
-			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 }, reactive: false });
+			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 } });
 
-			if (jitsiTimeout && (TimeSync.serverTime(), - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
+			if (jitsiTimeout && (TimeSync.serverTime() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
 				return;
 			}
 			if (Meteor.status().connected) {
@@ -70,7 +71,7 @@ Template.videoFlexTab.onRendered(function() {
 			return this.stop();
 		};
 		update();
-		this.intervalHandler = Meteor.setInterval(update, CONSTANTS.HEARTBEAT);
+		this.intervalHandler = setInterval(update, CONSTANTS.HEARTBEAT);
 		TabBar.updateButton('video', { class: 'red' });
 	};
 
@@ -125,7 +126,7 @@ Template.videoFlexTab.onRendered(function() {
 			jitsiRoomActive = jitsiRoom;
 
 			if (settings.get('Jitsi_Open_New_Window')) {
-				start();
+				Tracker.nonreactive(() => start());
 				let queryString = '';
 				if (accessToken) {
 					queryString = `?jwt=${ accessToken }`;
