@@ -38097,6 +38097,23 @@
       ],
       "pull_requests": []
     },
+    "2.3.3": {
+      "node_version": "8.15.1",
+      "npm_version": "6.9.0",
+      "mongo_versions": [],
+      "pull_requests": [
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
     "2.4.1": {
       "node_version": "8.17.0",
       "npm_version": "6.13.4",
@@ -38106,6 +38123,17 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "16195",
+          "title": "Release 2.4.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "mariaeduardacunha",
+            "sampaiodiego",
+            "rodrigok",
+            "d-gubert"
+          ]
+        },
         {
           "pr": "16189",
           "title": "[FIX] Enable apps change properties of the sender on the message as before",
@@ -38138,23 +38166,6 @@
         }
       ]
     },
-    "2.3.3": {
-      "node_version": "8.15.1",
-      "npm_version": "6.9.0",
-      "mongo_versions": [],
-      "pull_requests": [
-        {
-          "pr": "16171",
-          "title": "[FIX] Add missing password field back to administration area",
-          "userLogin": "rodrigok",
-          "milestone": "2.4.1",
-          "contributors": [
-            "rodrigok",
-            "sampaiodiego"
-          ]
-        }
-      ]
-    },
     "2.4.2": {
       "node_version": "8.17.0",
       "npm_version": "6.13.4",
@@ -38164,6 +38175,17 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "16274",
+          "title": "Release 2.4.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "MarcosSpessatto",
+            "ggazzo",
+            "tassoevan"
+          ]
+        },
         {
           "pr": "16147",
           "title": "[FIX] Setup Wizard inputs and Admin Settings",
@@ -38212,6 +38234,15 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "16358",
+          "title": "Release 2.4.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "pierre-lehnen-rc"
+          ]
+        },
         {
           "pr": "16347",
           "title": "[FIX] Unknown error when sending message if 'Set a User Name to Alias in Message' setting is enabled",
@@ -38280,7 +38311,16 @@
         "3.6",
         "4.0"
       ],
-      "pull_requests": []
+      "pull_requests": [
+        {
+          "pr": "16380",
+          "title": "Release 2.4.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     },
     "2.4.6": {
       "node_version": "8.17.0",
@@ -38292,10 +38332,20 @@
       ],
       "pull_requests": [
         {
+          "pr": "16402",
+          "title": "Release 2.4.6",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
           "pr": "16395",
           "title": "Revert message properties validation",
           "userLogin": "MarcosSpessatto",
-          "milestone": "3.0.0",
+          "milestone": "2.4.6",
           "contributors": [
             "MarcosSpessatto"
           ]
@@ -38304,7 +38354,7 @@
           "pr": "16401",
           "title": "Fix index creation for apps_logs collection",
           "userLogin": "rodrigok",
-          "milestone": "3.0.0",
+          "milestone": "2.4.6",
           "contributors": [
             "rodrigok"
           ]
@@ -38321,12 +38371,995 @@
       ],
       "pull_requests": [
         {
+          "pr": "16444",
+          "title": "Release 2.4.7",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "MarcosSpessatto",
+            "ggazzo"
+          ]
+        },
+        {
           "pr": "16433",
           "title": "[FIX] Option to make a channel default",
           "userLogin": "MarcosSpessatto",
           "milestone": "2.4.7",
           "contributors": [
             "MarcosSpessatto"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.0": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16059",
+          "title": "[NEW] Button to download admin server info",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16465",
+          "title": "Revert importer streamed uploads",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "16048",
+          "title": "[NEW] UiKit - Interactive UI elements for Rocket.Chat Apps",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "tassoevan",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16123",
+          "title": "[FIX] Result of get avatar from url can be null",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16348",
+          "title": "[IMPROVE] Request user presence on demand",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16279",
+          "title": "[IMPROVE] Major overhaul on data importers",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "16369",
+          "title": "[BREAK] Filter System messages per room",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "mariaeduardacunha",
+            "ggazzo",
+            "gabriellsh",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16458",
+          "title": "Regression: Fix app user status change for non-existing user",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16452",
+          "title": "[FIX] `stdout` streamer infinite loop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16451",
+          "title": "Regression: Fix sending a message not scrolling to bottom",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16450",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16392",
+          "title": "[IMPROVE] Changes App user's status when the app was enabled/disabled",
+          "userLogin": "lolimay",
+          "contributors": [
+            "lolimay",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16386",
+          "title": "Regression: Fix sequential messages grouping",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16446",
+          "title": "[IMPROVE] Log as info level when Method Rate Limiters are reached",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16443",
+          "title": "Use GitHub Actions to store builds",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16437",
+          "title": "[NEW] Sort the Omnichannel Chat list according to the user preferences",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16442",
+          "title": "Regression: recent opened rooms being marked as read",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16433",
+          "title": "[FIX] Option to make a channel default",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.7",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16065",
+          "title": "[NEW] Setting to only send plain text emails",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16438",
+          "title": "Regression: Fix status bar margins",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16425",
+          "title": "[NEW] Check the Omnichannel service status per Department",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.0",
+          "contributors": [
+            "renatobecker",
+            "lolimay"
+          ]
+        },
+        {
+          "pr": "16414",
+          "title": "[IMPROVE] Show more information related to the Omnichannel room closing data",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16401",
+          "title": "Fix index creation for apps_logs collection",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.6",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16395",
+          "title": "Revert message properties validation",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.6",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16397",
+          "title": "[FIX] Rooms not being marked as read sometimes",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16398",
+          "title": "Update apps engine to 1.12.0-beta.2496",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "16388",
+          "title": "[FIX] Container heights",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16360",
+          "title": "Regression: App deletion wasn’t returning the correct information",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16351",
+          "title": "[BREAK] Remove deprecated publications",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16393",
+          "title": "[IMPROVE] Update katex version",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "16263",
+          "title": "[FIX] Mail Msg Cancel button not closing the flexbar",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16378",
+          "title": "[FIX] Highlight freezing the UI",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "16243",
+          "title": "[BREAK] Hide system messages",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "3.0.0",
+          "contributors": [
+            "mariaeduardacunha",
+            "ggazzo",
+            "gabriellsh",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16373",
+          "title": "[IMPROVE] Prevent \"App user\" from being deleted by the admin",
+          "userLogin": "lolimay",
+          "contributors": [
+            "lolimay",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16375",
+          "title": "[FIX] Adding 'lang' tag",
+          "userLogin": "mariaeduardacunha",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16114",
+          "title": "Lint: Resolve complexity warnings",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16379",
+          "title": "Fix Preview Docker image build",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16252",
+          "title": "[BREAK] Upgrade to Meteor 1.9 and NodeJS 12",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16362",
+          "title": "[FIX] App removal was moving logs to the trash collection",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.4",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16356",
+          "title": "[FIX] Role tags missing - Description field explanation",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "3.0.0",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16361",
+          "title": "Regression: Rate limiter was not working due to Meteor internal changes",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.4",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16176",
+          "title": "[FIX] Invite links usage by channel owners/moderators",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "2.4.3",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16352",
+          "title": "Fix assets download on CI",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16347",
+          "title": "[FIX] Unknown error when sending message if 'Set a User Name to Alias in Message' setting is enabled",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.4.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16237",
+          "title": "Send build artifacts to S3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15896",
+          "title": "[NEW] Create a user for the Apps during installation",
+          "userLogin": "lolimay",
+          "contributors": [
+            "Cool-fire",
+            "lolimay",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16150",
+          "title": "Add missing translations",
+          "userLogin": "ritwizsinha",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "16253",
+          "title": "[FIX] Slack CSV User Importer",
+          "userLogin": "ggazzo",
+          "milestone": "2.4.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16142",
+          "title": "[FIX] The \"click to load\" text is hard-coded and not translated.",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16233",
+          "title": "[FIX] Integrations list without pagination and outgoing integration creation",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "2.4.2",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16147",
+          "title": "[FIX] Setup Wizard inputs and Admin Settings",
+          "userLogin": "tassoevan",
+          "milestone": "2.4.2",
+          "contributors": [
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16234",
+          "title": "[FIX] FileUpload.getBuffer was not working through the Apps-Engine",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16183",
+          "title": "[FIX] Integrations admin page",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16197",
+          "title": "[FIX]Readme Help wanted section",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16181",
+          "title": "[IMPROVE] Improve function to check if setting has changed",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15840",
+          "title": "[NEW] Add GUI for customFields in Omnichannel conversations",
+          "userLogin": "antkaz",
+          "milestone": "3.0.0",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "16189",
+          "title": "[FIX] Enable apps change properties of the sender on the message as before",
+          "userLogin": "d-gubert",
+          "milestone": "2.4.1",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16184",
+          "title": "[FIX] User stuck after reset password",
+          "userLogin": "sampaiodiego",
+          "milestone": "2.4.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16167",
+          "title": "[NEW] update on mongo, node and caddy on snap",
+          "userLogin": "LuluGO",
+          "contributors": [
+            "LuluGO"
+          ]
+        },
+        {
+          "pr": "16063",
+          "title": "[NEW] Enforce plain text emails converting from HTML when no text version supplied",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16121",
+          "title": "[IMPROVE] Status Text form validation",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.0",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15768",
+          "title": "[FIX] auto translate cache",
+          "userLogin": "vickyokrm",
+          "milestone": "3.0.0",
+          "contributors": [
+            "vickyokrm"
+          ]
+        },
+        {
+          "pr": "16060",
+          "title": "[FIX] Save password without confirmation",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16141",
+          "title": "Disable PR Docker image build",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "15913",
+          "title": "[IMPROVE] Set the color of the cancel button on modals to #bdbebf for enhanced  visibiity",
+          "userLogin": "ritwizsinha",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "16039",
+          "title": "[FIX] Break message-attachment text to the next line",
+          "userLogin": "ritwizsinha",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "16071",
+          "title": "[IMPROVE] Remove NRR",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16122",
+          "title": "Add Cloud Info to translation dictionary",
+          "userLogin": "aviral243",
+          "contributors": [
+            "aviral243"
+          ]
+        },
+        {
+          "pr": "16139",
+          "title": "[FIX] JS errors on Administration page",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.4.1",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16108",
+          "title": "[FIX] SafePorts: Ports 80, 8080 & 443 linked to respective protocols (#16108)",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.0",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16049",
+          "title": "[FIX] Drag and drop disabled when file upload is disabled",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "3.0.0",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16113",
+          "title": "[FIX] Video message sent to wrong room",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16047",
+          "title": "[FIX] \"User not found\" for direct messages",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16036",
+          "title": "[BREAK] Removed room counter from sidebar",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16051",
+          "title": "[FIX] Embedded style when using 'go' command",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16064",
+          "title": "[NEW]  Setting Top navbar in embedded mode ",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16083",
+          "title": "[FIX] Thread message icon overlapping text",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.0",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16085",
+          "title": "[FIX] Login change language button",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "3.0.0",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16080",
+          "title": "[FIX] api-bypass-rate-limiter permission was not working",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16107",
+          "title": "Merge master into develop & Set version to 2.5.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16444",
+          "title": "Release 2.4.7",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "MarcosSpessatto",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16377",
+          "title": "Release 2.4.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16189",
+          "title": "[FIX] Enable apps change properties of the sender on the message as before",
+          "userLogin": "d-gubert",
+          "milestone": "2.4.1",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16139",
+          "title": "[FIX] JS errors on Administration page",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.4.1",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.1": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16469",
+          "title": "Fix tests",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.2": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16488",
+          "title": "Regression: prevent submit modal",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16486",
+          "title": "Update presence package to 2.6.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16484",
+          "title": "[FIX] Missing edited icon in newly created messages",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.0.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "16483",
+          "title": "Regression: allow private channels to hide system messages",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16475",
+          "title": "Regression: Fix uikit modal closing on click",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16477",
+          "title": "Regression: Fix undefined presence after reconnect",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16473",
+          "title": "[FIX] Read Message after receive a message and the room is opened",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16474",
+          "title": "[FIX] Send message with pending messages",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.3": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16504",
+          "title": "Remove users.info being called without need",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16503",
+          "title": "Add Ui Kit container",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16494",
+          "title": "Catch zip errors on import file load",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.4": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16505",
+          "title": "Fix: License missing from manual register handler",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.0.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16489",
+          "title": "Exclude federated and app users from active user count",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.0",
+          "contributors": [
+            "d-gubert"
           ]
         }
       ]
@@ -38341,9 +39374,109 @@
       ],
       "pull_requests": [
         {
+          "pr": "16506",
+          "title": "Release 2.4.8",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
           "pr": "16486",
           "title": "Update presence package to 2.6.1",
           "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.5": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16515",
+          "title": "Regression: Update Uikit",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16514",
+          "title": "Regression: UIKit - Send container info on block actions triggered on a message",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16516",
+          "title": "Use base64 for import files upload to prevent file corruption",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16511",
+          "title": "Regression: Send app info along with interaction payload to the UI",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16513",
+          "title": "Regression: Ui Kit messaging issues (#16513)",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.6": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16528",
+          "title": "Regression: update package-lock",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.7": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16522",
+          "title": "[BREAK] Change apps/icon endpoint to return app's icon and use it to show on Ui Kit modal",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.0",
           "contributors": [
             "sampaiodiego"
           ]
@@ -38360,6 +39493,14 @@
       ],
       "pull_requests": [
         {
+          "pr": "16544",
+          "title": "Release 2.4.9",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
           "pr": "16452",
           "title": "[FIX] `stdout` streamer infinite loop",
           "userLogin": "sampaiodiego",
@@ -38368,6 +39509,242 @@
           ]
         }
       ]
+    },
+    "3.0.0-rc.8": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16552",
+          "title": "Regression: UIkit input states",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16547",
+          "title": "[FIX] Do not stop on DM imports if one of users was not found",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16467",
+          "title": "[FIX] Introduce AppLivechatBridge.isOnlineAsync method",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.0",
+          "contributors": [
+            "renatobecker",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16540",
+          "title": "Regression: UIKit missing select states: error/disabled",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.9": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16544",
+          "title": "Release 2.4.9",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16377",
+          "title": "Release 2.4.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16189",
+          "title": "[FIX] Enable apps change properties of the sender on the message as before",
+          "userLogin": "d-gubert",
+          "milestone": "2.4.1",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16171",
+          "title": "[FIX] Add missing password field back to administration area",
+          "userLogin": "rodrigok",
+          "milestone": "2.4.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16139",
+          "title": "[FIX] JS errors on Administration page",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "2.4.1",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "16562",
+          "title": "Regression: fix read unread messages",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16570",
+          "title": "Regression: UIKit update modal actions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16578",
+          "title": "[FIX] When copying invite links, multiple toastr messages",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16580",
+          "title": "[FIX] Livechat Widget version 1.3.1",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16584",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16571",
+          "title": "[FIX] Error when successfully joining room by invite link",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16575",
+          "title": "Add breaking notice regarding TLS",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16581",
+          "title": "[FIX] Invite links proxy URLs not working when using CDN",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16556",
+          "title": "Regression: Modal onSubmit",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.10": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16601",
+          "title": "[FIX] Bug on starting Jitsi video calls , multiple messages",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.0.0-rc.11": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16607",
+          "title": "Regression: send file modal not working via keyboard",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16521",
+          "title": "Fix github actions accessing the github registry",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.0.0": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }
