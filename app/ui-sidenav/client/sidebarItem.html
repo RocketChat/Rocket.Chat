@@ -4,7 +4,7 @@
 			{{> icon block="rc-icon--default-size sidebar-item__icon sidebar-item__icon" icon=icon}}
 		</div>
 	{{else}}
-		{{# userPresence uid=uid}}<div class="sidebar-item__user-status {{#if status}}sidebar-item__user-status--{{status}}{{/if}}" aria-label="{{_ 'Status_of' name=name status=status }}"  tabindex="0"></div>{{/userPresence}}
+		{{# userPresence uid=uid}}<div class="sidebar-item__user-status {{#if status}}sidebar-item__user-status--{{status}}{{/if}}" aria-label="{{_ 'Status_of' name=name status=status }}" tabindex="0"></div>{{/userPresence}}
 	{{/if}}
 </template>
 

@@ -93,10 +93,10 @@
 							</div>
 						{{/with}}
 						<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
-							<ul aria-live="polite" tabindex="0">
+							<ul aria-live="polite" role="listitem" tabindex="0" aria-label="Aria label do UL">
 								{{#if canPreview}}
 									{{#if hasMore}}
-										<li class="load-more" tabindex="-1">
+										<li class="load-more">
 											{{#if isLoading}}
 												{{> loading}}
 											{{/if}}

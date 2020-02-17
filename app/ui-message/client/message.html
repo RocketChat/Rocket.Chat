@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}">
+	<li tabindex="0" id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}">
 		{{#if isThreadReply}}
 			{{> messageThread parentMessage=parentMessage threadMessage=threadMessage following=msg.following avatar=msg.u.username msg=msg body=body class=bodyClass}}
 		{{else}}
@@ -30,8 +30,8 @@
 			{{/if}}
 			<div class="message-body-wrapper" aria-live="polite">
 				<div class="title border-component-color color-info-font-color">
-					<a type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="0" aria-label="{{_ 'View_profile_of' username=msg.u.username}}">
-						{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}
+					<a type="button" class="user user-card-message color-primary-font-color" tabindex="0" data-username="{{msg.u.username}}" aria-label="{{_ 'User_of' username=msg.u.username}}">
+						{{getName}}{{#if showUsername}} <span tabindex="0" class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}
 					</a>
 					<span class="info border-component-color color-info-font-color"></span>
 					{{#each role in roleTags}}
@@ -71,7 +71,7 @@
 						<span class="toggle-hidden icon-right-dir" data-message="{{msg._id}}"> {{_ "Message_Ignored"}} </span>
 					{{/if}}
 				</div>
-				<div class="body {{bodyClass}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
+				<div class="body {{bodyClass}}" tabindex="0" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 					{{#if isSnippet}}
 						<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 					{{/if}}

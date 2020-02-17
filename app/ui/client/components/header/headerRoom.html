@@ -34,7 +34,7 @@
 				</div>
 				{{/if}}
 
-				<div class="rc-header__data">
+				<div class="rc-header__data" tabindex="0" aria-label="{{_ 'Opened_room' room=_id}}">
 					{{#unless secondaryName}}
 					<div class="rc-header__name">{{> icon block="rc-header__icon" icon=roomIcon}}{{roomName}}</div>
 					{{else}}
