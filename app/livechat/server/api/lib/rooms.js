@@ -16,18 +16,7 @@ export async function findRooms({
 		sort,
 	},
 }) {
-	const total = (await LivechatRooms.findRoomsWithCriteria({
-		agents,
-		roomName,
-		departmentId,
-		open,
-		createdAt,
-		closedAt,
-		tags,
-		customFields,
-	})).length;
-
-	const rooms = await LivechatRooms.findRoomsWithCriteria({
+	const cursor = LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,
 		departmentId,
@@ -43,9 +32,15 @@ export async function findRooms({
 			fields,
 		},
 	});
+
+	const total = await cursor.count();
+
+	const rooms = await cursor.toArray();
+
 	const departmentsIds = [...new Set(rooms.map((room) => room.departmentId).filter(Boolean))];
-	const departments = await LivechatDepartment.findInIds(departmentsIds, { fields: { name: 1 } });
-	if (departments.length && departmentsIds.length) {
+	if (departmentsIds.length) {
+		const departments = await LivechatDepartment.findInIds(departmentsIds, { fields: { name: 1 } });
+
 		rooms.forEach((room) => {
 			if (!room.departmentId) {
 				return;

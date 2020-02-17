@@ -1138,6 +1138,6 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (customFields) {
 			query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
 		}
-		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count }).toArray();
+		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
 	}
 }
