@@ -90,7 +90,6 @@ export const APIClient = {
 					}, false);
 
 					xhr.upload.addEventListener('error', error, false);
-					xhr.upload.addEventListener('abort', abort, false);
 
 					return xhr;
 				},
