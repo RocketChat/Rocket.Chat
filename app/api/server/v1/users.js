@@ -16,7 +16,7 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
-import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
@@ -153,14 +153,18 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const { username } = this.getUserFromParams();
+		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
-
-		const result = getFullUserData({
+		const params = {
 			userId: this.userId,
 			filter: username,
 			limit: 1,
-		});
+		};
+
+		const result = userId
+			? getFullUserDataById({ userId: this.userId, filterId: userId })
+			: getFullUserData(params);
+
 		if (!result || result.count() !== 1) {
 			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
 		}
@@ -520,7 +524,6 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				hideAvatars: Match.Maybe(Boolean),
 				hideFlexTab: Match.Maybe(Boolean),
 				sendOnEnter: Match.Maybe(String),
-				roomCounterSidebar: Match.Maybe(Boolean),
 				language: Match.Maybe(String),
 				sidebarShowFavorites: Match.Optional(Boolean),
 				sidebarShowUnread: Match.Optional(Boolean),
@@ -644,7 +647,7 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 
 API.v1.addRoute('users.presence', { authRequired: true }, {
 	get() {
-		const { from } = this.queryParams;
+		const { from, ids } = this.queryParams;
 
 		const options = {
 			fields: {
@@ -655,6 +658,13 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 				statusText: 1,
 			},
 		};
+
+		if (ids) {
+			return API.v1.success({
+				users: Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
+				full: false,
+			});
+		}
 
 		if (from) {
 			const ts = new Date(from);

@@ -4,7 +4,7 @@ import Busboy from 'busboy';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findChannelAndPrivateAutocomplete } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete } from '../lib/rooms';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -273,6 +273,25 @@ API.v1.addRoute('rooms.getDiscussions', { authRequired: true }, {
 			offset,
 			total: Rooms.find(ourQuery).count(),
 		});
+	},
+});
+
+API.v1.addRoute('rooms.adminRooms', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+		const { types, filter } = this.requestParams();
+
+		return API.v1.success(Promise.await(findAdminRooms({
+			uid: this.userId,
+			filter,
+			types,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		})));
 	},
 });
 
