@@ -1552,6 +1552,7 @@
   "Force_SSL_Description": "*Caution!* _Force SSL_ should never be used with reverse proxy. If you have a reverse proxy, you should do the redirect THERE. This option exists for deployments like Heroku, that does not allow the redirect configuration at the reverse proxy.",
   "Force_visitor_to_accept_data_processing_consent": "Force visitor to accept data processing consent",
   "Force_visitor_to_accept_data_processing_consent_description": "Visitors are not allowed to start chatting without consent.",
+  "Invalid_Export_File": "The file uploaded isn't a valid %s export file.",
   "Force_visitor_to_accept_data_processing_consent_enabled_alert": "Agreement with data processing must be based on a transparent understanding of the reason for processing. Because of this, you must fill out the setting below which will be displayed to users in order to provide the reasons for collecting and processing your personal information.",
   "Forgot_password": "Forgot your password?",
   "Forgot_Password_Description": "You may use the following placeholders: <br/><ul><li>[Forgot_Password_Url] for the password recovery URL.</li><li>[name], [fname], [lname] for the user's full name, first name or last name, respectively.</li><li>[email] for the user's email.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
