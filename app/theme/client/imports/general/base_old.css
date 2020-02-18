@@ -153,11 +153,13 @@
 
 .visually-hidden {
 	position: absolute;
-	height: 1px; 
-	width: 1px;
+
 	overflow: hidden;
+	width: 1px;
+	height: 1px;
 	clip: rect(1px 1px 1px 1px);
 	clip: rect(1px, 1px, 1px, 1px);
+
 	white-space: nowrap;
 }
 
@@ -2504,10 +2506,9 @@ rc-old select,
 .messages-box {
 	position: relative;
 
+	display: flex;
 	overflow: hidden;
 	flex-grow: 1;
-
-	display: flex;
 
 	& .wrapper.has-more-next {
 		padding-bottom: 24px;
