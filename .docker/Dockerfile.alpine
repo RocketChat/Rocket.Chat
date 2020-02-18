@@ -1,6 +1,6 @@
-FROM node:8.17-alpine
+FROM node:8.17-alpine3.9
 
-RUN apk add python make g++ libc6-compat ttf-dejavu
+RUN apk add --no-cache python make g++ libc6-compat ttf-dejavu
 
 ADD . /app
 
@@ -12,8 +12,8 @@ RUN set -x \
  # Start hack for sharp...
  && rm -rf npm/node_modules/sharp \
  && rm -rf npm/node_modules/grpc \
- && npm install sharp@0.21.0 \
- && npm install grpc@1.12.2 \
+ && npm install sharp@0.22.1 \
+ && npm install grpc@1.16.1 \
  && mv node_modules/sharp npm/node_modules/sharp \
  && mv node_modules/grpc npm/node_modules/grpc \
  # End hack for sharp
