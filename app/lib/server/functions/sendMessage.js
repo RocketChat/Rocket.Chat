@@ -189,7 +189,6 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
 		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
 
-		console.log('result', result);
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
