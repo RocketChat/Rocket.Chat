@@ -136,6 +136,7 @@ const validateMessage = (message) => {
 		emoji: String,
 		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
+		blocks: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -188,11 +189,15 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
 		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
 
+		console.log('result', result);
+
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
 			validateMessage(message);
+
+			console.log('sendmessage', message);
 		}
 	}
 
