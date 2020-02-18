@@ -13,7 +13,7 @@ import { timeAgo } from '../../lib/client/lib/formatDate';
 Template.sidebarItem.helpers({
 	alt() {
 		const { name } = this;
-		return t('Avatar_of', { name })
+		return t('Avatar_of', { name });
 	},
 	streaming() {
 		return this.streamingOptions && Object.keys(this.streamingOptions).length;
