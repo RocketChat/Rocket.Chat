@@ -38,7 +38,7 @@ const createTemplateForComponent = async (
 	component,
 	props = {},
 	// eslint-disable-next-line new-cap
-	renderContainerView = () => HTML.DIV(),
+	renderContainerView = () => HTML.DIV({ style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }),
 ) => {
 	const name = component.displayName || component.name;
 
