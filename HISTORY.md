@@ -1,4 +1,29 @@
 
+# 3.0.1
+`2020-02-19  ·  7 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- UiKit not updating new actionIds received as responses from actions ([#16624](https://github.com/RocketChat/Rocket.Chat/pull/16624))
+- Regression: Jitsi on external window infinite loop ([#16625](https://github.com/RocketChat/Rocket.Chat/pull/16625))
+- livechat/rooms endpoint not working with big amount of livechats ([#16623](https://github.com/RocketChat/Rocket.Chat/pull/16623))
+- Regression: New 'app' role with no permissions when updating to 3.0.0 ([#16637](https://github.com/RocketChat/Rocket.Chat/pull/16637))
+- Block user option inside admin view ([#16626](https://github.com/RocketChat/Rocket.Chat/pull/16626))
+- Data converters overriding fields added by apps ([#16639](https://github.com/RocketChat/Rocket.Chat/pull/16639))
+- Admin height if the blue banner is opened ([#16629](https://github.com/RocketChat/Rocket.Chat/pull/16629))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.0.0
 `2020-02-14  ·  7 ️️️⚠️  ·  10 🎉  ·  11 🚀  ·  32 🐛  ·  43 🔍  ·  21 👩‍💻👨‍💻`
 
