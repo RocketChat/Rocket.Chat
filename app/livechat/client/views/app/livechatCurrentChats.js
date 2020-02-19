@@ -406,7 +406,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 
 			switch (key) {
 				case 'agents':
-					return this.selectedAgents.set();
+					return this.selectedAgents.set(value);
 				case 'from':
 				case 'to':
 					return $(`#${ key }`).datepicker('setDate', new Date(value));
