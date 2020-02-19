@@ -1,5 +1,7 @@
 tasks:
-  - init: curl https://install.meteor.com/ | sh && meteor npm install
+  - init: curl https://install.meteor.com/ | sh \
+      && PATH=$PATH:$HOME/.meteor \
+      && meteor npm install
     command: meteor npm start
 ports:
   - port: 3000
