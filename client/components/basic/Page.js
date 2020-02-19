@@ -1,4 +1,4 @@
-import { Box, Flex, Margins, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Flex, Margins, ScrollableArea } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import { BurgerMenuButton } from './BurgerMenuButton';
@@ -11,12 +11,12 @@ export function Page(props) {
 
 export function PageHeader({ children, title, ...props }) {
 	return <Margins all='x16'>
-		<Flex.Container wrap='nowrap' alignItems='center'>
+		<Flex.Container wrap='no-wrap' alignItems='center'>
 			<Box style={{ minHeight: '2.75rem' }} {...props}>
 				<Margins inlineEnd='x8'>
 					<BurgerMenuButton />
 				</Margins>
-				<Flex.Item grow='1'>
+				<Flex.Item grow={1}>
 					<Box is='h1' textStyle='h1' textColor='default'>{title}</Box>
 				</Flex.Item>
 				{children}
@@ -25,10 +25,10 @@ export function PageHeader({ children, title, ...props }) {
 	</Margins>;
 }
 
-export function PageContent(props) {
-	return <Scrollable>
-		<Box style={useMemo(() => ({ padding: '1rem' }), [])} {...props} />
-	</Scrollable>;
+export function PageContent({ children, ...props }) {
+	return <ScrollableArea >
+		<Box style={useMemo(() => ({ padding: '1rem', height: '100%' }), [])} {...props} children={useMemo(() => children, [children])} />
+	</ScrollableArea>;
 }
 
 Page.Header = PageHeader;
