@@ -39745,6 +39745,83 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.0.1": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16624",
+          "title": "[FIX] UiKit not updating new actionIds received as responses from actions",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16625",
+          "title": "[FIX] Regression: Jitsi on external window infinite loop",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16623",
+          "title": "[FIX] livechat/rooms endpoint not working with big amount of livechats",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.1",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16637",
+          "title": "[FIX] Regression: New 'app' role with no permissions when updating to 3.0.0",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16626",
+          "title": "[FIX] Block user option inside admin view",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16639",
+          "title": "[FIX] Data converters overriding fields added by apps",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16629",
+          "title": "[FIX] Admin height if the blue banner is opened",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
