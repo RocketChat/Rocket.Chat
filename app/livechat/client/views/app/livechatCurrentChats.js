@@ -11,7 +11,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { modal, call, popover } from '../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../utils/client';
-import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../authorization';
+import { hasRole, hasPermission } from '../../../../authorization';
 import './livechatCurrentChats.html';
 
 const ROOMS_COUNT = 50;
@@ -27,15 +27,15 @@ const loadStoredFilters = () => {
 	}
 
 	return storedFilters;
-}
+};
 
 const storeFilters = (filters) => {
 	Meteor._localStorage.setItem(FILTER_STORE_NAME, JSON.stringify(filters));
-}
+};
 
 const removeStoredFilters = () => {
 	Meteor._localStorage.removeItem(FILTER_STORE_NAME);
-}
+};
 
 Template.livechatCurrentChats.helpers({
 	hasMore() {
@@ -399,7 +399,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 		const defaultFilters = this.filter.get();
 
 		Object.keys(defaultFilters).forEach((key) => {
-			let value = defaultFilters[key];
+			const value = defaultFilters[key];
 			if (!value) {
 				return;
 			}
@@ -409,7 +409,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 					return this.selectedAgents.set();
 				case 'from':
 				case 'to':
-					return $(`#${ key }`).datepicker("setDate", new Date(value));
+					return $(`#${ key }`).datepicker('setDate', new Date(value));
 			}
 
 			$(`#${ key }`).val(value);
@@ -458,7 +458,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 		}
 	});
 
-	setTimeout(this.loadDefaultFilters, 500)
+	setTimeout(this.loadDefaultFilters, 500);
 });
 
 Template.livechatCurrentChats.onRendered(function() {
