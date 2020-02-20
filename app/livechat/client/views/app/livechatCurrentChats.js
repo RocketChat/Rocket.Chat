@@ -314,6 +314,11 @@ Template.livechatCurrentChats.events({
 			filter.agents = [agents[0]];
 		}
 
+		const departments = instance.selectedDepartments.get();
+		if (departments && departments.length > 0) {
+			filter.department = [departments[0]];
+		}
+
 		instance.filter.set(filter);
 		instance.offset.set(0);
 		storeFilters(filter);
@@ -389,8 +394,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 		if (status) {
 			url += `&open=${ status === 'opened' }`;
 		}
-		if (department) {
-			url += `&departmentId=${ department }`;
+		if (department && Array.isArray(department) && department.length) {
+			url += `&departmentId=${ department[0]._id }`;
 		}
 		if (from) {
 			dateRange.start = `${ moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`;
@@ -428,6 +433,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 			switch (key) {
 				case 'agents':
 					return this.selectedAgents.set(value);
+				case 'department':
+					return this.selectedDepartments.set(value);
 				case 'from':
 				case 'to':
 					return $(`#${ key }`).datepicker('setDate', new Date(value));
@@ -441,6 +448,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 		removeStoredFilters();
 		$('#form-filters').get(0).reset();
 		this.selectedAgents.set([]);
+		this.selectedDepartments.set([]);
 		this.filter.set({});
 	};
 
