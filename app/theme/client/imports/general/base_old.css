@@ -1954,7 +1954,7 @@ rc-old select,
 	&-wrapper {
 		display: flex;
 
-		height: calc(100% - 61px);
+		height: calc(100% - 76px);
 		flex-grow: 1;
 	}
 
