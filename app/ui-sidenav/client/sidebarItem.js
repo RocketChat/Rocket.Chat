@@ -75,7 +75,7 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
-var getConfig = function(e) {
+const getConfig = function(e) {
 	const canLeave = () => {
 		const roomData = Session.get(`roomData${ this.rid }`);
 
@@ -158,7 +158,7 @@ var getConfig = function(e) {
 		currentTarget: e.currentTarget,
 		offsetHorizontal: -e.currentTarget.clientWidth,
 	};
-}
+};
 
 Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
