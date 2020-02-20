@@ -195,6 +195,21 @@ describe('[Users]', function() {
 	describe('[/users.info]', () => {
 		after((done) => updatePermission('view-other-user-channels', ['admin']).then(done));
 
+		it('should return an error when the user does not exist', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					username: 'invalid-username',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('User not found.');
+				})
+				.end(done);
+		});
+
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
 				.set(credentials)
