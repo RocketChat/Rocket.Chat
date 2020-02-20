@@ -1954,7 +1954,9 @@ rc-old select,
 	&-wrapper {
 		display: flex;
 
-		height: calc(100% - 76px);
+		--header-height: 76px; 
+		height: calc(100% - var(--header-height)); /* TODO */
+
 		flex-grow: 1;
 	}
 
