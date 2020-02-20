@@ -251,19 +251,18 @@ Template.message.helpers({
 		}
 	},
 	edited() {
-		return Template.instance().wasEdited;
+		const { msg } = this;
+		return msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	},
 	editTime() {
 		const { msg } = this;
-		if (Template.instance().wasEdited) {
-			return DateFormat.formatDateAndTime(msg.editedAt);
-		}
+		return msg.editedAt ? DateFormat.formatDateAndTime(msg.editedAt) : '';
 	},
 	editedBy() {
-		if (!Template.instance().wasEdited) {
+		const { msg } = this;
+		if (!msg.editedAt) {
 			return '';
 		}
-		const { msg } = this;
 		// try to return the username of the editor,
 		// otherwise a special "?" character that will be
 		// rendered as a special avatar
@@ -466,7 +465,6 @@ const findParentMessage = (() => {
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
 
-	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}

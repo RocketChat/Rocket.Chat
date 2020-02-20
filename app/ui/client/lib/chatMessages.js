@@ -269,7 +269,7 @@ export class ChatMessages {
 
 		if (msg) {
 			readMessage.readNow(rid);
-			$('.message.first-unread').removeClass('first-unread');
+			readMessage.refreshUnreadMark(rid);
 
 			const message = await promises.run('onClientBeforeSendMessage', {
 				_id: Random.id(),
@@ -388,8 +388,8 @@ export class ChatMessages {
 			return false;
 		}
 
-		await call('updateMessage', message);
 		this.clearEditing();
+		await call('updateMessage', message);
 		return true;
 	}
 

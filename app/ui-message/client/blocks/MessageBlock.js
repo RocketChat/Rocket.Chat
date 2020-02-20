@@ -5,10 +5,12 @@ import { Modal, AnimatedVisibility, ButtonGroup, Button, Box } from '@rocket.cha
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import { renderMessageBody } from '../../../ui-utils/client';
+import { getURL } from '../../../utils/lib/getURL';
 import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
 
-
 const focusableElementsString =	'a[href]:not([tabindex="-1"]), area[href]:not([tabindex="-1"]), input:not([disabled]):not([tabindex="-1"]), select:not([disabled]):not([tabindex="-1"]), textarea:not([disabled]):not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
+
+const focusableElementsStringInvalid =	'a[href]:not([tabindex="-1"]):invalid, area[href]:not([tabindex="-1"]):invalid, input:not([disabled]):not([tabindex="-1"]):invalid, select:not([disabled]):not([tabindex="-1"]):invalid, textarea:not([disabled]):not([tabindex="-1"]):invalid, button:not([disabled]):not([tabindex="-1"]):invalid, iframe:invalid, object:invalid, embed:invalid, [tabindex]:not([tabindex="-1"]):invalid, [contenteditable]:invalid';
 
 messageParser.text = ({ text, type } = {}) => {
 	if (type !== 'mrkdwn') {
@@ -44,16 +46,10 @@ const textParser = uiKitText(new class {
 		return text;
 	}
 }());
-const thumb =	'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
 
 // https://www.w3.org/TR/wai-aria-practices/examples/dialog-modal/dialog.html
 
 export const modalBlockWithContext = ({
-	view: {
-		title,
-		close,
-		submit,
-	},
 	onSubmit,
 	onClose,
 	onCancel,
@@ -62,18 +58,31 @@ export const modalBlockWithContext = ({
 	const id = `modal_id_${ useUniqueId() }`;
 
 	const { view, ...data } = useReactiveValue(props.data);
+	const values = useReactiveValue(props.values);
 	const ref = useRef();
 
 	// Auto focus
-	useEffect(() => ref.current && ref.current.querySelector(focusableElementsString).focus(), [ref.current]);
-	// save fovus to restore after close
+	useEffect(() => {
+		if (!ref.current) {
+			return;
+		}
+
+		if (data.errors && Object.keys(data.errors).length) {
+			const element = ref.current.querySelector(focusableElementsStringInvalid);
+			element && element.focus();
+		} else {
+			const element = ref.current.querySelector(focusableElementsString);
+			element && element.focus();
+		}
+	}, [ref.current, data.errors]);
+	// save focus to restore after close
 	const previousFocus = useMemo(() => document.activeElement, []);
 	// restore the focus after the component unmount
 	useEffect(() => () => previousFocus && previousFocus.focus(), []);
 	// Handle Tab, Shift + Tab, Enter and Escape
-	const handleKeyUp = useCallback((event) => {
+	const handleKeyDown = useCallback((event) => {
 		if (event.keyCode === 13) { // ENTER
-			return onSubmit();
+			return onSubmit(event);
 		}
 
 		if (event.keyCode === 27) { // ESC
@@ -110,29 +119,40 @@ export const modalBlockWithContext = ({
 	}, [onSubmit]);
 	// Clean the events
 	useEffect(() => {
+		const element = document.querySelector('.rc-modal-wrapper');
+		const container = element.querySelector('.rcx-modal__content');
 		const close = (e) => {
+			if (e.target !== element) {
+				return;
+			}
 			e.preventDefault();
 			e.stopPropagation();
 			onClose();
 			return false;
 		};
-		const element = document.querySelector('.rc-modal-wrapper');
-		document.addEventListener('keydown', handleKeyUp);
+
+		const ignoreIfnotContains = (e) => {
+			if (!container.contains(e.target)) {
+				return;
+			}
+			return handleKeyDown(e);
+		};
+
+		document.addEventListener('keydown', ignoreIfnotContains);
 		element.addEventListener('click', close);
 		return () => {
-			document.removeEventListener('keydown', handleKeyUp);
+			document.removeEventListener('keydown', ignoreIfnotContains);
 			element.removeEventListener('click', close);
 		};
-	}, handleKeyUp);
+	}, handleKeyDown);
 
 	return (
-		<kitContext.Provider value={{ ...context, ...data }}>
+		<kitContext.Provider value={{ ...context, ...data, values }}>
 			<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
-						{/* <Modal.Thumb url={`api/apps/${ context.appId }/icon`} /> */}
-						<Modal.Thumb url={thumb} />
-						<Modal.Title>{textParser([title])}</Modal.Title>
+						<Modal.Thumb url={getURL(`/api/apps/${ data.appId }/icon`)} />
+						<Modal.Title>{textParser([view.title])}</Modal.Title>
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
@@ -147,8 +167,8 @@ export const modalBlockWithContext = ({
 					</Modal.Content>
 					<Modal.Footer>
 						<ButtonGroup align='end'>
-							<Button onClick={onCancel}>{textParser([close.text])}</Button>
-							<Button primary onClick={onSubmit}>{textParser([submit.text])}</Button>
+							{ view.close && <Button onClick={onCancel}>{textParser([view.close.text])}</Button>}
+							{ view.submit && <Button primary onClick={onSubmit}>{textParser([view.submit.text])}</Button>}
 						</ButtonGroup>
 					</Modal.Footer>
 				</Modal>
