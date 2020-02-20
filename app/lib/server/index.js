@@ -35,7 +35,6 @@ import './methods/deleteUserOwnAccount';
 import './methods/executeSlashCommandPreview';
 import './methods/filterATAllTag';
 import './methods/filterATHereTag';
-import './methods/filterBadWords';
 import './methods/getChannelHistory';
 import './methods/getFullUserData';
 import './methods/getRoomJoinCode';

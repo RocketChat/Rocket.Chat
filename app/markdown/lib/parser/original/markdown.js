@@ -5,6 +5,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import s from 'underscore.string';
+import Filter from 'bad-words';
 
 import { settings } from '../../../../settings';
 
@@ -52,6 +53,21 @@ const parseNotEscaped = function(msg, message) {
 
 	// Support *text* to make bold
 	msg = msg.replace(/(|&gt;|[ >_~`])\*{1,2}([^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3');
+
+	// filtering bad words
+	if (settings.get('Message_AllowBadWordsFilter')) {
+		const badWordsList = settings.get('Message_BadWordsFilterList');
+		let options;
+
+		// Add words to the blacklist
+		if (!!badWordsList && badWordsList.length) {
+			options = {
+				list: badWordsList.split(','),
+			};
+		}
+		const filter = new Filter(options);
+		msg = filter.clean(msg);
+	}
 
 	// Support _text_ to make italics
 	msg = msg.replace(/(^|&gt;|[ >*~`])\_{1,2}([^\_\r\n]+)\_{1,2}([<*~`]|\B|\b|$)/gm, '$1<span class="copyonly">_</span><em>$2</em><span class="copyonly">_</span>$3');
