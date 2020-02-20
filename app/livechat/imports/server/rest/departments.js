@@ -4,7 +4,7 @@ import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
-import { findDepartments, findDepartmentById } from '../../../server/api/lib/departments';
+import { findDepartments, findDepartmentById, findDepartmentsToAutocomplete } from '../../../server/api/lib/departments';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
@@ -131,5 +131,19 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 		} catch (e) {
 			return API.v1.failure(e);
 		}
+	},
+});
+
+API.v1.addRoute('livechat/department.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findDepartmentsToAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
 	},
 });

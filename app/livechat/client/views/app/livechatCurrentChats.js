@@ -84,11 +84,23 @@ Template.livechatCurrentChats.helpers({
 	tagFilters() {
 		return Template.instance().tagFilters.get();
 	},
-	departments() {
-		return Template.instance().departments.get();
-	},
 	tagId() {
 		return this;
+	},
+	departmentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	onClickTagDepartment() {
+		return Template.instance().onClickTagDepartment;
+	},
+	selectedDepartments() {
+		return Template.instance().selectedDepartments.get();
+	},
+	onSelectDepartments() {
+		return Template.instance().onSelectDepartments;
 	},
 });
 
@@ -353,7 +365,16 @@ Template.livechatCurrentChats.onCreated(async function() {
 	this.customFilters = new ReactiveVar([]);
 	this.customFields = new ReactiveVar([]);
 	this.tagFilters = new ReactiveVar([]);
-	this.departments = new ReactiveVar([]);
+	this.selectedDepartments = new ReactiveVar([]);
+
+	this.onSelectDepartments = ({ item: department }) => {
+		department.text = department.name;
+		this.selectedDepartments.set([department]);
+	};
+
+	this.onClickTagDepartment = () => {
+		this.selectedDepartments.set([]);
+	};
 
 	const mountArrayQueryParameters = (label, items, index) => items.reduce((acc, item) => {
 		const isTheLastElement = index === items.length - 1;
@@ -448,9 +469,6 @@ Template.livechatCurrentChats.onCreated(async function() {
 		const offset = this.offset.get();
 		this.loadRooms(filter, offset);
 	});
-
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
-	this.departments.set(departments);
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
