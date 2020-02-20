@@ -92,10 +92,7 @@ export class Users extends Base {
 	}
 
 	findOnlineAgents(agentId) {
-		const query = queryStatusAgentOnline();
-		if (agentId) {
-			Object.assign(query, { _id: agentId });
-		}
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
 
 		return this.find(query);
 	}
