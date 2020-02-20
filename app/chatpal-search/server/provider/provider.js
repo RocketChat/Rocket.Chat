@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { searchProviderService, SearchProvider } from '../../../search/server';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions } from '../../../models';
-
 import { baseUrl } from '../utils/settings';
 
 import Index from './index';
@@ -20,7 +19,7 @@ class ChatpalProvider extends SearchProvider {
 
 		this.chatpalBaseUrl = `${ baseUrl }`;
 
-		ChatpalLogger.debug(`Using ${this.chatpalBaseUrl} as chatpal base url`)
+		ChatpalLogger.debug(`Using ${ this.chatpalBaseUrl } as chatpal base url`);
 
 		this._settings.add('Backend', 'select', 'cloud', {
 			values: [
