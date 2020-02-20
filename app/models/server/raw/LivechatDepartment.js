@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import s from 'underscore.string';
 
 import { BaseRaw } from './BaseRaw';
@@ -28,5 +29,4 @@ export class LivechatDepartmentRaw extends BaseRaw {
 
 		return this.find(query, options);
 	}
-
 }

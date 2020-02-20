@@ -67,4 +67,3 @@ export async function findDepartmentsToAutocomplete({ uid, selector }) {
 		items,
 	};
 }
-
