@@ -203,6 +203,9 @@ Template.message.helpers({
 	},
 	timestamp() {
 		const { msg } = this;
+		if (typeof msg.ts === 'string') {
+			return +new Date(msg.ts);
+		}
 		return +msg.ts;
 	},
 	chatops() {

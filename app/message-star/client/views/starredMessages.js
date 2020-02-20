@@ -19,6 +19,9 @@ Template.starredMessages.helpers({
 		const instance = Template.instance();
 		return instance.messages.find({}, { limit: instance.limit.get(), sort: { ts: -1 } });
 	},
+	populateMessage(msg) {
+		return { ...msg, actionContext: 'starred' };
+	},
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
