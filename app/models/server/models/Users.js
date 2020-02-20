@@ -496,12 +496,6 @@ export class Users extends Base {
 	}
 
 	// FIND
-	findById(userId) {
-		const query = { _id: userId };
-
-		return this.find(query);
-	}
-
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };
 		return this.find(query, options);

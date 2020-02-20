@@ -172,6 +172,14 @@ export class LivechatInquiry extends Base {
 	removeByRoomId(rid) {
 		return this.remove({ rid });
 	}
+
+	removeByVisitorToken(token) {
+		const query = {
+			'v.token': token,
+		};
+
+		this.remove(query);
+	}
 }
 
 export default new LivechatInquiry();
