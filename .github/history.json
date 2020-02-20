@@ -38368,6 +38368,27 @@
           ]
         }
       ]
+    },
+    "2.4.10": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16495",
+          "title": "[FIX] users.info endpoint not handling the error if the user does not exist",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.2",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
