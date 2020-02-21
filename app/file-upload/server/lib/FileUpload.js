@@ -435,6 +435,8 @@ export class FileUploadClass {
 		}
 
 		FileUpload.handlers[name] = this;
+
+		this.insertSync = Meteor.wrapAsync(this.insert, this);
 	}
 
 	getStore() {
