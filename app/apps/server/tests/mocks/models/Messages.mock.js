@@ -14,6 +14,7 @@ export class MessagesMock extends BaseModelMock {
 			},
 			groupable: false,
 			_updatedAt: new Date('2019-03-30T01:22:08.412Z'),
+			unmappedProperty: true,
 		},
 
 		LivechatGuestMessageMock: {

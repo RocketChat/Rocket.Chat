@@ -95,6 +95,7 @@ describe('The AppMessagesConverter instance', function() {
 				},
 				groupable: false,
 				_updatedAt: new Date('2019-03-30T01:22:08.412Z'),
+				unmappedProperty: true,
 			});
 		});
 
@@ -103,7 +104,7 @@ describe('The AppMessagesConverter instance', function() {
 
 			expect(appMessage)
 				.to.have.property('_unmappedProperties_')
-				.which.has.property('t', 'uj');
+				.which.has.property('unmappedProperty', true);
 		});
 
 		it('should return basic sender info when it\'s not a Rocket.Chat user (e.g. Livechat Guest)', function() {
@@ -143,7 +144,7 @@ describe('The AppMessagesConverter instance', function() {
 			const rocketchatMessage = messagesConverter.convertAppMessage(appMessageMock);
 
 			expect(rocketchatMessage).not.to.have.property('_unmappedProperties_');
-			expect(rocketchatMessage).to.have.property('t', 'uj');
+			expect(rocketchatMessage).to.have.property('unmappedProperty', true);
 		});
 
 		it('should throw if message has an invalid room', function() {
