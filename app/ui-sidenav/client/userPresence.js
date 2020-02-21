@@ -77,17 +77,23 @@ Tracker.autorun(() => {
 	}
 	mem.clear(get);
 
-	if (observer) {
+	if (featureExists) {
 		for (const node of data.keys()) {
 			observer.unobserve(node);
 			observer.observe(node);
 		}
 	}
+
+	get(this.data.uid);
+	getAll();
 });
 
 Template.userPresence.onRendered(function() {
 	data.set(this.firstNode, this.data);
-	if (observer) {
-		observer.observe(this.firstNode);
+	if (featureExists) {
+		return observer.observe(this.firstNode);
 	}
+
+	get(this.data.uid);
+	getAll();
 });
