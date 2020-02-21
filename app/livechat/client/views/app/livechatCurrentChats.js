@@ -484,7 +484,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 		}
 	});
 
-	setTimeout(this.loadDefaultFilters, 500);
+	this.loadDefaultFilters();
 });
 
 Template.livechatCurrentChats.onRendered(function() {
