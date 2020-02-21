@@ -86,9 +86,6 @@ const getFiles = Meteor.wrapAsync(({ request }, callback) => {
 	request.pipe(busboy);
 });
 
-const fileStore = FileUpload.getStore('Uploads');
-const fileStoreInsert = Meteor.wrapAsync(fileStore.insert.bind(fileStore));
-
 API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 	post() {
 		const room = Meteor.call('canAccessRoom', this.urlParams.rid, this.userId);
@@ -121,7 +118,8 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		};
 
 		const fileData = Meteor.runAsUser(this.userId, () => {
-			const uploadedFile = fileStoreInsert(details, file.fileBuffer);
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
 
 			uploadedFile.description = fields.description;
 
