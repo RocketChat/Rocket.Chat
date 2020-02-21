@@ -50,7 +50,7 @@ export const deleteMessage = function(message, user) {
 	}
 
 	// decrease message count
-	Rooms.dcrsMsgCountById(message.rid, -1);
+	Rooms.decreaseMessageCountById(message.rid, -1);
 
 	if (showDeletedStatus) {
 		Messages.setAsDeletedByIdAndUser(message._id, user);

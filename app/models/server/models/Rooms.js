@@ -625,13 +625,13 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	dcrsMsgCountById(_id, dcrs) {
-		if (dcrs == null) { dcrs = -1; }
+	decreaseMessageCountById(_id, count) {
+		if (count == null) { count = -1; }
 		const query = { _id };
 
 		const update = {
 			$inc: {
-				msgs: dcrs,
+				msgs: count,
 			},
 		};
 

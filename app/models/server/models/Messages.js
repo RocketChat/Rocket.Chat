@@ -918,7 +918,7 @@ export class Messages extends Base {
 			const count = this.remove(query);
 
 			// decrease message count
-			Rooms.dcrsMsgCountById(rid, -count);
+			Rooms.decreaseMessageCountById(rid, -count);
 
 			return count;
 		}
@@ -937,7 +937,7 @@ export class Messages extends Base {
 		});
 
 		// decrease message count
-		Rooms.dcrsMsgCountById(rid, -count);
+		Rooms.decreaseMessageCountById(rid, -count);
 
 		return count;
 	}
