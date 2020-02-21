@@ -72,6 +72,26 @@ export class AppMessagesConverter {
 
 				return user;
 			},
+			discussionRoom: (message) => {
+				const { drid } = message;
+				delete message.drid;
+
+				if (!drid) {
+					return undefined;
+				}
+
+				return this.orch.getConverters().get('rooms').convertById(drid);
+			},
+			type: (message) => {
+				const { t } = message;
+				delete message.t;
+
+				if (!t) {
+					return undefined;
+				}
+
+				return t;
+			},
 		};
 
 		return transformMappedData(msgObj, map);
@@ -138,6 +158,8 @@ export class AppMessagesConverter {
 			parseUrls: message.parseUrls,
 			blocks: message.blocks,
 			token: message.token,
+			drid: typeof message.discussionRoom === 'undefined' ? undefined : message.discussionRoom.id,
+			t: typeof message.type === 'undefined' ? undefined : message.type,
 		};
 
 		return Object.assign(newMessage, message._unmappedProperties_);
