@@ -67,7 +67,9 @@ const handleEntries = function(entries) {
 	getAll();
 };
 
-const observer = new IntersectionObserver(handleEntries, options);
+const featureExists = !!window.IntersectionObserver;
+
+const observer = featureExists && new IntersectionObserver(handleEntries, options);
 
 Tracker.autorun(() => {
 	if (!Meteor.userId() || !Meteor.status().connected) {
@@ -75,13 +77,17 @@ Tracker.autorun(() => {
 	}
 	mem.clear(get);
 
-	for (const node of data.keys()) {
-		observer.unobserve(node);
-		observer.observe(node);
+	if (observer) {
+		for (const node of data.keys()) {
+			observer.unobserve(node);
+			observer.observe(node);
+		}
 	}
 });
 
 Template.userPresence.onRendered(function() {
 	data.set(this.firstNode, this.data);
-	observer.observe(this.firstNode);
+	if (observer) {
+		observer.observe(this.firstNode);
+	}
 });
