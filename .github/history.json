@@ -39822,6 +39822,54 @@
           ]
         }
       ]
+    },
+    "3.0.2": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16682",
+          "title": "[FIX] ie11 support",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.2",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16603",
+          "title": "[FIX] Omnichannel Inquiry queues when removing chats",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16495",
+          "title": "[FIX] users.info endpoint not handling the error if the user does not exist",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.2",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16668",
+          "title": "[FIX] Clear unread red line when the ESC key is pressed ",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
