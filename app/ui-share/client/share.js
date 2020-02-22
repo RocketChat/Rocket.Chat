@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 
-import { getShareData, isMobile } from '../../utils';
+import { getShareData } from '../../utils';
 
 function getShareString() {
 	const data = getShareData();
