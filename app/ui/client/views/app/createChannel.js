@@ -10,6 +10,7 @@ import _ from 'underscore';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { t, roomTypes } from '../../../../utils';
+import { offlineAction } from '../../../../ui-utils';
 import { hasAllPermission } from '../../../../authorization';
 import { AutoComplete } from '../../../../meteor-autocomplete/client';
 
@@ -96,8 +97,11 @@ Template.createChannel.helpers({
 	typeDescription() {
 		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel') : t('Everyone_can_access_this_channel'));
 	},
-	broadcast() {
-		return Template.instance().broadcast.get();
+	readOnlyDisabled() {
+		return Template.instance().broadcast.get() || !hasAllPermission(['create-ro']);
+	},
+	broadcastDisabled() {
+		return !hasAllPermission(['create-ro']);
 	},
 	encrypted() {
 		return Template.instance().encrypted.get();
@@ -223,6 +227,9 @@ Template.createChannel.events({
 	'submit .create-channel__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
+		if (offlineAction('Creating channel')) {
+			return;
+		}
 		const name = e.target.name.value;
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();

@@ -9,7 +9,7 @@ import s from 'underscore.string';
 import toastr from 'toastr';
 
 import { t, handleError, getUserPreference } from '../../utils';
-import { modal, SideNav } from '../../ui-utils';
+import { modal, SideNav, offlineAction } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
 import { settings } from '../../settings';
 import { CustomSounds } from '../../custom-sounds/client';
@@ -127,6 +127,33 @@ Template.accountPreferences.helpers({
 	dontAskAgainList() {
 		return getUserPreference(Meteor.userId(), 'dontAskAgainList');
 	},
+	showLocalization() {
+		return settings.get('UI_DisplayLocalization');
+	},
+	showPrivacy() {
+		return settings.get('UI_DisplayPrivacy');
+	},
+	showUserPresence() {
+		return settings.get('UI_DisplayUserPresence');
+	},
+	showNotifications() {
+		return settings.get('UI_DisplayNotifications');
+	},
+	showMessages() {
+		return settings.get('UI_DisplayMessages');
+	},
+	showSidebar() {
+		return settings.get('UI_DisplaySidebar');
+	},
+	showHighlights() {
+		return settings.get('UI_DisplayHighlights');
+	},
+	showSound() {
+		return settings.get('UI_DisplaySound');
+	},
+	showMyData() {
+		return (settings.get('UserData_EnableDownload') !== false) && settings.get('UI_DisplayMyData');
+	},
 });
 
 Template.accountPreferences.onCreated(function() {
@@ -159,8 +186,22 @@ Template.accountPreferences.onCreated(function() {
 	};
 
 	this.save = function() {
+		if (offlineAction('Updating preference')) {
+			return;
+		}
+
 		instance = this;
 		const data = {};
+		let reload = false;
+
+		if (settings.get('UI_DisplayLocalization')) {
+			const selectedLanguage = $('#language').val();
+			if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
+				localStorage.setItem('userLanguage', selectedLanguage);
+				data.language = selectedLanguage;
+				reload = true;
+			}
+		}
 
 		data.newRoomNotification = $('select[name=newRoomNotification]').val();
 		data.newMessageNotification = $('select[name=newMessageNotification]').val();
@@ -189,10 +230,27 @@ Template.accountPreferences.onCreated(function() {
 		}));
 		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map((option) => ({ action: option.value, label: option.text }));
 
-		let reload = false;
+		if (settings.get('UI_DisplayUserPresence')) {
+			const enableAutoAway = JSON.parse($('#enableAutoAway').find('input:checked').val());
+			data.enableAutoAway = enableAutoAway;
+			if (this.shouldUpdateLocalStorageSetting('enableAutoAway', enableAutoAway)) {
+				localStorage.setItem('enableAutoAway', enableAutoAway);
+				reload = true;
+			}
 
-		if (settings.get('UI_DisplayRoles')) {
-			data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
+			const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? settings.get('Accounts_Default_User_Preferences_idleTimeLimit') : parseInt($('input[name=idleTimeLimit]').val());
+			data.idleTimeLimit = idleTimeLimit;
+			if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
+				localStorage.setItem('idleTimeLimit', idleTimeLimit);
+				reload = true;
+			}
+		}
+
+		if (settings.get('UI_DisplayNotifications')) {
+			data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
+			data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
+			data.desktopNotifications = $('#desktopNotifications').find('select').val();
+			data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		}
 
 		if ($('input[name=desktopNotificationRequireInteraction]:checked').val() === undefined) {
@@ -207,24 +265,34 @@ Template.accountPreferences.onCreated(function() {
 			reload = true;
 		}
 
+		if (settings.get('UI_DisplaySidebar')) {
+			data.roomCounterSidebar = JSON.parse($('#roomCounterSidebar').find('input:checked').val());
+			data.sidebarShowDiscussion = JSON.parse($('#sidebarShowDiscussion').find('input:checked').val());
+		}
+
+		if (settings.get('UI_DisplayHighlights')) {
+			data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
+				return s.trim(e);
+			}));
+
+			// if highlights changed we need page reload
+			const highlights = getUserPreference(Meteor.userId(), 'highlights');
+			if (highlights && highlights.join('\n') !== data.highlights.join('\n')) {
+				reload = true;
+			}
+		}
+
+		if (settings.get('UI_DisplaySound')) {
+			data.newRoomNotification = $('select[name=newRoomNotification]').val();
+			data.newMessageNotification = $('select[name=newMessageNotification]').val();
+			data.muteFocusedConversations = JSON.parse($('#muteFocusedConversations').find('input:checked').val());
+			data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
+		}
+
 		const selectedLanguage = $('#language').val();
 		if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
 			Meteor._localStorage.setItem('userLanguage', selectedLanguage);
 			data.language = selectedLanguage;
-			reload = true;
-		}
-
-		const enableAutoAway = JSON.parse($('#enableAutoAway').find('input:checked').val());
-		data.enableAutoAway = enableAutoAway;
-		if (this.shouldUpdateLocalStorageSetting('enableAutoAway', enableAutoAway)) {
-			Meteor._localStorage.setItem('enableAutoAway', enableAutoAway);
-			reload = true;
-		}
-
-		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? settings.get('Accounts_Default_User_Preferences_idleTimeLimit') : parseInt($('input[name=idleTimeLimit]').val());
-		data.idleTimeLimit = idleTimeLimit;
-		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
-			Meteor._localStorage.setItem('idleTimeLimit', idleTimeLimit);
 			reload = true;
 		}
 
@@ -249,6 +317,9 @@ Template.accountPreferences.onCreated(function() {
 	};
 
 	this.downloadMyData = function(fullExport = false) {
+		if (!settings.get('UI_DisplayMyData')) {
+			return false;
+		}
 		Meteor.call('requestDataDownload', { fullExport }, function(error, results) {
 			if (results) {
 				if (results.requested) {
@@ -301,6 +372,9 @@ Template.accountPreferences.onCreated(function() {
 	};
 
 	this.exportMyData = function() {
+		if (!settings.get('UI_DisplayMyData')) {
+			return false;
+		}
 		this.downloadMyData(true);
 	};
 });

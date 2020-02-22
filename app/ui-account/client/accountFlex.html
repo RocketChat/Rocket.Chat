@@ -24,11 +24,11 @@
 					{{> sidebarItem menuItem "Encryption" "key" "account" "encryption" }}
 				{{/if}}
 
-				{{#if webdavIntegrationEnabled}}
+				{{#if showIntegrationsMenu}}
 					{{> sidebarItem menuItem "Integrations" "code" "account" "integrations" }}
 				{{/if}}
 
-				{{#if accessTokensEnabled}}
+				{{#if showPersonalAccessTokensMenu}}
 					{{> sidebarItem menuItem "Personal_Access_Tokens" "key" "account" "tokens" }}
 				{{/if}}
 			</ul>

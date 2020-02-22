@@ -52,18 +52,18 @@ export const formattingButtons = [
 	{
 		label: 'KaTeX',
 		text: () => {
-			if (!katex.isEnabled()) {
+			if (!settings.get('Katex_Enabled')) {
 				return;
 			}
-			if (katex.isDollarSyntaxEnabled()) {
+			if (settings.get('Katex_Dollar_Syntax')) {
 				return '$$KaTeX$$';
 			}
-			if (katex.isParenthesisSyntaxEnabled()) {
+			if (settings.get('Katex_Parenthesis_Syntax')) {
 				return '\\[KaTeX\\]';
 			}
 		},
 		link: 'https://khan.github.io/KaTeX/function-support.html',
-		condition: () => katex.isEnabled(),
+		condition: () => settings.get('Katex_Enabled'),
 	},
 ];
 

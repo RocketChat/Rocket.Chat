@@ -8,7 +8,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { modal, SideNav } from '../../ui-utils';
+import { modal, SideNav, offlineAction } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
@@ -286,21 +286,24 @@ Template.accountProfile.onCreated(function() {
 			}
 			data.username = s.trim(self.username.get());
 		}
-		if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
-			if (!settings.get('Accounts_AllowEmailChange')) {
-				toastr.remove();
-				toastr.error(t('Email_Change_Disabled'));
-				instance.clearForm();
-				return cb && cb();
-			}
-			data.email = s.trim(self.email.get());
-		}
+		// WIDECHAT - disable email check
+		// if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
+		// 	if (!settings.get('Accounts_AllowEmailChange')) {
+		// 		toastr.remove();
+		// 		toastr.error(t('Email_Change_Disabled'));
+		// 		instance.clearForm();
+		// 		return cb && cb();
+		// 	} else {
+		// 		data.email = s.trim(self.email.get());
+		// 	}
+		// }
+
 		const customFields = {};
 		$('[data-customfield=true]').each(function() {
 			customFields[this.name] = $(this).val() || '';
 		});
 
-		if (Object.keys(data).length + Object.keys(customFields).length === 0) {
+		if (Object.keys(data).length + Object.keys(customFields).length === 0 || offlineAction('Updating profile')) {
 			return cb && cb();
 		}
 		Meteor.call('saveUserProfile', data, customFields, function(error, results) {

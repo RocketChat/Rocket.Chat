@@ -2,16 +2,19 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
+import { PhoneNumberUtil } from 'google-libphonenumber';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
 import { Info } from '../../../utils/server';
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
+import * as Mailer from '../../../mailer';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
 import { StdOut } from '../../../logger/server/streamer';
 
+const phoneUtil = PhoneNumberUtil.getInstance();
 
 // DEPRECATED
 // Will be removed after v3.0.0

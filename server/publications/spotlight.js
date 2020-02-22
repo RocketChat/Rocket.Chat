@@ -63,6 +63,7 @@ Meteor.methods({
 				statusText: 1,
 			},
 			sort: {},
+			filterByDiscoverability: true,
 		};
 		if (settings.get('UI_Use_Real_Name')) {
 			userOptions.sort.name = 1;

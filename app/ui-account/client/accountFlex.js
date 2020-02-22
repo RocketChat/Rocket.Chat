@@ -43,4 +43,14 @@ Template.accountFlex.helpers({
 	embeddedVersion() {
 		return Layout.isEmbedded();
 	},
+	showSecurityMenu() {
+		return settings.get('UI_Display_Security');
+	},
+	showPersonalAccessTokensMenu() {
+		return hasAllPermission(['create-personal-access-tokens']) && settings.get('UI_Display_Personal_Access_Tokens');
+	},
+	showIntegrationsMenu() {
+		return settings.get('Webdav_Integration_Enabled') && settings.get('UI_Display_Integrations');
+	},
+
 });

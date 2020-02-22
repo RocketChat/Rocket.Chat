@@ -1,14 +1,30 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
 
 import { fileUploadHandler } from '../../../file-upload';
 import { settings } from '../../../settings/client';
-import { t, fileUploadIsValidContentType } from '../../../utils';
+import { ChatMessage } from '../../../models/client';
+import { t, fileUploadIsValidContentType, SWCache } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
+import { sendOfflineFileMessage } from './sendOfflineFileMessage';
 
+const setMsgId = (msgData = {}) => {
+	let id;
+	if (msgData.id) {
+		id = msgData.id;
+	} else {
+		id = Random.id();
+	}
+	return Object.assign({
+		id,
+		msg: '',
+		groupable: false,
+	}, msgData);
+};
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -146,16 +162,9 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 
 	const replies = $(input).data('reply') || [];
 	const mention = $(input).data('mention-user') || false;
-
-	let msg = '';
-
-	if (!mention || !threadsEnabled) {
-		msg = await prependReplies('', replies, mention);
-	}
-
-	if (mention && threadsEnabled && replies.length) {
-		tmid = replies[0]._id;
-	}
+	const msg = await prependReplies('', replies, mention);
+	const msgData = setMsgId({ msg, tmid });
+	let offlineFile = null;
 
 	const uploadNextFile = () => {
 		const file = files.pop();
@@ -207,34 +216,29 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			};
 
 			const upload = fileUploadHandler('Uploads', record, file.file);
-
-			uploadNextFile();
-
-			const uploads = Session.get('uploading') || [];
-			uploads.push({
+			const uploading = {
 				id: upload.id,
 				name: upload.getFileName(),
 				percentage: 0,
-			});
-			Session.set('uploading', uploads);
+			};
+			file.file._id = upload.id;
+			uploadNextFile();
+
+			// Session.set(`uploading-${ upload.id }`, uploading);
 
 			upload.onProgress = (progress) => {
-				const uploads = Session.get('uploading') || [];
-				uploads.filter((u) => u.id === upload.id).forEach((u) => {
-					u.percentage = Math.round(progress * 100) || 0;
-				});
-				Session.set('uploading', uploads);
+				const uploads = uploading;
+				uploads.percentage = Math.round(progress * 100) || 0;
+				ChatMessage.setProgress(msgData.id, uploads);
 			};
+
+			const offlineUpload = (file, meta) => sendOfflineFileMessage(rid, msgData, file, meta, (file) => {
+				offlineFile = file;
+			});
 
 			upload.start((error, file, storage) => {
 				if (error) {
-					const uploads = Session.get('uploading') || [];
-					uploads.filter((u) => u.id === upload.id).forEach((u) => {
-						u.error = error.message;
-						u.percentage = 0;
-					});
-					Session.set('uploading', uploads);
-
+					ChatMessage.setProgress(msgData.id, uploading);
 					return;
 				}
 
@@ -242,20 +246,20 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					return;
 				}
 
-				Meteor.call('sendFileMessage', rid, storage, file, { msg, tmid }, () => {
+				Meteor.call('sendFileMessage', rid, storage, file, msgData, () => {
 					$(input)
 						.removeData('reply')
 						.trigger('dataChange');
 
-					setTimeout(() => {
-						const uploads = Session.get('uploading') || [];
-						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
-					}, 2000);
+					if (offlineFile) {
+						SWCache.removeFromCache(offlineFile);
+					}
 				});
-			});
+			}, offlineUpload);
 
 			Tracker.autorun((computation) => {
 				const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
+
 				if (!isCanceling) {
 					return;
 				}
@@ -263,8 +267,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				computation.stop();
 				upload.stop();
 
-				const uploads = Session.get('uploading') || {};
-				Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+				ChatMessage.setProgress(msgData.id, uploading);
 			});
 		}));
 	};

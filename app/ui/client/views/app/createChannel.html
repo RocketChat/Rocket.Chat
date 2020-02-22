@@ -6,7 +6,10 @@
 			</div>
 		{{/each}}
 		<div class="create-channel__wrapper">
-			<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
+			<header class="create-channel__header">
+                                <h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
+                                <p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
+                        </header>
 			<form id="create-channel" name="create-channel" class="create-channel__content">
 				<div class="create-channel__switches">
 					<div class="rc-switch">
@@ -23,7 +26,7 @@
 					</div>
 					<div class="rc-switch">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input" name="readOnly" checked={{readOnly}} disabled="{{broadcast}}">
+							<input type="checkbox" class="rc-switch__input" name="readOnly" checked={{readOnly}} disabled="{{readOnlyDisabled}}">
 							<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -51,7 +54,7 @@
 					{{/if}}
 					<div class="rc-switch">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input" name="broadcast">
+							<input type="checkbox" class="rc-switch__input" name="broadcast" disabled="{{broadcastDisabled}}">
 							<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -101,7 +104,11 @@
 							</div>
 							{{#with config}}
 								{{#if autocomplete 'isShowing'}}
-									{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
+									<div class="fadeInDown">
+                                                                                {{#if autocomplete 'isLoaded'}}
+											{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
+                                                                                {{/if}}
+                                                                        </div>
 								{{/if}}
 							{{/with}}
 						</label>

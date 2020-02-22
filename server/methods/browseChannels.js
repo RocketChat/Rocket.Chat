@@ -58,6 +58,7 @@ Meteor.methods({
 		const pagination = {
 			skip,
 			limit,
+			filterByDiscoverability: true,
 		};
 
 		const canViewAnonymous = settings.get('Accounts_AllowAnonymousRead') === true;

@@ -14,7 +14,7 @@
 	<section class="preferences-page preferences-page--new">
 		{{#header sectionName="Profile" buttons=true fullpage=true}}
 			<div class="rc-header__section-button">
-				<button class="rc-button rc-button--primary" name="send" type="submit" data-button="create" form="profile" {{canSave 'disabled'}}>{{_ "Save_changes"}}</button>
+				<button class="rc-button rc-button--primary" name="send" type="submit" data-button="create" form="profile" {{canSave 'enabled'}}>{{_ "Save_changes"}}</button>
 			</div>
 		{{/header}}
 		<div class="preferences-page__content">
@@ -92,7 +92,7 @@
 						</div>
 						<div class="rc-form-group rc-grid">
 							{{# with canChange=allowRealNameChange}}
-							<div class="rc-input rc-w50 padded {{#if nameInvalid}}rc-input--error{{/if}}">
+							<div class="rc-input rc-w50 padded {{#if nameInvalid}}rc-input--error{{/if}}" style="display: none;">
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Name"}}</div>
 									<div class="rc-input__wrapper">
@@ -116,7 +116,8 @@
 									</div>
 								</label>
 								{{# unless canChange}}
-									<div class="rc-input__description">{{_ 'Username_Change_Disabled'}}</div>
+									{{!-- WIDECHAT --}}
+									{{!-- <div class="rc-input__description">{{_ 'Username_Change_Disabled'}}</div> --}}
 								{{/unless}}
 								{{#unless usernameAvaliable}}
 									<div class="rc-input__error">
@@ -131,7 +132,7 @@
 						</div>
 						<div class="rc-form-group rc-grid">
 							{{#with canChange=allowEmailChange}}
-							<div class="rc-input rc-w50 padded {{#if emailInvalid}}rc-input--error{{/if}}">
+							<div class="rc-input rc-w50 padded {{#if emailInvalid}}rc-input--error{{/if}}" style="display: none;">
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Email"}}</div>
 									<div class="rc-input__wrapper">
@@ -148,7 +149,8 @@
 									</div>
 								</label>
 								{{#unless canChange}}
-									<div class="rc-input__description">{{_ 'Email_Change_Disabled'}}</div>
+									{{!-- WIDECHAT --}}
+									{{!-- <div class="rc-input__description">{{_ 'Email_Change_Disabled'}}</div> --}}
 								{{/unless}}
 								{{#unless emailVerified}}
 									<div class="rc-input__error">
@@ -157,7 +159,7 @@
 								{{/unless}}
 							</div>
 							{{/with}}
-							<div class="rc-input{{#if confirmationPasswordInvalid}} rc-input--error{{/if}} rc-w50 padded">
+							<div class="rc-input{{#if confirmationPasswordInvalid}} rc-input--error{{/if}} rc-w50 padded" style="display: none;">
 								{{#with canChange=allowPasswordChange}}
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "New_password"}}</div>

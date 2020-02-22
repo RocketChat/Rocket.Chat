@@ -16,16 +16,9 @@ let Settings = {
 	get: () => {},
 };
 
-// define server language for email translations
-// @TODO: change TAPi18n.__ function to use the server language by default
-let lng = 'en';
-settings.get('Language', (key, value) => {
-	lng = value || 'en';
-});
-
 export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
-export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
-export const replace = function replace(str, data = {}) {
+export const translate = (str, lng = undefined) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
+export const replace = function replace(str, data = {}, lng = undefined) {
 	if (!str) {
 		return '';
 	}
@@ -39,10 +32,10 @@ export const replace = function replace(str, data = {}) {
 		},
 		...data,
 	};
-	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
+	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str, lng));
 };
 
-export const replaceEscaped = (str, data = {}) => replace(str, {
+export const replaceEscaped = (str, data = {}, lng = undefined) => replace(str, {
 	Site_Name: s.escapeHTML(settings.get('Site_Name')),
 	Site_Url: s.escapeHTML(settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {

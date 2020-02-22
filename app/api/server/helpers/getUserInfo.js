@@ -33,5 +33,30 @@ API.helperMethods.set('getUserInfo', function _getUserInfo(me) {
 		},
 	};
 
+	me.telephoneNumber = '';
+	let phoneFieldName = '';
+
+	settings.get('Contacts_Phone_Custom_Field_Name', function(name, fieldName) {
+		phoneFieldName = fieldName;
+	});
+
+	let phoneFieldArray = [];
+	if (phoneFieldName) {
+		phoneFieldArray = phoneFieldName.split(',');
+	}
+
+	if (phoneFieldArray.length > 0) {
+		let dict = me;
+		for (let i = 0; i < phoneFieldArray.length - 1; i++) {
+			if (phoneFieldArray[i] in dict) {
+				dict = dict[phoneFieldArray[i]];
+			}
+		}
+		const phone = dict[phoneFieldArray[phoneFieldArray.length - 1]];
+		if (phone) {
+			me.telephoneNumber = phone;
+		}
+	}
+
 	return me;
 });

@@ -82,6 +82,7 @@ Template.messageBox.onCreated(function() {
 		autogrow.update();
 	};
 
+	// let isSending = false;
 
 	this.send = (event) => {
 		const { input } = this;

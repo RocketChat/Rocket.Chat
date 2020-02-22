@@ -17,6 +17,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 
+		if (readOnly && !hasPermission(Meteor.userId(), 'create-ro')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
+		}
+
 		// validate extra data schema
 		check(extraData, Match.ObjectIncluding({
 			tokenpass: Match.Maybe({

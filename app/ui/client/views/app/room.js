@@ -11,7 +11,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
+import { t, roomTypes, getUserPreference, handleError, isMobile } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
@@ -114,7 +114,7 @@ const mountPopover = (e, i, outerContext) => {
 			modifier: item.color,
 		}));
 
-		menuItems = menuItems.concat(messageItems);
+		menuItems = messageItems.concat(menuItems);
 	}
 
 	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
@@ -138,14 +138,6 @@ const mountPopover = (e, i, outerContext) => {
 	};
 
 	popover.open(config);
-};
-
-const wipeFailedUploads = () => {
-	const uploads = Session.get('uploading');
-
-	if (uploads) {
-		Session.set('uploading', uploads.filter((upload) => !upload.error));
-	}
 };
 
 function roomHasGlobalPurge(room) {
@@ -333,10 +325,6 @@ Template.room.helpers({
 
 	windowId() {
 		return `chat-window-${ this._id }`;
-	},
-
-	uploading() {
-		return Session.get('uploading');
 	},
 
 	roomLeader() {
@@ -735,6 +723,10 @@ Template.room.events({
 			}
 
 			window.open(e.target.href);
+		}
+
+		if (isMobile() && !touchMoved) {
+			mountPopover(e, t, this);
 		}
 	},
 
@@ -1174,6 +1166,8 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	Session.set('openSearchPage', false);
+
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {
