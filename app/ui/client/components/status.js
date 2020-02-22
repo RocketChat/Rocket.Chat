@@ -21,9 +21,9 @@ const clearRetryInterval = function() {
 
 const reconnectToServer = function() {
 	if (Meteor.status().status === 'waiting') {
-		nextRetry.set(new Date((new Date()).getTime() + 5000));
+		nextRetry.set(new Date(new Date().getTime() + 5000));
 		intervalId = intervalId || Meteor.setInterval(function() {
-			nextRetry.set(new Date((new Date()).getTime() + 5000));
+			nextRetry.set(new Date(new Date().getTime() + 5000));
 			Meteor.reconnect();
 		}, 5000);
 	} else {

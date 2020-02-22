@@ -162,7 +162,16 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 
 	const replies = $(input).data('reply') || [];
 	const mention = $(input).data('mention-user') || false;
-	const msg = await prependReplies('', replies, mention);
+	let msg = '';
+
+	if (!mention || !threadsEnabled) {
+		msg = await prependReplies('', replies, mention);
+	}
+
+	if (mention && threadsEnabled && replies.length) {
+		tmid = replies[0]._id;
+	}
+
 	const msgData = setMsgId({ msg, tmid });
 	let offlineFile = null;
 

@@ -256,6 +256,7 @@ Template.messagePopup.onRendered(function() {
 	}
 	const self = this;
 	self.autorun(() => {
+		lazyloadtick();
 		const open = self.open.get();
 		if ($('.reply-preview').length) {
 			if (open === true) {
@@ -284,6 +285,9 @@ Template.messagePopup.onDestroyed(function() {
 });
 
 Template.messagePopup.events({
+	'scroll .rooms-list__list'() {
+		lazyloadtick();
+	},
 	'mouseenter .popup-item'(e) {
 		if (e.currentTarget.className.indexOf('selected') > -1 || isMobile()) {
 			return;
