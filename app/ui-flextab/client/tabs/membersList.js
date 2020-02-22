@@ -33,6 +33,7 @@ Template.membersList.helpers({
 	roomUsers() {
 		const onlineUsers = RoomManager.onlineUsers.get();
 		const roomUsers = Template.instance().users.get();
+		const showAllUsers = Template.instance().showAllUsers.get();
 		const room = ChatRoom.findOne(this.rid);
 		const roomMuted = (room != null ? room.muted : undefined) || [];
 		const roomUnmuted = (room != null ? room.unmuted : undefined) || [];
@@ -50,6 +51,9 @@ Template.membersList.helpers({
 		if (filter && reg) {
 			users = users.filter((user) => reg.test(user.username) || reg.test(user.name));
 		}
+
+		// filter online user
+		users = users.filter((user) => showAllUsers || onlineUsers[user.username] != null);
 
 		users = users.map(function(user) {
 			let utcOffset;
@@ -76,6 +80,14 @@ Template.membersList.helpers({
 				muted,
 				utcOffset,
 			};
+		});
+
+		// sort online user to the top
+		users = users.sort(function(user1, user2) {
+			if (user1.status === 'offline' && user2.status === 'online') {
+				return 1;
+			}
+			return -1;
 		});
 
 		const usersTotal = users.length;
@@ -283,7 +295,7 @@ Template.membersList.onCreated(function() {
 	this.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
-		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
+		return Meteor.call('getUsersOfRoom', this.data.rid, true, { limit: 100, skip: 0 }, (error, users) => {
 			if (error) {
 				console.error(error);
 				this.loading.set(false);
