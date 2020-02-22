@@ -464,11 +464,11 @@
 			}
 		}
 
-		 &__search-button {
+		&__search-button {
 			&__action {
-			   &__icon {
-				  height: 1.2em;
-			   }
+				&__icon {
+					height: 1.2em;
+				}
 			}
 		}
 
