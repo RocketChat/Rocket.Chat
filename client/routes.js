@@ -233,19 +233,20 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
+const style = 'overflow: hidden; flex: 1 1 auto; height: 1%;';
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
 	action: async ({ group = 'info' } = {}) => {
 		switch (group) {
 			case 'info': {
 				const { InformationRoute } = await import('./components/admin/info/InformationRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute) });
+				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute, { }, () => HTML.DIV({ style })) }); // eslint-disable-line
 				break;
 			}
 
 			default: {
 				const { SettingsRoute } = await import('./components/admin/settings/SettingsRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }) });
+				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }, () => HTML.DIV({ style })) }); // eslint-disable-line
 				// BlazeLayout.render('main', { center: 'admin' });
 			}
 		}
