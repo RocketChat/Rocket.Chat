@@ -82,7 +82,9 @@ Tracker.autorun(() => {
 			observer.unobserve(node);
 			observer.observe(node);
 		}
+		return;
 	}
+	getAll();
 });
 
 Template.userPresence.onRendered(function() {
