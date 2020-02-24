@@ -83,9 +83,6 @@ Tracker.autorun(() => {
 			observer.observe(node);
 		}
 	}
-
-	get(this.data.uid);
-	getAll();
 });
 
 Template.userPresence.onRendered(function() {
