@@ -26,7 +26,7 @@ export function PageHeader({ children, title, ...props }) {
 }
 
 export function PageContent(props) {
-	return <ScrollableArea >
+	return <ScrollableArea>
 		<Box style={useMemo(() => ({ padding: '1rem' }), [])} {...props} />
 	</ScrollableArea>;
 }
