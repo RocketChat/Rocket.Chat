@@ -91,23 +91,21 @@ const statistics = {
 	},
 };
 
-const instances = [
-	{
-		address: 'instances[].address',
-		broadcastAuth: 'instances[].broadcastAuth',
-		currentStatus: {
-			connected: 'instances[].currentStatus.connected',
-			retryCount: 'instances[].currentStatus.retryCount',
-			status: 'instances[].currentStatus.status',
-		},
-		instanceRecord: {
-			_id: 'instances[].instanceRecord._id',
-			pid: 'instances[].instanceRecord.pid',
-			_createdAt: dummyDate,
-			_updatedAt: dummyDate,
-		},
+const exampleInstance = {
+	address: 'instances[].address',
+	broadcastAuth: 'instances[].broadcastAuth',
+	currentStatus: {
+		connected: 'instances[].currentStatus.connected',
+		retryCount: 'instances[].currentStatus.retryCount',
+		status: 'instances[].currentStatus.status',
 	},
-];
+	instanceRecord: {
+		_id: 'instances[].instanceRecord._id',
+		pid: 'instances[].instanceRecord.pid',
+		_createdAt: dummyDate,
+		_updatedAt: dummyDate,
+	},
+};
 
 export const _default = () =>
 	<InformationPage
@@ -115,14 +113,16 @@ export const _default = () =>
 		isLoading={boolean('isLoading', false)}
 		info={object('info', info)}
 		statistics={object('statistics', statistics)}
-		instances={object('instances', instances)}
+		instances={object('instances', exampleInstance)}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const withoutCanViewStatisticsPermission = () =>
 	<InformationPage
 		info={info}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const loading = () =>
@@ -131,6 +131,7 @@ export const loading = () =>
 		isLoading
 		info={info}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const withStatistics = () =>
@@ -139,6 +140,7 @@ export const withStatistics = () =>
 		info={info}
 		statistics={statistics}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const withOneInstance = () =>
@@ -146,6 +148,27 @@ export const withOneInstance = () =>
 		canViewStatistics
 		info={info}
 		statistics={statistics}
-		instances={instances}
+		instances={[exampleInstance]}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
+	/>;
+
+export const withTwoInstances = () =>
+	<InformationPage
+		canViewStatistics
+		info={info}
+		statistics={statistics}
+		instances={[exampleInstance, exampleInstance]}
+		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
+	/>;
+
+export const withTwoInstancesAndDisabledOplog = () =>
+	<InformationPage
+		canViewStatistics
+		info={info}
+		statistics={{ ...statistics, instanceCount: 2, oplogEnabled: false }}
+		instances={[exampleInstance, exampleInstance]}
+		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;

@@ -13,6 +13,8 @@ import { callbacks } from '../../../callbacks';
 import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from '../../../authorization';
 import { t, roomTypes, RoomSettingsEnum } from '../../../utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
+import { MessageTypesValues } from '../../../lib/lib/MessageTypes';
+
 
 const common = {
 	canLeaveRoom() {
@@ -147,6 +149,12 @@ Template.channelSettingsEditing.events({
 	},
 	'change .js-input-check'(e) {
 		this.value.set(e.currentTarget.checked);
+	},
+	'change .js-input-toggle'(e) {
+		this.toogle.set(e.currentTarget.checked);
+		if (!e.currentTarget.checked) {
+			this.value.set(null);
+		}
 	},
 	'click .js-reset'(e, t) {
 		const { settings } = t;
@@ -406,29 +414,44 @@ Template.channelSettingsEditing.onCreated(function() {
 		},
 		sysMes: {
 			type: 'boolean',
-			label: 'System_messages',
+			label: 'Hide_System_Messages',
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
 				return roomTypes.roomTypes[room.t].allowRoomSettingChange(
 					room,
-					RoomSettingsEnum.SYSTEM_MESSAGES
+					RoomSettingsEnum.SYSTEM_MESSAGES,
 				);
 			},
-			getValue() {
-				return room.sysMes !== false;
+			onChangeValue() {
+				return function(value) { this.value.set(value || []); }.bind(this);
+			},
+			getValue(room) {
+				return room.sysMes;
 			},
 			canEdit() {
 				return hasAllPermission('edit-room', room._id);
 			},
-			save(value) {
+			get() {
+				return this.value.get() || [];
+			},
+			save() {
+				const value = this.toogle.get() ? this.value.get() : null;
+
 				return call('saveRoomSettings', room._id, 'systemMessages', value).then(
 					() => {
 						toastr.success(
-							t('System_messages_setting_changed_successfully')
+							t('System_messages_setting_changed_successfully'),
 						);
-					}
+					},
 				);
+			},
+			c() {
+				return this.toogle.get();
+			},
+			toogle: new ReactiveVar(room.sysMes && room.sysMes.length > 0),
+			values() {
+				return MessageTypesValues;
 			},
 		},
 		archived: {
@@ -572,9 +595,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'retentionOverrideGlobal', value).then(
 					() => {
 						toastr.success(
-							t('Retention_setting_changed_successfully')
+							t('Retention_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -596,9 +619,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'retentionMaxAge', value).then(
 					() => {
 						toastr.success(
-							t('Retention_setting_changed_successfully')
+							t('Retention_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -620,9 +643,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'retentionExcludePinned', value).then(
 					() => {
 						toastr.success(
-							t('Retention_setting_changed_successfully')
+							t('Retention_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -644,9 +667,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'retentionFilesOnly', value).then(
 					() => {
 						toastr.success(
-							t('Retention_setting_changed_successfully')
+							t('Retention_setting_changed_successfully'),
 						);
-					}
+					},
 				);
 			},
 		},
@@ -664,7 +687,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			save(value) {
 				return call('saveRoomSettings', room._id, 'encrypted', value).then(() => {
 					toastr.success(
-						t('Encrypted_setting_changed_successfully')
+						t('Encrypted_setting_changed_successfully'),
 					);
 				});
 			},

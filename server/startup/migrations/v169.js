@@ -1,13 +1,18 @@
-import { Migrations } from '../../../app/migrations';
-import { LivechatRooms } from '../../../app/models/server';
+import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server';
 
 Migrations.add({
 	version: 169,
 	up() {
-		LivechatRooms.update(
-			{ t: 'l', whatsAppGateway: { $exists: 1 } },
-			{ $rename: { whatsAppGateway: 'customFields.whatsAppGateway' } },
-			{ multi: true },
-		);
+		const _id = 'Livechat_webhookUrl';
+		const setting = Settings.findOne({ _id });
+		if (setting && setting.value === false) {
+			Settings.update({ _id }, {
+				$set: {
+					value: '',
+					packageValue: '',
+				},
+			});
+		}
 	},
 });

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 
-import { useMethod } from '../../../hooks/useMethod';
-import { useViewStatisticsPermission } from '../../../hooks/usePermissions';
-import { useRocketChatInformation } from '../../../hooks/useRocketChatInformation';
-import { useAdminSideNav } from '../hooks';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
+import { useAdminSideNav } from '../../../hooks/useAdminSideNav';
 import { InformationPage } from './InformationPage';
+import { downloadJsonAsAFile } from '../../../helpers/download';
 
 export function InformationRoute() {
 	useAdminSideNav();
 
-	const canViewStatistics = useViewStatisticsPermission();
+	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);
 	const [statistics, setStatistics] = useState({});
 	const [instances, setInstances] = useState([]);
 	const [fetchStatistics, setFetchStatistics] = useState(() => () => ({}));
-	const getStatistics = useMethod('getStatistics');
+	const getStatistics = useEndpoint('GET', 'statistics');
 	const getInstances = useMethod('instances/get');
 
 	useEffect(() => {
@@ -32,14 +32,13 @@ export function InformationRoute() {
 
 			try {
 				const [statistics, instances] = await Promise.all([
-					getStatistics(),
+					getStatistics({ refresh: true }),
 					getInstances(),
 				]);
 
 				if (didCancel) {
 					return;
 				}
-
 				setStatistics(statistics);
 				setInstances(instances);
 			} finally {
@@ -56,7 +55,7 @@ export function InformationRoute() {
 		};
 	}, [canViewStatistics]);
 
-	const info = useRocketChatInformation();
+	const info = useServerInformation();
 
 	const handleClickRefreshButton = () => {
 		if (isLoading) {
@@ -66,6 +65,13 @@ export function InformationRoute() {
 		fetchStatistics();
 	};
 
+	const handleClickDownloadInfo = () => {
+		if (isLoading) {
+			return;
+		}
+		downloadJsonAsAFile(statistics, 'statistics');
+	};
+
 	return <InformationPage
 		canViewStatistics={canViewStatistics}
 		isLoading={isLoading}
@@ -73,5 +79,6 @@ export function InformationRoute() {
 		statistics={statistics}
 		instances={instances}
 		onClickRefreshButton={handleClickRefreshButton}
+		onClickDownloadInfo={handleClickDownloadInfo}
 	/>;
 }

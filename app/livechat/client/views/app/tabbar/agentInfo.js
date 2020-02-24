@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -12,7 +11,6 @@ import './agentInfo.html';
 import { modal } from '../../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../../utils/client';
 import { hasPermission } from '../../../../../authorization';
-import { LivechatDepartmentAgents } from '../../../collections/LivechatDepartmentAgents';
 
 const customFieldsTemplate = () => getCustomFormTemplate('livechatAgentInfoForm');
 
@@ -22,7 +20,9 @@ Template.agentInfo.helpers({
 		const hasCustomFields = customFieldsTemplate() !== null;
 		return (availableDepartments.length > 0 && hasPermission('add-livechat-department-agents')) || hasCustomFields;
 	},
-
+	uid() {
+		return Template.instance().agent.get()._id;
+	},
 	name() {
 		const agent = Template.instance().agent.get();
 		return agent && agent.name ? agent.name : TAPi18n.__('Unnamed');
@@ -132,7 +132,7 @@ Template.agentInfo.events({
 						showConfirmButton: false,
 					});
 				});
-			}
+			},
 		);
 	},
 	'click .edit-agent'(e, instance) {
@@ -159,13 +159,9 @@ Template.agentInfo.onCreated(async function() {
 	const loadAgentData = async (agentId) => {
 		this.ready.set(false);
 		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
+		const { departments } = await APIClient.v1.get(`livechat/agents/${ agentId }/departments`);
 		this.agent.set(user);
-
-		// TODO: Need to replace the following subscribe by the REST approach
-		Tracker.nonreactive(() => this.subscribe('livechat:departmentAgents', null, agentId, () => {
-			this.agentDepartments.set(LivechatDepartmentAgents.find({ agentId }).map((deptAgent) => deptAgent.departmentId));
-		}));
-
+		this.agentDepartments.set((departments || []).map((department) => department.departmentId));
 		this.ready.set(true);
 	};
 

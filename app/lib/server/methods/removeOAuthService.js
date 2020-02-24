@@ -40,5 +40,6 @@ Meteor.methods({
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-roles_claim`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_roles`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_users`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-show_button`);
 	},
 });

@@ -1,21 +1,24 @@
-import { Button, Icon, Label } from '@rocket.chat/fuselage';
-import { Meteor } from 'meteor/meteor';
+import { Button, Field, Icon } from '@rocket.chat/fuselage';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React from 'react';
-import toastr from 'toastr';
 
-import { handleError } from '../../../../../app/utils/client';
-import { useTranslation } from '../../../providers/TranslationProvider';
+import { useMethod } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import './AssetSettingInput.css';
 
 export function AssetSettingInput({
 	_id,
 	label,
-	value,
+	value = {},
 	asset,
-	fileConstraints,
+	fileConstraints = {},
 }) {
 	const t = useTranslation();
+
+	const dispatchToastMessage = useToastMessageDispatch();
+	const setAsset = useMethod('setAsset');
+	const unsetAsset = useMethod('unsetAsset');
 
 	const handleUpload = (event) => {
 		event = event.originalEvent || event;
@@ -30,43 +33,50 @@ export function AssetSettingInput({
 		}
 
 		Object.values(files).forEach((blob) => {
-			toastr.info(TAPi18n.__('Uploading_file'));
+			dispatchToastMessage({ type: 'info', message: t('Uploading_file') });
 			const reader = new FileReader();
 			reader.readAsBinaryString(blob);
-			reader.onloadend = () => Meteor.call('setAsset', reader.result, blob.type, asset, function(err) {
-				if (err != null) {
-					handleError(err);
-					console.log(err);
-					return;
+			reader.onloadend = async () => {
+				try {
+					await setAsset(reader.result, blob.type, asset);
+					dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
 				}
-				return toastr.success(TAPi18n.__('File_uploaded'));
-			});
+			};
 		});
 	};
 
-	const handleDeleteButtonClick = () => {
-		Meteor.call('unsetAsset', asset);
+	const handleDeleteButtonClick = async () => {
+		try {
+			await unsetAsset(asset);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
 	};
 
 	return <>
-		<Label htmlFor={_id} text={label} title={_id} />
-		<div className='settings-file-preview'>
-			{value.url
-				? <div className='preview' style={{ backgroundImage: `url(${ value.url }?_dc=${ Random.id() })` }} />
-				: <div className='preview no-file background-transparent-light secondary-font-color'><Icon icon='icon-upload' /></div>}
-			<div className='action'>
+		<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
+		<Field.Row>
+			<div className='settings-file-preview'>
 				{value.url
-					? <Button onClick={handleDeleteButtonClick}>
-						<Icon name='trash' />{t('Delete')}
-					</Button>
-					: <div className='rc-button rc-button--primary'>{t('Select_file')}
-						<input
-							type='file'
-							accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${ fileConstraints.extensions.join(', .') }`}
-							onChange={handleUpload}
-						/>
-					</div>}
+					? <div className='preview' style={{ backgroundImage: `url(${ value.url }?_dc=${ Random.id() })` }} />
+					: <div className='preview no-file background-transparent-light secondary-font-color'><Icon icon='icon-upload' /></div>}
+				<div className='action'>
+					{value.url
+						? <Button onClick={handleDeleteButtonClick}>
+							<Icon name='trash' />{t('Delete')}
+						</Button>
+						: <div className='rc-button rc-button--primary'>{t('Select_file')}
+							<input
+								className='AssetSettingInput__input'
+								type='file'
+								accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${ fileConstraints.extensions.join(', .') }`}
+								onChange={handleUpload}
+							/>
+						</div>}
+				</div>
 			</div>
-		</div>
+		</Field.Row>
 	</>;
 }

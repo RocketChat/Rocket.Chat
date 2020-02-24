@@ -32,7 +32,9 @@ Template.headerRoom.helpers({
 	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
-
+	uid() {
+		return this._id.replace(Meteor.userId(), '');
+	},
 	back() {
 		return Template.instance().data.back;
 	},
@@ -154,7 +156,7 @@ Template.headerRoom.events({
 			'toggleFavorite',
 			this._id,
 			!instance.state.get('favorite'),
-			(err) => err && handleError(err)
+			(err) => err && handleError(err),
 		);
 	},
 
@@ -170,7 +172,7 @@ Template.headerRoom.events({
 		if (hasAllPermission('edit-room', this._id)) {
 			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
 				toastr.success(
-					t('Encrypted_setting_changed_successfully')
+					t('Encrypted_setting_changed_successfully'),
 				);
 			});
 		}

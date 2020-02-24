@@ -73,6 +73,10 @@ export class PublicRoomType extends RoomTypeConfig {
 		return true;
 	}
 
+	includeInDashboard() {
+		return true;
+	}
+
 	canAddUser(room) {
 		return hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
 	}

@@ -38,7 +38,7 @@ const createTemplateForComponent = async (
 	component,
 	props = {},
 	// eslint-disable-next-line new-cap
-	renderContainerView = () => HTML.DIV()
+	renderContainerView = () => HTML.DIV(),
 ) => {
 	const name = component.displayName || component.name;
 
@@ -57,7 +57,7 @@ const createTemplateForComponent = async (
 
 	const React = await import('react');
 	const ReactDOM = await import('react-dom');
-	const { MeteorProvider } = await import('./components/providers/MeteorProvider');
+	const { MeteorProvider } = await import('./providers/MeteorProvider');
 
 	function TemplateComponent() {
 		return React.createElement(component, Template[name].props.get());
@@ -83,14 +83,6 @@ const createTemplateForComponent = async (
 	});
 
 	return name;
-};
-
-FlowRouter.subscriptions = function() {
-	Tracker.autorun(() => {
-		if (Meteor.userId()) {
-			this.register('userData', Meteor.subscribe('userData'));
-		}
-	});
 };
 
 FlowRouter.route('/', {
@@ -225,27 +217,36 @@ FlowRouter.route('/register/:hash', {
 	},
 });
 
-FlowRouter.route('/setup-wizard/:step?', {
-	name: 'setup-wizard',
-	action: async () => {
-		const { SetupWizard } = await import('./components/setupWizard/SetupWizard');
-		BlazeLayout.render(await createTemplateForComponent(SetupWizard));
+FlowRouter.route('/invite/:hash', {
+	name: 'invite',
+
+	action(/* params */) {
+		BlazeLayout.render('invite');
 	},
 });
 
+FlowRouter.route('/setup-wizard/:step?', {
+	name: 'setup-wizard',
+	action: async () => {
+		const { SetupWizardRoute } = await import('./components/setupWizard/SetupWizardRoute');
+		BlazeLayout.render(await createTemplateForComponent(SetupWizardRoute));
+	},
+});
+
+const style = 'overflow: hidden; flex: 1 1 auto; height: 1%;';
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
 	action: async ({ group = 'info' } = {}) => {
 		switch (group) {
 			case 'info': {
 				const { InformationRoute } = await import('./components/admin/info/InformationRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute) });
+				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute, { }, () => HTML.DIV({ style })) }); // eslint-disable-line
 				break;
 			}
 
 			default: {
 				const { SettingsRoute } = await import('./components/admin/settings/SettingsRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }) });
+				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }, () => HTML.DIV({ style })) }); // eslint-disable-line
 				// BlazeLayout.render('main', { center: 'admin' });
 			}
 		}

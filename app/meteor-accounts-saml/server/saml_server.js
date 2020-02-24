@@ -13,6 +13,7 @@ import { SAML } from './saml_utils';
 import { Rooms, Subscriptions, CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
 import { _setUsername } from '../../lib/server/functions';
+import { Users } from '../../models/server';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -55,12 +56,11 @@ Meteor.methods({
 			console.log(`Logout request from ${ JSON.stringify(providerConfig) }`);
 		}
 		// This query should respect upcoming array of SAML logins
-		const user = Meteor.users.findOne({
-			_id: Meteor.userId(),
-			'services.saml.provider': provider,
-		}, {
-			'services.saml': 1,
-		});
+		const user = Users.getSAMLByIdAndSAMLProvider(Meteor.userId(), provider);
+		if (!user || !user.services || ! user.services.saml) {
+			return;
+		}
+
 		let { nameID } = user.services.saml;
 		const sessionIndex = user.services.saml.idpSession;
 		nameID = sessionIndex;
@@ -91,7 +91,6 @@ Meteor.methods({
 		if (Accounts.saml.settings.debug) {
 			console.log(`SAML Logout Request ${ result }`);
 		}
-
 
 		return result;
 	},

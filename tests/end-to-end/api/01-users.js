@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 
+import { expect } from 'chai';
+
 import {
 	getCredentials,
 	api,
@@ -9,6 +11,7 @@ import {
 	apiUsername,
 	targetUser,
 	log,
+	wait,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
@@ -193,7 +196,22 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.info]', () => {
-		after((done) => updatePermission('view-other-user-channels', ['admin']).then(done));
+		after(() => updatePermission('view-other-user-channels', ['admin']));
+
+		it('should return an error when the user does not exist', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					username: 'invalid-username',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('User not found.');
+				})
+				.end(done);
+		});
 
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
@@ -1250,11 +1268,10 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.end(wait(done, 200));
 		});
 
 		it('should delete user own account', (done) => {
-			browser.pause(500);
 			request.post(api('users.deleteOwnAccount'))
 				.set(userCredentials)
 				.send({
@@ -1368,7 +1385,7 @@ describe('[Users]', function() {
 						.end(done);
 				});
 			});
-			it('Grant necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', ['admin']).then(done));
+			it('Grant necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', ['admin']));
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
@@ -1470,7 +1487,7 @@ describe('[Users]', function() {
 			});
 		});
 		describe('unsuccessful cases', () => {
-			it('Remove necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', []).then(done));
+			it('Remove necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', []));
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
@@ -1696,6 +1713,47 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('requested');
 					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
 					expect(res.body.exportOperation).to.have.property('fullExport', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.autocomplete]', () => {
+		it('should return an empty list when the user does not have the necessary permission', (done) => {
+			updatePermission('view-outside-room', []).then(() => {
+				request.get(api('users.autocomplete?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
+				request.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					})
+					.end(done);
+			});
+		});
+		it('should return the users to fill auto complete', (done) => {
+			request.get(api('users.autocomplete?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
 		});
