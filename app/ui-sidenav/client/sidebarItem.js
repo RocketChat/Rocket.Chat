@@ -75,7 +75,7 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
-function getConfig(e) {
+const getConfig = function(e) {
 	const canLeave = () => {
 		const roomData = Session.get(`roomData${ this.rid }`);
 
@@ -158,7 +158,7 @@ function getConfig(e) {
 		currentTarget: e.currentTarget,
 		offsetHorizontal: -e.currentTarget.clientWidth,
 	};
-}
+};
 
 Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
@@ -205,7 +205,7 @@ Template.sidebarItem.events({
 			return;
 		}
 
-		const config = getConfig(e);
+		const config = getConfig.call(this, e);
 
 		const doLongTouch = () => {
 			popover.open(config);
@@ -221,7 +221,7 @@ Template.sidebarItem.events({
 		e.stopPropagation(); // to not close the menu
 		e.preventDefault();
 
-		const config = getConfig(e);
+		const config = getConfig.call(this, e);
 		popover.open(config);
 	},
 });
