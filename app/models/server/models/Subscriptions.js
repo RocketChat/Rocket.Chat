@@ -895,13 +895,23 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userIds, incUser = 1, incUnread = 1) {
-		const query = {
-			rid: roomId,
-			'u._id': {
-				$in: userIds,
-			},
-		};
+	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userId, userIds, incUser = 1, incUnread = 1, incUnreadByUser) {
+		let query = {};
+		if (incUnreadByUser) {
+			query = {
+				rid: roomId,
+				'u._id': {
+					$ne: userId,
+				},
+			};
+		} else {
+			query = {
+				rid: roomId,
+				'u._id': {
+					$in: userIds,
+				},
+			};
+		}
 
 		const update = {
 			$set: {
