@@ -348,11 +348,11 @@ export const useSection = (groupId, sectionName) => {
 export const useSettingActions = (persistedSetting) => {
 	const { hydrate } = useContext(SettingsContext);
 
-	const update = useDebouncedCallback(({ value = persistedSetting.value, editor = persistedSetting.editor }) => {
+	const update = useDebouncedCallback(({ value, editor }) => {
 		const changes = [{
 			_id: persistedSetting._id,
-			value,
-			editor,
+			...value !== undefined && { value },
+			...editor !== undefined && { editor },
 			changed: (value !== persistedSetting.value) || (editor !== persistedSetting.editor),
 		}];
 
