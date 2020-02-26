@@ -16,5 +16,10 @@
 		"title": "[BREAK] Support for Cordova (Rocket.Chat Legacy app) has reached End-of-life, support has been discontinued",
 		"userLogin": "sampaiodiego",
 		"contributors": []
+	}],
+	"2.4.11": [{
+		"title": "[FIX] Layout color settings not saving properly",
+		"userLogin": "ggazzo",
+		"contributors": []
 	}]
 }
