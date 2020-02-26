@@ -1,4 +1,16 @@
 
+# 2.4.11
+`2020-02-26  ·  1 🐛`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Layout color settings not saving properly
+
 # 2.4.10
 `2020-02-20  ·  1 🐛  ·  2 👩‍💻👨‍💻`
 
