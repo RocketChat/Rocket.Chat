@@ -2,28 +2,22 @@
 * Filter markdown tags in message
 *	Use case: notifications
 */
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from '../../../../settings';
 
 const filterMarkdownTags = function(message) {
-	const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+	const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 	// Remove block code backticks
 	message = message.replace(/```/g, '');
 
 	// Remove inline code backticks
-	message = message.replace(new RegExp(/`([^`\r\n]+)\`/gm), (match) => {
-		return match.substr(1, match.length - 2);
-	});
+	message = message.replace(new RegExp(/`([^`\r\n]+)\`/gm), (match) => match.substr(1, match.length - 2));
 
 	// Filter [text](url), ![alt_text](image_url)
-	message = message.replace(new RegExp(`!?\\[([^\\]]+)\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\)`, 'gm'), (match, title) => {
-		return title;
-	});
+	message = message.replace(new RegExp(`!?\\[([^\\]]+)\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\)`, 'gm'), (match, title) => title);
 
 	// Filter <http://link|Text>
-	message = message.replace(new RegExp(`(?:<|&lt;)(?:${ schemes }):\\/\\/[^\\|]+\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, title) => {
-		return title;
-	});
+	message = message.replace(new RegExp(`(?:<|&lt;)(?:${ schemes }):\\/\\/[^\\|]+\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, title) => title);
 
 	// Filter headings
 	message = message.replace(/^#{1,4} (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '$1');
