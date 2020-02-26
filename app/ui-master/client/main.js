@@ -96,6 +96,10 @@ Template.body.onRendered(function() {
 
 		popover.close();
 
+		if (document.querySelector('.rc-modal-wrapper dialog[open]')) {
+			return;
+		}
+
 		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
 		if (!inputMessage) {
 			return;

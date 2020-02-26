@@ -1,11 +1,26 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Permissions } from '../../../app/models/server';
+
+const appRolePermissions = [
+	'api-bypass-rate-limit',
+	'create-c',
+	'create-d',
+	'create-p',
+	'join-without-join-code',
+	'leave-c',
+	'leave-p',
+	'send-many-messages',
+	'view-c-room',
+	'view-d-room',
+	'view-joined-room',
+];
 
 Migrations.add({
 	version: 174,
 	up() {
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter' });
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter_Limit_Calls_Default' });
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter_Limit_Time_Default' });
+		Permissions.update({ _id: { $in: appRolePermissions } }, { $addToSet: { roles: 'app' } }, { multi: true });
+	},
+	down() {
+		Permissions.update({ _id: { $in: appRolePermissions } }, { $pull: { roles: 'app' } }, { multi: true });
 	},
 });
