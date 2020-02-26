@@ -135,8 +135,6 @@ export function SettingsBasedStep({ step, title, active }) {
 								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
 							/>}
 
-							{console.log(Object.entries(languages))}
-
 							{type === 'language' && <Select
 								type='select'
 								data-qa={_id}
