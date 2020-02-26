@@ -240,7 +240,7 @@ function addToInput(text) {
 	$(input).change().trigger('input');
 }
 
-callbacks.add('enter-room', wipeFailedUploads);
+// callbacks.add('enter-room', wipeFailedUploads);
 
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
@@ -281,6 +281,7 @@ Template.room.helpers({
 	},
 	subscribed() {
 		const { state } = Template.instance();
+		console.log(state);
 		return state.get('subscribed');
 	},
 	messagesHistory() {
@@ -307,7 +308,6 @@ Template.room.helpers({
 				ts: 1,
 			},
 		};
-
 		return ChatMessage.find(query, options);
 	},
 
