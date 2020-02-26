@@ -135,6 +135,7 @@ export function SettingsBasedStep({ step, title, active }) {
 								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
 							/>}
 
+							{console.log(Object.entries(languages))}
 
 							{type === 'language' && <Select
 								type='select'
@@ -144,8 +145,8 @@ export function SettingsBasedStep({ step, title, active }) {
 								placeholder={t('Default')}
 								value={value}
 								onChange={(value) => setFieldValue(_id, value)}
-								options = {Object.entries(languages)
-									.map(([key, { name }]) => [key, name])
+								options = {languages
+									.map(({ key, name }) => [key, name])
 									.sort(([a], [b]) => a - b)}
 							/>}
 						</Field.Row>
