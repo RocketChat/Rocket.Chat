@@ -325,12 +325,12 @@ export const useSection = (groupId, sectionName) => {
 		const persistedSettings = filterSettings(state.persistedSettings);
 
 		const changes = settings.map((setting) => {
-			const { _id, value, packageValue, editor } = persistedSettings.find(({ _id }) => _id === setting._id);
+			const { _id, value, packageValue, packageEditor } = persistedSettings.find(({ _id }) => _id === setting._id);
 			return {
 				_id,
 				value: packageValue,
-				editor,
-				changed: packageValue !== value,
+				editor: packageEditor,
+				changed: JSON.stringify(packageValue) !== JSON.stringify(value),
 			};
 		});
 
@@ -357,7 +357,7 @@ export const useSettingActions = (persistedSetting) => {
 		}];
 
 		hydrate(changes);
-	}, 70, [hydrate, persistedSetting]);
+	}, 100, [hydrate, persistedSetting]);
 
 	const reset = useDebouncedCallback(() => {
 		const { _id, value, packageValue, packageEditor, editor } = persistedSetting;
@@ -370,7 +370,7 @@ export const useSettingActions = (persistedSetting) => {
 		}];
 
 		hydrate(changes);
-	}, 170, [hydrate, persistedSetting]);
+	}, 100, [hydrate, persistedSetting]);
 
 	return { update, reset };
 };
