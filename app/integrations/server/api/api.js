@@ -325,10 +325,19 @@ class WebHookAPI extends APIClass {
 	}
 
 	shouldVerifyRateLimit(/* route */) {
-		return (settings.get('API_Rate_Limit_IP_Enabled') || settings.get('API_Rate_Limit_User_Enabled') || settings.get('API_Rate_Limit_Connection_Enabled')
-		|| settings.get('API_Rate_Limit_User_By_Endpoint_Enabled') || settings.get('API_Rate_Limit_Connection_By_Endpoint_Enabled'))
-			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
-			&& !process.env.TEST_MODE;
+		if (process.env.TEST_MODE) {
+			return false;
+		}
+
+		if (process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true) {
+			return false;
+		}
+
+		return settings.get('API_Rate_Limit_IP_Enabled')
+			|| settings.get('API_Rate_Limit_User_Enabled')
+			|| settings.get('API_Rate_Limit_Connection_Enabled')
+			|| settings.get('API_Rate_Limit_User_By_Endpoint_Enabled')
+			|| settings.get('API_Rate_Limit_Connection_By_Endpoint_Enabled');
 	}
 
 	/*

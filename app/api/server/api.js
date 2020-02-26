@@ -178,12 +178,24 @@ export class APIClass extends Restivus {
 	}
 
 	shouldVerifyRateLimit(route, userId) {
-		return rateLimiterDictionary.hasOwnProperty(route)
-			&& (settings.get('API_Rate_Limit_IP_Enabled') || settings.get('API_Rate_Limit_User_Enabled') || settings.get('API_Rate_Limit_Connection_Enabled')
-				|| settings.get('API_Rate_Limit_User_By_Endpoint_Enabled') || settings.get('API_Rate_Limit_Connection_By_Endpoint_Enabled'))
-			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
-			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'))
-			&& !process.env.TEST_MODE;
+		if (!rateLimiterDictionary.hasOwnProperty(route)) {
+			return false;
+		}
+		if (process.env.TEST_MODE) {
+			return false;
+		}
+		if (process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true) {
+			return false;
+		}
+		if (userId && hasPermission(userId, 'api-bypass-rate-limit')) {
+			return false;
+		}
+
+		return settings.get('API_Rate_Limit_IP_Enabled')
+			|| settings.get('API_Rate_Limit_User_Enabled')
+			|| settings.get('API_Rate_Limit_Connection_Enabled')
+			|| settings.get('API_Rate_Limit_User_By_Endpoint_Enabled')
+			|| settings.get('API_Rate_Limit_Connection_By_Endpoint_Enabled');
 	}
 
 	enforceRateLimit(request, response, userId, token) {
@@ -738,10 +750,12 @@ settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
+const reloadRoutes = _.debounce(() => API.v1.reloadRoutesToRefreshRateLimiter(), 2000);
+
 if (!process.env.TEST_MODE) {
-	settings.get(/^API_Rate_Limit_IP_.+/, () => API.v1.reloadRoutesToRefreshRateLimiter());
-	settings.get(/^API_Rate_Limit_User_[^B].+/, () => API.v1.reloadRoutesToRefreshRateLimiter());
-	settings.get(/^API_Rate_Limit_Connection_[^B].+/, () => API.v1.reloadRoutesToRefreshRateLimiter());
-	settings.get(/^API_Rate_Limit_User_By_Endpoint_.+/, () => API.v1.reloadRoutesToRefreshRateLimiter());
-	settings.get(/^API_Rate_Limit_Connection_By_Endpoint.+/, () => API.v1.reloadRoutesToRefreshRateLimiter());
+	settings.get(/^API_Rate_Limit_IP_.+/, () => reloadRoutes());
+	settings.get(/^API_Rate_Limit_User_[^B].+/, () => reloadRoutes());
+	settings.get(/^API_Rate_Limit_Connection_[^B].+/, () => reloadRoutes());
+	settings.get(/^API_Rate_Limit_User_By_Endpoint_.+/, () => reloadRoutes());
+	settings.get(/^API_Rate_Limit_Connection_By_Endpoint.+/, () => reloadRoutes());
 }
