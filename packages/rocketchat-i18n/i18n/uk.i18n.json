@@ -330,7 +330,7 @@
   "API_Personal_Access_Tokens_To_REST_API": "Особисті токени до REST API",
   "API_Personal_Access_Tokens_Remove_Modal": "Ви впевнені, що хочете видалити цей токен?",
   "API_Personal_Access_Token_Generated": "Токен особистого доступу успішно створений",
-  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Будь ласка, зберігайте токен безпечно,  оскільки ви більше не зможете переглядати його. <br/>Токен: <strong>__token __ </strong><br/>Ваш Id користувача: <strong>__userId __ </strong>",
+  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Будь ласка, зберігайте токен безпечно,  оскільки ви більше не зможете переглядати його. <br/>Токен: <strong>__token__</strong><br/>Ваш Id користувача: <strong>__userId__</strong>",
   "API_Personal_Access_Tokens_Regenerate_Modal": "Якщо ви втратили або забули токен, його можна відновити, але пам’ятайте, що всі програми, які використовують цей токен, повинні бути оновлені",
   "API_Personal_Access_Tokens_Regenerate_It": "Відновити токен",
   "API_Shield_Types": "Типи бейджів",

@@ -308,7 +308,7 @@
   "API_Personal_Access_Tokens_To_REST_API": "Osobni tokeni za pristup na REST API",
   "API_Personal_Access_Tokens_Remove_Modal": "Jeste li sigurni da želite ukloniti ovaj osobni pristupni token?",
   "API_Personal_Access_Token_Generated": "Osobni token za pristup uspješno je generiran",
-  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Pažljivo spremite svoj token jer ga nećete moći vidjeti poslije. <br/>Token: <strong>__token __ </strong><br/>Vaš korisnički Id: <strong>__userId __ </strong>",
+  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Pažljivo spremite svoj token jer ga nećete moći vidjeti poslije. <br/>Token: <strong>__token__</strong><br/>Vaš korisnički Id: <strong>__userId__</strong>",
   "API_Personal_Access_Tokens_Regenerate_Modal": "Ako ste izgubili ili zaboravili svoj token, možete ga regenerirati, ali imajte na umu da sve aplikacije koje koriste ovaj token trebaju biti ažurirane",
   "API_Personal_Access_Tokens_Regenerate_It": "Obnovite token",
   "API_Shield_Types": "Vrste štitova",

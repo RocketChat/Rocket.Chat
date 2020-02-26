@@ -327,7 +327,7 @@
   "API_Personal_Access_Tokens_To_REST_API": "Osobní přístupové tokeny k REST API",
   "API_Personal_Access_Tokens_Remove_Modal": "Opravdu chcete odstranit tento osobní přístupový token?",
   "API_Personal_Access_Token_Generated": "Osobní přístupový token byl úspěšně vygenerován",
-  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Uložte si pečlivě svůj token, protože jej již nebudete moci zobrazit. <br/>Token: <strong>__token __ </strong><br/>Vaše uživatelské ID: <strong>__userId __ </strong>",
+  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Uložte si pečlivě svůj token, protože jej již nebudete moci zobrazit. <br/>Token: <strong>__token__</strong><br/>Vaše uživatelské ID: <strong>__userId__</strong>",
   "API_Personal_Access_Tokens_Regenerate_Modal": "Pokud jste token ztratili nebo zapomněli, můžete jej vygenerovat znovu, ale nezapomeňte, že všechny aplikace, které tento token používají, by měly být aktualizovány",
   "API_Personal_Access_Tokens_Regenerate_It": "Znovu vygenerovat token",
   "API_Shield_Types": "Typy ikon",
