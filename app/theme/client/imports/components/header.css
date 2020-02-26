@@ -421,11 +421,24 @@
 			display: none;
 		}
 
-		&__first-icon {
-			width: 2.25em;
-
+		&__block {
 			margin: 0 0.2em;
 
+			padding: 0 0.1em;
+		}
+
+		&__section {
+			display: flex;
+
+			margin: 0 0.5rem;
+
+			padding: 0 0.5rem;
+
+			align-items: center;
+		}
+
+		&__first-icon {
+			width: 2.25em;
 			padding: 0;
 		}
 
@@ -451,8 +464,6 @@
 		}
 
 		&__search-button {
-			margin-right: -0.75em;
-
 			&__action {
 				&__icon {
 					height: 1.2em;
@@ -475,6 +486,7 @@
 			display: flex;
 
 			margin: 0;
+
 			padding: 0;
 		}
 	}
