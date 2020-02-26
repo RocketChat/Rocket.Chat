@@ -353,24 +353,24 @@ export const useSettingActions = (persistedSetting) => {
 			_id: persistedSetting._id,
 			...value !== undefined && { value },
 			...editor !== undefined && { editor },
-			changed: (value !== persistedSetting.value) || (editor !== persistedSetting.editor),
+			changed: JSON.stringify(persistedSetting.value) !== JSON.stringify(value) || JSON.stringify(editor) !== JSON.stringify(persistedSetting.editor),
 		}];
 
 		hydrate(changes);
 	}, 70, [hydrate, persistedSetting]);
 
 	const reset = useDebouncedCallback(() => {
-		const { _id, value, packageValue, editor } = persistedSetting;
+		const { _id, value, packageValue, packageEditor, editor } = persistedSetting;
 
 		const changes = [{
 			_id,
 			value: packageValue,
-			editor,
-			changed: JSON.stringify(packageValue) !== JSON.stringify(value),
+			editor: packageEditor,
+			changed: JSON.stringify(packageValue) !== JSON.stringify(value) || JSON.stringify(packageEditor) !== JSON.stringify(editor),
 		}];
 
 		hydrate(changes);
-	}, 70, [hydrate, persistedSetting]);
+	}, 170, [hydrate, persistedSetting]);
 
 	return { update, reset };
 };
