@@ -24,11 +24,11 @@ Meteor.methods({
 		if (!hasPermission(userId, 'clean-channel-history', roomId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
-		
+
 		if (!hasPermission(userId, 'clean-group-history', roomId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
-		
+
 		if (!hasPermission(userId, 'clean-direct-history', roomId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
