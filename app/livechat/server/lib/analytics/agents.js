@@ -1,4 +1,4 @@
-import { Users } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatAgentActivity } from '../../../../models/server/raw';
 
 const findAllAverageServiceTimeAsync = async ({
 	start,
@@ -9,8 +9,8 @@ const findAllAverageServiceTimeAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		agents: await Users.findAllAverageServiceTime({ start, end, options }),
-		total: (await Users.findAllAverageServiceTime({ start, end })).length,
+		agents: await LivechatRooms.findAllAverageServiceTimeByAgents({ start, end, options }),
+		total: (await LivechatRooms.findAllAverageServiceTimeByAgents({ start, end })).length,
 	};
 };
 
@@ -23,8 +23,8 @@ const findAllServiceTimeAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		agents: await Users.findAllServiceTime({ start, end, options }),
-		total: (await Users.findAllServiceTime({ start, end })).length,
+		agents: await LivechatRooms.findAllServiceTimeByAgent({ start, end, options }),
+		total: (await LivechatRooms.findAllServiceTimeByAgent({ start, end })).length,
 	};
 };
 
@@ -38,8 +38,8 @@ const findAvailableServiceTimeHistoryAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	return {
-		agents: await Users.findAvailableServiceTimeHistory({ start, end, fullReport, options }),
-		total: (await Users.findAvailableServiceTimeHistory({ start, end, fullReport })).length,
+		agents: await LivechatAgentActivity.findAvailableServiceTimeHistory({ start, end, fullReport, options }),
+		total: (await LivechatAgentActivity.findAvailableServiceTimeHistory({ start, end, fullReport })).length,
 	};
 };
 

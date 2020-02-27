@@ -1140,4 +1140,115 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
 	}
+
+	findAllServiceTimeByAgent({ start, end, options = {} }) {
+		const match = {
+			$match: {
+				t: 'l',
+				'servedBy._id': { $exists: true },
+				ts: {
+					$gte: start,
+					$lte: end,
+				},
+			},
+		};
+		const lookup = {
+			$lookup: {
+				from: 'users',
+				localField: 'servedBy._id',
+				foreignField: '_id',
+				as: 'user',
+			},
+		};
+		const unwind = {
+			$unwind: {
+				path: '$user',
+			},
+		};
+		const group = {
+			$group: {
+				_id: { _id: '$user._id', username: '$user.username', name: '$user.name', active: '$user.active' },
+				chats: { $sum: 1 },
+				chatsDuration: { $sum: '$metrics.chatDuration' },
+			},
+		};
+		const project = {
+			$project: {
+				_id: 0,
+				username: '$_id.username',
+				name: '$_id.name',
+				active: '$_id.active',
+				chats: 1,
+				chatsDuration: { $ceil: '$chatsDuration' },
+			},
+		};
+		const sort = { $sort: options.sort || { username: 1 } };
+		const params = [match, lookup, unwind, group, project, sort];
+		if (options.offset) {
+			params.push({ $skip: options.offset });
+		}
+		if (options.count) {
+			params.push({ $limit: options.count });
+		}
+		return this.col.aggregate(params).toArray();
+	}
+
+	findAllAverageServiceTimeByAgents({ start, end, options = {} }) {
+		const match = {
+			$match: {
+				t: 'l',
+				'servedBy._id': { $exists: true },
+				ts: {
+					$gte: start,
+					$lte: end,
+				},
+			},
+		};
+		const lookup = {
+			$lookup: {
+				from: 'users',
+				localField: 'servedBy._id',
+				foreignField: '_id',
+				as: 'user',
+			},
+		};
+		const unwind = {
+			$unwind: {
+				path: '$user',
+			},
+		};
+		const group = {
+			$group: {
+				_id: { _id: '$user._id', username: '$user.username', name: '$user.name', active: '$user.active' },
+				chats: { $sum: 1 },
+				chatsDuration: { $sum: '$metrics.chatDuration' },
+			},
+		};
+		const project = {
+			$project: {
+				_id: 0,
+				username: '$_id.username',
+				name: '$_id.name',
+				active: '$_id.active',
+				averageServiceTimeInSeconds: {
+					$ceil: {
+						$cond: [
+							{ $eq: ['$chats', 0] },
+							0,
+							{ $divide: ['$chatsDuration', '$chats'] },
+						],
+					},
+				},
+			},
+		};
+		const sort = { $sort: options.sort || { username: 1 } };
+		const params = [match, lookup, unwind, group, project, sort];
+		if (options.offset) {
+			params.push({ $skip: options.offset });
+		}
+		if (options.count) {
+			params.push({ $limit: options.count });
+		}
+		return this.col.aggregate(params).toArray();
+	}
 }

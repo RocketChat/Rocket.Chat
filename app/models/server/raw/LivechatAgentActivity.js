@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw {
@@ -62,6 +64,58 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 		}
 		params.push(group);
 		params.push(project);
+		return this.col.aggregate(params).toArray();
+	}
+
+	findAvailableServiceTimeHistory({ start, end, fullReport, options = {} }) {
+		const match = {
+			$match: {
+				date: {
+					$gte: parseInt(moment(start).format('YYYYMMDD')),
+					$lte: parseInt(moment(end).format('YYYYMMDD')),
+				},
+			},
+		};
+		const lookup = {
+			$lookup: {
+				from: 'users',
+				localField: 'agentId',
+				foreignField: '_id',
+				as: 'user',
+			},
+		};
+		const unwind = {
+			$unwind: {
+				path: '$user',
+			},
+		};
+		const group = {
+			$group: {
+				_id: { _id: '$user._id', username: '$user.username', name: '$user.name', active: '$user.active' },
+				serviceHistory: { $first: '$serviceHistory' },
+				availableTimeInSeconds: { $sum: '$availableTime' },
+			},
+		};
+		const project = {
+			$project: {
+				_id: 0,
+				username: '$_id.username',
+				name: '$_id.name',
+				active: '$_id.active',
+				availableTimeInSeconds: 1,
+			},
+		};
+		if (fullReport) {
+			project.$project.serviceHistory = 1;
+		}
+		const sort = { $sort: options.sort || { username: 1 } };
+		const params = [match, lookup, unwind, group, project, sort];
+		if (options.offset) {
+			params.push({ $skip: options.offset });
+		}
+		if (options.count) {
+			params.push({ $limit: options.count });
+		}
 		return this.col.aggregate(params).toArray();
 	}
 }
