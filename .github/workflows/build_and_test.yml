@@ -436,6 +436,10 @@ jobs:
         cd /tmp/build
         export CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         docker push ${IMAGE}:$CIRCLE_TAG
 
