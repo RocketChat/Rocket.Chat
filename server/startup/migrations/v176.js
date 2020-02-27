@@ -3,7 +3,7 @@ import { Permissions } from '../../../app/models/server';
 
 const adminRolePermissions = [
 	'clean-group-history',
-  'clean-direct-history',
+	'clean-direct-history',
 ];
 
 Migrations.add({
