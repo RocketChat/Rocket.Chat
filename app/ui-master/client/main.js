@@ -17,7 +17,6 @@ import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
-import { isSyncReady } from '../../../client/lib/userData';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -182,7 +181,7 @@ Template.main.helpers({
 
 		const settingsReady = settings.cachedCollection.ready.get();
 
-		const ready = (isSyncReady.get() && userReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = (userReady && subscriptionsReady && settingsReady) || !Meteor.userId();
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
