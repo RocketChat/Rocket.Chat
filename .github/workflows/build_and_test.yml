@@ -419,7 +419,6 @@ jobs:
 
         export DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
           export DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
@@ -437,6 +436,10 @@ jobs:
         cd /tmp/build
         export CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         docker push ${IMAGE}:$CIRCLE_TAG
 
@@ -453,5 +456,10 @@ jobs:
       if: github.ref == 'refs/heads/develop'
       run: |
         cd /tmp/build
+
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop
