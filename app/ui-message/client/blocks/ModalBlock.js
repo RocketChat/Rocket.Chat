@@ -79,7 +79,7 @@ Template.ModalBlock.onRendered(async function() {
 						appId,
 						viewId,
 						view: {
-							...this.data.view,
+							...state.get().view,
 							id: viewId,
 							state: groupStateByBlockId(this.state.all()),
 						},
@@ -91,7 +91,7 @@ Template.ModalBlock.onRendered(async function() {
 						appId,
 						viewId,
 						view: {
-							...this.data.view,
+							...state.get().view,
 							id: viewId,
 							state: groupStateByBlockId(this.state.all()),
 						},
@@ -105,7 +105,7 @@ Template.ModalBlock.onRendered(async function() {
 						appId,
 						payload: {
 							view: {
-								...this.data.view,
+								...state.get().view,
 								id: viewId,
 								state: groupStateByBlockId(this.state.all()),
 							},
