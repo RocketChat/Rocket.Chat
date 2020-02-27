@@ -16,13 +16,20 @@ API.v1.addRoute('roles.list', { authRequired: true }, {
 // api to to get updated roles after a date(in ISODate format)
 API.v1.addRoute('roles.listByUpdatedDate', { authRequired: true }, {
 	get() {
-		check(this.bodyParams, {
-			updatedAfter: String,
+		const { updatedAfter } = this.queryParams;
+
+		let updatedAfterDate;
+		if (updatedAfter) {
+			if (isNaN(Date.parse(updatedAfter))) {
+				throw new Meteor.Error('error-updatedAfter-param-invalid', 'The "updatedAfter" query parameter must be a valid date.');
+			} else {
+				updatedAfterDate = new Date(updatedAfter);
+			}
+		}
+
+		return API.v1.success({
+			roles: Roles.findByUpdatedDate(updatedAfterDate, { fields: API.v1.defaultFieldsToExclude }),
 		});
-
-		const roles = Roles.find({ _updatedAt: { $gte: new Date(this.bodyParams.updatedAfter) } }).fetch();
-
-		return API.v1.success({ roles });
 	},
 });
 
