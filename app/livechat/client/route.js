@@ -2,178 +2,178 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { AccountBox } from '../../ui-utils';
 
-export const livechatManagerRoutes = FlowRouter.group({
-	prefix: '/livechat-manager',
-	name: 'livechat-manager',
+export const omnichannelManagerRoutes = FlowRouter.group({
+	prefix: '/omnichannel-manager',
+	name: 'omnichannel-manager',
 });
 
 const load = () => import('./views/admin');
 
 AccountBox.addRoute({
-	name: 'livechat-dashboard',
+	name: 'omnichannel-dashboard',
 	path: '/dashboard',
-	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_Dashboard',
-	pageTemplate: 'livechatDashboard',
-}, livechatManagerRoutes, load);
+	sideNav: 'omnichannelFlex',
+	i18nPageTitle: 'Dashboard',
+	pageTemplate: 'omnichannelDashboard',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-current-chats',
+	name: 'omnichannel-current-chats',
 	path: '/current',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Current_Chats',
-	pageTemplate: 'livechatCurrentChats',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelCurrentChats',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-analytics',
+	name: 'omnichannel-analytics',
 	path: '/analytics',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Analytics',
-	pageTemplate: 'livechatAnalytics',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelAnalytics',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-real-time-monitoring',
+	name: 'omnichannel-real-time-monitoring',
 	path: '/real-time-monitoring',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Real_Time_Monitoring',
-	pageTemplate: 'livechatRealTimeMonitoring',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelRealTimeMonitoring',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-managers',
+	name: 'omnichannel-managers',
 	path: '/managers',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Livechat_managers',
-	pageTemplate: 'livechatManagers',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelManagers',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-agents',
+	name: 'omnichannel-agents',
 	path: '/agents',
-	sideNav: 'livechatFlex',
-	pageTemplate: 'livechatAgents',
+	sideNav: 'omnichannelFlex',
+	pageTemplate: 'omnichannelAgents',
 	customContainer: true,
-}, livechatManagerRoutes, load);
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-departments',
+	name: 'omnichannel-departments',
 	path: '/departments',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Departments',
-	pageTemplate: 'livechatDepartments',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelDepartments',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-department-edit',
+	name: 'omnichannel-department-edit',
 	path: '/departments/:_id/edit',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Edit_Department',
-	pageTemplate: 'livechatDepartmentForm',
+	pageTemplate: 'omnichannelDepartmentForm',
 	customContainer: true,
-}, livechatManagerRoutes, load);
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-department-new',
+	name: 'omnichannel-department-new',
 	path: '/departments/new',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'New_Department',
-	pageTemplate: 'livechatDepartmentForm',
+	pageTemplate: 'omnichannelDepartmentForm',
 	customContainer: true,
-}, livechatManagerRoutes, load);
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-triggers',
 	path: '/triggers',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Triggers',
 	pageTemplate: 'livechatTriggers',
-}, livechatManagerRoutes, load);
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-trigger-edit',
 	path: '/triggers/:_id/edit',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Edit_Trigger',
 	pageTemplate: 'livechatTriggersForm',
-}, livechatManagerRoutes, load);
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-trigger-new',
 	path: '/triggers/new',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'New_Trigger',
 	pageTemplate: 'livechatTriggersForm',
-}, livechatManagerRoutes, load);
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-installation',
 	path: '/installation',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Installation',
 	pageTemplate: 'livechatInstallation',
-}, livechatManagerRoutes, load);
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
 	name: 'livechat-appearance',
 	path: '/appearance',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Appearance',
 	pageTemplate: 'livechatAppearance',
-}, livechatManagerRoutes, load);
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-officeHours',
+	name: 'omnichannel-officeHours',
 	path: '/officeHours',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Office_Hours',
-	pageTemplate: 'livechatOfficeHours',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelOfficeHours',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-customfields',
+	name: 'omnichannel-customfields',
 	path: '/customfields',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Custom_Fields',
-	pageTemplate: 'livechatCustomFields',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelCustomFields',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-customfield-edit',
+	name: 'omnichannel-customfield-edit',
 	path: '/customfields/:_id/edit',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Edit_Custom_Field',
-	pageTemplate: 'livechatCustomFieldForm',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelCustomFieldForm',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-customfield-new',
+	name: 'omnichannel-customfield-new',
 	path: '/customfields/new',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'New_Custom_Field',
-	pageTemplate: 'livechatCustomFieldForm',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelCustomFieldForm',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-webhooks',
+	name: 'omnichannel-webhooks',
 	path: '/webhooks',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Webhooks',
-	pageTemplate: 'livechatIntegrationWebhook',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelIntegrationWebhook',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-facebook',
+	name: 'omnichannel-facebook',
 	path: '/facebook',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Facebook Messenger',
-	pageTemplate: 'livechatIntegrationFacebook',
-}, livechatManagerRoutes, load);
+	pageTemplate: 'omnichannelIntegrationFacebook',
+}, omnichannelManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-queue',
-	path: '/livechat-queue',
-	i18nPageTitle: 'Livechat_Queue',
-	pageTemplate: 'livechatQueue',
+	name: 'omnichannel-queue',
+	path: '/omnichannel-queue',
+	i18nPageTitle: 'Omnichannel_Queue',
+	pageTemplate: 'omnichannelQueue',
 }, null, load);

@@ -5,7 +5,7 @@ import { hasAllPermission } from '../../authorization';
 import { AccountBox, TabBar, MessageTypes } from '../../ui-utils';
 
 Tracker.autorun((c) => {
-	// import livechat tabbar templates right away if livechat enabled
+	// import omnichannel tabbar templates right away if omnichannel enabled
 	if (!settings.get('Livechat_enabled')) {
 		return;
 	}
@@ -14,15 +14,15 @@ Tracker.autorun((c) => {
 });
 
 AccountBox.addItem({
-	name: 'Livechat',
-	icon: 'livechat',
-	href: 'livechat-current-chats',
-	sideNav: 'livechatFlex',
+	name: 'Omnichannel',
+	icon: 'omnichannel',
+	href: 'omnichannel-current-chats',
+	sideNav: 'omnichannelFlex',
 	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
 });
 
 TabBar.addButton({
-	groups: ['live'],
+	groups: ['omni'],
 	id: 'visitor-info',
 	i18nTitle: 'Visitor_Info',
 	icon: 'info-circled',
@@ -31,7 +31,7 @@ TabBar.addButton({
 });
 
 TabBar.addButton({
-	groups: ['live'],
+	groups: ['omni'],
 	id: 'visitor-history',
 	i18nTitle: 'Past_Chats',
 	icon: 'chat',
@@ -39,14 +39,14 @@ TabBar.addButton({
 	order: 11,
 });
 
-TabBar.addGroup('message-search', ['live']);
-TabBar.addGroup('starred-messages', ['live']);
-TabBar.addGroup('uploaded-files-list', ['live']);
-TabBar.addGroup('push-notifications', ['live']);
-TabBar.addGroup('video', ['live']);
+TabBar.addGroup('message-search', ['omni']);
+TabBar.addGroup('starred-messages', ['omni']);
+TabBar.addGroup('uploaded-files-list', ['omni']);
+TabBar.addGroup('push-notifications', ['omni']);
+TabBar.addGroup('video', ['omni']);
 
 TabBar.addButton({
-	groups: ['live'],
+	groups: ['omni'],
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
 	icon: 'book',
