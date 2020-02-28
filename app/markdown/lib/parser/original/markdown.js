@@ -5,9 +5,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import s from 'underscore.string';
-import Filter from 'bad-words';
 
 import { settings } from '../../../../settings';
+import { badWordFilter } from './original';
 
 const addAsToken = function(message, html) {
 	const token = `=!=${ Random.id() }=!=`;
@@ -56,17 +56,7 @@ const parseNotEscaped = function(msg, message) {
 
 	// filtering bad words
 	if (settings.get('Message_AllowBadWordsFilter')) {
-		const badWordsList = settings.get('Message_BadWordsFilterList');
-		let options;
-
-		// Add words to the blacklist
-		if (!!badWordsList && badWordsList.length) {
-			options = {
-				list: badWordsList.split(','),
-			};
-		}
-		const filter = new Filter(options);
-		msg = filter.clean(msg);
+		msg = badWordFilter(msg);
 	}
 
 	// Support _text_ to make italics

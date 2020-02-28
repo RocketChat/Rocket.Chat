@@ -6,8 +6,14 @@ import { Random } from 'meteor/random';
 import s from 'underscore.string';
 
 import hljs from '../../hljs';
+import { settings } from '../../../../settings';
+import { badWordFilter } from './original';
 
 const inlinecode = (message) => {
+	// filtering bad words
+	if (settings.get('Message_AllowBadWordsFilter')) {
+		message.html = badWordFilter(message.html);
+	}
 	// Support `text`
 	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) => {
 		const token = `=!=${ Random.id() }=!=`;
