@@ -23,47 +23,19 @@ const getRoomName = function() {
 	return t('conversation_with_s', roomTypes.getRoomName(room.t, room));
 };
 
-const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers) {
-	const room = ChatRoom.findOne(Session.get('openedRoom'));
-	if (room.t === 'c') {
-		return call('cleanChannelHistory', {
-			roomId,
-			latest,
-			oldest,
-			inclusive,
-			limit,
-			excludePinned,
-			ignoreDiscussion,
-			filesOnly,
-			fromUsers,
-		});
-	}
-	if (room.t === 'p') {
-		return call('cleanGroupHistory', {
-			roomId,
-			latest,
-			oldest,
-			inclusive,
-			limit,
-			excludePinned,
-			ignoreDiscussion,
-			filesOnly,
-			fromUsers,
-		});
-	}
-	if (room.t === 'd') {
-		return call('cleanDirectHistory', {
-			roomId,
-			latest,
-			oldest,
-			inclusive,
-			limit,
-			excludePinned,
-			ignoreDiscussion,
-			filesOnly,
-			fromUsers,
-		});
-	}
+const purgeWorker = function(roomId, roomType, oldest, latest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers) {
+	return call('cleanRoomHistory', {
+		roomId,
+		roomType,
+		latest,
+		oldest,
+		inclusive,
+		limit,
+		excludePinned,
+		ignoreDiscussion,
+		filesOnly,
+		fromUsers,
+	});
 };
 
 
@@ -83,6 +55,10 @@ Template.cleanHistory.helpers({
 	roomId() {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
 		return room && room._id;
+	},
+	roomType() {
+		const room = ChatRoom.findOne(Session.get('openedRoom'));
+		return room.t;
 	},
 	roomName() {
 		return getRoomName();
