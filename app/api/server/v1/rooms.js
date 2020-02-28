@@ -192,44 +192,17 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 
 		const inclusive = this.bodyParams.inclusive || false;
 
-		if (findResult.t === 'c') {
-			Meteor.runAsUser(this.userId, () => Meteor.call('cleanChannelHistory', {
-				roomId: findResult._id,
-				latest,
-				oldest,
-				inclusive,
-				limit: this.bodyParams.limit,
-				excludePinned: this.bodyParams.excludePinned,
-				filesOnly: this.bodyParams.filesOnly,
-				fromUsers: this.bodyParams.users,
-			}));
-		}
-
-		if (findResult.t === 'p') {
-			Meteor.runAsUser(this.userId, () => Meteor.call('cleanGroupHistory', {
-				roomId: findResult._id,
-				latest,
-				oldest,
-				inclusive,
-				limit: this.bodyParams.limit,
-				excludePinned: this.bodyParams.excludePinned,
-				filesOnly: this.bodyParams.filesOnly,
-				fromUsers: this.bodyParams.users,
-			}));
-		}
-
-		if (findResult.t === 'd') {
-			Meteor.runAsUser(this.userId, () => Meteor.call('cleanDirectHistory', {
-				roomId: findResult._id,
-				latest,
-				oldest,
-				inclusive,
-				limit: this.bodyParams.limit,
-				excludePinned: this.bodyParams.excludePinned,
-				filesOnly: this.bodyParams.filesOnly,
-				fromUsers: this.bodyParams.users,
-			}));
-		}
+		Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
+			roomId: findResult._id,
+			roomType: findResult.t
+			latest,
+			oldest,
+			inclusive,
+			limit: this.bodyParams.limit,
+			excludePinned: this.bodyParams.excludePinned,
+			filesOnly: this.bodyParams.filesOnly,
+			fromUsers: this.bodyParams.users,
+		}));
 		return API.v1.success();
 	},
 });
