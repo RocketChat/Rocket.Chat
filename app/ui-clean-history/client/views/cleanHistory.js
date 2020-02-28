@@ -56,10 +56,6 @@ Template.cleanHistory.helpers({
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
 		return room && room._id;
 	},
-	roomType() {
-		const room = ChatRoom.findOne(Session.get('openedRoom'));
-		return room.t;
-	},
 	roomName() {
 		return getRoomName();
 	},
