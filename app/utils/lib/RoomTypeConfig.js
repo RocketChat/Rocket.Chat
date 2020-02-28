@@ -24,6 +24,20 @@ export const RoomSettingsEnum = {
 	E2E: 'encrypted',
 };
 
+export const RoomMemberActions = {
+	ARCHIVE: 'archive',
+	IGNORE: 'ignore',
+	BLOCK: 'block',
+	MUTE: 'mute',
+	SET_AS_OWNER: 'setAsOwner',
+	SET_AS_LEADER: 'setAsLeader',
+	SET_AS_MODERATOR: 'setAsModerator',
+	LEAVE: 'leave',
+	KICK: 'kick',
+	JOIN: 'join',
+	INVITE: 'invite',
+};
+
 export const UiTextContext = {
 	CLOSE_WARNING: 'closeWarning',
 	HIDE_WARNING: 'hideWarning',
@@ -152,6 +166,10 @@ export class RoomTypeConfig {
 
 	allowRoomSettingChange(/* room, setting */) {
 		return true;
+	}
+
+	allowMemberAction(/* room, action */) {
+		return false;
 	}
 
 	/**

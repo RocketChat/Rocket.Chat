@@ -30,7 +30,7 @@ Meteor.methods({
 		const userInRoom = subscription != null;
 
 		// Can't add to direct room ever
-		if (room.t === 'd') {
+		if (room.t === 'd') { // TODO CHANGE
 			throw new Meteor.Error('error-cant-invite-for-direct-room', 'Can\'t invite user to direct rooms', {
 				method: 'addUsersToRoom',
 			});
