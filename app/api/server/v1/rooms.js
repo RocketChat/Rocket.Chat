@@ -194,7 +194,7 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
 			roomId: findResult._id,
-			roomType: findResult.t
+			roomType: findResult.t,
 			latest,
 			oldest,
 			inclusive,
