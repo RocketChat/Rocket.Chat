@@ -11,6 +11,7 @@ import { modal } from '../../../ui-utils';
 import { t, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization';
+import { RoomMemberActions } from '../../../utils/client';
 
 const canSetLeader = () => hasAllPermission('set-leader', Session.get('openedRoom'));
 
@@ -49,12 +50,12 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' });
 	const isInDirectMessageRoom = () => {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
-		return (room && room.t) === 'd';
+		return roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK);
 	};
 
-	const isMuted = () => {
-		const room = ChatRoom.findOne(Session.get('openedRoom'));
+	const room = ChatRoom.findOne(Session.get('openedRoom'));
 
+	const isMuted = () => {
 		if (room && room.ro) {
 			if (_.isArray(room.unmuted) && room.unmuted.indexOf(user && user.username) !== -1) {
 				return false;
@@ -191,6 +192,9 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || !isInDirectMessageRoom() || isSelf(this.username)) {
 				return;
 			}
+			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK)) {
+				return;
+			}
 			if (canBlockUser()) {
 				return {
 					icon: 'ban',
@@ -206,6 +210,9 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			};
 		}, () => {
 			if (!directActions || !canSetOwner()) {
+				return;
+			}
+			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_OWNER)) {
 				return;
 			}
 			if (isOwner()) {
@@ -241,6 +248,9 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			};
 		}, () => {
 			if (!directActions || !canSetLeader()) {
+				return;
+			}
+			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_LEADER)) {
 				return;
 			}
 			if (isLeader()) {
@@ -279,6 +289,9 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || !canSetModerator()) {
 				return;
 			}
+			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR)) {
+				return;
+			}
 			if (isModerator()) {
 				return {
 					group: 'channel',
@@ -315,6 +328,9 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || user._id === Meteor.userId()) {
 				return;
 			}
+			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.IGNORE)) {
+				return;
+			}
 			if (isIgnored()) {
 				return {
 					group: 'channel',
@@ -331,6 +347,9 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			};
 		}, () => {
 			if (!directActions || !canMuteUser()) {
+				return;
+			}
+			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.MUTE)) {
 				return;
 			}
 			if (isMuted()) {
@@ -412,7 +431,12 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					return this.instance.clear();
 				})));
 			}),
-			condition: () => directActions && canRemoveUser(),
+			condition: () => {
+				if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.KICK)) {
+					return;
+				}
+				return directActions && canRemoveUser();
+			},
 		}, {
 			icon: 'edit',
 			name: 'Edit',
