@@ -6,8 +6,8 @@ import { hasAllPermission } from '../../../authorization';
 
 Meteor.startup(() => {
 	TabBar.addButton({
-		groups: ['channel', 'group', 'direct'],
-		id: 'clean-history',
+		groups: ['channel'],
+		id: 'clean-channel-history',
 		anonymous: true,
 		i18nTitle: 'Prune_Messages',
 		icon: 'eraser',
@@ -17,7 +17,7 @@ Meteor.startup(() => {
 	});
 	TabBar.addButton({
 		groups: ['group'],
-		id: 'clean-history',
+		id: 'clean-group-history',
 		anonymous: true,
 		i18nTitle: 'Prune_Messages',
 		icon: 'eraser',
@@ -27,7 +27,7 @@ Meteor.startup(() => {
 	});
 	TabBar.addButton({
 		groups: ['direct'],
-		id: 'clean-history',
+		id: 'clean-direct-history',
 		anonymous: true,
 		i18nTitle: 'Prune_Messages',
 		icon: 'eraser',
