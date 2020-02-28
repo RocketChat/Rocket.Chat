@@ -229,7 +229,7 @@ const getSamlConfigs = function(service) {
 			cert: normalizeCert(settings.get(`${ service.key }_cert`)),
 		},
 		userDataFieldMap: settings.get(`${ service.key }_user_data_fieldmap`),
-		allowedClockDrift: settings.get(`${ service.key }_allowed_clock_drift`),		
+		allowedClockDrift: settings.get(`${ service.key }_allowed_clock_drift`),
 	};
 };
 
