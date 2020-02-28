@@ -20,8 +20,8 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'archiveRoom' });
 		}
 
-		if (roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
-			throw new Meteor.Error('error-direct-message-room', `rooms type: ${ room.r } can not be archived`, { method: 'archiveRoom' });
+		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
+			throw new Meteor.Error('error-direct-message-room', `rooms type: ${ room.t } can not be archived`, { method: 'archiveRoom' });
 		}
 
 		if (!hasPermission(Meteor.userId(), 'archive-room', room._id)) {

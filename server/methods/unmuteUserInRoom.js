@@ -29,7 +29,7 @@ Meteor.methods({
 			});
 		}
 
-		if (roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.MUTE)) {
+		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.MUTE)) {
 			throw new Meteor.Error('error-invalid-room-type', `${ room.t } is not a valid room type`, {
 				method: 'unmuteUserInRoom',
 				type: room.t,

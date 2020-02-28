@@ -17,7 +17,7 @@ Meteor.methods({
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user();
 
-		if (roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.LEAVE)) {
+		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.LEAVE)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 

@@ -21,7 +21,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
 		}
 
-		if (roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.JOIN)) {
+		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.JOIN)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
