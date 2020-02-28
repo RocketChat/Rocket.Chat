@@ -49,7 +49,7 @@ SAML.prototype.initialize = function(options) {
 	if (options.authnContext === undefined) {
 		options.authnContext = 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
 	}
-	
+
 	options.allowedClockDrift = parseInt(options.allowedClockDrift) || 0;
 
 	return options;
@@ -466,9 +466,9 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 
 SAML.prototype.validateNotBeforeNotOnOrAfterAssertions = function(element) {
 	const sysnow = new Date();
-        const allowedclockdrift = this.options.allowedClockDrift;
+	const allowedclockdrift = this.options.allowedClockDrift;
 
-        const now = new Date(sysnow.getTime() + allowedclockdrift);
+	const now = new Date(sysnow.getTime() + allowedclockdrift);
 
 	if (element.hasAttribute('NotBefore')) {
 		const notBefore = element.getAttribute('NotBefore');
