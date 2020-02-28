@@ -17,6 +17,7 @@ const logger = new Logger('CustomOAuth');
 const Services = {};
 const BeforeUpdateOrCreateUserFromExternalService = [];
 
+const IDENTITY_PROPNAME_FILTER = /\./;
 const normalizers = {
 	// Set 'id' to '_id' for any sources that provide it
 	_id(identity) {
