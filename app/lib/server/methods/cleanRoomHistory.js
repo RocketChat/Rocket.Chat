@@ -62,7 +62,7 @@ Meteor.methods({
 		check(fromUsers, Match.Maybe([String]));
 
 		const userId = Meteor.userId();
-		
+
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cleanDirectHistory' });
 		}
@@ -72,5 +72,5 @@ Meteor.methods({
 		}
 
 		return cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers });
-        },
+	},
 });
