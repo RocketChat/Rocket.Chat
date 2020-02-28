@@ -204,7 +204,7 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 				fromUsers: this.bodyParams.users,
 			}));
 		}
-		
+
 		if (findResult.t === 'p') {
 			Meteor.runAsUser(this.userId, () => Meteor.call('cleanGroupHistory', {
 				roomId: findResult._id,
@@ -217,7 +217,7 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 				fromUsers: this.bodyParams.users,
 			}));
 		}
-		
+
 		if (findResult.t === 'd') {
 			Meteor.runAsUser(this.userId, () => Meteor.call('cleanDirectHistory', {
 				roomId: findResult._id,
