@@ -1,4 +1,4 @@
 import { roomTypes } from '../../utils';
-import OmnichannelRoomType from '../lib/OmnichannelRoomType';
+import LivechatRoomType from '../lib/LivechatRoomType';
 
-roomTypes.add(new OmnichannelRoomType());
+roomTypes.add(new LivechatRoomType());

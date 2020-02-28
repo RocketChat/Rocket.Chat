@@ -65,11 +65,11 @@ are two fields which are required when constructing your route which is `{ name,
 class must implement the `action(params, queryParams)` method.
 
 ```javascript
-class OmnichannelRoomRoute extends RoomTypeRouteConfig {
+class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
-			name: 'omni',
-			path: '/omni/:code(\\d+)'
+			name: 'live',
+			path: '/live/:code(\\d+)'
 		});
 	}
 
@@ -93,14 +93,14 @@ default implementations of the required methods, so unless you want to overwrite
 certain settings, then you will need to implement that method and handle it.
 
 ```javascript
-class OmnichannelRoomType extends RoomTypeConfig {
+class LivechatRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'l',
 			order: 5,
-			icon: 'omnichannel',
-			label: 'Omnichannel',
-			route: new OmnichannelRoomRoute() //defined above, see the example
+			icon: 'livechat',
+			label: 'Livechat',
+			route: new LivechatRoomRoute() //defined above, see the example
 		});
 	}
 
@@ -140,9 +140,9 @@ RocketChat.roomTypes.setPublish('l', (identifier) => {
 You can add items to the left upper corner drop menu:
 ```javascript
 AccountBox.addItem({
-    name: 'Omnichannel',
+    name: 'Livechat',
     icon: 'icon-chat-empty',
-    class: 'omnichannel-manager',
+    class: 'livechat-manager',
     condition: () => {
         return RocketChat.authz.hasPermission('view-livechat-manager');
     }

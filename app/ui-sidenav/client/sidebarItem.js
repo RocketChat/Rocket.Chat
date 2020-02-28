@@ -29,8 +29,8 @@ Template.sidebarItem.helpers({
 	mySelf() {
 		return this.t === 'd' && this.name === Template.instance().user.username;
 	},
-	isOmnichannelQueue() {
-		return this.pathSection === 'omnichannel-queue';
+	isLivechatQueue() {
+		return this.pathSection === 'livechat-queue';
 	},
 	showUnread() {
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);

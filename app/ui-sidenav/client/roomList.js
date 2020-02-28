@@ -103,7 +103,7 @@ Template.roomList.helpers({
 		return ChatSubscription.find(query, { sort });
 	},
 
-	isOmnichannel() {
+	isLivechat() {
 		return this.identifier === 'l';
 	},
 

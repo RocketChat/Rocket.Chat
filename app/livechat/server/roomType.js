@@ -1,9 +1,9 @@
 import { LivechatRooms, LivechatVisitors } from '../../models';
 import { roomTypes } from '../../utils';
-import OmnichannelRoomType from '../lib/OmnichannelRoomType';
+import LivechatRoomType from '../lib/LivechatRoomType';
 
 
-class LivechatRoomTypeServer extends OmnichannelRoomType {
+class LivechatRoomTypeServer extends LivechatRoomType {
 	getMsgSender(senderId) {
 		return LivechatVisitors.findOneById(senderId);
 	}
