@@ -1,12 +1,12 @@
-import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
+const style = { width: '1.5em', height: '1.5em', verticalAlign: '-0.5em' };
+
 export const PositiveGrowthSymbol = (props) =>
-	<Box
-		is='svg'
+	<svg
 		xmlns='http://www.w3.org/2000/svg'
 		viewBox='0 0 24 24'
-		style={{ width: '1.5em', height: '1.5em', verticalAlign: '-0.5em' }}
+		style={style}
 		{...props}
 	>
 		<path
@@ -23,4 +23,4 @@ export const PositiveGrowthSymbol = (props) =>
 			L6.12133 16.7408C5.73081 17.1313 5.09765 17.1313 4.70712 16.7408C4.3166
 			16.3502 4.3166 15.7171 4.70712 15.3265Z`}
 		/>
-	</Box>;
+	</svg>;
