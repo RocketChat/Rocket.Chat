@@ -24,17 +24,46 @@ const getRoomName = function() {
 };
 
 const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers) {
-	return call('cleanRoomHistory', {
-		roomId,
-		latest,
-		oldest,
-		inclusive,
-		limit,
-		excludePinned,
-		ignoreDiscussion,
-		filesOnly,
-		fromUsers,
-	});
+	const room = ChatRoom.findOne(Session.get('openedRoom'));
+	if (room.t === 'c') {
+		return call('cleanChannelHistory', {
+			roomId,
+			latest,
+			oldest,
+			inclusive,
+			limit,
+			excludePinned,
+			ignoreDiscussion,
+			filesOnly,
+			fromUsers,
+		});
+	}
+	if (room.t === 'p') {
+		return call('cleanGroupHistory', {
+			roomId,
+			latest,
+			oldest,
+			inclusive,
+			limit,
+			excludePinned,
+			ignoreDiscussion,
+			filesOnly,
+			fromUsers,
+		});
+	}
+	if (room.t === 'd') {
+		return call('cleanDirectHistory', {
+			roomId,
+			latest,
+			oldest,
+			inclusive,
+			limit,
+			excludePinned,
+			ignoreDiscussion,
+			filesOnly,
+			fromUsers,
+		});
+	}	
 };
 
 
