@@ -63,7 +63,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 			filesOnly,
 			fromUsers,
 		});
-	}	
+	}
 };
 
 
