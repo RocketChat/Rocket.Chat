@@ -1,5 +1,5 @@
 <template name="messageAttachment">
-	<a class="attachment" href="{{message_link}}" rel="noopener noreferrer">
+	<div class="attachment">
 		<!-- <div>fallback: {{fallback}}</div> -->
 		{{#if markdownInPretext}}
 			{{{parsedPretext}}}
@@ -37,9 +37,17 @@
 						{{/if}}
 						{{author_name}}
 					{{#if ts}}
-						<span class="time">
-							{{time}}
-						</span>
+						{{#if message_link}}
+							<span class="time-link">
+								<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+							</span>
+						{{else}}
+							{{#unless time}}
+								<span class="time">
+									{{time}}
+								</span>
+							{{/unless}}
+						{{/if}}
 					{{/if}}
 					</div>
 				{{/if}}
@@ -167,5 +175,5 @@
 				{{injectIndex . ../index @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
-	</a>
+	</div>
 </template>

@@ -57,17 +57,10 @@ html.rtl .attachment {
 			margin-bottom: -2px;
 		}
 
-		& .time {
-
-			color: #1d74f5;
-
+		& .time,
+		& .time-link {
 			font-size: 0.8em;
 			font-weight: normal;
-
-			&:hover {
-
-				color: #095cd6;
-			}
 		}
 	}
 
