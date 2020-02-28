@@ -296,13 +296,13 @@ Template.cleanHistory.events({
 				toDate = new Date(`${ metaToDate }T${ metaToTime || '00:00' }:00${ getTimeZoneOffset() }`);
 			}
 
-			const roomId = Session.get('openedRoom');
+			const room = ChatRoom.findOne(Session.get('openedRoom'));
 			const users = metaSelectedUsers.map((element) => element.username);
 			const limit = 2000;
 			let count = 0;
 			let result;
 			do {
-				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreDiscussion, metaCleanHistoryFilesOnly, users); // eslint-disable-line no-await-in-loop
+				result = await purgeWorker(room._id, room.t, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreDiscussion, metaCleanHistoryFilesOnly, users); // eslint-disable-line no-await-in-loop
 				count += result;
 			} while (result === limit);
 
