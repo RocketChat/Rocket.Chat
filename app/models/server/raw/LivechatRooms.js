@@ -103,47 +103,26 @@ export class LivechatRoomsRaw extends BaseRaw {
 				closedAt: { $lte: new Date(end) },
 			},
 		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'departments',
-			},
-		};
-		const unwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
 		const group = {
 			$group: {
 				_id: {
 					_id: null,
-					departmentId: '$departments._id',
-					name: '$departments.name',
+					departmentId: '$departmentId',
 				},
-				rooms: { $push: '$$ROOT' },
+				abandonedRooms: { $sum: 1 },
 			},
 		};
-		const presentationProject = {
+		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				name: { $ifNull: ['$_id.name', null] },
-				abandonedRooms: { $size: '$rooms' },
+				abandonedRooms: 1,
 			},
 		};
-		const firstParams = [match, lookup, unwind];
 		if (departmentId) {
-			firstParams.push({
-				$match: {
-					'departments._id': departmentId,
-				},
-			});
+			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, group, presentationProject, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -160,89 +139,44 @@ export class LivechatRoomsRaw extends BaseRaw {
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'departments',
-			},
-		};
-		const departmentsUnwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const departmentsGroup = {
+		const group = {
 			$group: {
 				_id: {
 					_id: null,
-					departmentId: '$departments._id',
-					name: '$departments.name',
+					departmentId: '$departmentId',
 				},
-				rooms: { $push: '$$ROOT' },
-			},
-		};
-		const departmentsProject = {
-			$project: {
-				_id: '$_id.departmentId',
-				name: '$_id.name',
-				rooms: 1,
-				sizeOfRooms: { $size: '$rooms' },
-			},
-		};
-		const roomsUnwind = {
-			$unwind: {
-				path: '$rooms',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const roomsGroup = {
-			$group: {
-				_id: {
-					_id: null,
-					departmentId: '$_id',
-					name: '$name',
-					sizeOfRooms: '$sizeOfRooms',
-				},
+				rooms: { $sum: 1 },
 				abandonedChats: {
 					$sum: {
 						$cond: [{
 							$and: [
-								{ $ifNull: ['$rooms.metrics.visitorInactivity', false] },
-								{ $gte: ['$rooms.metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')] },
+								{ $ifNull: ['$metrics.visitorInactivity', false] },
+								{ $gte: ['$metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')] },
 							],
 						}, 1, 0],
 					},
 				},
 			},
 		};
-		const presentationProject = {
+		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				name: { $ifNull: ['$_id.name', null] },
 				percentageOfAbandonedChats: {
 					$floor: {
 						$cond: [
-							{ $eq: ['$_id.sizeOfRooms', 0] },
+							{ $eq: ['$rooms', 0] },
 							0,
-							{ $divide: [{ $multiply: ['$abandonedChats', 100] }, '$_id.sizeOfRooms'] },
+							{ $divide: [{ $multiply: ['$abandonedChats', 100] }, '$rooms'] },
 						],
 					},
 				},
 			},
 		};
-		const firstParams = [match, lookup, departmentsUnwind];
 		if (departmentId) {
-			firstParams.push({
-				$match: {
-					'departments._id': departmentId,
-				},
-			});
+			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -260,74 +194,27 @@ export class LivechatRoomsRaw extends BaseRaw {
 				closedAt: { $lte: new Date(end) },
 			},
 		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'departments',
-			},
-		};
-		const departmentsUnwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const departmentsGroup = {
+		const group = {
 			$group: {
 				_id: {
 					_id: null,
-					departmentId: '$departments._id',
-					name: '$departments.name',
+					departmentId: '$departmentId',
 				},
-				rooms: { $push: '$$ROOT' },
+				rooms: { $sum: 1 },
+				chatsDuration: { $sum: '$metrics.chatDuration' },
 			},
 		};
-		const departmentsProject = {
-			$project: {
-				_id: '$_id.departmentId',
-				name: '$_id.name',
-				rooms: 1,
-				sizeOfRooms: { $size: '$rooms' },
-			},
-		};
-		const roomsUnwind = {
-			$unwind: {
-				path: '$rooms',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const roomsGroup = {
-			$group: {
-				_id: {
-					_id: null,
-					departmentId: '$_id',
-					name: '$name',
-					sizeOfRooms: '$sizeOfRooms',
-				},
-				chatsDuration: {
-					$sum: '$rooms.metrics.chatDuration',
-				},
-			},
-		};
-		const presentationProject = {
+		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				name: { $ifNull: ['$_id.name', null] },
-				averageChatDurationTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$_id.sizeOfRooms', 0] }, 0, { $divide: ['$chatsDuration', '$_id.sizeOfRooms'] }] } },
+				averageChatDurationTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$chatsDuration', '$rooms'] }] } },
 			},
 		};
-		const firstParams = [match, lookup, departmentsUnwind];
 		if (departmentId) {
-			firstParams.push({
-				$match: {
-					'departments._id': departmentId,
-				},
-			});
+			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -345,74 +232,27 @@ export class LivechatRoomsRaw extends BaseRaw {
 				waitingResponse: { $ne: true },
 			},
 		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_room',
-				localField: '_id',
-				foreignField: 'departmentId',
-				as: 'rooms',
-			},
-		};
-		const departmentsUnwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const departmentsGroup = {
+		const group = {
 			$group: {
 				_id: {
 					_id: null,
-					departmentId: '$departments._id',
-					name: '$departments.name',
+					departmentId: '$departmentId',
 				},
-				rooms: { $push: '$$ROOT' },
+				rooms: { $sum: 1 },
+				chatsFirstResponses: { $sum: '$metrics.response.ft' },
 			},
 		};
-		const departmentsProject = {
-			$project: {
-				_id: '$_id.departmentId',
-				name: '$_id.name',
-				rooms: 1,
-				sizeOfRooms: { $size: '$rooms' },
-			},
-		};
-		const roomsUnwind = {
-			$unwind: {
-				path: '$rooms',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const roomsGroup = {
-			$group: {
-				_id: {
-					_id: null,
-					departmentId: '$_id',
-					name: '$name',
-					sizeOfRooms: '$sizeOfRooms',
-				},
-				chatsFirstResponses: {
-					$sum: '$rooms.metrics.response.ft',
-				},
-			},
-		};
-		const presentationProject = {
+		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				name: { $ifNull: ['$_id.name', null] },
-				averageWaitingTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$_id.sizeOfRooms', 0] }, 0, { $divide: ['$chatsFirstResponses', '$_id.sizeOfRooms'] }] } },
+				averageWaitingTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$chatsFirstResponses', '$rooms'] }] } },
 			},
 		};
-		const firstParams = [match, lookup, departmentsUnwind];
 		if (departmentId) {
-			firstParams.push({
-				$match: {
-					'departments._id': departmentId,
-				},
-			});
+			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -432,56 +272,26 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (answered !== undefined) {
 			match.$match.waitingResponse = { [answered ? '$ne' : '$eq']: true };
 		}
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'departments',
-			},
-		};
-		const departmentsUnwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const departmentsGroup = {
+		const group = {
 			$group: {
 				_id: {
 					_id: null,
-					departmentId: '$departments._id',
-					name: '$departments.name',
+					departmentId: '$departmentId',
 				},
-				rooms: { $push: '$$ROOT' },
+				rooms: { $sum: 1 },
 			},
 		};
-		const projects = [
-			{
-				$project: {
-					_id: '$_id.departmentId',
-					name: '$_id.name',
-					rooms: { $size: '$rooms' },
-				},
+		const project = {
+			$project: {
+				_id: { $ifNull: ['$_id.departmentId', null] },
+				rooms: 1,
 			},
-			{
-				$project: {
-					_id: { $ifNull: ['$_id', null] },
-					name: { $ifNull: ['$name', null] },
-					rooms: 1,
-				},
-			},
-		];
-		const firstParams = [match, lookup, departmentsUnwind];
+		};
 		if (departmentId) {
-			firstParams.push({
-				$match: {
-					'departments._id': departmentId,
-				},
-			});
+			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, departmentsGroup, ...projects, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -499,75 +309,28 @@ export class LivechatRoomsRaw extends BaseRaw {
 				closedAt: { $lte: new Date(end) },
 			},
 		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'departments',
-			},
-		};
-		const departmentsUnwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const departmentsGroup = {
+		const group = {
 			$group: {
 				_id: {
 					_id: null,
-					departmentId: '$departments._id',
-					name: '$departments.name',
+					departmentId: '$departmentId',
 				},
-				rooms: { $push: '$$ROOT' },
+				rooms: { $sum: 1 },
+				chatsDuration: { $sum: '$metrics.chatDuration' },
 			},
 		};
-		const departmentsProject = {
-			$project: {
-				_id: '$_id.departmentId',
-				name: '$_id.name',
-				rooms: 1,
-				sizeOfRooms: { $size: '$rooms' },
-			},
-		};
-		const roomsUnwind = {
-			$unwind: {
-				path: '$rooms',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const presentationProject = {
+		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				name: { $ifNull: ['$_id.name', null] },
-				chats: '$_id.sizeOfRooms',
+				chats: '$rooms',
 				chatsDuration: { $ceil: '$chatsDuration' },
 			},
 		};
-		const roomsGroup = {
-			$group: {
-				_id: {
-					_id: null,
-					departmentId: '$_id',
-					name: '$name',
-					sizeOfRooms: '$sizeOfRooms',
-				},
-				chatsDuration: {
-					$sum: '$rooms.metrics.chatDuration',
-				},
-			},
-		};
-		const firstParams = [match, lookup, departmentsUnwind];
 		if (departmentId) {
-			firstParams.push({
-				$match: {
-					'departments._id': departmentId,
-				},
-			});
+			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -682,7 +445,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params, { allowDiskUse: true }).toArray();
 	}
 
 	countAllOpenChatsBetweenDate({ start, end, departmentId }) {
@@ -1006,80 +769,27 @@ export class LivechatRoomsRaw extends BaseRaw {
 				'servedBy.ts': { $exists: true },
 			},
 		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'departments',
-			},
-		};
-		const departmentsUnwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const departmentsGroup = {
+		const group = {
 			$group: {
 				_id: {
 					_id: null,
-					departmentId: '$departments._id',
-					name: '$departments.name',
+					departmentId: '$departmentId',
 				},
-				rooms: { $push: '$$ROOT' },
+				rooms: { $sum: 1 },
+				allServiceTime: { $sum: { $divide: [{ $subtract: ['$responseBy.lastMessageTs', '$servedBy.ts'] }, 1000] } },
 			},
 		};
-		const departmentsProject = {
-			$project: {
-				_id: '$_id.departmentId',
-				name: '$_id.name',
-				rooms: 1,
-				sizeOfRooms: { $size: '$rooms' },
-			},
-		};
-		const roomsUnwind = {
-			$unwind: {
-				path: '$rooms',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const serviceTimeProject = {
-			$project: {
-				name: 1,
-				sizeOfRooms: 1,
-				allServiceTime: { $divide: [{ $subtract: ['$rooms.responseBy.lastMessageTs', '$rooms.servedBy.ts'] }, 1000] },
-			},
-		};
-		const roomsGroup = {
-			$group: {
-				_id: {
-					_id: null,
-					departmentId: '$_id',
-					name: '$name',
-					sizeOfRooms: '$sizeOfRooms',
-					allServiceTime: '$allServiceTime',
-				},
-			},
-
-		};
-		const presentationProject = {
+		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				name: { $ifNull: ['$_id.name', null] },
-				averageServiceTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$_id.sizeOfRooms', 0] }, 0, { $divide: ['$_id.allServiceTime', '$_id.sizeOfRooms'] }] } },
+				averageServiceTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$allServiceTime', '$rooms'] }] } },
 			},
 		};
-		const firstParams = [match, lookup, departmentsUnwind];
 		if (departmentId) {
-			firstParams.push({
-				$match: {
-					'departments._id': departmentId,
-				},
-			});
+			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, serviceTimeProject, roomsGroup, presentationProject, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
