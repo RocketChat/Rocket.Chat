@@ -192,7 +192,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || !isInDirectMessageRoom() || isSelf(this.username)) {
 				return;
 			}
-			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK)) {
+			if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK)) {
 				return;
 			}
 			if (canBlockUser()) {
@@ -212,7 +212,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || !canSetOwner()) {
 				return;
 			}
-			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_OWNER)) {
+			if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_OWNER)) {
 				return;
 			}
 			if (isOwner()) {
@@ -250,7 +250,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || !canSetLeader()) {
 				return;
 			}
-			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_LEADER)) {
+			if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_LEADER)) {
 				return;
 			}
 			if (isLeader()) {
@@ -289,7 +289,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || !canSetModerator()) {
 				return;
 			}
-			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR)) {
+			if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR)) {
 				return;
 			}
 			if (isModerator()) {
@@ -328,7 +328,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || user._id === Meteor.userId()) {
 				return;
 			}
-			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.IGNORE)) {
+			if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.IGNORE)) {
 				return;
 			}
 			if (isIgnored()) {
@@ -349,7 +349,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			if (!directActions || !canMuteUser()) {
 				return;
 			}
-			if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.MUTE)) {
+			if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.MUTE)) {
 				return;
 			}
 			if (isMuted()) {
@@ -432,7 +432,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				})));
 			}),
 			condition: () => {
-				if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.KICK)) {
+				if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.KICK)) {
 					return;
 				}
 				return directActions && canRemoveUser();
