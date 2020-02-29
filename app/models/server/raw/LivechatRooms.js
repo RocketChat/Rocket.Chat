@@ -862,38 +862,23 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			},
 		};
-		const lookup = {
-			$lookup: {
-				from: 'users',
-				localField: 'servedBy._id',
-				foreignField: '_id',
-				as: 'user',
-			},
-		};
-		const unwind = {
-			$unwind: {
-				path: '$user',
-			},
-		};
 		const group = {
 			$group: {
-				_id: { _id: '$user._id', username: '$user.username', name: '$user.name', active: '$user.active' },
+				_id: { _id: '$servedBy._id', username: '$servedBy.username' },
 				chats: { $sum: 1 },
 				chatsDuration: { $sum: '$metrics.chatDuration' },
 			},
 		};
 		const project = {
 			$project: {
-				_id: 0,
+				_id: '$_id._id',
 				username: '$_id.username',
-				name: '$_id.name',
-				active: '$_id.active',
 				chats: 1,
 				chatsDuration: { $ceil: '$chatsDuration' },
 			},
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, lookup, unwind, group, project, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -914,29 +899,16 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			},
 		};
-		const lookup = {
-			$lookup: {
-				from: 'users',
-				localField: 'servedBy._id',
-				foreignField: '_id',
-				as: 'user',
-			},
-		};
-		const unwind = {
-			$unwind: {
-				path: '$user',
-			},
-		};
 		const group = {
 			$group: {
-				_id: { _id: '$user._id', username: '$user.username', name: '$user.name', active: '$user.active' },
+				_id: { _id: '$servedBy._id', username: '$servedBy.username' },
 				chats: { $sum: 1 },
 				chatsDuration: { $sum: '$metrics.chatDuration' },
 			},
 		};
 		const project = {
 			$project: {
-				_id: 0,
+				_id: '$_id._id',
 				username: '$_id.username',
 				name: '$_id.name',
 				active: '$_id.active',
@@ -952,7 +924,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, lookup, unwind, group, project, sort];
+		const params = [match, group, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}

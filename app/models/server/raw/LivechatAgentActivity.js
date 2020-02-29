@@ -91,7 +91,7 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 		};
 		const group = {
 			$group: {
-				_id: { _id: '$user._id', username: '$user.username', name: '$user.name', active: '$user.active' },
+				_id: { _id: '$user._id', username: '$user.username' },
 				serviceHistory: { $first: '$serviceHistory' },
 				availableTimeInSeconds: { $sum: '$availableTime' },
 			},
@@ -100,8 +100,6 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 			$project: {
 				_id: 0,
 				username: '$_id.username',
-				name: '$_id.name',
-				active: '$_id.active',
 				availableTimeInSeconds: 1,
 			},
 		};
