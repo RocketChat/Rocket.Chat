@@ -2731,6 +2731,7 @@
   "Report_this_message_question_mark": "Report this message?",
   "Reporting": "Reporting",
   "Request_comment_when_closing_conversation": "Request comment when closing conversation",
+  "Request_comment_when_closing_conversation_description": "If enabled, the agent will need to set a comment before the conversation is closed.",
   "Request_tag_before_closing_chat": "Request tag(s) before closing conversation",
   "Require_all_tokens": "Require all tokens",
   "Require_any_token": "Require any token",

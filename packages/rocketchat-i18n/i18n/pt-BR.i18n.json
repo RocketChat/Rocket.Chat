@@ -2498,6 +2498,7 @@
   "Report_this_message_question_mark": "Denunciar esta mensagem?",
   "Reporting": "Relatórios",
   "Request_comment_when_closing_conversation": "Solicitar comentário ao encerrar a conversa",
+  "Request_comment_when_closing_conversation_description": "Se ativado, o agente precisará informar um comentário antes que a conversa seja encerrada.",
   "Request_tag_before_closing_chat": "Solicitar tag(s) antes de encerrar a conversa",
   "Require_all_tokens": "Exigir todos os tokens",
   "Require_any_token": "Exigir qualquer token",

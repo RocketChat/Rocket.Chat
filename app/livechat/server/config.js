@@ -119,6 +119,7 @@ Meteor.startup(function() {
 		group: 'Omnichannel',
 		public: true,
 		i18nLabel: 'Request_comment_when_closing_conversation',
+		i18nDescription: 'Request_comment_when_closing_conversation_description',
 	});
 
 	settings.add('Livechat_conversation_finished_message', '', {
@@ -277,6 +278,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_history_monitor_type', 'url', {
 		type: 'select',
 		group: 'Omnichannel',
+		section: 'Livechat',
 		i18nLabel: 'Monitor_history_for_changes_on',
 		values: [
 			{ key: 'url', i18nLabel: 'Page_URL' },
@@ -287,6 +289,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_Visitor_navigation_as_a_message', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Send_Visitor_navigation_history_as_a_message',
 	});
@@ -316,6 +319,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_videocall_enabled', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
+		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Videocall_enabled',
 		i18nDescription: 'Beta_feature_Depends_on_Video_Conference_to_be_enabled',
