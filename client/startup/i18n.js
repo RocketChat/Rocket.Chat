@@ -47,6 +47,10 @@ Meteor.startup(() => {
 	});
 
 	const applyLanguage = (language = 'en') => {
+		if (language.includes('-')) {
+			language = language.replace(/-.+/, `-${ language.split('-')[1].toUpperCase() }`);
+		}
+
 		language = filterLanguage(language);
 
 		if (!availableLanguages[language]) {
