@@ -875,6 +875,15 @@ Template.room.events({
 		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
 		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
+	'click .attachment'(event) {
+		if (this.message_link) {
+			event.preventDefault();
+			event.stopPropagation();
+			const { msg } = messageArgs(this);
+			const repliedMessageId = this.message_link.split('?msg=')[1];
+			RoomHistoryManager.getSurroundingMessages({ _id: repliedMessageId, rid: msg.rid });
+		}
+	},
 	'click .mention-link'(e, instance) {
 		if (!Meteor.userId()) {
 			return;

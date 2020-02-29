@@ -29,6 +29,8 @@ html.rtl .attachment {
 		margin: 5px 0;
 		padding-left: 15px;
 
+		cursor: pointer;
+
 		& .attachment-block-border {
 			position: absolute;
 			top: 0;
