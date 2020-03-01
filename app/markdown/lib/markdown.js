@@ -8,6 +8,7 @@ import { Blaze } from 'meteor/blaze';
 
 import { marked } from './parser/marked/marked.js';
 import { original } from './parser/original/original.js';
+import { filtered } from './parser/filtered/filtered.js';
 import { code } from './parser/original/code.js';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
@@ -15,6 +16,7 @@ import { settings } from '../../settings';
 const parsers = {
 	original,
 	marked,
+	filtered,
 };
 
 class MarkdownClass {
@@ -75,6 +77,10 @@ class MarkdownClass {
 
 	code(...args) {
 		return code(...args);
+	}
+
+	filterMarkdownFromMessage(message) {
+		return parsers.filtered(message);
 	}
 }
 

@@ -237,7 +237,6 @@ const nested = {
 const boldFiltered = {
 	'*Hello*': 'Hello',
 	'**Hello**': 'Hello',
-	'**Hello': 'Hello',
 	'*Hello**': 'Hello',
 	'He*llo': 'He*llo',
 	'*Hello': '*Hello',
@@ -255,10 +254,10 @@ const boldFiltered = {
 const italicFiltered = {
 	_Hello_: 'Hello',
 	__Hello__: 'Hello',
-	__Hello: 'Hello',
 	_Hello__: 'Hello',
 	He_llo: 'He_llo',
 	_Hello: '_Hello',
+	__Hello: '__Hello',
 	Hello_: 'Hello_',
 	___Hello___: '___Hello___',
 	___Hello__: '___Hello__',
@@ -273,7 +272,7 @@ const italicFiltered = {
 const strikeFiltered = {
 	'~Hello~': 'Hello',
 	'~~Hello~~': 'Hello',
-	'~~Hello': 'Hello',
+	'~~Hello': '~~Hello',
 	'~Hello~~': 'Hello',
 	'He~llo': 'He~llo',
 	'~Hello': '~Hello',
@@ -299,18 +298,16 @@ const headingFiltered = {
 	'####Hello': '####Hello',
 	'He#llo': 'He#llo',
 	'# Hello there': 'Hello there',
-	'Hi, # Hello': 'Hi, Hello',
-	'Hi, # Hello there': 'Hi, Hello there',
+	'Hi, # Hello': 'Hi, # Hello',
+	'Hi, # Hello there': 'Hi, # Hello there',
 };
 
 const quoteFiltered = {
-	'&gt;Hello': 'Hello',
-	'&gt; Hello': ' Hello',
-	'&lt;Hello': '&lt;Hello',
-	' &gt;Hello': ' &gt;Hello',
-	'Hello &gt; there': 'Hello &gt; there',
 	'>Hello': 'Hello',
 	'> Hello': ' Hello',
+	'>>>\nHello\n<<<': 'Hello',
+	'>>>\nHello there!\n<<<': 'Hello there!',
+	'>>>\n Hello there! \n<<<': ' Hello there! ',
 };
 
 const linkFiltered = {
@@ -345,9 +342,8 @@ const defaultObjectTest = (result, object, objectKey) => assert.equal(result.htm
 const testObject = (object, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
-			const message = parser === original ? { html: s.escapeHTML(objectKey) } : object[objectKey];
-			const result = parser === original ? Markdown.mountTokensBack(parser(message)) : parser(message);
-
+			const message = parser === original ? { html: s.escapeHTML(objectKey) } : objectKey;
+			const result = parser === original ? Markdown.mountTokensBack(parser(message)) : { html: parser(message) };
 			it(`should be equal to ${ object[objectKey] }`, () => {
 				test(result, object, objectKey);
 			});
@@ -355,31 +351,32 @@ const testObject = (object, parser = original, test = defaultObjectTest) => {
 	});
 };
 
-
 describe('Original', function() {
-	describe('Bold', () => testObject(bold, original));
+	describe('Bold', () => testObject(bold));
 
-	describe('Italic', () => testObject(italic, original));
+	describe('Italic', () => testObject(italic));
 
-	describe('Strike', () => testObject(strike, original));
+	describe('Strike', () => testObject(strike));
 
 	describe('Headers', () => {
-		describe('Level 1', () => testObject(headersLevel1, original));
+		describe('Level 1', () => testObject(headersLevel1));
 
-		describe('Level 2', () => testObject(headersLevel2, original));
+		describe('Level 2', () => testObject(headersLevel2));
 
-		describe('Level 3', () => testObject(headersLevel3, original));
+		describe('Level 3', () => testObject(headersLevel3));
 
-		describe('Level 4', () => testObject(headersLevel4, original));
+		describe('Level 4', () => testObject(headersLevel4));
 	});
 
-	describe('Quote', () => testObject(quote, original));
+	describe('Quote', () => testObject(quote));
 
-	describe('Link', () => testObject(link, original));
+	describe('Link', () => testObject(link));
 
-	describe('Inline Code', () => testObject(inlinecode, original));
+	describe('Inline Code', () => testObject(inlinecode));
 
-	describe('Code', () => testObject(code, original));
+	describe('Code', () => testObject(code));
+
+	describe('Nested', () => testObject(nested));
 });
 
 describe('Filtered', function() {
@@ -396,10 +393,6 @@ describe('Filtered', function() {
 	describe('LinkFilter', () => testObject(linkFiltered, filtered));
 
 	describe('inlinecodeFilter', () => testObject(inlinecodeFiltered, filtered));
-
-	describe('Code', () => testObject(code));
-
-	describe('Nested', () => testObject(nested));
 
 	describe('blockcodeFilter', () => testObject(blockcodeFiltered, filtered));
 });
