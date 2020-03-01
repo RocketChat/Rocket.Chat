@@ -26,19 +26,6 @@ const getUserStatusText = (id) => {
 	return roomTypes.getUserStatusText(roomData.t, id);
 };
 
-Blaze.TemplateInstance.prototype.parentTemplate = function (levels) {
-    var view = this.view;
-    if (typeof levels === "undefined") {
-        levels = 1;
-    }
-    while (view) {
-        if (view.name.substring(0, 9) === "Template." && !(levels--)) {
-            return view.templateInstance();
-        }
-        view = view.parentView;
-    }
-};
-
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
@@ -191,9 +178,9 @@ Template.headerRoom.events({
 		}
 	},
 	'click .rc-header__name'(event, instance) {
-		const tabBar = instance.parentTemplate().tabBar;
+		const { tabBar } = instance.parentTemplate();
 		const $flexTab = $('.flex-tab-container .flex-tab');
-		
+
 		if (tabBar.getState() === 'opened' && tabBar.getTemplate() === 'channelSettings') {
 			$flexTab.attr('template', '');
 			return tabBar.close();
@@ -214,12 +201,11 @@ Template.headerRoom.events({
 				template: 'channelSettings',
 				order: 1,
 			});
-		}
-		else {
+		} else {
 			$flexTab.attr('template', 'membersList');
 			tabBar.setData({
-				label: 'Room_Info',
-				icon: 'info-circled',
+				label: 'User_Info',
+				icon: 'info-user',
 			});
 			tabBar.open({
 				groups: ['direct'],
