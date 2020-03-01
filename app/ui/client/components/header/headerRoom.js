@@ -26,6 +26,19 @@ const getUserStatusText = (id) => {
 	return roomTypes.getUserStatusText(roomData.t, id);
 };
 
+Blaze.TemplateInstance.prototype.parentTemplate = function (levels) {
+    var view = this.view;
+    if (typeof levels === "undefined") {
+        levels = 1;
+    }
+    while (view) {
+        if (view.name.substring(0, 9) === "Template." && !(levels--)) {
+            return view.templateInstance();
+        }
+        view = view.parentView;
+    }
+};
+
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
@@ -174,6 +187,47 @@ Template.headerRoom.events({
 				toastr.success(
 					t('Encrypted_setting_changed_successfully'),
 				);
+			});
+		}
+	},
+	'click .rc-header__name'(event, instance) {
+		const tabBar = instance.parentTemplate().tabBar;
+		const $flexTab = $('.flex-tab-container .flex-tab');
+		
+		if (tabBar.getState() === 'opened' && tabBar.getTemplate() === 'channelSettings') {
+			$flexTab.attr('template', '');
+			return tabBar.close();
+		}
+
+		if (instance.currentChannel.t === 'c') {
+			$flexTab.attr('template', 'channelSettings');
+			tabBar.setData({
+				label: 'Room_Info',
+				icon: 'info-circled',
+			});
+			tabBar.open({
+				groups: ['channel', 'group'],
+				id: 'channel-settings',
+				anonymous: true,
+				i18nTitle: 'Room_Info',
+				icon: 'info-circled',
+				template: 'channelSettings',
+				order: 1,
+			});
+		}
+		else {
+			$flexTab.attr('template', 'membersList');
+			tabBar.setData({
+				label: 'Room_Info',
+				icon: 'info-circled',
+			});
+			tabBar.open({
+				groups: ['direct'],
+				id: 'user-info',
+				i18nTitle: 'User_Info',
+				icon: 'user',
+				template: 'membersList',
+				order: 2,
 			});
 		}
 	},
