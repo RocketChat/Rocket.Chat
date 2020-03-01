@@ -3,15 +3,15 @@ import { check } from 'meteor/check';
 
 import { settings } from '../../app/settings';
 import { hasPermission } from '../../app/authorization';
-import { Users, Rooms, Subscriptions } from '../../app/models';
-import { getDefaultSubscriptionPref } from '../../app/utils';
+import { Users, Rooms } from '../../app/models';
 import { RateLimiter } from '../../app/lib';
 import { callbacks } from '../../app/callbacks';
 import { addUser } from '../../app/federation/server/functions/addUser';
+import { createDirectRoom } from '../../app/lib/server';
 
 Meteor.methods({
-	createDirectMessage(username) {
-		check(username, String);
+	createDirectMessage(...usernames) {
+		check(usernames, [String]);
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -27,7 +27,7 @@ Meteor.methods({
 			});
 		}
 
-		if (settings.get('Message_AllowDirectMessagesToYourself') === false && me.username === username) {
+		if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && me.username === usernames[0]) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createDirectMessage',
 			});
@@ -39,109 +39,35 @@ Meteor.methods({
 			});
 		}
 
-		let to = Users.findOneByUsernameIgnoringCase(username);
 
-		// If the username does have an `@`, but does not exist locally, we create it first
-		if (!to && username.indexOf('@') !== -1) {
-			to = addUser(username);
-		}
+		const users = usernames.filter((username) => username !== me.username).map((username) => {
+			let to = Users.findOneByUsernameIgnoringCase(username);
 
-		if (!to) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'createDirectMessage',
-			});
-		}
+			// If the username does have an `@`, but does not exist locally, we create it first
+			if (!to && username.indexOf('@') !== -1) {
+				to = addUser(username);
+			}
 
-		if (!hasPermission(to._id, 'view-d-room')) {
-			throw new Meteor.Error('error-not-allowed', 'Target user not allowed to receive messages', {
-				method: 'createDirectMessage',
-			});
-		}
+			if (!to) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'createDirectMessage',
+				});
+			}
 
-		const rid = [me._id, to._id].sort().join('');
-
-		const now = new Date();
-
-		// Make sure we have a room
-		const roomUpsertResult = Rooms.upsert({
-			_id: rid,
-		}, {
-			$set: {
-				usernames: [me.username, to.username],
-			},
-			$setOnInsert: {
-				t: 'd',
-				msgs: 0,
-				ts: now,
-				usersCount: 2,
-			},
+			if (!hasPermission(to._id, 'view-d-room')) {
+				throw new Meteor.Error('error-not-allowed', `Target user ${ username } not allowed to receive messages`, {
+					method: 'createDirectMessage',
+				});
+			}
+			return to;
 		});
 
-		const myNotificationPref = getDefaultSubscriptionPref(me);
-
-		// Make user I have a subcription to this room
-		const upsertSubscription = {
-			$set: {
-				ls: now,
-				open: true,
-			},
-			$setOnInsert: {
-				fname: to.name,
-				name: to.username,
-				t: 'd',
-				alert: false,
-				unread: 0,
-				userMentions: 0,
-				groupMentions: 0,
-				customFields: me.customFields,
-				u: {
-					_id: me._id,
-					username: me.username,
-				},
-				ts: now,
-				...myNotificationPref,
-			},
-		};
-
-		if (to.active === false) {
-			upsertSubscription.$set.archived = true;
-		}
-
-		Subscriptions.upsert({
-			rid,
-			$and: [{ 'u._id': me._id }], // work around to solve problems with upsert and dot
-		}, upsertSubscription);
-
-		const toNotificationPref = getDefaultSubscriptionPref(to);
-
-		Subscriptions.upsert({
-			rid,
-			$and: [{ 'u._id': to._id }], // work around to solve problems with upsert and dot
-		}, {
-			$setOnInsert: {
-				fname: me.name,
-				name: me.username,
-				t: 'd',
-				open: false,
-				alert: false,
-				unread: 0,
-				userMentions: 0,
-				groupMentions: 0,
-				customFields: to.customFields,
-				u: {
-					_id: to._id,
-					username: to.username,
-				},
-				ts: now,
-				...toNotificationPref,
-			},
-		});
+		const { _id: rid, inserted } = createDirectRoom([me, ...users], { }, users === 0 || users.length > 1 ? { subscriptionExtra: { open: true } } : { creator: me._id });
 
 		// If the room is new, run a callback
-		if (roomUpsertResult.insertedId) {
+		if (inserted) {
 			const insertedRoom = Rooms.findOneById(rid);
-
-			callbacks.run('afterCreateDirectRoom', insertedRoom, { from: me, to });
+			callbacks.run('afterCreateDirectRoom', insertedRoom, { from: me, to: users[0] }); // TODO CHECK FEDERATION
 		}
 
 		return {

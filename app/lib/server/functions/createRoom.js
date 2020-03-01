@@ -11,7 +11,7 @@ import { createDirectRoom } from './createDirectRoom';
 
 export const createRoom = function(type, name, owner, members, readOnly, extraData = {}, options = {}) {
 	if (type === 'd') {
-		return createDirectRoom(members[0], members[1], extraData, options);
+		return createDirectRoom(members, extraData, options);
 	}
 
 	name = s.trim(name);
@@ -23,6 +23,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 	}
 
 	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
+
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
@@ -44,7 +45,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		validRoomNameOptions.nameValidationRegex = options.nameValidationRegex;
 	}
 
-	let room = Object.assign({
+	let room = {
 		name: getValidRoomName(name, null, validRoomNameOptions),
 		fname: name,
 		t: type,
@@ -54,14 +55,10 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 			_id: owner._id,
 			username: owner.username,
 		},
-	}, extraData, {
+		...extraData,
 		ts: now,
 		ro: readOnly === true,
-	});
-
-	if (type === 'd') {
-		room.usernames = members;
-	}
+	};
 
 	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));

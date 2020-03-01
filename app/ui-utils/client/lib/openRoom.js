@@ -59,7 +59,7 @@ export const openRoom = function(type, name) {
 		const room = roomTypes.findRoom(type, name, user);
 		if (room == null) {
 			if (type === 'd') {
-				Meteor.call('createDirectMessage', name, function(error) {
+				Meteor.call('createDirectMessage', ...name.split(', '), function(error) { // TODO provide an function to handle
 					if (!error) {
 						RoomManager.close(type + name);
 						return openRoom('d', name);
