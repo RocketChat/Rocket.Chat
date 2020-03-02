@@ -165,7 +165,7 @@ jobs:
     strategy:
       matrix:
         node-version: ["12.14.0"]
-        mongodb-version: ["3.4", "3.6", "4.0"]
+        mongodb-version: ["4.0"]
 
     steps:
     - name: Launch MongoDB
@@ -329,7 +329,7 @@ jobs:
       run: |
         cd /tmp/build-pr
 
-        docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
+        docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
 
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
