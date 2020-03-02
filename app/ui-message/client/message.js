@@ -407,9 +407,10 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.actionContext === 'snippeted';
 	},
-	isThreadReply() {
+	renderAsThreadReply() {
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
+		const isThreadReply = !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
+		return isThreadReply && !this.isSearchResult;
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
