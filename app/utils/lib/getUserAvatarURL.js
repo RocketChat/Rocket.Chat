@@ -1,6 +1,3 @@
-import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
-
 import { getAvatarURL } from './getAvatarURL';
 import { settings } from '../../settings';
 
@@ -12,8 +9,8 @@ export const getUserAvatarURL = function(username) {
 	if (username == null) {
 		return;
 	}
-	const key = `avatar_random_${ username }`;
-	const cache = Tracker.nonreactive(() => Session && Session.get(key)); // there is no Session on server
+
+	const cache = localStorage.getItem(`avatar_random_${ username }`); // there is no Session on server
 
 	return getAvatarURL({ username, cache });
 };

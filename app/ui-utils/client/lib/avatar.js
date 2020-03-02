@@ -1,5 +1,4 @@
 import { Blaze } from 'meteor/blaze';
-import { Session } from 'meteor/session';
 
 import { RoomManager } from './RoomManager';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
@@ -28,7 +27,7 @@ export const getAvatarAsPng = function(username, cb) {
 };
 
 export const updateAvatarOfUsername = function(username) {
-	Session.set(`avatar_random_${ username }`, Date.now());
+	localStorage.setItem(`avatar_random_${ username }`, Date.now());
 	const url = getUserAvatarURL(username);
 
 	// force reload of avatars of messages
