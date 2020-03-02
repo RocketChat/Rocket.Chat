@@ -62,7 +62,7 @@ Meteor.methods({
 			return to;
 		});
 
-		const { _id: rid, inserted } = createDirectRoom([me, ...users], { }, users === 0 || users.length > 1 ? { subscriptionExtra: { open: true } } : { creator: me._id });
+		const { _id: rid, inserted } = createDirectRoom([me, ...users], { }, { creator: me._id });
 
 		// If the room is new, run a callback
 		if (inserted) {
