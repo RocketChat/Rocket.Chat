@@ -25,6 +25,7 @@ import {
 import { Notifications } from '../../notifications';
 import { Rooms, Subscriptions } from '../../models';
 import { call } from '../../ui-utils';
+import { roomTypes, RoomSettingsEnum } from '../../utils';
 
 export class E2ERoom {
 	constructor(userId, roomId, t) {
@@ -97,7 +98,7 @@ export class E2ERoom {
 	}
 
 	isSupportedRoomType(type) {
-		return ['d', 'p'].includes(type);
+		return roomTypes.getConfig(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
 
 	async importGroupKey(groupKey) {
