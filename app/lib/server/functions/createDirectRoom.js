@@ -24,7 +24,7 @@ const getName = (uid, members) => members.filter(({ _id }) => _id !== uid).map((
 
 export const createDirectRoom = function(members, roomExtraData = {}, options = {}) {
 	if (members.length > settings.get('DirectMesssage_maxUsers')) {
-		return;
+		throw new Error('error-direct-message-max-user-exceeded');
 	}
 
 	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
