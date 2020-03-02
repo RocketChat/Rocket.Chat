@@ -88,7 +88,7 @@ textarea.rc-input__element {
 			text-align: start;
 			text-overflow: ellipsis;
 
-			color: var(--input-placeholder-color);
+			color: var(--input-placeholder-color-primary-light);
 		}
 
 		&[type=color] {
