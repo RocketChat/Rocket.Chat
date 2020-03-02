@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission, hasAllPermission } from '../../../authorization';
+import { hasPermission, hasAllPermission } from '../../../authorization/server';
+import { getSettingPermissionId } from '../../../authorization/lib';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
-import { getSettingPermissionId } from '../lib';
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {

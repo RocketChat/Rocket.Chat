@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
@@ -7,21 +9,7 @@ export class RoomsRaw extends BaseRaw {
 			'u._id': uid,
 		};
 
-		return this.col.findOne(query, options);
-	}
-
-	isUserInRole(uid, roleName, rid) {
-		if (rid == null) {
-			return;
-		}
-
-		const query = {
-			'u._id': uid,
-			rid,
-			roles: roleName,
-		};
-
-		return this.findOne(query, { fields: { roles: 1 } });
+		return this.findOne(query, options);
 	}
 
 	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
@@ -43,5 +31,62 @@ export class RoomsRaw extends BaseRaw {
 
 		const [statistic] = await this.col.aggregate(aggregate).toArray();
 		return statistic;
+	}
+
+	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
+		const nameRegex = new RegExp(s.escapeRegExp(name).trim(), 'i');
+		const query = {
+			t: {
+				$in: types,
+			},
+			prid: { $exists: discussion },
+			$or: [
+				{ name: nameRegex },
+				{
+					t: 'd',
+					usernames: nameRegex,
+				},
+			],
+		};
+		return this.find(query, options);
+	}
+
+	findByTypes(types, discussion = false, options = {}) {
+		const query = {
+			t: {
+				$in: types,
+			},
+			prid: { $exists: discussion },
+		};
+		return this.find(query, options);
+	}
+
+	findByNameContaining(name, discussion = false, options = {}) {
+		const nameRegex = new RegExp(s.escapeRegExp(name).trim(), 'i');
+
+		const query = {
+			prid: { $exists: discussion },
+			$or: [
+				{ name: nameRegex },
+				{
+					t: 'd',
+					usernames: nameRegex,
+				},
+			],
+		};
+		return this.find(query, options);
+	}
+
+	findChannelAndPrivateByNameStarting(name, options) {
+		const nameRegex = new RegExp(`^${ s.escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+		};
+
+		return this.find(query, options);
 	}
 }

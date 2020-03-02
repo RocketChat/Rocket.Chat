@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
+import { normalizeAgent } from '../../lib/Helper';
 
-export function online() {
-	return Livechat.online();
+export function online(department) {
+	return Livechat.online(department);
 }
 
 export function findTriggers() {
@@ -80,7 +81,7 @@ export function getRoom({ guest, rid, roomInfo, agent }) {
 }
 
 export function findAgent(agentId) {
-	return Users.getAgentInfo(agentId);
+	return normalizeAgent(agentId);
 }
 
 export function normalizeHttpHeaderData(headers = {}) {
@@ -109,6 +110,7 @@ export function settings() {
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
+			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
@@ -125,6 +127,7 @@ export function settings() {
 			offlineSuccessMessage: initSettings.Livechat_offline_success_message,
 			offlineUnavailableMessage: initSettings.Livechat_offline_form_unavailable,
 			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
+			conversationFinishedText: initSettings.Livechat_conversation_finished_text,
 			transcriptMessage: initSettings.Livechat_transcript_message,
 			registrationFormMessage: initSettings.Livechat_registration_form_message,
 			dataProcessingConsentText: initSettings.Livechat_data_processing_consent_text,
@@ -144,59 +147,4 @@ export function settings() {
 
 export async function getExtraConfigInfo(room) {
 	return callbacks.run('livechat.onLoadConfigApi', room);
-}
-
-export function findRooms({
-	agents,
-	departmentId,
-	open,
-	createdAt,
-	closedAt,
-	tags,
-	customFields,
-	options = {},
-}) {
-	const query = { t: 'l' };
-	if (agents) {
-		query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
-	}
-	if (departmentId) {
-		query.departmentId = departmentId;
-	}
-	if (open !== undefined) {
-		query.open = { $exists: open };
-	}
-	if (createdAt) {
-		query.ts = {};
-		if (createdAt.start) {
-			query.ts.$gte = new Date(createdAt.start);
-		}
-		if (createdAt.end) {
-			query.ts.$lte = new Date(createdAt.end);
-		}
-	}
-	if (closedAt) {
-		query.closedAt = {};
-		if (closedAt.start) {
-			query.closedAt.$gte = new Date(closedAt.start);
-		}
-		if (closedAt.end) {
-			query.closedAt.$lte = new Date(closedAt.end);
-		}
-	}
-	if (tags) {
-		query.tags = { $in: tags };
-	}
-	if (customFields) {
-		query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: customFields[key] }));
-	}
-	return {
-		rooms: LivechatRooms.find(query, {
-			sort: options.sort || { ts: 1 },
-			skip: options.offset,
-			limit: options.count,
-			fields: options.fields,
-		}).fetch(),
-		total: LivechatRooms.find(query).count(),
-	};
 }

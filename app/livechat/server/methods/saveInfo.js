@@ -17,12 +17,14 @@ Meteor.methods({
 			name: Match.Optional(String),
 			email: Match.Optional(String),
 			phone: Match.Optional(String),
+			livechatData: Match.Optional(Object),
 		}));
 
 		check(roomData, Match.ObjectIncluding({
 			_id: String,
 			topic: Match.Optional(String),
 			tags: Match.Optional([String]),
+			livechatData: Match.Optional(Object),
 		}));
 
 		const room = LivechatRooms.findOneById(roomData._id, { t: 1, servedBy: 1 });
@@ -32,6 +34,10 @@ Meteor.methods({
 
 		if ((!room.servedBy || room.servedBy._id !== Meteor.userId()) && !hasPermission(Meteor.userId(), 'save-others-livechat-room-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
+		}
+
+		if (room.sms) {
+			delete guestData.phone;
 		}
 
 		const ret = Livechat.saveGuest(guestData) && Livechat.saveRoomInfo(roomData, guestData);

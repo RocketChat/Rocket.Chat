@@ -2,39 +2,25 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import s from 'underscore.string';
+import _ from 'underscore';
 
-import { CustomSounds } from '../../../models';
 import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
+import { CustomSounds } from '../lib/CustomSounds';
+import { APIClient } from '../../../utils/client';
+
+const LIST_SIZE = 50;
+const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 Template.adminSounds.helpers({
 	searchText() {
 		const instance = Template.instance();
 		return instance.filter && instance.filter.get();
 	},
-	isReady() {
-		if (Template.instance().ready != null) {
-			return Template.instance().ready.get();
-		}
-		return undefined;
-	},
 	customsounds() {
-		return Template.instance().customsounds();
+		return Template.instance().sounds.get();
 	},
 	isLoading() {
-		if (Template.instance().ready != null) {
-			if (!Template.instance().ready.get()) {
-				return 'btn-loading';
-			}
-		}
-	},
-	hasMore() {
-		if (Template.instance().limit != null) {
-			if (typeof Template.instance().customsounds === 'function') {
-				return Template.instance().limit.get() === Template.instance().customsounds().length;
-			}
-		}
-		return false;
+		return Template.instance().isLoading.get();
 	},
 	flexData() {
 		return {
@@ -46,18 +32,22 @@ Template.adminSounds.helpers({
 	onTableScroll() {
 		const instance = Template.instance();
 		return function(currentTarget) {
-			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop
-				>= currentTarget.scrollHeight - 100
-			) {
-				return instance.limit.set(instance.limit.get() + 50);
+			if (currentTarget.offsetHeight + currentTarget.scrollTop < currentTarget.scrollHeight - 100) {
+				return;
+			}
+			const sounds = instance.sounds.get();
+			if (instance.total.get() > sounds.length) {
+				instance.offset.set(instance.offset.get() + LIST_SIZE);
 			}
 		};
 	},
 	onTableItemClick() {
 		const instance = Template.instance();
 		return function(item) {
-			instance.tabBarData.set(CustomSounds.findOne({ _id: item._id }));
+			instance.tabBarData.set({
+				sound: instance.sounds.get().find((sound) => sound._id === item._id),
+				onSuccess: instance.onSuccessCallback,
+			});
 			instance.tabBar.showGroup('custom-sounds-selected');
 			instance.tabBar.open('admin-sound-info');
 		};
@@ -66,9 +56,12 @@ Template.adminSounds.helpers({
 
 Template.adminSounds.onCreated(function() {
 	const instance = this;
-	this.limit = new ReactiveVar(50);
+	this.sounds = new ReactiveVar([]);
+	this.offset = new ReactiveVar(0);
+	this.total = new ReactiveVar(0);
+	this.query = new ReactiveVar({});
+	this.isLoading = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
-	this.ready = new ReactiveVar(false);
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
@@ -80,10 +73,6 @@ Template.adminSounds.onCreated(function() {
 		i18nTitle: 'Custom_Sound_Add',
 		icon: 'plus',
 		template: 'adminSoundEdit',
-		openClick(/* e, t*/) {
-			instance.tabBarData.set();
-			return true;
-		},
 		order: 1,
 	});
 
@@ -96,33 +85,43 @@ Template.adminSounds.onCreated(function() {
 		order: 2,
 	});
 
-	this.autorun(function() {
-		const limit = instance.limit != null ? instance.limit.get() : 0;
-		const subscription = instance.subscribe('customSounds', '', limit);
-		instance.ready.set(subscription.ready());
+	this.onSuccessCallback = () => {
+		this.offset.set(0);
+		return this.loadSounds(this.query.get(), this.offset.get());
+	};
+
+	this.tabBarData.set({
+		onSuccess: instance.onSuccessCallback,
 	});
 
-	this.customsounds = function() {
-		const filter = instance.filter != null ? s.trim(instance.filter.get()) : '';
-
-		let query = {};
-
-		if (filter) {
-			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { name: filterReg };
+	this.loadSounds = _.debounce(async (query, offset) => {
+		this.isLoading.set(true);
+		const { sounds, total } = await APIClient.v1.get(`custom-sounds.list?count=${ LIST_SIZE }&offset=${ offset }&query=${ JSON.stringify(query) }`);
+		this.total.set(total);
+		if (offset === 0) {
+			this.sounds.set(sounds);
+		} else {
+			this.sounds.set(this.sounds.get().concat(sounds));
 		}
+		this.isLoading.set(false);
+	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
 
-		const limit = instance.limit != null ? instance.limit.get() : 0;
-
-		return CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
-	};
+	this.autorun(() => {
+		const filter = this.filter.get() && this.filter.get().trim();
+		const offset = this.offset.get();
+		if (filter) {
+			const regex = { $regex: filter, $options: 'i' };
+			return this.loadSounds({ name: regex }, offset);
+		}
+		return this.loadSounds({}, offset);
+	});
 });
 
 Template.adminSounds.onRendered(() =>
 	Tracker.afterFlush(function() {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
-	})
+	}),
 );
 
 Template.adminSounds.events({
@@ -137,14 +136,12 @@ Template.adminSounds.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
+		t.offset.set(0);
 	},
 	'click .icon-play-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		const $audio = $(`audio#${ this._id }`);
-		if ($audio && $audio[0] && $audio[0].play) {
-			$audio[0].play();
-		}
+		CustomSounds.play(this._id);
 	},
 	'click .icon-pause-circled'(e) {
 		e.preventDefault();

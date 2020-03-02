@@ -286,7 +286,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	};
 }
 
-async function sendAllNotifications(message, room) {
+export async function sendAllNotifications(message, room) {
 	// threads
 	if (message.tmid) {
 		return message;
@@ -329,7 +329,7 @@ async function sendAllNotifications(message, room) {
 				await callJoinRoom(userId, room._id);
 
 				return userId;
-			})
+			}),
 		).then((users) => {
 			users.forEach((userId) => {
 				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, userId);

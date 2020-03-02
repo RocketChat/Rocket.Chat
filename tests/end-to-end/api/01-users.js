@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 
+import { expect } from 'chai';
+
 import {
 	getCredentials,
 	api,
@@ -9,6 +11,7 @@ import {
 	apiUsername,
 	targetUser,
 	log,
+	wait,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
@@ -23,7 +26,7 @@ describe('[Users]', function() {
 
 	it('enabling E2E in server and generating keys to user...', (done) => {
 		updateSetting('E2E_Enable', true).then(() => {
-			request.post(api('e2e.setUserPublicAndPivateKeys'))
+			request.post(api('e2e.setUserPublicAndPrivateKeys'))
 				.set(credentials)
 				.send({
 					private_key: 'test',
@@ -170,7 +173,6 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', username);
-					expect(res.body).to.have.nested.property('user.emails[0].address', email);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', 'name');
 				})
@@ -194,7 +196,22 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.info]', () => {
-		after((done) => updatePermission('view-other-user-channels', ['admin']).then(done));
+		after(() => updatePermission('view-other-user-channels', ['admin']));
+
+		it('should return an error when the user does not exist', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					username: 'invalid-username',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('User not found.');
+				})
+				.end(done);
+		});
 
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
@@ -207,7 +224,6 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', apiUsername);
-					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', apiUsername);
 					expect(res.body).to.not.have.nested.property('user.e2e');
@@ -886,7 +902,7 @@ describe('[Users]', function() {
 
 		it('enabling E2E in server and generating keys to user...', (done) => {
 			updateSetting('E2E_Enable', true).then(() => {
-				request.post(api('e2e.setUserPublicAndPivateKeys'))
+				request.post(api('e2e.setUserPublicAndPrivateKeys'))
 					.set(userCredentials)
 					.send({
 						private_key: 'test',
@@ -1007,130 +1023,71 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.createToken]', () => {
-		let user;
-		beforeEach((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
-		});
-
-		let userCredentials;
-		beforeEach((done) => {
-			request.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
-		});
-		afterEach((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(done);
-			user = undefined;
-		});
-
-		describe('logged as admin:', () => {
-			it('should return the user id and a new token', (done) => {
-				request.post(api('users.createToken'))
-					.set(credentials)
-					.send({
-						username: user.username,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('data.userId', user._id);
-						expect(res.body).to.have.nested.property('data.authToken');
-					})
-					.end(done);
-			});
-		});
-
-		describe('logged as itself:', () => {
-			it('should return the user id and a new token', (done) => {
-				request.post(api('users.createToken'))
-					.set(userCredentials)
-					.send({
-						username: user.username,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('data.userId', user._id);
-						expect(res.body).to.have.nested.property('data.authToken');
-					})
-					.end(done);
-			});
-		});
-
-		describe('As an user not allowed:', () => {
-			it('should return 401 unauthorized', (done) => {
-				request.post(api('users.createToken'))
-					.set(userCredentials)
-					.send({
-						username: 'rocket.cat',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('errorType');
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
-		});
-
-		describe('Not logged in:', () => {
-			it('should return 401 unauthorized', (done) => {
-				request.post(api('users.createToken'))
-					.send({
-						username: user.username,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(401)
-					.expect((res) => {
-						expect(res.body).to.have.property('message');
-					})
-					.end(done);
-			});
-		});
-
-		describe('Testing if the returned token is valid:', () => {
-			it('should return 200', (done) => request.post(api('users.createToken'))
-				.set(credentials)
-				.send({ username: user.username })
-				.expect('Content-Type', 'application/json')
-				.end((err, res) => (err ? done()
-					: request.get(api('me'))
-						.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done))
-				)
-			);
-		});
-	});
-
 	describe('[/users.setPreferences]', () => {
+		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
+			const userPreferences = {
+				userId: 'rocket.cat',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', []).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(400)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Editing user is not allowed [error-action-not-allowed]');
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the user try to update info of an inexistent user', (done) => {
+			const userPreferences = {
+				userId: 'invalid-id',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', ['admin', 'user']).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(400)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'The optional \"userId\" param provided does not match any users [error-invalid-user]');
+						expect(res.body).to.have.property('errorType', 'error-invalid-user');
+					})
+					.end(done);
+			});
+		});
+		it('should set some preferences of another user successfully', (done) => {
+			const userPreferences = {
+				userId: 'rocket.cat',
+				data: {
+					...preferences.data,
+				},
+			};
+			updatePermission('edit-other-user-info', ['admin', 'user']).then(() => {
+				request.post(api('users.setPreferences'))
+					.set(credentials)
+					.send(userPreferences)
+					.expect(200)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body.user).to.have.property('settings');
+						expect(res.body.user.settings).to.have.property('preferences');
+						expect(res.body.user._id).to.be.equal('rocket.cat');
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
 		it('should set some preferences by user when execute successfully', (done) => {
 			const userPreferences = {
 				userId: credentials['X-User-Id'],
@@ -1144,7 +1101,8 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					expect(Object.keys(res.body.user.settings.preferences)).to.include.members(Object.keys(userPreferences.data));
+					expect(res.body.user).to.have.property('settings');
+					expect(res.body.user.settings).to.have.property('preferences');
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
@@ -1310,11 +1268,10 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.end(wait(done, 200));
 		});
 
 		it('should delete user own account', (done) => {
-			browser.pause(500);
 			request.post(api('users.deleteOwnAccount'))
 				.set(userCredentials)
 				.send({
@@ -1428,7 +1385,7 @@ describe('[Users]', function() {
 						.end(done);
 				});
 			});
-			it('Grant necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', ['admin']).then(done));
+			it('Grant necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', ['admin']));
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
@@ -1530,7 +1487,7 @@ describe('[Users]', function() {
 			});
 		});
 		describe('unsuccessful cases', () => {
-			it('Remove necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', []).then(done));
+			it('Remove necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', []));
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
@@ -1716,6 +1673,89 @@ describe('[Users]', function() {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[/users.requestDataDownload]', () => {
+		it('should return the request data with fullExport false when no query parameter was send', (done) => {
+			request.get(api('users.requestDataDownload'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', false);
+				})
+				.end(done);
+		});
+		it('should return the request data with fullExport false when the fullExport query parameter is false', (done) => {
+			request.get(api('users.requestDataDownload?fullExport=false'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', false);
+				})
+				.end(done);
+		});
+		it('should return the request data with fullExport true when the fullExport query parameter is true', (done) => {
+			request.get(api('users.requestDataDownload?fullExport=true'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('requested');
+					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+					expect(res.body.exportOperation).to.have.property('fullExport', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.autocomplete]', () => {
+		it('should return an empty list when the user does not have the necessary permission', (done) => {
+			updatePermission('view-outside-room', []).then(() => {
+				request.get(api('users.autocomplete?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
+				request.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					})
+					.end(done);
+			});
+		});
+		it('should return the users to fill auto complete', (done) => {
+			request.get(api('users.autocomplete?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
 		});
 	});
 });

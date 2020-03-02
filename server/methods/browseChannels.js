@@ -4,8 +4,10 @@ import s from 'underscore.string';
 
 import { hasPermission } from '../../app/authorization';
 import { Rooms, Users } from '../../app/models';
-import { Federation } from '../../app/federation/server';
 import { settings } from '../../app/settings/server';
+import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
+import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
+import { federationSearchUsers } from '../../app/federation/server/handler';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -118,17 +120,17 @@ Meteor.methods({
 		if (workspace === 'all') {
 			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
 		} else if (workspace === 'external') {
-			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.domain);
+			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
 		} else {
-			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.domain);
+			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
 		}
 
 		const total = result.count(); // count ignores the `skip` and `limit` options
 		const results = result.fetch();
 
 		// Try to find federated users, when appliable
-		if (Federation.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
-			const users = Federation.methods.searchUsers(text);
+		if (isFederationEnabled() && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
+			const users = federationSearchUsers(text);
 
 			for (const user of users) {
 				if (results.find((e) => e._id === user._id)) { continue; }

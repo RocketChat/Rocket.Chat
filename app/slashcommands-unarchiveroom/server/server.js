@@ -74,4 +74,5 @@ function Unarchive(command, params, item) {
 slashCommands.add('unarchive', Unarchive, {
 	description: 'Unarchive',
 	params: '#channel',
+	permission: 'unarchive-room',
 });

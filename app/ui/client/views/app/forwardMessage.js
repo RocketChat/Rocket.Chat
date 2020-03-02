@@ -24,7 +24,7 @@ Template.forwardMessage.helpers({
 			rules: [
 				{
 					collection: 'CachedChannelList',
-					subscription: 'channelAndPrivateAutocomplete',
+					endpoint: 'rooms.autocomplete.channelAndPrivate',
 					field: 'name',
 					matchAll: true,
 					filter: {

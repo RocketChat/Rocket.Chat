@@ -29,6 +29,7 @@ export const fields = {
 	lastMessage: 1,
 	retention: 1,
 	prid: 1,
+	usersCount: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,
@@ -51,7 +52,6 @@ export const fields = {
 	e2eKeyId: 1,
 	departmentId: 1,
 	servedBy: 1,
-	federation: 1,
 };
 
 const roomMap = (record) => {

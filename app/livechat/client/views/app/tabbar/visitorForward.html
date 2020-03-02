@@ -1,5 +1,5 @@
 <template name="visitorForward">
-	<div class="user-view">
+	<div class="forward-chat">
 		<div class="edit-form">
 			<h3>{{_ "Forward_chat"}}</h3>
 			{{#with visitor}}
@@ -12,33 +12,47 @@
 				{{#if hasDepartments}}
 					<div class="input-line">
 						<label for="forwardDepartment">{{_ "Forward_to_department"}}</label>
-						<select name="forwardDepartment" id="forwardDepartment">
-							<option value="">{{_ "Select_a_department"}}</option>
-							{{#each departments}}
-								<option value="{{_id}}">{{name}}</option>
-							{{/each}}
-						</select>
+						<div class="rc-select">
+							<select class="rc-select__element" name="forwardDepartment" id="forwardDepartment">
+								<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
+								{{#each departments}}
+									<option class="rc-select__option" value="{{_id}}">{{name}}</option>
+								{{/each}}
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						</div>
 					</div>
 
 					<div class="form-divisor">
 						<span>{{_ "or"}}</span>
 					</div>
 				{{/if}}
-
 				<div class="input-line">
-					<label for="forwardUser">{{_ "Forward_to_user"}}</label>
-					<select name="forwardUser" id="forwardUser">
-						<option value="">{{_ "Select_a_user"}}</option>
-						{{#each agents}}
-							<option value="{{_id}}">{{agentName}}</option>
-						{{/each}}
-					</select>
+					<label for="agent">{{_ "Forward_to_user"}}</label>
+					<div class="form-group">
+						{{> livechatAutocompleteUser
+							onClickTag=onClickTagAgent
+							list=selectedAgents
+							onSelect=onSelectAgents
+							collection='UserAndRoom'
+							endpoint='users.autocomplete'
+							field='username'
+							sort='username'
+							label="Select_a_user"
+							placeholder="Select_a_user"
+							name="agent"
+							icon="at"
+							noMatchTemplate="userSearchEmpty"
+							templateItem="popupList_item_default"
+							modifier=agentModifier
+							conditions=agentConditions
+						}}
+					</div>
 				</div>
-
-				<nav class="buttons">
-					<button class="button button-block cancel" type="button"><span>{{_ "Cancel"}}</span></button>
-					<button class="button button-block primary save"><span>{{_ "Forward"}}</span></button>
-				</nav>
+				<div class="rc-user-info__flex rc-user-info__row">
+					<button class='rc-button cancel' type="button"><span>{{_ "Cancel"}}</span></button>
+					<button class='rc-button rc-button--primary save'><span>{{_ "Forward"}}</span></button>
+				</div>
 			</form>
 		</div>
 	</div>

@@ -1,10 +1,12 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
+import { baseURI } from '../../../utils/client/lib/baseuri';
+
 import './icon.html';
 
 
-const baseUrlFix = () => `${ document.baseURI }${ FlowRouter.current().path.substring(1) }`;
+const baseUrlFix = () => `${ baseURI }${ FlowRouter.current().path.substring(1) }`;
 
 const isMozillaFirefoxBelowVersion = (upperVersion) => {
 	const [, version] = navigator.userAgent.match(/Firefox\/(\d+)\.\d/) || [];

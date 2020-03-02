@@ -22,6 +22,9 @@ export const normalizeMessagesForUser = (messages, uid) => {
 	messages.forEach((message) => {
 		message = filterStarred(message, uid);
 
+		if (!message.u || !message.u.username) {
+			return;
+		}
 		usernames.add(message.u.username);
 
 		(message.mentions || []).forEach(({ username }) => { usernames.add(username); });
@@ -42,6 +45,9 @@ export const normalizeMessagesForUser = (messages, uid) => {
 	});
 
 	messages.forEach((message) => {
+		if (!message.u) {
+			return;
+		}
 		message.u.name = users[message.u.username];
 
 		(message.mentions || []).forEach((mention) => { mention.name = users[mention.username]; });

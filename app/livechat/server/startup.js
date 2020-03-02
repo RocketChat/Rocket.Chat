@@ -6,16 +6,25 @@ import { LivechatRooms } from '../../models';
 import { hasPermission, hasRole, addRoomAccessValidator } from '../../authorization';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { LivechatInquiry } from '../lib/LivechatInquiry';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../models/server';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 import { createLivechatQueueView } from './lib/Helper';
+import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 
 Meteor.startup(() => {
 	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
 	addRoomAccessValidator(function(room, user) {
 		return room && room.t === 'l' && user && hasPermission(user._id, 'view-livechat-rooms');
+	});
+
+	addRoomAccessValidator(function(room, user) {
+		if (!room || !user || room.t !== 'l') {
+			return;
+		}
+		const { _id: userId } = user;
+		const { servedBy: { _id: agentId } = {} } = room;
+		return userId === agentId;
 	});
 
 	addRoomAccessValidator(function(room, user, extraData) {
@@ -60,4 +69,6 @@ Meteor.startup(() => {
 	}, callbacks.priority.LOW, 'cant-leave-room');
 
 	createLivechatQueueView();
+
+	new LivechatAgentActivityMonitor().start();
 });

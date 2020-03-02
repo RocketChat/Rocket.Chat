@@ -1,17 +1,32 @@
 <template name="uploadedFilesList">
-	<form class="search-form" role="form">
-		<div class="rc-input">
-			<label class="rc-input__label">
-				<div class="rc-input__title">{{_ "Search_by_file_name"}}</div>
-				<div class="rc-input__wrapper">
-					<div class="rc-input__icon">
-						{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+	<div class="flex-tab__header">
+		<form class="search-form rc-member-list__search js-search-form" role="form">
+			<div class="rc-input">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "Search_by_file_name"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+						</div>
+						<input type="text" class="rc-input__element uploaded-files-list__search-input" name="file-search" placeholder={{_ "File_name_Placeholder"}} autocomplete="off" />
 					</div>
-					<input type="text" class="rc-input__element uploaded-files-list__search-input" name="file-search" placeholder={{_ "File_name_Placeholder"}} autocomplete="off" />
+				</label>
+			</div>
+			<div class="rc-select-wrapper">
+				<div class="rc-select">
+					<select class="rc-select__element js-type" name="status-type">
+						<option value="all">{{_ 'All'}}</option>
+						<option value="image">{{_ 'Images'}}</option>
+						<option value="video">{{_ 'Videos'}}</option>
+						<option value="audio">{{_ 'Audios'}}</option>
+						<option value="text">{{_ 'Texts'}}</option>
+						<option value="application">{{_ 'Files'}}</option>
+					</select>
+					{{> icon block="rc-select__arrow" icon="arrow-down" }}
 				</div>
-			</label>
-		</div>
-	</form>
+			</div>
+		</form>
+	</div>
 	<div class="flex-tab__result">
 		<ul class="attachments">
 			{{#each files}}

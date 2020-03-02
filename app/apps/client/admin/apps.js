@@ -36,27 +36,25 @@ Template.apps.onCreated(function() {
 
 	(async () => {
 		try {
-			const appsFromMarketplace = await Apps.getAppsFromMarketplace();
 			const installedApps = await Apps.getApps();
+			let apps = installedApps.map((app) => ({ ...app, installed: true }));
 
-			const apps = installedApps.map((app) => {
-				const appFromMarketplace = appsFromMarketplace.find(({ id }) => id === app.id);
+			this.state.set('apps', apps);
 
-				if (!appFromMarketplace) {
+			const appsFromMarketplace = await Apps.getAppsFromMarketplace().catch(() => []);
+
+			apps = apps.map((app) => {
+				const appFromMarketplace = appsFromMarketplace.find(({ id } = {}) => id === app.id);
+
+				if (appFromMarketplace) {
 					return {
 						...app,
-						installed: true,
+						categories: appFromMarketplace.categories,
+						marketplaceVersion: appFromMarketplace.version,
 					};
 				}
-
-				return {
-					...app,
-					installed: true,
-					categories: appFromMarketplace.categories,
-					marketplaceVersion: appFromMarketplace.version,
-				};
+				return app;
 			});
-
 			this.state.set('apps', apps);
 		} catch (error) {
 			handleAPIError(error);

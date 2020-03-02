@@ -2,12 +2,12 @@ import { callbacks } from '../../callbacks';
 import { Notifications } from '../../notifications';
 
 import './settings';
-import './methods/setUserPublicAndPivateKeys';
+import './methods/setUserPublicAndPrivateKeys';
 import './methods/getUsersOfRoomWithoutKey';
 import './methods/updateGroupKey';
 import './methods/setRoomKeyID';
 import './methods/fetchMyKeys';
-import './methods/resetUserE2EKey';
+import './methods/resetOwnE2EKey';
 import './methods/requestSubscriptionKeys';
 
 callbacks.add('afterJoinRoom', (user, room) => {

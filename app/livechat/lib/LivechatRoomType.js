@@ -1,12 +1,17 @@
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { LivechatInquiry } from './LivechatInquiry';
 import { ChatRoom } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
 import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
+
+let getLivechatInquiryCollection;
+if (Meteor.isClient) {
+	({ getLivechatInquiryCollection } = require('../client/collections/LivechatInquiry'));
+}
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -63,7 +68,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		if (room) {
 			return room.v && room.v.status;
 		}
-		const inquiry = LivechatInquiry.findOne({ rid });
+		const inquiry = getLivechatInquiryCollection().findOne({ rid });
 		return inquiry && inquiry.v && inquiry.v.status;
 	}
 
@@ -93,7 +98,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
-		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
+		const inquiry = getLivechatInquiryCollection().findOne({ rid }, { fields: { status: 1 } });
 		if (inquiry && inquiry.status === 'queued') {
 			return true;
 		}

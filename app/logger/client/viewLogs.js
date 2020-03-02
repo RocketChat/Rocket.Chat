@@ -7,7 +7,7 @@ import { AdminBox } from '../../ui-utils';
 import { hasAllPermission } from '../../authorization';
 import { t } from '../../utils';
 
-export const stdout = new Mongo.Collection('stdout');
+export const stdout = new Mongo.Collection(null);
 
 Meteor.startup(function() {
 	AdminBox.addOption({
@@ -22,7 +22,8 @@ Meteor.startup(function() {
 
 FlowRouter.route('/admin/view-logs', {
 	name: 'admin-view-logs',
-	action() {
+	async action() {
+		await import('./views/viewLogs');
 		return BlazeLayout.render('main', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('View_Logs'),

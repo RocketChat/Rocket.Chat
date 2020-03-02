@@ -14,7 +14,7 @@ Meteor.startup(function() {
 		id: 'pin-message',
 		icon: 'pin',
 		label: 'Pin',
-		context: ['pinned', 'message', 'message-mobile'],
+		context: ['pinned', 'message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.pinned = true;
@@ -39,7 +39,7 @@ Meteor.startup(function() {
 		id: 'unpin-message',
 		icon: 'pin',
 		label: 'Unpin',
-		context: ['pinned', 'message', 'message-mobile'],
+		context: ['pinned', 'message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.pinned = false;
