@@ -1737,10 +1737,12 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.logoutOtherClients]', () => {
+	describe('[/users.logoutOtherClients]', function() {
 		let user;
 		let userCredentials;
 		let newCredentials;
+
+		this.timeout(20000);
 
 		before(async () => {
 			user = await createTestUser();
