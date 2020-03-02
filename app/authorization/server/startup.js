@@ -30,6 +30,8 @@ Meteor.startup(function() {
 		{ _id: 'create-personal-access-tokens', roles: ['admin', 'user'] },
 		{ _id: 'create-user',                   roles: ['admin'] },
 		{ _id: 'clean-channel-history',         roles: ['admin'] },
+		{ _id: 'clean-group-history',           roles: ['admin'] },
+		{ _id: 'clean-direct-history',          roles: ['admin'] },
 		{ _id: 'delete-c',                      roles: ['admin', 'owner'] },
 		{ _id: 'delete-d',                      roles: ['admin'] },
 		{ _id: 'delete-message',                roles: ['admin', 'owner', 'moderator'] },

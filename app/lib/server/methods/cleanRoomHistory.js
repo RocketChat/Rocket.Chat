@@ -5,8 +5,9 @@ import { hasPermission } from '../../../authorization';
 import { cleanRoomHistory } from '../functions';
 
 Meteor.methods({
-	cleanRoomHistory({ roomId, latest, oldest, inclusive = true, limit, excludePinned = false, ignoreDiscussion = true, filesOnly = false, fromUsers = [] }) {
+	cleanRoomHistory({ roomId, roomType, latest, oldest, inclusive = true, limit, excludePinned = false, ignoreDiscussion = true, filesOnly = false, fromUsers = [] }) {
 		check(roomId, String);
+		check(roomType, String);
 		check(latest, Date);
 		check(oldest, Date);
 		check(inclusive, Boolean);
@@ -21,8 +22,18 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cleanRoomHistory' });
 		}
 
-		if (!hasPermission(userId, 'clean-channel-history', roomId)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
+		if (roomType === 'c') {
+			if (!hasPermission(userId, 'clean-channel-history', roomId)) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
+			}
+		} else if (roomType === 'p') {
+			if (!hasPermission(userId, 'clean-group-history', roomId)) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
+			}
+		} else if (roomType === 'd') {
+			if (!hasPermission(userId, 'clean-direct-history', roomId)) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
+			}
 		}
 
 		return cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers });

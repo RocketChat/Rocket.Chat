@@ -194,6 +194,7 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
 			roomId: findResult._id,
+			roomType: findResult.t,
 			latest,
 			oldest,
 			inclusive,
@@ -202,7 +203,6 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 			filesOnly: this.bodyParams.filesOnly,
 			fromUsers: this.bodyParams.users,
 		}));
-
 		return API.v1.success();
 	},
 });
