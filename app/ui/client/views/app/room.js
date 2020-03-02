@@ -1287,7 +1287,7 @@ Template.room.onRendered(function() {
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
 		read();
-		return subscription && (subscription.alert || subscription.unread);// && readMessage.refreshUnreadMark(rid);
+		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
 	});
 
 	this.autorun(() => {
