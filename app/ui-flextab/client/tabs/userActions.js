@@ -432,7 +432,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				})));
 			}),
 			condition: () => {
-				if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.KICK)) {
+				if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER)) {
 					return;
 				}
 				return directActions && canRemoveUser();

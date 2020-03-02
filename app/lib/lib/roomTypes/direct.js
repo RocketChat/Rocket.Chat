@@ -103,6 +103,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	allowRoomSettingChange(room, setting) {
 		switch (setting) {
+			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			case RoomSettingsEnum.DESCRIPTION:

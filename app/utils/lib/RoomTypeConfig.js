@@ -11,6 +11,7 @@ if (Meteor.isServer) {
 }
 
 export const RoomSettingsEnum = {
+	TYPE: 'type',
 	NAME: 'roomName',
 	TOPIC: 'roomTopic',
 	ANNOUNCEMENT: 'roomAnnouncement',
@@ -33,7 +34,7 @@ export const RoomMemberActions = {
 	SET_AS_LEADER: 'setAsLeader',
 	SET_AS_MODERATOR: 'setAsModerator',
 	LEAVE: 'leave',
-	KICK: 'kick',
+	REMOVE_USER: 'removeUser',
 	JOIN: 'join',
 	INVITE: 'invite',
 };
