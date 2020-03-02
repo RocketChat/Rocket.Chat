@@ -39823,6 +39823,27 @@
         }
       ]
     },
+    "2.4.10": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16495",
+          "title": "[FIX] users.info endpoint not handling the error if the user does not exist",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.2",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
     "3.0.2": {
       "node_version": "12.14.0",
       "npm_version": "6.13.4",
@@ -39867,6 +39888,74 @@
           "milestone": "3.0.2",
           "contributors": [
             "ggazzo"
+          ]
+        }
+      ]
+    },
+    "2.4.11": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.0.3": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16757",
+          "title": "[FIX] Language country has been ignored on translation load",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16726",
+          "title": "[FIX] Manual Register use correct state for determining registered",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.0.3",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16723",
+          "title": "[FIX] Rocket.Chat takes too long to set the username when it fails to send enrollment email",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.0.3",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "16671",
+          "title": "[FIX] LDAP sync admin action was not syncing existent users",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16618",
+          "title": "[FIX] Check agent status when starting a new conversation with an agent assigned",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.3",
+          "contributors": [
+            "renatobecker"
           ]
         }
       ]
