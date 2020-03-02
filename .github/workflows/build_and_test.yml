@@ -335,7 +335,7 @@ jobs:
 
         export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
 
-        export IMAGE_NAME="docker.pkg.github.com/${LOWERCASE_REPOSITORY}/rocket.chat:${VERSION}"
+        export IMAGE_NAME="assistify/chat:${VERSION}"
 
         echo "Build official Docker image ${IMAGE_NAME}"
 
