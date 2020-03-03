@@ -213,6 +213,13 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	return true;
 };
 
+export const updateChatDepartment = ({ rid, newDepartmentId, oldDepartmentId }) => {
+	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
+
+	return callbacks.run('livechat.afterForwardChatToDepartment', { rid, newDepartmentId, oldDepartmentId });
+};
+
 export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (!room || !room.open) {
 		return false;
@@ -288,11 +295,4 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	}
 
 	return Livechat.online(guest.department);
-};
-
-export const updateChatDepartment = ({ rid, newDepartmentId, oldDepartmentId }) => {
-	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
-	LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
-
-	return callbacks.run('livechat.afterForwardChatToDepartment', { rid, newDepartmentId, oldDepartmentId });
 };
