@@ -218,7 +218,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		return false;
 	}
 
-	const { _id: rid, servedBy: oldServedBy } = room;
+	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
@@ -226,6 +226,11 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { departmentId } = transferData;
+
+	if (oldDepartmentId === departmentId) {
+		throw new Meteor.Error('error-forwarding-chat-same-department', 'The selected department and the current room department are the same', { function: 'forwardRoomToDepartment' });
+	}
+
 	if (!RoutingManager.getConfig().autoAssignAgent) {
 		Livechat.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
@@ -252,8 +257,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
 	}
 
-	LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
-	LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
+	updateChatDepartment({ rid, departmentId, oldDepartmentId });
 
 	const { token } = guest;
 	Livechat.setDepartmentForGuest({ token, department: departmentId });
@@ -284,4 +288,11 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	}
 
 	return Livechat.online(guest.department);
+};
+
+export const updateChatDepartment = ({ rid, newDepartmentId, oldDepartmentId }) => {
+	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
+
+	return callbacks.run('livechat.afterForwardChatToDepartment', { rid, newDepartmentId, oldDepartmentId });
 };
