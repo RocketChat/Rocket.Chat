@@ -130,4 +130,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 		// otherwise gets discussion's avatar via _id
 		return getRoomAvatarURL(roomData.prid);
 	}
+
+	includeInDashboard() {
+		return true;
+	}
 }
