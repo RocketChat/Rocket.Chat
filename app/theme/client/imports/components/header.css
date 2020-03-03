@@ -417,10 +417,6 @@
 
 @media (width <= 500px) {
 	.rc-header {
-		&__visual-status {
-			display: none;
-		}
-
 		&__block {
 			margin: 0 0.2em;
 
@@ -473,9 +469,7 @@
 
 		&__data {
 			display: flex;
-			flex-direction: row;
-
-			justify-content: center;
+			flex-direction: column;
 		}
 
 		&__status {

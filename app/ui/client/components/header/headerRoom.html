@@ -9,7 +9,7 @@
 					{{> burger}}
 				</div>
 
-				{{#if isDiscussion}}
+				{{#if $and isDiscussion isNotMobile}}
 					<div class="rc-header__block rc-header__block--action js-open-parent-channel rc-tooltip rc-tooltip--down rc-tooltip--start" aria-label={{_ "Back_to_room"}}>
 						<span class="rc-header__first-icon">{{> icon block="rc-header__icon rc-header__icon" icon="back"}}</span>
 					</div>
@@ -29,14 +29,12 @@
 				{{/if}}
 
 				<div class="rc-header__content rc-header__block">
-					{{#if isDirect}}
-						{{#if isNotMobile}}
+					{{#if $and isDirect isNotMobile}}
 						<div class="rc-header__block">
 							<div class="rc-header__image">
 								{{> avatar username=avatarBackground}}
 							</div>
 						</div>
-						{{/if}}
 					{{/if}}
 
 					<div class="rc-header__data">
