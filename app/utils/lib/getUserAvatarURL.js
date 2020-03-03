@@ -10,7 +10,7 @@ export const getUserAvatarURL = function(username) {
 		return;
 	}
 
-	const cache = window.localStorage && localStorage.getItem(`avatar_random_${ username }`); // there is no Session on server
+	const cache = !!localStorage && localStorage.getItem(`avatar_random_${ username }`); // there is no Session on server
 
 	return getAvatarURL({ username, cache });
 };
