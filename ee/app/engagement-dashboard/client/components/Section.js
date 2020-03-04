@@ -1,4 +1,4 @@
-import { Box, Flex, Grid, InputBox, Margins } from '@rocket.chat/fuselage';
+import { Box, Flex, InputBox, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
 export function Section({
@@ -7,18 +7,16 @@ export function Section({
 	filter = <InputBox.Skeleton />,
 }) {
 	return <Margins block='x16'>
-		<Grid>
-			<Flex.Container alignItems='center'>
-				<Grid.Item sm={4} md={6}>
+		<Flex.Container alignItems='center' wrap='no-wrap'>
+			<Box>
+				<Flex.Item grow={1}>
 					<Box textStyle='s2' textColor='default'>{title}</Box>
-				</Grid.Item>
-			</Flex.Container>
-			{filter && <Grid.Item sm={4} md={2}>
-				<Flex.Container>
+				</Flex.Item>
+				{filter && <Flex.Item grow={0}>
 					{filter}
-				</Flex.Container>
-			</Grid.Item>}
-		</Grid>
+				</Flex.Item>}
+			</Box>
+		</Flex.Container>
 		{children}
 	</Margins>;
 }

@@ -13,7 +13,7 @@ export function EngagementDashboardPage({
 }) {
 	const t = useTranslation();
 
-	const handleTabClick = onSelectTab ? (tab) => () => onSelectTab(tab) : undefined;
+	const handleTabClick = onSelectTab ? (tab) => () => onSelectTab(tab) : () => undefined;
 
 	return <Page>
 		<Page.Header title={t('Engagement Dashboard')} />
