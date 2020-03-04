@@ -37,8 +37,8 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'l',
 			order: 5,
-			icon: 'livechat',
-			label: 'Livechat',
+			icon: 'omnichannel',
+			label: 'Omnichannel',
 			route: new LivechatRoomRoute(),
 		});
 

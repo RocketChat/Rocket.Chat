@@ -561,6 +561,9 @@ export class Messages extends Base {
 					username: user.username,
 				},
 			},
+			$unset: {
+				blocks: 1,
+			},
 		};
 
 		return this.update(query, update);
