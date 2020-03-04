@@ -94,6 +94,13 @@ function getEmailContent({ message, user, room }) {
 	return header;
 }
 
+const getButtonUrl = (room, subscription, message) => {
+	const siteUrl = settings.get('Site_Url').replace(/https?\:\/\//i, '');
+	const host = s.rtrim(siteUrl, '/');
+	const path = `${ s.ltrim(roomTypes.getRelativePath(room.t, subscription), '/') }&msg=${ message._id }`;
+	return `${ settings.get('Offline_Message_Link_To_Redirect') }/room?host=${ host }&path=${ path }`;
+};
+
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
@@ -114,8 +121,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 		room,
 	});
 
-	const room_path = roomTypes.getURL(room.t, subscription);
-
+	const room_path = getButtonUrl(room, subscription, message);
 	const email = {
 		to: emailAddress,
 		subject: emailSubject,

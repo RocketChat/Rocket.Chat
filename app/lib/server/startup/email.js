@@ -406,6 +406,13 @@ settings.addGroup('Email', function() {
 		});
 	});
 
+	this.section('Offline_Message', function() {
+		this.add('Offline_Message_Link_To_Redirect', 'https://go.rocket.chat', {
+			type: 'string',
+			i18nLabel: 'Offline_Message_Link_To_Redirect',
+		});
+	});
+
 
 	this.section('Invitation', function() {
 		this.add('Invitation_Subject', '{Invitation_Subject_Default}', {
