@@ -409,7 +409,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable === false || _groupable === false) && !!(tmid && showreply && (!t || t === 'e2e'));
+		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;

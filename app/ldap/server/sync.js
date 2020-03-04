@@ -5,6 +5,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import _ from 'underscore';
 
 import LDAP from './ldap';
+import { callbacks } from '../../callbacks/server';
 import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
@@ -16,7 +17,7 @@ import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
 
 
-const logger = new Logger('LDAPSync', {});
+export const logger = new Logger('LDAPSync', {});
 
 export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 	const syncUserRolesFilter = settings.get('LDAP_Sync_User_Data_Groups_Filter').trim();
@@ -531,7 +532,7 @@ export function importNewUsers(ldap) {
 	}));
 }
 
-function sync() {
+export function sync() {
 	if (settings.get('LDAP_Enable') !== true) {
 		return;
 	}
@@ -562,9 +563,9 @@ function sync() {
 
 				if (ldapUser) {
 					syncUserData(user, ldapUser, ldap);
-				} else {
-					logger.info('Can\'t sync user', user.username);
 				}
+
+				callbacks.run('ldap.afterSyncExistentUser', { ldapUser, user });
 			});
 		}
 	} catch (error) {
