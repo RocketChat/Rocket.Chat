@@ -2,48 +2,18 @@ import { Box, Chevron, Divider, Flex, Grid, Margins } from '@rocket.chat/fuselag
 import React from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { CounterSet } from '../data/CounterSet';
 import { CountGraph } from '../data/CountGraph';
 import { HeatMap } from '../data/HeatMap';
 import { Histogram } from '../data/Histogram';
 import { Section } from '../Section';
 import { StreamGraph } from '../data/StreamGraph';
+import { NewUsersSection } from './NewUsersSection';
 
 export function UsersTab() {
 	const t = useTranslation();
 
 	return <>
-		<Section title={t('New users')}>
-			<CounterSet
-				counters={[
-					{
-						count: Math.round(100 * Math.random()),
-						variation: Math.round(20 * Math.random() - 10),
-						description: t('Last 7 days'),
-					},
-					{
-						count: Math.round(100 * Math.random()),
-						variation: Math.round(20 * Math.random() - 10),
-						description: t('Yesterday'),
-					},
-				]}
-			/>
-			<Flex.Container>
-				<Box style={{ height: 240 }}>
-					<CountGraph
-						data={[
-							[t('Monday'), Math.round(168 * Math.random())],
-							[t('Tuesday'), Math.round(88 * Math.random())],
-							[t('Wednesday'), Math.round(131 * Math.random())],
-							[t('Thurday'), Math.round(145 * Math.random())],
-							[t('Friday'), Math.round(26 * Math.random())],
-							[t('Saturday'), Math.round(60 * Math.random())],
-							[t('Sunday'), Math.round(50 * Math.random())],
-						]}
-					/>
-				</Box>
-			</Flex.Container>
-		</Section>
+		<NewUsersSection />
 		<Divider />
 		<Section title={t('Active users')} filter={null}>
 			<StreamGraph
