@@ -17,12 +17,12 @@ export function PageHeader({ children, title, ...props }) {
 	const [border] = useContext(PageContext);
 	return <Box style={{ borderBlockEndColor: border ? 'var(--color-gray-lightest)' : 'transparent', transition: 'border-block-end-color 0.3s', borderBlockEnd: '2px solid transparent' }}>
 		<Margins all='x16'>
-			<Flex.Container wrap='nowrap' alignItems='center' direction='row'>
+			<Flex.Container wrap='no-wrap' alignItems='center' direction='row'>
 				<Box style={{ minHeight: '2.75rem' }} {...props}>
 					<Margins inlineEnd='x8'>
 						<BurgerMenuButton />
 					</Margins>
-					<Flex.Item grow='1'>
+					<Flex.Item grow={1}>
 						<Box is='h1' textStyle='h1' textColor='default'>{title}</Box>
 					</Flex.Item>
 					{children}
@@ -32,9 +32,9 @@ export function PageHeader({ children, title, ...props }) {
 	</Box>;
 }
 
-export function PageContent({ scrollCb, ...props }) {
+export function PageContent(props) {
 	const [, setBorder] = useContext(PageContext);
-	return <Scrollable scrollCb={({ top }) => { setBorder(!top); }}>
+	return <Scrollable onScrollContent={({ top }) => { setBorder(!top); console.log(top); }}>
 		<Box style={useMemo(() => ({ padding: '1rem' }), [])} {...props} />
 	</Scrollable>;
 }
