@@ -1,11 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
+import { Random } from 'meteor/random';
 
-import { fileUploadHandler } from '../../../file-upload';
 import { settings } from '../../../settings/client';
 import { ChatMessage } from '../../../models/client';
 import { t, fileUploadIsValidContentType, SWCache } from '../../../utils';
@@ -211,7 +210,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			cancelButtonText: t('Cancel'),
 			html: true,
 			onRendered: () => $('#file-name').focus(),
-		}, (isConfirm) => {
+		}, async (isConfirm) => {
 			if (!isConfirm) {
 				return;
 			}
@@ -272,12 +271,26 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				if (!isCanceling) {
 					return;
 				}
-
 				computation.stop();
-				upload.stop();
+				Session.delete(`uploading-cancel-${ upload.id }`);
+
+				xhr.abort();
 
 				ChatMessage.setProgress(msgData.id, uploading);
 			});
+
+			try {
+				await promise;
+				const uploads = Session.get('uploading') || [];
+				return Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+			} catch (error) {
+				const uploads = Session.get('uploading') || [];
+				uploads.filter((u) => u.id === upload.id).forEach((u) => {
+					u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+					u.percentage = 0;
+				});
+				Session.set('uploading', uploads);
+			}
 		}));
 	};
 

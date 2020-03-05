@@ -49,7 +49,7 @@ Template.accountPreferences.helpers({
 		const languages = TAPi18n.getLanguages();
 
 		const result = Object.entries(languages)
-			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+			.map(([key, language]) => ({ ...language, key }))
 			.sort((a, b) => a.key - b.key);
 
 		result.unshift({
@@ -62,7 +62,7 @@ Template.accountPreferences.helpers({
 	},
 	isUserLanguage(key) {
 		const languageKey = Meteor.user().language;
-		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key.toLowerCase();
 	},
 	ifThenElse(condition, val, not = '') {
 		return condition ? val : not;

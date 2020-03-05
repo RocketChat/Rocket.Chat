@@ -370,6 +370,20 @@ export const Livechat = {
 		return true;
 	},
 
+	removeRoom(rid) {
+		check(rid, String);
+		const room = LivechatRooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:removeRoom' });
+		}
+
+		Messages.removeByRoomId(rid);
+		Subscriptions.removeByRoomId(rid);
+		LivechatInquiry.removeByRoomId(rid);
+		return LivechatRooms.removeById(rid);
+	},
+
+
 	setCustomFields({ token, key, value, overwrite } = {}) {
 		check(token, String);
 		check(key, String);
@@ -757,6 +771,7 @@ export const Livechat = {
 
 		Subscriptions.removeByVisitorToken(token);
 		LivechatRooms.removeByVisitorToken(token);
+		LivechatInquiry.removeByVisitorToken(token);
 	},
 
 	saveDepartmentAgents(_id, departmentAgents) {
