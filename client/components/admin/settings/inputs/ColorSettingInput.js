@@ -4,10 +4,10 @@ import {
 	Flex,
 	InputBox,
 	Margins,
-	SelectInput,
 	TextInput,
+	Select,
 } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { ResetSettingButton } from '../ResetSettingButton';
@@ -17,7 +17,7 @@ export function ColorSettingInput({
 	label,
 	value,
 	editor,
-	allowedTypes,
+	allowedTypes = [],
 	placeholder,
 	readonly,
 	autocomplete,
@@ -29,14 +29,13 @@ export function ColorSettingInput({
 }) {
 	const t = useTranslation();
 
-	const handleChange = (event) => {
+	const handleChange = useCallback((event) => {
 		onChangeValue && onChangeValue(event.currentTarget.value);
-	};
+	}, []);
 
-	const handleEditorTypeChange = (event) => {
-		const editor = event.currentTarget.value.trim();
-		onChangeEditor && onChangeEditor(editor);
-	};
+	const handleEditorTypeChange = useCallback((value) => {
+		onChangeEditor && onChangeEditor(value);
+	}, []);
 
 	return <>
 		<Flex.Container>
@@ -71,7 +70,7 @@ export function ColorSettingInput({
 							onChange={handleChange}
 						/>}
 					</Flex.Item>
-					<SelectInput
+					<Select
 						data-qa-setting-id={`${ _id }_editor`}
 						type='color'
 						id={`${ _id }_editor`}
@@ -80,11 +79,11 @@ export function ColorSettingInput({
 						readOnly={readonly}
 						autoComplete={autocomplete === false ? 'off' : undefined}
 						onChange={handleEditorTypeChange}
-					>
-						{allowedTypes && allowedTypes.map((allowedType) =>
-							<SelectInput.Option key={allowedType} value={allowedType}>{t(allowedType)}</SelectInput.Option>,
-						)}
-					</SelectInput>
+						options={allowedTypes.map((type) => [
+							type,
+							t(type),
+						])}
+					/>
 				</Margins>
 			</Field.Row>
 		</Margins>

@@ -16,6 +16,7 @@ import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
 import CustomUserStatus from './models/CustomUserStatus';
+import Imports from './models/Imports';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
 import Invites from './models/Invites';
@@ -67,6 +68,7 @@ export {
 	Roles,
 	CustomSounds,
 	CustomUserStatus,
+	Imports,
 	Integrations,
 	IntegrationHistory,
 	Invites,
