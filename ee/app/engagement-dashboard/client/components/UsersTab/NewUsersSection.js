@@ -1,10 +1,9 @@
 import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
-import { useEndpoint } from '../../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../../../client/contexts/ToastMessagesContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import { CounterSet } from '../data/CounterSet';
 import { CountGraph } from '../data/CountGraph';
 import { Section } from '../Section';
@@ -18,54 +17,16 @@ export function NewUsersSection() {
 		[15, t('Last 15 days')],
 	], [t]);
 
-	const [data, setData] = useState(null);
-
 	const handleFilterChange = (filterValue) => {
 		setFilterValue(filterValue);
 	};
 
-	const getData = useEndpoint('GET', 'engagement-dashboard/users/weekly-data');
-	const dispatchToastMessage = useToastMessageDispatch();
+	const params = useMemo(() => ({
+		start: moment().subtract(filterValue - 1, 'days').toISOString(),
+		end: moment().toISOString(),
+	}), [filterValue]);
 
-	useEffect(() => {
-		let mounted = true;
-
-		const fetchData = async () => {
-			const start = moment().subtract(filterValue - 1, 'days').toISOString();
-			const end = moment().toISOString();
-			try {
-				const timer = setTimeout(() => {
-					if (!mounted) {
-						return;
-					}
-
-					setData(null);
-				}, 3000);
-
-				const data = await getData({ start, end });
-
-				clearTimeout(timer);
-
-				if (!data.success) {
-					throw new Error();
-				}
-
-				if (!mounted) {
-					return;
-				}
-
-				setData(data);
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-		};
-
-		fetchData();
-
-		return () => {
-			mounted = false;
-		};
-	}, [getData, filterValue]);
+	const data = useEndpointData('GET', 'engagement-dashboard/users/weekly-data', params);
 
 	return <Section
 		title={t('New users')}

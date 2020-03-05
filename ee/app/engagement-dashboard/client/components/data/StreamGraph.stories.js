@@ -1,4 +1,4 @@
-import { Margins } from '@rocket.chat/fuselage';
+import { Box, Flex, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { StreamGraph } from './StreamGraph';
@@ -6,7 +6,11 @@ import { StreamGraph } from './StreamGraph';
 export default {
 	title: 'admin/engagement/data/StreamGraph',
 	component: StreamGraph,
-	decorators: [(fn) => <Margins all='x16' children={fn()} />],
+	decorators: [(fn) => <Margins all='x16'>
+		<Flex.Container>
+			<Box children={fn()} style={{ height: 240 }} />
+		</Flex.Container>
+	</Margins>],
 };
 
 export const _default = () => <StreamGraph
