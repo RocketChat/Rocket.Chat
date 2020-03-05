@@ -2,7 +2,7 @@ import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { CounterSet } from '../data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { StreamGraph } from '../data/StreamGraph';
@@ -49,9 +49,9 @@ export function ActiveUsersSection() {
 					<StreamGraph
 						lastDate={new Date()}
 						series={{
-							[t('Daily Active Users')]: Array.from({ length: 21 }, () => Math.round(200 + 80 * Math.random())),
-							[t('Weekly Active Users')]: Array.from({ length: 21 }, () => Math.round(220 + 80 * Math.random())),
-							[t('Monthly Active Users')]: Array.from({ length: 21 }, () => Math.round(240 + 80 * Math.random())),
+							[t('Daily Active Users')]: [],
+							[t('Weekly Active Users')]: [],
+							[t('Monthly Active Users')]: [],
 						}}
 					/>
 				</Box>

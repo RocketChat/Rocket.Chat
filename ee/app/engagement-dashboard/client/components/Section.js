@@ -6,17 +6,19 @@ export function Section({
 	title,
 	filter = <InputBox.Skeleton />,
 }) {
-	return <Margins block='x16'>
-		<Flex.Container alignItems='center' wrap='no-wrap'>
-			<Box>
-				<Flex.Item grow={1}>
-					<Box textStyle='s2' textColor='default'>{title}</Box>
-				</Flex.Item>
-				{filter && <Flex.Item grow={0}>
-					{filter}
-				</Flex.Item>}
-			</Box>
-		</Flex.Container>
-		{children}
-	</Margins>;
+	return <Box>
+		<Margins block='x16'>
+			<Flex.Container alignItems='center' wrap='no-wrap'>
+				<Box>
+					<Flex.Item grow={1}>
+						<Box textStyle='s2' textColor='default'>{title}</Box>
+					</Flex.Item>
+					{filter && <Flex.Item grow={0}>
+						{filter}
+					</Flex.Item>}
+				</Box>
+			</Flex.Container>
+			{children}
+		</Margins>
+	</Box>;
 }
