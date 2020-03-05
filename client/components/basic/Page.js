@@ -34,7 +34,7 @@ export function PageHeader({ children, title, ...props }) {
 
 export function PageContent(props) {
 	const [, setBorder] = useContext(PageContext);
-	return <Scrollable onScrollContent={({ top }) => { setBorder(!top); console.log(top); }}>
+	return <Scrollable onScrollContent={({ top }) => { setBorder(!top); }}>
 		<Box style={useMemo(() => ({ padding: '1rem' }), [])} {...props} />
 	</Scrollable>;
 }
