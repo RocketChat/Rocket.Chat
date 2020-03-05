@@ -56,7 +56,6 @@ export function NewUsersSection() {
 
 				setData(data);
 			} catch (error) {
-				console.error(error);
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
@@ -67,9 +66,6 @@ export function NewUsersSection() {
 			mounted = false;
 		};
 	}, [getData, filterValue]);
-
-	// const { week, yesterday, days } = data;
-	console.log(data);
 
 	return <Section
 		title={t('New users')}
@@ -93,15 +89,10 @@ export function NewUsersSection() {
 			{data
 				? <Box style={{ height: 240 }}>
 					<CountGraph
-						data={[
-							[t('Monday'), Math.round(168 * Math.random())],
-							[t('Tuesday'), Math.round(88 * Math.random())],
-							[t('Wednesday'), Math.round(131 * Math.random())],
-							[t('Thurday'), Math.round(145 * Math.random())],
-							[t('Friday'), Math.round(26 * Math.random())],
-							[t('Saturday'), Math.round(60 * Math.random())],
-							[t('Sunday'), Math.round(50 * Math.random())],
-						]}
+						data={data.days.map(({ day, users }, _, { length }) => [
+							moment(day).format(length === 7 ? 'dddd' : 'L'),
+							users,
+						])}
 					/>
 				</Box>
 				: <Skeleton variant='rect' height={240} />}
