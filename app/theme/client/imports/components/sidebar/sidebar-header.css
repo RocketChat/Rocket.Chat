@@ -88,6 +88,20 @@
 
 		& .rc-input__element {
 			background-color: var(--sidebar-background);
+			border-color: #81868d;
+			border-radius: 15px;
+
+			color: var(--color-white);
+			border-color: var(--rc-color-primary-dark);
+			background-color: var(--rc-color-primary-darkest);
+
+			&::placeholder {
+				color: var(--rc-color-primary-light);
+			}
+
+			&:focus + .rc-input__icon--right {
+				display: flex;
+			}
 		}
 
 		& .rc-input__icon {
@@ -152,6 +166,7 @@
 
 @media (width <= 500px) {
 	.sidebar__header {
+		padding: var(--sidebar-small-default-padding);
 		&-thumb {
 			flex: 0 0 var(--sidebar-account-thumb-size-mobile);
 
@@ -159,9 +174,7 @@
 			height: var(--sidebar-account-thumb-size-mobile);
 		}
 	}
-}
 
-@media (width <= 600px) {
 	.sidebar__toolbar {
 		& .rc-input > .rc-input__label > .rc-input__wrapper > #searchBar {
 			border-color: #81868d;
