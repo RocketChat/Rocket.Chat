@@ -799,6 +799,26 @@ Template.room.events({
 		}
 
 		const { username } = msg.u;
+		if (/guest-(\d+)/.test(username)) {
+			const $flexTab = $('.flex-tab-container .flex-tab');
+			const flexTabData = {
+				groups: ['live'],
+				i18nTitle: 'Visitor_Info',
+				icon: 'info-circled',
+				id: 'visitor-info',
+				order: 0,
+				template: 'visitorInfo',
+			};
+
+			$flexTab.attr('template', flexTabData.template);
+			instance.tabBar.setData({
+				label: flexTabData.i18nTitle,
+				icon: flexTabData.icon,
+			});
+			instance.tabBar.open(flexTabData);
+
+			return popover.close();
+		}
 
 		openProfileTabOrOpenDM(e, instance, username);
 	},
