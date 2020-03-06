@@ -799,7 +799,7 @@ Template.room.events({
 		}
 
 		const { username } = msg.u;
-		if (/guest-(\d+)/.test(username)) {
+		if (/^guest-(\d+)$/.test(username)) {
 			const $flexTab = $('.flex-tab-container .flex-tab');
 			const flexTabData = {
 				groups: ['live'],
