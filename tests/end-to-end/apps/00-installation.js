@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { getCredentials, request, credentials } from '../../data/api-data.js';
+import { getCredentials, request, credentials, api } from '../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { APP_URL, apps, APP_USERNAME } from '../../data/apps/apps-data.js';
 import { cleanupApps } from '../../data/apps/helper.js';
@@ -76,6 +76,32 @@ describe('Apps - Installation', function() {
 					expect(user.username).to.be.equal(APP_USERNAME);
 				})
 				.then(done);
+		});
+		describe('Slash commands registration', () => {
+			it('should have created the "test-simple" slash command successfully', (done) => {
+				request.get(api('commands.get?command=test-simple'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('command');
+						expect(res.body.command.command).to.be.equal('test-simple');
+					})
+					.end(done);
+			});
+			it('should have created the "test-with-arguments" slash command successfully', (done) => {
+				request.get(api('commands.get?command=test-with-arguments'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('command');
+						expect(res.body.command.command).to.be.equal('test-with-arguments');
+					})
+					.end(done);
+			});
 		});
 	});
 });
