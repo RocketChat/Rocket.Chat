@@ -59,7 +59,7 @@ const openProfileTab = (e, instance, username) => {
 	}
 
 	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
-	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
+	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile() || roomData.t === 'l') {
 		instance.userDetail.set(username);
 	}
 
@@ -799,7 +799,10 @@ Template.room.events({
 		}
 
 		const { username } = msg.u;
-		if (/^guest-(\d+)$/.test(username)) {
+		const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
+
+		// open visitor-info flexTabBar if user is livechat guest
+		if (/^guest-(\d+)$/.test(username) && roomData.t === 'l') {
 			const $flexTab = $('.flex-tab-container .flex-tab');
 			const flexTabData = {
 				groups: ['live'],
