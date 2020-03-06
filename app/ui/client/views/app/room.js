@@ -832,6 +832,9 @@ Template.room.events({
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu, contextmenu .message'(e, i) {
+		if (!getUserPreference(Meteor.userId(), 'messageContextMenu')) {
+			return;
+		}
 		let target = e.currentTarget;
 		if (e.which === 3) {
 			if ($(e.currentTarget).hasClass('system')) {

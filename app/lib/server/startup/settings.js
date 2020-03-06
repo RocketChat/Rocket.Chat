@@ -314,6 +314,11 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Convert_Ascii_Emojis',
 		});
+		this.add('Accounts_Default_User_Preferences_messageContextMenu', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Message_Context_Menu',
+		});
 		this.add('Accounts_Default_User_Preferences_autoImageLoad', true, {
 			type: 'boolean',
 			public: true,
