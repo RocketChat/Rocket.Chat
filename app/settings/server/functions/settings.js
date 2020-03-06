@@ -56,6 +56,12 @@ const overrideSetting = (_id, value, options) => {
 	return value;
 };
 
+/*
+* Reference to the raw setting's options
+*/
+
+settings._raw = new Map();
+
 
 /*
 * Add a setting
@@ -68,6 +74,13 @@ settings.add = function(_id, value, { editor, ...options } = {}) {
 	if (!_id || value == null) {
 		return false;
 	}
+
+	settings._raw[_id] = {
+		value,
+		editor,
+		...options,
+	};
+
 	if (settings._sorter[options.group] == null) {
 		settings._sorter[options.group] = 0;
 	}
@@ -231,6 +244,11 @@ settings.updateById = function(_id, value, editor) {
 	if (!_id || value == null) {
 		return false;
 	}
+
+	if (settings._raw[_id] && typeof settings._raw[_id].processValue === 'function') {
+		value = settings._raw[_id].processValue(value);
+	}
+
 	if (editor != null) {
 		return Settings.updateValueAndEditorById(_id, value, editor);
 	}

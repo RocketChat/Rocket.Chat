@@ -751,6 +751,13 @@ settings.addGroup('General', function() {
 		type: 'string',
 		i18nDescription: 'Site_Url_Description',
 		public: true,
+		processValue(value) {
+			value = value.trim();
+			if (typeof value === 'string' && !value.endsWith('/')) {
+				return `${ value }/`;
+			}
+			return value;
+		},
 	});
 	this.add('Site_Name', 'Rocket.Chat', {
 		type: 'string',
