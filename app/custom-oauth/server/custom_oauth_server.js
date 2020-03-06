@@ -17,7 +17,21 @@ const logger = new Logger('CustomOAuth');
 const Services = {};
 const BeforeUpdateOrCreateUserFromExternalService = [];
 
-const IDENTITY_PROPNAME_FILTER = /\./;
+const IDENTITY_PROPNAME_FILTER = /(\.)/g;
+const renameInvalidProperties = (input) => {
+	if (Array.isArray(input)) {
+		return input.map(renameInvalidProperties);
+	}
+	if (!_.isObject(input)) {
+		return input;
+	}
+
+	return Object.entries(input).reduce((result, [name, value]) => ({
+		...result,
+		[name.replace(IDENTITY_PROPNAME_FILTER, '_')]: renameInvalidProperties(value),
+	}), {});
+};
+
 const normalizers = {
 	// Set 'id' to '_id' for any sources that provide it
 	_id(identity) {
@@ -394,16 +408,7 @@ export class CustomOAuth {
 			identity.name = this.getName(identity);
 		}
 
-		// remove all properties with names that don't match the RegExp in `IDENTITY_PROPNAME_FILTER`
-		return Object.entries(identity).reduce((result, [name, value]) => {
-			if (IDENTITY_PROPNAME_FILTER.test(name)) {
-				return result;
-			}
-			return {
-				...result,
-				[name]: value,
-			};
-		}, {});
+		return renameInvalidProperties(identity);
 	}
 
 	retrieveCredential(credentialToken, credentialSecret) {
