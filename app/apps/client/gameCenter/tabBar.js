@@ -22,7 +22,7 @@ Meteor.startup(function() {
 				groups: ['channel', 'group', 'direct'],
 				id: 'gameCenter',
 				i18nTitle: 'Game_Center',
-				icon: 'cube',
+				icon: 'game',
 				template: 'GameCenter',
 				order: -1,
 			});
