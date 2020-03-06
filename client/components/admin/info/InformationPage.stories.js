@@ -115,12 +115,14 @@ export const _default = () =>
 		statistics={object('statistics', statistics)}
 		instances={object('instances', exampleInstance)}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const withoutCanViewStatisticsPermission = () =>
 	<InformationPage
 		info={info}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const loading = () =>
@@ -129,6 +131,7 @@ export const loading = () =>
 		isLoading
 		info={info}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const withStatistics = () =>
@@ -137,6 +140,7 @@ export const withStatistics = () =>
 		info={info}
 		statistics={statistics}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const withOneInstance = () =>
@@ -146,6 +150,7 @@ export const withOneInstance = () =>
 		statistics={statistics}
 		instances={[exampleInstance]}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const withTwoInstances = () =>
@@ -155,6 +160,7 @@ export const withTwoInstances = () =>
 		statistics={statistics}
 		instances={[exampleInstance, exampleInstance]}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;
 
 export const withTwoInstancesAndDisabledOplog = () =>
@@ -164,4 +170,5 @@ export const withTwoInstancesAndDisabledOplog = () =>
 		statistics={{ ...statistics, instanceCount: 2, oplogEnabled: false }}
 		instances={[exampleInstance, exampleInstance]}
 		onClickRefreshButton={action('clickRefreshButton')}
+		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;

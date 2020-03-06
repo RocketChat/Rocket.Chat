@@ -50,19 +50,19 @@ export const Livechat = {
 		},
 	}),
 
-	online() {
+	online(department) {
 		if (settings.get('Livechat_accept_chats_with_no_agents')) {
 			return true;
 		}
 
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
-			const botAgents = Livechat.getBotAgents();
+			const botAgents = Livechat.getBotAgents(department);
 			if (botAgents && botAgents.count() > 0) {
 				return true;
 			}
 		}
 
-		const onlineAgents = Livechat.getOnlineAgents();
+		const onlineAgents = Livechat.getOnlineAgents(department);
 		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
 	},
 
@@ -355,10 +355,10 @@ export const Livechat = {
 		// Retreive the closed room
 		room = LivechatRooms.findOneByIdOrName(rid);
 
-		sendMessage(user, message, room);
+		sendMessage(user || visitor, message, room);
 
 		if (servedBy) {
-			Subscriptions.hideByRoomIdAndUserId(rid, servedBy._id);
+			Subscriptions.removeByRoomIdAndUserId(rid, servedBy._id);
 		}
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
@@ -369,6 +369,20 @@ export const Livechat = {
 
 		return true;
 	},
+
+	removeRoom(rid) {
+		check(rid, String);
+		const room = LivechatRooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:removeRoom' });
+		}
+
+		Messages.removeByRoomId(rid);
+		Subscriptions.removeByRoomId(rid);
+		LivechatInquiry.removeByRoomId(rid);
+		return LivechatRooms.removeById(rid);
+	},
+
 
 	setCustomFields({ token, key, value, overwrite } = {}) {
 		check(token, String);
@@ -757,6 +771,7 @@ export const Livechat = {
 
 		Subscriptions.removeByVisitorToken(token);
 		LivechatRooms.removeByVisitorToken(token);
+		LivechatInquiry.removeByVisitorToken(token);
 	},
 
 	saveDepartmentAgents(_id, departmentAgents) {

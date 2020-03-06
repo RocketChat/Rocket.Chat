@@ -21,13 +21,13 @@ export const APIClient = {
 		return APIClient._jqueryCall('POST', endpoint, params, body);
 	},
 
-	upload(endpoint, params, formData) {
+	upload(endpoint, params, formData, xhrOptions) {
 		if (!formData) {
 			formData = params;
 			params = {};
 		}
 
-		return APIClient._jqueryFormDataCall(endpoint, params, formData);
+		return APIClient._jqueryFormDataCall(endpoint, params, formData, xhrOptions);
 	},
 
 	_generateQueryFromParams(params) {
@@ -68,15 +68,31 @@ export const APIClient = {
 		});
 	},
 
-	_jqueryFormDataCall(endpoint, params, formData) {
+	_jqueryFormDataCall(endpoint, params, formData, { progress = () => {}, error = () => {} } = {}) {
+		const ret = { };
+
 		const query = APIClient._generateQueryFromParams(params);
 
 		if (!(formData instanceof FormData)) {
 			throw new Error('The formData parameter MUST be an instance of the FormData class.');
 		}
 
-		return new Promise(function _jqueryFormDataPromise(resolve, reject) {
-			jQuery.ajax({
+		ret.promise = new Promise(function _jqueryFormDataPromise(resolve, reject) {
+			ret.xhr = jQuery.ajax({
+				xhr() {
+					const xhr = new window.XMLHttpRequest();
+
+					xhr.upload.addEventListener('progress', function(evt) {
+						if (evt.lengthComputable) {
+							const percentComplete = evt.loaded / evt.total;
+							progress(percentComplete * 100);
+						}
+					}, false);
+
+					xhr.upload.addEventListener('error', error, false);
+
+					return xhr;
+				},
 				url: `${ baseURI }api/${ endpoint }${ query }`,
 				headers: {
 					'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
@@ -96,6 +112,8 @@ export const APIClient = {
 				},
 			});
 		});
+
+		return ret;
 	},
 
 	v1: {
