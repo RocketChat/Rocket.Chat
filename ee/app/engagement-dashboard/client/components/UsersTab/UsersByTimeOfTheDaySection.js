@@ -1,12 +1,11 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
-import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { Section } from '../Section';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { monochromaticColors } from '../data/colors';
 
 export function UsersByTimeOfTheDaySection() {
 	const t = useTranslation();
@@ -44,11 +43,19 @@ export function UsersByTimeOfTheDaySection() {
 		];
 	}, [data]);
 
-	console.log(data);
-	console.log(dates);
-	console.log(groups);
+	const [filterValue, setFilterValue] = useState(7);
+	const filterOptions = useMemo(() => [
+		[7, t('Last 7 days')],
+	], [t]);
 
-	return <Section title={t('Users by time of day')} filter={null}>
+	const handleFilterChange = (filterValue) => {
+		setFilterValue(filterValue);
+	};
+
+	return <Section
+		title={t('Users by time of day')}
+		filter={<Select options={filterOptions} value={filterValue} onChange={handleFilterChange} />}
+	>
 		<Flex.Container>
 			{data
 				? <Box style={{ height: 696 }}>
@@ -61,21 +68,36 @@ export function UsersByTimeOfTheDaySection() {
 									keys={dates}
 									groupMode='grouped'
 									padding={4}
-									margin={{ left: 32, bottom: 20 }}
-									colors={monochromaticColors}
+									margin={{
+										// TODO: Get it from theme
+										left: 40,
+										bottom: 20,
+									}}
+									colors={[
+										// TODO: Get it from theme
+										'#E8F2FF',
+										'#D1EBFE',
+										'#A4D3FE',
+										'#76B7FC',
+										'#549DF9',
+										'#1D74F5',
+										'#10529E',
+									]}
 									cellOpacity={1}
 									enableLabels={false}
 									axisTop={null}
 									axisRight={null}
 									axisBottom={{
+										// TODO: Get it from theme
 										tickSize: 0,
-										tickPadding: 5,
+										tickPadding: 4,
 										tickRotation: 0,
 										format: (timestamp) => moment(parseInt(timestamp, 10)).format(dates.length === 7 ? 'dddd' : 'L'),
 									}}
 									axisLeft={{
+										// TODO: Get it from theme
 										tickSize: 0,
-										tickPadding: 5,
+										tickPadding: 4,
 										tickRotation: 0,
 										format: (hour) => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
 									}}
@@ -83,13 +105,20 @@ export function UsersByTimeOfTheDaySection() {
 									motionStiffness={90}
 									motionDamping={15}
 									theme={{
-										font: 'inherit',
-										fontStyle: 'normal',
-										fontWeight: 600,
-										fontSize: 10,
-										lineHeight: 12,
-										letterSpacing: 0.2,
-										color: '#9EA2A8',
+										// TODO: Get it from theme
+										axis: {
+											ticks: {
+												text: {
+													fill: '#9EA2A8',
+													fontFamily: 'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+													fontSize: 10,
+													fontStyle: 'normal',
+													fontWeight: '600',
+													letterSpacing: '0.2px',
+													lineHeight: '12px',
+												},
+											},
+										},
 									}}
 								/>
 							</Box>

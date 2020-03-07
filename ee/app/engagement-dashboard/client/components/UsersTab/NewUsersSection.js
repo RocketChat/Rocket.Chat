@@ -1,3 +1,4 @@
+import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
@@ -5,7 +6,6 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { CounterSet } from '../data/CounterSet';
-import { CountGraph } from '../data/CountGraph';
 import { Section } from '../Section';
 
 export function NewUsersSection() {
@@ -22,7 +22,7 @@ export function NewUsersSection() {
 	};
 
 	const params = useMemo(() => ({
-		start: moment().subtract(filterValue - 1, 'days').toISOString(),
+		start: moment().subtract(filterValue, 'days').toISOString(),
 		end: moment().toISOString(),
 	}), [filterValue]);
 
@@ -49,12 +49,58 @@ export function NewUsersSection() {
 		<Flex.Container>
 			{data
 				? <Box style={{ height: 240 }}>
-					<CountGraph
-						data={data.days.map(({ day, users }, _, { length }) => [
-							moment(day).format(length === 7 ? 'dddd' : 'L'),
-							users,
-						])}
-					/>
+					<Flex.Item align='stretch' grow={1} shrink={0}>
+						<Box style={{ position: 'relative' }}>
+							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+								<ResponsiveBar
+									data={data.days}
+									indexBy='day'
+									keys={['users']}
+									groupMode='grouped'
+									padding={0.25}
+									margin={{
+										// TODO: Get it from theme
+										bottom: 20,
+									}}
+									colors={[
+										// TODO: Get it from theme
+										'#1d74f5',
+									]}
+									enableLabel={false}
+									enableGridY={false}
+									axisTop={null}
+									axisRight={null}
+									axisBottom={{
+										tickSize: 0,
+										// TODO: Get it from theme
+										tickPadding: 4,
+										tickRotation: 0,
+										format: (date) => moment(date).format(data.days.length === 7 ? 'dddd' : 'L'),
+									}}
+									axisLeft={null}
+									animate={true}
+									motionStiffness={90}
+									motionDamping={15}
+									theme={{
+										// TODO: Get it from theme
+										axis: {
+											ticks: {
+												text: {
+													fill: '#9EA2A8',
+													fontFamily: 'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+													fontSize: '10px',
+													fontStyle: 'normal',
+													fontWeight: '600',
+													letterSpacing: '0.2px',
+													lineHeight: '12px',
+												},
+											},
+										},
+									}}
+								/>
+							</Box>
+						</Box>
+					</Flex.Item>
 				</Box>
 				: <Skeleton variant='rect' height={240} />}
 		</Flex.Container>
