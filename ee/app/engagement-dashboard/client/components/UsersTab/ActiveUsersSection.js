@@ -1,5 +1,5 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo } from 'react';
 
@@ -12,32 +12,71 @@ import { Section } from '../Section';
 export function ActiveUsersSection() {
 	const t = useTranslation();
 
-	const overviewParams = useMemo(() => ({
+	const params = useMemo(() => ({
 		start: moment().toISOString(),
 	}), []);
 
-	const streamParams = useMemo(() => ({
-		start: moment().toISOString(),
-	}), []);
+	const overviewData = useEndpointData('GET', 'engagement-dashboard/users/active-users/overview', params);
 
-	const overviewData = useEndpointData('GET', 'engagement-dashboard/users/active-users/overview', overviewParams);
-	const streamData = useEndpointData('GET', 'engagement-dashboard/users/active-users/monthly-data', streamParams);
+	const [
+		countDailyActiveUsers,
+		diffDailyActiveUsers,
+		countWeeklyActiveUsers,
+		diffWeeklyActiveUsers,
+		countMonthlyActiveUsers,
+		diffMonthlyActiveUsers,
+	] = useMemo(() => {
+		if (!overviewData) {
+			return [];
+		}
+
+		return [
+			overviewData.daily.current,
+			overviewData.daily.diffFromYesterday,
+			overviewData.week.current,
+			overviewData.week.diffFromLastWeek,
+			overviewData.month.current,
+			0,
+		];
+	}, [overviewData]);
+
+	const streamData = useEndpointData('GET', 'engagement-dashboard/users/active-users/monthly-data', params);
+
+	const [
+		dauValues,
+		wauValues,
+		mauValues,
+	] = useMemo(() => {
+		if (!streamData) {
+			return [];
+		}
+
+		return [
+			streamData.month.map(({ year, month, day, users }) => ({
+				x: moment.utc([year, month, day]).toDate(),
+				y: users,
+			})),
+			[],
+			[],
+		];
+	}, [streamData]);
 
 	return <Section title={t('Active users')} filter={null}>
 		<CounterSet
 			counters={[
 				{
-					count: overviewData ? overviewData.daily.current : <Skeleton variant='rect' width='3ex' height='1em' />,
-					variation: overviewData ? overviewData.daily.diffFromYesterday : 0,
+					count: overviewData ? countDailyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
+					variation: overviewData ? diffDailyActiveUsers : 0,
 					description: <><LegendSymbol color='#D1EBFE' /> {t('Daily Active Users')}</>,
 				},
 				{
-					count: overviewData ? overviewData.week.current : <Skeleton variant='rect' width='3ex' height='1em' />,
-					variation: overviewData ? overviewData.week.differFromLastWeek : 0,
+					count: overviewData ? countWeeklyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
+					variation: overviewData ? diffWeeklyActiveUsers : 0,
 					description: <><LegendSymbol color='#76B7FC' /> {t('Weekly Active Users')}</>,
 				},
 				{
-					count: overviewData ? overviewData.daily.current : <Skeleton variant='rect' width='3ex' height='1em' />,
+					count: overviewData ? countMonthlyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
+					variation: overviewData ? diffMonthlyActiveUsers : 0,
 					description: <><LegendSymbol color='#1D74F5' /> {t('Monthly Active Users')}</>,
 				},
 			]}
@@ -51,16 +90,16 @@ export function ActiveUsersSection() {
 								<ResponsiveLine
 									data={[
 										{
-											id: t('Daily Active Users'),
-											data: [],
+											id: 'dau',
+											data: dauValues,
 										},
 										{
-											id: t('Weekly Active Users'),
-											data: [],
+											id: 'wau',
+											data: wauValues,
 										},
 										{
-											id: t('Monthly Active Users'),
-											data: [],
+											id: 'mau',
+											data: mauValues,
 										},
 									]}
 									xScale={{
@@ -126,7 +165,23 @@ export function ActiveUsersSection() {
 												},
 											},
 										},
+										tooltip: {
+											container: {
+												backgroundColor: '#1F2329',
+												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+												borderRadius: 2,
+											},
+										},
 									}}
+									enableSlices='x'
+									sliceTooltip={({ slice: { points } }) => <Tile elevation='2'>
+										{points.map(({ serieId, data: { y: activeUsers } }) =>
+											<Box key={serieId} textStyle='p2'>
+												{(serieId === 'dau' && t('DAU = %d', activeUsers))
+										|| (serieId === 'wau' && t('WAU = %d', activeUsers))
+										|| (serieId === 'mau' && t('MAU = %d', activeUsers))}
+											</Box>)}
+									</Tile>}
 								/>
 							</Box>
 						</Box>

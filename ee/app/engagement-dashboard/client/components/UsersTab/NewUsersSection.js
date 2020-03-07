@@ -142,7 +142,7 @@ export function NewUsersSection() {
 										},
 									}}
 									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
-										{t('__users__ users', { users: value })}
+										{t('%d users', value)}
 									</Box>}
 								/>
 							</Box>
