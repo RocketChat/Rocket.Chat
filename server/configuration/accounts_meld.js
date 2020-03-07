@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { Accounts } from 'meteor/accounts-base';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { Users } from '../../app/models';
 
@@ -16,7 +17,14 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		'twitter',
 	];
 
-	if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
+	//	To get the configurations of service named serviceName
+	const serviceConfigurations = ServiceConfiguration.configurations.findOne({ service: serviceName });
+	let isCustomService;
+	if (serviceConfigurations) {
+		isCustomService = serviceConfigurations.custom;
+	}
+
+	if (services.includes(serviceName) === false && isCustomService !== true) {
 		return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);
 	}
 
