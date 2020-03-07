@@ -10,10 +10,43 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 export function UsersByTimeOfTheDaySection() {
 	const t = useTranslation();
 
-	const params = useMemo(() => ({ start: moment().subtract(20, 'days').toISOString() }), []);
+	const periodOptions = useMemo(() => [
+		['last 7 days', t('Last 7 days')],
+		['last 30 days', t('Last 30 days')],
+		['last 90 days', t('Last 90 days')],
+	], [t]);
+	const [period, setPeriod] = useState('last 7 days');
+
+	const handleFilterChange = (period) => setPeriod(period);
+
+	const params = useMemo(() => {
+		switch (period) {
+			case 'last 7 days':
+				return {
+					start: moment().subtract(6, 'days').toISOString(),
+					// end: moment().toISOString(),
+				};
+
+			case 'last 30 days':
+				return {
+					start: moment().subtract(29, 'days').toISOString(),
+					// end: moment().toISOString(),
+				};
+
+			case 'last 90 days':
+				return {
+					start: moment().subtract(89, 'days').toISOString(),
+					// end: moment().toISOString(),
+				};
+		}
+	}, [period]);
+
 	const data = useEndpointData('GET', 'engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
 
-	const [dates, groups] = useMemo(() => {
+	const [
+		dates,
+		groups,
+	] = useMemo(() => {
 		if (!data) {
 			return [];
 		}
@@ -27,14 +60,13 @@ export function UsersByTimeOfTheDaySection() {
 
 		const dates = Array.from(points.reduce((set, { date }) => { set.add(date); return set; }, new Set())).sort();
 
-		const emptyGroup = dates.reduce((obj, date) => ({ ...obj, [String(date)]: 0 }), {});
-
-		const groups = Array.from({ length: 24 });
+		const groups = Array.from({ length: 24 }, (_, hour) => ({
+			hour: String(hour),
+			...dates.reduce((obj, date) => ({ ...obj, [String(date)]: 0 }), {}),
+		}));
 
 		for (const { users, hour, date } of points) {
-			const group = groups[hour] || { hour, ...emptyGroup };
-			group[date] = users;
-			groups[hour] = group;
+			groups[hour][date] = users;
 		}
 
 		return [
@@ -43,18 +75,9 @@ export function UsersByTimeOfTheDaySection() {
 		];
 	}, [data]);
 
-	const [filterValue, setFilterValue] = useState(7);
-	const filterOptions = useMemo(() => [
-		[7, t('Last 7 days')],
-	], [t]);
-
-	const handleFilterChange = (filterValue) => {
-		setFilterValue(filterValue);
-	};
-
 	return <Section
 		title={t('Users by time of day')}
-		filter={<Select options={filterOptions} value={filterValue} onChange={handleFilterChange} />}
+		filter={<Select options={periodOptions} value={period} onChange={handleFilterChange} />}
 	>
 		<Flex.Container>
 			{data
@@ -99,7 +122,7 @@ export function UsersByTimeOfTheDaySection() {
 										tickSize: 0,
 										tickPadding: 4,
 										tickRotation: 0,
-										format: (hour) => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
+										format: (hour) => moment().set({ hour: parseInt(hour, 10), minute: 0, second: 0 }).format('LT'),
 									}}
 									animate={true}
 									motionStiffness={90}
@@ -119,7 +142,17 @@ export function UsersByTimeOfTheDaySection() {
 												},
 											},
 										},
+										tooltip: {
+											container: {
+												backgroundColor: '#1F2329',
+												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+												borderRadius: 2,
+											},
+										},
 									}}
+									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+										{t('%d users', value)}
+									</Box>}
 								/>
 							</Box>
 						</Box>
