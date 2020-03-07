@@ -103,7 +103,7 @@ export const readMessage = new class extends EventEmitter {
 			return;
 		}
 
-		const room = RoomManager.openedRooms[subscription.t + subscription.name];
+		const room = RoomManager.openedRooms[subscription.t + subscription.name] ? RoomManager.openedRooms[subscription.t + subscription.name] : RoomManager.openedRooms[subscription.t + subscription.rid];
 		if (room == null) {
 			return;
 		}
