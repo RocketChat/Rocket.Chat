@@ -1,13 +1,14 @@
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
-import { Random } from 'meteor/random';
 
+import { fileUploadHandler } from '../../../file-upload';
 import { settings } from '../../../settings/client';
 import { ChatMessage } from '../../../models/client';
-import { t, fileUploadIsValidContentType, SWCache } from '../../../utils';
+import { t, fileUploadIsValidContentType, SWCache, APIClient } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 import { sendOfflineFileMessage } from './sendOfflineFileMessage';
 
@@ -223,6 +224,14 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				description: document.getElementById('file-description').value,
 			};
 
+			const fileName = document.getElementById('file-name').value || file.name || file.file.name;
+
+			const data = new FormData();
+			record.description && data.append('description', record.description);
+			msg && data.append('msg', msg);
+			tmid && data.append('tmid', tmid);
+			data.append('file', file.file, fileName);
+
 			const upload = fileUploadHandler('Uploads', record, file.file);
 			const uploading = {
 				id: upload.id,
@@ -264,6 +273,28 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					}
 				});
 			}, offlineUpload);
+
+			const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
+				progress(progress) {
+					const uploads = Session.get('uploading') || [];
+
+					if (progress === 100) {
+						return;
+					}
+					uploads.filter((u) => u.id === upload.id).forEach((u) => {
+						u.percentage = Math.round(progress) || 0;
+					});
+					Session.set('uploading', uploads);
+				},
+				error(error) {
+					const uploads = Session.get('uploading') || [];
+					uploads.filter((u) => u.id === upload.id).forEach((u) => {
+						u.error = error.message;
+						u.percentage = 0;
+					});
+					Session.set('uploading', uploads);
+				},
+			});
 
 			Tracker.autorun((computation) => {
 				const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
