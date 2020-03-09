@@ -113,4 +113,24 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	getAvatarPath(roomData) {
 		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
 	}
+
+	openCustomProfileTab(instance, room, username) {
+		if (room.v.username !== username) {
+			return false;
+		}
+		const button = instance.tabBar.getButtons().find((button) => button.id === 'visitor-info');
+		if (!button) {
+			return false;
+		}
+
+		const { template, i18nTitle: label, icon } = button;
+		instance.tabBar.setTemplate(template);
+		instance.tabBar.setData({
+			label,
+			icon,
+		});
+
+		instance.tabBar.open();
+		return true;
+	}
 }

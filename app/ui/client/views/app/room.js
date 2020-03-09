@@ -63,9 +63,11 @@ const openProfileTab = (e, instance, username) => {
 		instance.userDetail.set(username);
 	}
 
-	instance.groupDetail.set(null);
-	instance.tabBar.setTemplate('membersList');
-	instance.tabBar.open();
+	if (!roomTypes.roomTypes[roomData.t].openCustomProfileTab(instance, roomData, username)) {
+		instance.groupDetail.set(null);
+		instance.tabBar.setTemplate('membersList');
+		instance.tabBar.open();
+	}
 };
 
 const openProfileTabOrOpenDM = (e, instance, username) => {
@@ -799,29 +801,6 @@ Template.room.events({
 		}
 
 		const { username } = msg.u;
-		const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
-
-		// open visitor-info flexTabBar if user is livechat guest
-		if (/^guest-(\d+)$/.test(username) && roomData.t === 'l') {
-			const $flexTab = $('.flex-tab-container .flex-tab');
-			const flexTabData = {
-				groups: ['live'],
-				i18nTitle: 'Visitor_Info',
-				icon: 'info-circled',
-				id: 'visitor-info',
-				order: 0,
-				template: 'visitorInfo',
-			};
-
-			$flexTab.attr('template', flexTabData.template);
-			instance.tabBar.setData({
-				label: flexTabData.i18nTitle,
-				icon: flexTabData.icon,
-			});
-			instance.tabBar.open(flexTabData);
-
-			return popover.close();
-		}
 
 		openProfileTabOrOpenDM(e, instance, username);
 	},
