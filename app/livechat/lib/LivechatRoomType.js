@@ -115,7 +115,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	openCustomProfileTab(instance, room, username) {
-		if (room.v.username !== username) {
+		if (!room || !room.v || room.v.username !== username) {
 			return false;
 		}
 		const button = instance.tabBar.getButtons().find((button) => button.id === 'visitor-info');
