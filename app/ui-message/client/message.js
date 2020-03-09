@@ -96,7 +96,6 @@ const renderBody = (msg, settings) => {
 Template.message.helpers({
 	body() {
 		const { msg, settings } = this;
-		console.log(msg);
 		return Tracker.nonreactive(() => renderBody(msg, settings));
 	},
 	and(a, b) {
