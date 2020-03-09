@@ -46,6 +46,10 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		this.readOnlyTpl = 'livechatReadOnly';
 	}
 
+	enableMembersListProfile() {
+		return true;
+	}
+
 	findRoom(identifier) {
 		return ChatRoom.findOne({ _id: identifier });
 	}
