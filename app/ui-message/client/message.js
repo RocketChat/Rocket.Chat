@@ -96,6 +96,7 @@ const renderBody = (msg, settings) => {
 Template.message.helpers({
 	body() {
 		const { msg, settings } = this;
+		console.log(msg);
 		return Tracker.nonreactive(() => renderBody(msg, settings));
 	},
 	and(a, b) {
@@ -176,6 +177,14 @@ Template.message.helpers({
 		if (msg.avatar != null && msg.avatar[0] === '@') {
 			return msg.avatar.replace(/^@/, '');
 		}
+	},
+	customAvatarUsername() {
+		const { msg } = this;
+
+		if (msg.alias && msg.u && msg.u.name) {
+			return msg.u.name;
+		}
+		return msg.u.username;
 	},
 	getName() {
 		const { msg, settings } = this;
