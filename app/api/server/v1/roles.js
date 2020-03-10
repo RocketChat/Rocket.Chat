@@ -7,24 +7,25 @@ import { getUsersInRole, hasPermission } from '../../../authorization/server';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
+		const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
+
+		return API.v1.success({ roles });
+	},
+});
+
+API.v1.addRoute('roles.sync', { authRequired: true }, {
+	get() {
 		const { updatedSince } = this.queryParams;
-
-		if (!updatedSince) {
-			const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
-
-			return API.v1.success({ roles });
-		}
-
-		let updatedSinceDate;
 
 		if (isNaN(Date.parse(updatedSince))) {
 			throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-		} else {
-			updatedSinceDate = new Date(updatedSince);
 		}
 
 		return API.v1.success({
-			roles: Roles.findByUpdatedDate(updatedSinceDate, { fields: API.v1.defaultFieldsToExclude }).fetch(),
+			roles: {
+				update: Roles.findByUpdatedDate(new Date(updatedSince), { fields: API.v1.defaultFieldsToExclude }).fetch(),
+				remove: Roles.trashFindDeletedAfter(new Date(updatedSince)).fetch(),
+			},
 		});
 	},
 });
