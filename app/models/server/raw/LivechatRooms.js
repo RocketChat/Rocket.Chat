@@ -94,7 +94,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	async findAllNumberOfAbandonedRooms({ start, end, departmentId, options = {} }) {
+	async findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -123,16 +123,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
-	async findPercentageOfAbandonedRooms({ start, end, departmentId, options = {} }) {
+	async findPercentageOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -177,16 +181,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
-	findAllAverageOfChatDurationTime({ start, end, departmentId, options = {} }) {
+	findAllAverageOfChatDurationTime({ start, end, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -215,16 +223,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
-	findAllAverageWaitingTime({ start, end, departmentId, options = {} }) {
+	findAllAverageWaitingTime({ start, end, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -253,16 +265,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
-	findAllRooms({ start, end, answered, departmentId, options = {} }) {
+	findAllRooms({ start, end, answered, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -292,16 +308,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
-	findAllServiceTime({ start, end, departmentId, options = {} }) {
+	findAllServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -331,13 +351,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
 	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
@@ -760,7 +784,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project]).toArray();
 	}
 
-	findAllAverageOfServiceTime({ start, end, departmentId, options = {} }) {
+	findAllAverageOfServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -790,13 +814,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
 	findByVisitorId(visitorId, options) {
@@ -851,7 +879,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
 	}
 
-	findAllServiceTimeByAgent({ start, end, options = {} }) {
+	findAllServiceTimeByAgent({ start, end, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -879,16 +907,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
-	findAllAverageServiceTimeByAgents({ start, end, options = {} }) {
+	findAllAverageServiceTimeByAgents({ start, end, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -925,12 +957,16 @@ export class LivechatRoomsRaw extends BaseRaw {
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
 		const params = [match, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 }

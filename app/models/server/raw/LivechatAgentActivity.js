@@ -67,7 +67,7 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findAvailableServiceTimeHistory({ start, end, fullReport, options = {} }) {
+	findAvailableServiceTimeHistory({ start, end, fullReport, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				date: {
@@ -108,12 +108,16 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { username: 1 } };
 		const params = [match, lookup, unwind, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 }

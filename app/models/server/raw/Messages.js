@@ -48,7 +48,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
+	findAllNumberOfTransferredRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				t: 'livechat_transfer_history',
@@ -94,12 +94,16 @@ export class MessagesRaw extends BaseRaw {
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
 		const params = [...firstParams, group, project, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true }).toArray();
+		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 }
