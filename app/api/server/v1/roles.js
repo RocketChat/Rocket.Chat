@@ -7,21 +7,20 @@ import { getUsersInRole, hasPermission } from '../../../authorization/server';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
-		if (!this.queryParams) {
+		const { updatedSince } = this.queryParams;
+
+		if (!updatedSince) {
 			const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
 
 			return API.v1.success({ roles });
 		}
 
-		const { updatedSince } = this.queryParams;
-
 		let updatedSinceDate;
-		if (updatedSince) {
-			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			} else {
-				updatedSinceDate = new Date(updatedSince);
-			}
+
+		if (isNaN(Date.parse(updatedSince))) {
+			throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+		} else {
+			updatedSinceDate = new Date(updatedSince);
 		}
 
 		return API.v1.success({
