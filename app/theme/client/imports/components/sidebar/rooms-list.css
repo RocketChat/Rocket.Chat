@@ -58,6 +58,7 @@
 	.rooms-list {
 		&__type {
 			font-size: var(--rooms-list-title-text-size-mobile);
+			padding: 0 var(--sidebar-small-default-padding) 1rem var(--sidebar-small-default-padding);
 		}
 
 		&__empty-room {

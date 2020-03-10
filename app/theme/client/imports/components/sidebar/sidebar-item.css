@@ -23,9 +23,6 @@
 
 	&__picture {
 		flex: 0 0 var(--sidebar-item-thumb-size-extended);
-
-		width: var(--sidebar-item-thumb-size-extended);
-		height: var(--sidebar-item-thumb-size-extended);
 	}
 
 	&__user-thumb {
@@ -54,7 +51,7 @@
 	&__picture {
 		flex: 0 0 var(--sidebar-item-thumb-size-medium);
 
-		width: var(--sidebar-item-thumb-size-medium);
+		/* width: var(--sidebar-item-thumb-size-medium); */
 		height: var(--sidebar-item-thumb-size-medium);
 	}
 
@@ -315,15 +312,11 @@
 
 @media (width <= 500px) {
 	.sidebar-item {
+		padding: 0 0 0 var(--sidebar-small-default-padding);
+
 		&__name {
 			font-size: var(--sidebar-item-text-size-mobile);
 		}
-	}
-}
-
-@media (width <= 400px) {
-	.sidebar-item {
-		padding: 0 0 0 var(--sidebar-small-default-padding);
 
 		&__message {
 			display: flex;

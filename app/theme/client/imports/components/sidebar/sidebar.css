@@ -88,7 +88,7 @@
 	}
 }
 
-@media (width <= 400px) {
+@media (width <= 500px) {
 	.sidebar {
 		flex: 0 0 var(--sidebar-small-width);
 
