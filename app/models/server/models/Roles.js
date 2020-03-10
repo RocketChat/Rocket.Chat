@@ -90,7 +90,7 @@ export class Roles extends Base {
 			_updatedAt: { $gte: new Date(updatedAfterDate) },
 		};
 
-		return this.find(query, options).fetch();
+		return this.find(query, options);
 	}
 
 	canAddUserToRole(uid, roleName, scope) {

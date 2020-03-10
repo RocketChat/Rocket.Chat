@@ -28,7 +28,7 @@ API.v1.addRoute('roles.listByUpdatedDate', { authRequired: true }, {
 		}
 
 		return API.v1.success({
-			roles: Roles.findByUpdatedDate(updatedAfterDate, { fields: API.v1.defaultFieldsToExclude }),
+			roles: Roles.findByUpdatedDate(updatedAfterDate, { fields: API.v1.defaultFieldsToExclude }).fetch(),
 		});
 	},
 });
