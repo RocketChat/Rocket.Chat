@@ -7,28 +7,25 @@ import { getUsersInRole, hasPermission } from '../../../authorization/server';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
-		const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
+		const { updatedSince } = this.queryParams;
 
-		return API.v1.success({ roles });
-	},
-});
+		if (!updatedSince) {
+			const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
 
-// api to to get updated roles after a date(in ISODate format)
-API.v1.addRoute('roles.listByUpdatedDate', { authRequired: true }, {
-	get() {
-		const { updatedAfter } = this.queryParams;
+			return API.v1.success({ roles });
+		}
 
-		let updatedAfterDate;
-		if (updatedAfter) {
-			if (isNaN(Date.parse(updatedAfter))) {
-				throw new Meteor.Error('error-updatedAfter-param-invalid', 'The "updatedAfter" query parameter must be a valid date.');
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
-				updatedAfterDate = new Date(updatedAfter);
+				updatedSinceDate = new Date(updatedSince);
 			}
 		}
 
 		return API.v1.success({
-			roles: Roles.findByUpdatedDate(updatedAfterDate, { fields: API.v1.defaultFieldsToExclude }).fetch(),
+			roles: Roles.findByUpdatedDate(updatedSinceDate, { fields: API.v1.defaultFieldsToExclude }).fetch(),
 		});
 	},
 });
