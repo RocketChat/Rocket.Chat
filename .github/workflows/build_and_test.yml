@@ -29,10 +29,10 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
-    - name: Use Node.js 12.14.0
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: "12.14.0"
+        node-version: "12.16.1"
 
     - uses: actions/checkout@v1
 
@@ -164,7 +164,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["12.14.0"]
+        node-version: ["12.16.1"]
         mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
@@ -269,10 +269,10 @@ jobs:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Use Node.js 12.14.0
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: "12.14.0"
+        node-version: "12.16.1"
 
     - name: Install Meteor
       run: |
