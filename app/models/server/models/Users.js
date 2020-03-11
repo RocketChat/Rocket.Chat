@@ -973,6 +973,25 @@ export class Users extends Base {
 		return this.update({}, update, { multi: true });
 	}
 
+	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
+		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
+		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
+
+		const query = {
+			$or: [neverActive, idleTooLong],
+			active: true,
+			roles: role,
+		};
+
+		const update = {
+			$set: {
+				active,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	unsetLoginTokens(_id) {
 		const update = {
 			$set: {
