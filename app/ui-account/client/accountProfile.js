@@ -13,6 +13,7 @@ import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
+import { getPopoverStatusConfig } from '../../ui/client';
 
 const validateEmail = (email) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
 const validateUsername = (username) => {
@@ -375,64 +376,7 @@ Template.accountProfile.events({
 		}, [e, instance, ...args]);
 	},
 	'click .js-status-type'(e, instance) {
-		const options = [
-			{
-				icon: 'circle',
-				name: t('Online'),
-				modifier: 'online',
-				action: () => {
-					instance.statusType.set('online');
-					$('input[name=statusType]').val('online');
-					$('.js-status-type').prop('class', 'rc-input__icon js-status-type edit-status-type-icon--online');
-				},
-			},
-			{
-				icon: 'circle',
-				name: t('Away'),
-				modifier: 'away',
-				action: () => {
-					instance.statusType.set('away');
-					$('input[name=statusType]').val('away');
-					$('.js-status-type').prop('class', 'rc-input__icon js-status-type edit-status-type-icon--away');
-				},
-			},
-			{
-				icon: 'circle',
-				name: t('Busy'),
-				modifier: 'busy',
-				action: () => {
-					instance.statusType.set('busy');
-					$('input[name=statusType]').val('busy');
-					$('.js-status-type').prop('class', 'rc-input__icon js-status-type edit-status-type-icon--busy');
-				},
-			},
-			{
-				icon: 'circle',
-				name: t('Invisible'),
-				modifier: 'offline',
-				action: () => {
-					instance.statusType.set('offline');
-					$('input[name=statusType]').val('offline');
-					$('.js-status-type').prop('class', 'rc-input__icon js-status-type edit-status-type-icon--offline');
-				},
-			},
-		];
-
-		const config = {
-			popoverClass: 'edit-status-type',
-			columns: [
-				{
-					groups: [
-						{
-							items: options,
-						},
-					],
-				},
-			],
-			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight,
-		};
-		popover.open(config);
+		popover.open(getPopoverStatusConfig(e.currentTarget, (status) => instance.statusType.set(status)));
 	},
 	'input .js-avatar-url-input'(e, instance) {
 		const text = e.target.value;
