@@ -935,7 +935,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			$group: {
 				_id: { _id: '$servedBy._id', username: '$servedBy.username' },
 				chats: { $sum: 1 },
-				chatsDuration: { $sum: '$metrics.chatDuration' },
+				serviceTimeDuration: { $sum: '$metrics.serviceTimeDuration' },
 			},
 		};
 		const project = {
@@ -949,7 +949,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 						$cond: [
 							{ $eq: ['$chats', 0] },
 							0,
-							{ $divide: ['$chatsDuration', '$chats'] },
+							{ $divide: ['$serviceTimeDuration', '$chats'] },
 						],
 					},
 				},

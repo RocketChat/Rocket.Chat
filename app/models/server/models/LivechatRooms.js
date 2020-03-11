@@ -420,6 +420,7 @@ export class LivechatRooms extends Base {
 				closedBy: closeInfo.closedBy,
 				closedAt: closeInfo.closedAt,
 				'metrics.chatDuration': closeInfo.chatDuration,
+				'metrics.serviceTimeDuration': closeInfo.serviceTimeDuration,
 				'v.status': 'offline',
 			},
 			$unset: {

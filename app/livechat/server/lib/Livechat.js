@@ -326,6 +326,7 @@ export const Livechat = {
 		const closeData = {
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000,
+			serviceTimeDuration: (now.getTime() - room.servedBy.ts) / 1000,
 		};
 
 		if (user) {
