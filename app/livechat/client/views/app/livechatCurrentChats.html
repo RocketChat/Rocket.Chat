@@ -1,7 +1,7 @@
 <template name="livechatCurrentChats">
 	{{#requiresPermission 'view-livechat-current-chats'}}
 		<fieldset>
-			<form class="form-inline" method="post">
+			<form class="form-inline" id="form-filters" method="post">
 				<div class="livechat-group-filters-wrapper">
 					<div class="livechat-group-filters-container">
 						<div class="livechat-current-chats-standard-filters">
@@ -9,7 +9,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Guest"}}</div>
 									<div class="rc-input__wrapper">
-										<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
+										<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" id="name" name="name">
 									</div>
 								</label>
 							</div>
@@ -36,7 +36,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Status"}}</div>
 									<div class="rc-select">
-										<select class="rc-select__element" name="status">
+										<select class="rc-select__element" id="status" name="status">
 											<option class="rc-select__option" value="">{{_ "All"}}</option>
 											<option class="rc-select__option" value="opened">{{_ "Opened"}}</option>
 											<option class="rc-select__option" value="closed">{{_ "Closed"}}</option>
@@ -49,7 +49,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Department"}}</div>
 									<div class="rc-select">
-										<select class="rc-select__element" name="department">
+										<select class="rc-select__element" id="department" name="department">
 											<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
 											{{#each departments}}
 												<option class="rc-select__option" value="{{_id}}">{{name}}</option>
@@ -108,11 +108,9 @@
 					<div class="livechat-group-filters-buttons">
 						<div class="rc-button__group">
 							<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
-							{{#if hasPopoverPermissions}}
-								<button class="livechat-current-chats-extra-actions">
-									{{> icon icon="menu" block="rc-icon--default-size"}}
-								</button>
-							{{/if}}
+							<button class="livechat-current-chats-extra-actions">
+								{{> icon icon="menu" block="rc-icon--default-size"}}
+							</button>
 						</div>
 					</div>
 				</div>

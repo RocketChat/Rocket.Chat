@@ -166,7 +166,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 			: getFullUserData(params);
 
 		if (!result || result.count() !== 1) {
-			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
+			return API.v1.failure('User not found.');
 		}
 		const [user] = result.fetch();
 		const myself = user._id === this.userId;
@@ -647,7 +647,7 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 
 API.v1.addRoute('users.presence', { authRequired: true }, {
 	get() {
-		const { from } = this.queryParams;
+		const { from, ids } = this.queryParams;
 
 		const options = {
 			fields: {
@@ -658,6 +658,13 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 				statusText: 1,
 			},
 		};
+
+		if (ids) {
+			return API.v1.success({
+				users: Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
+				full: false,
+			});
+		}
 
 		if (from) {
 			const ts = new Date(from);

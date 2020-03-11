@@ -1,3 +1,4 @@
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
@@ -313,7 +314,6 @@ export const useSection = (groupId, sectionName) => {
 	const filterSettings = (settings) =>
 		settings.filter(({ group, section }) => group === groupId && ((!sectionName && !section) || (sectionName === section)));
 
-	const changed = useSelector((state) => filterSettings(state.settings).some(({ changed }) => changed));
 	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)));
 	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.length === b.length && a.join() === b.join());
 
@@ -325,12 +325,12 @@ export const useSection = (groupId, sectionName) => {
 		const persistedSettings = filterSettings(state.persistedSettings);
 
 		const changes = settings.map((setting) => {
-			const { _id, value, packageValue, editor } = persistedSettings.find(({ _id }) => _id === setting._id);
+			const { _id, value, packageValue, packageEditor } = persistedSettings.find(({ _id }) => _id === setting._id);
 			return {
 				_id,
 				value: packageValue,
-				editor,
-				changed: packageValue !== value,
+				editor: packageEditor,
+				changed: JSON.stringify(packageValue) !== JSON.stringify(value),
 			};
 		});
 
@@ -339,52 +339,63 @@ export const useSection = (groupId, sectionName) => {
 
 	return {
 		name: sectionName,
-		changed,
 		canReset,
 		settings: settingsIds,
 		reset,
 	};
 };
 
-export const useSetting = (_id) => {
-	const { stateRef, hydrate, isDisabled } = useContext(SettingsContext);
+export const useSettingActions = (persistedSetting) => {
+	const { hydrate } = useContext(SettingsContext);
 
-	const selectSetting = (settings) => settings.find((setting) => setting._id === _id);
-
-	const setting = useSelector((state) => selectSetting(state.settings));
-	const sectionChanged = useSelector((state) => state.settings.some(({ section, changed }) => section === setting.section && changed));
-	const disabled = useReactiveValue(() => isDisabled(setting), [setting.blocked, setting.enableQuery]);
-
-	const update = useEventCallback((selectSetting, { current: state }, hydrate, data) => {
-		const setting = { ...selectSetting(state.settings), ...data };
-		const persistedSetting = selectSetting(state.persistedSettings);
-
+	const update = useDebouncedCallback(({ value, editor }) => {
 		const changes = [{
-			_id: setting._id,
-			value: setting.value,
-			editor: setting.editor,
-			changed: (setting.value !== persistedSetting.value) || (setting.editor !== persistedSetting.editor),
+			_id: persistedSetting._id,
+			...value !== undefined && { value },
+			...editor !== undefined && { editor },
+			changed: JSON.stringify(persistedSetting.value) !== JSON.stringify(value) || JSON.stringify(editor) !== JSON.stringify(persistedSetting.editor),
 		}];
 
 		hydrate(changes);
-	}, selectSetting, stateRef, hydrate);
+	}, 100, [hydrate, persistedSetting]);
 
-	const reset = useEventCallback((selectSetting, { current: state }, hydrate) => {
-		const { _id, value, packageValue, editor } = selectSetting(state.persistedSettings);
+	const reset = useDebouncedCallback(() => {
+		const { _id, value, packageValue, packageEditor, editor } = persistedSetting;
 
 		const changes = [{
 			_id,
 			value: packageValue,
-			editor,
-			changed: JSON.stringify(packageValue) !== JSON.stringify(value),
+			editor: packageEditor,
+			changed: JSON.stringify(packageValue) !== JSON.stringify(value) || JSON.stringify(packageEditor) !== JSON.stringify(editor),
 		}];
 
 		hydrate(changes);
-	}, selectSetting, stateRef, hydrate);
+	}, 100, [hydrate, persistedSetting]);
+
+	return { update, reset };
+};
+
+export const useSettingDisabledState = ({ blocked, enableQuery }) => {
+	const { isDisabled } = useContext(SettingsContext);
+	return useReactiveValue(() => isDisabled({ blocked, enableQuery }), [blocked, enableQuery]);
+};
+
+export const useSectionChangedState = (groupId, sectionName) =>
+	useSelector((state) =>
+		state.settings.some(({ group, section, changed }) =>
+			group === groupId && ((!sectionName && !section) || (sectionName === section)) && changed));
+
+export const useSetting = (_id) => {
+	const selectSetting = (settings) => settings.find((setting) => setting._id === _id);
+
+	const setting = useSelector((state) => selectSetting(state.settings));
+	const persistedSetting = useSelector((state) => selectSetting(state.persistedSettings));
+
+	const { update, reset } = useSettingActions(persistedSetting);
+	const disabled = useSettingDisabledState(persistedSetting);
 
 	return {
 		...setting,
-		sectionChanged,
 		disabled,
 		update,
 		reset,
