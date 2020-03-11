@@ -1,4 +1,4 @@
-FROM rocketchat/base:12.14.0
+FROM rocketchat/base:12.16.1
 
 ADD . /app
 

@@ -36,16 +36,16 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, _cdn_prefix, _roo
 
 	const url = s.rtrim(`${ pathPrefix }/${ finalPath }`, '/') + query;
 
+	if (cloud) {
+		return getCloudUrl(url, siteUrl, cloudRoute);
+	}
+
 	if (cdn && cdnPrefix !== '') {
 		return cdnPrefix + url;
 	}
 
 	if (full) {
 		return siteUrl + url;
-	}
-
-	if (cloud) {
-		return getCloudUrl(url, siteUrl, cloudRoute);
 	}
 
 	return url;

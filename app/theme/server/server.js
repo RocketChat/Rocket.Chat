@@ -106,6 +106,7 @@ export const theme = new class {
 		this.variables[name] = {
 			type,
 			value,
+			editor,
 		};
 		if (persist) {
 			const config = {
