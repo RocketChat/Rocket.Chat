@@ -33,7 +33,7 @@ Meteor.startup(function() {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_Google',
-		public: true,
+		public: false,
 		i18nLabel: 'AutoTranslate_APIKey',
 		enableQuery: [
 			{
@@ -48,7 +48,7 @@ Meteor.startup(function() {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_DeepL',
-		public: true,
+		public: false,
 		i18nLabel: 'AutoTranslate_APIKey',
 		enableQuery: [
 			{
@@ -62,7 +62,7 @@ Meteor.startup(function() {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_Microsoft',
-		public: true,
+		public: false,
 		i18nLabel: 'AutoTranslate_APIKey',
 		enableQuery: [
 			{
