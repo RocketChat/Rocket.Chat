@@ -325,12 +325,12 @@ export const useSection = (groupId, sectionName) => {
 		const persistedSettings = filterSettings(state.persistedSettings);
 
 		const changes = settings.map((setting) => {
-			const { _id, value, packageValue, editor } = persistedSettings.find(({ _id }) => _id === setting._id);
+			const { _id, value, packageValue, packageEditor } = persistedSettings.find(({ _id }) => _id === setting._id);
 			return {
 				_id,
 				value: packageValue,
-				editor,
-				changed: packageValue !== value,
+				editor: packageEditor,
+				changed: JSON.stringify(packageValue) !== JSON.stringify(value),
 			};
 		});
 
@@ -348,29 +348,29 @@ export const useSection = (groupId, sectionName) => {
 export const useSettingActions = (persistedSetting) => {
 	const { hydrate } = useContext(SettingsContext);
 
-	const update = useDebouncedCallback(({ value = persistedSetting.value, editor = persistedSetting.editor }) => {
+	const update = useDebouncedCallback(({ value, editor }) => {
 		const changes = [{
 			_id: persistedSetting._id,
-			value,
-			editor,
-			changed: (value !== persistedSetting.value) || (editor !== persistedSetting.editor),
+			...value !== undefined && { value },
+			...editor !== undefined && { editor },
+			changed: JSON.stringify(persistedSetting.value) !== JSON.stringify(value) || JSON.stringify(editor) !== JSON.stringify(persistedSetting.editor),
 		}];
 
 		hydrate(changes);
-	}, 70, [hydrate, persistedSetting]);
+	}, 100, [hydrate, persistedSetting]);
 
 	const reset = useDebouncedCallback(() => {
-		const { _id, value, packageValue, editor } = persistedSetting;
+		const { _id, value, packageValue, packageEditor, editor } = persistedSetting;
 
 		const changes = [{
 			_id,
 			value: packageValue,
-			editor,
-			changed: JSON.stringify(packageValue) !== JSON.stringify(value),
+			editor: packageEditor,
+			changed: JSON.stringify(packageValue) !== JSON.stringify(value) || JSON.stringify(packageEditor) !== JSON.stringify(editor),
 		}];
 
 		hydrate(changes);
-	}, 70, [hydrate, persistedSetting]);
+	}, 100, [hydrate, persistedSetting]);
 
 	return { update, reset };
 };
