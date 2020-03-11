@@ -151,7 +151,7 @@ jobs:
         path: /tmp/build
 
   test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-16.10
     needs: build
 
     strategy:
