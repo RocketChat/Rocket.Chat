@@ -335,6 +335,7 @@
   "API_Personal_Access_Tokens_Regenerate_It": "Regenerate token",
   "API_Shield_Types": "Shield Types",
   "API_Shield_Types_Description": "Types of shields to enable as a comma separated list, choose from `online`, `channel` or `*` for all",
+  "API_Shield_user_require_auth": "Require authentication for users shields",
   "API_Token": "API Token",
   "API_Tokenpass_URL": "Tokenpass Server URL",
   "API_Tokenpass_URL_Description": "Example: https://domain.com (excluding trailing slash)",
