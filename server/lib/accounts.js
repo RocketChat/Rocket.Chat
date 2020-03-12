@@ -190,11 +190,6 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 			});
 		}
 
-		if (user.type !== 'visitor') {
-			Meteor.defer(function() {
-				return callbacks.run('afterCreateUser', user);
-			});
-		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = getAvatarSuggestionForUser(user);
 			Object.keys(avatarSuggestions).some((service) => {
