@@ -5,7 +5,7 @@ import { BurgerMenuButton } from './BurgerMenuButton';
 
 export function Page(props) {
 	return <Flex.Container direction='column'>
-		<Box is='section' style={useMemo(() => ({ height: '100vh' }), [])} {...props} />
+		<Box is='section' style={useMemo(() => ({ height: '100%' }), [])} {...props} />
 	</Flex.Container>;
 }
 

@@ -34,10 +34,10 @@ Template.adminFlex.helpers({
 		const query = {
 			type: 'group',
 		};
+		let groups = [];
 		if (filter) {
 			const filterRegex = new RegExp(s.escapeRegExp(filter), 'i');
 			const records = settings.collectionPrivate.find().fetch();
-			let groups = [];
 			records.forEach(function(record) {
 				if (filterRegex.test(TAPi18n.__(record.i18nLabel || record._id))) {
 					groups.push(record.group || record._id);
@@ -49,6 +49,9 @@ Template.adminFlex.helpers({
 					$in: groups,
 				};
 			}
+		}
+		if (filter && groups.length === 0) {
+			return 0;
 		}
 		return settings.collectionPrivate.find(query).fetch().map(function(el) {
 			el.label = label.apply(el);

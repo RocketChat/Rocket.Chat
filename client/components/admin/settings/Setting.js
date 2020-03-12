@@ -67,10 +67,12 @@ export function Setting({ settingId, sectionChanged }) {
 	const {
 		value: contextValue,
 		editor: contextEditor,
+		packageEditor,
 		update,
 		reset,
 		...setting
 	} = useSetting(settingId);
+
 
 	const t = useTranslation();
 
@@ -116,7 +118,7 @@ export function Setting({ settingId, sectionChanged }) {
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
 	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>, [i18nDescription]);
 	const callout = useMemo(() => alert && <RawText>{t(alert)}</RawText>, [alert]);
-	const hasResetButton = !disableReset && !readonly && type !== 'asset' && JSON.stringify(value) !== JSON.stringify(packageValue) && !disabled;
+	const hasResetButton = !disableReset && !readonly && type !== 'asset' && (JSON.stringify(packageEditor) !== JSON.stringify(editor) || JSON.stringify(value) !== JSON.stringify(packageValue)) && !disabled;
 
 	return <MemoizedSetting
 		type={type}
