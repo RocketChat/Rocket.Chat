@@ -63,6 +63,9 @@ const openProfileTab = (e, instance, username) => {
 		instance.userDetail.set(username);
 	}
 
+	if (roomTypes.roomTypes[roomData.t].openCustomProfileTab(instance, roomData, username)) {
+		return;
+	}
 	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.open();
@@ -284,39 +287,19 @@ Template.room.helpers({
 	embeddedVersion() {
 		return Layout.isEmbedded();
 	},
-
 	showTopNavbar() {
 		return !Layout.isEmbedded() || settings.get('UI_Show_top_navbar_embedded_layout');
 	},
-
 	subscribed() {
 		const { state } = Template.instance();
 		return state.get('subscribed');
 	},
-
 	messagesHistory() {
 		const { rid } = Template.instance();
-		const hideMessagesOfType = [];
-		settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
-			let types;
-			const type = record._id.replace('Message_HideType_', '');
-			switch (type) {
-				case 'mute_unmute':
-					types = ['user-muted', 'user-unmuted'];
-					break;
-				default:
-					types = [type];
-			}
-			return types.forEach(function(type) {
-				const index = hideMessagesOfType.indexOf(type);
-
-				if ((record.value === true) && (index === -1)) {
-					hideMessagesOfType.push(type);
-				} else if (index > -1) {
-					hideMessagesOfType.splice(index, 1);
-				}
-			});
-		});
+		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
+		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
+		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
+		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
 
 		const modes = ['', 'cozy', 'compact'];
 		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
@@ -326,8 +309,8 @@ Template.room.helpers({
 			...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
 		};
 
-		if (hideMessagesOfType.length > 0) {
-			query.t =				{ $nin: hideMessagesOfType };
+		if (hideMessagesOfType.size) {
+			query.t = { $nin: Array.from(hideMessagesOfType.values()) };
 		}
 
 		const options = {
@@ -779,8 +762,8 @@ Template.room.events({
 		Session.set(`uploading-cancel-${ this.id }`, true);
 	},
 
-	'click .unread-bar > button.mark-read'() {
-		readMessage.readNow(true);
+	'click .unread-bar > button.mark-read'(e, t) {
+		readMessage.readNow(t.data._id);
 	},
 
 	'click .unread-bar > button.jump-to'(e, t) {
@@ -947,7 +930,11 @@ Template.room.events({
 		}
 	},
 	'load .gallery-item'(e, template) {
-		return template.sendToBottomIfNecessaryDebounced();
+		template.sendToBottomIfNecessaryDebounced();
+	},
+
+	'rendered .js-block-wrapper'(e, i) {
+		i.sendToBottomIfNecessaryDebounced();
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -1293,9 +1280,16 @@ Template.room.onRendered(function() {
 		});
 	}, 300);
 
+	const read = _.debounce(function() {
+		if (rid !== Session.get('openedRoom')) {
+			return;
+		}
+		readMessage.read(rid);
+	}, 500);
+
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
-		readMessage.read();
+		read();
 		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
 	});
 
@@ -1324,7 +1318,7 @@ Template.room.onRendered(function() {
 		Rooms.findOne(rid);
 		const count = this.state.get('count');
 		if (count === 0) {
-			return readMessage.read();
+			return read();
 		}
 		readMessage.refreshUnreadMark(rid);
 	});
@@ -1373,6 +1367,8 @@ Template.room.onRendered(function() {
 		if (!room) {
 			FlowRouter.go('home');
 		}
+
+		callbacks.run('onRenderRoom', template, room);
 	});
 });
 
@@ -1384,5 +1380,5 @@ callbacks.add('enter-room', (sub) => {
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
 	}
-	readMessage.refreshUnreadMark(sub.rid);
+	setTimeout(() => readMessage.read(sub.rid), 1000);
 });
