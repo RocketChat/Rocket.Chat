@@ -88,8 +88,7 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 				text = `#${ channel }`;
 				break;
 			case 'user':
-				const loggedUser = this.getLoggedInUser();
-				if (settings.get('API_Shield_user_require_auth') && !loggedUser) {
+				if (settings.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
 					return API.v1.failure('You must be logged in to do this.');
 				}
 				const user = this.getUserFromParams();
