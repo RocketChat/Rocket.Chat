@@ -208,7 +208,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (user.type !== 'visitor') {
 		Meteor.defer(function() {
-			return RocketChat.callbacks.run('afterCreateUser', user);
+			return callbacks.run('afterCreateUser', user);
 		});
 	}
 
