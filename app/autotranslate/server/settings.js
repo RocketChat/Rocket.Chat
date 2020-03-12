@@ -63,7 +63,7 @@ Meteor.startup(function() {
 		group: 'Message',
 		section: 'AutoTranslate_Microsoft',
 		public: false,
-		i18nLabel: 'AutoTranslate_APIKey',
+		i18nLabel: 'AutoTranslate_Microsoft_API_Key',
 		enableQuery: [
 			{
 				_id: 'AutoTranslate_Enabled', value: true,
