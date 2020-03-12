@@ -411,16 +411,19 @@ export class LivechatRooms extends Base {
 
 
 	closeByRoomId(roomId, closeInfo) {
+		const { closer, closedBy, closedAt, chatDuration, ...extraData } = closeInfo;
+
 		return this.update({
 			_id: roomId,
 			t: 'l',
 		}, {
 			$set: {
-				closer: closeInfo.closer,
-				closedBy: closeInfo.closedBy,
-				closedAt: closeInfo.closedAt,
-				'metrics.chatDuration': closeInfo.chatDuration,
+				closer,
+				closedBy,
+				closedAt,
+				'metrics.chatDuration': chatDuration,
 				'v.status': 'offline',
+				...extraData,
 			},
 			$unset: {
 				open: 1,
