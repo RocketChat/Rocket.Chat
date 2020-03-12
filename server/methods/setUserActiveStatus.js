@@ -1,4 +1,8 @@
-import * as Mailer from 'meteor/rocketchat:mailer';
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
+import { hasPermission } from '../../app/authorization';
+import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
 
 Meteor.methods({
 	setUserActiveStatus(userId, active) {
@@ -11,44 +15,14 @@ Meteor.methods({
 			});
 		}
 
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-active-status') !== true) {
+		if (hasPermission(Meteor.userId(), 'edit-other-user-active-status') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'setUserActiveStatus',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
-
-		if (!user) {
-			return false;
-		}
-
-		RocketChat.models.Users.setUserActive(userId, active);
-
-		if (user.username) {
-			RocketChat.models.Subscriptions.setArchivedByUsername(user.username, !active);
-		}
-
-		if (active === false) {
-			RocketChat.models.Users.unsetLoginTokens(userId);
-		} else {
-			RocketChat.models.Users.unsetReason(userId);
-		}
-
-		const destinations = Array.isArray(user.emails) && user.emails.map((email) => `${ user.name || user.username }<${ email.address }>`);
-
-
-		const email = {
-			to: destinations,
-			from: RocketChat.settings.get('From_Email'),
-			subject: Accounts.emailTemplates.userActivated.subject({ active }),
-			html: Accounts.emailTemplates.userActivated.html({ active, name: user.name, username: user.username }),
-		};
-
-		Mailer.sendNoWrap(email);
-
+		setUserActiveStatus(userId, active);
 
 		return true;
-
 	},
 });

@@ -1,21 +1,16 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
+import { expect } from 'chai';
 
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
 	directMessage,
-	log,
 	apiUsername,
 	apiEmail,
 } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
-import { adminUsername } from '../../data/user';
+import { password, adminUsername } from '../../data/user.js';
+
 
 describe('[Direct Messages]', function() {
 	this.retries(0);
@@ -40,19 +35,37 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
-	it('/im.setTopic', (done) => {
-		request.post(api('im.setTopic'))
-			.set(credentials)
-			.send({
-				roomId: directMessage._id,
-				topic: 'a direct message with rocket.cat',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
+	describe('/im.setTopic', () => {
+		it('should set the topic of the DM with a string', (done) => {
+			request.post(api('im.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: directMessage._id,
+					topic: 'a direct message with rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', 'a direct message with rocket.cat');
+				})
+				.end(done);
+		});
+		it('should set the topic of DM with an empty string(remove the topic)', (done) => {
+			request.post(api('im.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: directMessage._id,
+					topic: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', '');
+				})
+				.end(done);
+		});
 	});
 
 	describe('Testing DM info', () => {
@@ -128,7 +141,7 @@ describe('[Direct Messages]', function() {
 				})
 				.end(done);
 		});
-		it('should return all DM messages where the last message of array should have the "star" object with USERS star ONLY', (done) => {
+		it('should return all DM messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
 			request.get(api('im.messages'))
 				.set(credentials)
 				.query({
@@ -141,8 +154,8 @@ describe('[Direct Messages]', function() {
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === dmMessage._id)[0];
-					expect(lastMessage).to.have.property('starred').and.to.be.an('object');
-					expect(lastMessage.starred._id).to.be.equal(adminUsername);
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
 				})
 				.end(done);
 		});

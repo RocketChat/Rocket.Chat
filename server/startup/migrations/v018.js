@@ -1,4 +1,9 @@
-RocketChat.Migrations.add({
+import { ServiceConfiguration } from 'meteor/service-configuration';
+
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
+
+Migrations.add({
 	version: 18,
 	up() {
 		const changes = {
@@ -27,18 +32,18 @@ RocketChat.Migrations.add({
 
 		for (const from of Object.keys(changes)) {
 			const to = changes[from];
-			const record = RocketChat.models.Settings.findOne({
+			const record = Settings.findOne({
 				_id: from,
 			});
 
 			if (record) {
 				delete record._id;
-				RocketChat.models.Settings.upsert({
+				Settings.upsert({
 					_id: to,
 				}, record);
 			}
 
-			RocketChat.models.Settings.remove({
+			Settings.remove({
 				_id: from,
 			});
 		}

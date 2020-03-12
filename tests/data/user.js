@@ -1,4 +1,4 @@
-export const username = `user.test.${ Date.now() }`;
+export const username = 'user.test';
 export const email = `${ username }@rocket.chat`;
 export const password = 'rocket.chat';
 export const reason = 'rocket.chat.reason';
@@ -10,7 +10,7 @@ export const preferences = {
 		newRoomNotification: 'door',
 		newMessageNotification: 'chime',
 		muteFocusedConversations: true,
-		clockMode: 0,
+		clockMode: 1,
 		useEmojis: true,
 		convertAsciiEmoji: true,
 		saveMobileBandwidth: true,
@@ -24,12 +24,12 @@ export const preferences = {
 		enableAutoAway: true,
 		highlights: [],
 		desktopNotificationDuration: 0,
+		desktopNotificationRequireInteraction: false,
 		messageViewMode: 0,
 		hideUsernames: false,
 		hideRoles: false,
 		hideAvatars: false,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
-		roomCounterSidebar: false,
 	},
 };

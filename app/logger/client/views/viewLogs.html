@@ -1,0 +1,17 @@
+<template name="viewLogs">
+	{{#if hasPermission}}
+		<div class="section view-logs__terminal js-terminal">
+			{{#each logs}}
+				<div class="view-logs__terminal-line">
+					{{{ansispan string}}}
+				</div>
+			{{/each}}
+		</div>
+		<div class="view-logs__new-logs js-new-logs not color-primary-action-color">
+			<i class="icon-down-big"></i>
+			<span>{{_ "New_logs"}}</span>
+		</div>
+	{{else}}
+		{{_ "Not_authorized"}}
+	{{/if}}
+</template>
