@@ -433,6 +433,7 @@ describe('[Users]', function() {
 		after(async () => {
 			await deleteUser(user);
 			user = undefined;
+			await updatePermission('edit-other-user-info', ['admin'])
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request.post(api('users.setAvatar'))
