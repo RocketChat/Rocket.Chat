@@ -134,7 +134,6 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 
 API.v1.addRoute('users.deactivateIdle', { authRequired: true }, {
 	post() {
-		console.log(this.bodyParams);
 		check(this.bodyParams, {
 			daysIdle: Match.Integer,
 			role: Match.Optional(String),
