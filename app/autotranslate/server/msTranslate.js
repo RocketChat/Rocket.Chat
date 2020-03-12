@@ -129,18 +129,16 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @returns {object} translations: Translated messages for each language
 	 */
 	_translateMessage(message, targetLanguages) {
-		let translations = {};
-
 		// There are multi-sentence-messages where multiple sentences come from different languages
 		// This is a problem for translation services since the language detection fails.
 		// Thus, we'll split the message in sentences, get them translated, and join them again after translation
 		const msgs = message.msg.split('\n').map((msg) => ({ Text: msg }));
 		try {
-			translations = this._translate(msgs, targetLanguages);
+			return this._translate(msgs, targetLanguages);
 		} catch (e) {
 			logger.microsoft.error('Error translating message', e);
 		}
-		return translations;
+		return {};
 	}
 
 	/**
@@ -151,15 +149,14 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @returns {object} translated messages for each target language
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		let translations = {};
 		try {
-			translations = this._translate([{
+			return this._translate([{
 				Text: attachment.description || attachment.text,
 			}], targetLanguages);
 		} catch (e) {
 			logger.microsoft.error('Error translating message attachment', e);
 		}
-		return translations;
+		return {};
 	}
 }
 
