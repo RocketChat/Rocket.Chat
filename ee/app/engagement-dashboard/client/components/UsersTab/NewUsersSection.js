@@ -16,69 +16,83 @@ export function NewUsersSection() {
 		['last 30 days', t('Last 30 days')],
 		['last 90 days', t('Last 90 days')],
 	], [t]);
-	const [period, setPeriod] = useState('last 7 days');
 
-	const handlePeriodChange = (period) => setPeriod(period);
+	const [periodId, setPeriodId] = useState('last 7 days');
 
-	const params = useMemo(() => {
-		switch (period) {
+	const period = useMemo(() => {
+		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().subtract(6, 'days').toISOString(),
-					end: moment().toISOString(),
+					start: moment().set({ hour: 0, minute: 0, second: 0 }).subtract(7, 'days'),
+					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().subtract(29, 'days').toISOString(),
-					end: moment().toISOString(),
+					start: moment().set({ hour: 0, minute: 0, second: 0 }).subtract(30, 'days'),
+					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().subtract(89, 'days').toISOString(),
-					end: moment().toISOString(),
+					start: moment().set({ hour: 0, minute: 0, second: 0 }).subtract(90, 'days'),
+					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 		}
-	}, [period]);
+	}, [periodId]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/users/weekly-data', params);
+	const handlePeriodChange = (periodId) => setPeriodId(periodId);
+
+	const params = useMemo(() => ({
+		start: period.start.toISOString(),
+		end: period.end.toISOString(),
+	}), [period]);
+
+	const data = useEndpointData('GET', 'engagement-dashboard/users/new-users', params);
 
 	const [
-		countFromLast7Days,
-		diffFromLast7Days,
+		countFromPeriod,
+		variatonFromPeriod,
 		countFromYesterday,
-		diffFromYesterday,
+		variationFromYesterday,
 		values,
 	] = useMemo(() => {
 		if (!data) {
 			return [];
 		}
 
+		const values = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => ({
+			date: moment(period.start).add(i, 'days').toISOString(),
+			newUsers: 0,
+		}));
+		for (const { day, users } of data.days) {
+			const i = moment(day).diff(period.start, 'days');
+			values[i].newUsers += users;
+		}
+
 		return [
-			data.week.users,
-			data.week.diffFromLastWeek,
-			data.yesterday.users,
-			data.yesterday.diffFromToday,
-			data.days.map(({ day, users }) => ({ date: day, newUsers: users + 100 * Math.random() }))
-				.sort(({ date: a }, { date: b }) => moment(a).diff(b).valueOf()),
+			data.period.count,
+			data.period.variation,
+			data.yesterday.count,
+			data.yesterday.variation,
+			values,
 		];
-	}, [data]);
+	}, [data, period]);
 
 	return <Section
 		title={t('New users')}
-		filter={<Select options={periodOptions} value={period} onChange={handlePeriodChange} />}
+		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
 	>
 		<CounterSet
 			counters={[
 				{
-					count: data ? countFromLast7Days : <Skeleton variant='rect' width='3ex' height='1em' />,
-					variation: data ? diffFromLast7Days : 0,
-					description: t('Last 7 days'),
+					count: data ? countFromPeriod : <Skeleton variant='rect' width='3ex' height='1em' />,
+					variation: data ? variatonFromPeriod : 0,
+					description: periodOptions.find(([id]) => id === periodId)[1],
 				},
 				{
 					count: data ? countFromYesterday : <Skeleton variant='rect' width='3ex' height='1em' />,
-					variation: data ? diffFromYesterday : 0,
+					variation: data ? variationFromYesterday : 0,
 					description: t('Yesterday'),
 				},
 			]}
