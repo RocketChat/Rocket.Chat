@@ -449,12 +449,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByUsernameAndServiceNameIgnoringCase(username, serviceName, options) {
+	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
 		}
 
-		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+		const query = { username, [`services.${ serviceName }.id`]: userId };
 
 		return this.findOne(query, options);
 	}
