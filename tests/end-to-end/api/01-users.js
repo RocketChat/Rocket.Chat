@@ -1737,7 +1737,7 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.logoutOtherClients]', () => {
+	describe('[/users.removeOtherTokens]', () => {
 		let user;
 		let userCredentials;
 		let newCredentials;
@@ -1775,7 +1775,7 @@ describe('[Users]', function() {
 				}
 			}
 
-			request.post(api('users.logoutOtherClients'))
+			request.post(api('users.removeOtherTokens'))
 				.set(newCredentials)
 				.expect(200)
 				.then(tryAuthentication);
