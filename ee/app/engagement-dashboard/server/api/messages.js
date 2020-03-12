@@ -4,7 +4,7 @@ import { API } from '../../../../../app/api';
 import { findWeeklyMessagesSentData, findMessagesSentOrigin, findTopFivePopularChannelsByMessageSentQuantity } from '../lib/messages';
 import { transformDatesForAPI } from './helpers/date';
 
-API.v1.addRoute('engagement-dashboard/messages/weekly-data', { authRequired: true }, {
+API.v1.addRoute('engagement-dashboard/messages/messages-sent', { authRequired: true }, {
 	get() {
 		const { start, end } = this.requestParams();
 

@@ -11,7 +11,7 @@ import {
 } from '../lib/users';
 import { transformDatesForAPI } from './helpers/date';
 
-API.v1.addRoute('engagement-dashboard/users/weekly-data', { authRequired: true }, {
+API.v1.addRoute('engagement-dashboard/users/new-users', { authRequired: true }, {
 	get() {
 		const { start, end } = this.requestParams();
 

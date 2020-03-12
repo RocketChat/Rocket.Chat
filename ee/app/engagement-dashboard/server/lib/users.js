@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import Analytics from '../../../../../app/models/server/raw/Analytics';
 import Sessions from '../../../../../app/models/server/raw/Sessions';
-import { convertDateToInt, diffBetweenDaysInclusive, fillDateArrayWithEmptyDaysIfNeeded, getTotalOfWeekItems, convertIntToDate } from './date';
+import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user) => {
 	Promise.await(Analytics.saveUserData({
@@ -18,30 +18,29 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
 	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
 	const today = convertDateToInt(end);
 	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
-	const users = await Analytics.getTotalOfRegisteredUsersByDate({
+	const currentPeriodUsers = await Analytics.getTotalOfRegisteredUsersByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	});
-	const lastWeekUsers = await Analytics.getTotalOfRegisteredUsersByDate({
+	const lastPeriodUsers = await Analytics.getTotalOfRegisteredUsersByDate({
 		start: convertDateToInt(startOfLastWeek),
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	});
-	const currentWeekUsersData = fillDateArrayWithEmptyDaysIfNeeded(users, daysBetweenDates, end, 'users');
-	const yesterdayUsers = (currentWeekUsersData.find((item) => item._id === yesterday) || {}).users || 0;
-	const todayUsers = (currentWeekUsersData.find((item) => item._id === today) || {}).users || 0;
-	const currentWeekTotalOfUsers = getTotalOfWeekItems(users, 'users');
-	const lastWeekTotalOfUsers = getTotalOfWeekItems(lastWeekUsers, 'users');
+	const yesterdayUsers = (currentPeriodUsers.find((item) => item._id === yesterday) || {}).users || 0;
+	const todayUsers = (currentPeriodUsers.find((item) => item._id === today) || {}).users || 0;
+	const currentPeriodTotalUsers = getTotalOfWeekItems(currentPeriodUsers, 'users');
+	const lastPeriodTotalUsers = getTotalOfWeekItems(lastPeriodUsers, 'users');
 	return {
-		days: currentWeekUsersData.map((day) => ({ day: convertIntToDate(day._id), users: day.users })),
-		week: {
-			users: currentWeekTotalOfUsers,
-			diffFromLastWeek: currentWeekTotalOfUsers - lastWeekTotalOfUsers,
+		days: currentPeriodUsers.map((day) => ({ day: convertIntToDate(day._id), users: day.users })),
+		period: {
+			count: currentPeriodTotalUsers,
+			variation: currentPeriodTotalUsers - lastPeriodTotalUsers,
 		},
 		yesterday: {
-			users: yesterdayUsers,
-			diffFromToday: todayUsers - yesterdayUsers,
+			count: yesterdayUsers,
+			variation: todayUsers - yesterdayUsers,
 		},
 	};
 };
