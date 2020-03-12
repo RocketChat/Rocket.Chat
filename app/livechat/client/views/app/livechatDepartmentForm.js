@@ -260,7 +260,8 @@ Template.livechatDepartmentForm.onCreated(async function() {
 				.map(({ name }) => name);
 			this.availableDepartmentTags.set(availableTags);
 		});
-	}
+	};
+
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
 		if (id) {

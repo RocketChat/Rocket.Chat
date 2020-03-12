@@ -6,13 +6,13 @@ import { LivechatDepartment } from '../../../models';
 const concatUnique = (...arrays) => [...new Set([].concat(...arrays.filter(Array.isArray)))];
 
 callbacks.add('livechat.beforeCloseRoom', ({ room, options }) => {
-	const { departmentId ,tags: roomTags } = room;
+	const { departmentId, tags: roomTags } = room;
 	if (!departmentId) {
 		return;
 	}
 
 	const department = LivechatDepartment.findOneById(departmentId);
-	if (!department){
+	if (!department) {
 		return;
 	}
 
