@@ -11,6 +11,10 @@ export class RoomTypesCommon {
 		this.mainOrder = 1;
 	}
 
+	getTypesToShowOnDashboard() {
+		return Object.keys(this.roomTypes).filter((key) => this.roomTypes[key].includeInDashboard && this.roomTypes[key].includeInDashboard());
+	}
+
 	/**
 	 * Adds a room type to the application.
 	 *

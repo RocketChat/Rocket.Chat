@@ -63,6 +63,9 @@ const openProfileTab = (e, instance, username) => {
 		instance.userDetail.set(username);
 	}
 
+	if (roomTypes.roomTypes[roomData.t].openCustomProfileTab(instance, roomData, username)) {
+		return;
+	}
 	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.open();
@@ -1364,6 +1367,8 @@ Template.room.onRendered(function() {
 		if (!room) {
 			FlowRouter.go('home');
 		}
+
+		callbacks.run('onRenderRoom', template, room);
 	});
 });
 
@@ -1375,6 +1380,5 @@ callbacks.add('enter-room', (sub) => {
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
 	}
-	readMessage.read(sub.rid);
-	readMessage.refreshUnreadMark(sub.rid);
+	setTimeout(() => readMessage.read(sub.rid), 1000);
 });
