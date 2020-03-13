@@ -2,40 +2,40 @@
 	/*
 	 * Color palette
 	 */
-	--color-dark-100: #0c0d0f;
-	--color-dark-90: #1e232a;
-	--color-dark-80: #2e343e;
-	--color-dark-70: #53585f;
-	--color-dark-30: #9da2a9;
-	--color-dark-20: #caced1;
-	--color-dark-10: #e0e5e8;
-	--color-dark-05: #f1f2f4;
+	--color-dark-100: #0c0d0f; 	/* TODO: make sure if is being used in some place */
+	--color-dark-90: #1e232a; 	/* TODO: make sure if is being used in some place */
+	--color-dark-80: #2e343e; 	/* TODO: make sure if is being used in some place */
+	--color-dark-70: #53585f; 	/* TODO: make sure if is being used in some place */
+	--color-dark-30: #9da2a9; 	/* TODO: make sure if is being used in some place */
+	--color-dark-20: #caced1; 	/* TODO: make sure if is being used in some place */
+	--color-dark-10: #e0e5e8; 	/* TODO: make sure if is being used in some place */
+	--color-dark-05: #f1f2f4; 	/* TODO: make sure if is being used in some place */
 	--color-dark-blue: #175cc4;
 	--color-blue: #1d74f5;
-	--color-light-blue: #4eb2f5;
+	--color-light-blue: #4eb2f5; /* TODO: make sure if is being used in some place */
 	--color-lighter-blue: #e8f2ff;
-	--color-purple: #861da8;
+	--color-purple: #861da8; /* TODO: make sure if is being used in some place */
 	--color-red: #f5455c;
-	--color-dark-red: #e0364d;
-	--color-orange: #f59547;
+	--color-dark-red: #e0364d; /* TODO: make sure if is being used in some place */
+	--color-orange: #f59547; /* TODO: make sure if is being used in some place */
 	--color-yellow: #ffd21f;
 	--color-dark-yellow: #f6c502;
 	--color-green: #2de0a5;
-	--color-dark-green: #26d198;
-
-	/*
-	* General Colors
-	*/
+	--color-dark-green: #26d198; /* TODO: make sure if is being used in some place */
 	--color-darkest: #1f2329;
 	--color-dark: #2f343d;
 	--color-dark-medium: #414852;
-	--color-dark-light: #6c727a;
+	--color-dark-light: #6c727a; /* TODO: make sure if is being used in some place */
 	--color-gray: #9ea2a8;
 	--color-gray-medium: #cbced1;
 	--color-gray-light: #e1e5e8;
 	--color-gray-lightest: #f2f3f5;
-	--color-black: #000000;
+	--color-black: #000000; /* TODO: make sure if is being used in some place */
 	--color-white: #ffffff;
+
+	/*
+	* General Colors
+	*/
 	--rc-color-error: var(--color-red);
 	--rc-color-error-light: #e1364c;
 	--rc-color-alert: var(--color-yellow);
@@ -203,10 +203,10 @@
 	--sidebar-account-username-size: 1rem;
 	--sidebar-account-username-weight: 700;
 	--sidebar-small-account-username-weight: 400;
-	--sidebar-account-username-color: var(--color-white);
-	--sidebar-account-username-color-darker: var(--color-dark);
+	--sidebar-account-username-color: var(--color-white); /* TODO: make sure if is being used in some place */
+	--sidebar-account-username-color-darker: var(--color-dark); /* TODO: make sure if is being used in some place */
 	--sidebar-account-status-font-size: 0.875rem;
-	--sidebar-account-status-color: var(--color-gray);
+	--sidebar-account-status-color: var(--color-gray); /* TODO: make sure if is being used in some place */
 
 	/*
 	* Sidebar Item
@@ -241,7 +241,7 @@
 	* Modal - Create Channel
 	*/
 	--create-channel-gap-between-elements: 1rem;
-	--create-channel-title-color: var(--color-darkest);
+	--create-channel-title-color: var(--color-darkest); /* TODO: make sure if is being used in some place */
 	--create-channel-title-text-size: 1.375rem;
 	--create-channel-description-color: var(--color-gray);
 	--create-channel-description-text-size: 0.875rem;
