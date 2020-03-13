@@ -26,11 +26,11 @@ const canBlockUser = () =>
 	ChatSubscription.findOne({ rid: Session.get('openedRoom'), 'u._id': Meteor.userId() }, { fields: { blocker: 1 } })
 		.blocker;
 
-const canDirectMessageTo = (username) => {
+const canDirectMessageTo = (username, directActions) => {
 	const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') });
 	const canOpenDm = hasAllPermission('create-d') || Subscriptions.findOne({ name: username });
 	const dmIsNotAlreadyOpen = subscription && subscription.name !== username;
-	return canOpenDm && dmIsNotAlreadyOpen;
+	return canOpenDm && (!directActions || dmIsNotAlreadyOpen);
 };
 
 export const getActions = ({ user, directActions, hideAdminControls }) => {
@@ -107,7 +107,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				Meteor.call('createDirectMessage', username, success((result) => result.rid && FlowRouter.go('direct', { username }, FlowRouter.current().queryParams))),
 			),
 			condition() {
-				return canDirectMessageTo(this.username);
+				return canDirectMessageTo(this.username, directActions);
 			},
 		},
 
@@ -188,7 +188,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				},
 			};
 		}, function() {
-			if (!isInDirectMessageRoom() || isSelf(this.username)) {
+			if (!directActions || !isInDirectMessageRoom() || isSelf(this.username)) {
 				return;
 			}
 			if (canBlockUser()) {

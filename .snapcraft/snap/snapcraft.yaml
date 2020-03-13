@@ -16,7 +16,7 @@ apps:
     rocketchat-server:
         command: startRocketChat
         daemon: simple
-        plugs: [network, network-bind]
+        plugs: [network, network-bind, removable-media]
     rocketchat-mongo:
         command: startmongo
         daemon: simple

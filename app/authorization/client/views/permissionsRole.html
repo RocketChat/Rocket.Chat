@@ -34,7 +34,9 @@
 						<label for="mandatory2fa">{{_ "Users must use Two Factor Authentication"}} :</label>
 						<input id="mandatory2fa" type="checkbox" name="mandatory2fa" checked="{{mandatory2fa}}">
 					</div>
-
+					<div class="alert alert-warning">
+						<p for="mandatory2fa">{{_ "Leave the description field blank if you dont want to show the role"}}.</p>
+					</div>
 					<div class="rc-button__group">
 						{{#if editable}}
 							<button name="delete" class="rc-button rc-button--danger delete-role">{{_ "Delete"}}</button>

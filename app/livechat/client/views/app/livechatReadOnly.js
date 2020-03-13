@@ -50,9 +50,7 @@ Template.livechatReadOnly.onCreated(function() {
 	this.preparing = new ReactiveVar(true);
 
 	this.updateInquiry = (inquiry) => {
-		if (inquiry && inquiry.rid === this.rid) {
-			this.inquiry.set(inquiry);
-		}
+		this.inquiry.set(inquiry);
 	};
 
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {

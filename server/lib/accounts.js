@@ -247,6 +247,12 @@ Accounts.validateLoginAttempt(function(login) {
 		return true;
 	}
 
+	if (login.user.type === 'app') {
+		throw new Meteor.Error('error-app-user-is-not-allowed-to-login', 'App user is not allowed to login', {
+			function: 'Accounts.validateLoginAttempt',
+		});
+	}
+
 	if (!!login.user.active !== true) {
 		throw new Meteor.Error('error-user-is-not-activated', 'User is not activated', {
 			function: 'Accounts.validateLoginAttempt',
