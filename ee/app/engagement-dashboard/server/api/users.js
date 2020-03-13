@@ -3,7 +3,6 @@ import { check } from 'meteor/check';
 import { API } from '../../../../../app/api';
 import {
 	findWeeklyUsersRegisteredData,
-	findActiveUsersOverviewData,
 	findActiveUsersMonthlyData,
 	findBusiestsChatsInADayByHours,
 	findBusiestsChatsWithinAWeek,
@@ -23,24 +22,14 @@ API.v1.addRoute('engagement-dashboard/users/new-users', { authRequired: true }, 
 	},
 });
 
-API.v1.addRoute('engagement-dashboard/users/active-users/overview', { authRequired: true }, {
+API.v1.addRoute('engagement-dashboard/users/active-users', { authRequired: true }, {
 	get() {
-		const { start } = this.requestParams();
+		const { start, end } = this.requestParams();
 
 		check(start, String);
+		check(end, String);
 
-		const data = Promise.await(findActiveUsersOverviewData(transformDatesForAPI(start)));
-		return API.v1.success(data);
-	},
-});
-
-API.v1.addRoute('engagement-dashboard/users/active-users/monthly-data', { authRequired: true }, {
-	get() {
-		const { start } = this.requestParams();
-
-		check(start, String);
-
-		const data = Promise.await(findActiveUsersMonthlyData(transformDatesForAPI(start)));
+		const data = Promise.await(findActiveUsersMonthlyData(transformDatesForAPI(start, end)));
 		return API.v1.success(data);
 	},
 });
@@ -67,11 +56,12 @@ API.v1.addRoute('engagement-dashboard/users/chat-busier/weekly-data', { authRequ
 
 API.v1.addRoute('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', { authRequired: true }, {
 	get() {
-		const { start } = this.requestParams();
+		const { start, end } = this.requestParams();
 
 		check(start, String);
+		check(end, String);
 
-		const data = Promise.await(findUserSessionsByHourWithinAWeek(transformDatesForAPI(start)));
+		const data = Promise.await(findUserSessionsByHourWithinAWeek(transformDatesForAPI(start, end)));
 		return API.v1.success(data);
 	},
 });

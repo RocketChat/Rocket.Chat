@@ -45,105 +45,21 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
 	};
 };
 
-export const findActiveUsersOverviewData = async ({ start }) => {
-	const today = moment(start);
-	const yesterday = today.clone().subtract(1, 'days');
-	const startOfCurrentWeek = moment(yesterday).clone().subtract(7, 'days');
-	const endOfLastWeek = moment(startOfCurrentWeek).clone().subtract(1, 'days');
-	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(7, 'days');
-	const startOfCurrentMonth = moment(yesterday).clone().subtract(30, 'days');
-
-	const currentUsers = (await Sessions.getActiveUsersBetweenDates({
-		start: {
-			year: today.year(),
-			month: today.month() + 1,
-			day: today.date(),
-		},
-		end: {
-			year: today.year(),
-			month: today.month() + 1,
-			day: today.date(),
-		},
-	})).length;
-	const yesterdayUsers = (await Sessions.getActiveUsersBetweenDates({
-		start: {
-			year: yesterday.year(),
-			month: yesterday.month() + 1,
-			day: yesterday.date(),
-		},
-		end: {
-			year: yesterday.year(),
-			month: yesterday.month() + 1,
-			day: yesterday.date(),
-		},
-	})).length;
-	const currentWeekUsers = (await Sessions.getActiveUsersBetweenDates({
-		start: {
-			year: startOfCurrentWeek.year(),
-			month: startOfCurrentWeek.month() + 1,
-			day: startOfCurrentWeek.date(),
-		},
-		end: {
-			year: yesterday.year(),
-			month: yesterday.month() + 1,
-			day: yesterday.date(),
-		},
-	})).length;
-	const lastWeekUsers = (await Sessions.getActiveUsersBetweenDates({
-		start: {
-			year: startOfLastWeek.year(),
-			month: startOfLastWeek.month() + 1,
-			day: startOfLastWeek.date(),
-		},
-		end: {
-			year: endOfLastWeek.year(),
-			month: endOfLastWeek.month() + 1,
-			day: endOfLastWeek.date(),
-		},
-	})).length;
-	const currentMonthUsers = (await Sessions.getActiveUsersBetweenDates({
-		start: {
-			year: startOfCurrentMonth.year(),
-			month: startOfCurrentMonth.month() + 1,
-			day: startOfCurrentMonth.date(),
-		},
-		end: {
-			year: yesterday.year(),
-			month: yesterday.month() + 1,
-			day: yesterday.date(),
-		},
-	})).length;
-
-	return {
-		daily: {
-			current: currentUsers,
-			diffFromYesterday: currentUsers - yesterdayUsers,
-		},
-		week: {
-			current: currentWeekUsers,
-			diffFromLastWeek: currentWeekUsers - lastWeekUsers,
-		},
-		month: {
-			current: currentMonthUsers,
-		},
-	};
-};
-
-export const findActiveUsersMonthlyData = async ({ start }) => {
-	const today = moment(start);
-	const startOfCurrentMonth = moment(today).clone().subtract(30, 'days');
+export const findActiveUsersMonthlyData = async ({ start, end }) => {
+	const startOfPeriod = moment(start);
+	const endOfPeriod = moment(end);
 
 	return {
 		month: await Sessions.getActiveUsersOfPeriodByDayBetweenDates({
 			start: {
-				year: startOfCurrentMonth.year(),
-				month: startOfCurrentMonth.month() + 1,
-				day: startOfCurrentMonth.date(),
+				year: startOfPeriod.year(),
+				month: startOfPeriod.month() + 1,
+				day: startOfPeriod.date(),
 			},
 			end: {
-				year: today.year(),
-				month: today.month() + 1,
-				day: today.date(),
+				year: endOfPeriod.year(),
+				month: endOfPeriod.month() + 1,
+				day: endOfPeriod.date(),
 			},
 		}),
 	};
@@ -180,14 +96,14 @@ export const findBusiestsChatsWithinAWeek = async ({ start }) => {
 	};
 };
 
-export const findUserSessionsByHourWithinAWeek = async ({ start }) => {
-	const today = moment(start);
-	const startOfCurrentWeek = moment(today).clone().subtract(7, 'days');
+export const findUserSessionsByHourWithinAWeek = async ({ start, end }) => {
+	const startOfPeriod = moment(start);
+	const endOfPeriod = moment(end);
 
 	return {
 		week: await Sessions.getTotalOfSessionByHourAndDayBetweenDates({
-			start: startOfCurrentWeek.toDate(),
-			end: today.toDate(),
+			start: startOfPeriod.toDate(),
+			end: endOfPeriod.toDate(),
 		}),
 	};
 };
