@@ -75,9 +75,9 @@
 
 		padding: 0 0.5rem;
 
-		align-items: center;
-
 		cursor: pointer;
+		
+		align-items: center;
 
 		&-action {
 			position: relative;
