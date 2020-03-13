@@ -18,10 +18,10 @@ addSidebarItem('Real_Time_Monitoring', 'livechat-real-time-monitoring', 'view-li
 addSidebarItem('Managers', 'livechat-managers', 'manage-livechat-managers');
 addSidebarItem('Agents', 'livechat-agents', 'manage-livechat-agents');
 addSidebarItem('Departments', 'livechat-departments', 'view-livechat-departments');
-addSidebarItem('Triggers', 'livechat-triggers', 'view-livechat-triggers');
 addSidebarItem('Custom_Fields', 'livechat-customfields', 'view-livechat-customfields');
-addSidebarItem('Installation', 'livechat-installation', 'view-livechat-installation');
-addSidebarItem('Appearance', 'livechat-appearance', 'view-livechat-appearance');
+addSidebarItem('Livechat_Triggers', 'livechat-triggers', 'view-livechat-triggers');
+addSidebarItem('Livechat_Installation', 'livechat-installation', 'view-livechat-installation');
+addSidebarItem('Livechat_Appearance', 'livechat-appearance', 'view-livechat-appearance');
 addSidebarItem('Webhooks', 'livechat-webhooks', 'view-livechat-webhooks');
 addSidebarItem('Facebook Messenger', 'livechat-facebook', 'view-livechat-facebook');
 addSidebarItem('Office_Hours', 'livechat-officeHours', 'view-livechat-officeHours');

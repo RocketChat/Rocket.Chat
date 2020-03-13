@@ -118,7 +118,7 @@
 					<div class="attachment-audio">
 						<audio controls>
 							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
-							Your browser does not support the audio element.
+							{{_ "Browser_does_not_support_audio_element"}}
 						</audio>
 					</div>
 				{{/unless}}
@@ -129,7 +129,7 @@
 					<div class="attachment-video">
 						<video controls class="inline-video">
 							<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
-							Your browser does not support the video element.
+							{{_ "Browser_does_not_support_video_element"}}
 						</video>
 					</div>
 				{{/unless}}
