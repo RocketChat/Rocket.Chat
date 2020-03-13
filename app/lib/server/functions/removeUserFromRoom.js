@@ -26,8 +26,6 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 			Messages.createCommandWithRoomIdAndUser('survey', rid, user);
 		}
 
-		Subscriptions.removeByRoomIdAndUserId(rid, user._id);
-
 		Meteor.defer(function() {
 			// TODO: CACHE: maybe a queue?
 			callbacks.run('afterLeaveRoom', user, room);
