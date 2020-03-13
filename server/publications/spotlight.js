@@ -19,7 +19,7 @@ function fetchRooms(userId, rooms) {
 }
 
 Meteor.methods({
-	spotlight(text, usernames, type = { users: true, rooms: true }, rid) {
+	spotlight(text, usernames = [], type = { users: true, rooms: true }, rid) {
 		const searchForChannels = text[0] === '#';
 		const searchForDMs = text[0] === '@';
 		if (searchForChannels) {
