@@ -91,8 +91,8 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	findOnlineAgents() {
-		const query = queryStatusAgentOnline();
+	findOnlineAgents(agentId) {
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
 
 		return this.find(query);
 	}
@@ -429,6 +429,12 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findOneByAppId(appId, options) {
+		const query = { appId };
+
+		return this.findOne(query, options);
+	}
+
 	findOneByImportId(_id, options) {
 		return this.findOne({ importIds: _id }, options);
 	}
@@ -443,12 +449,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByUsernameAndServiceNameIgnoringCase(username, serviceName, options) {
+	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
 		}
 
-		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+		const query = { username, [`services.${ serviceName }.id`]: userId };
 
 		return this.findOne(query, options);
 	}
@@ -487,14 +493,18 @@ export class Users extends Base {
 	}
 
 	// FIND
-	findById(userId) {
-		const query = { _id: userId };
-
-		return this.find(query);
-	}
-
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };
+		return this.find(query, options);
+	}
+
+	findNotOfflineByIds(users, options) {
+		const query = {
+			_id: { $in: users },
+			status: {
+				$in: ['online', 'away', 'busy'],
+			},
+		};
 		return this.find(query, options);
 	}
 
@@ -544,7 +554,6 @@ export class Users extends Base {
 		return this.find({
 			active: true,
 			type: { $nin: ['app'] },
-			emails: { $exists: true },
 		}, options);
 	}
 
@@ -827,6 +836,16 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				lastLogin: new Date(),
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	updateStatusById(_id, status) {
+		const update = {
+			$set: {
+				status,
 			},
 		};
 
