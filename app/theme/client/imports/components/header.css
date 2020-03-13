@@ -77,6 +77,8 @@
 
 		align-items: center;
 
+		cursor: pointer;
+
 		&-action {
 			position: relative;
 
@@ -126,7 +128,6 @@
 
 		padding-bottom: 1px;
 
-		cursor: pointer;
 		text-overflow: ellipsis;
 	}
 

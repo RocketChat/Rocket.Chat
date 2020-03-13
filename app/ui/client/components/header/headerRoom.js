@@ -177,44 +177,29 @@ Template.headerRoom.events({
 			});
 		}
 	},
-	'click .rc-header__name'(event, instance) {
+	'click .rc-header__content.rc-header__block'(event, instance) {
 		const { tabBar } = instance.parentTemplate();
 		const $flexTab = $('.flex-tab-container .flex-tab');
 
-		if (tabBar.getState() === 'opened' && tabBar.getTemplate() === 'channelSettings') {
+		if (tabBar.getState() === 'opened' && (tabBar.getTemplate() === 'channelSettings' || tabBar.getTemplate() === 'membersList')) {
 			$flexTab.attr('template', '');
 			return tabBar.close();
 		}
 
-		if (instance.currentChannel.t === 'c') {
+		if (instance.currentChannel.t !== 'd') {
 			$flexTab.attr('template', 'channelSettings');
 			tabBar.setData({
 				label: 'Room_Info',
 				icon: 'info-circled',
 			});
-			tabBar.open({
-				groups: ['channel', 'group'],
-				id: 'channel-settings',
-				anonymous: true,
-				i18nTitle: 'Room_Info',
-				icon: 'info-circled',
-				template: 'channelSettings',
-				order: 1,
-			});
+			tabBar.open(TabBar.getButton('channel-settings'));
 		} else {
 			$flexTab.attr('template', 'membersList');
 			tabBar.setData({
 				label: 'User_Info',
 				icon: 'info-user',
 			});
-			tabBar.open({
-				groups: ['direct'],
-				id: 'user-info',
-				i18nTitle: 'User_Info',
-				icon: 'user',
-				template: 'membersList',
-				order: 2,
-			});
+			tabBar.open(TabBar.getButton('user-info'));
 		}
 	},
 });
