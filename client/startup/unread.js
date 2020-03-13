@@ -22,6 +22,8 @@ const fetchSubscriptions = () => ChatSubscription.find({
 		unreadAlert: 1,
 		fname: 1,
 		prid: 1,
+		muteGroupMentions: 1,
+		groupMentions: 1,
 	},
 }).fetch();
 
@@ -42,7 +44,8 @@ Meteor.startup(() => {
 						unreadAlert = '•';
 					}
 				}
-				return ret + subscription.unread;
+				const unreadMessages = subscription.muteGroupMentions ? subscription.unread - subscription.groupMentions : subscription.unread;
+				return ret + unreadMessages;
 			}
 			return ret;
 		}, 0);

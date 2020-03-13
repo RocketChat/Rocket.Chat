@@ -35,6 +35,17 @@ Template.sidebarItem.helpers({
 	showUnread() {
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
+	showBadge() {
+		const { unread, userMentions, hideUnreadStatus, groupMentions, muteGroupMentions } = this;
+		return !hideUnreadStatus && ((unread > 0 && userMentions) || (unread > 0 && groupMentions && !muteGroupMentions));
+	},
+	unreadMessages() {
+		const { unread, groupMentions, muteGroupMentions } = this;
+		if (muteGroupMentions) {
+			return unread - groupMentions;
+		}
+		return unread;
+	},
 	badgeClass() {
 		const { t, unread, userMentions, groupMentions } = this;
 
