@@ -91,8 +91,8 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	findOnlineAgents() {
-		const query = queryStatusAgentOnline();
+	findOnlineAgents(agentId) {
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
 
 		return this.find(query);
 	}
