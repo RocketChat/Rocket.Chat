@@ -710,3 +710,9 @@ API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 		})));
 	},
 });
+
+API.v1.addRoute('users.removeOtherTokens', { authRequired: true }, {
+	post() {
+		API.v1.success(Meteor.call('removeOtherTokens'));
+	},
+});
