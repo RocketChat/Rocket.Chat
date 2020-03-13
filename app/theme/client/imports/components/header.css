@@ -413,7 +413,7 @@
 @media (width <= 500px) {
 	.rc-header {
 		&__visual-status {
-			font-size:100%;
+			font-size: 100%;
 		}
 
 		&__block {
