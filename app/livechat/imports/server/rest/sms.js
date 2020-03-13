@@ -39,6 +39,18 @@ const defineVisitor = (smsNumber) => {
 	return LivechatVisitors.findOneById(id);
 };
 
+const normalizeLocationSharing = (payload) => {
+	const { extra: { fromLatitude: latitude, fromLongitude: longitude } } = payload;
+	if (!latitude || !longitude) {
+		return;
+	}
+
+	return {
+		type: 'Point',
+		coordinates: [parseFloat(longitude), parseFloat(latitude)],
+	}
+};
+
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
 		const SMSService = SMS.getService(this.urlParams.service);
@@ -47,6 +59,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const visitor = defineVisitor(sms.from);
 		const { token } = visitor;
 		const room = LivechatRooms.findOneOpenByVisitorToken(token);
+		const location = normalizeLocationSharing(sms);
 
 		const sendMessage = {
 			message: {
@@ -54,6 +67,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				rid: (room && room._id) || Random.id(),
 				token,
 				msg: sms.body,
+				...location && { location },
 			},
 			guest: visitor,
 			roomInfo: {

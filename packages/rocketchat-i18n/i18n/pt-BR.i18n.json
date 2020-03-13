@@ -1930,6 +1930,7 @@
   "Local_Domains": "Domínios Locais",
   "Local_Password": "Senha local",
   "Localization": "Localização",
+  "Location": "Localização",
   "Log_Exceptions_to_Channel_Description": "Um canal que irá receber todas as exceções capturadas. Deixe em branco para ignorar exceções.",
   "Log_Exceptions_to_Channel": "Log de Exceções no Canal",
   "Log_File": "Mostrar Arquivo e Linha",
