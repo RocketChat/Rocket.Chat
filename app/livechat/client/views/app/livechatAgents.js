@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import _ from 'underscore';
 
-import { modal, call } from '../../../../ui-utils';
+import { modal, call, TabBar, RocketChatTabBar } from '../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../utils/client';
 import './livechatAgents.html';
 
@@ -54,7 +55,7 @@ Template.livechatAgents.helpers({
 					? text
 					: text.replace(
 						new RegExp(filter.get()),
-						(part) => `<strong>${ part }</strong>`
+						(part) => `<strong>${ part }</strong>`,
 					)
 			}`;
 		};
@@ -83,6 +84,12 @@ Template.livechatAgents.helpers({
 			}
 		};
 	},
+	flexData() {
+		return {
+			tabBar: Template.instance().tabBar,
+			data: Template.instance().tabBarData.get(),
+		};
+	},
 });
 
 const DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS = 300;
@@ -104,12 +111,18 @@ Template.livechatAgents.events({
 			},
 			() => {
 				Meteor.call('livechat:removeAgent', this.username, async function(
-					error /* , result*/
+					error, /* , result*/
 				) {
 					if (error) {
 						return handleError(error);
 					}
+
+					if (instance.tabBar.getState() === 'opened') {
+						instance.tabBar.close();
+					}
+
 					await loadAgents(instance);
+
 					modal.open({
 						title: t('Removed'),
 						text: t('Agent_removed'),
@@ -118,7 +131,7 @@ Template.livechatAgents.events({
 						showConfirmButton: false,
 					});
 				});
-			}
+			},
 		);
 	},
 
@@ -135,7 +148,7 @@ Template.livechatAgents.events({
 		state.set('loading', true);
 		try {
 			await Promise.all(
-				users.map(({ username }) => call('livechat:addAgent', username))
+				users.map(({ username }) => call('livechat:addAgent', username)),
 			);
 
 			await loadAgents(instance, limit.get(), filter.get());
@@ -144,23 +157,30 @@ Template.livechatAgents.events({
 			state.set('loading', false);
 		}
 	},
+
 	'keydown #agents-filter'(e) {
 		if (e.which === 13) {
 			e.stopPropagation();
 			e.preventDefault();
 		}
 	},
+
 	'keyup #agents-filter': _.debounce((e, t) => {
-		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	}, DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS),
-	/*
-	'click .agent-info'(e, instance) {
+
+	'click .user-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(FullUser.findOne(this._id));
-		instance.tabBar.open('admin-user-info');
+		instance.tabBarData.set({
+			agentId: this._id,
+			onRemoveAgent: () => loadAgents(instance),
+		});
+
+		instance.tabBar.setData({ label: t('Agent_Info'), icon: 'livechat' });
+		instance.tabBar.open('livechat-agent-info');
 	},
+	/*
 	'click .info-tabs button'(e) {
 		e.preventDefault();
 		$('.info-tabs button').removeClass('active');
@@ -181,6 +201,18 @@ Template.livechatAgents.onCreated(function() {
 	this.ready = new ReactiveVar(true);
 	this.selectedAgents = new ReactiveVar([]);
 	this.agents = new ReactiveVar([]);
+	this.tabBar = new RocketChatTabBar();
+	this.tabBar.showGroup(FlowRouter.current().route.name);
+	this.tabBarData = new ReactiveVar();
+
+	TabBar.addButton({
+		groups: ['livechat-agent-users'],
+		id: 'livechat-agent-info',
+		i18nTitle: 'Agent_Info',
+		icon: 'livechat',
+		template: 'agentInfo',
+		order: 1,
+	});
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([...this.selectedAgents.curValue, agent]);

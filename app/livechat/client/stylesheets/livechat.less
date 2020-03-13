@@ -282,7 +282,7 @@
 
 .lc-analytics-overview {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   margin-top: 10px;
   margin-bottom: 10px;
 	justify-content: center;
@@ -290,8 +290,8 @@
 
 .lc-analytics-ov-col {
   min-height: 20px;
-  flex: 33.33333%; //1;
-  max-width: 33.33333%;
+  flex: 25%; //1;
+  max-width: 25%;
 
   &.-full-width {
     max-width: 100%;
@@ -450,6 +450,8 @@
 .lc-monitoring-flex {
 	display: flex;
 	flex-wrap: wrap;
+	margin-bottom: 2px !important;
+	margin-top: 2px !important;
 	// flex-direction: row;
   // margin-top: 10px;
   // margin-bottom: 10px;
@@ -467,12 +469,29 @@
 	flex: 66.66666%;
 	max-width: 66.66666%;
 	padding: 2px 2px;
+
+	& .lc-analytics-ov-col {
+		min-height: 20px;
+		flex: 33.3%; //1;
+		max-width: 33.3%;
+
+		&.-full-width {
+		  max-width: 100%;
+		}
+
+		&:not(:last-child) {
+		  border-right: 1px solid #E9E9E9;
+		}
+	}
+
+	& .lc-analytics-overview {
+		margin: auto;
+	}
 }
 
 .lc-monitoring-line-chart-full {
 	flex: 66.66666%;
-	width: 66.66666%;
-	max-width: 100%;
+	width: 100%;
 	padding: 2px 2px;
 }
 
@@ -532,28 +551,22 @@
 	}
 }
 
-.livechat-current-chats-add-filter-button {
-	margin-top: 17px;
-}
-
-.livechat-current-chats-filters-wrapper {
+.livechat-group-filters-wrapper {
 	display: flex;
 }
 
-.livechat-current-chats-filters {
+.livechat-group-filters-container {
 	flex: 8 0;
 }
 
-.livechat-current-chats-filters-buttons {
+.livechat-group-filters-buttons {
 	flex: 0 0 auto;
 	margin-top: 26px;
 	padding-left: 30px;
-	border-left: 1px solid #cccccc;
 
 	& > .rc-button__group {
 		margin: 0 5px;
 	}
-
 }
 
 .livechat-current-chats-tag-filter-wrapper {
@@ -564,3 +577,8 @@
 		margin-bottom: auto;
 	}
 }
+
+.livechat-current-chats-add-filter-button {
+	margin-top: 17px;
+}
+

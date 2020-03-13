@@ -46,20 +46,6 @@ oauth2server.routes.get('/oauth/userinfo', function(req, res) {
 	});
 });
 
-Meteor.publish('oauthClient', function(clientId) {
-	if (!this.userId) {
-		return this.ready();
-	}
-	return OAuthApps.find({
-		clientId,
-		active: true,
-	}, {
-		fields: {
-			name: 1,
-		},
-	});
-});
-
 API.v1.addAuthMethod(function() {
 	let headerToken = this.request.headers.authorization;
 	const getToken = this.request.query.access_token;

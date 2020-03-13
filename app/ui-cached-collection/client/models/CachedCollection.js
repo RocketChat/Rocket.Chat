@@ -131,7 +131,6 @@ export class CachedCollection extends EventEmitter {
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
-		useCache = true,
 		version = 8,
 		maxCacheTime = 60 * 60 * 24 * 30,
 		onSyncData = (/* action, record */) => {},
@@ -146,7 +145,6 @@ export class CachedCollection extends EventEmitter {
 		this.eventName = eventName || `${ name }-changed`;
 		this.eventType = eventType;
 		this.useSync = useSync;
-		this.useCache = useCache;
 		this.listenChangesForLoggedUsersOnly = listenChangesForLoggedUsersOnly;
 		this.version = version;
 		this.userRelated = userRelated;

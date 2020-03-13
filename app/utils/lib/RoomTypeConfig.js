@@ -214,6 +214,10 @@ export class RoomTypeConfig {
 		return false;
 	}
 
+	isEmitAllowed() {
+		return false;
+	}
+
 	/**
 	 * Returns a text which can be used in generic UIs.
 	 * @param context The role of the text in the UI-Element
@@ -271,5 +275,9 @@ export class RoomTypeConfig {
 
 	getAvatarPath(/* roomData */) {
 		return '';
+	}
+
+	openCustomProfileTab() {
+		return false;
 	}
 }

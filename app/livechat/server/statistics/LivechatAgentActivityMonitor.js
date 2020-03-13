@@ -44,7 +44,6 @@ export class LivechatAgentActivityMonitor {
 				this._updateActiveSessions();
 			},
 		});
-		SyncedCron.start();
 	}
 
 	_updateActiveSessions() {

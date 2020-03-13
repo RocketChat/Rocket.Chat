@@ -1,6 +1,6 @@
 <template name="messageThread">
 	<q role="button" aria-label="{{_ " Open_thread "}}" class="thread-quote">
-			<div class="thread-quote__message js-open-thread">{{> icon icon="thread" block="thread-icons"}} <span class="message-body--unstyled">{{{parentMessage}}}</span></div>
+		<div class="thread-quote__message js-open-thread"><span class="message-body--unstyled">{{{parentMessage}}}</span> {{> icon icon="thread" block="thread-icons"}}</div>
 
 		{{# if following }}
 		<div role="button" class="rc-tooltip js-unfollow-thread" aria-label="{{_ "Following"}}">
