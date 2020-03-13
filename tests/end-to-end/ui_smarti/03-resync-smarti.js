@@ -6,9 +6,9 @@ import { adminEmail, adminUsername, adminPassword } from '../../data/user';
 // eslint-disable-next-line import/no-useless-path-segments
 import { credentials } from '../ui_smarti/00-preparation'; // directly address the folder to support continued testing
 import { checkIfUserIsAdmin } from '../../data/checks';
-import sideNav from '../../pageobjects/side-nav.page';
-import assistify from '../../pageobjects/assistify.page';
-import mainContent from '../../pageobjects/main-content.page';
+import sideNav from '../../cypress/pageobjects/side-nav.page';
+import assistify from '../../cypress/pageobjects/assistify.page';
+import mainContent from '../../cypress/pageobjects/main-content.page';
 
 
 export const clientname = 'syncclient';

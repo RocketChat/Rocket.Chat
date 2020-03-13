@@ -24,6 +24,7 @@ Template.livechatCustomFieldForm.events({
 		const label = instance.$('input[name=label]').val();
 		const scope = instance.$('select[name=scope]').val();
 		const visibility = instance.$('select[name=visibility]').val();
+		const regexp = instance.$('input[name=regexp]').val();
 
 		if (!/^[0-9a-zA-Z-_]+$/.test(field)) {
 			return toastr.error(t('error-invalid-custom-field-name'));
@@ -41,6 +42,7 @@ Template.livechatCustomFieldForm.events({
 			label,
 			scope: scope.trim(),
 			visibility: visibility.trim(),
+			regexp: regexp.trim(),
 		};
 
 		Meteor.call('livechat:saveCustomField', _id, customFieldData, function(error) {

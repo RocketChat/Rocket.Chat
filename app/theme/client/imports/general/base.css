@@ -87,6 +87,8 @@ button {
 
 	display: flex;
 
+	overflow: hidden;
+
 	flex: 1 1 auto;
 
 	height: 100%;

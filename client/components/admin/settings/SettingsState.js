@@ -366,7 +366,7 @@ export const useSettingActions = (persistedSetting) => {
 			_id,
 			value: packageValue,
 			editor,
-			changed: packageValue !== value,
+			changed: JSON.stringify(packageValue) !== JSON.stringify(value),
 		}];
 
 		hydrate(changes);
