@@ -449,12 +449,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByUsernameAndServiceNameIgnoringCase(username, serviceName, options) {
+	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
 		}
 
-		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+		const query = { username, [`services.${ serviceName }.id`]: userId };
 
 		return this.findOne(query, options);
 	}
@@ -971,6 +971,25 @@ export class Users extends Base {
 		};
 
 		return this.update({}, update, { multi: true });
+	}
+
+	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
+		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
+		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
+
+		const query = {
+			$or: [neverActive, idleTooLong],
+			active: true,
+			roles: role,
+		};
+
+		const update = {
+			$set: {
+				active,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 
 	unsetLoginTokens(_id) {

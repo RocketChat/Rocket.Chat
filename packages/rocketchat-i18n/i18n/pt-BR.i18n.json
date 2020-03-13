@@ -325,6 +325,7 @@
   "API_Personal_Access_Tokens_Regenerate_It": "Renovar código",
   "API_Shield_Types": "Tipos de escudo",
   "API_Shield_Types_Description": "Tipos de escudos para habilitar como uma lista separada por vírgulas, escolha entre \"on-line\", \"canal\" ou \"*\" para todos",
+  "API_Shield_user_require_auth": "Exigir autenticaçāo para escudos de usuários",
   "API_Token": "API Token",
   "API_Tokenpass_URL": "URL do Servidor Tokenpass",
   "API_Tokenpass_URL_Description": "Exemplo: https://domain.com (excluindo a barra diagonal)",
