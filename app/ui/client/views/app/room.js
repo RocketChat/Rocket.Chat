@@ -876,6 +876,9 @@ Template.room.events({
 		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+
 		if (!Meteor.userId()) {
 			return;
 		}
@@ -891,8 +894,6 @@ Template.room.events({
 		}
 
 		if (group) {
-			e.stopPropagation();
-			e.preventDefault();
 			openMembersListTab(instance, group);
 			return;
 		}

@@ -43,6 +43,7 @@ import './views/app/invite';
 import './views/app/videoCall/videoButtons';
 import './views/app/videoCall/videoCall';
 import './views/app/photoswipe';
+import './views/app/RoomForeword';
 import './components/icon';
 import './components/status';
 import './components/table.html';

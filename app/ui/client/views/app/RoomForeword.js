@@ -1,0 +1,73 @@
+import React from 'react';
+import { Meteor } from 'meteor/meteor';
+import { Avatar, Margins, Flex, Box } from '@rocket.chat/fuselage';
+import { Template } from 'meteor/templating';
+
+import './RoomForeword.html';
+import { Rooms, Users } from '../../../../models';
+import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+
+
+const RoomForeword = ({ room, user }) => {
+	const t = useTranslation();
+
+	if (room.t !== 'd') {
+		return t('Start_of_conversation');
+	}
+
+	const users = room.usernames.filter((username) => username !== user.username);
+	if (users.length < 1) {
+		return null;
+	}
+
+	return <Avatar.Context.Provider value={{ baseUrl: '/avatar/' }}>
+		<Flex.Container justifyContent='center' direction='column'>
+			<Flex.Item grow={1}>
+				<Box is='div'>
+					<Flex.Item grow={1}>
+						<Margins block='x24'>
+							<Box is='div'>
+								{users.map((username, index) => <Margins inline='x2' key={index}><Avatar size='x40' title={username} url={username}/> </Margins>)}
+							</Box>
+						</Margins>
+					</Flex.Item>
+					<Flex.Item grow={1}>
+						<Box textColor='default' textStyle='headline' >
+							{ t('You have joined a new direct message with') }
+						</Box>
+					</Flex.Item>
+					<Flex.Item grow={1}>
+						<Margins block='x8'>
+							<Box is='div'>
+								{users.map((username, index) => <Margins inline='x8' key={index}><Box is='a' href={ `/direct/${ username }` } data-username={username} componentClassName='mention-link mention-link--user'>{username}</Box></Margins>)}
+							</Box>
+						</Margins>
+					</Flex.Item>
+				</Box>
+			</Flex.Item>
+		</Flex.Container>
+	</Avatar.Context.Provider>;
+};
+
+Template.RoomForeword.onRendered(async function() {
+	const { MeteorProvider } = await import('../../../../../client/providers/MeteorProvider');
+	const ReactDOM = await import('react-dom');
+	this.container = this.firstNode;
+	this.autorun(() => {
+		const data = Template.currentData();
+		const { _id: rid } = data;
+
+		const user = Users.findOne(Meteor.userId(), { username: 1 });
+
+		const room = Rooms.findOne({ _id: rid });
+		ReactDOM.render(React.createElement(MeteorProvider, {
+			children: React.createElement(RoomForeword, { ...data, room, user }),
+		}), this.container);
+	});
+});
+
+
+Template.RoomForeword.onDestroyed(async function() {
+	const ReactDOM = await import('react-dom');
+	this.container && ReactDOM.unmountComponentAtNode(this.container);
+});
