@@ -48,7 +48,7 @@ const normalizeLocationSharing = (payload) => {
 	return {
 		type: 'Point',
 		coordinates: [parseFloat(longitude), parseFloat(latitude)],
-	}
+	};
 };
 
 API.v1.addRoute('livechat/sms-incoming/:service', {

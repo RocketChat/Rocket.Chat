@@ -112,7 +112,7 @@ class Twilio {
 		if (extraData && extraData.location) {
 			const [longitude, latitude] = extraData.location.coordinates;
 			persistentAction = `geo:${ latitude },${ longitude }`;
-			body = TAPi18n.__('Location',  { lng: defaultLanguage });
+			body = TAPi18n.__('Location', { lng: defaultLanguage });
 		}
 
 		client.messages.create({
