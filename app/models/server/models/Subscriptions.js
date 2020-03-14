@@ -895,7 +895,7 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userIds, incUser = 1, incUnread = 1) {
+	incUserMentionsForRoomIdAndUserIds(roomId, userIds, incUser = 1) {
 		const query = {
 			rid: roomId,
 			'u._id': {
@@ -909,7 +909,6 @@ export class Subscriptions extends Base {
 				open: true,
 			},
 			$inc: {
-				unread: incUnread,
 				userMentions: incUser,
 			},
 		};
