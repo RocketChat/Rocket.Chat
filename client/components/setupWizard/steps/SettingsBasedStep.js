@@ -4,7 +4,6 @@ import {
 	Flex,
 	InputBox,
 	Margins,
-	SelectInput,
 	Select,
 	Skeleton,
 	TextInput,

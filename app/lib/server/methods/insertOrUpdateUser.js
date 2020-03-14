@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { saveUser } from '../functions';
+import { methodsWithTwoFactor } from '../../../2fa/server/twoFactorRequired';
 
-Meteor.methods({
+methodsWithTwoFactor({
 	insertOrUpdateUser(userData) {
 		check(userData, Object);
 
