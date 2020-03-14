@@ -23,19 +23,19 @@ export function NewUsersSection() {
 		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0 }).subtract(7, 'days'),
+					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
 					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0 }).subtract(30, 'days'),
+					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
 					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0 }).subtract(90, 'days'),
+					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
 					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 		}

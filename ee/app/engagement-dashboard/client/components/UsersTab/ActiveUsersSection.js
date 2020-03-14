@@ -12,11 +12,17 @@ import { Section } from '../Section';
 export function ActiveUsersSection() {
 	const t = useTranslation();
 
-	const params = useMemo(() => ({
-		start: moment().toISOString(),
+	const period = useMemo(() => ({
+		start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
+		end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 	}), []);
 
-	const overviewData = useEndpointData('GET', 'engagement-dashboard/users/active-users/overview', params);
+	const params = useMemo(() => ({
+		start: period.start.clone().subtract(30, 'days').toISOString(),
+		end: period.end.toISOString(),
+	}), [period]);
+
+	const data = useEndpointData('GET', 'engagement-dashboard/users/active-users', params);
 
 	const [
 		countDailyActiveUsers,
@@ -25,64 +31,88 @@ export function ActiveUsersSection() {
 		diffWeeklyActiveUsers,
 		countMonthlyActiveUsers,
 		diffMonthlyActiveUsers,
-	] = useMemo(() => {
-		if (!overviewData) {
-			return [];
-		}
-
-		return [
-			overviewData.daily.current,
-			overviewData.daily.diffFromYesterday,
-			overviewData.week.current,
-			overviewData.week.diffFromLastWeek,
-			overviewData.month.current,
-			0,
-		];
-	}, [overviewData]);
-
-	const streamData = useEndpointData('GET', 'engagement-dashboard/users/active-users/monthly-data', params);
-
-	const [
 		dauValues,
 		wauValues,
 		mauValues,
 	] = useMemo(() => {
-		if (!streamData) {
+		if (!data) {
 			return [];
 		}
 
+		const createPoint = (i) => ({
+			x: moment(period.start).add(i, 'days').toDate(),
+			y: 0,
+		});
+
+		const createPoints = () => Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => createPoint(i));
+
+		const distributeValueOverPoints = (value, i, T, array, prev) => {
+			for (let j = 0; j < T; ++j) {
+				const k = i + j;
+
+				if (k >= array.length) {
+					continue;
+				}
+
+				if (k >= 0) {
+					array[k].y += value;
+				}
+
+				if (k === -1) {
+					prev.y += value;
+				}
+			}
+		};
+
+		const dauValues = createPoints();
+		const prevDauValue = createPoint(-1);
+		const wauValues = createPoints();
+		const prevWauValue = createPoint(-1);
+		const mauValues = createPoints();
+		const prevMauValue = createPoint(-1);
+
+		for (const { users, day, month, year } of data.month) {
+			const i = moment.utc([year, month - 1, day, 0, 0, 0, 0]).diff(period.start, 'days');
+			distributeValueOverPoints(users, i, 1, dauValues, prevDauValue);
+			distributeValueOverPoints(users, i, 7, wauValues, prevWauValue);
+			distributeValueOverPoints(users, i, 30, mauValues, prevMauValue);
+		}
+
 		return [
-			streamData.month.map(({ year, month, day, users }) => ({
-				x: moment.utc([year, month, day]).toDate(),
-				y: users,
-			})),
-			[],
-			[],
+			dauValues[dauValues.length - 1].y,
+			dauValues[dauValues.length - 1].y - prevDauValue.y,
+			wauValues[wauValues.length - 1].y,
+			wauValues[wauValues.length - 1].y - prevWauValue.y,
+			mauValues[mauValues.length - 1].y,
+			mauValues[mauValues.length - 1].y - prevMauValue.y,
+			dauValues,
+			wauValues,
+			mauValues,
 		];
-	}, [streamData]);
+	}, [period, data]);
 
 	return <Section title={t('Active users')} filter={null}>
 		<CounterSet
 			counters={[
 				{
-					count: overviewData ? countDailyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
-					variation: overviewData ? diffDailyActiveUsers : 0,
+					count: data ? countDailyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
+					variation: data ? diffDailyActiveUsers : 0,
 					description: <><LegendSymbol color='#D1EBFE' /> {t('Daily Active Users')}</>,
 				},
 				{
-					count: overviewData ? countWeeklyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
-					variation: overviewData ? diffWeeklyActiveUsers : 0,
+					count: data ? countWeeklyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
+					variation: data ? diffWeeklyActiveUsers : 0,
 					description: <><LegendSymbol color='#76B7FC' /> {t('Weekly Active Users')}</>,
 				},
 				{
-					count: overviewData ? countMonthlyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
-					variation: overviewData ? diffMonthlyActiveUsers : 0,
+					count: data ? countMonthlyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
+					variation: data ? diffMonthlyActiveUsers : 0,
 					description: <><LegendSymbol color='#1D74F5' /> {t('Monthly Active Users')}</>,
 				},
 			]}
 		/>
 		<Flex.Container>
-			{streamData
+			{data
 				? <Box style={{ height: 240 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>

@@ -15,31 +15,37 @@ export function UsersByTimeOfTheDaySection() {
 		['last 30 days', t('Last 30 days')],
 		['last 90 days', t('Last 90 days')],
 	], [t]);
-	const [period, setPeriod] = useState('last 7 days');
 
-	const handleFilterChange = (period) => setPeriod(period);
+	const [periodId, setPeriodId] = useState('last 7 days');
 
-	const params = useMemo(() => {
-		switch (period) {
+	const period = useMemo(() => {
+		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().subtract(6, 'days').toISOString(),
-					// end: moment().toISOString(),
+					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
+					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().subtract(29, 'days').toISOString(),
-					// end: moment().toISOString(),
+					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
+					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().subtract(89, 'days').toISOString(),
-					// end: moment().toISOString(),
+					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
+					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 		}
-	}, [period]);
+	}, [periodId]);
+
+	const handlePeriodChange = (periodId) => setPeriodId(periodId);
+
+	const params = useMemo(() => ({
+		start: period.start.toISOString(),
+		end: period.end.toISOString(),
+	}), [period]);
 
 	const data = useEndpointData('GET', 'engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
 
@@ -77,7 +83,7 @@ export function UsersByTimeOfTheDaySection() {
 
 	return <Section
 		title={t('Users by time of day')}
-		filter={<Select options={periodOptions} value={period} onChange={handleFilterChange} />}
+		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
 	>
 		<Flex.Container>
 			{data
