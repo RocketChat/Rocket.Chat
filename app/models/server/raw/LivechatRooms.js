@@ -327,6 +327,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				t: 'l',
 				ts: { $gte: new Date(start) },
 				closedAt: { $lte: new Date(end) },
+				'metrics.serviceTimeDuration': { $exists: true },
 			},
 		};
 		const group = {
@@ -336,14 +337,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 					departmentId: '$departmentId',
 				},
 				rooms: { $sum: 1 },
-				chatsDuration: { $sum: '$metrics.chatDuration' },
+				serviceTimeDuration: { $sum: '$metrics.serviceTimeDuration' },
 			},
 		};
 		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
 				chats: '$rooms',
-				chatsDuration: { $ceil: '$chatsDuration' },
+				serviceTimeDuration: { $ceil: '$serviceTimeDuration' },
 			},
 		};
 		if (departmentId) {
@@ -744,6 +745,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
+				'metrics.chatDuration': { $exists: true },
 			},
 		};
 		const group = {
@@ -884,6 +886,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			$match: {
 				t: 'l',
 				'servedBy._id': { $exists: true },
+				'metrics.serviceTimeDuration': { $exists: true },
 				ts: {
 					$gte: start,
 					$lte: end,
@@ -894,7 +897,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			$group: {
 				_id: { _id: '$servedBy._id', username: '$servedBy.username' },
 				chats: { $sum: 1 },
-				chatsDuration: { $sum: '$metrics.chatDuration' },
+				serviceTimeDuration: { $sum: '$metrics.serviceTimeDuration' },
 			},
 		};
 		const project = {
@@ -902,7 +905,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				_id: '$_id._id',
 				username: '$_id.username',
 				chats: 1,
-				chatsDuration: { $ceil: '$chatsDuration' },
+				serviceTimeDuration: { $ceil: '$serviceTimeDuration' },
 			},
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
@@ -925,6 +928,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			$match: {
 				t: 'l',
 				'servedBy._id': { $exists: true },
+				'metrics.serviceTimeDuration': { $exists: true },
 				ts: {
 					$gte: start,
 					$lte: end,
