@@ -136,16 +136,19 @@ export function SettingsBasedStep({ step, title, active }) {
 								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
 							/>}
 
-							{type === 'boolean' && <SelectInput
+							{type === 'boolean' && <Select
 								type='select'
+								data-qa={_id}
+								id={_id}
 								name={_id}
 								ref={i === 0 ? autoFocusRef : undefined}
 								value={String(value)}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value === 'true')}
-							>
-								<SelectInput.Option key={'true'} value={'true'}>{t('Yes')}</SelectInput.Option>
-								<SelectInput.Option key={'false'} value={'false'}>{t('No')}</SelectInput.Option>
-							</SelectInput>}
+								onChange={(value) => setFieldValue(_id, value === 'true')}
+								options={[
+									['true', t('Yes')],
+									['false', t('No')],
+								]}
+							/>}
 
 							{type === 'language' && <Select
 								type='select'
