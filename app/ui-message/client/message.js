@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
@@ -14,7 +13,6 @@ import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
 import './messageThread.html';
 import { AutoTranslate } from '../../autotranslate/client';
@@ -173,13 +171,6 @@ Template.message.helpers({
 			return 'false';
 		}
 	},
-	sequentialClass() {
-		const { msg, groupable } = this;
-		if (MessageTypes.isSystemMessage(msg) && !msg.tmid) {
-			return;
-		}
-		return groupable !== false && msg.groupable !== false && 'sequential';
-	},
 	avatarFromUsername() {
 		const { msg } = this;
 
@@ -266,19 +257,18 @@ Template.message.helpers({
 		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
 	},
 	edited() {
-		return Template.instance().wasEdited;
+		const { msg } = this;
+		return msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	},
 	editTime() {
 		const { msg } = this;
-		if (Template.instance().wasEdited) {
-			return DateFormat.formatDateAndTime(msg.editedAt);
-		}
+		return msg.editedAt ? DateFormat.formatDateAndTime(msg.editedAt) : '';
 	},
 	editedBy() {
-		if (!Template.instance().wasEdited) {
+		const { msg } = this;
+		if (!msg.editedAt) {
 			return '';
 		}
-		const { msg } = this;
 		// try to return the username of the editor,
 		// otherwise a special "?" character that will be
 		// rendered as a special avatar
@@ -370,6 +360,9 @@ Template.message.helpers({
 		if (_.isEmpty(msg.actionLinks)) {
 			return 'hidden';
 		}
+	},
+	injectMessage(data, { _id, rid }) {
+		data.msg = { _id, rid };
 	},
 	injectIndex(data, index) {
 		data.index = index;
@@ -478,7 +471,6 @@ const findParentMessage = (() => {
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
 
-	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
@@ -565,7 +557,7 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
@@ -573,7 +565,7 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
 	}
 	// const currentDataset = currentNode.dataset;
-	const previousNode = getPreviousSentMessage(currentNode);
+	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
 	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
@@ -600,29 +592,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		} else {
 			nextNode.classList.remove('new-day');
 		}
-	} else if (shouldCollapseReplies) {
-		const [el] = $(`#chat-window-${ msg.rid }`);
-		const view = el && Blaze.getView(el);
-		const templateInstance = view && view.templateInstance();
-		if (!templateInstance) {
-			return;
-		}
-		templateInstance.sendToBottomIfNecessary();
 	}
 };
 
-Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-	this.autorun(() => {
-		const currentNode = this.firstNode;
-		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	});
+Template.message.onRendered(function() {
+	const currentNode = this.firstNode;
+	this.autorun(() => processSequentials({ currentNode, ...Template.currentData() }));
 });
-
-Template.message.onViewRendered = function() {
-	const args = messageArgs(Template.currentData());
-	// processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	return this._domrange.onAttached((domRange) => {
-		const currentNode = domRange.lastNode();
-		processSequentials({ currentNode, ...args });
-	});
-};

@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-import sideNav from '../../pageobjects/side-nav.page';
-import assistify from '../../pageobjects/assistify.page';
+import sideNav from '../../cypress/pageobjects/side-nav.page';
+import assistify from '../../cypress/pageobjects/assistify.page';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 import { checkIfUserIsAdmin } from '../../data/checks';
-import mainContent from '../../pageobjects/main-content.page';
+import mainContent from '../../cypress/pageobjects/main-content.page';
 
 const room1 = `widget-test-topic1-${ Date.now() }`;
 const room2 = `widget-test-topic2-${ Date.now() }`;

@@ -2,10 +2,10 @@
 
 import supertest from 'supertest';
 
-import sideNav from '../../pageobjects/side-nav.page';
-import assistify from '../../pageobjects/assistify.page';
-import mainContent from '../../pageobjects/main-content.page';
-import Global from '../../pageobjects/global';
+import sideNav from '../../cypress/pageobjects/side-nav.page';
+import assistify from '../../cypress/pageobjects/assistify.page';
+import mainContent from '../../cypress/pageobjects/main-content.page';
+import Global from '../../cypress/pageobjects/global';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 import { checkIfUserIsAdmin } from '../../data/checks';
 
