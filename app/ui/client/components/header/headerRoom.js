@@ -28,6 +28,11 @@ const getUserStatusText = (id) => {
 
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
+	hasPresence() {
+		const room = Rooms.findOne(this._id);
+		return !roomTypes.getConfig(room.t).isGroupChat(room);
+	},
+	isDirect() { return Rooms.findOne(this._id).t === 'd'; },
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
 	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
@@ -41,7 +46,7 @@ Template.headerRoom.helpers({
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return roomTypes.getSecondaryRoomName(roomData.t, roomData) || roomTypes.getRoomName(roomData.t, roomData);
+		return roomTypes.getConfig(roomData.t).getAvatarPath(roomData);
 	},
 	buttons() {
 		return TabBar.getButtons();
@@ -51,11 +56,6 @@ Template.headerRoom.helpers({
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
-
-	isDirect() {
-		return Rooms.findOne(this._id).t === 'd';
-	},
-
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }

@@ -7,6 +7,7 @@ import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnu
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -34,6 +35,14 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			label: 'Direct_Messages',
 			route: new DirectMessageRoomRoute(),
 		});
+	}
+
+
+	getIcon(roomData) {
+		if (roomData.usernames && roomData.usernames.length > 2) {
+			return 'group';
+		}
+		return this.icon;
 	}
 
 	findRoom(identifier) {
@@ -162,10 +171,17 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
+		if (roomData.usernames.length > 2) {
+			return getAvatarURL({ username: roomData.usernames.length + roomData.usernames.join() });
+		}
 		return getUserAvatarURL(roomData.name || this.roomName(roomData));
 	}
 
 	includeInDashboard() {
 		return true;
+	}
+
+	isGroupChat(room) {
+		return room.usernames && room.usernames.length > 2;
 	}
 }

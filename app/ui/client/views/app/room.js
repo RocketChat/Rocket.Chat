@@ -1035,10 +1035,16 @@ Template.room.onCreated(function() {
 
 	this.subscription = new ReactiveVar();
 	this.state = new ReactiveDict();
+	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
 
 	this.autorun(() => {
 		const rid = Template.currentData()._id;
-		this.state.set('announcement', Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } }).announcement);
+		const room = Rooms.findOne({ _id: rid }, { fields: { announcement: 1, usernames: 1, t: 1 } });
+		this.state.set('announcement', room.announcement);
+
+		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
+			this.userDetail.set(undefined);
+		}
 	});
 
 	this.autorun(() => {
@@ -1062,7 +1068,6 @@ Template.room.onCreated(function() {
 
 	this.flexTemplate = new ReactiveVar();
 
-	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
 	this.groupDetail = new ReactiveVar();
 
 	this.tabBar = new RocketChatTabBar();
