@@ -113,12 +113,8 @@ export class PublicRoomType extends RoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(room, action) {
-		switch (action) {
-			case RoomMemberActions.MUTE:
-			default:
-				return true;
-		}
+	allowMemberAction(/* room, action */) {
+		return true;
 	}
 
 	getUiText(context) {

@@ -119,12 +119,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(room, action) {
-		switch (action) {
-			case RoomMemberActions.MUTE:
-			default:
-				return false;
-		}
+	allowMemberAction(/* room, action */) {
+		return false;
 	}
 
 	enableMembersListProfile() {
