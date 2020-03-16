@@ -2993,6 +2993,8 @@
   "Total_messages": "Quantidade de Mensagens",
   "Total_Threads": "Total de Tópicos",
   "Total_visitors": "Total de visitantes",
+  "totp-invalid": "Código ou senha invalidos",
+  "TOTP Invalid [totp-invalid]": "Código ou senha invalidos",
   "Tourism": "Turismo",
   "Transcript_Enabled": "Pergunte ao visitante se eles gostariam de uma transcrição após o bate-papo fechado",
   "Transcript_message": "Mensagem para mostrar ao perguntar sobre Transcrição",

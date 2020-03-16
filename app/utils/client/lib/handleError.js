@@ -4,6 +4,10 @@ import s from 'underscore.string';
 import toastr from 'toastr';
 
 export const handleError = function(error, useToastr = true) {
+	if (error.xhr) {
+		error = error.xhr.responseJSON || {};
+	}
+
 	if (_.isObject(error.details)) {
 		for (const key in error.details) {
 			if (error.details.hasOwnProperty(key)) {

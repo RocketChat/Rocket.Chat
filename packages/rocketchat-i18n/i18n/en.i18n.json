@@ -3278,6 +3278,8 @@
   "Total_messages": "Total Messages",
   "Total_Threads": "Total Threads",
   "Total_visitors": "Total Visitors",
+  "totp-invalid": "Code or password invalid",
+  "TOTP Invalid [totp-invalid]": "Code or password invalid",
   "Tourism": "Tourism",
   "Transcript_Enabled": "Ask Visitor if They Would Like a Transcript After Chat Closed",
   "Transcript_message": "Message to Show When Asking About Transcript",
