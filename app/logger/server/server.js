@@ -3,6 +3,8 @@ import { EventEmitter } from 'events';
 import _ from 'underscore';
 import s from 'underscore.string';
 
+import { updateLoggingLevel, checkLogging, logging } from './configLogging2file';
+
 export const LoggerManager = new class extends EventEmitter {
 	constructor() {
 		super();
@@ -43,6 +45,7 @@ export const LoggerManager = new class extends EventEmitter {
 	}
 
 	enable(dispatchQueue = false) {
+		updateLoggingLevel(LoggerManager.logLevel);
 		this.enabled = true;
 		return dispatchQueue === true ? this.dispatchQueue() : this.clearQueue();
 	}
@@ -300,13 +303,30 @@ export class Logger {
 				subPrefix = subPrefix[color];
 			}
 
-			console.log(subPrefix, prefix);
+			this._log2(null, options.level, subPrefix, prefix);
 			box.forEach((line) => {
-				console.log(subPrefix, color ? line[color] : line);
+				this._log2(null, options.level, subPrefix, color ? line[color] : line);
 			});
 		} else {
 			options.arguments.unshift(prefix);
-			console.log.apply(console, options.arguments);
+			this._log2(console, options.level, options.arguments);
+		}
+	}
+
+	_log2(that, level, a, b) {
+		if (checkLogging()) {
+			logging(a, b);
+			if (level === 0) {
+				if (that) {
+					console.log.apply(that, a);
+				} else {
+					console.log(a, b);
+				}
+			}
+		} else if (that) {
+			console.log.apply(that, a);
+		} else {
+			console.log(a, b);
 		}
 	}
 }
@@ -319,3 +339,32 @@ export const SystemLogger = new Logger('System', {
 		},
 	},
 });
+
+
+/*
+function _bad_idea(start, id) {
+	const { Logger } = require('../index');
+	const logger = new Logger(`bad_idea-${ id }`);
+
+	const time = start.getTime();
+	const now = new Date();
+	const delta = now.getTime() - time;
+	if (delta < 1000 * 60 * 30) {
+		setTimeout(() => {
+			logger.info(`[${ id }] delta ${ delta }}`);
+			// console.log(`[${ id }] delta ${ delta }}`);
+			_bad_idea(start, id);
+		}, 1);
+	} else {
+		console.log(`[${ id }] delta ${ delta }}`);
+	}
+}
+setTimeout(() => {
+	const start = new Date();
+	console.log('start bad idea at', start.toLocaleString());
+	for (let i = 0; i < 10000; i++) {
+		const id = `00000${ i }`.substr(-5, 5);
+		_bad_idea(start, id);
+	}// for
+}, 1000 * 60);
+*/
