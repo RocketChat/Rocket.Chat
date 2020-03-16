@@ -48,10 +48,6 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'owner' });
 	const isModerator = () =>
 		user && user._id && !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' });
-	const isInDirectMessageRoom = () => {
-		const room = ChatRoom.findOne(Session.get('openedRoom'));
-		return roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK);
-	};
 
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
 
@@ -189,7 +185,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				},
 			};
 		}, function() {
-			if (!directActions || !isInDirectMessageRoom() || isSelf(this.username)) {
+			if (!directActions || isSelf(this.username)) {
 				return;
 			}
 			if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK)) {
