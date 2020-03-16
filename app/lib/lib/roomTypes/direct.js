@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions } from '../../../utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
