@@ -28,7 +28,7 @@
 		"lint": "meteor npm run stylelint && meteor npm run eslint",
 		"jslint": "npm run eslint",
 		"eslint": "eslint --ext .js,.ts,.jsx,.tsx .",
-		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\"",
+		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"postinstall": "node .scripts/npm-postinstall.js",
 		"testunit-watch": "mocha --watch --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
