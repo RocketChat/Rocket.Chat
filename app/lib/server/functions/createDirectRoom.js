@@ -31,10 +31,12 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	const rid = members.map(({ _id }) => _id).sort().join(''); // TODO provide a better rid heuristic
 
+	const usernames = sortedMembers.map(({ username }) => username);
+
 	const { insertedId } = Rooms.upsert({ _id: rid }, {
 		$setOnInsert: {
 			t: 'd',
-			usernames: sortedMembers.map(({ username }) => username),
+			usernames,
 			usersCount: members.length,
 			msgs: 0,
 			ts: new Date(),
@@ -55,6 +57,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	return {
 		_id: rid,
+		usernames,
 		t: 'd',
 		inserted: !!insertedId,
 	};

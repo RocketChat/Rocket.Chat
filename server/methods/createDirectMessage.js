@@ -62,7 +62,7 @@ Meteor.methods({
 			return to;
 		});
 
-		const { _id: rid, inserted } = createDirectRoom([me, ...users], { }, { creator: me._id });
+		const { _id: rid, inserted, ...room } = createDirectRoom([me, ...users], { }, { creator: me._id });
 
 		// If the room is new, run a callback
 		if (inserted) {
@@ -71,7 +71,9 @@ Meteor.methods({
 		}
 
 		return {
+			t: 'd',
 			rid,
+			...room,
 		};
 	},
 });

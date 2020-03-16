@@ -1,0 +1,112 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+
+
+import { roomTypes } from '../../../../utils/client';
+import { ChatSubscription } from '../../../../models/client';
+import { call } from '../../../../ui-utils/client';
+
+import './CreateDirectMessage.html';
+
+Template.CreateDirectMessage.helpers({
+	onSelectUser() {
+		return Template.instance().onSelectUser;
+	},
+	createIsDisabled() {
+		return Template.instance().selectedUsers.get().length === 0 ? 'disabled' : '';
+	},
+	parentChannel() {
+		const instance = Template.instance();
+		return instance.parentChannel.get();
+	},
+	selectedUsers() {
+		const myUsername = Meteor.user().username;
+		const { message } = this;
+		const users = Template.instance().selectedUsers.get().map((e) => e);
+		if (message) {
+			users.unshift(message.u);
+		}
+		return users.filter(({ username }) => myUsername !== username);
+	},
+
+	onClickTagUser() {
+		return Template.instance().onClickTagUser;
+	},
+	deleteLastItemUser() {
+		return Template.instance().deleteLastItemUser;
+	},
+	onClickTagRoom() {
+		return Template.instance().onClickTagRoom;
+	},
+	selectedRoom() {
+		return Template.instance().selectedRoom.get();
+	},
+	userModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	nameSuggestion() {
+		return Template.instance().discussionName.get();
+	},
+});
+
+Template.CreateDirectMessage.events({
+	async 'submit #create-dm, click .js-save-dm'(event, instance) {
+		event.preventDefault();
+		const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
+
+		const result = await call('createDirectMessage', ...users);
+
+		if (instance.data.onCreate) {
+			instance.data.onCreate(result);
+		}
+		const user = Meteor.user();
+		roomTypes.openRouteLink(result.t, { ...result, name: result.usernames.filter((username) => username !== user.username).join(', ') });
+	},
+});
+
+Template.CreateDirectMessage.onRendered(function() {
+	this.find('#directMessageUsers').focus();
+});
+
+Template.CreateDirectMessage.onCreated(function() {
+	const { rid, message: msg } = this.data;
+
+	const parentRoom = rid && ChatSubscription.findOne({ rid });
+
+	// if creating a discussion from inside a discussion, uses the same channel as parent channel
+	const room = parentRoom && parentRoom.prid ? ChatSubscription.findOne({ rid: parentRoom.prid }) : parentRoom;
+
+	if (room) {
+		room.text = room.name;
+	}
+
+	this.selectedUsers = new ReactiveVar([]);
+
+	this.onSelectUser = ({ item: user }) => {
+		if (user.username === (msg && msg.u.username)) {
+			return;
+		}
+
+		if (user.username === Meteor.user().username) {
+			return;
+		}
+		const users = this.selectedUsers.get();
+		if (!users.find((u) => user.username === u.username)) {
+			this.selectedUsers.set([...users, user]);
+		}
+	};
+
+	this.onClickTagUser = ({ username }) => {
+		this.selectedUsers.set(this.selectedUsers.get().filter((user) => user.username !== username));
+	};
+
+	this.deleteLastItemUser = () => {
+		const arr = this.selectedUsers.get();
+		arr.pop();
+		this.selectedUsers.set(arr);
+	};
+});
