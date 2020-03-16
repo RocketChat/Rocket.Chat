@@ -174,8 +174,8 @@ export function ActiveUsersSection() {
 										tickSize: 0,
 										tickPadding: 4,
 										tickRotation: 0,
-										format: '%Y-%m-%d',
-										tickValues: 'every 7 days',
+										tickValues: 'every 3 days',
+										format: (date) => moment(date).format(dauValues.length === 7 ? 'dddd' : 'L'),
 									}}
 									animate={true}
 									motionStiffness={90}

@@ -8,10 +8,31 @@ import { Section } from '../Section';
 import { useEndpointData } from '../../hooks/useEndpointData';
 
 function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick }) {
-	const currentDate = useMemo(() => moment.utc().subtract(displacement, 'days'), [displacement]);
+	const t = useTranslation();
+
+	const currentDate = useMemo(() =>
+		moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+			.subtract(1).subtract(displacement, 'days'), [displacement]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
 	const data = useEndpointData('GET', 'engagement-dashboard/users/chat-busier/hourly-data', params);
-	const values = data ? data.hours.sort(({ hour: a }, { hour: b }) => a - b) : [];
+	const values = useMemo(() => {
+		if (!data) {
+			return [];
+		}
+
+		const divider = 2;
+		const values = Array.from({ length: 24 / divider }, (_, i) => ({
+			hour: divider * i,
+			users: 0,
+		}));
+		for (const { hour, users } of data.hours) {
+			const i = Math.floor(hour / divider);
+			values[i] = values[i] || { hour: divider * i, users: 0 };
+			values[i].users += users;
+		}
+
+		return values;
+	}, [data]);
 
 	return <>
 		<Flex.Container alignItems='center' justifyContent='center'>
@@ -60,7 +81,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 										// TODO: Get it from theme
 										tickPadding: 4,
 										tickRotation: 0,
-										tickValues: 8,
+										tickValues: 'every 2 hours',
 										format: (hour) => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
 									}}
 									axisLeft={null}
@@ -82,7 +103,17 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 												},
 											},
 										},
+										tooltip: {
+											container: {
+												backgroundColor: '#1F2329',
+												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+												borderRadius: 2,
+											},
+										},
 									}}
+									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+										{t('%d users', value)}
+									</Box>}
 								/>
 							</Box>
 						</Box>
@@ -153,6 +184,7 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 										// TODO: Get it from theme
 										tickPadding: 4,
 										tickRotation: 0,
+										tickValues: 'every 3 days',
 										format: (timestamp) => moment(timestamp).format('L'),
 									}}
 									axisLeft={null}

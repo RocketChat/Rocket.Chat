@@ -51,33 +51,29 @@ export function UsersByTimeOfTheDaySection() {
 
 	const [
 		dates,
-		groups,
+		values,
 	] = useMemo(() => {
 		if (!data) {
 			return [];
 		}
 
-		const points = data.week
-			.map(({ users, hour, day, month, year }) => ({
-				users,
-				hour,
-				date: moment.utc([year, month - 1, day, 0, 0, 0]).valueOf(),
-			}));
+		const dates = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 },
+			(_, i) => moment(period.start).add(i, 'days'));
 
-		const dates = Array.from(points.reduce((set, { date }) => { set.add(date); return set; }, new Set())).sort();
-
-		const groups = Array.from({ length: 24 }, (_, hour) => ({
+		const values = Array.from({ length: 24 }, (_, hour) => ({
 			hour: String(hour),
-			...dates.reduce((obj, date) => ({ ...obj, [String(date)]: 0 }), {}),
+			...dates.map((date) => ({ [date.toISOString()]: 0 }))
+				.reduce((obj, elem) => ({ ...obj, ...elem }), {}),
 		}));
 
-		for (const { users, hour, date } of points) {
-			groups[hour][date] = users;
+		for (const { users, hour, day, month, year } of data.week) {
+			const date = moment([year, month - 1, day, 0, 0, 0, 0]).toISOString();
+			values[hour][date] += users;
 		}
 
 		return [
-			dates.map(String),
-			groups,
+			dates.map((date) => date.toISOString()),
+			values,
 		];
 	}, [data]);
 
@@ -92,10 +88,9 @@ export function UsersByTimeOfTheDaySection() {
 						<Box style={{ position: 'relative' }}>
 							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
 								<ResponsiveHeatMap
-									data={groups}
+									data={values}
 									indexBy='hour'
 									keys={dates}
-									groupMode='grouped'
 									padding={4}
 									margin={{
 										// TODO: Get it from theme
@@ -121,7 +116,7 @@ export function UsersByTimeOfTheDaySection() {
 										tickSize: 0,
 										tickPadding: 4,
 										tickRotation: 0,
-										format: (timestamp) => moment(parseInt(timestamp, 10)).format(dates.length === 7 ? 'dddd' : 'L'),
+										format: (isoString) => (dates.length === 7 ? moment(isoString).format('dddd') : ''),
 									}}
 									axisLeft={{
 										// TODO: Get it from theme
@@ -130,7 +125,8 @@ export function UsersByTimeOfTheDaySection() {
 										tickRotation: 0,
 										format: (hour) => moment().set({ hour: parseInt(hour, 10), minute: 0, second: 0 }).format('LT'),
 									}}
-									animate={true}
+									hoverTarget='cell'
+									animate={dates.length <= 7}
 									motionStiffness={90}
 									motionDamping={15}
 									theme={{
