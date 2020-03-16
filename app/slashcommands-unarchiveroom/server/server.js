@@ -39,7 +39,7 @@ function Unarchive(command, params, item) {
 	}
 
 	// You can not archive direct messages.
-	if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomMemberActions.ARCHIVE)) {
+	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
 		return;
 	}
 
