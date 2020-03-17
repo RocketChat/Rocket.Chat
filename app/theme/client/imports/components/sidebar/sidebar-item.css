@@ -341,18 +341,14 @@
 		}
 
 		&__body {
-			display: flex;
-			overflow: visible !important;
-			flex: 1;
-
-			margin: 0 4px;
-			align-items: center;
+			display: -webkit-box;
+			height: 100%;
 		}
 
 		&__time {
 			margin: 0 15px;
 
-			font-size: 13px !important;
+			font-size: 11px !important;
 		}
 
 		&__user-thumb {
