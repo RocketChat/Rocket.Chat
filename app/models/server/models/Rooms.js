@@ -439,7 +439,7 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, options) {
+	findChannelAndPrivateByNameStarting(name, options, exceptions = []) {
 		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
 
 		const query = {
@@ -447,6 +447,15 @@ export class Rooms extends Base {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			$and: [{
+				name: {
+					$exists: true,
+				},
+			}, {
+				name: {
+					$nin: exceptions,
+				},
+			}],
 		};
 
 		return this.find(query, options);

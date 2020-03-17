@@ -10,7 +10,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { roomTypes, canDeleteMessage } from '../../../utils/client';
+import { roomTypes, canDeleteMessage, t } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { modal } from './modal';
@@ -258,6 +258,34 @@ Meteor.startup(async function() {
 	});
 
 	MessageAction.addButton({
+		id: 'forward-message',
+		icon: 'jump',
+		label: 'Forward',
+		context: ['message', 'message-mobile'],
+		async action() {
+			const { msg: message } = messageArgs(this);
+
+			modal.open({
+				title: t('Forward_Message_Modal_Title'),
+				modifier: 'modal',
+				content: 'forwardMessage',
+				data: {
+					rid: message.rid,
+					message,
+				},
+				confirmOnEnter: false,
+				showConfirmButton: false,
+				showCancelButton: false,
+			});
+		},
+		condition(message) {
+			return Subscriptions.findOne({ rid: message.rid }) !== null;
+		},
+		order: 6,
+		group: 'menu',
+	});
+
+	MessageAction.addButton({
 		id: 'edit-message',
 		icon: 'edit',
 		label: 'Edit',
@@ -290,7 +318,7 @@ Meteor.startup(async function() {
 			}
 			return true;
 		},
-		order: 6,
+		order: 7,
 		group: 'menu',
 	});
 
