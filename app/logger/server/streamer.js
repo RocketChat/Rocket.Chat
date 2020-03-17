@@ -60,7 +60,7 @@ stdoutStreamer.allowRead(function() {
 
 Meteor.startup(() => {
 	const handler = (string, item) => {
-		stdoutStreamer.emit('stdout', {
+		stdoutStreamer.emitWithoutBroadcast('stdout', {
 			...item,
 		});
 	};

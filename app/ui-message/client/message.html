@@ -44,6 +44,7 @@
 					{{#if showTranslated}}
 						<span class="translated">
 							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+							<span class="translation-provider">{{ translationProvider }}</span>
 						</span>
 					{{/if}}
 					{{#if msg.sentByEmail}}
@@ -75,10 +76,16 @@
 					{{#if isSnippet}}
 						<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 					{{/if}}
-					{{#if isDecrypting}}
-						<span>******</span>
+					{{#if msg.blocks}}
+						<div class='rc-ui-kit'>
+							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
+						</div>
 					{{else}}
-						{{{body}}}
+						{{#if isDecrypting}}
+							<span>******</span>
+						{{else}}
+							{{{body}}}
+						{{/if}}
 					{{/if}}
 				</div>
 			</div>
