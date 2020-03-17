@@ -59,7 +59,7 @@ const openProfileTab = (e, instance, username) => {
 	}
 
 	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
-	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
+	if (roomTypes.getConfig(roomData.t).enableMembersListProfile()) {
 		instance.userDetail.set(username);
 	}
 
