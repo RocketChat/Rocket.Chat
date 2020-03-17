@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 
-import { modal } from '../../../ui-utils';
+import { modal } from '../../../ui-utils/client';
 import { Apps } from '../orchestrator';
 import { APIClient } from '../../../utils/client';
 
