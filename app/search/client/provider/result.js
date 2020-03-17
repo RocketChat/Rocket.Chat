@@ -33,7 +33,7 @@ Meteor.startup(function() {
 			// RocketChat.MessageAction.hideDropDown();
 
 			if (window.matchMedia('(max-width: 500px)').matches) {
-				Template.instance().tabBar.close();
+				Template.currentData().instance.tabBar.close();
 			}
 
 			window.setTimeout(() => {
