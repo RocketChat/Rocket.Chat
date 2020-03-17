@@ -4,10 +4,10 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { hasPermission } from '../../../../../app/authorization';
 import { Users } from '../../../../../app/models';
-import { methodsWithTwoFactor } from '../../../../../app/2fa/server/twoFactorRequired';
+import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
-methodsWithTwoFactor({
-	'personalAccessTokens:generateToken'({ tokenName, bypassTwoFactor }) {
+Meteor.methods({
+	'personalAccessTokens:generateToken': twoFactorRequired(function({ tokenName, bypassTwoFactor }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:generateToken' });
 		}
@@ -36,5 +36,5 @@ methodsWithTwoFactor({
 			},
 		});
 		return token;
-	},
+	}),
 });
