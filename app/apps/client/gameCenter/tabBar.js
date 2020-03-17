@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { APIClient } from '../../../utils';
+import { APIClient } from '../../../utils/client';
 import { TabBar } from '../../../ui-utils/client';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/client';
 
 import './gameCenter.html';
 
