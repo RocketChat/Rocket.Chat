@@ -57,9 +57,8 @@
 @media (width <= 500px) {
 	.rooms-list {
 		&__type {
-			padding: 0 var(--sidebar-small-default-padding) 1rem var(--sidebar-small-default-padding);
-
 			font-size: var(--rooms-list-title-text-size-mobile);
+			padding: 0 var(--sidebar-small-default-padding) 1rem var(--sidebar-small-default-padding);
 		}
 
 		&__empty-room {

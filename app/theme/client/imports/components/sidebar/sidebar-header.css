@@ -87,6 +87,10 @@
 		width: 200px;
 
 		& .rc-input__element {
+			background-color: var(--sidebar-background);
+			border-color: #81868d;
+			border-radius: 15px;
+
 			color: var(--color-white);
 			border-color: var(--rc-color-primary-dark);
 			background-color: var(--rc-color-primary-darkest);
@@ -163,7 +167,6 @@
 @media (width <= 500px) {
 	.sidebar__header {
 		padding: var(--sidebar-small-default-padding);
-
 		&-thumb {
 			flex: 0 0 var(--sidebar-account-thumb-size-mobile);
 

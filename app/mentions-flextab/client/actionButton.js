@@ -13,7 +13,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
-				Template.currentData().instance.tabBar.close();
+				Template.instance().tabBar.close();
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
