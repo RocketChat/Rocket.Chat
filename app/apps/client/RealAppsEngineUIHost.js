@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 
-import { Rooms } from '../../models';
-import { APIClient } from '../../utils';
+import { Rooms } from '../../models/client';
+import { APIClient } from '../../utils/client';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 
 export class RealAppsEngineUIHost extends AppsEngineUIHost {
