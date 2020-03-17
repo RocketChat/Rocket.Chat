@@ -46,7 +46,7 @@ Template.integrations.onCreated(async function() {
 
 	this.autorun(async () => {
 		const offset = this.offset.get();
-		const { integrations, total } = await APIClient.v1.get(`integrations.list?count=${ ITEMS_COUNT }&offset=${ offset }`);
+		const { integrations, total } = await APIClient.v1.get(`integrations.list?sort={"type":1}&count=${ ITEMS_COUNT }&offset=${ offset }`);
 		this.total.set(total);
 		this.integrations.set(this.integrations.get().concat(integrations));
 	});

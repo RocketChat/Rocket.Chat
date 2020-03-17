@@ -12,6 +12,10 @@ import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppRealLogsStorage, AppRealStorage } from './storage';
 
+function isTesting() {
+	return process.env.TEST_MODE === 'true';
+}
+
 
 class AppServerOrchestrator {
 	constructor() {
@@ -101,7 +105,7 @@ class AppServerOrchestrator {
 	}
 
 	isDebugging() {
-		return settings.get('Apps_Framework_Development_Mode');
+		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
 	}
 
 	getRocketChatLogger() {
