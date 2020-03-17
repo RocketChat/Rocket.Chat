@@ -17,14 +17,12 @@ export function EngagementDashboardPage({
 
 	return <Page>
 		<Page.Header title={t('Engagement Dashboard')} />
+		<Tabs>
+			<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')}</Tabs.Item>
+			<Tabs.Item selected={tab === 'messages'} onClick={handleTabClick('messages')}>{t('Messages')}</Tabs.Item>
+			<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')}</Tabs.Item>
+		</Tabs>
 		<Page.Content style={{ padding: 0 }}>
-			<Margins block='x24'>
-				<Tabs>
-					<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')}</Tabs.Item>
-					<Tabs.Item selected={tab === 'messages'} onClick={handleTabClick('messages')}>{t('Messages')}</Tabs.Item>
-					<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')}</Tabs.Item>
-				</Tabs>
-			</Margins>
 			<Margins all='x24'>
 				<Box>
 					{(tab === 'users' && <UsersTab />)
