@@ -67,18 +67,22 @@ Template.InvitePlayers.helpers({
 });
 
 Template.InvitePlayers.events({
-	'submit #invite-players, click .js-confirm'(e, instance) {
+	async 'submit #invite-players, click .js-confirm'(e, instance) {
 		const { data: { name } } = instance;
 		const users = instance.selectedUsers.get().map(({ username }) => username);
 		const privateGroupName = `${ name.replace(/\s/g, '-') }-${ Random.id(10) }`;
 
-		call('createPrivateGroup', privateGroupName, users).then((result) => {
+		try {
+			const result = await call('createPrivateGroup', privateGroupName, users);
+
 			roomTypes.openRouteLink(result.t, result);
 			call('sendMessage', {
 				rid: result.rid,
 				msg: TAPi18n.__('Game_Center_Play_Game_Together', { name }),
 			});
-		}).catch(console.warn);
+		} catch (err) {
+			console.warn(err);
+		}
 	},
 });
 

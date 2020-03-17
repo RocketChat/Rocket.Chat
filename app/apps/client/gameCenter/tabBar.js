@@ -8,24 +8,24 @@ import { settings } from '../../../settings';
 import './gameCenter.html';
 
 Meteor.startup(function() {
-	Tracker.autorun(function() {
+	Tracker.autorun(async function() {
 		if (!settings.get('Apps_Game_Center_enabled')) {
 			return TabBar.removeButton('gameCenter');
 		}
 
-		APIClient.get('apps/externalComponents').then(({ externalComponents }) => {
-			if (!externalComponents.length) {
-				return TabBar.removeButton('gameCenter');
-			}
+		const { externalComponents } = await APIClient.get('apps/externalComponents');
 
-			TabBar.addButton({
-				groups: ['channel', 'group', 'direct'],
-				id: 'gameCenter',
-				i18nTitle: 'Game_Center',
-				icon: 'game',
-				template: 'GameCenter',
-				order: -1,
-			});
+		if (!externalComponents.length) {
+			return TabBar.removeButton('gameCenter');
+		}
+
+		TabBar.addButton({
+			groups: ['channel', 'group', 'direct'],
+			id: 'gameCenter',
+			i18nTitle: 'Game_Center',
+			icon: 'game',
+			template: 'GameCenter',
+			order: -1,
 		});
 	});
 });
