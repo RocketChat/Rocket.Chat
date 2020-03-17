@@ -125,7 +125,7 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_RequireNameForSignUp', true, {
+		this.add('Accounts_RequireNameForSignUp', true, { // TODO rename to Accounts_RequireFullName
 			type: 'boolean',
 			public: true,
 		});
