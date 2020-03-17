@@ -22,9 +22,9 @@ import { mime } from '../../../utils/lib/mimeTypes';
 import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
+import { Apps } from '../../../apps/server';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -55,7 +55,7 @@ export const FileUpload = {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload(file) {
+	validateFileUpload({ file, stream }) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -88,10 +88,16 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file.type)) {
+
+		if (Promise.await(Apps.getBridges().getListenerBridge().fileUploadEvent('IPreFileUploadAllow', { file, stream }))) {
 			const reason = TAPi18n.__('File_type_is_not_accepted', language);
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
+
+		// if (!fileUploadIsValidContentType(file.type)) {
+		// 	const reason = TAPi18n.__('File_type_is_not_accepted', language);
+		// 	throw new Meteor.Error('error-invalid-file-type', reason);
+		// }
 
 		return true;
 	},
@@ -532,7 +538,7 @@ export class FileUploadClass {
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
-			filter.check(fileData);
+			filter.check({ file: fileData, stream: streamOrBuffer });
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);

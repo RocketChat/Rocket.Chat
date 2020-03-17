@@ -3,6 +3,10 @@ export class AppListenerBridge {
 		this.orch = orch;
 	}
 
+	async fileUploadEvent(inte, file) {
+		return this.orch.getManager().getListenerManager().executeListener(inte, file);
+	}
+
 	async messageEvent(inte, message) {
 		const msg = this.orch.getConverters().get('messages').convertMessage(message);
 		const result = await this.orch.getManager().getListenerManager().executeListener(inte, msg);
