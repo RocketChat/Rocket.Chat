@@ -25,6 +25,7 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
+import { Apps } from '../../../apps/server';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -55,7 +56,7 @@ export const FileUpload = {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload(file) {
+	validateFileUpload({ file, stream }) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -91,6 +92,19 @@ export const FileUpload = {
 		if (!fileUploadIsValidContentType(file.type)) {
 			const reason = TAPi18n.__('File_type_is_not_accepted', language);
 			throw new Meteor.Error('error-invalid-file-type', reason);
+		}
+
+		const appResponses = Promise.await(
+			Apps.getBridges()
+				.getListenerBridge()
+				.fileUploadEvent('IPreFileUpload', { file, stream })
+		);
+		const preventResponse = appResponses.find(({ prevent }) => prevent);
+
+		if (preventResponse) {
+			const { appId, i18nReason } = preventResponse;
+			console.warn(`The app (${ appId }) prevented the file upload, reason: `, i18nReason);
+			throw new Meteor.Error('error-app-prevent-file-upload', i18nReason);
 		}
 
 		return true;
@@ -588,7 +602,7 @@ export class FileUploadClass {
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
-			filter.check(fileData);
+			filter.check({ file: fileData, stream: streamOrBuffer });
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);
