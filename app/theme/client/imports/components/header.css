@@ -412,10 +412,6 @@
 
 @media (width <= 500px) {
 	.rc-header {
-		&__visual-status {
-			font-size: 100%;
-		}
-
 		&__block {
 			margin: 0 0.25rem;
 		}
