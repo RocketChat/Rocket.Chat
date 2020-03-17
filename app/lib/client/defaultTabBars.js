@@ -27,7 +27,7 @@ TabBar.addButton({
 			_id: rid,
 		});
 
-		return !roomTypes.getConfig(room.t).isGroupChat(room);
+		return room && !roomTypes.getConfig(room.t).isGroupChat(room);
 	},
 });
 
@@ -44,7 +44,7 @@ TabBar.addButton({
 			_id: rid,
 		});
 
-		return roomTypes.getConfig(room.t).isGroupChat(room);
+		return room && roomTypes.getConfig(room.t).isGroupChat(room);
 	},
 });
 
