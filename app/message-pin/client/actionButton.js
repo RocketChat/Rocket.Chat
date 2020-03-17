@@ -5,7 +5,7 @@ import toastr from 'toastr';
 
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
+import { handleError, isMobile } from '../../utils';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 
@@ -68,12 +68,12 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
-				Template.currentData().instance.tabBar.close();
+				Template.instance().tabBar.close();
 			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		condition({ msg, subscription }) {
-			return msg.pinned && !!subscription;
+		condition({ subscription }) {
+			return !!subscription && !isMobile();
 		},
 		order: 100,
 		group: 'menu',

@@ -123,7 +123,7 @@ const retainMessages = (rid, messages) => {
 	const roomMsgs = messages.filter((msg) => rid === msg.rid);
 	const limit = parseInt(getConfig('roomListLimit')) || 50;
 	const retain = sortBy(roomMsgs.filter((msg) => !msg.temp), 'ts').reverse().slice(0, limit);
-	retain.push(...roomMsgs.filter((msg) => msg.temp));
+	retain.push(...messages.filter((msg) => rid === msg.rid && msg.temp));
 	return retain;
 };
 
@@ -141,7 +141,7 @@ function clearOldMessages({ records: messages, ...value }) {
 	});
 }
 
-const cleanMessagesAtStartup = () => {
+const clearOldMessageAtStartup = () => {
 	localforage.getItem('chatMessage').then((value) => {
 		if (value && value.records) {
 			clearOldMessages(value);
@@ -149,4 +149,4 @@ const cleanMessagesAtStartup = () => {
 	});
 };
 
-callbacks.add('afterMainReady', cleanMessagesAtStartup, callbacks.priority.MEDIUM, 'cleanMessagesAtStartup');
+callbacks.add('afterMainReady', clearOldMessageAtStartup, callbacks.priority.LOW, 'clearOldMessageAtStartup');
