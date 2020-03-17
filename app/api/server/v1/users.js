@@ -614,11 +614,11 @@ API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
 
 API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
-		const { tokenName } = this.bodyParams;
+		const { tokenName, bypassTwoFactor } = this.bodyParams;
 		if (!tokenName) {
 			return API.v1.failure('The \'tokenName\' param is required');
 		}
-		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName }));
+		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }));
 
 		return API.v1.success({ token });
 	},
