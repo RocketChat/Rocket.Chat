@@ -322,6 +322,7 @@ Template.membersList.onCreated(function() {
 });
 
 Template.membersList.onRendered(function() {
+	this.firstNode.parentNode.querySelector('#user-search').focus();
 	this.autorun(() => {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');

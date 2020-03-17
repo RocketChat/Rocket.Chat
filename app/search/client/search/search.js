@@ -180,9 +180,9 @@ Template.RocketSearch.onRendered(function() {
 	});
 	Tracker.autorun((c) => {
 		if (this.isActive.get() === true) {
+			Tracker.afterFlush(() => { document.querySelector('#message-search').focus(); });
 			c.stop();
 		}
-		Tracker.afterFlush(() => { $('#message-search').focus(); });
 	});
 });
 
