@@ -118,6 +118,6 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 }
