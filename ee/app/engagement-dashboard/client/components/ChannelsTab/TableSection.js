@@ -1,4 +1,4 @@
-import { Box, Icon, Margins, Pagination, Select, Table } from '@rocket.chat/fuselage';
+import { Box, Icon, Margins, Pagination, Select, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
@@ -42,12 +42,15 @@ export function TableSection() {
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
+	const [current, setCurrent] = useState(0);
+	const [itemsPerPage, setItemsPerPage] = useState(25);
+
 	const params = useMemo(() => ({
 		start: period.start.toISOString(),
 		end: period.end.toISOString(),
-		offset: 0,
-		count: 10,
-	}), [period]);
+		offset: current,
+		count: itemsPerPage,
+	}), [period, current, itemsPerPage]);
 
 	const data = useEndpointData('GET', 'engagement-dashboard/channels/list', params);
 
@@ -72,7 +75,11 @@ export function TableSection() {
 
 	return <Section filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}>
 		<Box>
-			<Table>
+			{channels && !channels.length && <Tile textStyle='p1' textColor='info' style={{ textAlign: 'center' }}>
+				{t('No data found')}
+			</Tile>}
+			{(!channels || channels.length)
+			&& <Table>
 				<Table.Head>
 					<Table.Row>
 						<Table.Cell>{t('#')}</Table.Cell>
@@ -104,9 +111,36 @@ export function TableSection() {
 								{messagesCount} <Growth>{messagesVariation}</Growth>
 							</Table.Cell>
 						</Table.Row>)}
+					{!channels && Array.from({ length: 5 }, (_, i) =>
+						<Table.Row key={i}>
+							<Table.Cell>
+								<Skeleton width='100%' />
+							</Table.Cell>
+							<Table.Cell>
+								<Skeleton width='100%' />
+							</Table.Cell>
+							<Table.Cell>
+								<Skeleton width='100%' />
+							</Table.Cell>
+							<Table.Cell>
+								<Skeleton width='100%' />
+							</Table.Cell>
+							<Table.Cell>
+								<Skeleton width='100%' />
+							</Table.Cell>
+						</Table.Row>)}
 				</Table.Body>
-			</Table>
-			<Pagination count={500} />
+			</Table>}
+			<Pagination
+				current={current}
+				itemsPerPage={itemsPerPage}
+				itemsPerPageLabel={() => t('Items per page:')}
+				showingResultsLabel={({ count, current, itemsPerPage }) =>
+					t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count)}
+				count={1} // TODO
+				onSetItemsPerPage={setItemsPerPage}
+				onSetCurrent={setCurrent}
+			/>
 		</Box>
 	</Section>;
 }
