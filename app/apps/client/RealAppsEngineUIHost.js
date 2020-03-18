@@ -13,6 +13,16 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		this._baseURL = document.baseURI.slice(0, -1);
 	}
 
+	getUserAvatarUrl(username) {
+		let avatarUrl = getUserAvatarURL(username);
+
+		if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('data')) {
+			avatarUrl = `${ this._baseURL }${ avatarUrl }`;
+		}
+
+		return avatarUrl;
+	}
+
 	async getClientRoomInfo() {
 		const { name: slugifiedName, _id: id } = Rooms.findOne(Session.get('openedRoom'));
 
@@ -23,7 +33,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 			cachedMembers = members.map(({ _id, username }) => ({
 				id: _id,
 				username,
-				avatarUrl: `${ this._baseURL }${ getUserAvatarURL(username) }`,
+				avatarUrl: this.getUserAvatarUrl(username),
 			}));
 		} catch (error) {
 			console.warn(error);
@@ -38,12 +48,11 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 
 	async getClientUserInfo() {
 		const { username, _id } = Meteor.user();
-		const avatarUrl = `${ this._baseURL }${ getUserAvatarURL(username) }`;
 
 		return {
 			id: _id,
 			username,
-			avatarUrl,
+			avatarUrl: this.getUserAvatarUrl(username),
 		};
 	}
 }
