@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, getUserPreference, roomTypes, isMobile } from '../../utils';
+import { t, getUserPreference, roomTypes } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
@@ -18,9 +18,6 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	isExtendedViewMode() {
-		if (isMobile()) {
-			return true;
-		}
 		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
 	},
 	lastMessage() {
@@ -78,7 +75,7 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
-function getConfig(e) {
+const getConfig = function(e) {
 	const canLeave = () => {
 		const roomData = Session.get(`roomData${ this.rid }`);
 
@@ -161,7 +158,7 @@ function getConfig(e) {
 		currentTarget: e.currentTarget,
 		offsetHorizontal: -e.currentTarget.clientWidth,
 	};
-}
+};
 
 Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
@@ -208,7 +205,7 @@ Template.sidebarItem.events({
 			return;
 		}
 
-		const config = getConfig(e);
+		const config = getConfig.call(this, e);
 
 		const doLongTouch = () => {
 			popover.open(config);
@@ -224,7 +221,7 @@ Template.sidebarItem.events({
 		e.stopPropagation(); // to not close the menu
 		e.preventDefault();
 
-		const config = getConfig(e);
+		const config = getConfig.call(this, e);
 		popover.open(config);
 	},
 });

@@ -258,7 +258,6 @@ export const RoomHistoryManager = new class {
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
 		if (subscription) {
-			// const { ls } = subscription;
 			typeName = subscription.t + subscription.name;
 		} else {
 			const curRoomDoc = ChatRoom.findOne({ _id: message.rid });

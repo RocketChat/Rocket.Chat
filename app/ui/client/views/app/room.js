@@ -23,6 +23,7 @@ import {
 	modal,
 	Layout,
 	MessageAction,
+	MessageTypes,
 	RocketChatTabBar,
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
@@ -92,8 +93,15 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 	e.stopPropagation();
 };
 
+const showMessageActions = (e, outerContext) => {
+	const { msg } = messageArgs(outerContext);
+	return e.target && e.target.nodeName === 'DIV' && !msg.private && !MessageTypes.isSystemMessage(msg);
+};
+
 const mountPopover = (e, i, outerContext) => {
-	let context = $(e.target).parents('.message').data('context');
+	let context = $(e.target).parents('.message').data('context')
+		|| ($(e.target).parents('.message').hasClass('mentions') && 'mentions');
+
 	if (!context) {
 		context = 'message';
 	}
@@ -726,9 +734,7 @@ Template.room.events({
 			}
 
 			window.open(e.target.href);
-		}
-
-		if (isMobile() && !touchMoved) {
+		} else if (isMobile() && !touchMoved && showMessageActions(e, this)) {
 			mountPopover(e, t, this);
 		}
 	},

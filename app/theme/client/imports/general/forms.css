@@ -259,7 +259,6 @@
 	&__content {
 
 		display: flex;
-		overflow-y: auto;
 		flex-direction: column;
 
 		flex: 1;
