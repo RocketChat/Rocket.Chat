@@ -27,7 +27,7 @@ export const useEndpointData = (httpMethod, endpoint, params = {}) => {
 				clearTimeout(timer);
 
 				if (!data.success) {
-					throw new Error();
+					throw new Error(data.status);
 				}
 
 				if (!mounted) {
@@ -36,6 +36,7 @@ export const useEndpointData = (httpMethod, endpoint, params = {}) => {
 
 				setData(data);
 			} catch (error) {
+				console.error(error);
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
