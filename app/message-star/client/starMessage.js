@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import toastr from 'toastr';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 import { settings } from '../../settings';
 import { ChatMessage, Subscriptions } from '../../models';
-import toastr from 'toastr';
-import { TAPi18n } from 'meteor/tap:i18n';
 
 Meteor.methods({
 	starMessage(message) {
