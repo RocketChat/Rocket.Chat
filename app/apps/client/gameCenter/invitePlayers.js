@@ -8,7 +8,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AutoComplete } from '../../../meteor-autocomplete/client';
 import { roomTypes } from '../../../utils/client';
 import { ChatRoom } from '../../../models/client';
-import { call } from '../../../ui-utils/client';
+import { call, modal } from '../../../ui-utils/client';
 
 import './invitePlayers.html';
 
@@ -67,7 +67,9 @@ Template.InvitePlayers.helpers({
 });
 
 Template.InvitePlayers.events({
-	async 'submit #invite-players, click .js-confirm'(e, instance) {
+	async 'submit #invite-players, click .js-invite-players'(e, instance) {
+		e.preventDefault();
+
 		const { data: { name } } = instance;
 		const users = instance.selectedUsers.get().map(({ username }) => username);
 		const privateGroupName = `${ name.replace(/\s/g, '-') }-${ Random.id(10) }`;
@@ -76,10 +78,18 @@ Template.InvitePlayers.events({
 			const result = await call('createPrivateGroup', privateGroupName, users);
 
 			roomTypes.openRouteLink(result.t, result);
-			call('sendMessage', {
+
+			// setTimeout ensures the message is only sent after the
+			// user has been redirected to the new room, preventing a
+			// weird bug that made the message appear as unsent until
+			// the screen gets refreshed
+			setTimeout(() => call('sendMessage', {
+				_id: Random.id(),
 				rid: result.rid,
 				msg: TAPi18n.__('Game_Center_Play_Game_Together', { name }),
-			});
+			}), 100);
+
+			modal.close();
 		} catch (err) {
 			console.warn(err);
 		}

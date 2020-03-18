@@ -101,6 +101,7 @@ Template.GameCenter.events({
 			title: t('Invite You Friends to Join'),
 			content: 'InvitePlayers',
 			data: this,
+			confirmOnEnter: false,
 			showCancelButton: false,
 			showConfirmButton: false,
 			html: false,
