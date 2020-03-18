@@ -9,7 +9,7 @@ import { t } from '../../../app/utils';
 import { modal, SideNav } from '../../../app/ui-utils';
 import { hasAllPermission } from '../../../app/authorization';
 import './personalAccessTokens.html';
-import { APIClient } from '../../../app/utils/client';
+import { APIClient, handleError } from '../../../app/utils/client';
 
 const loadTokens = async (instance) => {
 	const { tokens } = await APIClient.v1.get('users.getPersonalAccessTokens');
@@ -54,7 +54,7 @@ Template.accountTokens.events({
 		const bypassTwoFactor = $('#bypassTwoFactor').val() === 'true';
 		Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }, (error, token) => {
 			if (error) {
-				return toastr.error(t(error.error));
+				return handleError(error);
 			}
 			showSuccessModal(token);
 			loadTokens(instance);
@@ -77,7 +77,7 @@ Template.accountTokens.events({
 				tokenName: this.name,
 			}, (error) => {
 				if (error) {
-					return toastr.error(t(error.error));
+					return handleError(error);
 				}
 				loadTokens(instance);
 				toastr.success(t('Removed'));
@@ -100,7 +100,7 @@ Template.accountTokens.events({
 				tokenName: this.name,
 			}, (error, token) => {
 				if (error) {
-					return toastr.error(t(error.error));
+					return handleError(error);
 				}
 				loadTokens(instance);
 				showSuccessModal(token);

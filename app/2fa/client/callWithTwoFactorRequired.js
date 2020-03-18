@@ -79,6 +79,7 @@ Meteor.call = function(ddpMethod, ...args) {
 			onCode: (code, method) => {
 				call(ddpMethod, ...[...args, { twoFactorCode: code, twoFactorMethod: method }], (error, result) => {
 					if (error && error.error === 'totp-invalid') {
+						error.toastrShowed = true;
 						toastr.error(t('Invalid_two_factor_code'));
 						return callback(error);
 					}
