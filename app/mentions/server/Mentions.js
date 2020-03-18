@@ -3,6 +3,7 @@
 * @param {Object} message - The message object
 */
 import { MentionsParser } from '../lib/MentionsParser';
+import { Subscriptions } from '../../models';
 
 export default class MentionsServer extends MentionsParser {
 	constructor(args) {
@@ -67,6 +68,11 @@ export default class MentionsServer extends MentionsParser {
 			});
 		});
 		mentions = userMentions.length ? this.getUsers(userMentions) : [];
+		// fetch current (private) room user's data
+		const roomUsersData = Subscriptions.findByRoomIdAndTypes(rid, ['p'], { fields: { u: 1 } }).fetch().map((user) => user.u._id);
+		if (roomUsersData.length > 0) {
+			mentions = mentions.filter((user) => roomUsersData.indexOf(user._id) !== -1);
+		}
 		return [...mentionsAll, ...mentions];
 	}
 
