@@ -9,20 +9,22 @@ export function twoFactorRequired(fn: Function, options: ITwoFactorOptions): Fun
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'twoFactorRequired' });
 		}
 
-		// remove get two factor options from last item of args
+		// get two factor options from last item of args and remove it
 		const twoFactor = args.pop();
-		if (twoFactor && twoFactor.twoFactorCode && twoFactor.twoFactorMethod) {
-			checkCodeForUser({
-				user: this.userId,
-				connection: this.connection || undefined,
-				code: twoFactor.twoFactorCode,
-				method: twoFactor.twoFactorMethod,
-				options,
-			});
-			this.twoFactorChecked = true;
-		} else {
-			// if it was not two factor options, put it back
-			args.push(twoFactor);
+		if (twoFactor) {
+			if (twoFactor.twoFactorCode && twoFactor.twoFactorMethod) {
+				checkCodeForUser({
+					user: this.userId,
+					connection: this.connection || undefined,
+					code: twoFactor.twoFactorCode,
+					method: twoFactor.twoFactorMethod,
+					options,
+				});
+				this.twoFactorChecked = true;
+			} else {
+				// if it was not two factor options, put it back
+				args.push(twoFactor);
+			}
 		}
 
 		if (!this.twoFactorChecked) {
