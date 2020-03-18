@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { SHA256 } from 'meteor/sha';
 import toastr from 'toastr';
 
-import { modal } from '../../ui-utils';
+import { modal } from '../../ui-utils/client';
 import { t, APIClient } from '../../utils/client';
 
 const methods = {
