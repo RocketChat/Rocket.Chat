@@ -37,14 +37,13 @@ export function process2faReturn({ error, result, originalCallback, onCode, emai
 		html: methods[method].html,
 		type: 'input',
 		inputActionText: method === 'email' && t('Send_me_the_code_again'),
-		inputAction(e) {
+		async inputAction(e) {
 			const { value } = e.currentTarget;
 			e.currentTarget.value = t('Sending');
-			APIClient.v1.post('users.2fa.sendEmailCode', {
-				emailOrUsername,
-			}).then(() => {
-				e.currentTarget.value = value;
-			});
+
+			await APIClient.v1.post('users.2fa.sendEmailCode', { emailOrUsername });
+
+			e.currentTarget.value = value;
 		},
 		inputType: methods[method].inputType || 'text',
 		showCancelButton: true,
