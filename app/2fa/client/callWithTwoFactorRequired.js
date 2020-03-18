@@ -64,10 +64,10 @@ export function process2faReturn({ error, result, originalCallback, onCode, emai
 
 const { call } = Meteor;
 Meteor.call = function(ddpMethod, ...args) {
-	const callback = args.pop();
-
+	let callback = args.pop();
 	if (typeof callback !== 'function') {
-		return call(ddpMethod, ...args, callback);
+		args.push(callback);
+		callback = () => {};
 	}
 
 	return call(ddpMethod, ...args, function(error, result) {
