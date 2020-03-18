@@ -311,11 +311,10 @@ SAML.prototype.validateStatus = function(doc) {
 	};
 };
 
-SAML.prototype.validateSignature = function(xml, cert) {
+SAML.prototype.validateSignature = function(xml, cert, response) {
 	const self = this;
 
-	const doc = new xmldom.DOMParser().parseFromString(xml);
-	const signature = xmlCrypto.xpath(doc, '//*[local-name(.)=\'Signature\' and namespace-uri(.)=\'http://www.w3.org/2000/09/xmldsig#\']')[0];
+	const signature = response.getElementsByTagName('ds:Signature')[0];
 
 	const sig = new xmlCrypto.SignedXml();
 
@@ -510,14 +509,6 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	}
 	debugLog('Status ok');
 
-	// Verify signature
-	debugLog('Verify signature');
-	if (self.options.cert && !self.validateSignature(xml, self.options.cert)) {
-		debugLog('Signature WRONG');
-		return callback(new Error('Invalid signature'), null, false);
-	}
-	debugLog('Signature OK');
-
 	const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response')[0];
 	if (!response) {
 		const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
@@ -528,6 +519,14 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 		return callback(null, null, true);
 	}
 	debugLog('Got response');
+
+	// Verify signature
+	debugLog('Verify signature');
+	if (self.options.cert && !self.validateSignature(xml, self.options.cert, response)) {
+		debugLog('Signature WRONG');
+		return callback(new Error('Invalid signature'), null, false);
+	}
+	debugLog('Signature OK');
 
 	let assertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')[0];
 	const encAssertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion')[0];
