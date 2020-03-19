@@ -2,15 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import toastr from 'toastr';
+import s from 'underscore.string';
+
 import { t, handleError } from '../../../utils';
 import { call, modal } from '../../../ui-utils';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { ChannelSettings } from '../../../channel-settings';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { AdminChatRoom } from './adminRooms';
-import toastr from 'toastr';
 
 Template.adminRoomInfo.helpers({
 	selectedRoom() {
@@ -23,27 +24,27 @@ Template.adminRoomInfo.helpers({
 		return Template.instance().editing.get() === field;
 	},
 	notDirect() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.t !== 'd';
 	},
 	roomType() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.t;
 	},
 	channelSettings() {
 		return ChannelSettings.getOptions(undefined, 'admin-room');
 	},
 	roomTypeDescription() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = Template.instance().room.get();
 		const roomType = room && room.t;
 		if (roomType === 'c') {
 			return t('Channel');
-		} else if (roomType === 'p') {
+		} if (roomType === 'p') {
 			return t('Private_Group');
 		}
 	},
 	roomName() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { name: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.name;
 	},
 	roomOwner() {
@@ -51,45 +52,43 @@ Template.adminRoomInfo.helpers({
 		return roomOwner && (roomOwner.name || roomOwner.username);
 	},
 	roomTopic() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { topic: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.topic;
 	},
 	archivationState() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { archived: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.archived;
 	},
 	archivationStateDescription() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { archived: 1 } });
+		const room = Template.instance().room.get();
 		const archivationState = room && room.archived;
 		if (archivationState === true) {
 			return t('Room_archivation_state_true');
-		} else {
-			return t('Room_archivation_state_false');
 		}
+		return t('Room_archivation_state_false');
 	},
 	canDeleteRoom() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = Template.instance().room.get();
 		const roomType = room && room.t;
 		return (roomType != null) && hasAtLeastOnePermission(`delete-${ roomType }`);
 	},
 	readOnly() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { ro: 1 } });
+		const room = Template.instance().room.get();
 		return room && room.ro;
 	},
 	readOnlyDescription() {
-		const room = AdminChatRoom.findOne(this.rid, { fields: { ro: 1 } });
+		const room = Template.instance().room.get();
 		const readOnly = room && room.ro;
 
 		if (readOnly === true) {
 			return t('True');
-		} else {
-			return t('False');
 		}
+		return t('False');
 	},
 });
 
 Template.adminRoomInfo.events({
-	'click .delete'() {
+	'click .delete'(event, instance) {
 		modal.open({
 			title: t('Are_you_sure'),
 			text: t('Delete_Room_Warning'),
@@ -112,6 +111,8 @@ Template.adminRoomInfo.events({
 						timer: 2000,
 						showConfirmButton: false,
 					});
+					instance.onSuccess();
+					instance.data.tabBar.close();
 				}
 			});
 		});
@@ -125,9 +126,9 @@ Template.adminRoomInfo.events({
 	'click [data-edit]'(e, t) {
 		e.preventDefault();
 		t.editing.set($(e.currentTarget).data('edit'));
-		return setTimeout((function() {
+		return setTimeout(function() {
 			t.$('input.editing').focus().select();
-		}), 100);
+		}, 100);
 	},
 	'click .cancel'(e, t) {
 		e.preventDefault();
@@ -140,8 +141,18 @@ Template.adminRoomInfo.events({
 });
 
 Template.adminRoomInfo.onCreated(function() {
-	this.editing = new ReactiveVar;
-	this.roomOwner = new ReactiveVar;
+	const instance = this;
+	const currentData = Template.currentData();
+	this.editing = new ReactiveVar();
+	this.room = new ReactiveVar();
+	this.roomOwner = new ReactiveVar();
+	this.onSuccess = Template.currentData().onSuccess;
+
+	this.autorun(() => {
+		const { room } = Template.currentData();
+		this.room.set(room);
+	});
+
 	this.validateRoomType = () => {
 		const type = this.$('input[name=roomType]:checked').val();
 		if (type !== 'c' && type !== 'p') {
@@ -150,7 +161,7 @@ Template.adminRoomInfo.onCreated(function() {
 		return true;
 	};
 	this.validateRoomName = (rid) => {
-		const room = AdminChatRoom.findOne(rid);
+		const { room } = currentData;
 		let nameValidation;
 		if (!hasAllPermission('edit-room', rid) || (room.t !== 'c' && room.t !== 'p')) {
 			toastr.error(t('error-not-allowed'));
@@ -164,7 +175,7 @@ Template.adminRoomInfo.onCreated(function() {
 		}
 		if (!nameValidation.test(name)) {
 			toastr.error(t('error-invalid-room-name', {
-				room_name: name,
+				room_name: s.escapeHTML(name),
 			}));
 			return false;
 		}
@@ -175,12 +186,14 @@ Template.adminRoomInfo.onCreated(function() {
 		switch (this.editing.get()) {
 			case 'roomName':
 				if (this.validateRoomName(rid)) {
-					callbacks.run('roomNameChanged', AdminChatRoom.findOne(rid));
+					callbacks.run('roomNameChanged', currentData.room);
 					Meteor.call('saveRoomSettings', rid, 'roomName', this.$('input[name=roomName]').val(), function(err) {
 						if (err) {
 							return handleError(err);
 						}
 						toastr.success(TAPi18n.__('Room_name_changed_successfully'));
+						instance.onSuccess();
+						instance.data.tabBar.close();
 					});
 				}
 				break;
@@ -191,7 +204,9 @@ Template.adminRoomInfo.onCreated(function() {
 							return handleError(err);
 						}
 						toastr.success(TAPi18n.__('Room_topic_changed_successfully'));
-						callbacks.run('roomTopicChanged', AdminChatRoom.findOne(rid));
+						callbacks.run('roomTopicChanged', currentData.room);
+						instance.onSuccess();
+						instance.data.tabBar.close();
 					});
 				}
 				break;
@@ -202,24 +217,27 @@ Template.adminRoomInfo.onCreated(function() {
 							return handleError(err);
 						}
 						toastr.success(TAPi18n.__('Room_announcement_changed_successfully'));
-						callbacks.run('roomAnnouncementChanged', AdminChatRoom.findOne(rid));
+						callbacks.run('roomAnnouncementChanged', currentData.room);
+						instance.onSuccess();
+						instance.data.tabBar.close();
 					});
 				}
 				break;
 			case 'roomType':
 				const val = this.$('input[name=roomType]:checked').val();
 				if (this.validateRoomType(rid)) {
-					callbacks.run('roomTypeChanged', AdminChatRoom.findOne(rid));
+					callbacks.run('roomTypeChanged', currentData.room);
 					const saveRoomSettings = function() {
 						Meteor.call('saveRoomSettings', rid, 'roomType', val, function(err) {
 							if (err) {
 								return handleError(err);
-							} else {
-								toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 							}
+							toastr.success(TAPi18n.__('Room_type_changed_successfully'));
+							instance.onSuccess();
+							instance.data.tabBar.close();
 						});
 					};
-					if (!AdminChatRoom.findOne(rid, { fields: { default: 1 } }).default) {
+					if (!currentData.room.default) {
 						return saveRoomSettings();
 					}
 					modal.open({
@@ -237,7 +255,7 @@ Template.adminRoomInfo.onCreated(function() {
 				}
 				break;
 			case 'archivationState':
-				const room = AdminChatRoom.findOne(rid);
+				const { room } = currentData;
 				if (this.$('input[name=archivationState]:checked').val() === 'true') {
 					if (room && room.archived !== true) {
 						Meteor.call('archiveRoom', rid, function(err) {
@@ -245,7 +263,9 @@ Template.adminRoomInfo.onCreated(function() {
 								return handleError(err);
 							}
 							toastr.success(TAPi18n.__('Room_archived'));
-							callbacks.run('archiveRoom', AdminChatRoom.findOne(rid));
+							callbacks.run('archiveRoom', currentData.room);
+							instance.onSuccess();
+							instance.data.tabBar.close();
 						});
 					}
 				} else if ((room && room.archived) === true) {
@@ -254,7 +274,9 @@ Template.adminRoomInfo.onCreated(function() {
 							return handleError(err);
 						}
 						toastr.success(TAPi18n.__('Room_unarchived'));
-						callbacks.run('unarchiveRoom', AdminChatRoom.findOne(rid));
+						callbacks.run('unarchiveRoom', currentData.room);
+						instance.onSuccess();
+						instance.data.tabBar.close();
 					});
 				}
 				break;
@@ -264,12 +286,14 @@ Template.adminRoomInfo.onCreated(function() {
 						return handleError(err);
 					}
 					toastr.success(TAPi18n.__('Read_only_changed_successfully'));
+					instance.onSuccess();
+					instance.data.tabBar.close();
 				});
 		}
 		this.editing.set();
 	};
 
-	this.autorun(async() => {
+	this.autorun(async () => {
 		this.roomOwner.set(null);
 		for (const { roles, u } of await call('getRoomRoles', Session.get('adminRoomsSelected').rid)) {
 			if (roles.includes('owner')) {

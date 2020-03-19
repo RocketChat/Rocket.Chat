@@ -1,7 +1,9 @@
-import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../settings';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+
 import { MessageTypes } from './MessageTypes';
+import { settings } from '../../settings';
 
 export const Message = {
 	parse(msg, language) {
@@ -9,12 +11,12 @@ export const Message = {
 		if (messageType) {
 			if (messageType.render) {
 				return messageType.render(msg);
-			} else if (messageType.template) {
+			} if (messageType.template) {
 				// Render message
 				return;
-			} else if (messageType.message) {
-				if (!language && typeof localStorage !== 'undefined') {
-					language = localStorage.getItem('userLanguage');
+			} if (messageType.message) {
+				if (!language) {
+					language = Meteor._localStorage.getItem('userLanguage');
 				}
 				const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
 				return TAPi18n.__(messageType.message, data, language);

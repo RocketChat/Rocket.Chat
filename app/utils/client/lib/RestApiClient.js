@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+
+import { baseURI } from './baseuri';
+
 export const APIClient = {
 	delete(endpoint, params) {
 		return APIClient._jqueryCall('DELETE', endpoint, params);
@@ -16,13 +21,13 @@ export const APIClient = {
 		return APIClient._jqueryCall('POST', endpoint, params, body);
 	},
 
-	upload(endpoint, params, formData) {
+	upload(endpoint, params, formData, xhrOptions) {
 		if (!formData) {
 			formData = params;
 			params = {};
 		}
 
-		return APIClient._jqueryFormDataCall(endpoint, params, formData);
+		return APIClient._jqueryFormDataCall(endpoint, params, formData, xhrOptions);
 	},
 
 	_generateQueryFromParams(params) {
@@ -44,11 +49,11 @@ export const APIClient = {
 		return new Promise(function _rlRestApiGet(resolve, reject) {
 			jQuery.ajax({
 				method,
-				url: `${ document.baseURI }api/${ endpoint }${ query }`,
+				url: `${ baseURI }api/${ endpoint }${ query }`,
 				headers: {
 					'Content-Type': 'application/json',
-					'X-User-Id': localStorage['Meteor.userId'],
-					'X-Auth-Token': localStorage['Meteor.loginToken'],
+					'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
+					'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
 				},
 				data: JSON.stringify(body),
 				success: function _rlGetSuccess(result) {
@@ -63,19 +68,35 @@ export const APIClient = {
 		});
 	},
 
-	_jqueryFormDataCall(endpoint, params, formData) {
+	_jqueryFormDataCall(endpoint, params, formData, { progress = () => {}, error = () => {} } = {}) {
+		const ret = { };
+
 		const query = APIClient._generateQueryFromParams(params);
 
 		if (!(formData instanceof FormData)) {
 			throw new Error('The formData parameter MUST be an instance of the FormData class.');
 		}
 
-		return new Promise(function _jqueryFormDataPromise(resolve, reject) {
-			jQuery.ajax({
-				url: `${ document.baseURI }api/${ endpoint }${ query }`,
+		ret.promise = new Promise(function _jqueryFormDataPromise(resolve, reject) {
+			ret.xhr = jQuery.ajax({
+				xhr() {
+					const xhr = new window.XMLHttpRequest();
+
+					xhr.upload.addEventListener('progress', function(evt) {
+						if (evt.lengthComputable) {
+							const percentComplete = evt.loaded / evt.total;
+							progress(percentComplete * 100);
+						}
+					}, false);
+
+					xhr.upload.addEventListener('error', error, false);
+
+					return xhr;
+				},
+				url: `${ baseURI }api/${ endpoint }${ query }`,
 				headers: {
-					'X-User-Id': localStorage['Meteor.userId'],
-					'X-Auth-Token': localStorage['Meteor.loginToken'],
+					'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
+					'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
 				},
 				data: formData,
 				processData: false,
@@ -85,10 +106,14 @@ export const APIClient = {
 					resolve(result);
 				},
 				error: function _jqueryFormDataError(xhr, status, errorThrown) {
-					reject(new Error(errorThrown));
+					const error = new Error(errorThrown);
+					error.xhr = xhr;
+					reject(error);
 				},
 			});
 		});
+
+		return ret;
 	},
 
 	v1: {

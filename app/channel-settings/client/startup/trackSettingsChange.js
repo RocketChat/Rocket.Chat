@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
+
 import { callbacks } from '../../../callbacks';
 import { RoomManager } from '../../../ui-utils';
 import { roomTypes } from '../../../utils';

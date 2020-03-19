@@ -58,6 +58,10 @@
 			left: 5px;
 
 			border-left: 0;
+
+			& .translation-provider {
+				display: none;
+			}
 		}
 	}
 }

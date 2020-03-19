@@ -1,10 +1,8 @@
-import { settings } from '../../settings';
 import { theme } from './server';
+import { settings } from '../../settings';
 // TODO: Define registers/getters/setters for packages to work with established
 // 			heirarchy of colors instead of making duplicate definitions
 // TODO: Settings pages to show simple separation of major/minor/addon colors
-// TODO: Get major colours as swatches for minor colors in minicolors plugin
-// TODO: Minicolors settings to use rgb for alphas, hex otherwise
 // TODO: Add setting toggle to use defaults for minor colours and hide settings
 
 // New colors, used for shades on solid backgrounds
@@ -35,7 +33,7 @@ const majorColors = {
 	'secondary-background-color': '#F4F4F4',
 	'secondary-font-color': '#A0A0A0',
 	'secondary-action-color': '#DDDDDD',
-	'component-color': '#EAEAEA',
+	'component-color': '#f2f3f5',
 	'success-color': '#4dff4d',
 	'pending-color': '#FCB316',
 	'error-color': '#BC2031',
@@ -77,4 +75,3 @@ settings.add('theme-custom-css', '', {
 	section: 'Custom CSS',
 	public: true,
 });
-

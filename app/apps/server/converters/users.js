@@ -1,5 +1,6 @@
-import { Users } from '../../../models';
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
+
+import { Users } from '../../../models';
 
 export class AppUsersConverter {
 	constructor(orch) {
@@ -40,6 +41,30 @@ export class AppUsersConverter {
 			createdAt: user.createdAt,
 			updatedAt: user._updatedAt,
 			lastLoginAt: user.lastLogin,
+			appId: user.appId,
+		};
+	}
+
+	convertToRocketChat(user) {
+		if (!user) {
+			return undefined;
+		}
+
+		return {
+			_id: user.id,
+			username: user.username,
+			emails: user.emails,
+			type: user.type,
+			active: user.isEnabled,
+			name: user.name,
+			roles: user.roles,
+			status: user.status,
+			statusConnection: user.statusConnection,
+			utcOffset: user.utfOffset,
+			createdAt: user.createdAt,
+			_updatedAt: user.updatedAt,
+			lastLogin: user.lastLoginAt,
+			appId: user.appId,
 		};
 	}
 
@@ -49,6 +74,8 @@ export class AppUsersConverter {
 				return UserType.USER;
 			case 'bot':
 				return UserType.BOT;
+			case 'app':
+				return UserType.APP;
 			case '':
 			case undefined:
 				return UserType.UNKNOWN;

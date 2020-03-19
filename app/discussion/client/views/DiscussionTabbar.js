@@ -1,53 +1,74 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 
-import { DiscussionOfRoom } from '../lib/discussionsOfRoom';
+import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { Messages } from '../../../models/client';
+import { APIClient } from '../../../utils/client';
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 
 import './DiscussionTabbar.html';
 
+const LIMIT_DEFAULT = 50;
+
 Template.discussionsTabbar.helpers({
 	hasMessages() {
-		return DiscussionOfRoom.find({
-			rid: this.rid,
-		}).count() > 0;
+		return Template.instance().messages.find().count();
 	},
 	messages() {
-		return DiscussionOfRoom.find({
-			rid: this.rid,
-		}, {
-			sort: {
-				ts: -1,
-			},
-		});
-	},
-	message() {
-		return _.extend(this, { customClass: 'pinned', actionContext: 'pinned' });
+		const instance = Template.instance();
+		return instance.messages.find({}, { limit: instance.limit.get(), sort: { ts: -1 } });
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
+	messageContext,
 });
 
 Template.discussionsTabbar.onCreated(function() {
+	this.rid = this.data.rid;
+	this.messages = new Mongo.Collection(null);
 	this.hasMore = new ReactiveVar(true);
-	this.limit = new ReactiveVar(50);
-	return this.autorun(() => {
-		const data = Template.currentData();
-		return this.subscribe('discussionsOfRoom', data.rid, this.limit.get(), () => {
-			if (DiscussionOfRoom.find({
-				rid: data.rid,
-			}).count() < this.limit.get()) {
-				return this.hasMore.set(false);
-			}
+	this.limit = new ReactiveVar(LIMIT_DEFAULT);
+
+	this.autorun(() => {
+		const query = {
+			rid: this.rid,
+			drid: { $exists: true },
+		};
+
+		this.cursor && this.cursor.stop();
+
+		this.limit.set(LIMIT_DEFAULT);
+
+		this.cursor = Messages.find(query).observe({
+			added: ({ _id, ...message }) => {
+				this.messages.upsert({ _id }, message);
+			},
+			changed: ({ _id, ...message }) => {
+				this.messages.upsert({ _id }, message);
+			},
+			removed: ({ _id }) => {
+				this.messages.remove({ _id });
+			},
 		});
+	});
+
+	this.autorun(async () => {
+		const limit = this.limit.get();
+		const { messages, total } = await APIClient.v1.get(`chat.getDiscussions?roomId=${ this.rid }&count=${ limit }`);
+
+		upsertMessageBulk({ msgs: messages }, this.messages);
+
+		this.hasMore.set(total > limit);
 	});
 });
 
 Template.discussionsTabbar.events({
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight - 10 && instance.hasMore.get()) {
-			return instance.limit.set(instance.limit.get() + 50);
+			instance.limit.set(instance.limit.get() + LIMIT_DEFAULT);
 		}
 	}, 200),
 });

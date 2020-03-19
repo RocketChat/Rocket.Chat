@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { handleError, t } from '../../../utils';
 import { modal } from '../../../ui-utils';
 
@@ -28,6 +29,7 @@ Template.emojiInfo.helpers({
 		return {
 			tabBar: this.tabBar,
 			emoji: instance.emoji.get(),
+			onSuccess: instance.onSuccess,
 			back(name) {
 				instance.editingEmoji.set();
 
@@ -67,17 +69,17 @@ Template.emojiInfo.events({
 				Meteor.call('deleteEmojiCustom', _id, (error/* , result*/) => {
 					if (error) {
 						return handleError(error);
-					} else {
-						modal.open({
-							title: t('Deleted'),
-							text: t('Custom_Emoji_Has_Been_Deleted'),
-							type: 'success',
-							timer: 2000,
-							showConfirmButton: false,
-						});
-
-						instance.tabBar.close();
 					}
+					modal.open({
+						title: t('Deleted'),
+						text: t('Custom_Emoji_Has_Been_Deleted'),
+						type: 'success',
+						timer: 2000,
+						showConfirmButton: false,
+					});
+					instance.onSuccess();
+
+					instance.tabBar.close();
 				});
 			});
 		}
@@ -86,13 +88,13 @@ Template.emojiInfo.events({
 	'click .edit-emoji'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
-
 		instance.editingEmoji.set(instance.emoji.get()._id);
 	},
 });
 
 Template.emojiInfo.onCreated(function() {
 	this.emoji = new ReactiveVar();
+	this.onSuccess = Template.currentData().onSuccess;
 
 	this.editingEmoji = new ReactiveVar();
 
@@ -108,7 +110,7 @@ Template.emojiInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const data = Template.currentData();
+		const data = Template.currentData().emoji;
 		const emoji = this.emoji.get();
 		if (emoji != null && emoji.name != null) {
 			this.loadedName.set(emoji.name);
@@ -118,7 +120,7 @@ Template.emojiInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const data = Template.currentData();
+		const data = Template.currentData().emoji;
 		this.emoji.set(data);
 	});
 });

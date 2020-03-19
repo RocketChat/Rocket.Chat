@@ -1,8 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+
 import { Messages, Users, Subscriptions } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 
 export class AppMessageBridge {
 	constructor(orch) {
@@ -12,13 +13,11 @@ export class AppMessageBridge {
 	async create(message, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating a new message.`);
 
-		let msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+		const convertedMessage = this.orch.getConverters().get('messages').convertAppMessage(message);
 
-		Meteor.runAsUser(msg.u._id, () => {
-			msg = Meteor.call('sendMessage', msg);
-		});
+		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
 
-		return msg._id;
+		return sentMessage._id;
 	}
 
 	async getById(messageId, appId) {
@@ -29,10 +28,6 @@ export class AppMessageBridge {
 
 	async update(message, appId) {
 		this.orch.debugLog(`The App ${ appId } is updating a message.`);
-		if (!this.updateMessage) {
-			const { updateMessage } = await import('meteor/rocketchat:lib');
-			this.updateMessage = updateMessage;
-		}
 
 		if (!message.editor) {
 			throw new Error('Invalid editor assigned to the message for the update.');
@@ -80,7 +75,7 @@ export class AppMessageBridge {
 			Users.findByIds(users, { fields: { _id: 1 } })
 				.fetch()
 				.forEach(({ _id }) =>
-					Notifications.notifyUser(_id, 'message', rmsg)
+					Notifications.notifyUser(_id, 'message', rmsg),
 				);
 		}
 	}

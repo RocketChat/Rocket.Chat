@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { hasAtLeastOnePermission } from '../../../authorization';
-import { t, handleError } from '../../../utils';
 import _ from 'underscore';
 import toastr from 'toastr';
+
+import { hasAtLeastOnePermission } from '../../../authorization';
+import { t, handleError } from '../../../utils';
 
 Template.adminInviteUser.helpers({
 	isAllowed() {

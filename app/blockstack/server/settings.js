@@ -1,8 +1,9 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+
 import { logger } from './logger';
+import { settings } from '../../settings';
 
 const defaults = {
 	enable: false,

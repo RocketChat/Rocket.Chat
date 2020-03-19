@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
@@ -18,7 +19,7 @@ Meteor.startup(() => {
 });
 
 async function getBadgeCount(userId) {
-	const [result] = await SubscriptionRaw.aggregate([
+	const [result = {}] = await SubscriptionRaw.aggregate([
 		{ $match: { 'u._id': userId } },
 		{
 			$group: {
@@ -32,8 +33,17 @@ async function getBadgeCount(userId) {
 	return total;
 }
 
-function canSendMessageToRoom(room, username) {
-	return !((room.muted || []).includes(username));
+function enableNotificationReplyButton(room, username) {
+	// Some users may have permission to send messages even on readonly rooms, but we're ok with false negatives here in exchange of better perfomance
+	if (room.ro === true) {
+		return false;
+	}
+
+	if (!room.muted) {
+		return true;
+	}
+
+	return !room.muted.includes(username);
 }
 
 export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
@@ -60,7 +70,7 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 		usersTo: {
 			userId,
 		},
-		category: canSendMessageToRoom(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
+		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	});
 }
 
@@ -70,10 +80,11 @@ export function shouldNotifyMobile({
 	hasMentionToAll,
 	isHighlighted,
 	hasMentionToUser,
+	hasReplyToThread,
 	statusConnection,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser) {
+	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
 
@@ -94,5 +105,5 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser;
+	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser || hasReplyToThread;
 }

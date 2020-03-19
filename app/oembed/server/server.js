@@ -1,16 +1,19 @@
+import URL from 'url';
+import querystring from 'querystring';
+
 import { Meteor } from 'meteor/meteor';
 import { HTTPInternals } from 'meteor/http';
 import { changeCase } from 'meteor/konecty:change-case';
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
-import { OEmbedCache, Messages } from '../../models';
 import _ from 'underscore';
-import URL from 'url';
-import querystring from 'querystring';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
+
+import { OEmbedCache, Messages } from '../../models';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
+import { isURL } from '../../utils/lib/isURL';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
@@ -58,10 +61,15 @@ const toUtf8 = function(contentType, body) {
 };
 
 const getUrlContent = function(urlObj, redirectCount = 5, callback) {
-
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
+
+	const portsProtocol = {
+		80: 'http:',
+		8080: 'http:',
+		443: 'https:',
+	};
 
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
@@ -70,7 +78,12 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
-	if (parsedUrl.port && safePorts.length > 0 && (!safePorts.includes(parsedUrl.port))) {
+
+	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
+		return callback();
+	}
+
+	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
 		return callback();
 	}
 
@@ -127,7 +140,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		});
 	}));
 	return stream.on('error', function(err) {
-		return error = err;
+		error = err;
 	});
 };
 
@@ -155,24 +168,24 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 	let metas = undefined;
 	if (content && content.body) {
 		metas = {};
+		const escapeMeta = (name, value) => {
+			metas[name] = metas[name] || he.unescape(value);
+			return metas[name];
+		};
 		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gmi, function(meta, title) {
-			return metas.pageTitle != null ? metas.pageTitle : metas.pageTitle = he.unescape(title);
+			return escapeMeta('pageTitle', title);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, function(meta, name, value) {
-			let name1;
-			return metas[name1 = changeCase.camelCase(name)] != null ? metas[name1] : metas[name1] = he.unescape(value);
+			return escapeMeta(changeCase.camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, function(meta, name, value) {
-			let name1;
-			return metas[name1 = changeCase.camelCase(name)] != null ? metas[name1] : metas[name1] = he.unescape(value);
+			return escapeMeta(changeCase.camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, function(meta, value, name) {
-			let name1;
-			return metas[name1 = changeCase.camelCase(name)] != null ? metas[name1] : metas[name1] = he.unescape(value);
+			return escapeMeta(changeCase.camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, function(meta, value, name) {
-			let name1;
-			return metas[name1 = changeCase.camelCase(name)] != null ? metas[name1] : metas[name1] = he.unescape(value);
+			return escapeMeta(changeCase.camelCase(name), value);
 		});
 		if (metas.fragment === '!' && (withFragment == null)) {
 			return OEmbed.getUrlMeta(url, true);
@@ -254,23 +267,23 @@ OEmbed.rocketUrlParser = function(message) {
 			if (item.ignoreParse === true) {
 				return;
 			}
-			if (!/^https?:\/\//i.test(item.url)) {
+			if (!isURL(item.url)) {
 				return;
 			}
 			const data = OEmbed.getUrlMetaWithCache(item.url);
 			if (data != null) {
 				if (data.attachments) {
-					return attachments = _.union(attachments, data.attachments);
-				} else {
-					if (data.meta != null) {
-						item.meta = getRelevantMetaTags(data.meta);
-					}
-					if (data.headers != null) {
-						item.headers = getRelevantHeaders(data.headers);
-					}
-					item.parsedUrl = data.parsedUrl;
-					return changed = true;
+					attachments = _.union(attachments, data.attachments);
+					return;
 				}
+				if (data.meta != null) {
+					item.meta = getRelevantMetaTags(data.meta);
+				}
+				if (data.headers != null) {
+					item.headers = getRelevantHeaders(data.headers);
+				}
+				item.parsedUrl = data.parsedUrl;
+				changed = true;
 			}
 		});
 		if (attachments.length) {
@@ -286,9 +299,8 @@ OEmbed.rocketUrlParser = function(message) {
 settings.get('API_Embed', function(key, value) {
 	if (value) {
 		return callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
-	} else {
-		return callbacks.remove('afterSaveMessage', 'API_Embed');
 	}
+	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });
 
 export { OEmbed };

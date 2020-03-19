@@ -2,11 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import _ from 'underscore';
+
 import { hasAllPermission } from '../../authorization';
 import { popover, TabBar, Layout } from '../../ui-utils';
 import { t } from '../../utils';
-import _ from 'underscore';
+import { settings } from '../../settings';
 
 const commonHelpers = {
 	title() {
@@ -20,25 +22,25 @@ const commonHelpers = {
 };
 function canShowAddUsersButton(rid) {
 	const canAddToChannel = hasAllPermission(
-		'add-user-to-any-c-room', rid
+		'add-user-to-any-c-room', rid,
 	);
 	const canAddToGroup = hasAllPermission(
-		'add-user-to-any-p-room', rid
+		'add-user-to-any-p-room', rid,
 	);
 	const canAddToJoinedRoom = hasAllPermission(
-		'add-user-to-joined-room', rid
+		'add-user-to-joined-room', rid,
 	);
 	if (
-		!canAddToJoinedRoom &&
-		!canAddToChannel &&
-		Template.instance().tabBar.currentGroup() === 'channel'
+		!canAddToJoinedRoom
+		&& !canAddToChannel
+		&& Template.instance().tabBar.currentGroup() === 'channel'
 	) {
 		return false;
 	}
 	if (
-		!canAddToJoinedRoom &&
-		!canAddToGroup &&
-		Template.instance().tabBar.currentGroup() === 'group'
+		!canAddToJoinedRoom
+		&& !canAddToGroup
+		&& Template.instance().tabBar.currentGroup() === 'group'
 	) {
 		return false;
 	}
@@ -54,6 +56,9 @@ const filterButtons = (button, anonymous, rid) => {
 	if (button.id === 'addUsers' && !canShowAddUsersButton(rid)) {
 		return false;
 	}
+	if (button.id === 'thread' && !settings.get('Threads_enabled')) {
+		return false;
+	}
 	return true;
 };
 Template.flexTabBar.helpers({
@@ -63,7 +68,7 @@ Template.flexTabBar.helpers({
 	...commonHelpers,
 	buttons() {
 		return TabBar.getButtons().filter((button) =>
-			filterButtons(button, this.anonymous, this.data && this.data.rid)
+			filterButtons(button, this.anonymous, this.data && this.data.rid),
 		);
 	},
 	opened() {
@@ -144,6 +149,10 @@ Template.flexTabBar.events({
 
 		$flexTab.attr('template', this.template);
 
+		t.tabBar.setData({
+			label: this.i18nTitle,
+			icon: this.icon,
+		});
 		t.tabBar.open(this.id);
 	},
 
@@ -176,7 +185,7 @@ Template.RoomsActionTab.events({
 		$(e.currentTarget).blur();
 		e.preventDefault();
 		const buttons = TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
-		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => ({
+		const groups = [{ items: (t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => ({
 			...item,
 			name: TAPi18n.__(item.i18nTitle),
 			actionDefault: item.action !== action && item.action,

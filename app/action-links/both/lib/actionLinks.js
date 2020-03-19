@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Messages, Subscriptions } from '../../../models';
 
 // Action Links namespace creation.

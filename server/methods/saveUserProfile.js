@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+
 import { saveCustomFields, passwordPolicy } from '../../app/lib';
 import { Users } from '../../app/models';
 import { settings as rcSettings } from '../../app/settings';
@@ -16,13 +17,13 @@ Meteor.methods({
 			});
 		}
 
-		if (!Meteor.userId()) {
+		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'saveUserProfile',
 			});
 		}
 
-		const user = Users.findOneById(Meteor.userId());
+		const user = Users.findOneById(this.userId);
 
 		function checkPassword(user = {}, typedPassword) {
 			if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
@@ -30,7 +31,7 @@ Meteor.methods({
 			}
 
 			const passCheck = Accounts._checkPassword(user, {
-				digest: typedPassword,
+				digest: typedPassword.toLowerCase(),
 				algorithm: 'sha-256',
 			});
 
@@ -40,12 +41,16 @@ Meteor.methods({
 			return true;
 		}
 
-		if (settings.realname) {
+		if (settings.realname || (!settings.realname && !rcSettings.get('Accounts_RequireNameForSignUp'))) {
 			Meteor.call('setRealName', settings.realname);
 		}
 
 		if (settings.username) {
 			Meteor.call('setUsername', settings.username);
+		}
+
+		if (settings.statusText || settings.statusText === '') {
+			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
 		if (settings.email) {
@@ -59,7 +64,7 @@ Meteor.methods({
 		}
 
 		// Should be the last check to prevent error when trying to check password for users without password
-		if ((settings.newPassword) && rcSettings.get('Accounts_AllowPasswordChange') === true) {
+		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile',
@@ -68,15 +73,21 @@ Meteor.methods({
 
 			passwordPolicy.validate(settings.newPassword);
 
-			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
+			Accounts.setPassword(this.userId, settings.newPassword, {
 				logout: false,
 			});
+
+			try {
+				Meteor.call('removeOtherTokens');
+			} catch (e) {
+				Accounts._clearAllLoginTokens(this.userId);
+			}
 		}
 
-		Users.setProfile(Meteor.userId(), {});
+		Users.setProfile(this.userId, {});
 
 		if (customFields && Object.keys(customFields).length) {
-			saveCustomFields(Meteor.userId(), customFields);
+			saveCustomFields(this.userId, customFields);
 		}
 
 		return true;
