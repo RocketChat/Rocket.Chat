@@ -94,7 +94,7 @@
 	}
 
 	&--secondary {
-		color: var(--button-secondary-text-color);
+		color: var(--button-secondary-text-color); 
 		border: 0;
 		border-color: var(--button-secondary-background);
 		background-color: var(--button-secondary-background);

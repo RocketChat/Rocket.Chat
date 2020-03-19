@@ -33,6 +33,22 @@
 	--color-black: #000000; /* TODO: make sure if is being used in some place */
 	--color-white: #ffffff;
 
+	/* 
+	* New Variables
+	*/
+	--message-container-background: rgb(64, 10, 241);
+	--header-room-background: rgb(43, 10, 226);
+	--footer-message-background: rgb(51, 17, 202);
+	--home-section-background: #0b79ce;
+	--flex-nav: rgb(49, 5, 170);
+	--room-sidebar: rgb(7, 17, 146);
+	--room-sidebar-header: rgb(14, 5, 131);
+	--room-sidebar-header-border: rgb(47, 31, 117);
+	--room-sidebar-header-icon-title: rgb(67, 52, 109);
+	--room-header-actions: rgb(59, 46, 119);
+	--emoji-picker-background: rgb(18, 68, 149);
+	--input-border-color: blue; /* (já existe mas nao muda no painel /layout) */
+
 	/*
 	* General Colors
 	*/
@@ -136,7 +152,7 @@
 	--input-text-color: var(--color-dark-medium);
 	--input-placeholder-color: var(--color-gray-medium);
 	--input-icon-color: var(--color-dark);
-	--input-border-color: var(--color-gray-light);
+	/* --input-border-color: var(--color-gray-light); */
 	--input-border-width: var(--border);
 	--input-border-radius: var(--border-radius);
 	--input-description-text-color: var(--color-gray);

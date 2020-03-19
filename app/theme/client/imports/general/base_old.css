@@ -1401,6 +1401,8 @@ rc-old select,
 /* MAIN CONTENT + MAIN PAGES */
 
 .rc-old.main-content {
+	background-color: var(--admin-background);
+
 	& .container-fluid {
 		padding-top: 0;
 	}
@@ -1671,6 +1673,7 @@ rc-old select,
 }
 
 .rc-old .page-home {
+	background-color: var(--home-section-background);
 	& .fixed-title h2 {
 		overflow: visible;
 	}

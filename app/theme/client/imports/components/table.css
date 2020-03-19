@@ -97,11 +97,12 @@
 
 		text-overflow: ellipsis;
 
-		color: var(--rc-color-primary);
+		
 
 		line-height: normal;
 
 		& .rc-icon {
+			color: var(--rc-color-primary-light);
 			margin: 0 -4px;
 
 			font-size: 1rem;

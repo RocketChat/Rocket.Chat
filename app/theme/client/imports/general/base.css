@@ -226,6 +226,7 @@ button {
 	& .body {
 		&::before {
 			display: none;
+			/* background-color: var(--light-background); */
 		}
 
 		&::after {

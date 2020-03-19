@@ -1,6 +1,7 @@
 .rc-tooltip {
 	position: relative;
 	--translation-x: -50%;
+	/* color: var(--icon-color); */
 
 	&::before,
 	&::after {
@@ -81,7 +82,7 @@
 		&:focus::after {
 			transform: translate(var(--translation-x), 0);
 			pointer-events: auto;
-
+			/* color: var(--icon-color); */
 			opacity: 1;
 		}
 	}

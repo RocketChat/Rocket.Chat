@@ -99,7 +99,7 @@ textarea.rc-input__element {
 	&__description {
 		margin-bottom: 0.25rem;
 
-		color: var(--input-description-text-color);
+		color: var(--input-description-text-color); /* TODO: make sure if is being used in some place */
 
 		font-size: var(--input-description-text-size);
 	}

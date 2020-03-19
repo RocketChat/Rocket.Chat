@@ -101,6 +101,7 @@
 		& .footer {
 			right: 0;
 			left: auto;
+			/* background-color: var(--light-background); */
 		}
 
 		& .message-form {

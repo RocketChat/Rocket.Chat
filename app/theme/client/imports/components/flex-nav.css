@@ -9,7 +9,7 @@
 
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
-	background-color: var(--flex-nav-background);
+	background-color: var(--flex-nav);
 	will-change: transform;
 
 	&.animated-hidden {

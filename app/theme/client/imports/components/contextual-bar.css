@@ -39,6 +39,7 @@
 
 		padding: var(--default-padding);
 		justify-content: space-between;
+		background-color: var(--room-sidebar);
 
 		&--no-padding {
 			padding-right: 0;
@@ -56,18 +57,20 @@
 
 		padding: var(--default-padding);
 
-		border-bottom: solid 1px var(--color-gray-light);
+		border-bottom: solid 1px var(--room-sidebar-header-border);
 
-		background: var(--color-gray-lightest);
+		background: var(--room-sidebar-header);
 
 		align-items: center;
 		justify-content: flex-end;
+
 
 		&-data {
 			display: flex;
 			overflow: hidden;
 			flex: 1 1;
 			align-items: center;
+			color: var(--room-sidebar-header-icon-title);
 		}
 
 		&-icon {
@@ -333,7 +336,7 @@
 
 		color: var(--rc-color-alert-message-secondary);
 		border-color: var(--rc-color-alert-message-secondary);
-		background: var(--rc-color-alert-message-secondary-background);
+		background: pink;
 	}
 
 	&--warning {
@@ -358,6 +361,7 @@
 
 			transform: rotate3d(0, 0, 1, -25deg);
 			fill: currentColor;
+			/* stroke: var(--icon-colors); */
 		}
 	}
 

@@ -1,5 +1,6 @@
 .messages-container-wrapper {
 	position: relative;
+	background-color: var(--message-container-background);
 }
 
 .message-actions {
