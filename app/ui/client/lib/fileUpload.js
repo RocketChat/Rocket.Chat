@@ -1,12 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
+import { Random } from 'meteor/random';
 
-import { fileUploadHandler } from '../../../file-upload';
 import { settings } from '../../../settings/client';
-import { t, fileUploadIsValidContentType } from '../../../utils';
+import { t, fileUploadIsValidContentType, APIClient } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 
 
@@ -193,7 +192,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			cancelButtonText: t('Cancel'),
 			html: true,
 			onRendered: () => $('#file-name').focus(),
-		}, (isConfirm) => {
+		}, async (isConfirm) => {
 			if (!isConfirm) {
 				return;
 			}
@@ -206,52 +205,48 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				description: document.getElementById('file-description').value,
 			};
 
-			const upload = fileUploadHandler('Uploads', record, file.file);
+			const fileName = document.getElementById('file-name').value || file.name || file.file.name;
+
+			const data = new FormData();
+			record.description && data.append('description', record.description);
+			msg && data.append('msg', msg);
+			tmid && data.append('tmid', tmid);
+			data.append('file', file.file, fileName);
+
+
+			const uploads = Session.get('uploading') || [];
+
+			const upload = {
+				id: Random.id(),
+				name: fileName,
+				percentage: 0,
+			};
+
+			uploads.push(upload);
+			Session.set('uploading', uploads);
 
 			uploadNextFile();
 
-			const uploads = Session.get('uploading') || [];
-			uploads.push({
-				id: upload.id,
-				name: upload.getFileName(),
-				percentage: 0,
-			});
-			Session.set('uploading', uploads);
+			const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
+				progress(progress) {
+					const uploads = Session.get('uploading') || [];
 
-			upload.onProgress = (progress) => {
-				const uploads = Session.get('uploading') || [];
-				uploads.filter((u) => u.id === upload.id).forEach((u) => {
-					u.percentage = Math.round(progress * 100) || 0;
-				});
-				Session.set('uploading', uploads);
-			};
-
-			upload.start((error, file, storage) => {
-				if (error) {
+					if (progress === 100) {
+						return;
+					}
+					uploads.filter((u) => u.id === upload.id).forEach((u) => {
+						u.percentage = Math.round(progress) || 0;
+					});
+					Session.set('uploading', uploads);
+				},
+				error(error) {
 					const uploads = Session.get('uploading') || [];
 					uploads.filter((u) => u.id === upload.id).forEach((u) => {
 						u.error = error.message;
 						u.percentage = 0;
 					});
 					Session.set('uploading', uploads);
-
-					return;
-				}
-
-				if (!file) {
-					return;
-				}
-
-				Meteor.call('sendFileMessage', rid, storage, file, { msg, tmid }, () => {
-					$(input)
-						.removeData('reply')
-						.trigger('dataChange');
-
-					setTimeout(() => {
-						const uploads = Session.get('uploading') || [];
-						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
-					}, 2000);
-				});
+				},
 			});
 
 			Tracker.autorun((computation) => {
@@ -259,13 +254,27 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				if (!isCanceling) {
 					return;
 				}
-
 				computation.stop();
-				upload.stop();
+				Session.delete(`uploading-cancel-${ upload.id }`);
+
+				xhr.abort();
 
 				const uploads = Session.get('uploading') || {};
 				Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 			});
+
+			try {
+				await promise;
+				const uploads = Session.get('uploading') || [];
+				return Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+			} catch (error) {
+				const uploads = Session.get('uploading') || [];
+				uploads.filter((u) => u.id === upload.id).forEach((u) => {
+					u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+					u.percentage = 0;
+				});
+				Session.set('uploading', uploads);
+			}
 		}));
 	};
 
