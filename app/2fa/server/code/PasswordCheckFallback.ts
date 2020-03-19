@@ -7,7 +7,10 @@ export class PasswordCheckFallback implements ICodeCheck {
 	public readonly name = 'password';
 
 	public isEnabled(user: IUser): boolean {
-		return user.services?.password?.bcrypt != null;
+		// TODO: Uncomment for version 4.0 forcing the
+		// password fallback for who has password set.
+		// return user.services?.password?.bcrypt != null;
+		return !user;
 	}
 
 	public verify(user: IUser, code: string): boolean {
