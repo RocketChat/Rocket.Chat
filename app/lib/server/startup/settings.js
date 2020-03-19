@@ -2,6 +2,7 @@ import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings';
 import './email';
+import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
 settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
@@ -124,7 +125,7 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_RequireNameForSignUp', true, {
+		this.add('Accounts_RequireNameForSignUp', true, { // TODO rename to Accounts_RequireFullName
 			type: 'boolean',
 			public: true,
 		});
@@ -142,6 +143,9 @@ settings.addGroup('Accounts', function() {
 					$ne: '',
 				},
 			},
+		});
+		this.add('Accounts_Verify_Email_For_External_Accounts', true, {
+			type: 'boolean',
 		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
 			public: true,
@@ -1088,27 +1092,14 @@ settings.addGroup('Message', function() {
 		type: 'int',
 		public: true,
 	});
-	this.add('Message_HideType_uj', false, {
-		type: 'boolean',
+
+
+	this.add('Hide_System_Messages', [], {
+		type: 'multiSelect',
 		public: true,
-	});
-	this.add('Message_HideType_ul', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_ru', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_au', false, {
-		type: 'boolean',
-		public: true,
+		values: MessageTypesValues,
 	});
 
-	this.add('Message_HideType_mute_unmute', false, {
-		type: 'boolean',
-		public: true,
-	});
 
 	this.add('Message_ErasureType', 'Delete', {
 		type: 'select',

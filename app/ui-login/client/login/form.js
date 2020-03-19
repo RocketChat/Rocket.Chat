@@ -141,6 +141,8 @@ Template.loginForm.events({
 						instance.state.set('email-verification');
 					} else if (error.error === 'error-user-is-not-activated') {
 						toastr.error(t('Wait_activation_warning'));
+					} else if (error.error === 'error-app-user-is-not-allowed-to-login') {
+						toastr.error(t('App_user_not_allowed_to_login'));
 					} else {
 						toastr.error(t('User_not_found_or_incorrect_password'));
 					}

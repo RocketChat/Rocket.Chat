@@ -8,14 +8,9 @@ import {
 Migrations.add({
 	version: 172,
 	up() {
-		const setting = Settings.findOne({ _id: 'Message_SetNameToAliasEnabled' });
-		if (setting.value) {
-			Settings.update({ _id: 'UI_Use_Real_Name' }, {
-				$set: {
-					value: true,
-				},
-			});
-		}
-		Settings.remove({ _id: 'Message_SetNameToAliasEnabled' });
+		const settings = Settings.find({ _id: /Message_HideType_.*/i }).fetch();
+
+		Settings.update({ _id: 'Hide_System_Messages' }, { $set: { value: settings.filter((setting) => setting.value).map((setting) => setting._id.replace('Message_HideType_')) } });
+		Settings.remove({ _id: /Message_HideType_.*/i }, { multi: true });
 	},
 });

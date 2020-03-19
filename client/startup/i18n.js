@@ -56,8 +56,9 @@ Meteor.startup(() => {
 		if (!language) {
 			return;
 		}
-
 		document.documentElement.classList[isRtl(language) ? 'add' : 'remove']('rtl');
+		document.querySelector('html').lang = language;
+
 		TAPi18n.setLanguage(language);
 		loadMomentLocale(language)
 			.then((locale) => moment.locale(locale))
