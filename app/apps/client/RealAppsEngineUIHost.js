@@ -14,10 +14,10 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	getUserAvatarUrl(username) {
-		let avatarUrl = getUserAvatarURL(username);
+		const avatarUrl = getUserAvatarURL(username);
 
 		if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('data')) {
-			avatarUrl = `${ this._baseURL }${ avatarUrl }`;
+			return `${ this._baseURL }${ avatarUrl }`;
 		}
 
 		return avatarUrl;
