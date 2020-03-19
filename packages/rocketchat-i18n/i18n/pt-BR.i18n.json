@@ -1212,6 +1212,7 @@
   "error-email-send-failed": "Erro ao tentar enviar e-mail: __message__",
   "error-field-unavailable": "<strong>__field__</strong> já está sendo usado :(",
   "error-file-too-large": "Arquivo é muito grande",
+  "error-forwarding-chat-same-department": "O departamento selecionado e o departamento atual da sala são iguais",
   "error-importer-not-defined": "O importador não foi definido corretamente;  está faltando a classe Import.",
   "error-import-file-extract-error": "Falha ao extrair o arquivo importado.",
   "error-import-file-is-empty": "Arquivo importado parece estar vazio.",
