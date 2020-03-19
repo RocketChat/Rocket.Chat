@@ -5045,17 +5045,17 @@ rc-old select,
 	}
 
 	.section-content {
-		& #mydata{
+		& #mydata {
 			display: block;
 		}
 
 		& #download {
-			width:100%;
-			margin-bottom:5px;
+			width: 100%;
+			margin-bottom: 5px;
 		}
 
 		& #export {
-			width:100%;
+			width: 100%;
 			margin-top: 5px;
 		}
 	}
