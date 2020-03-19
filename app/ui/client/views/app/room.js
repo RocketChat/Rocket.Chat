@@ -59,10 +59,13 @@ const openProfileTab = (e, instance, username) => {
 	}
 
 	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
-	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
+	if (roomTypes.getConfig(roomData.t).enableMembersListProfile()) {
 		instance.userDetail.set(username);
 	}
 
+	if (roomTypes.roomTypes[roomData.t].openCustomProfileTab(instance, roomData, username)) {
+		return;
+	}
 	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.open();
@@ -906,25 +909,6 @@ Template.room.events({
 		const { msg } = messageArgs(this);
 		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
-	},
-
-	'click .collapse-switch'(e) {
-		const { msg: { _id } } = messageArgs(this);
-		const index = $(e.currentTarget).data('index');
-		const collapsed = $(e.currentTarget).data('collapsed');
-
-		const msg = ChatMessage.findOne(_id);
-		if (!msg) {
-			return;
-		}
-
-		if (msg.attachments) {
-			ChatMessage.update({ _id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
-		}
-
-		if (msg.urls) {
-			ChatMessage.update({ _id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
-		}
 	},
 	'load .gallery-item'(e, template) {
 		template.sendToBottomIfNecessaryDebounced();
