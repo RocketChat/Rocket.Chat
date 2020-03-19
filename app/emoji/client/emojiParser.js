@@ -74,7 +74,7 @@ Tracker.autorun(() => {
 			// apostrophe (') back to &#39;
 			html = html.replace(/\'/g, '&#39;');
 
-			// apostrophe ' <br> ' back to '<br>'
+			// line breaks ' <br> ' back to '<br>'
 			html = html.replace(/ <br> /g, '<br>');
 		}
 
