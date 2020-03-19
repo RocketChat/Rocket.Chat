@@ -5045,12 +5045,18 @@ rc-old select,
 	}
 
 	.section-content {
-		& .download-my-data {
-			height: 70px;
+		& #mydata{
+			display: block;
 		}
 
-		& .export-my-data {
-			height: 70px;
+		& #download {
+			width:100%;
+			margin-bottom:5px;
+		}
+
+		& #export {
+			width:100%;
+			margin-top: 5px;
 		}
 	}
 }
