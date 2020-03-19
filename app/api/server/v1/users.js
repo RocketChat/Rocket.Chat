@@ -132,6 +132,30 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('users.deactivateIdle', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			daysIdle: Match.Integer,
+			role: Match.Optional(String),
+		});
+
+		if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
+			return API.v1.unauthorized();
+		}
+
+		const { daysIdle, role = 'user' } = this.bodyParams;
+
+		const lastLoggedIn = new Date();
+		lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
+
+		const count = Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
+
+		return API.v1.success({
+			count,
+		});
+	},
+});
+
 API.v1.addRoute('users.getPresence', { authRequired: true }, {
 	get() {
 		if (this.isUserFromParams()) {
@@ -708,5 +732,11 @@ API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 			uid: this.userId,
 			selector: JSON.parse(selector),
 		})));
+	},
+});
+
+API.v1.addRoute('users.removeOtherTokens', { authRequired: true }, {
+	post() {
+		API.v1.success(Meteor.call('removeOtherTokens'));
 	},
 });

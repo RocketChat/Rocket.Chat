@@ -40,7 +40,7 @@ Template.adminRooms.helpers({
 		return Template.instance().rooms.get().length;
 	},
 	type() {
-		return TAPi18n.__(roomTypes.roomTypes[this.t].label);
+		return TAPi18n.__(roomTypes.getConfig(this.t).label);
 	},
 	'default'() {
 		if (this.default) {
