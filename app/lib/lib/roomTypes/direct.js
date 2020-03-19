@@ -103,6 +103,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	allowRoomSettingChange(room, setting) {
 		switch (setting) {
+			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			case RoomSettingsEnum.DESCRIPTION:
@@ -116,6 +117,10 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			default:
 				return true;
 		}
+	}
+
+	allowMemberAction(/* room, action */) {
+		return false;
 	}
 
 	enableMembersListProfile() {
@@ -158,5 +163,9 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	getAvatarPath(roomData) {
 		return getUserAvatarURL(roomData.name || this.roomName(roomData));
+	}
+
+	includeInDashboard() {
+		return true;
 	}
 }
