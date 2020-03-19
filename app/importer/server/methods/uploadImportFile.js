@@ -35,7 +35,7 @@ Meteor.methods({
 		importer.instance.startFileUpload(newFileName, contentType);
 
 		// Save the file on the File Store
-		const file = new Buffer(binaryContent, 'binary');
+		const file = new Buffer(binaryContent, 'base64');
 		const readStream = RocketChatFile.bufferToStream(file);
 		const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
 

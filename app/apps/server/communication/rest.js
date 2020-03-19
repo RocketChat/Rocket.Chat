@@ -503,16 +503,30 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/icon', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+		this.api.addRoute(':id/icon', { authRequired: false }, {
 			get() {
 				const prl = manager.getOneById(this.urlParams.id);
-
-				if (prl) {
-					const info = prl.getInfo();
-
-					return API.v1.success({ iconFileContent: info.iconFileContent });
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+
+				const info = prl.getInfo();
+				if (!info || !info.iconFileContent) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				}
+
+				const imageData = info.iconFileContent.split(';base64,');
+
+				const buf = Buffer.from(imageData[1], 'base64');
+
+				return {
+					statusCode: 200,
+					headers: {
+						'Content-Length': buf.length,
+						'Content-Type': imageData[0].replace('data:', ''),
+					},
+					body: buf,
+				};
 			},
 		});
 

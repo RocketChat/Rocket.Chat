@@ -103,10 +103,10 @@ Template.adminImportNew.events({
 
 			const reader = new FileReader();
 
-			reader.readAsBinaryString(file);
+			reader.readAsDataURL(file);
 			reader.onloadend = () => {
 				APIClient.post('v1/uploadImportFile', {
-					binaryContent: reader.result,
+					binaryContent: reader.result.split(';base64,')[1],
 					contentType: file.type,
 					fileName: file.name,
 					importerKey: importType,
