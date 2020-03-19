@@ -50,7 +50,7 @@
 							<div class="rc-header__visual-status">{{userStatusText}}</div>
 						</span>
 						{{else}}
-						{{#if roomTopic}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}
+						{{#if $and roomTopic isNotMobile}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}
 						{{/if}}
 					</div>
 
