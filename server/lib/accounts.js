@@ -119,6 +119,8 @@ Accounts.onCreateUser(function(options, user = {}) {
 	}
 
 	if (user.services) {
+		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+
 		for (const service of Object.values(user.services)) {
 			if (!user.name) {
 				user.name = service.name || service.username;
@@ -127,7 +129,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 			if (!user.emails && service.email) {
 				user.emails = [{
 					address: service.email,
-					verified: true,
+					verified,
 				}];
 			}
 		}
@@ -175,6 +177,14 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (!user.type) {
 		user.type = 'user';
+	}
+
+	if (settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
+		user.services = user.services || {};
+		user.services.email2fa = {
+			enabled: true,
+			changedAt: new Date(),
+		};
 	}
 
 	const _id = insertUserDoc.call(Accounts, options, user);
