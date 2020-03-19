@@ -113,6 +113,10 @@ export class PublicRoomType extends RoomTypeConfig {
 		}
 	}
 
+	allowMemberAction(/* room, action */) {
+		return true;
+	}
+
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
