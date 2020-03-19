@@ -49,8 +49,8 @@ export async function findDepartmentsToAutocomplete({ uid, selector }) {
 	if (!await hasPermissionAsync(uid, 'view-livechat-departments') && !await hasPermissionAsync(uid, 'view-l-room')) {
 		return { items: [] };
 	}
-	const exceptions = selector.exceptions || [];
-	const conditions = selector.conditions || {};
+	const { exceptions = [], conditions = {} } = selector;
+
 	const options = {
 		fields: {
 			_id: 1,

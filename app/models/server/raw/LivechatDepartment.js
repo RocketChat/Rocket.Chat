@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import s from 'underscore.string';
 
 import { BaseRaw } from './BaseRaw';
@@ -9,11 +8,8 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (conditions == null) { conditions = {}; }
-		if (options == null) { options = {}; }
-		if (!_.isArray(exceptions)) {
+	findByNameRegexWithExceptionsAndConditions(searchTerm, exceptions = [], conditions = {}, options = {}) {
+		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 

@@ -43,7 +43,7 @@ Template.visitorForward.helpers({
 	departmentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
 		};
 	},
 	onClickTagDepartment() {
@@ -70,6 +70,7 @@ Template.visitorForward.onCreated(async function() {
 	this.onSelectDepartments = ({ item: department }) => {
 		department.text = department.name;
 		this.selectedDepartments.set([department]);
+		this.selectedAgents.set([]);
 	};
 
 	this.onClickTagDepartment = () => {
@@ -78,6 +79,7 @@ Template.visitorForward.onCreated(async function() {
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
+		this.selectedDepartments.set([]);
 	};
 
 	this.onClickTagAgent = ({ username }) => {
@@ -110,7 +112,11 @@ Template.visitorForward.events({
 			transferData.userId = user._id;
 		} else if (instance.selectedDepartments.get()) {
 			const [department] = instance.selectedDepartments.get();
-			transferData.departmentId = department._id;
+			transferData.departmentId = department && department._id;
+		}
+
+		if (!transferData.userId && !transferData.departmentId) {
+			return;
 		}
 
 		Meteor.call('livechat:transfer', transferData, (error, result) => {
@@ -124,19 +130,6 @@ Template.visitorForward.events({
 				toastr.warning(t('No_available_agents_to_transfer'));
 			}
 		});
-	},
-
-	'change #forwardDepartment, blur #forwardDepartment'(event, instance) {
-		const [user] = instance.selectedAgents.get();
-		if (user) {
-			instance.selectedAgents.set([]);
-		}
-	},
-
-	'change #forwardUser, blur #forwardUser'(event, instance) {
-		if (event.currentTarget.value && instance.find('#forwardDepartment')) {
-			instance.selectedDepartments.set([]);
-		}
 	},
 
 	'click .cancel'(event) {
