@@ -20,8 +20,7 @@ import './methods/deleteRole';
 import './methods/removeRoleFromPermission';
 import './methods/removeUserFromRole';
 import './methods/saveRole';
-import './publications/permissions';
-import './publications/roles';
+import './streamer/permissions';
 import './startup';
 
 export {

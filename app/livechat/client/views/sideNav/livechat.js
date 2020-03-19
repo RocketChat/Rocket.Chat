@@ -37,20 +37,16 @@ Template.livechat.helpers({
 			open: true,
 		};
 
-		const user = Users.findOne(Meteor.userId(), {
-			fields: { 'settings.preferences.sidebarShowUnread': 1 },
-		});
+		const user = Meteor.userId();
 
 		if (getUserPreference(user, 'sidebarShowUnread')) {
 			query.alert = { $ne: true };
 		}
 
-		return ChatSubscription.find(query, {
-			sort: {
-				t: 1,
-				fname: 1,
-			},
-		});
+		const sortBy = getUserPreference(user, 'sidebarSortby');
+		const sort = sortBy === 'activity' ? { _updatedAt: - 1 } : { fname: 1 };
+
+		return ChatSubscription.find(query, { sort });
 	},
 
 	inquiries() {

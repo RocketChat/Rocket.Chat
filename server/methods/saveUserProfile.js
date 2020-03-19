@@ -41,7 +41,7 @@ Meteor.methods({
 			return true;
 		}
 
-		if (settings.realname) {
+		if (settings.realname || (!settings.realname && !rcSettings.get('Accounts_RequireNameForSignUp'))) {
 			Meteor.call('setRealName', settings.realname);
 		}
 
