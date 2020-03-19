@@ -102,6 +102,14 @@
 								{{/if}}
 							</div>
 						</div>
+						<div class="input-line double-col" id="unreadAlert">
+							<label class="setting-label">{{_ "Notification_RequireInteraction"}}</label>
+							<div class="setting-field">
+								<label><input type="radio" name="desktopNotificationRequireInteraction" value="true" checked="{{checked 'desktopNotificationRequireInteraction' true}}"/> {{_ "On"}}</label>
+								<label><input type="radio" name="desktopNotificationRequireInteraction" value="false" checked="{{checked 'desktopNotificationRequireInteraction' false}}"/> {{_ "Off"}}</label>
+								<div class="settings-description secondary-font-color">{{_ "Only_works_with_chrome_version_greater_50"}}</div>
+							</div>
+						</div>
 						<div class="input-line double-col" id="desktopNotifications">
 							<label class="setting-label">{{_ "Notification_Desktop_Default_For"}}</label>
 							<div class="rc-select setting-field">
@@ -236,6 +244,14 @@
 								<label><input type="radio" name="hideAvatars" value="false" checked="{{checked 'hideAvatars' false}}"/> {{_ "False"}}</label>
 							</div>
 						</div>
+
+						<div class="input-line double-col" id="sidebarHideAvatar">
+							<label class="setting-label">{{_ "Hide_Avatars_Sidebar"}}</label>
+							<div class="setting-field">
+								<label><input type="radio" name="sidebarHideAvatar" value="true" checked="{{checked 'sidebarHideAvatar' true}}"/> {{_ "True"}}</label>
+								<label><input type="radio" name="sidebarHideAvatar" value="false" checked="{{checked 'sidebarHideAvatar' false}}"/> {{_ "False"}}</label>
+							</div>
+						</div>
 						<div class="input-line double-col" id="messageViewMode">
 							<label class="setting-label">{{_ "View_mode"}}</label>
 							<div class="setting-field">
@@ -269,14 +285,6 @@
 				<div class="section">
 					<h1>{{_ "Sidebar"}}</h1>
 					<div class="section-content border-component-color">
-						<div class="input-line double-col" id="roomCounterSidebar">
-							<label class="setting-label">{{_ "Show_room_counter_on_sidebar"}}</label>
-							<div class="setting-field">
-								<label><input type="radio" name="roomCounterSidebar" value="true" checked="{{checked 'roomCounterSidebar' true}}"/> {{_ "True"}}</label>
-								<label><input type="radio" name="roomCounterSidebar" value="false" checked="{{checked 'roomCounterSidebar' false}}"/> {{_ "False"}}</label>
-							</div>
-						</div>
-
 						<div class="input-line double-col" id="sidebarShowDiscussion">
 							<label class="setting-label">{{_ "Group_discussions"}}</label>
 							<div>

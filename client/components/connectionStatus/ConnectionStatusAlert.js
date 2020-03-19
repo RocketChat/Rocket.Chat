@@ -1,19 +1,18 @@
-import { Meteor } from 'meteor/meteor';
+import { Icon } from '@rocket.chat/fuselage';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { useTranslation } from '../../hooks/useTranslation';
-import { Icon } from '../basic/Icon';
+import { useConnectionStatus } from '../../contexts/ConnectionStatusContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import './ConnectionStatusAlert.css';
 
-export function ConnectionStatusAlert() {
-	const {
-		connected,
-		retryTime,
-		status,
-	} = useReactiveValue(() => ({ ...Meteor.status() }));
+const getReconnectCountdown = (retryTime) => {
+	const timeDiff = retryTime - Date.now();
+	return (timeDiff > 0 && Math.round(timeDiff / 1000)) || 0;
+};
+
+const useReconnectCountdown = (retryTime, status) => {
 	const reconnectionTimerRef = useRef();
-	const [reconnectCountdown, setReconnectCountdown] = useState(0);
-	const t = useTranslation();
+	const [reconnectCountdown, setReconnectCountdown] = useState(() => getReconnectCountdown(retryTime));
 
 	useEffect(() => {
 		if (status === 'waiting') {
@@ -22,8 +21,7 @@ export function ConnectionStatusAlert() {
 			}
 
 			reconnectionTimerRef.current = setInterval(() => {
-				const timeDiff = retryTime - Date.now();
-				setReconnectCountdown((timeDiff > 0 && Math.round(timeDiff / 1000)) || 0);
+				setReconnectCountdown(getReconnectCountdown(retryTime));
 			}, 500);
 			return;
 		}
@@ -36,18 +34,26 @@ export function ConnectionStatusAlert() {
 		clearInterval(reconnectionTimerRef.current);
 	}, []);
 
+	return reconnectCountdown;
+};
+
+export function ConnectionStatusAlert() {
+	const { connected, retryTime, status, reconnect } = useConnectionStatus();
+	const reconnectCountdown = useReconnectCountdown(retryTime, status);
+	const t = useTranslation();
+
 	if (connected) {
 		return null;
 	}
 
 	const handleRetryClick = (event) => {
 		event.preventDefault();
-		Meteor.reconnect();
+		reconnect && reconnect();
 	};
 
 	return <div className='ConnectionStatusAlert' role='alert'>
 		<strong>
-			<Icon icon='warning' /> {t('meteor_status', { context: status })}
+			<Icon name='warning' /> {t('meteor_status', { context: status })}
 		</strong>
 
 		{status === 'waiting' && <>
@@ -57,11 +63,7 @@ export function ConnectionStatusAlert() {
 
 		{['waiting', 'offline'].includes(status) && <>
 			{' '}
-			<a
-				href='#'
-				className='ConnectionStatusAlert__link'
-				onClick={handleRetryClick}
-			>
+			<a className='ConnectionStatusAlert__retry-link' href='#' onClick={handleRetryClick}>
 				{t('meteor_status_try_now', { context: status })}
 			</a>
 		</>}

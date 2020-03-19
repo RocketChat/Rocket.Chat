@@ -159,8 +159,8 @@ export const aggregates = {
 	},
 
 	getMatchOfLastMonthToday({ year, month, day }) {
-		const pastMonthLastDay = (new Date(year, month - 1, 0)).getDate();
-		const currMonthLastDay = (new Date(year, month, 0)).getDate();
+		const pastMonthLastDay = new Date(year, month - 1, 0).getDate();
+		const currMonthLastDay = new Date(year, month, 0).getDate();
 
 		const lastMonthToday = new Date(year, month - 1, day);
 		lastMonthToday.setMonth(lastMonthToday.getMonth() - 1, (currMonthLastDay === day ? pastMonthLastDay : Math.min(pastMonthLastDay, day)) + 1);

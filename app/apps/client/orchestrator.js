@@ -145,6 +145,15 @@ class AppClientOrchestrator {
 		return app;
 	}
 
+	updateApp = async (appId, version) => {
+		const { app } = await APIClient.post(`apps/${ appId }`, {
+			appId,
+			marketplace: true,
+			version,
+		});
+		return app;
+	}
+
 	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`)
 
 	syncApp = (appId) => APIClient.post(`apps/${ appId }/sync`)

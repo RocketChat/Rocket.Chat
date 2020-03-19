@@ -1,11 +1,11 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -15,9 +15,9 @@ import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
 import './messageThread.html';
+import { AutoTranslate } from '../../autotranslate/client';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement)
@@ -96,6 +96,12 @@ const renderBody = (msg, settings) => {
 	return msg;
 };
 
+Template.message.events({
+	'click .collapse-switch'(e, instance) {
+		instance.collapsedMedia.set(!instance.collapsedMedia.get());
+	},
+});
+
 Template.message.helpers({
 	body() {
 		const { msg, settings } = this;
@@ -172,13 +178,6 @@ Template.message.helpers({
 		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || (MessageTypes.isSystemMessage(msg) && !msg.tmid)) {
 			return 'false';
 		}
-	},
-	sequentialClass() {
-		const { msg, groupable } = this;
-		if (MessageTypes.isSystemMessage(msg) && !msg.tmid) {
-			return;
-		}
-		return groupable !== false && msg.groupable !== false && 'sequential';
 	},
 	avatarFromUsername() {
 		const { msg } = this;
@@ -264,20 +263,24 @@ Template.message.helpers({
 			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
 		}
 	},
+	translationProvider() {
+		const instance = Template.instance();
+		const { translationProvider } = instance.data.msg;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+	},
 	edited() {
-		return Template.instance().wasEdited;
+		const { msg } = this;
+		return msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	},
 	editTime() {
 		const { msg } = this;
-		if (Template.instance().wasEdited) {
-			return DateFormat.formatDateAndTime(msg.editedAt);
-		}
+		return msg.editedAt ? DateFormat.formatDateAndTime(msg.editedAt) : '';
 	},
 	editedBy() {
-		if (!Template.instance().wasEdited) {
+		const { msg } = this;
+		if (!msg.editedAt) {
 			return '';
 		}
-		const { msg } = this;
 		// try to return the username of the editor,
 		// otherwise a special "?" character that will be
 		// rendered as a special avatar
@@ -370,8 +373,19 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	injectMessage(data, { _id, rid }) {
+		data.msg = { _id, rid };
+	},
 	injectIndex(data, index) {
 		data.index = index;
+	},
+	injectSettings(data, settings) {
+		data.settings = settings;
+	},
+	injectCollapsedMedia(data) {
+		const collapsedMedia = Template.instance().collapsedMedia.get();
+		Object.assign(data, { collapsedMedia });
+		return data;
 	},
 	channelName() {
 		const { subscription } = this;
@@ -418,7 +432,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable || _groupable) && !!(tmid && showreply && (!t || t === 'e2e'));
+		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -426,6 +440,9 @@ Template.message.helpers({
 		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
+	},
+	collapsedMedia() {
+		return Template.instance().collapsedMedia.get();
 	},
 	collapseSwitchClass() {
 		const { msg: { collapsed = true } } = this;
@@ -466,15 +483,14 @@ const findParentMessage = (() => {
 					repliesCount: message.tcount,
 				},
 			},
-			{ multi: true }
+			{ multi: true },
 		);
 	};
 })();
 
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
-
-	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
+	this.collapsedMedia = new ReactiveVar(this.data.settings.collapseMediaByDefault === true);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
@@ -561,15 +577,15 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies, collapsedMedia }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
-	if (msg.file && msg.file.type === 'application/pdf') {
+	if (msg.file && msg.file.type === 'application/pdf' && !collapsedMedia) {
 		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
 	}
 	// const currentDataset = currentNode.dataset;
-	const previousNode = getPreviousSentMessage(currentNode);
+	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
 	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
@@ -596,33 +612,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		} else {
 			nextNode.classList.remove('new-day');
 		}
-	} else if (shouldCollapseReplies) {
-		const [el] = $(`#chat-window-${ msg.rid }`);
-		const view = el && Blaze.getView(el);
-		const templateInstance = view && view.templateInstance();
-		if (!templateInstance) {
-			return;
-		}
-
-		if (currentNode.classList.contains('own') === true) {
-			templateInstance.atBottom = true;
-		}
-		templateInstance.sendToBottomIfNecessary();
 	}
 };
 
-Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-	this.autorun(() => {
-		const currentNode = this.firstNode;
-		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	});
+Template.message.onRendered(function() {
+	const currentNode = this.firstNode;
+	this.autorun(() => processSequentials({ currentNode, ...Template.currentData(), collapsedMedia: this.collapsedMedia.get() }));
 });
-
-Template.message.onViewRendered = function() {
-	const args = messageArgs(Template.currentData());
-	// processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	return this._domrange.onAttached((domRange) => {
-		const currentNode = domRange.lastNode();
-		processSequentials({ currentNode, ...args });
-	});
-};

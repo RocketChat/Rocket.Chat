@@ -6,7 +6,6 @@ export class PrivateSettingsCachedCollection extends CachedCollection {
 		super({
 			name: 'private-settings',
 			eventType: 'onLogged',
-			useCache: false,
 		});
 	}
 

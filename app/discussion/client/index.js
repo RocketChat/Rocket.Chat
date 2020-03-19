@@ -5,7 +5,6 @@ import './views/DiscussionTabbar';
 
 // Other UI extensions
 import './lib/messageTypes/discussionMessage';
-import './lib/discussionsOfRoom';
 import './createDiscussionMessageAction';
 import './discussionFromMessageBox';
 import './tabBar';
