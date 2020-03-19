@@ -6,7 +6,7 @@ export { handleError } from './lib/handleError';
 export { getUserPreference } from '../lib/getUserPreference';
 export { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
 export { roomTypes } from './lib/roomTypes';
-export { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } from '../lib/RoomTypeConfig';
+export { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../lib/RoomTypeConfig';
 export { RoomTypesCommon } from '../lib/RoomTypesCommon';
 export { getUserAvatarURL } from '../lib/getUserAvatarURL';
 export { slashCommands } from '../lib/slashCommand';

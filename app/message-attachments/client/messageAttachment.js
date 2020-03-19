@@ -10,6 +10,7 @@ const colors = {
 	danger: '#D30230',
 };
 
+
 Template.messageAttachment.helpers({
 	parsedText() {
 		return renderMessageBody({
@@ -56,16 +57,7 @@ Template.messageAttachment.helpers({
 		return colors[this.color] || this.color;
 	},
 	collapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
-		}
-		return false;
-	},
-	mediaCollapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
-		}
-		return this.settings.collapseMediaByDefault === true;
+		return this.collapsedMedia;
 	},
 	time() {
 		const messageDate = new Date(this.ts);
@@ -84,6 +76,11 @@ Template.messageAttachment.helpers({
 	injectMessage(data, { rid, _id }) {
 		data.msg = { _id, rid };
 	},
+	injectCollapsedMedia(data) {
+		const { collapsedMedia } = data;
+		Object.assign(this, { collapsedMedia });
+		return this;
+	},
 	isFile() {
 		return this.type === 'file';
 	},
@@ -91,9 +88,9 @@ Template.messageAttachment.helpers({
 		if (
 			this.type === 'file'
 			&& this.title_link.endsWith('.pdf')
-			&& Template.parentData().msg.file
+			&& Template.parentData(2).msg.file
 		) {
-			this.fileId = Template.parentData().msg.file._id;
+			this.fileId = Template.parentData(2).msg.file._id;
 			return true;
 		}
 		return false;
