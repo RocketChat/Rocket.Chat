@@ -30,7 +30,6 @@ Meteor.startup(function() {
 
 		this.add('SMS_Default_Omnichannel_Department', '', {
 			type: 'string',
-			i18nLabel: 'SMS_Default_Omnichannel_Department',
 		});
 
 		this.section('Twilio', function() {
