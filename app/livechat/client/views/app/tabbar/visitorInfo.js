@@ -231,7 +231,7 @@ Template.visitorInfo.events({
 	'click .close-livechat'(event) {
 		event.preventDefault();
 
-		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, function(error/* , result*/) {
+		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function(error/* , result*/) {
 			if (error) {
 				return handleError(error);
 			}
