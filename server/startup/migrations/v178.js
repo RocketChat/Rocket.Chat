@@ -1,12 +1,12 @@
 import {
 	Migrations,
-} from '../../../app/migrations';
+} from '../../../app/migrations/server';
 import {
 	Settings,
-} from '../../../app/models';
+} from '../../../app/models/server';
 
 Migrations.add({
-	version: 172,
+	version: 178,
 	up() {
 		const setting = Settings.findOne({ _id: 'Message_SetNameToAliasEnabled' });
 		if (setting.value) {
