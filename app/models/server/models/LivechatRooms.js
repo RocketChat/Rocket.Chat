@@ -204,6 +204,16 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
+	findOneOpenByVisitorToken(visitorToken, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
 		const query = {
 			t: 'l',
@@ -411,16 +421,19 @@ export class LivechatRooms extends Base {
 
 
 	closeByRoomId(roomId, closeInfo) {
+		const { closer, closedBy, closedAt, chatDuration, ...extraData } = closeInfo;
+
 		return this.update({
 			_id: roomId,
 			t: 'l',
 		}, {
 			$set: {
-				closer: closeInfo.closer,
-				closedBy: closeInfo.closedBy,
-				closedAt: closeInfo.closedAt,
-				'metrics.chatDuration': closeInfo.chatDuration,
+				closer,
+				closedBy,
+				closedAt,
+				'metrics.chatDuration': chatDuration,
 				'v.status': 'offline',
+				...extraData,
 			},
 			$unset: {
 				open: 1,

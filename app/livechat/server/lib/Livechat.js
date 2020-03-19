@@ -314,18 +314,19 @@ export const Livechat = {
 		return ret;
 	},
 
-	closeRoom({ user, visitor, room, comment }) {
+	closeRoom({ user, visitor, room, comment, options = {} }) {
 		if (!room || room.t !== 'l' || !room.open) {
 			return false;
 		}
 
-		callbacks.run('livechat.beforeCloseRoom', room);
+		const extraData = callbacks.run('livechat.beforeCloseRoom', { room, options });
 
 		const now = new Date();
 
 		const closeData = {
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000,
+			...extraData,
 		};
 
 		if (user) {
@@ -480,7 +481,13 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			const { _id: rid } = roomData;
+			const { name } = guestData;
+			return Rooms.setFnameById(rid, name)
+				&& LivechatInquiry.setNameByRoomId(rid, name)
+				// This one needs to be the last since the agent may not have the subscription
+				// when the conversation is in the queue, then the result will be 0(zero)
+				&& Subscriptions.updateDisplayNameByRoomId(rid, name);
 		}
 	},
 
@@ -801,6 +808,8 @@ export const Livechat = {
 			showOnRegistration: Boolean,
 			email: String,
 			showOnOfflineForm: Boolean,
+			requestTagBeforeClosingChat: Match.Optional(Boolean),
+			chatClosingTags: Match.Optional([String]),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
@@ -818,6 +827,11 @@ export const Livechat = {
 				username: String,
 			}),
 		]));
+
+		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
+		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
+			throw new Meteor.Error('error-validating-department-chat-closing-tags', 'At least one closing tag is required when the department requires tag(s) on closing conversations.', { method: 'livechat:saveDepartment' });
+		}
 
 		if (_id) {
 			const department = LivechatDepartment.findOneById(_id);

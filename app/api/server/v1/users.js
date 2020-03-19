@@ -20,6 +20,7 @@ import { getFullUserData, getFullUserDataById } from '../../../lib/server/functi
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
+import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -426,7 +427,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.update', { authRequired: true }, {
+API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		check(this.bodyParams, {
 			userId: String,
@@ -611,19 +612,19 @@ API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
-		const { tokenName } = this.bodyParams;
+		const { tokenName, bypassTwoFactor } = this.bodyParams;
 		if (!tokenName) {
 			return API.v1.failure('The \'tokenName\' param is required');
 		}
-		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName }));
+		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }));
 
 		return API.v1.success({ token });
 	},
 });
 
-API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		const { tokenName } = this.bodyParams;
 		if (!tokenName) {
@@ -647,6 +648,7 @@ API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
 				name: loginToken.name,
 				createdAt: loginToken.createdAt,
 				lastTokenPart: loginToken.lastTokenPart,
+				bypassTwoFactor: loginToken.bypassTwoFactor,
 			}));
 
 		return API.v1.success({
@@ -655,7 +657,7 @@ API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		const { tokenName } = this.bodyParams;
 		if (!tokenName) {
@@ -666,6 +668,41 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 		}));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.2fa.enableEmail', { authRequired: true }, {
+	post() {
+		Users.enableEmail2FAByUserId(this.userId);
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.2fa.disableEmail', { authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } }, {
+	post() {
+		Users.disableEmail2FAByUserId(this.userId);
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.2fa.sendEmailCode', {
+	post() {
+		const { emailOrUsername } = this.bodyParams;
+
+		if (!emailOrUsername) {
+			throw new Meteor.Error('error-parameter-required', 'emailOrUsername is required');
+		}
+
+		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
+		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		return API.v1.success(emailCheck.sendEmailCode(getUserForCheck(userId)));
 	},
 });
 

@@ -46,18 +46,25 @@
 								</label>
 							</div>
 							<div class="form-group">
-								<label class="rc-input__label">
-									<div class="rc-input__title">{{_ "Department"}}</div>
-									<div class="rc-select">
-										<select class="rc-select__element" id="department" name="department">
-											<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
-											{{#each departments}}
-												<option class="rc-select__option" value="{{_id}}">{{name}}</option>
-											{{/each}}
-										</select>
-										{{> icon block="rc-select__arrow" icon="arrow-down" }}
-									</div>
-								</label>
+								{{> livechatAutocompleteUser
+									onClickTag=onClickTagDepartment
+									list=selectedDepartments
+									onSelect=onSelectDepartments
+									collection='CachedDepartmentList'
+									endpoint='livechat/department.autocomplete'
+									field='name'
+									sort='name'
+									label="Department"
+									placeholder="Enter_a_department_name"
+									name="department"
+									icon="queue"
+									noMatchTemplate="userSearchEmpty"
+									templateItem="popupList_item_channel"
+									template="roomSearch"
+									noMatchTemplate="roomSearchEmpty"
+									modifier=departmentModifier
+									showLabel=true
+								}}
 							</div>
 							<div class="form-group input-daterange">
 								<label class="rc-input__label">
