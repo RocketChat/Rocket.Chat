@@ -171,7 +171,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		if (roomData.usernames.length > 2) {
+		if (roomData.usernames && roomData.usernames.length > 2) {
 			return getAvatarURL({ username: roomData.usernames.length + roomData.usernames.join() });
 		}
 		return getUserAvatarURL(roomData.name || this.roomName(roomData));
