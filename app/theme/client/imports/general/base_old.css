@@ -5043,6 +5043,16 @@ rc-old select,
 			margin-top: 10px;
 		}
 	}
+	
+	.section-content {
+		& .download-my-data {
+			height: 70px;
+		}
+
+		& .export-my-data {
+			height: 70px;
+		}
+	}
 }
 
 @media (height <= 480px) {
