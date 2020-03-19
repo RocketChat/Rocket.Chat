@@ -80,7 +80,7 @@
 										<div class="rc-input__icon">
 											{{> icon block="rc-input__icon-svg" icon="edit"}}
 										</div>
-										
+
 										<input type="text" class="rc-input__element" maxlength="120" name="statusText" id="statusText" placeholder="{{_ "StatusMessage_Placeholder" }}" value="{{statusText}}" {{ifThenElse canChange '' 'disabled'}}>
 									</div>
 								</label>
@@ -176,6 +176,14 @@
 									{{# unless canChange}}
 										<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
 									{{/unless}}
+									{{#if confirmationPasswordInvalid}}
+										<div class="rc-input__error">
+											<div class="rc-input__error-icon">
+												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+											</div>
+											<div class="rc-input__error-message">{{_ 'Passwords_do_not_match'}}</div>
+										</div>
+									{{/if}}
 								{{/with}}
 							</div>
 						</div>
