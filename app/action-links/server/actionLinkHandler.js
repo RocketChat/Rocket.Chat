@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { actionLinks } from '../both/lib/actionLinks';
 // Action Links Handler. This method will be called off the client.
 

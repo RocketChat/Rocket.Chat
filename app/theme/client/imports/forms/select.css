@@ -26,13 +26,18 @@
 	&__arrow {
 		position: absolute;
 
-		margin: 0 -5px;
+		right: 5px;
 
 		pointer-events: none;
 
 		color: var(--color-gray-light);
 
 		font-size: 20px;
+
+		.rtl & {
+			right: auto;
+			left: 5px;
+		}
 	}
 
 	&__element {
@@ -58,6 +63,15 @@
 	&--small {
 		height: 1.75rem;
 	}
+}
+
+.rc-select-wrapper {
+	display: flex;
+
+	flex: 0 0 auto;
+
+	padding: 0.5rem 0;
+	align-items: flex-end;
 }
 
 .rtl .rc-select__element {

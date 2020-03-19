@@ -3,17 +3,20 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
-import { modal } from '../../../ui-utils';
-import { t, handleError } from '../../../utils';
-import { ChatIntegrations } from '../collections';
-import { integrations } from '../../lib/rocketchat';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Tracker } from 'meteor/tracker';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
-import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
 
-Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated() {
+import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
+import { hasAtLeastOnePermission } from '../../../authorization';
+import { modal, SideNav } from '../../../ui-utils';
+import { t, handleError } from '../../../utils/client';
+import { integrations } from '../../lib/rocketchat';
+import { getIntegration } from '../getIntegration';
+
+Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCreated() {
+	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
 	this.record = new ReactiveVar({
 		username: 'rocket.cat',
 		token: Random.id(24),
@@ -47,29 +50,15 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 		});
 	};
 
-	this.autorun(() => {
-		const id = this.data && this.data.params && this.data.params().id;
+	const integration = await getIntegration(params.id, Meteor.userId());
+	if (params.id && !integration) {
+		toastr.error(TAPi18n.__('No_integration_found'));
+		FlowRouter.go('admin-integrations');
+		return;
+	}
 
-		if (id) {
-			const sub = this.subscribe('integrations');
-			if (sub.ready()) {
-				let intRecord;
-
-				if (hasAllPermission('manage-integrations')) {
-					intRecord = ChatIntegrations.findOne({ _id: id });
-				} else if (hasAllPermission('manage-own-integrations')) {
-					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
-				}
-
-				if (intRecord) {
-					this.record.set(intRecord);
-				} else {
-					toastr.error(TAPi18n.__('No_integration_found'));
-					FlowRouter.go('admin-integrations');
-				}
-			}
-		}
-	});
+	integration.hasScriptError = integration.scriptEnabled && integration.scriptError;
+	this.record.set(integration);
 });
 
 Template.integrationsOutgoing.helpers({
@@ -89,7 +78,10 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission([
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+		]);
 	},
 
 	data() {
@@ -325,8 +317,8 @@ Template.integrationsOutgoing.events({
 			scriptEnabled: scriptEnabled === '1',
 			impersonateUser: impersonateUser === '1',
 			retryFailedCalls: retryFailedCalls === '1',
-			retryCount: retryCount ? retryCount : 6,
-			retryDelay: retryDelay ? retryDelay : 'powers-of-ten',
+			retryCount: retryCount || 6,
+			retryDelay: retryDelay || 'powers-of-ten',
 			triggerWordAnywhere: triggerWordAnywhere === '1',
 			runOnEdits: runOnEdits === '1',
 		};
@@ -351,4 +343,11 @@ Template.integrationsOutgoing.events({
 			});
 		}
 	},
+});
+
+Template.integrationsOutgoing.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

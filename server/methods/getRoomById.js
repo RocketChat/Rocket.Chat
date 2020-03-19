@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+
 import { Rooms } from '../../app/models';
 import { canAccessRoom } from '../../app/authorization';
 

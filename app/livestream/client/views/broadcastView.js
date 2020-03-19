@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { handleError } from '../../../utils';
 import { settings } from '../../../settings';
 
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {
-	if (!'WebSocket' in window) { // eslint-disable-line no-negated-in-lhs
+	if (!('WebSocket' in window)) { // eslint-disable-line no-negated-in-lhs
 		return false;
 	}
 
@@ -35,11 +36,11 @@ const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 const waitForStreamStatus = async (id, status) => {
 	const streamActive = new Promise(async (resolve) => {
 		while (true) { // eslint-disable-line no-constant-condition
-			const currentStatus = await call('livestreamStreamStatus', { streamId: id });
+			const currentStatus = await call('livestreamStreamStatus', { streamId: id }); // eslint-disable-line no-await-in-loop
 			if (currentStatus === status) {
 				return resolve(status);
 			}
-			await delay(1500);
+			await delay(1500); // eslint-disable-line no-await-in-loop
 		}
 	});
 	await streamActive;
@@ -47,11 +48,11 @@ const waitForStreamStatus = async (id, status) => {
 const waitForBroadcastStatus = async (id, status) => {
 	const broadcastActive = new Promise(async (resolve) => {
 		while (true) { // eslint-disable-line no-constant-condition
-			const currentStatus = await call('getBroadcastStatus', { broadcastId: id });
+			const currentStatus = await call('getBroadcastStatus', { broadcastId: id }); // eslint-disable-line no-await-in-loop
 			if (currentStatus === status) {
 				return resolve(status);
 			}
-			await delay(1500);
+			await delay(1500); // eslint-disable-line no-await-in-loop
 		}
 	});
 	await broadcastActive;
@@ -71,10 +72,6 @@ Template.broadcastView.onCreated(async function() {
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 	this.connection = new ReactiveVar(connection);
-
-	if (!connection) {
-		return;
-	}
 });
 Template.broadcastView.onDestroyed(function() {
 	if (this.connection.get()) {
@@ -124,7 +121,6 @@ Template.broadcastView.onRendered(async function() {
 		await call('setLivestreamStatus', { broadcastId: this.data.broadcast.id, status: 'testing' });
 		await waitForBroadcastStatus(this.data.broadcast.id, 'testing');
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStreamReady'));
-
 	} catch (e) {
 		console.log(e);
 	}

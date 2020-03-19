@@ -4,10 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import _ from 'underscore';
+
+import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
-import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
-import _ from 'underscore';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 
@@ -15,6 +16,107 @@ const logger = new Logger('CustomOAuth');
 
 const Services = {};
 const BeforeUpdateOrCreateUserFromExternalService = [];
+
+const normalizers = {
+	// Set 'id' to '_id' for any sources that provide it
+	_id(identity) {
+		if (identity._id && !identity.id) {
+			identity.id = identity._id;
+		}
+	},
+
+	// Fix for Reddit
+	redit(identity) {
+		if (identity.result) {
+			return identity.result;
+		}
+	},
+
+	// Fix WordPress-like identities having 'ID' instead of 'id'
+	wordpress(identity) {
+		if (identity.ID && !identity.id) {
+			identity.id = identity.ID;
+		}
+	},
+
+	// Fix Auth0-like identities having 'user_id' instead of 'id'
+	user_id(identity) {
+		if (identity.user_id && !identity.id) {
+			identity.id = identity.user_id;
+		}
+	},
+
+	characterid(identity) {
+		if (identity.CharacterID && !identity.id) {
+			identity.id = identity.CharacterID;
+		}
+	},
+
+	// Fix Dataporten having 'user.userid' instead of 'id'
+	dataporten(identity) {
+		if (identity.user && identity.user.userid && !identity.id) {
+			if (identity.user.userid_sec && identity.user.userid_sec[0]) {
+				identity.id = identity.user.userid_sec[0];
+			} else {
+				identity.id = identity.user.userid;
+			}
+			identity.email = identity.user.email;
+		}
+	},
+
+	// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
+	xenforo(identity) {
+		if (identity.user && identity.user.user_id && !identity.id) {
+			identity.id = identity.user.user_id;
+			identity.email = identity.user.user_email;
+		}
+	},
+
+	// Fix general 'phid' instead of 'id' from phabricator
+	phabricator(identity) {
+		if (identity.phid && !identity.id) {
+			identity.id = identity.phid;
+		}
+	},
+
+	// Fix Keycloak-like identities having 'sub' instead of 'id'
+	kaycloak(identity) {
+		if (identity.sub && !identity.id) {
+			identity.id = identity.sub;
+		}
+	},
+
+	// Fix OpenShift identities where id is in 'metadata' object
+	openshift(identity) {
+		if (!identity.id && identity.metadata && identity.metadata.uid) {
+			identity.id = identity.metadata.uid;
+			identity.name = identity.fullName;
+		}
+	},
+
+	// Fix general 'userid' instead of 'id' from provider
+	userid(identity) {
+		if (identity.userid && !identity.id) {
+			identity.id = identity.userid;
+		}
+	},
+
+	// Fix Nextcloud provider
+	nextcloud(identity) {
+		if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
+			identity.id = identity.ocs.data.id;
+			identity.name = identity.ocs.data.displayname;
+			identity.email = identity.ocs.data.email;
+		}
+	},
+
+	// Fix when authenticating from a meteor app with 'emails' field
+	meteor(identity) {
+		if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
+			identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
+		}
+	},
+};
 
 export class CustomOAuth {
 	constructor(name, options) {
@@ -72,6 +174,7 @@ export class CustomOAuth {
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
+		this.nameField = (options.nameField || '').trim();
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
 		this.mergeRoles = options.mergeRoles || false;
@@ -149,6 +252,7 @@ export class CustomOAuth {
 		const params = {};
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
+			Accept: 'application/json',
 		};
 
 		if (this.identityTokenSentVia === 'header') {
@@ -183,15 +287,15 @@ export class CustomOAuth {
 	registerService() {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
-
 			const response = self.getAccessToken(query);
 			const identity = self.getIdentity(response.access_token);
 
 			const serviceData = {
 				_OAuthCustom: true,
+				serverURL: self.serverURL,
 				accessToken: response.access_token,
 				idToken: response.id_token,
-				expiresAt: (+new Date) + (1000 * parseInt(response.expires_in, 10)),
+				expiresAt: +new Date() + (1000 * parseInt(response.expires_in, 10)),
 			};
 
 			// only set the token in serviceData if it's there. this ensures
@@ -218,76 +322,11 @@ export class CustomOAuth {
 
 	normalizeIdentity(identity) {
 		if (identity) {
-			// Set 'id' to '_id' for any sources that provide it
-			if (identity._id && !identity.id) {
-				identity.id = identity._id;
-			}
-
-			// Fix for Reddit
-			if (identity.result) {
-				identity = identity.result;
-			}
-
-			// Fix WordPress-like identities having 'ID' instead of 'id'
-			if (identity.ID && !identity.id) {
-				identity.id = identity.ID;
-			}
-
-			// Fix Auth0-like identities having 'user_id' instead of 'id'
-			if (identity.user_id && !identity.id) {
-				identity.id = identity.user_id;
-			}
-
-			if (identity.CharacterID && !identity.id) {
-				identity.id = identity.CharacterID;
-			}
-
-			// Fix Dataporten having 'user.userid' instead of 'id'
-			if (identity.user && identity.user.userid && !identity.id) {
-				if (identity.user.userid_sec && identity.user.userid_sec[0]) {
-					identity.id = identity.user.userid_sec[0];
-				} else {
-					identity.id = identity.user.userid;
+			for (const normalizer of Object.values(normalizers)) {
+				const result = normalizer(identity);
+				if (result) {
+					identity = result;
 				}
-				identity.email = identity.user.email;
-			}
-
-			// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
-			if (identity.user && identity.user.user_id && !identity.id) {
-				identity.id = identity.user.user_id;
-				identity.email = identity.user.user_email;
-			}
-			// Fix general 'phid' instead of 'id' from phabricator
-			if (identity.phid && !identity.id) {
-				identity.id = identity.phid;
-			}
-
-			// Fix Keycloak-like identities having 'sub' instead of 'id'
-			if (identity.sub && !identity.id) {
-				identity.id = identity.sub;
-			}
-
-			// Fix OpenShift identities where id is in 'metadata' object
-			if (!identity.id && identity.metadata && identity.metadata.uid) {
-				identity.id = identity.metadata.uid;
-				identity.name = identity.fullName;
-			}
-
-			// Fix general 'userid' instead of 'id' from provider
-			if (identity.userid && !identity.id) {
-				identity.id = identity.userid;
-			}
-
-			// Fix Nextcloud provider
-			if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
-				identity.id = identity.ocs.data.id;
-				identity.name = identity.ocs.data.displayname;
-				identity.email = identity.ocs.data.email;
-			}
-
-			// Fix when authenticating from a meteor app with 'emails' field
-			if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
-				identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 			}
 		}
 
@@ -299,7 +338,11 @@ export class CustomOAuth {
 			identity.avatarUrl = this.getAvatarUrl(identity);
 		}
 
-		identity.name = this.getName(identity);
+		if (this.nameField) {
+			identity.name = this.getCustomName(identity);
+		} else {
+			identity.name = this.getName(identity);
+		}
 
 		return identity;
 	}
@@ -319,6 +362,20 @@ export class CustomOAuth {
 			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
 		}
 		return username;
+	}
+
+	getCustomName(data) {
+		let customName = '';
+
+		customName = this.nameField.split('.').reduce(function(prev, curr) {
+			return prev ? prev[curr] : undefined;
+		}, data);
+
+		if (!customName) {
+			return this.getName(data);
+		}
+
+		return customName;
 	}
 
 	getAvatarUrl(data) {
@@ -345,7 +402,7 @@ export class CustomOAuth {
 			}
 
 			if (serviceData.username) {
-				const user = Users.findOneByUsername(serviceData.username);
+				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
 				if (!user) {
 					return;
 				}
@@ -384,13 +441,16 @@ export class CustomOAuth {
 				user.username = this.getUsername(user.services[this.name]);
 			}
 
+			if (this.nameField) {
+				user.name = this.getCustomName(user.services[this.name]);
+			}
+
 			if (this.mergeRoles) {
 				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim);
 			}
 
 			return true;
 		});
-
 	}
 
 	registerAccessTokenService(name) {
@@ -407,14 +467,13 @@ export class CustomOAuth {
 			check(options, Match.ObjectIncluding({
 				accessToken: String,
 				expiresIn: Match.Integer,
-				identity: Match.Maybe(Object),
 			}));
 
-			const identity = options.identity || self.getIdentity(options.accessToken);
+			const identity = self.getIdentity(options.accessToken);
 
 			const serviceData = {
 				accessToken: options.accessToken,
-				expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
+				expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
 			};
 
 			const fields = _.pick(identity, whitelisted);

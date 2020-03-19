@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Users, Rooms } from '../../app/models';
-import { canAccessRoom } from '../../app/authorization';
-import { settings } from '../../app/settings';
+
+import { Users, Rooms } from '../../app/models/server';
+import { canAccessRoom } from '../../app/authorization/server';
+import { settings } from '../../app/settings/server';
 
 Meteor.methods({
 	canAccessRoom(rid, userId, extraData) {
@@ -37,7 +38,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'canAccessRoom',
 			});
-
 		}
 
 		if (canAccessRoom.call(this, room, user, extraData)) {

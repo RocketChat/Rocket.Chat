@@ -59,9 +59,7 @@ const start = async () => {
 					});
 				resolve();
 			});
-
 		});
-
 	} catch (error) {
 		console.error(error);
 	} finally {
@@ -73,7 +71,6 @@ const start = async () => {
 
 try {
 	start();
-
 } catch (error) {
 	console.error(error);
 }

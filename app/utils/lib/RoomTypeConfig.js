@@ -1,13 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { settings } from '../../settings';
 
 let Users;
+let settings;
 if (Meteor.isServer) {
+	({ settings } = require('../../settings/server'));
 	Users = require('../../models/server/models/Users').default;
+} else {
+	({ settings } = require('../../settings/client'));
 }
 
 export const RoomSettingsEnum = {
+	TYPE: 'type',
 	NAME: 'roomName',
 	TOPIC: 'roomTopic',
 	ANNOUNCEMENT: 'roomAnnouncement',
@@ -19,6 +23,20 @@ export const RoomSettingsEnum = {
 	BROADCAST: 'broadcast',
 	SYSTEM_MESSAGES: 'systemMessages',
 	E2E: 'encrypted',
+};
+
+export const RoomMemberActions = {
+	ARCHIVE: 'archive',
+	IGNORE: 'ignore',
+	BLOCK: 'block',
+	MUTE: 'mute',
+	SET_AS_OWNER: 'setAsOwner',
+	SET_AS_LEADER: 'setAsLeader',
+	SET_AS_MODERATOR: 'setAsModerator',
+	LEAVE: 'leave',
+	REMOVE_USER: 'removeUser',
+	JOIN: 'join',
+	INVITE: 'invite',
 };
 
 export const UiTextContext = {
@@ -147,17 +165,12 @@ export class RoomTypeConfig {
 		return this._route;
 	}
 
-	/**
-	 * Gets the room's name to display in the UI.
-	 *
-	 * @param {object} room
-	 */
-	getDisplayName(room) {
-		return room.name;
-	}
-
 	allowRoomSettingChange(/* room, setting */) {
 		return true;
+	}
+
+	allowMemberAction(/* room, action */) {
+		return false;
 	}
 
 	/**
@@ -174,18 +187,18 @@ export class RoomTypeConfig {
 		if (!hasPermission && typeof hasPermission !== 'function') {
 			throw new Error('You MUST provide the "hasPermission" to canBeCreated function');
 		}
-		return Meteor.isServer ?
-			hasPermission(Meteor.userId(), `create-${ this._identifier }`) :
-			hasPermission([`create-${ this._identifier }`]);
+		return Meteor.isServer
+			? hasPermission(Meteor.userId(), `create-${ this._identifier }`)
+			: hasPermission([`create-${ this._identifier }`]);
 	}
 
 	canBeDeleted(hasPermission, room) {
 		if (!hasPermission && typeof hasPermission !== 'function') {
 			throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 		}
-		return Meteor.isServer ?
-			hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id) :
-			hasPermission(`delete-${ room.t }`, room._id);
+		return Meteor.isServer
+			? hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id)
+			: hasPermission(`delete-${ room.t }`, room._id);
 	}
 
 	supportMembersList(/* room */) {
@@ -217,6 +230,10 @@ export class RoomTypeConfig {
 	}
 
 	enableMembersListProfile() {
+		return false;
+	}
+
+	isEmitAllowed() {
 		return false;
 	}
 
@@ -277,5 +294,9 @@ export class RoomTypeConfig {
 
 	getAvatarPath(/* roomData */) {
 		return '';
+	}
+
+	openCustomProfileTab() {
+		return false;
 	}
 }

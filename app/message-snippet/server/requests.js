@@ -1,5 +1,6 @@
 import { WebApp } from 'meteor/webapp';
 import { Cookies } from 'meteor/ostrio:cookies';
+
 import { Users, Rooms, Messages } from '../../models';
 
 WebApp.connectHandlers.use('/snippet/download', function(req, res) {
@@ -39,7 +40,7 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 			{
 				_id: match[1],
 				snippeted: true,
-			}
+			},
 		);
 		const room = Rooms.findOne({ _id: snippet.rid, usernames: { $in: [user.username] } });
 		if (room === undefined) {
@@ -61,5 +62,4 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 
 	res.writeHead(404);
 	res.end();
-	return;
 });

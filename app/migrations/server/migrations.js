@@ -3,10 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { Log } from 'meteor/logging';
-import { Info } from '../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
+
+import { Info } from '../../utils';
 /*
 	Adds migration capabilities. Migrations are defined like:
 
@@ -79,10 +80,10 @@ function makeABox(message, color = 'red') {
 	const len = _(message).reduce(function(memo, msg) {
 		return Math.max(memo, msg.length);
 	}, 0) + 4;
-	const text = message.map((msg) => '|' [color] + s.lrpad(msg, len)[color] + '|' [color]).join('\n');
-	const topLine = '+' [color] + s.pad('', len, '-')[color] + '+' [color];
-	const separator = '|' [color] + s.pad('', len, '') + '|' [color];
-	const bottomLine = '+' [color] + s.pad('', len, '-')[color] + '+' [color];
+	const text = message.map((msg) => '|'[color] + s.lrpad(msg, len)[color] + '|'[color]).join('\n');
+	const topLine = '+'[color] + s.pad('', len, '-')[color] + '+'[color];
+	const separator = '|'[color] + s.pad('', len, '') + '|'[color];
+	const bottomLine = '+'[color] + s.pad('', len, '-')[color] + '+'[color];
 	return `\n${ topLine }\n${ separator }\n${ text }\n${ separator }\n${ bottomLine }\n`;
 }
 
@@ -110,13 +111,11 @@ function createLogger(prefix) {
 		const logger = Migrations.options && Migrations.options.logger;
 
 		if (logger && _.isFunction(logger)) {
-
 			logger({
 				level,
 				message,
 				tag: prefix,
 			});
-
 		} else {
 			Log[level]({
 				message: `${ prefix }: ${ message }`,
@@ -179,7 +178,7 @@ Migrations.migrateTo = function(command) {
 		if (version === 'latest') {
 			migrated = this._migrateTo(_.last(this._list).version);
 		} else {
-			migrated = this._migrateTo(parseInt(version), (subcommands.includes('rerun')));
+			migrated = this._migrateTo(parseInt(version), subcommands.includes('rerun'));
 		}
 		if (migrated) {
 			break;

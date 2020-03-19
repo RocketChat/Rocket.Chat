@@ -1,15 +1,15 @@
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+
 import { RoomManager } from './RoomManager';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 Blaze.registerHelper('avatarUrlFromUsername', getUserAvatarURL);
 
 export const getAvatarAsPng = function(username, cb) {
-	const image = new Image;
+	const image = new Image();
 	image.src = getUserAvatarURL(username);
 	image.onload = function() {
-
 		const canvas = document.createElement('canvas');
 		canvas.width = image.width;
 		canvas.height = image.height;
@@ -21,9 +21,10 @@ export const getAvatarAsPng = function(username, cb) {
 			return cb('');
 		}
 	};
-	return image.onerror = function() {
+	image.onerror = function() {
 		return cb('');
 	};
+	return image.onerror;
 };
 
 export const updateAvatarOfUsername = function(username) {

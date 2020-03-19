@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
+
 import { CachedCollection } from '../../../ui-cached-collection';
 import { settings } from '../../lib/settings';
 
@@ -11,8 +12,6 @@ settings.cachedCollection = new CachedCollection({
 });
 
 settings.collection = settings.cachedCollection.collection;
-
-settings.cachedCollection.init();
 
 settings.dict = new ReactiveDict('settings');
 

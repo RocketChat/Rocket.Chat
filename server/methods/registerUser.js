@@ -2,10 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
+
 import * as Mailer from '../../app/mailer';
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings';
 import { saveCustomFields, validateEmailDomain, passwordPolicy } from '../../app/lib';
+import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
 
 let verifyEmailTemplate = '';
 Meteor.startup(() => {
@@ -29,20 +31,28 @@ Meteor.methods({
 
 			Accounts._insertLoginToken(userId, stampedLoginToken);
 			return stampedLoginToken;
-		} else {
-			check(formData, Match.ObjectIncluding({
-				email: String,
-				pass: String,
-				name: String,
-				secretURL: Match.Optional(String),
-				reason: Match.Optional(String),
-			}));
 		}
+		check(formData, Match.ObjectIncluding({
+			email: String,
+			pass: String,
+			name: String,
+			secretURL: Match.Optional(String),
+			reason: Match.Optional(String),
+		}));
+
 
 		if (settings.get('Accounts_RegistrationForm') === 'Disabled') {
 			throw new Meteor.Error('error-user-registration-disabled', 'User registration is disabled', { method: 'registerUser' });
-		} else if (settings.get('Accounts_RegistrationForm') === 'Secret URL' && (!formData.secretURL || formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))) {
-			throw new Meteor.Error ('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
+		}
+
+		if (settings.get('Accounts_RegistrationForm') === 'Secret URL' && (!formData.secretURL || formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))) {
+			if (formData.secretURL) {
+				try {
+					validateInviteToken(formData.secretURL);
+				} catch (e) {
+					throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
+				}
+			}
 		}
 
 		passwordPolicy.validate(formData.pass);
@@ -76,7 +86,6 @@ Meteor.methods({
 		saveCustomFields(userId, formData);
 
 		try {
-
 			const subject = Mailer.replace(settings.get('Verification_Email_Subject'));
 
 			Accounts.emailTemplates.verifyEmail.subject = () => subject;

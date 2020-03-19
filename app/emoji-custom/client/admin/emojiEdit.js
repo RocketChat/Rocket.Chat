@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from '../../../utils';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import s from 'underscore.string';
+
+import { t, handleError } from '../../../utils';
 
 Template.emojiEdit.helpers({
 	emoji() {
@@ -57,6 +58,7 @@ Template.emojiEdit.onCreated(function() {
 	}
 
 	this.tabBar = Template.currentData().tabBar;
+	this.onSuccess = Template.currentData().onSuccess;
 
 	this.cancel = (form, name) => {
 		form.reset();
@@ -129,9 +131,8 @@ Template.emojiEdit.onCreated(function() {
 								if (uploadError != null) {
 									handleError(uploadError);
 									console.log(uploadError);
-									return;
 								}
-							}
+							},
 							);
 							delete this.emojiFile;
 							toastr.success(TAPi18n.__('File_uploaded'));
@@ -143,6 +144,7 @@ Template.emojiEdit.onCreated(function() {
 					} else {
 						toastr.success(t('Custom_Emoji_Added_Successfully'));
 					}
+					this.onSuccess();
 
 					this.cancel(form, emojiData.name);
 				}

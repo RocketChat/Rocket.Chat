@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+
 import { Users } from '../../app/models';
 import { passwordPolicy } from '../../app/lib';
 

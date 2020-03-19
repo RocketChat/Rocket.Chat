@@ -1,38 +1,45 @@
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
+
 import { DateFormat } from '../../../lib';
 import { popover } from '../../../ui-utils';
 import { templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import { getActions } from './userActions';
+import './userInfo.html';
+import { APIClient } from '../../../utils/client';
 
-const more = function() {
-	return Template.instance().actions.get()
-		.map((action) => (typeof action === 'function' ? action.call(this) : action))
-		.filter((action) => action && (!action.condition || action.condition.call(this)))
-		.slice(3);
+const shownActionsCount = 2;
+
+const moreActions = function() {
+	return (
+		Template.instance().actions.get()
+			.map((action) => (typeof action === 'function' ? action.call(this) : action))
+			.filter((action) => action && (!action.condition || action.condition.call(this)))
+			.slice(shownActionsCount)
+	);
 };
-
 
 Template.userInfo.helpers({
 	hideHeader() {
 		return ['Template.adminUserInfo', 'adminUserInfo'].includes(Template.parentData(2).viewName);
 	},
-	moreActions: more,
+
+	moreActions,
 
 	actions() {
 		return Template.instance().actions.get()
 			.map((action) => (typeof action === 'function' ? action.call(this) : action))
 			.filter((action) => action && (!action.condition || action.condition.call(this)))
-			.slice(0, 2);
+			.slice(0, shownActionsCount);
 	},
+
 	customField() {
 		const sCustomFieldsToShow = settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
 		const customFields = [];
@@ -61,7 +68,10 @@ Template.userInfo.helpers({
 		}
 		return customFields;
 	},
-
+	uid() {
+		const user = Template.instance().user.get();
+		return user._id;
+	},
 	name() {
 		const user = Template.instance().user.get();
 		return user && user.name ? user.name : TAPi18n.__('Unnamed');
@@ -75,7 +85,17 @@ Template.userInfo.helpers({
 	userStatus() {
 		const user = Template.instance().user.get();
 		const userStatus = Session.get(`user_${ user.username }_status`);
-		return userStatus;
+		return userStatus || TAPi18n.__('offline');
+	},
+
+	userStatusText() {
+		if (s.trim(this.statusText)) {
+			return this.statusText;
+		}
+
+		const user = Template.instance().user.get();
+		const userStatus = Session.get(`user_${ user.username }_status`);
+		return userStatus || TAPi18n.__('offline');
 	},
 
 	email() {
@@ -96,20 +116,20 @@ Template.userInfo.helpers({
 	lastLogin() {
 		const user = Template.instance().user.get();
 		if (user && user.lastLogin) {
-			return moment(user.lastLogin).format('LLL');
+			return DateFormat.formatDateAndTime(user.lastLogin);
 		}
 	},
 
 	createdAt() {
 		const user = Template.instance().user.get();
 		if (user && user.createdAt) {
-			return moment(user.createdAt).format('LLL');
+			return DateFormat.formatDateAndTime(user.createdAt);
 		}
 	},
 	linkedinUsername() {
 		const user = Template.instance().user.get();
 		if (user && user.services && user.services.linkedin && user.services.linkedin.publicProfileUrl) {
-			return s.strRight(user.services.linkedin.publicProfileUrl), '/in/';
+			return s.strRight(user.services.linkedin.publicProfileUrl, '/in/');
 		}
 	},
 
@@ -150,8 +170,13 @@ Template.userInfo.helpers({
 		const data = Template.currentData();
 		return {
 			user: instance.user.get(),
-			back(username) {
+			back({ _id, username }) {
 				instance.editingUser.set();
+
+				if (_id) {
+					data.onChange && data.onChange();
+					return instance.loadUser({ _id });
+				}
 
 				if (username != null) {
 					const user = instance.user.get();
@@ -183,21 +208,21 @@ Template.userInfo.helpers({
 
 Template.userInfo.events({
 	'click .js-more'(e, instance) {
-		const actions = more.call(this);
+		const actions = moreActions.call(this);
 		const groups = [];
 		const columns = [];
 		const admin = actions.filter((actions) => actions.group === 'admin');
 		const others = actions.filter((action) => !action.group);
 		const channel = actions.filter((actions) => actions.group === 'channel');
 		if (others.length) {
-			groups.push({ items:others });
+			groups.push({ items: others });
 		}
 		if (channel.length) {
-			groups.push({ items:channel });
+			groups.push({ items: channel });
 		}
 
 		if (admin.length) {
-			groups.push({ items:admin });
+			groups.push({ items: admin });
 		}
 		columns[0] = { groups };
 
@@ -217,7 +242,7 @@ Template.userInfo.events({
 		popover.open(config);
 	},
 	'click .js-action'(e) {
-		return this.action && this.action.apply(this, [e, { instance : Template.instance() }]);
+		return this.action && this.action.apply(this, [e, { instance: Template.instance() }]);
 	},
 	'click .js-close-info'(e, instance) {
 		return instance.clear();
@@ -229,9 +254,8 @@ Template.userInfo.events({
 
 Template.userInfo.onCreated(function() {
 	this.now = new ReactiveVar(moment());
-	this.user = new ReactiveVar;
-	this.actions = new ReactiveVar;
-
+	this.user = new ReactiveVar();
+	this.actions = new ReactiveVar();
 
 	this.autorun(() => {
 		const user = this.user.get();
@@ -246,49 +270,46 @@ Template.userInfo.onCreated(function() {
 		});
 		this.actions.set(actions);
 	});
-	this.editingUser = new ReactiveVar;
+	this.editingUser = new ReactiveVar();
 	this.loadingUserInfo = new ReactiveVar(true);
-	this.loadedUsername = new ReactiveVar;
 	this.tabBar = Template.currentData().tabBar;
+	this.nowInterval = setInterval(() => this.now.set(moment()), 30000);
 
-	Meteor.setInterval(() => this.now.set(moment()), 30000);
+	this.loadUser = async ({ _id, username }) => {
+		this.loadingUserInfo.set(true);
 
-	this.autorun(() => {
-		const username = this.loadedUsername.get();
+		const params = {};
 
-		if (username == null) {
-			this.loadingUserInfo.set(false);
+		if (_id != null) {
+			params.userId = _id;
+		} else if (username != null) {
+			params.username = username;
+		} else {
 			return;
 		}
 
-		this.loadingUserInfo.set(true);
+		const { user } = await APIClient.v1.get('users.info', params);
+		this.user.set(user);
+		this.loadingUserInfo.set(false);
+	};
 
-		return this.subscribe('fullUserData', username, 1, () => this.loadingUserInfo.set(false));
+	this.autorun(async () => {
+		const data = Template.currentData();
+		if (!data) {
+			return;
+		}
+
+		this.loadUser(data);
 	});
 
 	this.autorun(() => {
 		const data = Template.currentData();
 		if (data.clear != null) {
-			return this.clear = data.clear;
+			this.clear = data.clear;
 		}
 	});
+});
 
-	this.autorun(() => {
-		const data = Template.currentData();
-		const user = this.user.get();
-		return this.loadedUsername.set((user != null ? user.username : undefined) || (data != null ? data.username : undefined));
-	});
-
-	return this.autorun(() => {
-		let filter;
-		const data = Template.currentData();
-		if (data && data.username != null) {
-			filter = { username: data.username };
-		} else if (data && data._id != null) {
-			filter = { _id: data._id };
-		}
-		const user = Meteor.users.findOne(filter);
-
-		return this.user.set(user);
-	});
+Template.userInfo.onDestroyed(function() {
+	clearInterval(this.nowInterval);
 });

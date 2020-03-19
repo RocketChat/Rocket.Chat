@@ -25,4 +25,3 @@ Migrations.add({
 		}
 	},
 });
-

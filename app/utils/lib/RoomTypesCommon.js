@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RoomTypeConfig } from './RoomTypeConfig';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
+import { RoomTypeConfig } from './RoomTypeConfig';
 import { roomExit } from './roomExit';
 
 export class RoomTypesCommon {
@@ -8,6 +9,10 @@ export class RoomTypesCommon {
 		this.roomTypes = {};
 		this.roomTypesOrder = [];
 		this.mainOrder = 1;
+	}
+
+	getTypesToShowOnDashboard() {
+		return Object.keys(this.roomTypes).filter((key) => this.roomTypes[key].includeInDashboard && this.roomTypes[key].includeInDashboard());
 	}
 
 	/**

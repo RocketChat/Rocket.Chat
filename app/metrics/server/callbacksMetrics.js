@@ -1,7 +1,7 @@
-import { callbacks } from '../../callbacks';
 
 import { metrics } from './lib/metrics';
 import StatsTracker from './lib/statsTracker';
+import { callbacks } from '../../callbacks';
 
 const {
 	run: originalRun,
@@ -18,12 +18,15 @@ callbacks.run = function(hook, item, constant) {
 	return result;
 };
 
-callbacks.runItem = function({ callback, result, constant, hook, time }) {
+callbacks.runItem = function({ callback, result, constant, hook, time = Date.now() }) {
 	const rocketchatCallbacksEnd = metrics.rocketchatCallbacks.startTimer({ hook, callback: callback.id });
 
 	const newResult = originalRunItem({ callback, result, constant });
 
-	StatsTracker.timing('callbacks.time', (Date.now() - time), [`hook:${ hook }`, `callback:${ callback.id }`]);
+	StatsTracker.timing('callbacks.time', Date.now() - time, [
+		`hook:${ hook }`,
+		`callback:${ callback.id }`,
+	]);
 
 	rocketchatCallbacksEnd();
 

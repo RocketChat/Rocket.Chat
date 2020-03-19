@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../settings';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { smarsh } from './lib/rocketchat';
 import _ from 'underscore';
+
+import { smarsh } from './lib/rocketchat';
+import { settings } from '../../settings';
 
 const smarshJobName = 'Smarsh EML Connector';
 

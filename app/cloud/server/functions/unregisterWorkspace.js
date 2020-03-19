@@ -1,6 +1,6 @@
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { Settings } from '../../../models';
 
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export function unregisterWorkspace() {
 	const { workspaceRegistered } = retrieveRegistrationStatus();
@@ -13,10 +13,8 @@ export function unregisterWorkspace() {
 	Settings.updateValueById('Cloud_Workspace_Client_Id', null);
 	Settings.updateValueById('Cloud_Workspace_Client_Secret', null);
 	Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', null);
+	Settings.updateValueById('Cloud_Workspace_PublicKey', null);
 	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', null);
-
-	// So doesn't try to register again automatically
-	Settings.updateValueById('Register_Server', false);
 
 	return true;
 }

@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Email } from 'meteor/email';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../settings';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
+import stripHtml from 'string-strip-html';
+
+import { settings } from '../../settings';
+
 let contentHeader;
 let contentFooter;
 
@@ -30,10 +33,10 @@ export const replace = function replace(str, data = {}) {
 		Site_Name: Settings.get('Site_Name'),
 		Site_URL: Settings.get('Site_Url'),
 		Site_URL_Slash: Settings.get('Site_Url').replace(/\/?$/, '/'),
-		...(data.name && {
+		...data.name && {
 			fname: s.strLeft(data.name, ' '),
 			lname: s.strRightBack(data.name, ' '),
-		}),
+		},
 		...data,
 	};
 	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
@@ -47,7 +50,13 @@ export const replaceEscaped = (str, data = {}) => replace(str, {
 		return ret;
 	}, {}),
 });
-export const wrap = (html, data = {}) => replaceEscaped(body.replace('{{body}}', html), data);
+export const wrap = (html, data = {}) => {
+	if (settings.get('email_plain_text_only')) {
+		return replace(html, data);
+	}
+
+	return replaceEscaped(body.replace('{{body}}', html), data);
+};
 export const inlinecss = (html) => juice.inlineContent(html, Settings.get('email_style'));
 export const getTemplate = (template, fn, escape = true) => {
 	let html = '';
@@ -91,14 +100,23 @@ export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-
 
 export const checkAddressFormat = (from) => rfcMailPatternWithName.test(from);
 
-export const sendNoWrap = ({ to, from, subject, html, headers }) => {
+export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) => {
 	if (!checkAddressFormat(to)) {
 		return;
 	}
-	Meteor.defer(() => Email.send({ to, from, subject, html, headers }));
+
+	if (!text) {
+		text = stripHtml(html);
+	}
+
+	if (settings.get('email_plain_text_only')) {
+		html = undefined;
+	}
+
+	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
 };
 
-export const send = ({ to, from, subject, html, data, headers }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data), headers });
+export const send = ({ to, from, replyTo, subject, html, text, data, headers }) => sendNoWrap({ to, from, replyTo, subject: replace(subject, data), text: text ? replace(text, data) : stripHtml(replace(html, data)), html: wrap(html, data), headers });
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {

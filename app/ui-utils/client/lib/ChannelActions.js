@@ -1,12 +1,13 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { t, UiTextContext, roomTypes, handleError } from '../../../utils';
+
 import { modal } from './modal';
 import { call } from './callMethod';
 import { RoomManager } from './RoomManager';
+import { t, UiTextContext, roomTypes, handleError } from '../../../utils';
 
 export function hide(type, rid, name) {
-	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
+	const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
 
 	modal.open({
 		title: t('Are_you_sure'),
@@ -36,7 +37,7 @@ export function hide(type, rid, name) {
 }
 
 export async function leave(type, rid, name) {
-	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.LEAVE_WARNING);
+	const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
 
 	modal.open({
 		title: t('Are_you_sure'),
