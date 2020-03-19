@@ -84,11 +84,23 @@ Template.livechatCurrentChats.helpers({
 	tagFilters() {
 		return Template.instance().tagFilters.get();
 	},
-	departments() {
-		return Template.instance().departments.get();
-	},
 	tagId() {
 		return this;
+	},
+	departmentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	onClickTagDepartment() {
+		return Template.instance().onClickTagDepartment;
+	},
+	selectedDepartments() {
+		return Template.instance().selectedDepartments.get();
+	},
+	onSelectDepartments() {
+		return Template.instance().onSelectDepartments;
 	},
 });
 
@@ -302,6 +314,11 @@ Template.livechatCurrentChats.events({
 			filter.agents = [agents[0]];
 		}
 
+		const departments = instance.selectedDepartments.get();
+		if (departments && departments.length > 0) {
+			filter.department = [departments[0]];
+		}
+
 		instance.filter.set(filter);
 		instance.offset.set(0);
 		storeFilters(filter);
@@ -353,7 +370,16 @@ Template.livechatCurrentChats.onCreated(async function() {
 	this.customFilters = new ReactiveVar([]);
 	this.customFields = new ReactiveVar([]);
 	this.tagFilters = new ReactiveVar([]);
-	this.departments = new ReactiveVar([]);
+	this.selectedDepartments = new ReactiveVar([]);
+
+	this.onSelectDepartments = ({ item: department }) => {
+		department.text = department.name;
+		this.selectedDepartments.set([department]);
+	};
+
+	this.onClickTagDepartment = () => {
+		this.selectedDepartments.set([]);
+	};
 
 	const mountArrayQueryParameters = (label, items, index) => items.reduce((acc, item) => {
 		const isTheLastElement = index === items.length - 1;
@@ -368,8 +394,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 		if (status) {
 			url += `&open=${ status === 'opened' }`;
 		}
-		if (department) {
-			url += `&departmentId=${ department }`;
+		if (department && Array.isArray(department) && department.length) {
+			url += `&departmentId=${ department[0]._id }`;
 		}
 		if (from) {
 			dateRange.start = `${ moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`;
@@ -407,6 +433,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 			switch (key) {
 				case 'agents':
 					return this.selectedAgents.set(value);
+				case 'department':
+					return this.selectedDepartments.set(value);
 				case 'from':
 				case 'to':
 					return $(`#${ key }`).datepicker('setDate', new Date(value));
@@ -420,6 +448,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 		removeStoredFilters();
 		$('#form-filters').get(0).reset();
 		this.selectedAgents.set([]);
+		this.selectedDepartments.set([]);
 		this.filter.set({});
 	};
 
@@ -449,16 +478,13 @@ Template.livechatCurrentChats.onCreated(async function() {
 		this.loadRooms(filter, offset);
 	});
 
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
-	this.departments.set(departments);
-
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
 			this.customFields.set(customFields);
 		}
 	});
 
-	setTimeout(this.loadDefaultFilters, 500);
+	this.loadDefaultFilters();
 });
 
 Template.livechatCurrentChats.onRendered(function() {
