@@ -48,6 +48,9 @@ export const openRoom = function(type, name) {
 		}
 
 		if (RoomManager.open(type + name).ready() !== true) {
+			if (settings.get('Accounts_AllowAnonymousRead')) {
+				BlazeLayout.render('main');
+			}
 			replaceCenterDomBy(getDomOfLoading());
 			return;
 		}

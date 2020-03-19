@@ -295,4 +295,8 @@ export class RoomTypeConfig {
 	getAvatarPath(/* roomData */) {
 		return '';
 	}
+
+	openCustomProfileTab() {
+		return false;
+	}
 }
