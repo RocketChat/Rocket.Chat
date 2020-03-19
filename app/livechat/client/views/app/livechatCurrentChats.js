@@ -11,10 +11,31 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { modal, call, popover } from '../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../utils/client';
-import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../authorization';
+import { hasRole, hasPermission } from '../../../../authorization';
 import './livechatCurrentChats.html';
 
 const ROOMS_COUNT = 50;
+const FILTER_STORE_NAME = 'Filters.LivechatCurrentChats';
+
+const loadStoredFilters = () => {
+	let storedFilters;
+	try {
+		const storeItem = Meteor._localStorage.getItem(FILTER_STORE_NAME);
+		storedFilters = storeItem ? JSON.parse(Meteor._localStorage.getItem(FILTER_STORE_NAME)) : {};
+	} catch (e) {
+		storedFilters = {};
+	}
+
+	return storedFilters;
+};
+
+const storeFilters = (filters) => {
+	Meteor._localStorage.setItem(FILTER_STORE_NAME, JSON.stringify(filters));
+};
+
+const removeStoredFilters = () => {
+	Meteor._localStorage.removeItem(FILTER_STORE_NAME);
+};
 
 Template.livechatCurrentChats.helpers({
 	hasMore() {
@@ -68,9 +89,6 @@ Template.livechatCurrentChats.helpers({
 	},
 	tagId() {
 		return this;
-	},
-	hasPopoverPermissions() {
-		return hasAtLeastOnePermission(['remove-closed-livechat-rooms']);
 	},
 });
 
@@ -160,6 +178,11 @@ Template.livechatCurrentChats.events({
 				groups: [
 					{
 						items: [
+							{
+								icon: 'customize',
+								name: t('Clear_filters'),
+								action: instance.clearFilters,
+							},
 							canRemoveAllClosedRooms
 							&& {
 								icon: 'trash',
@@ -276,11 +299,12 @@ Template.livechatCurrentChats.events({
 
 		const agents = instance.selectedAgents.get();
 		if (agents && agents.length > 0) {
-			filter.agents = [agents[0]._id];
+			filter.agents = [agents[0]];
 		}
 
 		instance.filter.set(filter);
 		instance.offset.set(0);
+		storeFilters(filter);
 	},
 	'click .remove-livechat-room'(event, instance) {
 		event.preventDefault();
@@ -323,7 +347,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 	this.isLoading = new ReactiveVar(false);
 	this.offset = new ReactiveVar(0);
 	this.total = new ReactiveVar(0);
-	this.filter = new ReactiveVar({});
+	this.filter = new ReactiveVar(loadStoredFilters());
 	this.livechatRooms = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
 	this.customFilters = new ReactiveVar([]);
@@ -357,7 +381,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 			url += `&${ mountArrayQueryParameters('tags', tags) }`;
 		}
 		if (agents && Array.isArray(agents) && agents.length) {
-			url += `&${ mountArrayQueryParameters('agents', agents) }`;
+			url += `&${ mountArrayQueryParameters('agents', agents.map((agent) => agent._id)) }`;
 		}
 		if (customFields) {
 			url += `&customFields=${ JSON.stringify(customFields) }`;
@@ -369,6 +393,34 @@ Template.livechatCurrentChats.onCreated(async function() {
 			url += `&roomName=${ roomName }`;
 		}
 		return url;
+	};
+
+	this.loadDefaultFilters = () => {
+		const defaultFilters = this.filter.get();
+
+		Object.keys(defaultFilters).forEach((key) => {
+			const value = defaultFilters[key];
+			if (!value) {
+				return;
+			}
+
+			switch (key) {
+				case 'agents':
+					return this.selectedAgents.set(value);
+				case 'from':
+				case 'to':
+					return $(`#${ key }`).datepicker('setDate', new Date(value));
+			}
+
+			$(`#${ key }`).val(value);
+		});
+	};
+
+	this.clearFilters = () => {
+		removeStoredFilters();
+		$('#form-filters').get(0).reset();
+		this.selectedAgents.set([]);
+		this.filter.set({});
 	};
 
 	this.loadRooms = async (filter, offset) => {
@@ -405,6 +457,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 			this.customFields.set(customFields);
 		}
 	});
+
+	setTimeout(this.loadDefaultFilters, 500);
 });
 
 Template.livechatCurrentChats.onRendered(function() {
