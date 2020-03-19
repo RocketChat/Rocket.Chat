@@ -24,6 +24,10 @@ const sortChannels = function(field, direction) {
 
 const sortUsers = function(field, direction) {
 	switch (field) {
+		case 'email':
+			return {
+				'emails.address': direction === 'asc' ? 1 : -1,
+			};
 		default:
 			return {
 				[field]: direction === 'asc' ? 1 : -1,
@@ -47,7 +51,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username', 'email'] : []].includes(sortBy)) {
 			return;
 		}
 
