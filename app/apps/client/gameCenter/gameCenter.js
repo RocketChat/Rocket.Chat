@@ -2,8 +2,8 @@ import toastr from 'toastr';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { modal } from '../../../ui-utils';
-import { APIClient, t } from '../../../utils';
+import { modal } from '../../../ui-utils/client';
+import { APIClient, t } from '../../../utils/client';
 
 const getExternalComponents = async (instance) => {
 	try {
