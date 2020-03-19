@@ -157,7 +157,7 @@ Template.createChannel.helpers({
 		return roomTypes.roomTypesOrder.filter(
 			(roomTypeOrder) => roomTypeOrder.order < orderLow,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier],
+			(roomTypeOrder) => roomTypes.getConfig(roomTypeOrder.identifier),
 		).filter((roomType) => roomType.creationTemplate);
 	},
 	roomTypesAfterStandard() {
@@ -165,7 +165,7 @@ Template.createChannel.helpers({
 		return roomTypes.roomTypesOrder.filter(
 			(roomTypeOrder) => roomTypeOrder.order > orderHigh,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier],
+			(roomTypeOrder) => roomTypes.getConfig(roomTypeOrder.identifier),
 		).filter((roomType) => roomType.creationTemplate);
 	},
 });

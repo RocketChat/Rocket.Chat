@@ -255,8 +255,6 @@ export const RoomHistoryManager = new class {
 		}
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);
-		ChatMessage.remove({ rid: message.rid });
-
 		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
@@ -272,6 +270,7 @@ export const RoomHistoryManager = new class {
 			if (!result || !result.messages) {
 				return;
 			}
+			ChatMessage.remove({ rid: message.rid });
 			for (const msg of Array.from(result.messages)) {
 				if (msg.t !== 'command') {
 					upsertMessage({ msg, subscription });
