@@ -15,6 +15,7 @@ import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
+import { RoomSettingsEnum, roomTypes } from '../../../utils';
 
 const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
 Meteor.methods({
@@ -90,7 +91,7 @@ Meteor.methods({
 					action: 'Change_Room_Type',
 				});
 			}
-			if (setting === 'encrypted' && value !== room.encrypted && (room.t !== 'd' && room.t !== 'p')) {
+			if (setting === 'encrypted' && value !== room.encrypted && !roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
